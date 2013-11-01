@@ -1,0 +1,24 @@
+<html>
+	<head>
+		<script src="./javascripts/jquery.js"></script>
+		<script src="./javascripts/global-variables.js"></script>
+		<script src="./javascripts/jquery-cookie.js"></script>
+		<script src="./javascripts/functions.js"></script>
+		<LINK href="./stylesheets/homepage.css" rel="stylesheet" type="text/css">
+	</head>
+	<body>
+		<p>Hello Hong Kong Resort!</p>
+
+		email: <input id="emailField" type="text"><br>
+		password: <input id="passwordField" type="password"><br> 
+		<button id="checkConnectionButton" onclick="checkConnection();">checkConnection</button>
+		<button id="loginButton" onclick="login();">login</button>
+		<button id="registerButton" onclick="register();">register</button>
+		<button id="validateLoginStatus" onclick="checkLoginStatus();">checkLoginStatus</button>
+		<p id="jspData"></p>
+
+		<div id="userStatusBox">
+			<p id="userNameDisplay"></p>
+		</div>
+	</body>
+</html>
