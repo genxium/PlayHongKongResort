@@ -1,8 +1,9 @@
 package controllers;
 
 import play.*;
-import play.api.mvc.MultipartFormData;
 import play.mvc.*;
+import play.mvc.Http.MultipartFormData;
+import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Http.RequestBody;
 import scala.collection.immutable.Page;
 import views.html.*;
@@ -118,4 +119,22 @@ public class Application extends Controller {
   		}
   		return ok("User doesn't exist or not logged in");
     }
+    
+    public static Result uploadingHandler() {
+    	  // define response attributes
+    	  response().setContentType("text/plain");
+    	  
+    	  RequestBody body = request().body();
+    	  MultipartFormData data = body.asMultipartFormData();
+    	  FilePart picture = data.getFile("picture");
+    	  if (picture != null) {
+    	    String fileName = picture.getFilename();
+    	    String contentType = picture.getContentType(); 
+    	    File file = picture.getFile();
+    	    return ok("File uploaded");
+    	  } else {
+    	    flash("error", "Missing file");
+    	    return redirect("/assets/homepage.html");    
+    	  }
+    	}
 }
