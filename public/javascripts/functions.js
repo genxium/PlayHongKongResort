@@ -1,21 +1,3 @@
-function checkConnection(){
-	$("#jspData").html("Calling check function");
-	// this POST path is defined in conf/routes
-	$.post("/checkConnection",
-			{
-			},
-			// post response callback function
-			function(data, status, xhr){
-				if(status=="success"){
-		    			$("#jspData").html("Connection: "+data);
-		    		}
-		    		else{
-		    			$("#jspData").html("Query failed");
-		    		}
-		    }
-	);
-}
-
 function login(){
 	$("#jspData").html("Calling login function");
 	var email=$("#emailField").val();
@@ -82,4 +64,10 @@ function validateToken(token){
 		    		}
 		    }
 	);
+}
+
+function upload(){
+	var file =  document.getElementById('picture');
+	var fileName=file.value;
+	$("#jspData").html(fileName);
 }

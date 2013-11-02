@@ -16,17 +16,9 @@
 		<button id="registerButton" onclick="register();">register</button>
 		<button id="validateLoginStatus" onclick="checkLoginStatus();">checkLoginStatus</button>
 		<p id="jspData"></p>
-
-		<div id="userStatusBox">
-			<p id="userNameDisplay"></p>
-		</div>
 		
-		<form action="/uploadingHandler" enctype="multipart/form-data" method="post">
-    		<input type="file" name="picture">
-    		<p>
-        	<input type="submit">
-    		</p>
-		</form>
+        <input id="picture" type="file" name="picture">
+		<button id="fileSection" onclick="upload();">SEND</button>
 		
 	</body>
 </html>
