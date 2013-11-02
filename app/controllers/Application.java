@@ -37,13 +37,42 @@ public class Application extends Controller {
     }
     
     public static Result login(){
+		// define response attributes
+    		response().setContentType("text/plain");
+		
     		RequestBody body = request().body();
     		Map<String, String[]> formData=body.asFormUrlEncoded();
     		String[] emails=formData.get("email");
     		String[] passwords=formData.get("password");
     		String email=emails[0];
     		String password=passwords[0];
-    		response().setContentType("text/plain");
-    		return ok("email: "+email+", password: "+password);
+    		
+    		String passwordDigest=Converter.md5(password);
+			// DAO
+			SQLHelper sqlHelper=new SQLHelper();
+			boolean status = sqlHelper.checkConnection();
+			if(status==true){
+				String query=("SELECT * FROM User WHERE email='"+email+"' AND password='"+passwordDigest+"'");
+				List<JSONObject> results=sqlHelper.executeSelect(query);
+				if(results!=null){
+					if(results.size()>0){
+						Iterator it=results.iterator();
+				        while(it.hasNext())
+				        {
+				          JSONObject jsonObject=(JSONObject)it.next();
+				          String token = Converter.generateToken(email, password);
+				          session(token, email);
+				          return ok(token);
+				        }
+					}else{
+						return ok("not found");
+					}		
+				} else{
+					return ok("Failed to login");
+				}
+			} 
+			
+			return ok("Failed to connect to database");
     }
+    
 }

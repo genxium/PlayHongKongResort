@@ -43,7 +43,7 @@ function login(){
 	var email=$("#emailField").val();
 	var password=$("#passwordField").val();
 
-	$.post("../../JavaServer/controller.jsp",
+	$.post("/login",
 			{
 				r: 1, // login is request type 1
 				email: email.toString(),
@@ -51,14 +51,14 @@ function login(){
 			},
 			// post response callback function
 			function(data, status, xhr){
-		    	if(status=="success"){
-		    		$("#jspData").html("user: "+data);
-		    		// store token in cookie iff query succeeds
-                    $.cookie(loginStatusTokenKey.toString(),data.toString());
-		    	}
-		    	else{
-		    		$("#jspData").html("jsp query failed");
-		    	}
+				if(status=="success"){
+		    			$("#jspData").html("user: "+data);
+		    			// store token in cookie iff query succeeds
+		    			$.cookie(loginStatusTokenKey.toString(), data.toString());
+		    		}
+		    		else{
+		    			$("#jspData").html("jsp query failed");
+		    		}
 		    }
 	);
 }
