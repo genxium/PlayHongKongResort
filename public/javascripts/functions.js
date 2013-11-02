@@ -1,38 +1,16 @@
-function queryAllPost(){
-	$.post("../../JavaServer/controller.jsp",
-          	{
-      			param: 'this is a javascript call'
-            },
-            // post response callback function
-		    function(data, status, xhr){
-		    	if(status=="success"){
-		    		$("#jspData").html(data);
-		    	}
-		    	else{
-		    		$("#jspData").html("jsp query failed");
-		    	}
-		    }
-   	);
-}
-
 function checkConnection(){
 	$("#jspData").html("Calling check function");
-	var email=$("#emailField").val();
-	var password=$("#passwordField").val();
 	// this POST path is defined in conf/routes
 	$.post("/checkConnection",
 			{
-				r: 0, // checkConnection is request type 1
-				email: email.toString(),
-				password: password.toString()
 			},
 			// post response callback function
 			function(data, status, xhr){
 				if(status=="success"){
-		    			$("#jspData").html("user: "+data);
+		    			$("#jspData").html("Connection: "+data);
 		    		}
 		    		else{
-		    			$("#jspData").html("jsp query failed");
+		    			$("#jspData").html("Query failed");
 		    		}
 		    }
 	);
@@ -45,7 +23,6 @@ function login(){
 
 	$.post("/login",
 			{
-				r: 1, // login is request type 1
 				email: email.toString(),
 				password: password.toString()
 			},
@@ -68,20 +45,19 @@ function register(){
 	var email=$("#emailField").val();
 	var password=$("#passwordField").val();
 
-	$.post("../../JavaServer/controller.jsp",
+	$.post("/register",
 			{
-				r: 2, // register is request type 2
 				email: email.toString(),
 				password: password.toString()
 			},
 			// post response callback function
 			function(data, status, xhr){
-		    	if(status=="success"){
-		    		$("#jspData").html("user: "+data);
-		    	}
-		    	else{
-		    		$("#jspData").html("jsp query failed");
-		    	}
+		    		if(status=="success"){
+		    			$("#jspData").html("SQL query: "+data);
+		    		}
+		    		else{
+		    			$("#jspData").html("Query failed");
+		    		}
 		    }
 	);
 }
@@ -92,19 +68,18 @@ function checkLoginStatus(){
 }
 
 function validateToken(token){
-	$.post("../../JavaServer/controller.jsp",
+	$.post("/checkLoginStatus",
 			{
-				r: 3, // validateToken is request type 3
 				token: token.toString(),
 			},
 			// post response callback function
 			function(data, status, xhr){
-		    	if(status=="success"){
-		    		$("#jspData").html(data);
-		    	}
-		    	else{
-		    		$("#jspData").html("jsp query failed");
-		    	}
+		    		if(status=="success"){
+		    			$("#jspData").html(data);
+		    		}
+		    		else{
+		    			$("#jspData").html("Query failed");
+		    		}
 		    }
 	);
 }

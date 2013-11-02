@@ -75,4 +75,47 @@ public class Application extends Controller {
 			return ok("Failed to connect to database");
     }
     
+    public static Result register(){
+    		// define response attributes
+		response().setContentType("text/plain");
+	
+		RequestBody body = request().body();
+		Map<String, String[]> formData=body.asFormUrlEncoded();
+		String[] emails=formData.get("email");
+		String[] passwords=formData.get("password");
+		String email=emails[0];
+		String password=passwords[0];
+		String name=email;
+		
+		// DAO
+		SQLHelper sqlHelper=new SQLHelper();
+		
+		StringBuilder queryBuilder=new StringBuilder();
+		queryBuilder.append("INSERT INTO User(email,password,name) VALUES(");
+		queryBuilder.append("'"+email+"'");
+		queryBuilder.append(",");
+		queryBuilder.append("md5('"+password+"')");
+		queryBuilder.append(",");
+		queryBuilder.append("'"+name+"'");
+		queryBuilder.append(")");
+		String query=queryBuilder.toString();
+		sqlHelper.executeInsert(query);
+		
+		return ok(query);
+    }
+    
+    public static Result checkLoginStatus(){
+    		// define response attributes
+    		response().setContentType("text/plain");
+    		
+   		RequestBody body = request().body();
+    		Map<String, String[]> formData=body.asFormUrlEncoded();
+  		String[] tokens=formData.get("token");
+  		String token=tokens[0];
+  		String email=session(token);
+  		if(email!=null && email.length()>0){
+  			return ok(email+" has logged in with token "+token);
+  		}
+  		return ok("User doesn't exist or not logged in");
+    }
 }
