@@ -18,6 +18,11 @@ import java.util.List;
 import java.io.*;
 import java.util.*;
 
+import play.libs.Json;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 public class Application extends Controller {
 
     public static Result index() {
@@ -65,8 +70,15 @@ public class Application extends Controller {
 				        	  		String token = Converter.generateToken(email, password);
 							    session(token, email);
 							    String userIdKey="userId";
+							    String emailKey="email";
+							    String tokenKey="token";
 							    Integer userId=(Integer) jsonObject.get(userIdKey);
-							    return ok("userId="+userId.toString());
+							    String userEmail=(String) jsonObject.get(emailKey);
+							    ObjectNode result = Json.newObject();
+							    result.put(userIdKey, userId);
+							    result.put(emailKey, userEmail);
+							    result.put(tokenKey, token);
+							    return ok(result);
 				          } catch (Exception e) {
 				        	  		// TODO Auto-generated catch block
 				        	  		return ok(e.getMessage());
@@ -116,7 +128,7 @@ public class Application extends Controller {
     		// define response attributes
     		response().setContentType("text/plain");
    
-    		String token=getUserToken();
+    		String token=getUserToken(request().body());
     		String email=getEmailByToken(token);
     		
   		if(email!=null && email.length()>0){
@@ -130,8 +142,13 @@ public class Application extends Controller {
     	  response().setContentType("text/plain");
     	  
     	  RequestBody body = request().body();
+    	  // get file data from request body stream
     	  MultipartFormData data = body.asMultipartFormData();
     	  FilePart picture = data.getFile("picture");
+    	  
+    	  // get user token from request body stream
+    	  String token=getUserToken(data);
+    	  
     	  if (picture != null) {
     	    String fileName = picture.getFilename();
     	    File file = picture.getFile();
@@ -140,7 +157,7 @@ public class Application extends Controller {
     	    		if(isImage(contentType)){
     	    			String rootDir=Play.application().path().getAbsolutePath();
     	    			file.renameTo(new File(rootDir+"/uploadedImages/"+fileName));
-    	        	    return ok("File " + fileName +" uploaded");
+    	        	    return ok("File " + fileName +" uploaded token="+token);
     	    		}
         } catch (Exception e) {
             System.out.println("Problem operating on filesystem");
@@ -167,9 +184,15 @@ public class Application extends Controller {
 		return false;
     }
     
-    public static String getUserToken(){
-    		RequestBody body = request().body();
-    		Map<String, String[]> formData=body.asFormUrlEncoded();
+    public static String getUserToken(MultipartFormData data){
+    		Map<String, String[]> formData= data.asFormUrlEncoded();
+		String[] tokens=formData.get("token");
+		String token=tokens[0];
+		return token;
+    }
+    
+    public static String getUserToken(RequestBody body){
+    		Map<String, String[]> formData= body.asFormUrlEncoded();
 		String[] tokens=formData.get("token");
 		String token=tokens[0];
 		return token;

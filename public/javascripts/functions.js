@@ -29,9 +29,10 @@ function login(){
 			// post response callback function
 			function(data, status, xhr){
 				if(status=="success"){
-		    			$("#responseSection").html(data);
+					var obj=JSON.parse(data);
+		    			$("#responseSection").html(obj['userId']);
 		    			// store token in cookie iff query succeeds
-		    			$.cookie(loginStatusTokenKey.toString(), data.toString());
+		    			$.cookie(loginStatusTokenKey.toString(), obj['token']);
 		    		}
 		    		else{
 		    			$("#responseSection").html("jsp query failed");
@@ -94,6 +95,11 @@ function ajaxUpload(){
 		var formObj = $(this);
 		var formURL = formObj.attr("action");
 		var formData = new FormData(this);
+		
+		// append an user token for identity
+		var token = $.cookie(loginStatusTokenKey.toString());
+		formData.append("token", token);
+		
 		$.ajax({
 			method: "POST",
 			url: "/uploadingHandler", 
