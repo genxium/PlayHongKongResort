@@ -1,5 +1,5 @@
 function checkConnection(){
-	$("#jspData").html("Calling check function");
+	$("#responseSection").html("Calling check function");
 	// this POST path is defined in conf/routes
 	$.post("/checkConnection",
 			{
@@ -7,17 +7,17 @@ function checkConnection(){
 			// post response callback function
 			function(data, status, xhr){
 				if(status=="success"){
-		    			$("#jspData").html("Connection: "+data);
+		    			$("#responseSection").html("Connection: "+data);
 		    		}
 		    		else{
-		    			$("#jspData").html("Query failed");
+		    			$("#responseSection").html("Query failed");
 		    		}
 		    }
 	);
 }
 
 function login(){
-	$("#jspData").html("Calling login function");
+	$("#responseSection").html("Calling login function");
 	var email=$("#emailField").val();
 	var password=$("#passwordField").val();
 
@@ -29,19 +29,19 @@ function login(){
 			// post response callback function
 			function(data, status, xhr){
 				if(status=="success"){
-		    			$("#jspData").html("user: "+data);
+		    			$("#responseSection").html(data);
 		    			// store token in cookie iff query succeeds
 		    			$.cookie(loginStatusTokenKey.toString(), data.toString());
 		    		}
 		    		else{
-		    			$("#jspData").html("jsp query failed");
+		    			$("#responseSection").html("jsp query failed");
 		    		}
 		    }
 	);
 }
 
 function register(){
-	$("#jspData").html("Calling register function");
+	$("#responseSection").html("Calling register function");
 	var email=$("#emailField").val();
 	var password=$("#passwordField").val();
 
@@ -53,10 +53,10 @@ function register(){
 			// post response callback function
 			function(data, status, xhr){
 		    		if(status=="success"){
-		    			$("#jspData").html("SQL query: "+data);
+		    			$("#responseSection").html("SQL query: "+data);
 		    		}
 		    		else{
-		    			$("#jspData").html("Query failed");
+		    			$("#responseSection").html("Query failed");
 		    		}
 		    }
 	);
@@ -75,10 +75,10 @@ function validateToken(token){
 			// post response callback function
 			function(data, status, xhr){
 		    		if(status=="success"){
-		    			$("#jspData").html(data);
+		    			$("#responseSection").html(data);
 		    		}
 		    		else{
-		    			$("#jspData").html("Query failed");
+		    			$("#responseSection").html("Query failed");
 		    		}
 		    }
 	);
@@ -103,10 +103,10 @@ function ajaxUpload(){
 			processData: false,
 			success: function(data, status, xhr){
 		    			if(status=="success"){
-		    				$("#jspData").html(data);
+		    				$("#responseSection").html(data);
 		    			}
 		    			else{
-		    				$("#jspData").html("Upload failed");
+		    				$("#responseSection").html("Upload failed");
 		    			}
 			},
 			error: function(xhr, status, errorThrown){

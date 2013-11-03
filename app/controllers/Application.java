@@ -8,7 +8,10 @@ import play.mvc.Http.RequestBody;
 import dao.SQLHelper;
 import utilities.Converter; 
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.util.Iterator;
 import java.util.List;
@@ -58,9 +61,16 @@ public class Application extends Controller {
 				        while(it.hasNext())
 				        {
 				          JSONObject jsonObject=(JSONObject)it.next();
-				          String token = Converter.generateToken(email, password);
-				          session(token, email);
-				          return ok(jsonObject.toJSONString());
+				          try {
+				        	  		String token = Converter.generateToken(email, password);
+							    session(token, email);
+							    String userIdKey="userId";
+							    Integer userId=(Integer) jsonObject.get(userIdKey);
+							    return ok("userId="+userId.toString());
+				          } catch (Exception e) {
+				        	  		// TODO Auto-generated catch block
+				        	  		return ok(e.getMessage());
+				          }
 				        }
 					}else{
 						return ok("not found");
