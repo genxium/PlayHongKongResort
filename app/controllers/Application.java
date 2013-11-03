@@ -60,7 +60,7 @@ public class Application extends Controller {
 				          JSONObject jsonObject=(JSONObject)it.next();
 				          String token = Converter.generateToken(email, password);
 				          session(token, email);
-				          return ok(token);
+				          return ok(jsonObject.toJSONString());
 				        }
 					}else{
 						return ok("not found");
