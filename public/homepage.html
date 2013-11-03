@@ -17,8 +17,15 @@
 		<button id="validateLoginStatus" onclick="checkLoginStatus();">checkLoginStatus</button>
 		<p id="jspData"></p>
 		
-        <input id="picture" type="file" name="picture">
-		<button id="fileSection" onclick="upload();">SEND</button>
+		<form id="imageSection"> 
+        	<input id="picture" type="file" name="picture"><br>
+		</form>
+		<button id="ajaxUploadButton" onclick="ajaxUpload();">upload</button>
+		
+		<div id="progress">
+        	<div id="bar"></div>
+        	<div id="percent">0%</div >
+		</div>
 		
 	</body>
 </html>

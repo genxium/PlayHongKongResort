@@ -15,8 +15,11 @@ import org.json.simple.JSONObject;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
+
+import javax.imageio.ImageIO;
 
 public class Application extends Controller {
 
@@ -131,10 +134,23 @@ public class Application extends Controller {
     	    String fileName = picture.getFilename();
     	    String contentType = picture.getContentType(); 
     	    File file = picture.getFile();
-    	    return ok("File uploaded");
+    	    try {
+    	    		BufferedImage image = ImageIO.read(file);
+    	    		String extension = getFileExt(fileName);
+    	    		ImageIO.write(image, extension, new File("/tmp/"+fileName));
+        } catch (IOException ioe) {
+            System.out.println("Problem operating on filesystem");
+        }
+    	    return ok("File " + fileName +" uploaded");
     	  } else {
     	    flash("error", "Missing file");
     	    return redirect("/assets/homepage.html");    
     	  }
     	}
+    
+    public static String getFileExt(String fileName){
+    		int dotPos=fileName.lastIndexOf('.');
+    		String ext=fileName.substring(dotPos+1, fileName.length()-1);
+    		return ext;
+    }
 }
