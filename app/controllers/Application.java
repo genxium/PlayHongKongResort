@@ -118,6 +118,7 @@ public class Application extends Controller {
   		String token=tokens[0];
   		String email=session(token);
   		if(email!=null && email.length()>0){
+  			session(token, email);
   			return ok(email+" has logged in with token "+token);
   		}
   		return ok("User doesn't exist or not logged in");
@@ -132,12 +133,14 @@ public class Application extends Controller {
     	  FilePart picture = data.getFile("picture");
     	  if (picture != null) {
     	    String fileName = picture.getFilename();
-    	    String contentType = picture.getContentType(); 
     	    File file = picture.getFile();
     	    try {
+    	    	
     	    		BufferedImage image = ImageIO.read(file);
     	    		String extension = getFileExt(fileName);
-    	    		ImageIO.write(image, extension, new File("/tmp/"+fileName));
+    	    		String rootDir=Play.application().path().getAbsolutePath();
+    	    		ImageIO.write(image, extension, new File(rootDir+"/uploadedImages/"+fileName));
+    	    		
         } catch (IOException ioe) {
             System.out.println("Problem operating on filesystem");
         }

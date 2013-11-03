@@ -13,6 +13,7 @@ dist
 /.project
 /RUNNING_PID
 /.settings
-
+uploadedImages
+uploadedImages/*
 
 /.target
