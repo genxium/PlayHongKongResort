@@ -85,11 +85,15 @@ function validateToken(token){
 }
 
 function ajaxUpload(){
+	
+	if(validateImage()==false){
+		return;
+	}
+	
 	$("#imageSection").submit( function(e){
 		var formObj = $(this);
 		var formURL = formObj.attr("action");
 		var formData = new FormData(this);
-		if(validateImage()==false) return; 
 		$.ajax({
 			method: "POST",
 			url: "/uploadingHandler", 

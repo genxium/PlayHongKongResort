@@ -134,20 +134,20 @@ public class Application extends Controller {
     	  if (picture != null) {
     	    String fileName = picture.getFilename();
     	    File file = picture.getFile();
-    	    try {
-    	    	
-    	    		BufferedImage image = ImageIO.read(file);
-    	    		String extension = getFileExt(fileName);
-    	    		String rootDir=Play.application().path().getAbsolutePath();
-    	    		ImageIO.write(image, extension, new File(rootDir+"/uploadedImages/"+fileName));
-    	    		
-        } catch (IOException ioe) {
+    		String contentType=picture.getContentType();
+    		try {
+    	    		if(isImage(contentType)){
+    	    			String rootDir=Play.application().path().getAbsolutePath();
+    	    			file.renameTo(new File(rootDir+"/uploadedImages/"+fileName));
+    	        	    return ok("File " + fileName +" uploaded");
+    	    		}
+        } catch (Exception e) {
             System.out.println("Problem operating on filesystem");
         }
-    	    return ok("File " + fileName +" uploaded");
+    	    return ok("File " + fileName +"("+contentType+") upload failed");
     	  } else {
     	    flash("error", "Missing file");
-    	    return redirect("/assets/homepage.html");    
+    	    return redirect("/assets/homepage.html");
     	  }
     	}
     
@@ -155,5 +155,14 @@ public class Application extends Controller {
     		int dotPos=fileName.lastIndexOf('.');
     		String ext=fileName.substring(dotPos+1, fileName.length()-1);
     		return ext;
+    }
+    
+    public static boolean isImage(String contentType){
+    		int slashPos=contentType.indexOf('/');
+		String typePrefix=contentType.substring(0, slashPos);
+		if(typePrefix.compareTo("image")==0){
+			return true;
+		}
+		return false;
     }
 }
