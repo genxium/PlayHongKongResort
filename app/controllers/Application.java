@@ -5,8 +5,6 @@ import play.mvc.*;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Http.RequestBody;
-import scala.collection.immutable.Page;
-import views.html.*;
 import dao.SQLHelper;
 import utilities.Converter; 
 
@@ -14,12 +12,8 @@ import org.json.simple.JSONObject;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
-
-import javax.imageio.ImageIO;
 
 public class Application extends Controller {
 
@@ -111,14 +105,11 @@ public class Application extends Controller {
     public static Result checkLoginStatus(){
     		// define response attributes
     		response().setContentType("text/plain");
+   
+    		String token=getUserToken();
+    		String email=getEmailByToken(token);
     		
-   		RequestBody body = request().body();
-    		Map<String, String[]> formData=body.asFormUrlEncoded();
-  		String[] tokens=formData.get("token");
-  		String token=tokens[0];
-  		String email=session(token);
   		if(email!=null && email.length()>0){
-  			session(token, email);
   			return ok(email+" has logged in with token "+token);
   		}
   		return ok("User doesn't exist or not logged in");
@@ -164,5 +155,18 @@ public class Application extends Controller {
 			return true;
 		}
 		return false;
+    }
+    
+    public static String getUserToken(){
+    		RequestBody body = request().body();
+    		Map<String, String[]> formData=body.asFormUrlEncoded();
+		String[] tokens=formData.get("token");
+		String token=tokens[0];
+		return token;
+    }
+    
+    public static String getEmailByToken(String token){
+    		String email=session(token);
+		return email;
     }
 }
