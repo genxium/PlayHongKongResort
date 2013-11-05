@@ -60,39 +60,33 @@ public class Application extends Controller {
 			if(status==true){
 				String query=("SELECT * FROM User WHERE email='"+email+"' AND password='"+passwordDigest+"'");
 				List<JSONObject> results=sqlHelper.executeSelect(query);
-				if(results!=null){
-					if(results.size()>0){
-						Iterator it=results.iterator();
-				        while(it.hasNext())
-				        {
-				          JSONObject jsonObject=(JSONObject)it.next();
-				          try {
-				        	  		String token = Converter.generateToken(email, password);
-							    session(token, email);
-							    String userIdKey="userId";
-							    String emailKey="email";
-							    String tokenKey="token";
-							    Integer userId=(Integer) jsonObject.get(userIdKey);
-							    String userEmail=(String) jsonObject.get(emailKey);
-							    ObjectNode result = Json.newObject();
-							    result.put(userIdKey, userId);
-							    result.put(emailKey, userEmail);
-							    result.put(tokenKey, token);
-							    return ok(result);
-				          } catch (Exception e) {
-				        	  		// TODO Auto-generated catch block
-				        	  		return ok(e.getMessage());
-				          }
-				        }
-					}else{
-						return ok("not found");
-					}		
+				if(results!=null && results.size()>0){
+                    Iterator it=results.iterator();
+			        while(it.hasNext()){
+			          JSONObject jsonObject=(JSONObject)it.next();
+			          try {
+			        	  	String token = Converter.generateToken(email, password);
+						    session(token, email);
+						    String userIdKey="userId";
+						    String emailKey="email";
+						    String tokenKey="token";
+						    Integer userId=(Integer) jsonObject.get(userIdKey);
+						    String userEmail=(String) jsonObject.get(emailKey);
+						    ObjectNode result = Json.newObject();
+						    result.put(userIdKey, userId);
+						    result.put(emailKey, userEmail);
+						    result.put(tokenKey, token);
+						    return ok(result);
+			          } catch (Exception e) {
+			        	  		// TODO Auto-generated catch block
+			        	  		return ok(e.getMessage());
+			          }
+			        } 	
 				} else{
-					return ok("Failed to login");
+					return badRequest("User Not Found");
 				}
-			} 
-			
-			return ok("Failed to connect to database");
+			}			
+			return badRequest("Failed to connect to database");
     }
     
     public static Result register(){
@@ -125,16 +119,46 @@ public class Application extends Controller {
     }
     
     public static Result checkLoginStatus(){
-    		// define response attributes
-    		response().setContentType("text/plain");
-   
-    		String token=getUserToken(request().body());
-    		String email=getEmailByToken(token);
-    		
+		// define response attributes
+		response().setContentType("text/plain");
+
+		String token=getUserToken(request().body());
+		String email=getEmailByToken(token);
+		
   		if(email!=null && email.length()>0){
-  			return ok(email+" has logged in with token "+token);
+            // DAO
+            SQLHelper sqlHelper=new SQLHelper();
+            boolean status = sqlHelper.checkConnection();
+            if(status==true){
+      		    String query=("SELECT * FROM User WHERE email='"+email+"'");
+                List<JSONObject> results=sqlHelper.executeSelect(query);
+                if(results!=null && results.size()>0){
+                    Iterator it=results.iterator();
+                    while(it.hasNext()) {
+                      JSONObject jsonObject=(JSONObject)it.next();
+                      try {
+                            session(token, email);
+                            String userIdKey="userId";
+                            String emailKey="email";
+                            String tokenKey="token";
+                            Integer userId=(Integer) jsonObject.get(userIdKey);
+                            String userEmail=(String) jsonObject.get(emailKey);
+                            ObjectNode result = Json.newObject();
+                            result.put(userIdKey, userId);
+                            result.put(emailKey, userEmail);
+                            result.put(tokenKey, token);
+                            return ok(result);
+                      } catch (Exception e) {
+                                // TODO Auto-generated catch block
+                            return badRequest(e.getMessage());
+                      }
+                    } 
+                } else{
+                    return badRequest("User Not found");
+                }
+            }
   		}
-  		return ok("User doesn't exist or not logged in");
+  		return badRequest("User doesn't exist or not logged in");
     }
     
     public static Result uploadingHandler() {
@@ -170,9 +194,9 @@ public class Application extends Controller {
     	}
     
     public static String getFileExt(String fileName){
-    		int dotPos=fileName.lastIndexOf('.');
-    		String ext=fileName.substring(dotPos+1, fileName.length()-1);
-    		return ext;
+		int dotPos=fileName.lastIndexOf('.');
+		String ext=fileName.substring(dotPos+1, fileName.length()-1);
+		return ext;
     }
     
     public static boolean isImage(String contentType){

@@ -1,31 +1,54 @@
 <html>
 	<head>
+		<!-- style sheets -->
+		<LINK href="./stylesheets/homepage.css" rel="stylesheet" type="text/css">
+		<!-- javascripts -->
 		<script src="./javascripts/jquery.js"></script>
 		<script src="./javascripts/global-variables.js"></script>
 		<script src="./javascripts/jquery-cookie.js"></script>
 		<script src="./javascripts/functions.js"></script>
-		<LINK href="./stylesheets/homepage.css" rel="stylesheet" type="text/css">
+		<script src="./javascripts/executeOnStart.js"></script>
+
+		<p id="headerTitle">Welcome To Hong Kong Resort!</p>
 	</head>
 	<body>
-		<p>Hello Hong Kong Resort!</p>
 
-		email: <input id="emailField" type="text"><br>
-		password: <input id="passwordField" type="password"><br> 
-		<button id="checkConnectionButton" onclick="checkConnection();">checkConnection</button>
-		<button id="loginButton" onclick="login();">login</button>
-		<button id="registerButton" onclick="register();">register</button>
-		<button id="validateLoginStatus" onclick="checkLoginStatus();">checkLoginStatus</button>
-		<p id="responseSection"></p>
-		
-		<form id="imageSection"> 
-        	<input id="picture" type="file" name="picture"><br>
-		</form>
-		<button id="ajaxUploadButton" onclick="ajaxUpload();">upload</button>
-		
-		<div id="progress">
+		<div id="accountSection">
+			email: <input id="emailField" type="text"><br>
+			password: <input id="passwordField" type="password"><br> 
+			<button id="checkConnectionButton" onclick="checkConnection();">checkConnection</button>
+			<button id="loginButton" onclick="login();">login</button>
+			<button id="registerButton" onclick="register();">register</button>
+			<button id="validateLoginStatus" onclick="checkLoginStatus();">checkLoginStatus</button>
+			<!-- <p id="responseSection"></p> -->
+		</div>
+
+		<div id="userInformationSection">
+
+		</div>
+
+		<div id="activitySection">
+			<p>Activity Form</p>
+			<form id="activityForm">
+				Title<br>
+			    <input id="activityTitle" type="text"><br>
+				Description<br>
+				<TEXTAREA id="activityDescription"></TEXTAREA>
+			</form>
+		</div>
+
+		<div id="imageSection">
+			<p>Image Upload</p>
+			<form id="imageForm"> 
+	        	<input id="picture" type="file" name="picture"><br>
+			</form>
+			<button id="ajaxUploadButton" onclick="ajaxUpload();">upload</button>
+		</div>
+
+		<div id="progressSection">
         	<div id="bar"></div>
         	<div id="percent">0%</div >
 		</div>
-		
+
 	</body>
 </html>

@@ -30,13 +30,16 @@ function login(){
 			function(data, status, xhr){
 				if(status=="success"){
 					var obj=JSON.parse(data);
-		    			$("#responseSection").html(obj['userId']);
-		    			// store token in cookie iff query succeeds
-		    			$.cookie(loginStatusTokenKey.toString(), obj['token']);
-		    		}
-		    		else{
-		    			$("#responseSection").html("jsp query failed");
-		    		}
+	    			$("#responseSection").html(obj['userId']);
+	    			userName=obj['email'];
+	    			// store token in cookie iff query succeeds
+	    			$.cookie(loginStatusTokenKey.toString(), obj['token']);
+	    			// refresh screen
+	    			refreshOnLoggedIn();
+		    	}
+	    		else{
+	    			$("#responseSection").html("Query failed");
+	    		}
 		    }
 	);
 }
@@ -75,12 +78,18 @@ function validateToken(token){
 			},
 			// post response callback function
 			function(data, status, xhr){
-		    		if(status=="success"){
-		    			$("#responseSection").html(data);
-		    		}
-		    		else{
-		    			$("#responseSection").html("Query failed");
-		    		}
+				if(status=="success"){
+					var obj=JSON.parse(data);
+	    			$("#responseSection").html(obj['userId']);
+	    			userName=obj['email'];
+	    			// store token in cookie iff query succeeds
+	    			$.cookie(loginStatusTokenKey.toString(), obj['token']);
+	    			// refresh screen
+	    			refreshOnLoggedIn();
+		    	}
+	    		else{
+	    			$("#responseSection").html("data");
+	    		}
 		    }
 	);
 }
@@ -91,7 +100,7 @@ function ajaxUpload(){
 		return;
 	}
 	
-	$("#imageSection").submit( function(e){
+	$("#imageForm").submit( function(e){
 		var formObj = $(this);
 		var formURL = formObj.attr("action");
 		var formData = new FormData(this);
@@ -119,9 +128,12 @@ function ajaxUpload(){
 				
 			}
 		});
-		e.preventDefault(); //Prevent Default action.
+		e.preventDefault(); // prevent default action.
+		/*
+		return false; // prevent default action
+		*/
 	});
-	$("#imageSection").submit();
+	$("#imageForm").submit();
 }
 
 function validateImage(){
@@ -144,4 +156,23 @@ function validateEmail(){
 	  return false;
 	}
 	return true;
+}
+
+function createActivity(){
+	$("#activityForm").submit( function(e){
+		return false; // prevent default action
+	});
+}
+
+function refreshOnEnter(){
+	$("#accountSection").show();
+	$("#activitySection").hide();
+	$("imageSection").hide();
+}
+
+function refreshOnLoggedIn(){
+	$("#accountSection").hide();
+	$("#activitySection").show();
+	$("imageSection").show();
+	$("#userInformationSection").html("Hello, "+userName.toString());
 }
