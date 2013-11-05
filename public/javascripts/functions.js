@@ -167,12 +167,14 @@ function createActivity(){
 function refreshOnEnter(){
 	$("#accountSection").show();
 	$("#activitySection").hide();
-	$("imageSection").hide();
+	$("#imageSection").hide();
+	$("#progressSection").hide();
 }
 
 function refreshOnLoggedIn(){
 	$("#accountSection").hide();
 	$("#activitySection").show();
-	$("imageSection").show();
+	$("#imageSection").show();
+	//$("#progressSection").show();
 	$("#userInformationSection").html("Hello, "+userName.toString());
 }
