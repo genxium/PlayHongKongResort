@@ -94,7 +94,7 @@ function validateToken(token){
 	);
 }
 
-function ajaxUpload(){
+function ajaxUploadImage(){
 	
 	if(validateImage()==false){
 		return;

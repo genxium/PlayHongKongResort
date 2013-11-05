@@ -27,6 +27,18 @@
 
 }
 
+#ajaxCreateActivity
+{
+	background-color: transparent;
+	border-style: none;
+}
+
+#ajaxCreateActivityImage
+{
+	height: 50pt;
+	width: 120pt;
+}
+
 #progressSection
 {
 

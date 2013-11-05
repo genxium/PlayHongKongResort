@@ -29,12 +29,17 @@
 
 		<div id="activitySection">
 			<p>Activity Form</p>
+
 			<form id="activityForm">
 				Title<br>
 			    <input id="activityTitle" type="text"><br>
 				Description<br>
+				<p>
 				<TEXTAREA id="activityDescription"></TEXTAREA>
+				<button id="ajaxCreateActivity" onclick="ajaxCreateActivity();" ><img id="ajaxCreateActivityImage" src="./images/btn-createActivity.png"></button>
+				</p>
 			</form>
+
 		</div>
 
 		<div id="imageSection">
@@ -42,7 +47,7 @@
 			<form id="imageForm"> 
 	        	<input id="picture" type="file" name="picture"><br>
 			</form>
-			<button id="ajaxUploadButton" onclick="ajaxUpload();">upload</button>
+			<button id="ajaxUploadImage" onclick="ajaxUploadImage();">upload</button>
 		</div>
 
 		<div id="progressSection">
