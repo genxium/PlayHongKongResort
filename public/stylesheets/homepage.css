@@ -17,20 +17,53 @@
 
 }
 
-#activitySection
+#activityForm
 {
-
+	position: relative;
 }
 
 #imageSection
 {
+	position: relative;
+}
 
+#ajaxSaveActivity
+{
+	position: relative;
+	background-color: transparent;
+	border-style: none;
 }
 
 #ajaxCreateActivity
 {
+	position: relative;
 	background-color: transparent;
 	border-style: none;
+}
+
+#activityTitle
+{
+	position: relative;
+	background-color: transparent;
+	height: 100pt;
+	width:	400pt;
+}
+
+#activityDescription
+{
+	position: relative;
+	background-color: transparent;
+	height: 100pt;
+	width: 400pt;
+	max-height: 200pt;
+	max-width:	400pt;
+	overflow: auto;
+}
+
+#ajaxSaveActivityImage
+{
+	height: 50pt;
+	width: 120pt;
 }
 
 #ajaxCreateActivityImage

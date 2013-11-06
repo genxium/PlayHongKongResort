@@ -1,4 +1,5 @@
-function checkConnection(){
+function checkConnection(evt){
+
 	$("#responseSection").html("Calling check function");
 	// this POST path is defined in conf/routes
 	$.post("/checkConnection",
@@ -16,7 +17,8 @@ function checkConnection(){
 	);
 }
 
-function login(){
+function login(evt){
+
 	$("#responseSection").html("Calling login function");
 	var email=$("#emailField").val();
 	var password=$("#passwordField").val();
@@ -44,7 +46,8 @@ function login(){
 	);
 }
 
-function register(){
+function register(evt){
+
 	$("#responseSection").html("Calling register function");
 	var email=$("#emailField").val();
 	var password=$("#passwordField").val();
@@ -66,7 +69,8 @@ function register(){
 	);
 }
 
-function checkLoginStatus(){
+function checkLoginStatus(evt){
+
 	var token = $.cookie(loginStatusTokenKey.toString());
 	validateToken(token);
 }
@@ -102,7 +106,6 @@ function ajaxUploadImage(){
 	
 	$("#imageForm").submit( function(e){
 		var formObj = $(this);
-		var formURL = formObj.attr("action");
 		var formData = new FormData(this);
 		
 		// append an user token for identity
@@ -129,9 +132,6 @@ function ajaxUploadImage(){
 			}
 		});
 		e.preventDefault(); // prevent default action.
-		/*
-		return false; // prevent default action
-		*/
 	});
 	$("#imageForm").submit();
 }
@@ -158,10 +158,54 @@ function validateEmail(){
 	return true;
 }
 
-function createActivity(){
+function saveActivity(evt){
+
+	if (!evt) {evt = window.event;}
+    var sender = (evt.srcElement || evt.target);
+    sender.toggle("scale");
+
 	$("#activityForm").submit( function(e){
-		return false; // prevent default action
+		var formObj = $(this);
+		var formData = new FormData(this);
+		
+		// append an user token for identity
+		var token = $.cookie(loginStatusTokenKey.toString());
+		formData.append("token", token);
+		
+		$.ajax({
+			method: "POST",
+			url: "/saveActivity", 
+			data: formData,
+			success: function(data, status, xhr){
+	    			if(status=="success"){
+	    				$("#activityDescription").html(data);
+	    			}
+	    			else{
+	    				$("#activityDescription").html("Save failed");
+	    			}
+			},
+			error: function(xhr, status, errorThrown){
+				
+			}
+		});
+		e.preventDefault(); // prevent default action.
 	});
+
+	$("#activityForm").submit();
+}
+
+function createActivity(evt){
+
+	if (!evt) {evt = window.event;}
+    var sender = (evt.srcElement || evt.target);
+    sender.toggle("scale");
+    /*
+	$("#activityForm").submit( function(evt){
+		evt.preventDefault();
+	});
+
+	$("#activityForm").submit();
+	*/
 }
 
 function refreshOnEnter(){

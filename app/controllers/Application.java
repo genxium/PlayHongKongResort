@@ -191,7 +191,11 @@ public class Application extends Controller {
     	    flash("error", "Missing file");
     	    return redirect("/assets/homepage.html");
     	  }
-    	}
+    }
+
+    public static Result saveActivity(){
+        return badRequest();
+    }
     
     public static String getFileExt(String fileName){
 		int dotPos=fileName.lastIndexOf('.');

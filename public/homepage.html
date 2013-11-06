@@ -16,11 +16,10 @@
 		<div id="accountSection">
 			email: <input id="emailField" type="text"><br>
 			password: <input id="passwordField" type="password"><br> 
-			<button id="checkConnectionButton" onclick="checkConnection();">checkConnection</button>
-			<button id="loginButton" onclick="login();">login</button>
-			<button id="registerButton" onclick="register();">register</button>
-			<button id="validateLoginStatus" onclick="checkLoginStatus();">checkLoginStatus</button>
-			<!-- <p id="responseSection"></p> -->
+			<button id="checkConnectionButton" onclick="checkConnection(event);">checkConnection</button>
+			<button id="loginButton" onclick="login(event);">login</button>
+			<button id="registerButton" onclick="register(event);">register</button>
+			<button id="validateLoginStatus" onclick="checkLoginStatus(event);">checkLoginStatus</button>
 		</div>
 
 		<div id="userInformationSection">
@@ -35,11 +34,13 @@
 			    <input id="activityTitle" type="text"><br>
 				Description<br>
 				<p>
-				<TEXTAREA id="activityDescription"></TEXTAREA>
-				<button id="ajaxCreateActivity" onclick="ajaxCreateActivity();" ><img id="ajaxCreateActivityImage" src="./images/btn-createActivity.png"></button>
+					<TEXTAREA id="activityDescription"></TEXTAREA>
 				</p>
 			</form>
-
+			<p id="activityButtonsSection">
+				<button id="ajaxSaveActivity" onclick="saveActivity(event);"><img id="ajaxSaveActivityImage" src="./images/btn-saveActivity.png"></button>
+				<button id="ajaxCreateActivity" onclick="createActivity(event);" ><img id="ajaxCreateActivityImage" src="./images/btn-createActivity.png"></button>
+			</p>
 		</div>
 
 		<div id="imageSection">
@@ -52,10 +53,9 @@
 
 		<div id="progressSection">
         	<div id="bar"></div>
-        	<p> Progress
-        	<div id="percent">0%</div >
-			</p>
+        	<p> Progress <div id="percent">0%</div > </p>
 		</div>
 
+		<p id="responseSection"></p>
 	</body>
 </html>
