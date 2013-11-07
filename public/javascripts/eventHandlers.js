@@ -1,4 +1,22 @@
-function onRegisterClicked(evt){
+function onCheckConnectionClicked(evt){
+	$("#responseSection").html("Calling check function");
+	// this POST path is defined in conf/routes
+	$.post("/checkConnection",
+			{
+			},
+			// post response callback function
+			function(data, status, xhr){
+				if(status=="success"){
+		    			$("#responseSection").html("Connection: "+data);
+		    		}
+		    		else{
+		    			$("#responseSection").html("Query failed");
+		    		}
+		    }
+	);
+}
+
+function onRegisterButtonClicked(evt){
 	$("#responseSection").html("Calling register function");
 	var email=$("#emailField").val();
 	var password=$("#passwordField").val();
@@ -20,7 +38,7 @@ function onRegisterClicked(evt){
 	);
 }
 
-function onLoginClicked(evt){
+function onLoginButtonClicked(evt){
 	$("#responseSection").html("Calling login function");
 	var email=$("#emailField").val();
 	var password=$("#passwordField").val();
@@ -49,13 +67,87 @@ function onLoginClicked(evt){
 }
 
 function onSaveButtonClicked(evt){
+	if (!evt) {evt = window.event;}
+    var sender = (evt.srcElement || evt.target);	
+    toggleScaling(sender);
 
+	$("#activityForm").submit( function(e){
+		var formObj = $(this);
+		var formData = new FormData(this);
+		
+		// append an user token for identity
+		var token = $.cookie(loginStatusTokenKey.toString());
+		formData.append("token", token);
+		
+		$.ajax({
+			method: "POST",
+			url: "/saveActivity", 
+			data: formData,
+			success: function(data, status, xhr){
+	    			if(status=="success"){
+	    				$("#activityDescription").html(data);
+	    			}
+	    			else{
+	    				$("#activityDescription").html("Save failed");
+	    			}
+			},
+			error: function(xhr, status, errorThrown){
+				
+			}
+		});
+		e.preventDefault(); // prevent default action.
+	});
+
+	$("#activityForm").submit();
 }
 
 function onCreateButtonClicked(evt){
-	
+	if (!evt) {evt = window.event;}
+    var sender = (evt.srcElement || evt.target);
+    toggleScaling(sender);
+    /*
+	$("#activityForm").submit( function(evt){
+		evt.preventDefault();
+	});
+
+	$("#activityForm").submit();
+	*/
 }
 
-function onUploadClicked(evt){
+function onUploadImageButtonClicked(evt){
 
+	if(validateImage()==false){
+		return;
+	}
+	
+	$("#imageForm").submit( function(e){
+		var formObj = $(this);
+		var formData = new FormData(this);
+		
+		// append an user token for identity
+		var token = $.cookie(loginStatusTokenKey.toString());
+		formData.append("token", token);
+		
+		$.ajax({
+			method: "POST",
+			url: "/uploadingHandler", 
+			data: formData,
+			mimeType: "mutltipart/form-data",
+			contentType: false,
+			processData: false,
+			success: function(data, status, xhr){
+		    			if(status=="success"){
+		    				$("#responseSection").html(data);
+		    			}
+		    			else{
+		    				$("#responseSection").html("Upload failed");
+		    			}
+			},
+			error: function(xhr, status, errorThrown){
+				
+			}
+		});
+		e.preventDefault(); // prevent default action.
+	});
+	$("#imageForm").submit();
 }

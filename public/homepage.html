@@ -3,11 +3,14 @@
 		<!-- style sheets -->
 		<LINK href="./stylesheets/homepage.css" rel="stylesheet" type="text/css">
 		<!-- javascripts -->
-		<script src="./javascripts/jquery.js"></script>
+		<script src="./javascripts/jquery-2.0.3.min.js"></script>
 		<script src="./javascripts/jquery-cookie.js"></script>
+		<script src="./javascripts/jquery-ui.js"></script>
+		<script src="./javascripts/jquery-transform/jquery.transform2d.js"></script>
 		<script src="./javascripts/global-variables.js"></script>
-		<script src="./javascripts/eventHandlers.js"></script>
+		<script src="./javascripts/animations.js"></script>
 		<script src="./javascripts/functions.js"></script>
+		<script src="./javascripts/eventHandlers.js"></script>
 		<script src="./javascripts/executeOnStart.js"></script>
 
 		<p id="headerTitle">Welcome To Hong Kong Resort!</p>
@@ -17,10 +20,9 @@
 		<div id="accountSection">
 			email: <input id="emailField" type="text"><br>
 			password: <input id="passwordField" type="password"><br> 
-			<button id="checkConnectionButton" onclick="checkConnection(event);">checkConnection</button>
-			<button id="loginButton" onclick="login(event);">login</button>
-			<button id="registerButton" onclick="register(event);">register</button>
-			<button id="validateLoginStatus" onclick="checkLoginStatus(event);">checkLoginStatus</button>
+			<button id="checkConnectionButton">checkConnection</button>
+			<button id="loginButton">login</button>
+			<button id="registerButton">register</button>
 		</div>
 
 		<div id="userInformationSection">
@@ -39,8 +41,8 @@
 				</p>
 			</form>
 			<p id="activityButtonsSection">
-				<button id="ajaxSaveActivity" onclick="saveActivity(event);"><img id="ajaxSaveActivityImage" src="./images/btn-saveActivity.png"></button>
-				<button id="ajaxCreateActivity" onclick="createActivity(event);" ><img id="ajaxCreateActivityImage" src="./images/btn-createActivity.png"></button>
+				<button id="saveButton"><img id="saveButtonImage" src="./images/btn-saveActivity.png"></button>
+				<button id="createButton"><img id="createButtonImage" src="./images/btn-createActivity.png"></button>
 			</p>
 		</div>
 
@@ -49,12 +51,12 @@
 			<form id="imageForm"> 
 	        	<input id="picture" type="file" name="picture"><br>
 			</form>
-			<button id="ajaxUploadImage" onclick="ajaxUploadImage();">upload</button>
+			<button id="uploadImageButton">upload</button>
 		</div>
 
 		<div id="progressSection">
         	<div id="bar"></div>
-        	<p> Progress <div id="percent">0%</div > </p>
+        	<p> Progress <div id="percentage">0%</div > </p>
 		</div>
 
 		<p id="responseSection"></p>

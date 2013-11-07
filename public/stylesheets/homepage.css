@@ -27,14 +27,14 @@
 	position: relative;
 }
 
-#ajaxSaveActivity
+#saveButton
 {
 	position: relative;
 	background-color: transparent;
 	border-style: none;
 }
 
-#ajaxCreateActivity
+#createButton
 {
 	position: relative;
 	background-color: transparent;
@@ -60,13 +60,13 @@
 	overflow: auto;
 }
 
-#ajaxSaveActivityImage
+#saveButtonImage
 {
 	height: 50pt;
 	width: 120pt;
 }
 
-#ajaxCreateActivityImage
+#createButtonImage
 {
 	height: 50pt;
 	width: 120pt;
@@ -86,28 +86,4 @@
 	font-family: Tahoma, sans-serif;
 	overflow: auto;
 	color: #FF0000;
-}
-
-#activityTitle
-{
-	width: 600px;
-	height: 50px;
-	border: 2px solid #cccccc;
-	padding: 5px;
-	font-family: Tahoma, sans-serif;
-	overflow: auto;
-	font-size: 120%;
-	color: #0000FF;
-}
-
-#activityDescription
-{
-	width: 700px;
-	height: 150px;
-	border: 2px solid #cccccc;
-	padding: 5px;
-	font-family: Tahoma, sans-serif;
-	overflow: auto;
-	font-size: 150%;
-	color: #0000FF;
 }
