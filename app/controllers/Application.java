@@ -31,7 +31,7 @@ public class Application extends Controller {
     }
     
     public static Result show(){
-    	  return ok(new java.io.File("/public/images/favicon.png"));
+    	  return ok(new java.io.File("/assets/homepage.html"));
     }
 
     public static Result checkConnection(){

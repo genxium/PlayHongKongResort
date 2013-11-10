@@ -1,6 +1,8 @@
 function checkLoginStatus(evt){
 	var token = $.cookie(loginStatusTokenKey.toString());
-	validateToken(token);
+	if(token!=null){
+		validateToken(token);
+	}
 }
 
 function validateToken(token){
