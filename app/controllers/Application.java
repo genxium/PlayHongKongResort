@@ -5,13 +5,11 @@ import play.mvc.*;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Http.RequestBody;
+import model.*;
 import dao.SQLHelper;
-import utilities.Converter; 
-
-import org.json.simple.JSONArray;
+import dao.ResultSetUtil;
+import service.DataSaver;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.util.Iterator;
 import java.util.List;
@@ -19,8 +17,8 @@ import java.io.*;
 import java.util.*;
 
 import play.libs.Json;
+import utilities.Converter;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class Application extends Controller {
@@ -101,21 +99,13 @@ public class Application extends Controller {
 		String password=passwords[0];
 		String name=email;
 		
-		// DAO
-		SQLHelper sqlHelper=new SQLHelper();
-		
-		StringBuilder queryBuilder=new StringBuilder();
-		queryBuilder.append("INSERT INTO User(email,password,name) VALUES(");
-		queryBuilder.append("'"+email+"'");
-		queryBuilder.append(",");
-		queryBuilder.append("md5('"+password+"')");
-		queryBuilder.append(",");
-		queryBuilder.append("'"+name+"'");
-		queryBuilder.append(")");
-		String query=queryBuilder.toString();
-		sqlHelper.executeInsert(query);
-		
-		return ok(query);
+        Guest guest=new Guest(0, email, password, name, false, false, false);
+        boolean bRet=DataSaver.saveObject(guest);
+        if(bRet==true){
+        		return ok("Registered");
+        } else{
+        		return badRequest("Register failed");
+        }
     }
     
     public static Result checkLoginStatus(){
