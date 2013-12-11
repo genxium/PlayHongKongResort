@@ -1,59 +1,37 @@
+CREATE TABLE UserGroup (
+	GroupId	INT(20) NOT NULL PRIMARY KEY,
+	GroupName VARCHAR(32) NOT NULL
+);
+
 CREATE TABLE User (
-    userId INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    email VARCHAR(256) NOT NULL,
-    password VARCHAR(256) NOT NULL,
-    name VARCHAR(256) NOT NULL
-) ;
+    UserId INT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    UserName VARCHAR(32) NOT NULL,
+    UserPassword VARCHAR(32) NOT NULL,
+    UserEmail VARCHAR(32) NOT NULL,
+    UserGroupId INT(20) NOT NULL,
+    UserAuthenticationStatus INT(2) NOT NULL,
+    UserGender INT(1) NOT NULL,
+    UserLastLoggedInTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+    FOREIGN KEY (UserGroupId) REFERENCES UserGroup(GroupId)
+);
 
-CREATE TABLE Post (
-    postId INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    title TEXT NOT NULL,
-    content TEXT NOT NULL,
-    postTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ;
+CREATE TABLE Activity (
+	ActivityId INT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	ActivityName VARCHAR(32) NOT NULL,
+	ActivityContent VARCHAR(1024) NOT NULL,
+	ActivityCreatedTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	ActivityBeginDate DATETIME NOT NULL,
+	ActivityEndDate DATETIME NOT NULL,
+	ActivityCapacity INT(32) NOT NULL,
+	ActivityParticipantINT INT(32) NOT NULL
+);
 
-CREATE TABLE Image (
-    imageId INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    url TEXT NOT NULL,
-    uploadTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ;
+CREATE TABLE UserRelation (
+	UserRelationId INT(2) NOT NULL PRIMARY KEY,
+	UserRelationName VARCHAR(32) NOT NULL
+);
 
-CREATE TABLE UserPostRelation (
-    userId INTEGER NOT NULL,
-    postId INTEGER NOT NULL,
-    relation SMALLINT NOT NULL,
-    FOREIGN KEY (userId)
-    REFERENCES User(userId),
-    FOREIGN KEY (postId)
-    REFERENCES Post(postId)
-) ;
-
-CREATE TABLE UserImageRelation (
-    userId INTEGER NOT NULL,
-    imageId INTEGER NOT NULL,
-    relation SMALLINT NOT NULL,
-    FOREIGN KEY (userId)
-    REFERENCES User(userId),
-    FOREIGN KEY (imageId)
-    REFERENCES Image(imageId)
-) ;
-
-CREATE INDEX imageIdIndexUserImageRelation ON UserImageRelation(imageId);
-
-CREATE TABLE PostImageRelation (
-    postId INTEGER NOT NULL,
-    imageId INTEGER NOT NULL,
-    relation SMALLINT NOT NULL,
-    FOREIGN KEY (postId)
-    REFERENCES Post(postId),
-    FOREIGN KEY (imageId)
-    REFERENCES Image(imageId)
-) ;
-
-CREATE INDEX imageIdIndexPostImageRelation ON PostImageRelation(imageId);
-
-INSERT INTO Image(url) VALUES("defaultAvatar.png");
-INSERT INTO Image(url) VALUES("defaultPost.png");
-
-INSERT INTO Post(content) VALUES("The first post");
-INSERT INTO Post(content) VALUES("The second post");
+CREATE TABLE UserActivityRelation (
+	UserActivityRelationId INT(3) NOT NULL PRIMARY KEY,
+	UserActivityRelationName VARCHAR(32) NOT NULL
+);
