@@ -9,7 +9,7 @@ public class DataSaver {
 		SQLHelper sqlHelper=new SQLHelper();
 		
 		StringBuilder queryBuilder=new StringBuilder();
-		queryBuilder.append("INSERT INTO User(email,password,name) VALUES(");
+		queryBuilder.append("INSERT INTO User(UserEmail, UserPassword, UserName) VALUES(");
 		queryBuilder.append("'"+user.getEmail()+"'");
 		queryBuilder.append(",");
 		queryBuilder.append("'"+user.getPassword()+"'");

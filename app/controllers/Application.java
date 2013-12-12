@@ -42,49 +42,23 @@ public class Application extends Controller {
     
     public static Result login(){
 		// define response attributes
-    		response().setContentType("text/plain");
+		response().setContentType("text/plain");
+	
+		RequestBody body = request().body();
+		Map<String, String[]> formData=body.asFormUrlEncoded();
+		String[] emails=formData.get("email");
+		String[] passwords=formData.get("password");
+		String email=emails[0];
+		String password=passwords[0];
 		
-    		RequestBody body = request().body();
-    		Map<String, String[]> formData=body.asFormUrlEncoded();
-    		String[] emails=formData.get("email");
-    		String[] passwords=formData.get("password");
-    		String email=emails[0];
-    		String password=passwords[0];
-    		
-    		String passwordDigest=Converter.md5(password);
-			// DAO
-			SQLHelper sqlHelper=new SQLHelper();
-			boolean status = sqlHelper.checkConnection();
-			if(status==true){
-				String query=("SELECT * FROM User WHERE email='"+email+"' AND password='"+passwordDigest+"'");
-				List<JSONObject> results=sqlHelper.executeSelect(query);
-				if(results!=null && results.size()>0){
-                    Iterator it=results.iterator();
-			        while(it.hasNext()){
-			          JSONObject jsonObject=(JSONObject)it.next();
-			          try {
-			        	  	String token = Converter.generateToken(email, password);
-						    session(token, email);
-						    String userIdKey="userId";
-						    String emailKey="email";
-						    String tokenKey="token";
-						    Integer userId=(Integer) jsonObject.get(userIdKey);
-						    String userEmail=(String) jsonObject.get(emailKey);
-						    ObjectNode result = Json.newObject();
-						    result.put(userIdKey, userId);
-						    result.put(emailKey, userEmail);
-						    result.put(tokenKey, token);
-						    return ok(result);
-			          } catch (Exception e) {
-			        	  		// TODO Auto-generated catch block
-			        	  		return ok(e.getMessage());
-			          }
-			        } 	
-				} else{
-					return badRequest("User Not Found");
-				}
-			}			
-			return badRequest("Failed to connect to database");
+		String passwordDigest=Converter.md5(password);
+		
+        BasicUser user=SQLCommander.getBasicUserByEmail(email);
+
+        if(user!=null && user.getPassword().equals(passwordDigest)){
+            return ok("Logged in");
+        }
+        return badRequest("User does not exist!");
     }
     
     public static Result register(){
@@ -128,13 +102,10 @@ public class Application extends Controller {
                       JSONObject jsonObject=(JSONObject)it.next();
                       try {
                             session(token, email);
-                            String userIdKey="userId";
-                            String emailKey="email";
+                            String emailKey="UserEmail";
                             String tokenKey="token";
-                            Integer userId=(Integer) jsonObject.get(userIdKey);
                             String userEmail=(String) jsonObject.get(emailKey);
                             ObjectNode result = Json.newObject();
-                            result.put(userIdKey, userId);
                             result.put(emailKey, userEmail);
                             result.put(tokenKey, token);
                             return ok(result);
@@ -181,10 +152,6 @@ public class Application extends Controller {
     	    flash("error", "Missing file");
     	    return redirect("/assets/homepage.html");
     	  }
-    }
-
-    public static Result saveActivity(){
-        return badRequest();
     }
     
     public static String getFileExt(String fileName){
