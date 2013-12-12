@@ -32,7 +32,7 @@ public class SQLCommander {
 
 		queryBuilder.append(" FROM "+tableName+" WHERE ");
 
-		queryBuilder.append(emailKey+"="+email);
+		queryBuilder.append(emailKey+"="+"'"+email+"'");
 
 		String query=queryBuilder.toString();
 		SQLHelper sqlHelper=new SQLHelper();
@@ -42,15 +42,17 @@ public class SQLCommander {
 	        if(it.hasNext()){
 		        JSONObject jsonObject=(JSONObject)it.next();
 		        try {
-		      		int id=Integer.parseInt((String)jsonObject.get(idKey));
+
 		      		String password=(String)jsonObject.get(passwordKey);
-	        		String name=(String)jsonObject.get(nameKey);
+		      		String name=(String)jsonObject.get(nameKey);
+		      		int id=(Integer)jsonObject.get(idKey);
+	        		
           		    BasicUser user=new BasicUser(id, email, password, name, false, false, false);
           		    return user;
 			    } catch (Exception e) {
-
+			    		System.out.print(e.getMessage());
 		        }
-	    	} 	
+	    		} 	
 		}
 		
 		return null;

@@ -23,7 +23,7 @@ public class BasicUser {
 	
 	private String m_password=null;
 	public String getPassword() {return m_password;}
-	private void setPassword(String password) {m_password=Converter.md5(password);}
+	private void setPassword(String password) {m_password=password;}
 
 	private String m_name=null;
 	public String getName() {return m_name;}

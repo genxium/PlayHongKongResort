@@ -1,4 +1,4 @@
-package service;
+package controllers;
 import dao.SQLHelper;
 import dao.ResultSetUtil;
 import model.BasicUser;
@@ -17,8 +17,11 @@ public class DataSaver {
 		queryBuilder.append("'"+user.getName()+"'");
 		queryBuilder.append(")");
 		String query=queryBuilder.toString();
-		sqlHelper.executeInsert(query);
-	
+		try{
+			sqlHelper.executeInsert(query);
+		} catch (Exception e){
+			return false;
+		}
 		return true;
 	}
 }

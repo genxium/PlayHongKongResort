@@ -8,7 +8,7 @@ import play.mvc.Http.RequestBody;
 import model.*;
 import dao.SQLHelper;
 import dao.ResultSetUtil;
-import service.DataSaver;
+
 import org.json.simple.JSONObject;
 
 import java.util.Iterator;
@@ -56,7 +56,18 @@ public class Application extends Controller {
         BasicUser user=SQLCommander.getBasicUserByEmail(email);
 
         if(user!=null && user.getPassword().equals(passwordDigest)){
-            return ok("Logged in");
+        	
+        		String token = Converter.generateToken(email, password);
+		    session(token, email);
+		    String userIdKey="userId";
+		    String emailKey="email";
+		    String tokenKey="token";
+
+		    ObjectNode result = Json.newObject();
+		    result.put(userIdKey, user.getUserId());
+		    result.put(emailKey, user.getEmail());
+		    result.put(tokenKey, token);
+		    return ok(result);
         }
         return badRequest("User does not exist!");
     }
