@@ -1,14 +1,16 @@
 package controllers;
-import dao.*;
 import model.Guest;
 import model.BasicUser;
+import model.Activity;
 import org.json.simple.JSONObject;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import dao.SQLHelper;
+import dao.ResultSetUtil;
 
 public class SQLCommander {
- 	public static BasicUser getBasicUserByEmail(String email){
+ 	public static BasicUser queryUserByEmail(String email){
 
  		String tableName="User";
  		String idKey="UserId";
@@ -56,5 +58,59 @@ public class SQLCommander {
 		}
 		
 		return null;
+	}
+
+	public static boolean registerUser(BasicUser user){
+		// DAO
+		SQLHelper sqlHelper=new SQLHelper();
+		
+		StringBuilder queryBuilder=new StringBuilder();
+		queryBuilder.append("INSERT INTO User(UserEmail, UserPassword, UserName) VALUES(");
+		queryBuilder.append("'"+user.getEmail()+"'");
+		queryBuilder.append(",");
+		queryBuilder.append("'"+user.getPassword()+"'");
+		queryBuilder.append(",");
+		queryBuilder.append("'"+user.getName()+"'");
+		queryBuilder.append(")");
+		String query=queryBuilder.toString();
+		try{
+			sqlHelper.executeInsert(query);
+			sqlHelper=null;
+		} catch (Exception e){
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean createActivity(Activity activity){
+		// DAO
+		SQLHelper sqlHelper=new SQLHelper();
+		
+		StringBuilder queryBuilder=new StringBuilder();
+		queryBuilder.append("INSERT INTO User(ActivityName, ActivityContent, ActivityCreatedTime, ActivityBeginDate, ActivityEndDate, ActivityCapacity) VALUES(");
+		queryBuilder.append("'"+activity.getName()+"'");
+		queryBuilder.append(",");
+		queryBuilder.append("'"+activity.getContent()+"'");
+		queryBuilder.append(",");
+		queryBuilder.append("'"+activity.getCreatedTime()+"'");
+		queryBuilder.append(",");
+		queryBuilder.append("'"+activity.getBeginDate+"'");
+		queryBuilder.append(",");
+		queryBuilder.append("'"+activity.getEndDate+"'");
+		queryBuilder.append(",");
+		queryBuilder.append(activity.getCapacity);
+		queryBuilder.append(")");
+		String query=queryBuilder.toString();
+		try{
+			sqlHelper.executeInsert(query);
+			sqlHelper=null;
+		} catch (Exception e){
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean createUserActivityRelation(Activity activity, BasicUser user, int relationShip){
+		return true;
 	}
 };

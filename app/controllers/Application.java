@@ -53,7 +53,7 @@ public class Application extends Controller {
 		
 		String passwordDigest=Converter.md5(password);
 		
-        BasicUser user=SQLCommander.getBasicUserByEmail(email);
+        BasicUser user=SQLCommander.queryUserByEmail(email);
 
         if(user!=null && user.getPassword().equals(passwordDigest)){
         	
@@ -85,11 +85,11 @@ public class Application extends Controller {
 		String name=email;
 		
         Guest guest=new Guest(0, email, password, name, false, false, false);
-        boolean bRet=DataSaver.saveObject(guest);
+        boolean bRet=SQLCommander.registerUser(guest);
         if(bRet==true){
         		return ok("Registered");
         } else{
-        		return badRequest("Register failed");
+        		return ok("Register failed");
         }
     }
     

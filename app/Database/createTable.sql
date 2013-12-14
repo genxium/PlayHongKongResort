@@ -22,8 +22,7 @@ CREATE TABLE Activity (
 	ActivityCreatedTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	ActivityBeginDate DATETIME NOT NULL,
 	ActivityEndDate DATETIME NOT NULL,
-	ActivityCapacity INT(32) NOT NULL,
-	ActivityParticipantINT INT(32) NOT NULL
+	ActivityCapacity INT(32) NOT NULL
 );
 
 CREATE TABLE UserRelation (
