@@ -84,9 +84,10 @@ public class Application extends Controller {
 		String password=passwords[0];
 		String name=email;
 		
-        Guest guest=new Guest(0, email, password, name, false, false, false);
-        boolean bRet=SQLCommander.registerUser(guest);
-        if(bRet==true){
+		String passwordDigest=Converter.md5(password);
+        Guest guest=new Guest(0, email, passwordDigest, name, false, false, false);
+        int lastId=SQLCommander.registerUser(guest);
+        if(lastId!=SQLCommander.invalidId){
         		return ok("Registered");
         } else{
         		return ok("Register failed");

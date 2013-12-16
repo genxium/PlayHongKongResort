@@ -28,4 +28,8 @@ public class Activity {
 	private Timestamp m_endDate=null; 
 	public Timestamp getEndDate() {return m_endDate;}
 	public void setEndDate(Timestamp endDate) {m_endDate=endDate;}
+	
+	private int m_capacity=0;
+	public int getCapacity() {return m_capacity;}
+	public void setCapacity(int capacity) {m_capacity=capacity;}
 };

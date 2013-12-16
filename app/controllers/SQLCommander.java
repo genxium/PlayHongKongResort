@@ -1,15 +1,19 @@
 package controllers;
-import model.Guest;
 import model.BasicUser;
 import model.Activity;
+import model.UserActivityRelation;
+
 import org.json.simple.JSONObject;
+
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.ArrayList;
 import dao.SQLHelper;
-import dao.ResultSetUtil;
 
 public class SQLCommander {
+	
+	public static Integer invalidId=-1;
+	
  	public static BasicUser queryUserByEmail(String email){
 
  		String tableName="User";
@@ -60,57 +64,68 @@ public class SQLCommander {
 		return null;
 	}
 
-	public static boolean registerUser(BasicUser user){
+	public static int registerUser(BasicUser user){
+		int invalidId=-1;
+		int lastInsertedId=invalidId;
+		
 		// DAO
 		SQLHelper sqlHelper=new SQLHelper();
 		
-		StringBuilder queryBuilder=new StringBuilder();
-		queryBuilder.append("INSERT INTO User(UserEmail, UserPassword, UserName) VALUES(");
-		queryBuilder.append("'"+user.getEmail()+"'");
-		queryBuilder.append(",");
-		queryBuilder.append("'"+user.getPassword()+"'");
-		queryBuilder.append(",");
-		queryBuilder.append("'"+user.getName()+"'");
-		queryBuilder.append(")");
-		String query=queryBuilder.toString();
+		List<String> columnNames=new LinkedList<String>();
+		columnNames.add("UserEmail");
+		columnNames.add("UserPassword");
+		columnNames.add("UserName");
+		
+		List<Object> columnValues=new LinkedList<Object>();
+		columnValues.add(user.getEmail());
+		columnValues.add(user.getPassword());
+		columnValues.add(user.getName());
+		
 		try{
-			sqlHelper.executeInsert(query);
+			lastInsertedId=sqlHelper.insertToTableByColumns("User", columnNames, columnValues);
 			sqlHelper=null;
 		} catch (Exception e){
-			return false;
+			
 		}
-		return true;
+		return lastInsertedId;
 	}
 
-	public static boolean createActivity(Activity activity){
+	public static boolean createActivity(Activity activity, BasicUser user){
+		int invalidId=-1;
+		int lastInsertedActivityId=invalidId;
+		boolean bRet=false;
 		// DAO
 		SQLHelper sqlHelper=new SQLHelper();
+		List<String> columnNames=new LinkedList<String>();
 		
-		StringBuilder queryBuilder=new StringBuilder();
-		queryBuilder.append("INSERT INTO User(ActivityName, ActivityContent, ActivityCreatedTime, ActivityBeginDate, ActivityEndDate, ActivityCapacity) VALUES(");
-		queryBuilder.append("'"+activity.getName()+"'");
-		queryBuilder.append(",");
-		queryBuilder.append("'"+activity.getContent()+"'");
-		queryBuilder.append(",");
-		queryBuilder.append("'"+activity.getCreatedTime()+"'");
-		queryBuilder.append(",");
-		queryBuilder.append("'"+activity.getBeginDate+"'");
-		queryBuilder.append(",");
-		queryBuilder.append("'"+activity.getEndDate+"'");
-		queryBuilder.append(",");
-		queryBuilder.append(activity.getCapacity);
-		queryBuilder.append(")");
-		String query=queryBuilder.toString();
+		columnNames.add("ActivityName");
+		columnNames.add("ActivityContent");
+		columnNames.add("ActivityCreatedTime");
+		columnNames.add("ActivityBeginDate");
+		columnNames.add("ActivityEndDate");
+		columnNames.add("ActivityCapacity");
+		
+		List<Object> columnValues=new LinkedList<Object>();
+		
+		columnValues.add(activity.getName());
+		columnValues.add(activity.getContent());
+		columnValues.add(activity.getCreatedTime().toString());
+		columnValues.add(activity.getBeginDate().toString());
+		columnValues.add(activity.getEndDate().toString());
+		columnValues.add(activity.getCapacity());
+		
 		try{
-			sqlHelper.executeInsert(query);
+			lastInsertedActivityId=sqlHelper.insertToTableByColumns("User", columnNames, columnValues);
+			bRet=createUserActivityRelation(lastInsertedActivityId, user, UserActivityRelation.RelationShipType.host);
 			sqlHelper=null;
 		} catch (Exception e){
-			return false;
+			
 		}
-		return true;
+		return bRet;
 	}
 
-	public static boolean createUserActivityRelation(Activity activity, BasicUser user, int relationShip){
+	public static boolean createUserActivityRelation(int activityId, BasicUser user, UserActivityRelation.RelationShipType relationShip){
+		
 		return true;
 	}
 };
