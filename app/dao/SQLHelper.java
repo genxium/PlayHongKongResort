@@ -17,8 +17,9 @@ import java.util.ArrayList;
 public class SQLHelper {
 
 	private static Connection connection=null;
-	private int port=3306;
-	private String dbname="HongKongResort";
+	private String hostName="localhost";
+	private Integer port=3306;
+	private String databaseName="HongKongResort";
 	private String user="root";
 	private String password="";
 
@@ -30,7 +31,13 @@ public class SQLHelper {
 		try{
 			if(connection!=null) return true;
 			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/HongKongResort",user,password);
+			StringBuilder connectionBuilder=new StringBuilder();
+			connectionBuilder.append("jdbc:mysql://");
+			connectionBuilder.append(hostName+":");
+			connectionBuilder.append(port.toString()+"/");
+			connectionBuilder.append(databaseName);
+			String connectionStr=connectionBuilder.toString();
+			connection = DriverManager.getConnection(connectionStr,user,password);
 			if(connection!=null){
 				return true;
 			} else{
@@ -83,16 +90,19 @@ public class SQLHelper {
 		}
 	}
 
-	public void executeInsert(String query){
+	public int executeInsert(String query){
+		int invalidRet=-1;
+		int ret=0;
 		if(checkConnection()==true){
 			try{
 				Statement statement= connection.createStatement(); 
-				statement.executeUpdate(query);
+				// the following command returns the last inserted row id for the auto incremented key
+				ret=statement.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
 			} catch (Exception e){
-				return;
+				// return the invalid value for exceptions
+				ret=invalidRet;
 			}
-		}else{
-			
 		}
+		return ret;
 	}
 };
