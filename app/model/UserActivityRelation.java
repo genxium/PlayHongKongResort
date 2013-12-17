@@ -1,7 +1,7 @@
 package model;
 
 public class UserActivityRelation {
-	public enum RelationShipType{
+	public enum RelationType{
 		host, 
 		applied,
 		selected,

@@ -67,41 +67,37 @@ function onLoginButtonClicked(evt){
 }
 
 function onSaveButtonClicked(evt){
+	
 	if (!evt) {evt = window.event;}
     var sender = (evt.srcElement || evt.target);	
     toggleScaling(sender);
+	 
+	var title=$("#activityTitle").val();
+	var content=$("#activityContent").val();
+	var token=$.cookie(loginStatusTokenKey.toString());
 
-	$("#activityForm").submit( function(e){
-		var formObj = $(this);
-		var formData = new FormData(this);
-		
-		// append an user token for identity
-		var token = $.cookie(loginStatusTokenKey.toString());
-		formData.append("token", token);
-		
-		$.ajax({
-			method: "POST",
-			url: "/saveActivity", 
-			data: formData,
-			success: function(data, status, xhr){
-	    			if(status=="success"){
-	    				$("#activityDescription").html(data);
-	    			}
-	    			else{
-	    				$("#activityDescription").html("Save failed");
-	    			}
+	try{
+		$.post("/saveActivity", 
+			{
+				activityTitle: title.toString(),
+				activityContent: content.toString(),
+				token: token.toString()
 			},
-			error: function(xhr, status, errorThrown){
-				
-			}
-		});
-		e.preventDefault(); // prevent default action.
-	});
+			function(data, status, xhr){
+    			if(status=="success"){
 
-	$("#activityForm").submit();
+    			}
+    			else{
+
+    			}
+			}
+		);
+	} catch(err){
+		$("#activityContent").html(err.message);
+	}
 }
 
-function onCreateButtonClicked(evt){
+function onSubmitButtonClicked(evt){
 	if (!evt) {evt = window.event;}
     var sender = (evt.srcElement || evt.target);
     toggleScaling(sender);

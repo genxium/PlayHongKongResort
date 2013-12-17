@@ -1,17 +1,24 @@
 package model;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 public class Activity {
-	
-	private int m_activityId=0;
-	public int getId() {return m_activityId;}
-	public void setId(int activityId) {m_activityId=activityId;}
 
-	private String m_name=null;
-	public String getName() {return m_name;}
-	public void setName(String name) {m_name=name;}
+	public static String idKey="ActivityId";
+	public static String titleKey="ActivityTitle";
+	public static String contentKey="ActivityContent";
+	public static String createdTimeKey="ActivityCreatedTime";
+	public static String beginDateKey="ActivityBeginDate";
+	public static String endDateKey="ActivityEndDate";
+	public static String capacityKey="ActivityCapacity";
+	
+	private int m_id=0;
+	public int getId() {return m_id;}
+	public void setId(int id) {m_id=id;}
+
+	private String m_title=null;
+	public String getTitle() {return m_title;}
+	public void setTitle(String title) {m_title=title;}
 	
 	private String m_content=null;
 	public String getContent() {return m_content;}
@@ -32,4 +39,24 @@ public class Activity {
 	private int m_capacity=0;
 	public int getCapacity() {return m_capacity;}
 	public void setCapacity(int capacity) {m_capacity=capacity;}
+	
+	public Activity(int id, String title, String content, Timestamp createdTime, Timestamp beginDate, Timestamp endDate, int capacity){
+		m_id=id;
+		m_title=title;
+		m_content=content;
+		m_createdTime=createdTime;
+		m_beginDate=beginDate;
+		m_endDate=endDate;
+		m_capacity=capacity;
+	}
+	
+	public static Activity create(String title, String content){
+		java.util.Date date= new java.util.Date();
+		Timestamp createdTime=new Timestamp(date.getTime());
+		Timestamp beginDate=new Timestamp(date.getTime());
+		Timestamp endDate=new Timestamp(date.getTime());
+		int capacity=0;
+		Activity activity=new Activity(0, title, content, createdTime, beginDate, endDate, capacity);
+		return activity;
+	}
 };

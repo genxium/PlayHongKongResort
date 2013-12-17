@@ -6,6 +6,6 @@ $(document).ready(function(){
 	$("#registerButton").bind("click", onRegisterButtonClicked);
 	$("#loginButton").bind("click", onLoginButtonClicked);
 	$("#saveButton").bind("click", onSaveButtonClicked);
-	$("#createButton").bind("click", onCreateButtonClicked);
+	$("#submitButton").bind("click", onSubmitButtonClicked);
 	$("#uploadImageButton").bind("click", onUploadImageButtonClicked);
 });

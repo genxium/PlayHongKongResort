@@ -78,21 +78,19 @@ public class SQLHelper {
 	}
 
 	public List<JSONObject> executeSelect(String query){
+		List<JSONObject> ret=null;
 		if(checkConnection()==true){
 			try{
 				Statement statement= connection.createStatement(); 
 				ResultSet resultSet=statement.executeQuery(query);
 				if(resultSet!=null){
-					return ResultSetUtil.convertToJSON(resultSet);
-				} else{
-					return null;
+					ret=ResultSetUtil.convertToJSON(resultSet);
 				}
 			} catch (Exception e){
-				return null;
+				
 			}
-		}else{
-			return null;	
 		}
+		return ret;
 	}
 
 	public Integer executeInsert(String query){
@@ -112,6 +110,21 @@ public class SQLHelper {
 			}
 		}
 		return lastId;
+	}
+	
+	public boolean executeUpdate(String query){
+		boolean bRet=false;
+		if(checkConnection()==true){
+			try{
+				PreparedStatement statement= connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS); 
+				// the following command returns the last inserted row id for the auto incremented key
+				statement.executeUpdate();
+				bRet=true;
+			} catch (Exception e){
+				
+			}
+		}
+		return bRet;
 	}
 	
 	public Integer insertToTableByColumns(String tableName, List<String> columnNames, List<Object> columnValues){
@@ -134,9 +147,7 @@ public class SQLHelper {
 			
 			Iterator<Object> itValue=columnValues.iterator();
 			while(itValue.hasNext()){
-
 				Object valueObj=itValue.next();
-
 				if (valueObj instanceof Integer){
 					Integer value=(Integer)valueObj;
 				    queryBuilder.append(value);
@@ -151,13 +162,28 @@ public class SQLHelper {
 				} else{
 					// left blank deliberately 
 				}
-
 			}
-			
 			String query=queryBuilder.toString();
 			lastId=executeInsert(query);
-			
 		}while(false);
 		return lastId;
+	}
+	
+	public List<JSONObject> queryTableByColumns(String tableName, List<String> columnNames){
+		List<JSONObject> ret=null;
+		do{
+			StringBuilder queryBuilder=new StringBuilder();
+			queryBuilder.append("SELECT ");
+			Iterator<String> itName=columnNames.iterator();
+			while(itName.hasNext()){
+				String name=(String)itName.next();
+				queryBuilder.append(name);
+				if(itName.hasNext()) queryBuilder.append(",");
+			}
+			queryBuilder.append(" FROM "+tableName);
+			String query=queryBuilder.toString();
+			ret=executeSelect(query);
+		}while(false);
+		return ret;
 	}
 };

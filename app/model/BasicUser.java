@@ -4,6 +4,8 @@
 
 package model;
 
+import org.json.simple.JSONObject;
+
 import play.libs.Json;
 import utilities.Converter;
 
@@ -12,6 +14,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.SQLHelper;
 
 public class BasicUser {
+	
+	public static String idKey="UserId";
+	public static String emailKey="UserEmail";
+	public static String nameKey="UserName";
+	public static String passwordKey="UserPassword";
+	public static String groupIdKey="UserGroupId";
+	public static String authenticationStatusKey="UserAuthenticationStatus";
+	public static String genderKey="UserGender";
+	public static String lastLoggedInTimeKey="UserLastLoggedInTime";
 	
 	private int m_userId=0;
 	public int getUserId() {return m_userId;}
@@ -42,12 +53,26 @@ public class BasicUser {
 	private void setIsAdmin(boolean isAdmin) {m_isAdmin=isAdmin;} 
 	
 	public BasicUser(int userId, String email, String password, String name, boolean emailIdentity, boolean photoIdentity, boolean isAdmin){
-		setUserId(userId);
-		setEmail(email);
-		setPassword(password);
-		setName(name);
-		setEmailIdentity(emailIdentity);
-		setPhotoIdentity(photoIdentity);
-		setIsAdmin(isAdmin);
+		m_userId=userId;
+		m_email=email;
+		m_password=password;
+		m_name=name;
+		m_emailIdentity=emailIdentity;
+		m_photoIdentity=photoIdentity;
+		m_isAdmin=isAdmin;
+	}
+	
+	public static BasicUser create(String email, String password, String name){
+		BasicUser user=new BasicUser(0, email, password, name, false, false, false);
+		return user;
+	}
+	
+	public static BasicUser create(JSONObject jsonObject){
+  		int id=(Integer)jsonObject.get(idKey);
+  		String email=(String)jsonObject.get(emailKey);
+		String password=(String)jsonObject.get(passwordKey);
+  		String name=(String)jsonObject.get(nameKey);
+  		BasicUser user=new BasicUser(id, email, password, name, false, false, false);
+  		return user;
 	}
 }

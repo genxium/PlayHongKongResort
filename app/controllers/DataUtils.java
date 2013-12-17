@@ -56,4 +56,9 @@ public class DataUtils{
 		return email;
     }
     
+    public static String getNameByEmail(String email){
+    		int lastAtSignPos=email.lastIndexOf('@');
+    		String name=email.substring(0, lastAtSignPos-1);
+    		return name;
+    }
 }

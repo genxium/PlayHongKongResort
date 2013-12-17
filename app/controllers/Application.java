@@ -81,10 +81,10 @@ public class Application extends Controller {
 		String[] passwords=formData.get("password");
 		String email=emails[0];
 		String password=passwords[0];
-		String name=email;
+		String name=DataUtils.getNameByEmail(email);
 		
 		String passwordDigest=Converter.md5(password);
-        Guest guest=new Guest(0, email, passwordDigest, name, false, false, false);
+        Guest guest=Guest.create(email, passwordDigest, name);
         int lastId=SQLCommander.registerUser(guest);
         if(lastId!=SQLCommander.invalidId){
         		return ok("Registered");
@@ -154,8 +154,25 @@ public class Application extends Controller {
     		// define response attributes
   	  	response().setContentType("text/plain");
   	  	
+  	  	Map<String, String[]> formData=request().body().asFormUrlEncoded();
+    		String[] titles=formData.get("activityTitle");
+    		String[] contents=formData.get("activityContent");
+    		String[] tokens=formData.get("token");
+    		String title=titles[0];
+    		String content=contents[0];
+  	  	String token=tokens[0];
+  	  	BasicUser user=DataUtils.queryUserByToken(token);
+  	  	Activity activity=Activity.create(title, content);
   	  	
-    		return ok();
+  	  	try{
+  	  		boolean res=SQLCommander.createActivity(activity, user);
+  	  		if(res==true){
+  	  			return ok("Activity saved");
+  	  		}
+  	  	} catch(Exception e){
+  	  		
+  	  	}
+  	  	return ok("Activity not saved");
     }
     
     public static Result submitActivity(){

@@ -45,11 +45,14 @@
 {
 	position: relative;
 	background-color: transparent;
-	height: 100pt;
-	width:	400pt;
+	height: 20pt;
+	width: 400pt;
+	max-height: 50pt;
+	max-width:	400pt;
+	font-size: 15pt;
 }
 
-#activityDescription
+#activityContent
 {
 	position: relative;
 	background-color: transparent;
@@ -62,12 +65,15 @@
 
 #saveButtonImage
 {
+	background-color: transparent;
 	height: 50pt;
 	width: 120pt;
+	background-color: transparent;
 }
 
-#createButtonImage
+#submitButtonImage
 {
+	background-color: transparent;
 	height: 50pt;
 	width: 120pt;
 }
