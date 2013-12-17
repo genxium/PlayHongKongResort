@@ -7,7 +7,6 @@ import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Http.RequestBody;
 import model.*;
 import dao.SQLHelper;
-import dao.ResultSetUtil;
 
 import org.json.simple.JSONObject;
 
@@ -98,40 +97,25 @@ public class Application extends Controller {
 		// define response attributes
 		response().setContentType("text/plain");
 
-		String token=getUserToken(request().body());
-		String email=getEmailByToken(token);
+		String token=DataUtils.getUserToken(request().body());
+		String email=DataUtils.getEmailByToken(token);
+		BasicUser user=DataUtils.queryUserByToken(token);
 		
-  		if(email!=null && email.length()>0){
-            // DAO
-            SQLHelper sqlHelper=new SQLHelper();
-            boolean status = sqlHelper.checkConnection();
-            if(status==true){
-      		    String query=("SELECT * FROM User WHERE email='"+email+"'");
-                List<JSONObject> results=sqlHelper.executeSelect(query);
-                if(results!=null && results.size()>0){
-                    Iterator it=results.iterator();
-                    while(it.hasNext()) {
-                      JSONObject jsonObject=(JSONObject)it.next();
-                      try {
-                            session(token, email);
-                            String emailKey="UserEmail";
-                            String tokenKey="token";
-                            String userEmail=(String) jsonObject.get(emailKey);
-                            ObjectNode result = Json.newObject();
-                            result.put(emailKey, userEmail);
-                            result.put(tokenKey, token);
-                            return ok(result);
-                      } catch (Exception e) {
-                                // TODO Auto-generated catch block
-                            return badRequest(e.getMessage());
-                      }
-                    } 
-                } else{
-                    return badRequest("User Not found");
-                }
+		if(user!=null){
+            try {
+                  session(token, email);
+                  String emailKey="UserEmail";
+                  String tokenKey="token";
+                  ObjectNode result = Json.newObject();
+                  result.put(emailKey, email);
+                  result.put(tokenKey, token);
+                  return ok(result);
+            } catch (Exception e) {
+                  // TODO Auto-generated catch block
             }
-  		}
-  		return badRequest("User doesn't exist or not logged in");
+
+		}
+  		return ok("User doesn't exist or not logged in");
     }
     
     public static Result uploadingHandler() {
@@ -144,14 +128,14 @@ public class Application extends Controller {
     	  FilePart picture = data.getFile("picture");
     	  
     	  // get user token from request body stream
-    	  String token=getUserToken(data);
+    	  String token=DataUtils.getUserToken(data);
     	  
     	  if (picture != null) {
     	    String fileName = picture.getFilename();
     	    File file = picture.getFile();
     		String contentType=picture.getContentType();
     		try {
-    	    		if(isImage(contentType)){
+    	    		if(DataUtils.isImage(contentType)){
     	    			String rootDir=Play.application().path().getAbsolutePath();
     	    			file.renameTo(new File(rootDir+"/uploadedImages/"+fileName));
     	        	    return ok("File " + fileName +" uploaded token="+token);
@@ -166,37 +150,26 @@ public class Application extends Controller {
     	  }
     }
     
-    public static String getFileExt(String fileName){
-		int dotPos=fileName.lastIndexOf('.');
-		String ext=fileName.substring(dotPos+1, fileName.length()-1);
-		return ext;
+    public static Result saveActivity(){
+    		// define response attributes
+  	  	response().setContentType("text/plain");
+  	  	
+  	  	
+    		return ok();
     }
     
-    public static boolean isImage(String contentType){
-    		int slashPos=contentType.indexOf('/');
-		String typePrefix=contentType.substring(0, slashPos);
-		if(typePrefix.compareTo("image")==0){
-			return true;
-		}
-		return false;
+    public static Result submitActivity(){
+    		// define response attributes
+  	  	response().setContentType("text/plain");
+  	  	String token=DataUtils.getUserToken(request().body());
+		String email=DataUtils.getEmailByToken(token);
+    		return ok();
     }
-    
-    public static String getUserToken(MultipartFormData data){
-    		Map<String, String[]> formData= data.asFormUrlEncoded();
-		String[] tokens=formData.get("token");
-		String token=tokens[0];
-		return token;
+
+    public static Result joinActivity(){
+    		// define response attributes
+  	  	response().setContentType("text/plain");
+    		return ok();
     }
-    
-    public static String getUserToken(RequestBody body){
-    		Map<String, String[]> formData= body.asFormUrlEncoded();
-		String[] tokens=formData.get("token");
-		String token=tokens[0];
-		return token;
-    }
-    
-    public static String getEmailByToken(String token){
-    		String email=session(token);
-		return email;
-    }
+
 }

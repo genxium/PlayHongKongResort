@@ -14,8 +14,7 @@ function validateToken(token){
 			function(data, status, xhr){
 				if(status=="success"){
 					var obj=JSON.parse(data);
-	    			$("#responseSection").html(obj['userId']);
-	    			userName=obj['email'];
+	    			userName=obj['UserEmail'];
 	    			// store token in cookie iff query succeeds
 	    			$.cookie(loginStatusTokenKey.toString(), obj['token']);
 	    			// refresh screen
