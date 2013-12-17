@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.33, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.14, for osx10.7 (x86_64)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
--- Server version	5.5.33
+-- Server version	5.6.14
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,14 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `hongkongresort`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `hongkongresort` /*!40100 DEFAULT CHARACTER SET latin1 */;
-
-USE `hongkongresort`;
-
---
 -- Table structure for table `Activity`
 --
 
@@ -32,14 +24,14 @@ DROP TABLE IF EXISTS `Activity`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Activity` (
   `ActivityId` int(20) NOT NULL AUTO_INCREMENT,
-  `ActivityName` varchar(32) NOT NULL,
+  `ActivityTitle` varchar(32) NOT NULL,
   `ActivityContent` varchar(1024) NOT NULL,
   `ActivityCreatedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `ActivityBeginDate` datetime NOT NULL,
-  `ActivityEndDate` datetime NOT NULL,
-  `ActivityCapacity` int(32) NOT NULL,
+  `ActivityBeginDate` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `ActivityEndDate` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `ActivityCapacity` int(32) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ActivityId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -48,6 +40,7 @@ CREATE TABLE `Activity` (
 
 LOCK TABLES `Activity` WRITE;
 /*!40000 ALTER TABLE `Activity` DISABLE KEYS */;
+INSERT INTO `Activity` VALUES (3,'My Activity','This is a test activity creation.','2013-12-17 19:05:39','2013-12-17 19:05:39','2013-12-17 19:05:39',0);
 /*!40000 ALTER TABLE `Activity` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -71,7 +64,7 @@ CREATE TABLE `User` (
   UNIQUE KEY `UserEmail` (`UserEmail`),
   KEY `UserGroupId` (`UserGroupId`),
   CONSTRAINT `User_ibfk_1` FOREIGN KEY (`UserGroupId`) REFERENCES `UserGroup` (`GroupId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -80,6 +73,7 @@ CREATE TABLE `User` (
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
+INSERT INTO `User` VALUES (7,'genxium@gmail.com','e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',0,0,0,'2013-12-16 17:48:39');
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -158,6 +152,7 @@ CREATE TABLE `UserGroup` (
 
 LOCK TABLES `UserGroup` WRITE;
 /*!40000 ALTER TABLE `UserGroup` DISABLE KEYS */;
+INSERT INTO `UserGroup` VALUES (0,'visitor'),(1,'user'),(2,'manager'),(3,'admin');
 /*!40000 ALTER TABLE `UserGroup` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -193,4 +188,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-12-14 21:27:08
+-- Dump completed on 2013-12-18  3:08:46
