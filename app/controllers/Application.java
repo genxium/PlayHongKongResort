@@ -7,7 +7,6 @@ import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Http.RequestBody;
 import model.*;
 import dao.SQLHelper;
-
 import org.json.simple.JSONObject;
 
 import java.util.Iterator;
@@ -27,8 +26,16 @@ public class Application extends Controller {
     	   return ok("Got request " + request() + "!");
     }
     
-    public static Result show(){
-    	  return ok(new java.io.File("/assets/homepage.html"));
+    public static Result show(String page){
+    		try{
+    			String fullPath=Play.application().path()+"/app/views/"+page;
+    			File file=new File(fullPath);
+    			String content = new Scanner(file).useDelimiter("\\A").next();
+    			response().setContentType("text/html");
+    			return ok(content);
+    		} catch(IOException e){
+    			return badRequest();
+    		}
     }
 
     public static Result checkConnection(){
