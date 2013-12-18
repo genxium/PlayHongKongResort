@@ -19,7 +19,9 @@ import java.util.ArrayList;
 
 public class SQLHelper {
 	
-	private static Integer invalidId=-1;
+	public static Integer invalidId=-1;
+	public static String logicAND="AND";
+	public static String logicOR="OR";
 	
 	private static Connection connection=null;
 	private String hostName="localhost";
@@ -169,21 +171,46 @@ public class SQLHelper {
 		return lastId;
 	}
 	
-	public List<JSONObject> queryTableByColumns(String tableName, List<String> columnNames){
+	public List<JSONObject> queryTableByColumnsAndWhereClauses(String tableName, List<String> columnNames, List<String> whereClauses, String logicLink){
 		List<JSONObject> ret=null;
 		do{
 			StringBuilder queryBuilder=new StringBuilder();
 			queryBuilder.append("SELECT ");
 			Iterator<String> itName=columnNames.iterator();
 			while(itName.hasNext()){
-				String name=(String)itName.next();
+				String name=itName.next();
 				queryBuilder.append(name);
 				if(itName.hasNext()) queryBuilder.append(",");
 			}
 			queryBuilder.append(" FROM "+tableName);
+			
+			if(whereClauses.size()>0){
+				queryBuilder.append(" WHERE ");
+				Iterator<String> itClause=whereClauses.iterator();
+				while(itClause.hasNext()){
+					String clause=itClause.next();
+					queryBuilder.append(clause);
+					if(itClause.hasNext()) queryBuilder.append(" "+logicLink+" ");
+				}
+			}
 			String query=queryBuilder.toString();
 			ret=executeSelect(query);
 		}while(false);
 		return ret;
+	}
+	
+	public static String convertToQueryValue(Object item){
+		String res=null;
+		if (item instanceof Integer){
+			Integer value=(Integer)item;
+			res=value.toString();
+		}
+		else if (item instanceof String){
+		    String value=(String)item;
+		    res="'"+value+"'";
+		} else{
+			// left blank deliberately 
+		}
+		return res;
 	}
 };

@@ -157,9 +157,9 @@ public class SQLCommander {
 		
 		List<String> columnNames=new LinkedList<String>();
 		
-		columnNames.add("UserId");
-		columnNames.add("ActivityId");
-		columnNames.add("UserActivityRelationId");
+		columnNames.add(UserActivityRelation.userIdKey);
+		columnNames.add(UserActivityRelation.activityIdKey);
+		columnNames.add(UserActivityRelation.relationIdKey);
 		
 		List<Object> columnValues=new LinkedList<Object>();
 		
@@ -219,5 +219,49 @@ public class SQLCommander {
 		}
 		
 		return activity;
+	}
+	
+	public static List<JSONObject> queryActivitiesByUserAndRelation(BasicUser user, UserActivityRelation.RelationType relation){
+		List<JSONObject> activityRecords=null;
+		do{
+			SQLHelper sqlHelper=new SQLHelper();
+			// query table UserActivityRelationTable 
+			List<String> relationColumnNames=new LinkedList<String>();
+			relationColumnNames.add(UserActivityRelation.activityIdKey);
+			
+			List<String> relationWhereClauses=new LinkedList<String>();
+			relationWhereClauses.add(UserActivityRelation.userIdKey+"="+user.getUserId());
+			relationWhereClauses.add(UserActivityRelation.relationIdKey+"="+relation.ordinal());
+			
+			List<JSONObject> relationTableRecords=sqlHelper.queryTableByColumnsAndWhereClauses("UserActivityRelationTable", relationColumnNames, relationWhereClauses, SQLHelper.logicAND);
+			
+			List<Integer> activityIds=new LinkedList<Integer>();
+			Iterator<JSONObject> itRecord=relationTableRecords.iterator();
+			while(itRecord.hasNext()){
+				JSONObject record=itRecord.next();
+				Integer activityId=(Integer)record.get(UserActivityRelation.activityIdKey);
+				activityIds.add(activityId);
+			}
+				
+			// query table Activity
+			List<String> activityColumnNames=new LinkedList<String>();
+			activityColumnNames.add(Activity.idKey);
+			activityColumnNames.add(Activity.titleKey);
+			activityColumnNames.add(Activity.contentKey);
+			activityColumnNames.add(Activity.createdTimeKey);
+			activityColumnNames.add(Activity.beginDateKey);
+			activityColumnNames.add(Activity.endDateKey);
+			activityColumnNames.add(Activity.capacityKey);
+			
+			List<String> activityWhereClauses=new LinkedList<String>();
+			Iterator<Integer> itActivityId=activityIds.iterator();
+			while(itActivityId.hasNext()){
+				Integer targetActivityId=itActivityId.next();
+				activityWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(targetActivityId));
+			}
+			activityRecords=sqlHelper.queryTableByColumnsAndWhereClauses("Activity", activityColumnNames, activityWhereClauses, SQLHelper.logicOR);
+			
+		}while(false);
+		return activityRecords;
 	}
 };
