@@ -172,6 +172,9 @@ public class Application extends Controller {
   	  	Activity activity=Activity.create(title, content);
   	  	
   	  	try{
+  	  		if(DataUtils.validateTitle(title)==false || DataUtils.validateContent(content)==false){
+  	  			return ok("Invalid title or content!");
+  	  		}
   	  		boolean res=SQLCommander.createActivity(activity, user);
   	  		if(res==true){
   	  			return ok("Activity saved");
@@ -179,14 +182,14 @@ public class Application extends Controller {
   	  	} catch(Exception e){
   	  		
   	  	}
-  	  	return ok("Activity not saved");
+  	  	return ok("Activity not saved!");
     }
     
     public static Result submitActivity(){
     		// define response attributes
   	  	response().setContentType("text/plain");
   	  	String token=DataUtils.getUserToken(request().body());
-		    String email=DataUtils.getEmailByToken(token);
+		String email=DataUtils.getEmailByToken(token);
     		return ok();
     }
 

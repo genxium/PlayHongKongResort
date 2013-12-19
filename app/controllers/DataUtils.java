@@ -61,4 +61,12 @@ public class DataUtils{
     		String name=email.substring(0, lastAtSignPos-1);
     		return name;
     }
+    
+    public static boolean validateTitle(String title){
+    		return title.length()>0;
+    }
+    
+    public static boolean validateContent(String content){
+    		return content.length()>0;
+    }
 }
