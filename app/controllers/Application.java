@@ -186,7 +186,7 @@ public class Application extends Controller {
     		// define response attributes
   	  	response().setContentType("text/plain");
   	  	String token=DataUtils.getUserToken(request().body());
-		String email=DataUtils.getEmailByToken(token);
+		    String email=DataUtils.getEmailByToken(token);
     		return ok();
     }
 
@@ -196,4 +196,12 @@ public class Application extends Controller {
     		return ok();
     }
 
+    public static Result logout(){
+    		response().setContentType("text/plain");
+        Map<String, String[]> formData=request().body().asFormUrlEncoded();
+        String[] tokens=formData.get("token");
+        String token=tokens[0];
+        session().remove(token);
+        return ok();
+    }
 }

@@ -27,7 +27,7 @@
 	position: relative;
 }
 
-#saveButton
+#btnSave
 {
 	position: relative;
 	background-color: transparent;
@@ -39,6 +39,17 @@
 	position: relative;
 	background-color: transparent;
 	border-style: none;
+}
+
+#btnLogout
+{
+	position: absolute;
+	border-style: none;
+	margin-right: 10pt;
+	margin-top: 50pt;
+	width: 64pt;
+	height: 36pt;
+	font-size: 15pt;
 }
 
 #activityTitle
@@ -63,7 +74,7 @@
 	overflow: auto;
 }
 
-#saveButtonImage
+#btnSaveImage
 {
 	background-color: transparent;
 	height: 50pt;
@@ -71,7 +82,7 @@
 	background-color: transparent;
 }
 
-#submitButtonImage
+#btnSubmitImage
 {
 	background-color: transparent;
 	height: 50pt;

@@ -1,5 +1,5 @@
 function checkLoginStatus(evt){
-	var token = $.cookie(loginStatusTokenKey.toString());
+	var token = $.cookie(g_loginStatusTokenKey.toString());
 	if(token!=null){
 		validateToken(token);
 	}
@@ -14,9 +14,9 @@ function validateToken(token){
 			function(data, status, xhr){
 				if(status=="success"){
 					var obj=JSON.parse(data);
-	    			userName=obj['UserEmail'];
+	    			g_userName=obj['UserEmail'];
 	    			// store token in cookie iff query succeeds
-	    			$.cookie(loginStatusTokenKey.toString(), obj['token']);
+	    			$.cookie(g_loginStatusTokenKey.toString(), obj['token']);
 	    			// refresh screen
 	    			refreshOnLoggedIn();
 		    	}
@@ -54,12 +54,14 @@ function refreshOnEnter(){
 	$("#activitySection").hide();
 	$("#imageSection").hide();
 	$("#progressSection").hide();
+	$("#btnLogout").hide();
+	$("#userInformationSection").html("");
 }
 
 function refreshOnLoggedIn(){
 	$("#accountSection").hide();
 	$("#activitySection").show();
 	$("#imageSection").show();
-	//$("#progressSection").show();
-	$("#userInformationSection").html("Hello, "+userName.toString());
+	$("#btnLogout").show();
+	$("#userInformationSection").html("Hello, "+g_userName.toString());
 }

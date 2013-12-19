@@ -2,10 +2,11 @@ $(document).ready(function(){
 	// execute on page loaded
 	refreshOnEnter();
 	checkLoginStatus();
-	$("#checkConnectionButton").bind("click", onCheckConnectionClicked);
-	$("#registerButton").bind("click", onRegisterButtonClicked);
-	$("#loginButton").bind("click", onLoginButtonClicked);
-	$("#saveButton").bind("click", onSaveButtonClicked);
-	$("#submitButton").bind("click", onSubmitButtonClicked);
-	$("#uploadImageButton").bind("click", onUploadImageButtonClicked);
+	$("#btnCheckConnection").bind("click", onBtnCheckConnectionClicked);
+	$("#btnRegister").bind("click", onBtnRegisterClicked);
+	$("#btnLogin").bind("click", onBtnLoginClicked);
+	$("#btnSave").bind("click", onBtnSaveClicked);
+	$("#btnSubmit").bind("click", onBtnSubmitClicked);
+	$("#btnUploadImage").bind("click", onBtnUploadImageClicked);
+	$("#btnLogout").bind("click", onBtnLogoutClicked);
 });

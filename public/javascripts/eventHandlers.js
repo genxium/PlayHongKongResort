@@ -1,4 +1,4 @@
-function onCheckConnectionClicked(evt){
+function onBtnCheckConnectionClicked(evt){
 	$("#responseSection").html("Calling check function");
 	// this POST path is defined in conf/routes
 	$.post("/checkConnection",
@@ -16,7 +16,7 @@ function onCheckConnectionClicked(evt){
 	);
 }
 
-function onRegisterButtonClicked(evt){
+function onBtnRegisterClicked(evt){
 	$("#responseSection").html("Calling register function");
 	var email=$("#emailField").val();
 	var password=$("#passwordField").val();
@@ -38,7 +38,7 @@ function onRegisterButtonClicked(evt){
 	);
 }
 
-function onLoginButtonClicked(evt){
+function onBtnLoginClicked(evt){
 	$("#responseSection").html("Calling login function");
 	var email=$("#emailField").val();
 	var password=$("#passwordField").val();
@@ -53,9 +53,9 @@ function onLoginButtonClicked(evt){
 				if(status=="success"){
 					var obj=JSON.parse(data);
 	    			$("#responseSection").html(obj['userId']);
-	    			userName=obj['email'];
+	    			g_userName=obj['email'];
 	    			// store token in cookie iff query succeeds
-	    			$.cookie(loginStatusTokenKey.toString(), obj['token']);
+	    			$.cookie(g_loginStatusTokenKey.toString(), obj['token']);
 	    			// refresh screen
 	    			refreshOnLoggedIn();
 		    	}
@@ -66,7 +66,7 @@ function onLoginButtonClicked(evt){
 	);
 }
 
-function onSaveButtonClicked(evt){
+function onBtnSaveClicked(evt){
 	
 	if (!evt) {evt = window.event;}
     var sender = (evt.srcElement || evt.target);	
@@ -74,7 +74,7 @@ function onSaveButtonClicked(evt){
 	 
 	var title=$("#activityTitle").val();
 	var content=$("#activityContent").val();
-	var token=$.cookie(loginStatusTokenKey.toString());
+	var token=$.cookie(g_loginStatusTokenKey.toString());
 
 	try{
 		$.post("/saveActivity", 
@@ -97,7 +97,7 @@ function onSaveButtonClicked(evt){
 	}
 }
 
-function onSubmitButtonClicked(evt){
+function onBtnSubmitClicked(evt){
 	if (!evt) {evt = window.event;}
     var sender = (evt.srcElement || evt.target);
     toggleScaling(sender);
@@ -110,7 +110,7 @@ function onSubmitButtonClicked(evt){
 	*/
 }
 
-function onUploadImageButtonClicked(evt){
+function onBtnUploadImageClicked(evt){
 
 	if(validateImage()==false){
 		return;
@@ -121,7 +121,7 @@ function onUploadImageButtonClicked(evt){
 		var formData = new FormData(this);
 		
 		// append an user token for identity
-		var token = $.cookie(loginStatusTokenKey.toString());
+		var token = $.cookie(g_loginStatusTokenKey.toString());
 		formData.append("token", token);
 		
 		$.ajax({
@@ -147,3 +147,26 @@ function onUploadImageButtonClicked(evt){
 	});
 	$("#imageForm").submit();
 }
+
+function onBtnLogoutClicked(evt){
+	var token = $.cookie(g_loginStatusTokenKey.toString());
+	try{
+		$.post("/logout", 
+			{
+				token: token.toString()
+			},
+			function(data, status, xhr){
+    			if(status=="success"){
+    				$.removeCookie(g_loginStatusTokenKey.toString());
+    				refreshOnEnter();
+    			}
+    			else{
+
+    			}
+			}
+		);
+	} catch(err){
+
+	}
+}
+
