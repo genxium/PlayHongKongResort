@@ -52,16 +52,15 @@ function onBtnLoginClicked(evt){
 			function(data, status, xhr){
 				if(status=="success"){
 					var obj=JSON.parse(data);
-	    			$("#responseSection").html(obj['userId']);
-	    			g_userName=obj['email'];
-	    			// store token in cookie iff query succeeds
-	    			$.cookie(g_loginStatusTokenKey.toString(), obj['token']);
-	    			// refresh screen
-	    			refreshOnLoggedIn();
-		    	}
-	    		else{
-	    			$("#responseSection").html("Query failed");
-	    		}
+	    				$("#responseSection").html(obj['userId']);
+	    				g_userName=obj['email'];
+	    				// store token in cookie iff query succeeds
+	    				$.cookie(g_loginStatusTokenKey.toString(), obj['token']);
+	    				// refresh screen
+	    				refreshOnLoggedIn();
+				} else{
+	    				$("#responseSection").html("Query failed");
+	    			}
 		    }
 	);
 }
@@ -84,12 +83,11 @@ function onBtnSaveClicked(evt){
 				token: token.toString()
 			},
 			function(data, status, xhr){
-    			if(status=="success"){
-
-    			}
-    			else{
-
-    			}
+    				if(status=="success"){
+    					refreshOnLoggedIn();
+    				} else{
+    					
+    				}
 			}
 		);
 	} catch(err){
@@ -156,13 +154,12 @@ function onBtnLogoutClicked(evt){
 				token: token.toString()
 			},
 			function(data, status, xhr){
-    			if(status=="success"){
-    				$.removeCookie(g_loginStatusTokenKey.toString());
-    				refreshOnEnter();
-    			}
-    			else{
+    				if(status=="success"){
+    					$.removeCookie(g_loginStatusTokenKey.toString());
+    					refreshOnEnter();
+    				} else{
 
-    			}
+    				}
 			}
 		);
 	} catch(err){

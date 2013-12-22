@@ -14,15 +14,14 @@ function validateToken(token){
 			function(data, status, xhr){
 				if(status=="success"){
 					var obj=JSON.parse(data);
-	    			g_userName=obj['UserEmail'];
-	    			// store token in cookie iff query succeeds
-	    			$.cookie(g_loginStatusTokenKey.toString(), obj['token']);
-	    			// refresh screen
-	    			refreshOnLoggedIn();
-		    	}
-	    		else{
-	    			$("#responseSection").html("data");
-	    		}
+	    				g_userName=obj['UserEmail'];
+	    				// store token in cookie iff query succeeds
+	    				$.cookie(g_loginStatusTokenKey.toString(), obj['token']);
+	    				// refresh screen
+	    				refreshOnLoggedIn();
+		    		} else{
+		    			$("#responseSection").html("data");
+		    		}
 		    }
 	);
 }
@@ -49,6 +48,35 @@ function validateEmail(){
 	return true;
 }
 
+function queryActivitiesHostedByUser(){
+	var token = $.cookie(g_loginStatusTokenKey.toString());
+	try{
+		$.post("/queryActivitiesHostedByUser", 
+			{
+				token: token.toString()
+			},
+			function(data, status, xhr){
+    				if(status=="success"){
+    					$("#sectionActivities").html("");
+    					var obj=JSON.parse(data);
+    					for(var key in obj){
+    						var original=$("#sectionActivities").html();
+    						var subObj=obj[key];
+    						var activityId=key;
+    						var activityTitle=subObj['ActivityTitle'];
+    						var newLine=activityId+" "+activityTitle+"<br/>";
+    						$("#sectionActivities").html(original+newLine);
+    					}
+    				} else{
+
+    				}
+			}
+		);
+	} catch(err){
+
+	}
+}
+
 function refreshOnEnter(){
 	$("#accountSection").show();
 	$("#activitySection").hide();
@@ -64,4 +92,5 @@ function refreshOnLoggedIn(){
 	$("#imageSection").show();
 	$("#btnLogout").show();
 	$("#userInformationSection").html("Hello, "+g_userName.toString());
+	queryActivitiesHostedByUser();
 }

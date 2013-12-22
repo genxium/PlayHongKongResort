@@ -184,12 +184,44 @@ public class Application extends Controller {
   	  	}
   	  	return ok("Activity not saved!");
     }
+
+    public static Result queryActivitiesHostedByUser(){
+        response().setContentType("text/plain");
+        String token=DataUtils.getUserToken(request().body());
+        String email=DataUtils.getEmailByToken(token);
+        
+        BasicUser user=SQLCommander.queryUserByEmail(email);
+        UserActivityRelation.RelationType relation=UserActivityRelation.RelationType.host;
+        
+        try{
+        		List<JSONObject> activities=SQLCommander.queryActivitiesByUserAndRelation(user, relation);
+        		Iterator<JSONObject> itActivity=activities.iterator();
+        		ObjectNode result = Json.newObject();
+        		
+        		while(itActivity.hasNext()){
+        			JSONObject activityJSON=itActivity.next();
+        			Integer activityId=(Integer)activityJSON.get(Activity.idKey);
+        			String activityTitle=(String)activityJSON.get(Activity.titleKey);
+        			String activityContent=(String)activityJSON.get(Activity.contentKey);
+        			
+        			ObjectNode singleActivityNode=Json.newObject();
+        			singleActivityNode.put(Activity.titleKey, activityTitle);
+        			singleActivityNode.put(Activity.contentKey, activityContent);
+        			
+        			result.put(activityId.toString(), singleActivityNode);
+        		}
+        		return ok(result);
+        } catch(Exception e){
+        		return badRequest();
+        }
+        
+    }
     
     public static Result submitActivity(){
     		// define response attributes
   	  	response().setContentType("text/plain");
   	  	String token=DataUtils.getUserToken(request().body());
-		String email=DataUtils.getEmailByToken(token);
+		    String email=DataUtils.getEmailByToken(token);
     		return ok();
     }
 

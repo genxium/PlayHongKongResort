@@ -31,7 +31,7 @@ CREATE TABLE `Activity` (
   `ActivityEndDate` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `ActivityCapacity` int(32) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ActivityId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `Activity` (
 
 LOCK TABLES `Activity` WRITE;
 /*!40000 ALTER TABLE `Activity` DISABLE KEYS */;
-INSERT INTO `Activity` VALUES (3,'My Activity','This is a test activity creation.','2013-12-17 19:05:39','2013-12-17 19:05:39','2013-12-17 19:05:39',0);
+INSERT INTO `Activity` VALUES (13,'Testing','Testing save constraints','2013-12-19 17:49:45','2013-12-19 17:49:45','2013-12-19 17:49:45',0),(14,'Another Activity','Testing multi activities query.','2013-12-22 17:03:16','2013-12-22 17:03:16','2013-12-22 17:03:16',0),(15,'Refresh Test','Testing refreshing on save button clicked.','2013-12-22 17:06:49','2013-12-22 17:06:49','2013-12-22 17:06:49',0);
 /*!40000 ALTER TABLE `Activity` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -188,4 +188,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-12-18  3:08:46
+-- Dump completed on 2013-12-23  1:09:34
