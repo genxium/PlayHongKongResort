@@ -17,6 +17,11 @@
 
 }
 
+#domainActivity
+{
+	display: table-cell;
+}
+
 #activityForm
 {
 	position: relative;
@@ -92,17 +97,6 @@
 #progressSection
 {
 
-}
-
-#responseSection
-{
-	width: 600px;
-	height: 60px;
-	border: 3px solid #cccccc;
-	padding: 5px;
-	font-family: Tahoma, sans-serif;
-	overflow: auto;
-	color: #FF0000;
 }
 
 #sectionActivities

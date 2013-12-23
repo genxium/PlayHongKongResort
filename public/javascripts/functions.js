@@ -79,20 +79,19 @@ function queryActivitiesHostedByUser(){
 
 function refreshOnEnter(){
 	$("#accountSection").show();
-	$("#activitySection").hide();
+	$("#domainActivities").hide();
 	$("#imageSection").hide();
 	$("#progressSection").hide();
 	$("#btnLogout").hide();
 	$("#userInformationSection").html("");
-	$("#sectionActivities").hide();
+
 }
 
 function refreshOnLoggedIn(){
 	$("#accountSection").hide();
-	$("#activitySection").show();
+	$("#domainActivities").show();
 	$("#imageSection").show();
 	$("#btnLogout").show();
-	$("#sectionActivities").show();
 	$("#userInformationSection").html("Hello, "+g_userName.toString());
 	queryActivitiesHostedByUser();
 }
