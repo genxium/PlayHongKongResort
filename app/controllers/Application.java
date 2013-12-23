@@ -64,7 +64,8 @@ public class Application extends Controller {
         if(user!=null && user.getPassword().equals(passwordDigest)){
         	
         		String token = Converter.generateToken(email, password);
-		    session(token, email);
+        		Integer userId = user.getUserId();
+		    session(token, userId.toString());
 		    String userIdKey="userId";
 		    String emailKey="email";
 		    String tokenKey="token";

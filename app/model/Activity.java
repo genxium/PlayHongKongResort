@@ -11,6 +11,7 @@ public class Activity {
 	public static String beginDateKey="ActivityBeginDate";
 	public static String endDateKey="ActivityEndDate";
 	public static String capacityKey="ActivityCapacity";
+	public static String statusKey="ActivityStatus";
 	
 	private int m_id=0;
 	public int getId() {return m_id;}
@@ -40,7 +41,11 @@ public class Activity {
 	public int getCapacity() {return m_capacity;}
 	public void setCapacity(int capacity) {m_capacity=capacity;}
 	
-	public Activity(int id, String title, String content, Timestamp createdTime, Timestamp beginDate, Timestamp endDate, int capacity){
+	private int m_status=0;
+	public int getStatus() {return m_status;}
+	public void setStatus(int status) {m_status=status;}
+	
+	public Activity(int id, String title, String content, Timestamp createdTime, Timestamp beginDate, Timestamp endDate, int capacity, int status){
 		m_id=id;
 		m_title=title;
 		m_content=content;
@@ -48,6 +53,7 @@ public class Activity {
 		m_beginDate=beginDate;
 		m_endDate=endDate;
 		m_capacity=capacity;
+		m_status=status;
 	}
 	
 	public static Activity create(String title, String content){
@@ -56,7 +62,8 @@ public class Activity {
 		Timestamp beginDate=new Timestamp(date.getTime());
 		Timestamp endDate=new Timestamp(date.getTime());
 		int capacity=0;
-		Activity activity=new Activity(0, title, content, createdTime, beginDate, endDate, capacity);
+		int status=0;
+		Activity activity=new Activity(0, title, content, createdTime, beginDate, endDate, capacity, status);
 		return activity;
 	}
 };

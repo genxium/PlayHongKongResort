@@ -5,6 +5,8 @@ import model.UserActivityRelation;
 
 import org.json.simple.JSONObject;
 
+import ch.qos.logback.classic.db.names.ColumnName;
+
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -21,23 +23,22 @@ public class SQLCommander {
  		BasicUser user=null;
  		String tableName="User";
  		
- 		StringBuilder queryBuilder=new StringBuilder();
-		queryBuilder.append("SELECT ");
-		queryBuilder.append(BasicUser.emailKey+",");
-		queryBuilder.append(BasicUser.nameKey+",");
-		queryBuilder.append(BasicUser.passwordKey+",");
-		queryBuilder.append(BasicUser.groupIdKey+",");
-		queryBuilder.append(BasicUser.authenticationStatusKey+",");
-		queryBuilder.append(BasicUser.genderKey+",");
-		queryBuilder.append(BasicUser.lastLoggedInTimeKey);
+ 		List<String> columnNames=new LinkedList<String>();
+ 		List<String> whereClauses=new LinkedList<String>();
+ 		
+ 		columnNames.add(BasicUser.emailKey);
+ 		columnNames.add(BasicUser.passwordKey);
+ 		columnNames.add(BasicUser.nameKey);
+ 		columnNames.add(BasicUser.groupIdKey);
+		columnNames.add(BasicUser.authenticationStatusKey);
+		columnNames.add(BasicUser.genderKey);
+		columnNames.add(BasicUser.lastLoggedInTimeKey);
 
-		queryBuilder.append(" FROM "+tableName+" WHERE ");
-
-		queryBuilder.append(BasicUser.idKey+SQLHelper.convertToQueryValue(userId));
-
-		String query=queryBuilder.toString();
+		whereClauses.add(BasicUser.idKey+"="+SQLHelper.convertToQueryValue(userId));
+		String logicLink=SQLHelper.logicAND;
+		
 		SQLHelper sqlHelper=new SQLHelper();
-		List<JSONObject> results=sqlHelper.executeSelect(query);
+ 		List<JSONObject> results=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, columnNames, whereClauses, logicLink);
 		if(results!=null && results.size()>0){
             Iterator<JSONObject> it=results.iterator();
 	        if(it.hasNext()){
@@ -58,27 +59,25 @@ public class SQLCommander {
  	
  	public static BasicUser queryUserByEmail(String email){
  
- 			BasicUser user=null;
- 			String tableName="User";
- 			  		
- 			StringBuilder queryBuilder=new StringBuilder();
- 			queryBuilder.append("SELECT ");
- 			queryBuilder.append(BasicUser.idKey+",");
- 			queryBuilder.append(BasicUser.nameKey+",");
- 			queryBuilder.append(BasicUser.passwordKey+",");
- 			queryBuilder.append(BasicUser.groupIdKey+",");
- 			queryBuilder.append(BasicUser.authenticationStatusKey+",");
- 			queryBuilder.append(BasicUser.genderKey+",");
- 			queryBuilder.append(BasicUser.lastLoggedInTimeKey);
+ 		BasicUser user=null;
+ 		String tableName="User";
+ 		
+ 		List<String> columnNames=new LinkedList<String>();
+ 		List<String> whereClauses=new LinkedList<String>();
+ 		
+ 		columnNames.add(BasicUser.idKey);
+ 		columnNames.add(BasicUser.passwordKey);
+ 		columnNames.add(BasicUser.nameKey);
+ 		columnNames.add(BasicUser.groupIdKey);
+		columnNames.add(BasicUser.authenticationStatusKey);
+		columnNames.add(BasicUser.genderKey);
+		columnNames.add(BasicUser.lastLoggedInTimeKey);
 
- 			queryBuilder.append(" FROM "+tableName+" WHERE ");
-
- 			queryBuilder.append(BasicUser.emailKey+"="+SQLHelper.convertToQueryValue(email));
-
- 			String query=queryBuilder.toString();
- 			SQLHelper sqlHelper=new SQLHelper();
- 			List<JSONObject> results=sqlHelper.executeSelect(query);
- 			if(results!=null && results.size()>0){
+		whereClauses.add(BasicUser.emailKey+"="+SQLHelper.convertToQueryValue(email));
+		String logicLink=SQLHelper.logicAND;
+		
+		SQLHelper sqlHelper=new SQLHelper();
+ 		List<JSONObject> results=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, columnNames, whereClauses, logicLink); 			if(results!=null && results.size()>0){
  	            Iterator<JSONObject> it=results.iterator();
  		        if(it.hasNext()){
  			        JSONObject jsonObject=(JSONObject)it.next();
@@ -156,34 +155,38 @@ public class SQLCommander {
 		return bRet;
 	}
 	
-	public static void updateActivity(Activity activity){
-		
-		String tableName="Activity";
-		int activityId=activity.getId();
-		Activity res=queryActivityByActivityId(activityId);
-		if(res!=null){
-			
-			StringBuilder queryBuilder=new StringBuilder();
-			queryBuilder.append("UPDATE "+tableName+" SET ");
-			queryBuilder.append(Activity.titleKey+"="+"'"+activity.getTitle()+"'");
-			queryBuilder.append(",");
-			queryBuilder.append(Activity.contentKey+"="+"'"+activity.getContent()+"'");
-			queryBuilder.append(",");
-			queryBuilder.append(Activity.createdTimeKey+"="+"'"+activity.getCreatedTime().toString()+"'");
-			queryBuilder.append(",");
-			queryBuilder.append(Activity.beginDateKey+"="+"'"+activity.getBeginDate().toString()+"'");
-			queryBuilder.append(",");
-			queryBuilder.append(Activity.endDateKey+"="+"'"+activity.getEndDate().toString()+"'");
-			queryBuilder.append(",");
-			queryBuilder.append(Activity.capacityKey+"="+activity.getCapacity());
-			queryBuilder.append(" WHERE "+Activity.idKey+"="+activity.getId());
-			
-			String query=queryBuilder.toString();
-			
-			SQLHelper sqlHelper=new SQLHelper();
-			sqlHelper.executeUpdate(query);
-		}
-
+	public static boolean updateActivity(Activity activity){
+		boolean ret=false;
+		do{
+			String tableName="Activity";
+			int activityId=activity.getId();
+			Activity res=queryActivityByActivityId(activityId);
+			if(res!=null){
+				
+				SQLHelper sqlHelper=new SQLHelper();
+				List<String> columnNames=new LinkedList<String>();
+				List<Object> columnValues=new LinkedList<Object>();
+				List<String> whereClauses=new LinkedList<String>();
+				
+				columnNames.add(Activity.titleKey);
+				columnValues.add(activity.getTitle());
+				columnNames.add(Activity.contentKey);
+				columnValues.add(activity.getContent());
+				columnNames.add(Activity.createdTimeKey);
+				columnValues.add(activity.getCreatedTime().toString());
+				columnNames.add(Activity.beginDateKey);
+				columnValues.add(activity.getBeginDate().toString());
+				columnNames.add(Activity.endDateKey);
+				columnValues.add(activity.getEndDate());
+				columnNames.add(Activity.capacityKey);
+				columnValues.add(activity.getCapacity());
+				
+				whereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activity.getId()));
+				String logicLink=SQLHelper.logicAND;
+				ret=sqlHelper.updateTableByColumnsAndWhereClauses("Activity", columnNames, columnValues, whereClauses, logicLink);
+			}
+		}while(false);
+		return ret;
 	}
 
 	public static boolean createUserActivityRelation(int activityId, BasicUser user, UserActivityRelation.RelationType relation){
@@ -251,7 +254,8 @@ public class SQLCommander {
 		      		Timestamp beginDate=Timestamp.valueOf((String)jsonObject.get(Activity.beginDateKey));
 		      		Timestamp endDate=Timestamp.valueOf((String)jsonObject.get(Activity.endDateKey));
 		      		int capacity=(Integer)jsonObject.get(Activity.capacityKey);
-		      		activity=new Activity(id, title, content, createdTime, beginDate, endDate, capacity);
+		      		int status=(Integer)jsonObject.get(Activity.statusKey);
+		      		activity=new Activity(id, title, content, createdTime, beginDate, endDate, capacity, status);
 			    } catch (Exception e) {
 			    		
 		        }
