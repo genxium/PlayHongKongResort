@@ -16,14 +16,14 @@ public class SQLCommander {
 	
 	public static Integer invalidId=-1;
 	
- 	public static BasicUser queryUserByEmail(String email){
+ 	public static BasicUser queryUserByUserId(Integer userId){
  		
  		BasicUser user=null;
  		String tableName="User";
  		
  		StringBuilder queryBuilder=new StringBuilder();
 		queryBuilder.append("SELECT ");
-		queryBuilder.append(BasicUser.idKey+",");
+		queryBuilder.append(BasicUser.emailKey+",");
 		queryBuilder.append(BasicUser.nameKey+",");
 		queryBuilder.append(BasicUser.passwordKey+",");
 		queryBuilder.append(BasicUser.groupIdKey+",");
@@ -33,7 +33,7 @@ public class SQLCommander {
 
 		queryBuilder.append(" FROM "+tableName+" WHERE ");
 
-		queryBuilder.append(BasicUser.emailKey+"="+"'"+email+"'");
+		queryBuilder.append(BasicUser.idKey+SQLHelper.convertToQueryValue(userId));
 
 		String query=queryBuilder.toString();
 		SQLHelper sqlHelper=new SQLHelper();
@@ -43,10 +43,10 @@ public class SQLCommander {
 	        if(it.hasNext()){
 		        JSONObject jsonObject=(JSONObject)it.next();
 		        try {
-		        		int id=(Integer)jsonObject.get(BasicUser.idKey);
+		        		String email=(String)jsonObject.get(BasicUser.emailKey);
 		      		String password=(String)jsonObject.get(BasicUser.passwordKey);
 		      		String name=(String)jsonObject.get(BasicUser.nameKey);
-          		    user=new BasicUser(id, email, password, name, false, false, false);
+          		    user=new BasicUser(userId, email, password, name, false, false, false);
 			    } catch (Exception e) {
 			    	
 		        }
@@ -55,6 +55,46 @@ public class SQLCommander {
 		
 		return user;
 	}
+ 	
+ 	public static BasicUser queryUserByEmail(String email){
+ 
+ 			BasicUser user=null;
+ 			String tableName="User";
+ 			  		
+ 			StringBuilder queryBuilder=new StringBuilder();
+ 			queryBuilder.append("SELECT ");
+ 			queryBuilder.append(BasicUser.idKey+",");
+ 			queryBuilder.append(BasicUser.nameKey+",");
+ 			queryBuilder.append(BasicUser.passwordKey+",");
+ 			queryBuilder.append(BasicUser.groupIdKey+",");
+ 			queryBuilder.append(BasicUser.authenticationStatusKey+",");
+ 			queryBuilder.append(BasicUser.genderKey+",");
+ 			queryBuilder.append(BasicUser.lastLoggedInTimeKey);
+
+ 			queryBuilder.append(" FROM "+tableName+" WHERE ");
+
+ 			queryBuilder.append(BasicUser.emailKey+"="+SQLHelper.convertToQueryValue(email));
+
+ 			String query=queryBuilder.toString();
+ 			SQLHelper sqlHelper=new SQLHelper();
+ 			List<JSONObject> results=sqlHelper.executeSelect(query);
+ 			if(results!=null && results.size()>0){
+ 	            Iterator<JSONObject> it=results.iterator();
+ 		        if(it.hasNext()){
+ 			        JSONObject jsonObject=(JSONObject)it.next();
+ 			        try {
+ 			        		Integer userId=(Integer)jsonObject.get(BasicUser.idKey);
+ 			      		String password=(String)jsonObject.get(BasicUser.passwordKey);
+ 			      		String name=(String)jsonObject.get(BasicUser.nameKey);
+ 	          		    user=new BasicUser(userId, email, password, name, false, false, false);
+ 				    } catch (Exception e) {
+ 				    	
+ 			        }
+ 		    		} 	
+ 			}
+ 			
+ 			return user;
+ 	}
 
 	public static int registerUser(BasicUser user){
 		int invalidId=-1;
@@ -243,6 +283,8 @@ public class SQLCommander {
 				activityIds.add(activityId);
 			}
 				
+			if(activityIds.size()<=0) break;
+			
 			// query table Activity
 			List<String> activityColumnNames=new LinkedList<String>();
 			activityColumnNames.add(Activity.idKey);

@@ -38,27 +38,14 @@ public class DataUtils{
 		return token;
     }
     
-    public static BasicUser queryUserByToken(String token){
-    		BasicUser user=null;
-    		try{
-    			String email=getEmailByToken(token);
-    			if(email!=null && email.length()>0){
-    				user=SQLCommander.queryUserByEmail(email);
-    			}
-    		} catch(Exception e){
-    			
-    		}
-    		return user;
-    }
-    
-    public static String getEmailByToken(String token){
-    		String email=Controller.session(token);
-		return email;
+    public static Integer getUserIdByToken(String token){
+    		Integer userId=Integer.parseInt(Controller.session(token));
+    		return userId;
     }
     
     public static String getNameByEmail(String email){
     		int lastAtSignPos=email.lastIndexOf('@');
-    		String name=email.substring(0, lastAtSignPos-1);
+    		String name=email.substring(0, lastAtSignPos);
     		return name;
     }
     

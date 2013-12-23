@@ -105,16 +105,16 @@ public class Application extends Controller {
 		response().setContentType("text/plain");
 
 		String token=DataUtils.getUserToken(request().body());
-		String email=DataUtils.getEmailByToken(token);
-		BasicUser user=DataUtils.queryUserByToken(token);
+		Integer userId=DataUtils.getUserIdByToken(token);
+		BasicUser user=SQLCommander.queryUserByUserId(userId);
 		
 		if(user!=null){
             try {
-                  session(token, email);
-                  String emailKey="UserEmail";
+                  session(token, userId.toString());
+                  String emailKey=BasicUser.emailKey;
                   String tokenKey="token";
                   ObjectNode result = Json.newObject();
-                  result.put(emailKey, email);
+                  result.put(emailKey, user.getEmail());
                   result.put(tokenKey, token);
                   return ok(result);
             } catch (Exception e) {
@@ -168,7 +168,8 @@ public class Application extends Controller {
     		String title=titles[0];
     		String content=contents[0];
   	  	String token=tokens[0];
-  	  	BasicUser user=DataUtils.queryUserByToken(token);
+  	  	Integer userId=DataUtils.getUserIdByToken(token);
+  	  	BasicUser user=SQLCommander.queryUserByUserId(userId);
   	  	Activity activity=Activity.create(title, content);
   	  	
   	  	try{
@@ -188,9 +189,9 @@ public class Application extends Controller {
     public static Result queryActivitiesHostedByUser(){
         response().setContentType("text/plain");
         String token=DataUtils.getUserToken(request().body());
-        String email=DataUtils.getEmailByToken(token);
+        Integer userId=DataUtils.getUserIdByToken(token);
         
-        BasicUser user=SQLCommander.queryUserByEmail(email);
+        BasicUser user=SQLCommander.queryUserByUserId(userId);
         UserActivityRelation.RelationType relation=UserActivityRelation.RelationType.host;
         
         try{
@@ -221,7 +222,7 @@ public class Application extends Controller {
     		// define response attributes
   	  	response().setContentType("text/plain");
   	  	String token=DataUtils.getUserToken(request().body());
-		    String email=DataUtils.getEmailByToken(token);
+  	  	Integer userId=DataUtils.getUserIdByToken(token);
     		return ok();
     }
 
