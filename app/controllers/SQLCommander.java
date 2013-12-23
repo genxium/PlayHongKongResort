@@ -160,7 +160,7 @@ public class SQLCommander {
 		
 		String tableName="Activity";
 		int activityId=activity.getId();
-		Activity res=queryActivityById(activityId);
+		Activity res=queryActivityByActivityId(activityId);
 		if(res!=null){
 			
 			StringBuilder queryBuilder=new StringBuilder();
@@ -218,7 +218,7 @@ public class SQLCommander {
 		return bRet;
 	}
 	
-	public static Activity queryActivityById(int activityId){
+	public static Activity queryActivityByActivityId(int activityId){
 			
 		Activity activity=null;
  		String tableName="Activity";

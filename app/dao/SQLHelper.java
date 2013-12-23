@@ -11,6 +11,8 @@ import java.io.*;
 
 import com.mysql.jdbc.Driver;
 
+import model.Activity;
+
 import org.json.simple.JSONObject;
 
 import java.util.Iterator;
@@ -196,6 +198,38 @@ public class SQLHelper {
 			String query=queryBuilder.toString();
 			ret=executeSelect(query);
 		}while(false);
+		return ret;
+	}
+	
+	public boolean updateTableByColumnsAndWhereClauses(String tableName, List<String> columnNames, List<Object> columnValues, List<String> whereClauses, String logicLink){
+		boolean ret=false;
+		do{			
+			if(columnNames.size()!=columnValues.size()) break;
+			
+			StringBuilder queryBuilder=new StringBuilder();
+			queryBuilder.append("UPDATE "+tableName+" SET ");
+			Iterator<String> itName=columnNames.iterator();
+			Iterator<Object> itValue=columnValues.iterator();
+			while(itName.hasNext() && itValue.hasNext()){
+				String name=itName.next();
+				Object value=itValue.next();
+				queryBuilder.append(name+"="+SQLHelper.convertToQueryValue(value));
+				if(itName.hasNext()) queryBuilder.append(",");
+			}
+			
+			if(whereClauses.size()>0){
+				queryBuilder.append(" WHERE ");
+				Iterator<String> itClause=whereClauses.iterator();
+				while(itClause.hasNext()){
+					String clause=itClause.next();
+					queryBuilder.append(clause);
+					if(itClause.hasNext()) queryBuilder.append(" "+logicLink+" ");
+				}
+			}
+			String query=queryBuilder.toString();
+			ret=executeUpdate(query);
+		}while(false);
+		
 		return ret;
 	}
 	
