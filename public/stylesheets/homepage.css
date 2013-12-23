@@ -5,29 +5,43 @@
 	color: #FF8822;
 }
 
-#userInformationSection
+#sectionUserInfo
 {
 	font-family: Georgia;
 	font-size: 120%;
 	color: #4455AA;
 }
 
-#accountSection
+#sectionAccount
 {
 
 }
 
 #domainActivity
 {
-	display: table-cell;
+	
 }
 
-#activityForm
+#sectionActivities
+{
+	display: table-cell;
+	width: 300pt;
+	height: 60pt;
+	border: 3pt solid #cccccc;
+	font-family: Tahoma, sans-serif;
+	overflow: hidden;
+	color: #FF0000;
+	padding: 30pt;
+}
+
+#formActivity
 {
 	position: relative;
+	display: table-cell;
+	padding: 30pt;
 }
 
-#imageSection
+#sectionImage
 {
 	position: relative;
 }
@@ -39,7 +53,7 @@
 	border-style: none;
 }
 
-#createButton
+#btnSubmit
 {
 	position: relative;
 	background-color: transparent;
@@ -94,18 +108,7 @@
 	width: 120pt;
 }
 
-#progressSection
+#sectionProgress
 {
 
-}
-
-#sectionActivities
-{
-	width: 600px;
-	height: 60px;
-	border: 3px solid #cccccc;
-	padding: 5px;
-	font-family: Tahoma, sans-serif;
-	overflow: auto;
-	color: #FF0000;
 }

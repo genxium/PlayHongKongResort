@@ -9711,7 +9711,7 @@ $.widget( "ui.dialog", {
 			.appendTo( this.uiDialog );
 
 		this._createTitlebar();
-		this._createButtonPane();
+		this._btnSubmitPane();
 
 		if ( this.options.draggable && $.fn.draggable ) {
 			this._makeDraggable();
@@ -9981,7 +9981,7 @@ $.widget( "ui.dialog", {
 		title.text( this.options.title );
 	},
 
-	_createButtonPane: function() {
+	_btnSubmitPane: function() {
 		this.uiDialogButtonPane = $("<div>")
 			.addClass("ui-dialog-buttonpane ui-widget-content ui-helper-clearfix");
 
@@ -9989,10 +9989,10 @@ $.widget( "ui.dialog", {
 			.addClass("ui-dialog-buttonset")
 			.appendTo( this.uiDialogButtonPane );
 
-		this._createButtons();
+		this._btnSubmits();
 	},
 
-	_createButtons: function() {
+	_btnSubmits: function() {
 		var that = this,
 			buttons = this.options.buttons;
 
@@ -10181,7 +10181,7 @@ $.widget( "ui.dialog", {
 		}
 
 		if ( key === "buttons" ) {
-			this._createButtons();
+			this._btnSubmits();
 		}
 
 		if ( key === "closeText" ) {

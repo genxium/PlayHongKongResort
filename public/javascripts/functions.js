@@ -78,20 +78,20 @@ function queryActivitiesHostedByUser(){
 }
 
 function refreshOnEnter(){
-	$("#accountSection").show();
+	$("#sectionAccount").show();
 	$("#domainActivities").hide();
-	$("#imageSection").hide();
-	$("#progressSection").hide();
+	$("#sectionImage").hide();
+	$("#sectionProgress").hide();
 	$("#btnLogout").hide();
-	$("#userInformationSection").html("");
+	$("#sectionUserInfo").html("");
 
 }
 
 function refreshOnLoggedIn(){
-	$("#accountSection").hide();
+	$("#sectionAccount").hide();
 	$("#domainActivities").show();
-	$("#imageSection").show();
+	$("#sectionImage").show();
 	$("#btnLogout").show();
-	$("#userInformationSection").html("Hello, "+g_userName.toString());
+	$("#sectionUserInfo").html("Hello, "+g_userName.toString());
 	queryActivitiesHostedByUser();
 }

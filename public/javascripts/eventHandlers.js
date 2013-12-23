@@ -100,11 +100,11 @@ function onBtnSubmitClicked(evt){
     var sender = (evt.srcElement || evt.target);
     toggleScaling(sender);
     /*
-	$("#activityForm").submit( function(evt){
+	$("#formActivity").submit( function(evt){
 		evt.preventDefault();
 	});
 
-	$("#activityForm").submit();
+	$("#formActivity").submit();
 	*/
 }
 
