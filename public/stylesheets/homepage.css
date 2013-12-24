@@ -27,7 +27,7 @@
 	display: table-cell;
 	width: 300pt;
 	height: 60pt;
-	border: 3pt solid #cccccc;
+	border: 3pt solid #ccccff;
 	font-family: Tahoma, sans-serif;
 	overflow: hidden;
 	color: #FF0000;
@@ -46,7 +46,7 @@
 	position: relative;
 }
 
-#btnSave
+#btnCreate
 {
 	position: relative;
 	background-color: transparent;
@@ -93,7 +93,7 @@
 	overflow: auto;
 }
 
-#btnSaveImage
+#btnCreateImage
 {
 	background-color: transparent;
 	height: 50pt;

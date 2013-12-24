@@ -28,7 +28,7 @@ public class SQLHelper {
 	private static Connection connection=null;
 	private String hostName="localhost";
 	private Integer port=3306;
-	private String databaseName="HongKongResort";
+	private String databaseName="hongkongresort";
 	private String user="root";
 	private String password="";
 

@@ -158,33 +158,69 @@ public class Application extends Controller {
     	  }
     }
     
-    public static Result saveActivity(){
-    		// define response attributes
+    public static Result createActivity(){
+    	// define response attributes
   	  	response().setContentType("text/plain");
   	  	
   	  	Map<String, String[]> formData=request().body().asFormUrlEncoded();
-    		String[] titles=formData.get("activityTitle");
-    		String[] contents=formData.get("activityContent");
-    		String[] tokens=formData.get("token");
-    		String title=titles[0];
-    		String content=contents[0];
+    	String[] titles=formData.get("activityTitle");
+    	String[] contents=formData.get("activityContent");
+   		String[] tokens=formData.get("token");
+   		String title=titles[0];
+   		String content=contents[0];
   	  	String token=tokens[0];
   	  	Integer userId=DataUtils.getUserIdByToken(token);
   	  	BasicUser user=SQLCommander.queryUserByUserId(userId);
   	  	Activity activity=Activity.create(title, content);
   	  	
+  	  	String resultStr="Activity not created!";
   	  	try{
   	  		if(DataUtils.validateTitle(title)==false || DataUtils.validateContent(content)==false){
-  	  			return ok("Invalid title or content!");
-  	  		}
-  	  		boolean res=SQLCommander.createActivity(activity, user);
-  	  		if(res==true){
-  	  			return ok("Activity saved");
+  	  			resultStr="Invalid title or content!";
+  	  		} else{
+  	  			boolean res=SQLCommander.createActivity(activity, user);
+  	  			if(res==true){
+  	  				resultStr="Activity created";
+  	  			}
   	  		}
   	  	} catch(Exception e){
   	  		
   	  	}
-  	  	return ok("Activity not saved!");
+  	  	return ok(resultStr);
+    }
+    
+    public static Result updateActivity(){
+    	// define response attributes
+  	  	response().setContentType("text/plain");
+  	  	
+  	  	Map<String, String[]> formData=request().body().asFormUrlEncoded();
+    	String[] ids=formData.get("activityId");
+  	  	String[] titles=formData.get("activityTitle");
+    	String[] contents=formData.get("activityContent");
+
+   		Integer activityId=Integer.parseInt(ids[0]);
+   		String title=titles[0];
+   		String content=contents[0];
+  	  	Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+  	  	
+  	  	String resultStr="Activity not updated!";
+  	  	try{
+  	  		if(DataUtils.validateTitle(title)==false || DataUtils.validateContent(content)==false){
+  	  			resultStr="Invalid title or content!";
+  	  		} else{
+  	  			boolean res=SQLCommander.updateActivity(activity);
+  	  			if(res==true){
+  	  				resultStr="Activity updated";
+  	  			}
+  	  		}
+  	  	} catch(Exception e){
+  	  		
+  	  	}
+    	return ok(resultStr);
+    }
+    
+    public static Result deleteActivity(){
+    	return badRequest();
     }
 
     public static Result queryActivitiesHostedByUser(){

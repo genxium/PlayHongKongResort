@@ -65,7 +65,7 @@ function onBtnLoginClicked(evt){
 	);
 }
 
-function onBtnSaveClicked(evt){
+function onBtnCreateClicked(evt){
 	
 	if (!evt) {evt = window.event;}
     var sender = (evt.srcElement || evt.target);	
@@ -76,7 +76,7 @@ function onBtnSaveClicked(evt){
 	var token=$.cookie(g_loginStatusTokenKey.toString());
 
 	try{
-		$.post("/saveActivity", 
+		$.post("/createActivity", 
 			{
 				activityTitle: title.toString(),
 				activityContent: content.toString(),
@@ -91,7 +91,7 @@ function onBtnSaveClicked(evt){
 			}
 		);
 	} catch(err){
-		$("#activityContent").html(err.message);
+		$("#sectionActivities").html(err.message);
 	}
 }
 

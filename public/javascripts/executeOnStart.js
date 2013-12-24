@@ -5,7 +5,7 @@ $(document).ready(function(){
 	$("#btnCheckConnection").bind("click", onBtnCheckConnectionClicked);
 	$("#btnRegister").bind("click", onBtnRegisterClicked);
 	$("#btnLogin").bind("click", onBtnLoginClicked);
-	$("#btnSave").bind("click", onBtnSaveClicked);
+	$("#btnCreate").bind("click", onBtnCreateClicked);
 	$("#btnSubmit").bind("click", onBtnSubmitClicked);
 	$("#btnUploadImage").bind("click", onBtnUploadImageClicked);
 	$("#btnLogout").bind("click", onBtnLogoutClicked);
