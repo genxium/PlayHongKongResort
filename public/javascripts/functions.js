@@ -84,7 +84,6 @@ function refreshOnEnter(){
 	$("#sectionProgress").hide();
 	$("#btnLogout").hide();
 	$("#sectionUserInfo").html("");
-
 }
 
 function refreshOnLoggedIn(){
