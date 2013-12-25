@@ -25,13 +25,11 @@
 #sectionActivities
 {
 	display: table-cell;
+	padding: 30pt;
 	width: 300pt;
 	height: 60pt;
 	border: 3pt solid #ccccff;
-	font-family: Tahoma, sans-serif;
 	overflow: hidden;
-	color: #FF0000;
-	padding: 30pt;
 }
 
 #formActivity

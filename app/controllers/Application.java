@@ -194,13 +194,13 @@ public class Application extends Controller {
   	  	response().setContentType("text/plain");
   	  	
   	  	Map<String, String[]> formData=request().body().asFormUrlEncoded();
-    	String[] ids=formData.get("activityId");
+    	  String[] ids=formData.get("activityId");
   	  	String[] titles=formData.get("activityTitle");
-    	String[] contents=formData.get("activityContent");
+    	  String[] contents=formData.get("activityContent");
 
-   		Integer activityId=Integer.parseInt(ids[0]);
-   		String title=titles[0];
-   		String content=contents[0];
+     		Integer activityId=Integer.parseInt(ids[0]);
+     		String title=titles[0];
+     		String content=contents[0];
   	  	Activity activity=SQLCommander.queryActivityByActivityId(activityId);
   	  	
   	  	String resultStr="Activity not updated!";
@@ -243,6 +243,7 @@ public class Application extends Controller {
         			String activityContent=(String)activityJSON.get(Activity.contentKey);
         			
         			ObjectNode singleActivityNode=Json.newObject();
+              singleActivityNode.put(Activity.idKey, activityId.toString());
         			singleActivityNode.put(Activity.titleKey, activityTitle);
         			singleActivityNode.put(Activity.contentKey, activityContent);
         			

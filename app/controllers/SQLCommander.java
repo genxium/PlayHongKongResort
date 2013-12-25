@@ -264,7 +264,7 @@ public class SQLCommander {
 	        if(it.hasNext()){
 		        JSONObject jsonObject=(JSONObject)it.next();
 		        try {
-		        		int id=(Integer)jsonObject.get(Activity.idKey);
+		        	int id=(Integer)jsonObject.get(Activity.idKey);
 		      		String title=(String)jsonObject.get(Activity.titleKey);
 		      		String content=(String)jsonObject.get(Activity.contentKey);
 		      		Timestamp createdTime=Timestamp.valueOf((String)jsonObject.get(Activity.createdTimeKey));
@@ -274,9 +274,9 @@ public class SQLCommander {
 		      		int status=(Integer)jsonObject.get(Activity.statusKey);
 		      		activity=new Activity(id, title, content, createdTime, beginDate, endDate, capacity, status);
 			    } catch (Exception e) {
-			    		
+			    	System.out.println("SQLCommander.queryActivityByActivityId:"+e.getMessage());
 		        }
-	    		} 	
+	    	} 	
 		}
 		
 		return activity;

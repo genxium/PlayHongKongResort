@@ -62,11 +62,8 @@ function queryActivitiesHostedByUser(){
     					for(var key in jsonResponse){
     						var original=$("#sectionActivities").html();
     						var jsonActivity=jsonResponse[key];
-    						var activityId=key;
-    						var activityTitle=jsonActivity['ActivityTitle'];
-    						var activityContent=jsonActivity['ActivityContent'];
-    						var newLine=activityId+" "+activityTitle+"<br/>"+activityContent+"<br/><br/>";
-    						$("#sectionActivities").html(original+newLine);
+    						var cell=generateActivityCell(jsonActivity);
+    						$("#sectionActivities").append(cell);
     					}
     				} else{
     					
