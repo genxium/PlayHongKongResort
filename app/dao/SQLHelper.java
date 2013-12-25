@@ -68,20 +68,6 @@ public class SQLHelper {
 		}
 	}
 
-	public String checkConnectionWithStringResult(){
-		try{
-			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/HongKongResort",user,password);
-			if(connection!=null){
-				return "Success";
-			} else{
-				return "Normal Failed";
-			}
-		}catch(Exception e){
-			return e.getMessage();
-		}
-	}
-
 	public List<JSONObject> executeSelect(String query){
 		List<JSONObject> ret=null;
 		if(checkConnection()==true){

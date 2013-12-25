@@ -1,5 +1,5 @@
 function checkLoginStatus(evt){
-	var token = $.cookie(g_loginStatusTokenKey.toString());
+	var token = $.cookie(g_keyLoginStatus.toString());
 	if(token!=null){
 		validateToken(token);
 	}
@@ -16,7 +16,7 @@ function validateToken(token){
 					var obj=JSON.parse(data);
 	    				g_userName=obj['UserEmail'];
 	    				// store token in cookie iff query succeeds
-	    				$.cookie(g_loginStatusTokenKey.toString(), obj['token']);
+	    				$.cookie(g_keyLoginStatus.toString(), obj['token']);
 	    				// refresh screen
 	    				refreshOnLoggedIn();
 		    		} else{
@@ -49,7 +49,8 @@ function validateEmail(){
 }
 
 function queryActivitiesHostedByUser(){
-	var token = $.cookie(g_loginStatusTokenKey.toString());
+	$("#sectionActivities").empty();
+	var token = $.cookie(g_keyLoginStatus.toString());
 	try{
 		$.post("/queryActivitiesHostedByUser", 
 			{

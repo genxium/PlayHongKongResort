@@ -37,14 +37,6 @@ public class Application extends Controller {
     			return badRequest();
     		}
     }
-
-    public static Result checkConnection(){
-    		// DAO
-    		SQLHelper sqlHelper=new SQLHelper();
-    		String status = sqlHelper.checkConnectionWithStringResult();
-    		response().setContentType("text/plain");
-    		return ok(status);
-    }
     
     public static Result login(){
 		// define response attributes

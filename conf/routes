@@ -5,7 +5,6 @@
 # Home page
 GET	 /	controllers.Application.index()
 GET	 /:page	controllers.Application.show(page)
-POST /checkConnection controllers.Application.checkConnection()
 POST /login controllers.Application.login()
 POST /register controllers.Application.register()
 POST /checkLoginStatus controllers.Application.checkLoginStatus()
