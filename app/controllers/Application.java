@@ -163,11 +163,11 @@ public class Application extends Controller {
   	  	response().setContentType("text/plain");
   	  	
   	  	Map<String, String[]> formData=request().body().asFormUrlEncoded();
-    	String[] titles=formData.get("activityTitle");
-    	String[] contents=formData.get("activityContent");
-   		String[] tokens=formData.get("token");
-   		String title=titles[0];
-   		String content=contents[0];
+      	String[] titles=formData.get("activityTitle");
+      	String[] contents=formData.get("activityContent");
+     		String[] tokens=formData.get("token");
+     		String title=titles[0];
+     		String content=contents[0];
   	  	String token=tokens[0];
   	  	Integer userId=DataUtils.getUserIdByToken(token);
   	  	BasicUser user=SQLCommander.queryUserByUserId(userId);
@@ -184,7 +184,7 @@ public class Application extends Controller {
   	  			}
   	  		}
   	  	} catch(Exception e){
-  	  		
+  	  		System.out.println("Application.createActivity:"+e.getMessage());
   	  	}
   	  	return ok(resultStr);
     }

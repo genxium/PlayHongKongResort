@@ -53,6 +53,7 @@ public class SQLHelper {
 				return false;
 			}
 		}catch(Exception e){
+			System.out.println("SQLHelper.checkConnection:"+e.getMessage());
 			return false;
 		}
 	}
@@ -63,7 +64,7 @@ public class SQLHelper {
 				connection.close();
 			}
 		}catch(Exception e){
-
+			System.out.println("SQLHelper.closeConnection:"+e.getMessage());
 		}
 	}
 
@@ -91,7 +92,7 @@ public class SQLHelper {
 					ret=ResultSetUtil.convertToJSON(resultSet);
 				}
 			} catch (Exception e){
-				
+				System.out.println("SQLHelper.executeSelect:"+e.getMessage());
 			}
 		}
 		return ret;
@@ -110,7 +111,7 @@ public class SQLHelper {
 				}
 			} catch (Exception e){
 				// return the invalid value for exceptions
-				System.out.println(e.getMessage());
+				System.out.println("SQLHelper.executeInsert:"+e.getMessage());
 			}
 		}
 		return lastId;
@@ -125,7 +126,7 @@ public class SQLHelper {
 				statement.executeUpdate();
 				bRet=true;
 			} catch (Exception e){
-				
+				System.out.println("SQLHelper.executeUpdate:"+e.getMessage());
 			}
 		}
 		return bRet;

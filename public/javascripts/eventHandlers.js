@@ -65,12 +65,39 @@ function onBtnLoginClicked(evt){
 	);
 }
 
+function onBtnUpdateClicked(evt){
+	if (!evt) {evt = window.event;}
+
+	var id=g_editingActivityId;
+	var title=$("#activityTitle").val();
+	var content=$("#activityContent").val();
+	var token=$.cookie(g_loginStatusTokenKey.toString());
+
+	try{
+		$.post("/updateActivity", 
+			{
+				activityId: id.toString(),
+				activityTitle: title.toString(),
+				activityContent: content.toString(),
+				token: token.toString()
+			},
+			function(data, status, xhr){
+    				if(status=="success"){
+    					refreshOnLoggedIn();
+    				} else{
+    					
+    				}
+			}
+		);
+	} catch(err){
+		$("#sectionActivities").html(err.message);
+	}
+}
+
 function onBtnCreateClicked(evt){
 	
 	if (!evt) {evt = window.event;}
-    var sender = (evt.srcElement || evt.target);	
-    toggleScaling(sender);
-	 
+
 	var title=$("#activityTitle").val();
 	var content=$("#activityContent").val();
 	var token=$.cookie(g_loginStatusTokenKey.toString());
@@ -97,8 +124,7 @@ function onBtnCreateClicked(evt){
 
 function onBtnSubmitClicked(evt){
 	if (!evt) {evt = window.event;}
-    var sender = (evt.srcElement || evt.target);
-    toggleScaling(sender);
+	
     /*
 	$("#formActivity").submit( function(evt){
 		evt.preventDefault();

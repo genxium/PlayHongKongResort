@@ -4,3 +4,4 @@ var g_baseTen=10;
 var g_rootElement = $(":root");
 var g_loginStatusTokenKey="loginStatusToken";
 var g_userName="";
+var g_editingActivityId=(-1);

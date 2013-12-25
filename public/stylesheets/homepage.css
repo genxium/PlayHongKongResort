@@ -49,21 +49,21 @@
 #btnCreate
 {
 	position: relative;
-	background-color: transparent;
-	border-style: none;
+}
+
+#btnUpdate
+{
+	position: relative;
 }
 
 #btnSubmit
 {
 	position: relative;
-	background-color: transparent;
-	border-style: none;
 }
 
 #btnLogout
 {
 	position: absolute;
-	border-style: none;
 	margin-right: 10pt;
 	margin-top: 50pt;
 	width: 64pt;
