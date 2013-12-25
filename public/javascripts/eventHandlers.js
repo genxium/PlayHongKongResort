@@ -51,11 +51,11 @@ function onBtnLoginClicked(evt){
 			// post response callback function
 			function(data, status, xhr){
 				if(status=="success"){
-					var obj=JSON.parse(data);
-	    				$("#responseSection").html(obj['userId']);
-	    				g_userName=obj['email'];
+					var jsonResponse=JSON.parse(data);
+	    				$("#responseSection").html(jsonResponse['userId']);
+	    				g_userName=jsonResponse['email'];
 	    				// store token in cookie iff query succeeds
-	    				$.cookie(g_loginStatusTokenKey.toString(), obj['token']);
+	    				$.cookie(g_loginStatusTokenKey.toString(), jsonResponse['token']);
 	    				// refresh screen
 	    				refreshOnLoggedIn();
 				} else{

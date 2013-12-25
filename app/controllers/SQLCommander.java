@@ -2,6 +2,7 @@ package controllers;
 import model.BasicUser;
 import model.Activity;
 import model.UserActivityRelation;
+import model.UserActivityRelationTable;
 
 import org.json.simple.JSONObject;
 
@@ -145,9 +146,25 @@ public class SQLCommander {
 		columnValues.add(activity.getCapacity());
 		
 		try{
-			int lastId=sqlHelper.insertToTableByColumns("Activity", columnNames, columnValues);
-			if(lastId!=invalidId){
-				bRet=true;
+			int lastActivityId=sqlHelper.insertToTableByColumns("Activity", columnNames, columnValues);
+			if(lastActivityId!=invalidId){
+				columnNames.clear();
+				columnValues.clear();
+				
+				columnNames.add(UserActivityRelationTable.activityIdKey);
+				columnNames.add(UserActivityRelationTable.userIdKey);
+				columnNames.add(UserActivityRelationTable.relationIdKey);
+				columnNames.add(UserActivityRelationTable.generatedTimeKey);
+				
+				columnValues.add(lastActivityId);
+				columnValues.add(user.getUserId());
+				columnValues.add(UserActivityRelation.RelationType.host.ordinal());
+				columnValues.add(activity.getCreatedTime().toString());
+				
+				int lastRelationTableId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
+				if(lastRelationTableId!=invalidId){
+					bRet=true;
+				}
 			}
 		} catch (Exception e){
 			
@@ -183,7 +200,7 @@ public class SQLCommander {
 				
 				whereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activity.getId()));
 				String logicLink=SQLHelper.logicAND;
-				ret=sqlHelper.updateTableByColumnsAndWhereClauses("Activity", columnNames, columnValues, whereClauses, logicLink);
+				ret=sqlHelper.updateTableByColumnsAndWhereClauses(tableName, columnNames, columnValues, whereClauses, logicLink);
 			}
 		}while(false);
 		return ret;
@@ -200,9 +217,9 @@ public class SQLCommander {
 		
 		List<String> columnNames=new LinkedList<String>();
 		
-		columnNames.add(UserActivityRelation.userIdKey);
-		columnNames.add(UserActivityRelation.activityIdKey);
-		columnNames.add(UserActivityRelation.relationIdKey);
+		columnNames.add(UserActivityRelationTable.userIdKey);
+		columnNames.add(UserActivityRelationTable.activityIdKey);
+		columnNames.add(UserActivityRelationTable.relationIdKey);
 		
 		List<Object> columnValues=new LinkedList<Object>();
 		
@@ -271,11 +288,11 @@ public class SQLCommander {
 			SQLHelper sqlHelper=new SQLHelper();
 			// query table UserActivityRelationTable 
 			List<String> relationColumnNames=new LinkedList<String>();
-			relationColumnNames.add(UserActivityRelation.activityIdKey);
+			relationColumnNames.add(UserActivityRelationTable.activityIdKey);
 			
 			List<String> relationWhereClauses=new LinkedList<String>();
-			relationWhereClauses.add(UserActivityRelation.userIdKey+"="+user.getUserId());
-			relationWhereClauses.add(UserActivityRelation.relationIdKey+"="+relation.ordinal());
+			relationWhereClauses.add(UserActivityRelationTable.userIdKey+"="+user.getUserId());
+			relationWhereClauses.add(UserActivityRelationTable.relationIdKey+"="+relation.ordinal());
 			
 			List<JSONObject> relationTableRecords=sqlHelper.queryTableByColumnsAndWhereClauses("UserActivityRelationTable", relationColumnNames, relationWhereClauses, SQLHelper.logicAND);
 			
@@ -283,7 +300,7 @@ public class SQLCommander {
 			Iterator<JSONObject> itRecord=relationTableRecords.iterator();
 			while(itRecord.hasNext()){
 				JSONObject record=itRecord.next();
-				Integer activityId=(Integer)record.get(UserActivityRelation.activityIdKey);
+				Integer activityId=(Integer)record.get(UserActivityRelationTable.activityIdKey);
 				activityIds.add(activityId);
 			}
 				

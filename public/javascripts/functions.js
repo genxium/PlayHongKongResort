@@ -58,17 +58,18 @@ function queryActivitiesHostedByUser(){
 			function(data, status, xhr){
     				if(status=="success"){
     					$("#sectionActivities").html("");
-    					var obj=JSON.parse(data);
-    					for(var key in obj){
+    					var jsonResponse=JSON.parse(data);
+    					for(var key in jsonResponse){
     						var original=$("#sectionActivities").html();
-    						var subObj=obj[key];
+    						var jsonActivity=jsonResponse[key];
     						var activityId=key;
-    						var activityTitle=subObj['ActivityTitle'];
-    						var newLine=activityId+" "+activityTitle+"<br/>";
+    						var activityTitle=jsonActivity['ActivityTitle'];
+    						var activityContent=jsonActivity['ActivityContent'];
+    						var newLine=activityId+" "+activityTitle+"<br/>"+activityContent+"<br/><br/>";
     						$("#sectionActivities").html(original+newLine);
     					}
     				} else{
-
+    					
     				}
 			}
 		);
