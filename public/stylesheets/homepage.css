@@ -46,7 +46,12 @@
 	position: relative;
 }
 
-#btnCreate
+.classActivityEditor
+{
+	position: relative;
+}
+
+#idBtnCreate
 {
 	position: relative;
 	width: 64pt;
@@ -54,12 +59,45 @@
 	font-size: 15pt;
 }
 
-.btnUpdate
+.classActivityEditorContainer
 {
+	display: table-row;
 	position: relative;
+}
+
+.classActivityTitle
+{
+	display: table-row;
+	position: relative;
+	background-color: transparent;
+	height: 20pt;
+	width: 400pt;
+	max-height: 50pt;
+	max-width:	400pt;
+	font-size: 15pt;
+}
+
+.classActivityContent
+{
+	display: table-row;
+	position: relative;
+	background-color: transparent;
+	height: 100pt;
+	width: 400pt;
+	max-height: 200pt;
+	max-width:	400pt;
+	overflow: auto;
+}
+
+.classBtnUpdate
+{
+	display: table-row;
+	position: relative;
+	padding-top: 3pt;
 	width: 64pt;
 	height: 36pt;
 	font-size: 15pt;
+	top: 10pt;
 }
 
 #btnSubmit
@@ -75,28 +113,6 @@
 	width: 64pt;
 	height: 36pt;
 	font-size: 15pt;
-}
-
-.titleActivity
-{
-	position: relative;
-	background-color: transparent;
-	height: 20pt;
-	width: 400pt;
-	max-height: 50pt;
-	max-width:	400pt;
-	font-size: 15pt;
-}
-
-.contentActivity
-{
-	position: relative;
-	background-color: transparent;
-	height: 100pt;
-	width: 400pt;
-	max-height: 200pt;
-	max-width:	400pt;
-	overflow: auto;
 }
 
 #sectionProgress

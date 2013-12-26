@@ -84,7 +84,7 @@ function refreshOnEnter(){
 	$("#btnLogout").hide();
 	$("#sectionUserInfo").html("");
 	$("#sectionActivities").hide();
-	$("#btnCreate").hide();
+	$("#"+g_idBtnCreate).hide();
 }
 
 function refreshOnLoggedIn(){
@@ -94,6 +94,6 @@ function refreshOnLoggedIn(){
 	$("#btnLogout").show();
 	$("#sectionUserInfo").html("Hello, "+g_userName.toString());
 	$("#sectionActivities").show();
-	$("#btnCreate").show();
+	$("#"+g_idBtnCreate).show();
 	queryActivitiesHostedByUser();
 }

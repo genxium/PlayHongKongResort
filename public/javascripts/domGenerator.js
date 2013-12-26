@@ -3,6 +3,8 @@ function onActivityItemClicked(evt){
 	if (!evt) {evt = window.event;}
 	var sender = (evt.srcElement || evt.target);
 
+	$("#"+g_idBtnCreate).remove();
+
 	var activityId=jQuery.data(sender, g_keyActivityId);
 	var activityTitle=jQuery.data(sender, g_keyActivityTitle);
 	var activityContent=jQuery.data(sender, g_keyActivityContent);
@@ -12,18 +14,18 @@ function onActivityItemClicked(evt){
 
 	var editor=generateActivityEditor(activityId, activityTitle, activityContent);
 	targetSection.append(editor);
-    
 }
 
 function onBtnUpdateClicked(evt){
 	if (!evt) {evt = window.event;}
 	evt.preventDefault();
+
 	var sender = (evt.srcElement || evt.target);
 	var activityId=jQuery.data(sender, g_keyActivityId);
 	
 	var id=activityId;
-	var title=$("#activityTitle").val();
-	var content=$("#activityContent").val();
+	var title=$("."+g_classActivityTitle).val();
+	var content=$("."+g_classActivityContent).val();
 	var token=$.cookie(g_keyLoginStatus.toString());
 
 	try{
@@ -75,34 +77,44 @@ function generateActivityEditorByJson(jsonActivity){
 }
 
 function generateActivityEditor(activityId, activityTitle, activityContent){
-	 var ret=$('<div>');
+	 var ret=$('<div>',
+	 			{
+	 				class: g_classActivityEditor	
+	 			});
+
+	 var formContainer=$('<div>',
+	 					{
+	 						class: g_classActivityEditorContainer
+	 					});
+
 	 var titleText=$('<p>',
 	 			 {
 	 			 	html: 'Title'
 				 });
-	 ret.append(titleText);
+	 formContainer.append(titleText);
 	 var titleInput=$('<input>',
 	 				{
-		 				class: 'titleActivity',
+		 				class: g_classActivityTitle,
 		 				type: 'text',
 		 				value: activityTitle
 	 				});
-	 ret.append(titleInput);
+	 formContainer.append(titleInput);
 	 var contentText=$('<p>',
 	 			   {
 				   		html: 'Content'
  				   });
 
-	 ret.append(contentText);
+	 formContainer.append(contentText);
 	 var contentInput=$('<TEXTAREA>',
 	 				  {
-	 				  	class: 'contentActivity', 
+	 				  	class: g_classActivityContent, 
 	 				  	value: activityContent
 	 				  });
-	 ret.append(contentInput);
+	 formContainer.append(contentInput);
+	 ret.append(formContainer);
 	 
 	 var btnUpdate=$('<button>',{
-	 					class: 'btnUpdate',
+	 					class: g_classBtnUpdate,
 	 					text: 'Update' 
 	 				});
 	 btnUpdate.data(g_keyActivityId, activityId);
