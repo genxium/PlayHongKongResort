@@ -43,11 +43,11 @@ public class DataUtils{
     public static Integer getUserIdByToken(String token){
         Integer userId=invalidId;
         try{
-    	   userId=Integer.parseInt(Controller.session(token));
+        		userId=Integer.parseInt(Controller.session(token));
         } catch(Exception e){
-           System.out.println("DataUtils.getUserIdByToken:"+e.getMessage());
+        		System.out.println("DataUtils.getUserIdByToken:"+e.getMessage());
         }
-    	return userId;
+    		return userId;
     }
     
     public static String getNameByEmail(String email){

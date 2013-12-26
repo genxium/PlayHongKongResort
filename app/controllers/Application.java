@@ -194,10 +194,17 @@ public class Application extends Controller {
     	  String[] ids=formData.get("activityId");
   	  	String[] titles=formData.get("activityTitle");
     	  String[] contents=formData.get("activityContent");
-
+    	  String[] tokens=formData.get("token");
+    	  
      		Integer activityId=Integer.parseInt(ids[0]);
      		String title=titles[0];
      		String content=contents[0];
+     		String token=tokens[0];
+     	
+     	Integer userId=DataUtils.getUserIdByToken(token);
+     	if(userId==DataUtils.invalidId){
+     		return badRequest();
+     	}
   	  	Activity activity=SQLCommander.queryActivityByActivityId(activityId);
   	  	activity.setTitle(title);
   	  	activity.setContent(content);
