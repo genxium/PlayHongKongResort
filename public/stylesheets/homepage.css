@@ -30,8 +30,9 @@
 .cellActivity
 {
 	position: relative;
-	width: 60pt;
-	height: 20pt;
+	width: 250pt;
+	overflow: auto;
+	padding: 2pt;
 	border: 2pt solid #00ccff;
 	font-family: Tahoma, sans-serif; 
 }

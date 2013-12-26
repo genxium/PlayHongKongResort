@@ -199,6 +199,8 @@ public class Application extends Controller {
      		String title=titles[0];
      		String content=contents[0];
   	  	Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+  	  	activity.setTitle(title);
+  	  	activity.setContent(content);
   	  	
   	  	String resultStr="Activity not updated!";
   	  	try{
@@ -211,7 +213,7 @@ public class Application extends Controller {
   	  			}
   	  		}
   	  	} catch(Exception e){
-  	  		
+  	  		System.out.println("Application.updateActivity:"+e.getMessage());
   	  	}
     	return ok(resultStr);
     }

@@ -177,8 +177,8 @@ public class SQLCommander {
 		do{
 			String tableName="Activity";
 			int activityId=activity.getId();
-			Activity res=queryActivityByActivityId(activityId);
-			if(res!=null){
+			
+			try{
 				
 				SQLHelper sqlHelper=new SQLHelper();
 				List<String> columnNames=new LinkedList<String>();
@@ -201,6 +201,8 @@ public class SQLCommander {
 				whereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activity.getId()));
 				String logicLink=SQLHelper.logicAND;
 				ret=sqlHelper.updateTableByColumnsAndWhereClauses(tableName, columnNames, columnValues, whereClauses, logicLink);
+			} catch(Exception e){
+				System.out.println("SQLCommander.updateActivity:"+e.getMessage());
 			}
 		}while(false);
 		return ret;
@@ -250,7 +252,8 @@ public class SQLCommander {
 		queryBuilder.append(Activity.createdTimeKey+",");
 		queryBuilder.append(Activity.beginDateKey+",");
 		queryBuilder.append(Activity.endDateKey+",");
-		queryBuilder.append(Activity.capacityKey);
+		queryBuilder.append(Activity.capacityKey+",");
+		queryBuilder.append(Activity.statusKey);
 
 		queryBuilder.append(" FROM "+tableName+" WHERE ");
 
@@ -264,15 +267,14 @@ public class SQLCommander {
 	        if(it.hasNext()){
 		        JSONObject jsonObject=(JSONObject)it.next();
 		        try {
-		        	int id=(Integer)jsonObject.get(Activity.idKey);
 		      		String title=(String)jsonObject.get(Activity.titleKey);
 		      		String content=(String)jsonObject.get(Activity.contentKey);
-		      		Timestamp createdTime=Timestamp.valueOf((String)jsonObject.get(Activity.createdTimeKey));
-		      		Timestamp beginDate=Timestamp.valueOf((String)jsonObject.get(Activity.beginDateKey));
-		      		Timestamp endDate=Timestamp.valueOf((String)jsonObject.get(Activity.endDateKey));
+		      		Timestamp createdTime=(Timestamp)jsonObject.get(Activity.createdTimeKey);
+		      		Timestamp beginDate=(Timestamp)jsonObject.get(Activity.beginDateKey);
+		      		Timestamp endDate=(Timestamp)jsonObject.get(Activity.endDateKey);
 		      		int capacity=(Integer)jsonObject.get(Activity.capacityKey);
 		      		int status=(Integer)jsonObject.get(Activity.statusKey);
-		      		activity=new Activity(id, title, content, createdTime, beginDate, endDate, capacity, status);
+		      		activity=new Activity(activityId, title, content, createdTime, beginDate, endDate, capacity, status);
 			    } catch (Exception e) {
 			    	System.out.println("SQLCommander.queryActivityByActivityId:"+e.getMessage());
 		        }

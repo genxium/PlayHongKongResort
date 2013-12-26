@@ -69,8 +69,8 @@ function generateActivityCell(jsonActivity){
 
 function generateActivityEditorByJson(jsonActivity){
 	var activityId=jsonActivity[g_keyActivityId];
-	var activityTitle=jsonActivity['ActivityTitle'];
-	var activityContent=jsonActivity['ActivityContent'];
+	var activityTitle=jsonActivity[g_keyActivityTitle];
+	var activityContent=jsonActivity[g_keyActivityContent];
 	
 	var ret=generateActivityEditor(activityId, activityTitle, activityContent);
 	return ret;
