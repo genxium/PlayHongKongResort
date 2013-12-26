@@ -66,4 +66,8 @@ public class Activity {
 		Activity activity=new Activity(0, title, content, createdTime, beginDate, endDate, capacity, status);
 		return activity;
 	}
+
+	public static Activity create(){
+		return create("","");
+	}
 };

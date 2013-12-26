@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.33, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.14, for osx10.7 (x86_64)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
--- Server version	5.5.33
+-- Server version	5.6.14
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -32,7 +32,7 @@ CREATE TABLE `Activity` (
   `ActivityCapacity` int(32) NOT NULL DEFAULT '0',
   `ActivityStatus` int(3) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ActivityId`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +41,7 @@ CREATE TABLE `Activity` (
 
 LOCK TABLES `Activity` WRITE;
 /*!40000 ALTER TABLE `Activity` DISABLE KEYS */;
-INSERT INTO `Activity` VALUES (18,'Test','tttttttttttttt','2013-12-25 17:20:15','2013-12-25 17:20:15','2013-12-25 17:20:15',0,0),(19,'Test1','tttttttttttttttt','2013-12-25 17:27:04','2013-12-25 17:27:04','2013-12-25 17:27:04',0,0),(20,'Test2','ttttttttttttttt','2013-12-25 17:27:25','2013-12-25 17:27:25','2013-12-25 17:27:25',0,0);
+INSERT INTO `Activity` VALUES (28,'','','2013-12-26 10:33:44','2013-12-26 10:33:44','2013-12-26 10:33:44',0,0);
 /*!40000 ALTER TABLE `Activity` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -122,7 +122,7 @@ CREATE TABLE `UserActivityRelationTable` (
   CONSTRAINT `UserActivityRelationTable_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `User` (`UserId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_2` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_3` FOREIGN KEY (`UserActivityRelationId`) REFERENCES `UserActivityRelation` (`UserActivityRelationId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -131,7 +131,7 @@ CREATE TABLE `UserActivityRelationTable` (
 
 LOCK TABLES `UserActivityRelationTable` WRITE;
 /*!40000 ALTER TABLE `UserActivityRelationTable` DISABLE KEYS */;
-INSERT INTO `UserActivityRelationTable` VALUES (2,9,19,0,'2013-12-25 17:27:04'),(3,9,20,0,'2013-12-25 17:27:25');
+INSERT INTO `UserActivityRelationTable` VALUES (6,9,28,0,'2013-12-26 10:33:44');
 /*!40000 ALTER TABLE `UserActivityRelationTable` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -191,4 +191,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-12-26  1:47:46
+-- Dump completed on 2013-12-26 19:02:08

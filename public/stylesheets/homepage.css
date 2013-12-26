@@ -17,26 +17,14 @@
 
 }
 
-#domainActivity
-{
-	
-}
-
 #sectionActivities
 {
-	display: table-cell;
 	padding: 30pt;
+	margin: 5pt;
 	width: 300pt;
 	height: 60pt;
 	border: 3pt solid #ccccff;
-	overflow: hidden;
-}
-
-#formActivity
-{
-	position: relative;
-	display: table-cell;
-	padding: 30pt;
+	overflow: auto;
 }
 
 #sectionImage
@@ -47,6 +35,9 @@
 #btnCreate
 {
 	position: relative;
+	width: 64pt;
+	height: 36pt;
+	font-size: 15pt;
 }
 
 #btnUpdate
@@ -69,7 +60,7 @@
 	font-size: 15pt;
 }
 
-#activityTitle
+.titleActivity
 {
 	position: relative;
 	background-color: transparent;
@@ -80,7 +71,7 @@
 	font-size: 15pt;
 }
 
-#activityContent
+.contentActivity
 {
 	position: relative;
 	background-color: transparent;
@@ -89,21 +80,6 @@
 	max-height: 200pt;
 	max-width:	400pt;
 	overflow: auto;
-}
-
-#btnCreateImage
-{
-	background-color: transparent;
-	height: 50pt;
-	width: 120pt;
-	background-color: transparent;
-}
-
-#btnSubmitImage
-{
-	background-color: transparent;
-	height: 50pt;
-	width: 120pt;
 }
 
 #sectionProgress

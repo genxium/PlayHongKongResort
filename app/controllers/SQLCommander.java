@@ -17,7 +17,7 @@ import dao.SQLHelper;
 
 public class SQLCommander {
 	
-	public static Integer invalidId=-1;
+	public static Integer invalidId=(-1);
 	
  	public static BasicUser queryUserByUserId(Integer userId){
  		
@@ -122,9 +122,9 @@ public class SQLCommander {
 		return lastInsertedId;
 	}
 
-	public static boolean createActivity(Activity activity, BasicUser user){
+	public static int createActivity(Activity activity, Integer userId){
 	
-		boolean bRet=false;
+		int lastActivityId=invalidId;
 		// DAO
 		SQLHelper sqlHelper=new SQLHelper();
 		List<String> columnNames=new LinkedList<String>();
@@ -146,8 +146,8 @@ public class SQLCommander {
 		columnValues.add(activity.getCapacity());
 		
 		try{
-			int lastActivityId=sqlHelper.insertToTableByColumns("Activity", columnNames, columnValues);
-			if(lastActivityId!=invalidId){
+			int tmpLastActivityId=sqlHelper.insertToTableByColumns("Activity", columnNames, columnValues);
+			if(tmpLastActivityId!=SQLHelper.invalidId){
 				columnNames.clear();
 				columnValues.clear();
 				
@@ -156,20 +156,20 @@ public class SQLCommander {
 				columnNames.add(UserActivityRelationTable.relationIdKey);
 				columnNames.add(UserActivityRelationTable.generatedTimeKey);
 				
-				columnValues.add(lastActivityId);
-				columnValues.add(user.getUserId());
+				columnValues.add(tmpLastActivityId);
+				columnValues.add(userId);
 				columnValues.add(UserActivityRelation.RelationType.host.ordinal());
 				columnValues.add(activity.getCreatedTime().toString());
 				
 				int lastRelationTableId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
-				if(lastRelationTableId!=invalidId){
-					bRet=true;
+				if(lastRelationTableId!=SQLHelper.invalidId){
+					lastActivityId=tmpLastActivityId;
 				}
 			}
 		} catch (Exception e){
-			
+			System.out.println("SQLCommander.createActivity:"+e.getMessage());
 		}
-		return bRet;
+		return lastActivityId;
 	}
 	
 	public static boolean updateActivity(Activity activity){

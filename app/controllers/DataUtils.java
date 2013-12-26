@@ -9,6 +9,8 @@ import play.mvc.Http.RequestBody;
 
 public class DataUtils{
 
+    public static Integer invalidId=(-1);
+
 	public static String getFileExt(String fileName){
 		int dotPos=fileName.lastIndexOf('.');
 		String ext=fileName.substring(dotPos+1, fileName.length()-1);
@@ -39,8 +41,13 @@ public class DataUtils{
     }
     
     public static Integer getUserIdByToken(String token){
-    		Integer userId=Integer.parseInt(Controller.session(token));
-    		return userId;
+        Integer userId=invalidId;
+        try{
+    	   userId=Integer.parseInt(Controller.session(token));
+        } catch(Exception e){
+           System.out.println("DataUtils.getUserIdByToken:"+e.getMessage());
+        }
+    	return userId;
     }
     
     public static String getNameByEmail(String email){

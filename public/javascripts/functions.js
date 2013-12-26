@@ -49,7 +49,8 @@ function validateEmail(){
 }
 
 function queryActivitiesHostedByUser(){
-	$("#sectionActivities").empty();
+	var targetSection=$("sectionActivities");
+	targetSection.empty();
 	var token = $.cookie(g_keyLoginStatus.toString());
 	try{
 		$.post("/queryActivitiesHostedByUser", 
@@ -58,13 +59,11 @@ function queryActivitiesHostedByUser(){
 			},
 			function(data, status, xhr){
     				if(status=="success"){
-    					$("#sectionActivities").html("");
     					var jsonResponse=JSON.parse(data);
     					for(var key in jsonResponse){
-    						var original=$("#sectionActivities").html();
     						var jsonActivity=jsonResponse[key];
     						var cell=generateActivityCell(jsonActivity);
-    						$("#sectionActivities").append(cell);
+							targetSection.append(cell);
     					}
     				} else{
     					
@@ -83,6 +82,8 @@ function refreshOnEnter(){
 	$("#sectionProgress").hide();
 	$("#btnLogout").hide();
 	$("#sectionUserInfo").html("");
+	$("#sectionActivities").hide();
+	$("#btnCreate").hide();
 }
 
 function refreshOnLoggedIn(){
@@ -91,5 +92,7 @@ function refreshOnLoggedIn(){
 	$("#sectionImage").show();
 	$("#btnLogout").show();
 	$("#sectionUserInfo").html("Hello, "+g_userName.toString());
+	$("#sectionActivities").show();
+	$("#btnCreate").show();
 	queryActivitiesHostedByUser();
 }

@@ -155,30 +155,35 @@ public class Application extends Controller {
   	  	response().setContentType("text/plain");
   	  	
   	  	Map<String, String[]> formData=request().body().asFormUrlEncoded();
-      	String[] titles=formData.get("activityTitle");
-      	String[] contents=formData.get("activityContent");
      		String[] tokens=formData.get("token");
-     		String title=titles[0];
-     		String content=contents[0];
   	  	String token=tokens[0];
-  	  	Integer userId=DataUtils.getUserIdByToken(token);
-  	  	BasicUser user=SQLCommander.queryUserByUserId(userId);
-  	  	Activity activity=Activity.create(title, content);
-  	  	
-  	  	String resultStr="Activity not created!";
-  	  	try{
-  	  		if(DataUtils.validateTitle(title)==false || DataUtils.validateContent(content)==false){
-  	  			resultStr="Invalid title or content!";
-  	  		} else{
-  	  			boolean res=SQLCommander.createActivity(activity, user);
-  	  			if(res==true){
-  	  				resultStr="Activity created";
-  	  			}
-  	  		}
-  	  	} catch(Exception e){
-  	  		System.out.println("Application.createActivity:"+e.getMessage());
-  	  	}
-  	  	return ok(resultStr);
+
+        String resultStr="Activity not created!";
+
+        do{
+      	  	Integer userId=DataUtils.getUserIdByToken(token);
+            if(userId==DataUtils.invalidId) break;
+
+            // create blank draft
+      	  	Activity activity=Activity.create();
+      	  	
+      	  	try{
+
+      	  			int lastActivityId=SQLCommander.createActivity(activity, userId);
+      	  			if(lastActivityId!=SQLCommander.invalidId){
+                    activity.setId(lastActivityId);
+                    ObjectNode activityNode=Json.newObject();
+                    activityNode.put(Activity.idKey, new Integer(lastActivityId).toString());
+                    return ok(activityNode);
+      	  			}
+
+      	  	} catch(Exception e){
+      	  	    System.out.println("Application.createActivity:"+e.getMessage());
+      	  	}
+
+        }while(false);
+
+  	  	return badRequest();
     }
     
     public static Result updateActivity(){

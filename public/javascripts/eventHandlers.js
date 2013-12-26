@@ -77,23 +77,23 @@ function onBtnUpdateClicked(evt){
 }
 
 function onBtnCreateClicked(evt){
-	
-	if (!evt) {evt = window.event;}
 
-	var title=$("#activityTitle").val();
-	var content=$("#activityContent").val();
-	var token=$.cookie(g_keyLoginStatus.toString());
+	if (!evt) {evt = window.event;}
+	evt.preventDefault();
+
+	$("#domainActivities").empty();
+	var userToken=$.cookie(g_keyLoginStatus.toString());
 
 	try{
 		$.post("/createActivity", 
 			{
-				activityTitle: title.toString(),
-				activityContent: content.toString(),
-				token: token.toString()
+				token: userToken.toString()
 			},
 			function(data, status, xhr){
     				if(status=="success"){
-    					refreshOnLoggedIn();
+    					var jsonActivity=JSON.parse(data);
+						var editor=generateBlankActivityEditor();
+						$("#domainActivities").append(editor);
     				} else{
     					
     				}
@@ -106,7 +106,7 @@ function onBtnCreateClicked(evt){
 
 function onBtnSubmitClicked(evt){
 	if (!evt) {evt = window.event;}
-
+	evt.preventDefault();
     /*
 	$("#formActivity").submit( function(evt){
 		evt.preventDefault();
