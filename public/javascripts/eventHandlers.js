@@ -81,9 +81,10 @@ function onBtnCreateClicked(evt){
 	if (!evt) {evt = window.event;}
 	evt.preventDefault();
 
-	$("#domainActivities").empty();
+	targetSection=$("#domainActivities");
+	targetSection.empty();
 	var userToken=$.cookie(g_keyLoginStatus.toString());
-
+	
 	try{
 		$.post("/createActivity", 
 			{
@@ -92,15 +93,16 @@ function onBtnCreateClicked(evt){
 			function(data, status, xhr){
     				if(status=="success"){
     					var jsonActivity=JSON.parse(data);
-						var editor=generateBlankActivityEditor();
-						$("#domainActivities").append(editor);
+						var editor=generateActivityEditor(jsonActivity);
+						targetSection.append(editor);
+						queryActivitiesHostedByUser();
     				} else{
     					
     				}
 			}
 		);
 	} catch(err){
-		$("#sectionActivities").html(err.message);
+		targetSection.html(err.message);
 	}
 }
 
