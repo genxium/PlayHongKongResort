@@ -49,7 +49,7 @@ function validateEmail(){
 }
 
 function queryActivitiesHostedByUser(){
-	var targetSection=$("sectionActivities");
+	var targetSection=$("#sectionActivities");
 	targetSection.empty();
 	var token = $.cookie(g_keyLoginStatus.toString());
 	try{
@@ -63,6 +63,7 @@ function queryActivitiesHostedByUser(){
     					for(var key in jsonResponse){
     						var jsonActivity=jsonResponse[key];
     						var cell=generateActivityCell(jsonActivity);
+    						var text=cell.html();
 							targetSection.append(cell);
     					}
     				} else{

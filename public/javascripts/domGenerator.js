@@ -12,8 +12,10 @@ function generateActivityCell(jsonActivity){
 	var activityTitle=jsonActivity['ActivityTitle'];
 	var activityContent=jsonActivity['ActivityContent'];
 	var cellContent=activityId+" "+activityTitle+" "+activityContent+"<br/>";
-	var ret=$('<p>');
-	ret.css("display: table-cell;width: 60pt;height: 30pt;border: 3pt solid #ccccff;font-family: Tahoma, sans-serif;overflow: hidden;background-color: #FF0000;padding: 30pt");
+	var ret=$('<div>',
+				{
+					class: 'cellActivity'
+				});
 	ret.html(cellContent);
 	ret.bind("click", onActivityItemClicked);
 	ret.data(g_keyActivityId, activityId);
