@@ -54,9 +54,12 @@
 	font-size: 15pt;
 }
 
-#btnUpdate
+.btnUpdate
 {
 	position: relative;
+	width: 64pt;
+	height: 36pt;
+	font-size: 15pt;
 }
 
 #btnSubmit

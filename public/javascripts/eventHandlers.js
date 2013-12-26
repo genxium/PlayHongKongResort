@@ -47,39 +47,12 @@ function onBtnLoginClicked(evt){
 	);
 }
 
-function onBtnUpdateClicked(evt){
-	if (!evt) {evt = window.event;}
-
-	var id=g_editingActivityId;
-	var title=$("#activityTitle").val();
-	var content=$("#activityContent").val();
-	var token=$.cookie(g_keyLoginStatus.toString());
-
-	try{
-		$.post("/updateActivity", 
-			{
-				activityId: id.toString(),
-				activityTitle: title.toString(),
-				activityContent: content.toString(),
-				token: token.toString()
-			},
-			function(data, status, xhr){
-    				if(status=="success"){
-    					refreshOnLoggedIn();
-    				} else{
-    					
-    				}
-			}
-		);
-	} catch(err){
-		$("#sectionActivities").html(err.message);
-	}
-}
-
 function onBtnCreateClicked(evt){
 
 	if (!evt) {evt = window.event;}
 	evt.preventDefault();
+	var sender = (evt.srcElement || evt.target);
+	sender.remove();
 
 	targetSection=$("#domainActivities");
 	targetSection.empty();
@@ -93,7 +66,7 @@ function onBtnCreateClicked(evt){
 			function(data, status, xhr){
     				if(status=="success"){
     					var jsonActivity=JSON.parse(data);
-						var editor=generateActivityEditor(jsonActivity);
+						var editor=generateActivityEditorByJson(jsonActivity);
 						targetSection.append(editor);
 						queryActivitiesHostedByUser();
     				} else{

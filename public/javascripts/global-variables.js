@@ -6,3 +6,5 @@ var g_keyLoginStatus="loginStatusToken";
 var g_userName="";
 var g_editingActivityId=(-1);
 var g_keyActivityId="ActivityId";
+var g_keyActivityTitle="ActivityTitle";
+var g_keyActivityContent="ActivityContent";
