@@ -205,6 +205,10 @@ public class Application extends Controller {
      	if(userId==DataUtils.invalidId){
      		return badRequest();
      	}
+
+      // validate host relation
+      
+      
   	  	Activity activity=SQLCommander.queryActivityByActivityId(activityId);
   	  	activity.setTitle(title);
   	  	activity.setContent(content);

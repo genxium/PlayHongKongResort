@@ -326,4 +326,29 @@ public class SQLCommander {
 		}while(false);
 		return activityRecords;
 	}
+
+	public static UserActivityRelation.RelationType queryRelationOfUserAndActivity(int userId, int activityId){
+		String tableName="UserActivityRelationTable";
+		UserActivityRelation.RelationType ret=null; 
+		
+		SQLHelper sqlHelper=new SQLHelper();
+		// query table UserActivityRelationTable 
+		List<String> relationColumnNames=new LinkedList<String>();
+		relationColumnNames.add(UserActivityRelationTable.relationIdKey);
+
+		List<String> relationWhereClauses=new LinkedList<String>();
+		relationWhereClauses.add(UserActivityRelationTable.userIdKey+"="+userId);
+		relationWhereClauses.add(UserActivityRelationTable.activityIdKey+"="+activityId);
+		
+		List<JSONObject> relationTableRecords=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, relationColumnNames, relationWhereClauses, SQLHelper.logicAND);
+		
+		Iterator<JSONObject> itRecord=relationTableRecords.iterator();
+		if(itRecord.hasNext()){
+			JSONObject record=itRecord.next();
+			Integer relationId=(Integer)record.get(UserActivityRelationTable.relationIdKey);
+			ret=UserActivityRelation.RelationType.getTypeForValue(relationId);
+		}
+		
+		return ret;
+	}
 };
