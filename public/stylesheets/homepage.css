@@ -29,6 +29,7 @@
 
 .cellActivity
 {
+	display: table-row;
 	position: relative;
 	width: 250pt;
 	overflow: auto;
@@ -87,6 +88,7 @@
 	width: 400pt;
 	max-height: 200pt;
 	max-width:	400pt;
+	font-size: 14pt;
 	overflow: auto;
 }
 

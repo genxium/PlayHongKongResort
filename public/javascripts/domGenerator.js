@@ -108,8 +108,8 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 var contentInput=$('<TEXTAREA>',
 	 				  {
 	 				  	class: g_classActivityContent, 
-	 				  	value: activityContent
 	 				  });
+	 contentInput.val(activityContent);
 	 formContainer.append(contentInput);
 	 ret.append(formContainer);
 	 
