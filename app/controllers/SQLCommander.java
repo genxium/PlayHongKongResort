@@ -244,24 +244,21 @@ public class SQLCommander {
 			
 		Activity activity=null;
  		String tableName="Activity";
-		
- 		StringBuilder queryBuilder=new StringBuilder();
-		queryBuilder.append("SELECT ");
-		queryBuilder.append(Activity.titleKey+",");
-		queryBuilder.append(Activity.contentKey+",");
-		queryBuilder.append(Activity.createdTimeKey+",");
-		queryBuilder.append(Activity.beginDateKey+",");
-		queryBuilder.append(Activity.endDateKey+",");
-		queryBuilder.append(Activity.capacityKey+",");
-		queryBuilder.append(Activity.statusKey);
 
-		queryBuilder.append(" FROM "+tableName+" WHERE ");
+ 		List<String> columnNames=new LinkedList<String>();
+		columnNames.add(Activity.titleKey);
+		columnNames.add(Activity.contentKey);
+		columnNames.add(Activity.createdTimeKey);
+		columnNames.add(Activity.beginDateKey);
+		columnNames.add(Activity.endDateKey);
+		columnNames.add(Activity.capacityKey);
+		columnNames.add(Activity.statusKey);
 
-		queryBuilder.append(Activity.idKey+"="+activityId);
+		List<String> whereClauses=new LinkedList<String>();
+		whereClauses.add(Activity.idKey+"="+activityId);
 
-		String query=queryBuilder.toString();
 		SQLHelper sqlHelper=new SQLHelper();
-		List<JSONObject> results=sqlHelper.executeSelect(query);
+		List<JSONObject> results=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND);
 		if(results!=null && results.size()>0){
             Iterator<JSONObject> it=results.iterator();
 	        if(it.hasNext()){
