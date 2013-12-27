@@ -1,0 +1,3 @@
+[submodule "public/javascripts/jquery.transform"]
+	path = public/javascripts/jquery.transform
+	url = https://genxium@github.com/genxium/jquery.transform.js.git
