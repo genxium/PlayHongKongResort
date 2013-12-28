@@ -207,7 +207,10 @@ public class Application extends Controller {
      	}
 
       // validate host relation
-      
+      UserActivityRelation.RelationType type=SQLCommander.queryRelationOfUserAndActivity(userId, activityId);
+      if(type!=UserActivityRelation.RelationType.host){
+        return badRequest();
+      }
       
   	  	Activity activity=SQLCommander.queryActivityByActivityId(activityId);
   	  	activity.setTitle(title);
