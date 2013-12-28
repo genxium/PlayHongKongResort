@@ -233,7 +233,37 @@ public class Application extends Controller {
     }
     
     public static Result deleteActivity(){
-    	return badRequest();
+      // define response attributes
+        response().setContentType("text/plain");
+        
+        Map<String, String[]> formData=request().body().asFormUrlEncoded();
+        String[] ids=formData.get("activityId");
+        String[] tokens=formData.get("token");
+        
+        Integer activityId=Integer.parseInt(ids[0]);
+        String token=tokens[0];
+      
+        Integer userId=DataUtils.getUserIdByToken(token);
+        if(userId==DataUtils.invalidId){
+          return badRequest();
+        }
+
+        // validate host relation
+        UserActivityRelation.RelationType type=SQLCommander.queryRelationOfUserAndActivity(userId, activityId);
+        if(type!=UserActivityRelation.RelationType.host){
+          return badRequest();
+        }
+        
+        String resultStr="Activity not deleted!";
+        try{
+            boolean res=SQLCommander.deleteActivity(activityId);
+            if(res==true){
+              resultStr="Activity deleted";
+            }
+        } catch(Exception e){
+            System.out.println("Application.deleteActivity:"+e.getMessage());
+        }
+      return ok(resultStr);
     }
 
     public static Result queryActivitiesHostedByUser(){

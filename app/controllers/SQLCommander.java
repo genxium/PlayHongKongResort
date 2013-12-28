@@ -201,10 +201,30 @@ public class SQLCommander {
 				whereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activity.getId()));
 				String logicLink=SQLHelper.logicAND;
 				ret=sqlHelper.updateTableByColumnsAndWhereClauses(tableName, columnNames, columnValues, whereClauses, logicLink);
+			
 			} catch(Exception e){
 				System.out.println("SQLCommander.updateActivity:"+e.getMessage());
 			}
 		}while(false);
+		return ret;
+	}
+
+	public static boolean deleteActivity(int activityId){
+		boolean ret=false;
+		do{
+			String tableName="Activity";
+			try{
+				SQLHelper sqlHelper=new SQLHelper();
+				List<String> whereClauses=new LinkedList<String>();
+				
+				whereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
+				String logicLink=SQLHelper.logicAND;
+				ret=sqlHelper.deleteFromTableByWhereClauses(tableName, whereClauses, logicLink);
+			} catch(Exception e){
+				System.out.println("SQLCommander.deleteActivity:"+e.getMessage());
+			}
+		}while(false);
+
 		return ret;
 	}
 

@@ -294,6 +294,29 @@ public class SQLHelper {
 		
 		return ret;
 	}
+
+	public boolean deleteFromTableByWhereClauses(String tableName, List<String> whereClauses, String logicLink){
+		boolean ret=false;
+		do{
+			if(whereClauses.size()<=0) break;
+			StringBuilder queryBuilder=new StringBuilder();
+			queryBuilder.append("DELETE FROM "+tableName);
+
+			if(whereClauses.size()>0){
+				queryBuilder.append(" WHERE ");
+				Iterator<String> itClause=whereClauses.iterator();
+				while(itClause.hasNext()){
+					String clause=itClause.next();
+					queryBuilder.append(clause);
+					if(itClause.hasNext()) queryBuilder.append(" "+logicLink+" ");
+				}
+			}
+			String query=queryBuilder.toString();
+			ret=executeUpdate(query);
+		}while(false);
+
+		return ret;
+	}
 	
 	public static String convertToQueryValue(Object item){
 		String res=null;

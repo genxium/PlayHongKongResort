@@ -77,6 +77,34 @@ function onBtnUpdateClicked(evt){
 	}
 }
 
+function onBtnDeleteClicked(evt){
+	if (!evt) {evt = window.event;}
+	evt.preventDefault();
+	var sender = (evt.srcElement || evt.target);
+	
+	var activityId=jQuery.data(sender, g_keyActivityId);
+	var id=activityId;
+	var token=$.cookie(g_keyLoginStatus.toString());
+
+	try{
+		$.post("/deleteActivity", 
+			{
+				activityId: id.toString(),
+				token: token.toString()
+			},
+			function(data, status, xhr){
+    				if(status=="success"){
+    					refreshOnLoggedIn();
+    				} else{
+    					
+    				}
+			}
+		);
+	} catch(err){
+		$("#sectionActivities").html(err.message);
+	}
+}
+
 function onBtnCancelClicked(evt){
 	if (!evt) {evt = window.event;}
 	evt.preventDefault();
@@ -196,6 +224,14 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 btnUpdate.data(g_keyActivityId, activityId);
 	 btnUpdate.bind("click", onBtnUpdateClicked);
 	 ret.append(btnUpdate);
+
+	 var btnDelete=$('<button>',{
+	 					class: g_classBtnDelete,
+	 					text: 'Delete' 
+					 });
+	 btnDelete.data(g_keyActivityId, activityId);
+	 btnDelete.bind("click", onBtnDeleteClicked);
+	 ret.append(btnDelete);
 
 	 var btnCancel=$('<button>',{
 	 					class: g_classBtnCancel,
