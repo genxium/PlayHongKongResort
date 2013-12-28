@@ -1,6 +1,8 @@
 package model;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Activity {
 
@@ -12,6 +14,32 @@ public class Activity {
 	public static String endDateKey="ActivityEndDate";
 	public static String capacityKey="ActivityCapacity";
 	public static String statusKey="ActivityStatus";
+
+	public enum StatusType{
+		created(0), 
+		pending(1),
+		rejected(2),
+		accepted(3),
+		expired(4);
+
+		private static final Map<Integer, StatusType> statusLookUpMap = new HashMap<Integer, StatusType>();
+
+	    static {
+	        for (StatusType type : StatusType.values()) {
+	            statusLookUpMap.put(type.value, type);
+	        }
+	    }
+
+	    private final int value;
+
+	    private StatusType(int value) {
+	        this.value = value;
+	    }
+
+	    public static StatusType getTypeForValue(int value) {
+	        return statusLookUpMap.get(value);
+	    }
+	};
 	
 	private int m_id=0;
 	public int getId() {return m_id;}
@@ -41,11 +69,11 @@ public class Activity {
 	public int getCapacity() {return m_capacity;}
 	public void setCapacity(int capacity) {m_capacity=capacity;}
 	
-	private int m_status=0;
-	public int getStatus() {return m_status;}
-	public void setStatus(int status) {m_status=status;}
+	private StatusType m_status=StatusType.created;
+	public StatusType getStatus() {return m_status;}
+	public void setStatus(StatusType status) {m_status=status;}
 	
-	public Activity(int id, String title, String content, Timestamp createdTime, Timestamp beginDate, Timestamp endDate, int capacity, int status){
+	public Activity(int id, String title, String content, Timestamp createdTime, Timestamp beginDate, Timestamp endDate, int capacity, StatusType status){
 		m_id=id;
 		m_title=title;
 		m_content=content;
@@ -62,7 +90,7 @@ public class Activity {
 		Timestamp beginDate=new Timestamp(date.getTime());
 		Timestamp endDate=new Timestamp(date.getTime());
 		int capacity=0;
-		int status=0;
+		StatusType status=StatusType.created;
 		Activity activity=new Activity(0, title, content, createdTime, beginDate, endDate, capacity, status);
 		return activity;
 	}

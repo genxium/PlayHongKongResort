@@ -270,7 +270,7 @@ public class SQLCommander {
 		      		Timestamp beginDate=(Timestamp)jsonObject.get(Activity.beginDateKey);
 		      		Timestamp endDate=(Timestamp)jsonObject.get(Activity.endDateKey);
 		      		int capacity=(Integer)jsonObject.get(Activity.capacityKey);
-		      		int status=(Integer)jsonObject.get(Activity.statusKey);
+		      		Activity.StatusType status=Activity.StatusType.getTypeForValue((Integer)jsonObject.get(Activity.statusKey));
 		      		activity=new Activity(activityId, title, content, createdTime, beginDate, endDate, capacity, status);
 			    } catch (Exception e) {
 			    	System.out.println("SQLCommander.queryActivityByActivityId:"+e.getMessage());
@@ -325,6 +325,36 @@ public class SQLCommander {
 			
 		}while(false);
 		return activityRecords;
+	}
+
+	public static List<JSONObject> queryActivitiesByStatusAndChronologicalOrder(){
+		List<JSONObject> records=null;
+
+		try{
+			String tableName="Activity";
+			SQLHelper sqlHelper=new SQLHelper();
+
+			// query table Activity
+			List<String> columnNames=new LinkedList<String>();
+			columnNames.add(Activity.idKey);
+			columnNames.add(Activity.titleKey);
+			columnNames.add(Activity.contentKey);
+			columnNames.add(Activity.createdTimeKey);
+			columnNames.add(Activity.beginDateKey);
+			columnNames.add(Activity.endDateKey);
+			columnNames.add(Activity.capacityKey);
+				
+			List<String> whereClauses=new LinkedList<String>();
+			columnNames.add(Activity.statusKey+"="+Activity.StatusType.accepted);
+
+			List<String> orderClauses=new LinkedList<String>();
+			orderClauses.add(Activity.createdTimeKey);
+			records=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, SQLHelper.directionDescend);
+		
+		} catch(Exception e){
+			System.out.println("SQLCommander.queryActivitiesByStatusAndChronologicalOrder:"+e.getMessage());
+		}
+		return records;
 	}
 
 	public static UserActivityRelation.RelationType queryRelationOfUserAndActivity(int userId, int activityId){

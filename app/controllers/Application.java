@@ -283,6 +283,11 @@ public class Application extends Controller {
     		return ok();
     }
 
+    public static Result queryDefaultActivities(){
+        response().setContentType("text/plain");
+        return ok();
+    }
+
     public static Result logout(){
     		response().setContentType("text/plain");
         Map<String, String[]> formData=request().body().asFormUrlEncoded();

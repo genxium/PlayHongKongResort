@@ -34,6 +34,9 @@ public class SQLHelper {
 	public static String logicAND="AND";
 	public static String logicOR="OR";
 	
+	public static String directionAscend="ASC";
+	public static String directionDescend="DESC";
+
 	private static Connection connection=null;
 	private String databaseName=null;
 	private String host=null;
@@ -212,6 +215,48 @@ public class SQLHelper {
 					if(itClause.hasNext()) queryBuilder.append(" "+logicLink+" ");
 				}
 			}
+			String query=queryBuilder.toString();
+			ret=executeSelect(query);
+		}while(false);
+		return ret;
+	}
+
+	public List<JSONObject> queryTableByColumnsAndWhereClausesAndOrderClauses(String tableName, List<String> columnNames, List<String> whereClauses, String whereLogicLink, List<String> orderClauses, String orderDirection){
+		List<JSONObject> ret=null;
+		do{
+			StringBuilder queryBuilder=new StringBuilder();
+			queryBuilder.append("SELECT ");
+			Iterator<String> itName=columnNames.iterator();
+			while(itName.hasNext()){
+				String name=itName.next();
+				queryBuilder.append(name);
+				if(itName.hasNext()) queryBuilder.append(",");
+			}
+			queryBuilder.append(" FROM "+tableName);
+			
+			if(whereClauses.size()>0){
+				queryBuilder.append(" WHERE ");
+				Iterator<String> itClause=whereClauses.iterator();
+				while(itClause.hasNext()){
+					String clause=itClause.next();
+					queryBuilder.append(clause);
+					if(itClause.hasNext()) queryBuilder.append(" "+whereLogicLink+" ");
+				}
+			}
+
+			if(orderClauses.size()>0){
+				queryBuilder.append(" ORDER BY ");
+				Iterator<String> itClause=orderClauses.iterator();
+				while(itClause.hasNext()){
+					String clause=itClause.next();
+					queryBuilder.append(clause);
+					if(itClause.hasNext()) queryBuilder.append(",");
+				}
+				if(orderDirection!=null && orderDirection.length()>0){
+					queryBuilder.append(" "+orderDirection);
+				}
+			}
+
 			String query=queryBuilder.toString();
 			ret=executeSelect(query);
 		}while(false);
