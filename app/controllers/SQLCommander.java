@@ -209,17 +209,22 @@ public class SQLCommander {
 		return ret;
 	}
 
-	public static boolean deleteActivity(int activityId){
+	public static boolean deleteActivity(int userId, int activityId){
 		boolean ret=false;
 		do{
-			String tableName="Activity";
+			String activityTableName="Activity";
 			try{
 				SQLHelper sqlHelper=new SQLHelper();
-				List<String> whereClauses=new LinkedList<String>();
-				
-				whereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
-				String logicLink=SQLHelper.logicAND;
-				ret=sqlHelper.deleteFromTableByWhereClauses(tableName, whereClauses, logicLink);
+				String relationTableName="UserActivityRelationTable";
+				List<String> relationWhereClauses=new LinkedList<String>();
+				relationWhereClauses.add(BasicUser.idKey+"="+SQLHelper.convertToQueryValue(userId));
+				relationWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
+				boolean resultRelationDeletion=sqlHelper.deleteFromTableByWhereClauses(relationTableName, relationWhereClauses, SQLHelper.logicAND);
+				if(resultRelationDeletion==true){
+					List<String> activityWhereClauses=new LinkedList<String>();
+					activityWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
+					ret=sqlHelper.deleteFromTableByWhereClauses(activityTableName, activityWhereClauses, SQLHelper.logicAND);
+				}
 			} catch(Exception e){
 				System.out.println("SQLCommander.deleteActivity:"+e.getMessage());
 			}

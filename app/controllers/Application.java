@@ -256,7 +256,7 @@ public class Application extends Controller {
         
         String resultStr="Activity not deleted!";
         try{
-            boolean res=SQLCommander.deleteActivity(activityId);
+            boolean res=SQLCommander.deleteActivity(userId, activityId);
             if(res==true){
               resultStr="Activity deleted";
             }
