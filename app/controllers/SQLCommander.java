@@ -327,7 +327,7 @@ public class SQLCommander {
 		return activityRecords;
 	}
 
-	public static List<JSONObject> queryActivitiesByStatusAndChronologicalOrder(){
+	public static List<JSONObject> queryAcceptedActivitiesByStatusAndChronologicalOrder(){
 		List<JSONObject> records=null;
 
 		try{

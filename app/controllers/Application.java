@@ -241,6 +241,8 @@ public class Application extends Controller {
         String token=DataUtils.getUserToken(request().body());
         Integer userId=DataUtils.getUserIdByToken(token);
         
+        if(userId==DataUtils.invalidId) return badRequest();
+        
         BasicUser user=SQLCommander.queryUserByUserId(userId);
         UserActivityRelation.RelationType relation=UserActivityRelation.RelationType.host;
         
@@ -284,8 +286,29 @@ public class Application extends Controller {
     }
 
     public static Result queryDefaultActivities(){
-        response().setContentType("text/plain");
-        return ok();
+    		response().setContentType("text/plain");
+    		try{
+    			List<JSONObject> activities=SQLCommander.queryAcceptedActivitiesByStatusAndChronologicalOrder();
+			Iterator<JSONObject> itActivity=activities.iterator();
+			ObjectNode result = Json.newObject();
+		
+			while(itActivity.hasNext()){
+				JSONObject activityJSON=itActivity.next();
+				Integer activityId=(Integer)activityJSON.get(Activity.idKey);
+				String activityTitle=(String)activityJSON.get(Activity.titleKey);
+				String activityContent=(String)activityJSON.get(Activity.contentKey);
+			
+				ObjectNode singleActivityNode=Json.newObject();
+				singleActivityNode.put(Activity.idKey, activityId.toString());
+				singleActivityNode.put(Activity.titleKey, activityTitle);
+				singleActivityNode.put(Activity.contentKey, activityContent);
+			
+				result.put(activityId.toString(), singleActivityNode);
+			}
+			return ok(result);
+    		} catch(Exception e){
+			return badRequest();
+		}
     }
 
     public static Result logout(){

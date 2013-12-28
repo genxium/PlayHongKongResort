@@ -59,9 +59,15 @@
 {
 	display: table-row;
 	position: relative;
-	width: 250pt;
 	overflow: auto;
 	border: 2pt solid #00ccff;
+}
+
+.classCellActivityContent
+{
+	display: table-cell;
+	position: relative;
+	overflow: auto;
 	font-family: Tahoma, sans-serif;
 }
 
@@ -140,6 +146,17 @@
 	max-width:	400pt;
 	font-size: 14pt;
 	overflow: auto;
+}
+
+.classBtnEdit
+{
+	display: table-cell;
+	position: relative;
+	padding-left: 20pt;
+	width:	50pt;
+	background-color:	#cccc00;
+	font-size:	13pt;
+	font-color:	#00ffff;
 }
 
 .classBtnUpdate

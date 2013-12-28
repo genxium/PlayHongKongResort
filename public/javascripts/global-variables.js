@@ -17,6 +17,7 @@ var g_keyActivityContent="ActivityContent";
 // general DOM element key
 var g_classActivityEditor="classActivityEditor";
 var g_classActivityEditorContainer="classActivityEditorContainer";
+var g_classCellActivityContent="classCellActivityContent";
 var g_idSectionUserInfo="idSectionUserInfo";
 var g_idSectionTitle="idSectionTitle";
 var g_idLoggedInUserMenu="idLoggedInUserMenu";
@@ -33,7 +34,9 @@ var g_idFieldPassword="idFieldPassword";
 var g_idBtnLogin="idBtnLogin";
 var g_idBtnRegister="idBtnRegister";
 var g_idBtnCreate="idBtnCreate";
+var g_classBtnEdit="classBtnEdit";
 var g_classBtnSubmit="classBtnSubmit";
+var g_classBtnDelete="classBtnDelete";
 var g_classBtnLogout="classBtnLogout";
 var g_classBtnUpdate="classBtnUpdate";
 var g_classBtnCancel="classBtnCancel";

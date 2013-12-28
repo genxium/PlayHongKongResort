@@ -5,7 +5,11 @@ function refreshOnEnter(){
 	$("#"+g_idFieldPassword).empty();
 
 	$("#sectionAccount").show();
-	$("#domainActivities").hide();
+	
+	var domainActivities=$("#domainActivities");
+	domainActivities.empty();
+	domainActivities.hide();
+	
 	$("#sectionImage").hide();
 	$("#sectionProgress").hide();
 
@@ -15,10 +19,11 @@ function refreshOnEnter(){
 
 	$("#sectionActivities").hide();
 	$("#"+g_idBtnCreate).hide();
+	$("."+g_classActivityEditor).hide();
 }
 
 // Assistant Handlers
-function onActivityItemClicked(evt){
+function onBtnEditClicked(evt){
 	if (!evt) {evt = window.event;}
 	var sender = (evt.srcElement || evt.target);
 
@@ -32,6 +37,13 @@ function onActivityItemClicked(evt){
 	var editor=generateActivityEditor(activityId, activityTitle, activityContent);
 	targetSection.append(editor);
 }
+
+function onMouseEnterActivityCell(evt){
+	
+}
+
+function onMouseLeaveActivityCell(evt){}
+
 
 function onBtnUpdateClicked(evt){
 	if (!evt) {evt = window.event;}
@@ -100,16 +112,34 @@ function generateActivityCell(jsonActivity){
 	var activityId=jsonActivity[g_keyActivityId];
 	var activityTitle=jsonActivity[g_keyActivityTitle];
 	var activityContent=jsonActivity[g_keyActivityContent];
-	var cellContent=activityId+" "+activityTitle+" "+activityContent+"<br/>";
+
 	var ret=$('<div>',
 				{
 					class: 'cellActivity'
 				});
-	ret.html(cellContent);
-	ret.bind("click", onActivityItemClicked);
+	var cellContent=$('<div>',
+				{
+					class: g_classCellActivityContent,
+					html: activityId+" "+activityTitle+" "+activityContent+"<br/>"
+				});
+	ret.append(cellContent);
+	
+	var btnEdit=$('<button>', {
+					class: g_classBtnEdit,
+					text: 'Edit'
+				});
+	btnEdit.bind("click", onBtnEditClicked);
+	
+	btnEdit.data(g_keyActivityId, activityId);
+	btnEdit.data(g_keyActivityTitle, activityTitle);
+	btnEdit.data(g_keyActivityContent, activityContent);
+	
 	ret.data(g_keyActivityId, activityId);
 	ret.data(g_keyActivityTitle, activityTitle);
 	ret.data(g_keyActivityContent, activityContent);
+
+	ret.append(btnEdit);
+	
 	return ret;
 }
 

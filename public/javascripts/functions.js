@@ -94,9 +94,12 @@ function onMouseLeaveSectionUserInfo(evt){
 
 function refreshOnLoggedIn(){
 	$("#sectionAccount").hide();
-	$("#domainActivities").show();
 	$("#sectionImage").show();
 	$("#btnLogout").show();
+
+	var domainActivities=$("#domainActivities");
+	domainActivities.empty();
+	domainActivities.show();
 
 	// bind menu to sectionUserInfo
 	var sectionUserInfo=$("#"+g_idSectionUserInfo);
