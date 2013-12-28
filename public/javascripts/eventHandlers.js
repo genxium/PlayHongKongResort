@@ -1,7 +1,7 @@
 function onBtnRegisterClicked(evt){
-	$("#responseSection").html("Calling register function");
-	var email=$("#emailField").val();
-	var password=$("#passwordField").val();
+
+	var email=$("#"+g_idFieldEmail).val();
+	var password=$("#"+g_idFieldPassword).val();
 
 	$.post("/register",
 			{
@@ -21,9 +21,9 @@ function onBtnRegisterClicked(evt){
 }
 
 function onBtnLoginClicked(evt){
-	$("#responseSection").html("Calling login function");
-	var email=$("#emailField").val();
-	var password=$("#passwordField").val();
+	
+	var email=$("#"+g_idFieldEmail).val();
+	var password=$("#"+g_idFieldPassword).val();
 
 	$.post("/login",
 			{
@@ -52,7 +52,6 @@ function onBtnCreateClicked(evt){
 	if (!evt) {evt = window.event;}
 	evt.preventDefault();
 	var sender = (evt.srcElement || evt.target);
-	sender.remove();
 
 	targetSection=$("#domainActivities");
 	targetSection.empty();
@@ -82,7 +81,8 @@ function onBtnCreateClicked(evt){
 function onBtnSubmitClicked(evt){
 	if (!evt) {evt = window.event;}
 	evt.preventDefault();
-    /*
+	var sender = (evt.srcElement || evt.target);
+	/*
 	$("#formActivity").submit( function(evt){
 		evt.preventDefault();
 	});
@@ -127,25 +127,4 @@ function onBtnUploadImageClicked(evt){
 		e.preventDefault(); // prevent default action.
 	});
 	$("#imageForm").submit();
-}
-
-function onBtnLogoutClicked(evt){
-	var token = $.cookie(g_keyLoginStatus.toString());
-	try{
-		$.post("/logout", 
-			{
-				token: token.toString()
-			},
-			function(data, status, xhr){
-    				if(status=="success"){
-    					$.removeCookie(g_keyLoginStatus.toString());
-    					refreshOnEnter();
-    				} else{
-
-    				}
-			}
-		);
-	} catch(err){
-
-	}
 }

@@ -1,15 +1,43 @@
-#headerTitle
+.classFieldEmail
 {
+	display: table-row;
+	position: relative;
+	width: 200pt;
+	height: 30pt;
+	left: 50pt;
+	margin-left: 30pt;
+	margin-top: 10pt;
+	margin-bottom: 10pt;
+}
+
+.classFieldPassWord
+{
+	display: table-row;
+	position: relative;
+	width: 200pt;
+	height: 30pt;
+	margin: 10pt;
+}
+
+#idSectionUserInfo
+{
+	display: table-cell;
+	position: fixed;
+	left: 700pt;
+	top: 20pt;
+	font-family: Georgia;
+	font-size: 15pt;
+	color: #4455AA;
+	border: 3pt solid #cc00ff;
+}
+
+#idSectionTitle
+{
+	display: table-cell;
+	position: relative;
 	font-family: Georgia;
 	font-size: 250%;
 	color: #FF8822;
-}
-
-#sectionUserInfo
-{
-	font-family: Georgia;
-	font-size: 120%;
-	color: #4455AA;
 }
 
 #sectionAccount
@@ -33,9 +61,8 @@
 	position: relative;
 	width: 250pt;
 	overflow: auto;
-	padding: 2pt;
 	border: 2pt solid #00ccff;
-	font-family: Tahoma, sans-serif; 
+	font-family: Tahoma, sans-serif;
 }
 
 #domainActivities
@@ -48,17 +75,40 @@
 	position: relative;
 }
 
-.classActivityEditor
+#idBtnLogin
 {
-	position: relative;
-}
-
-#idBtnCreate
-{
+	display: table-cell;
 	position: relative;
 	width: 64pt;
 	height: 36pt;
 	font-size: 15pt;
+	margin: 10pt;
+}
+
+#idBtnRegister
+{
+	display: table-cell;
+	position: relative;
+	width: 64pt;
+	height: 36pt;
+	font-size: 15pt;
+	margin: 10pt;
+}
+
+#idBtnCreate
+{
+	position: fixed;
+	left: 600pt;
+	top: 20pt;
+	width: 64pt;
+	height: 36pt;
+	font-size: 15pt;
+}
+
+.classActivityEditor
+{
+	position: relative;
+	margin-top: 20pt;
 }
 
 .classActivityEditorContainer
@@ -94,25 +144,36 @@
 
 .classBtnUpdate
 {
-	display: table-row;
+	display: table-cell;
 	position: relative;
 	padding-top: 3pt;
 	width: 64pt;
 	height: 36pt;
 	font-size: 15pt;
-	top: 10pt;
+	margin-top: 10pt;
 }
 
-#btnSubmit
+.classBtnCancel
+{
+	display: table-cell;
+	position: relative;
+	padding-top: 3pt;
+	width: 64pt;
+	height: 36pt;
+	font-size: 15pt;
+	margin-top: 10pt;
+	margin-left: 50pt;
+}
+
+.classBtnSubmit
 {
 	position: relative;
 }
 
-#btnLogout
+.classBtnLogout
 {
-	position: absolute;
-	margin-right: 10pt;
-	margin-top: 50pt;
+	display: table-row;
+	position: relative;
 	width: 64pt;
 	height: 36pt;
 	font-size: 15pt;

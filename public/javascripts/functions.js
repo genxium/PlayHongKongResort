@@ -38,7 +38,7 @@ function validateImage(){
 }
 
 function validateEmail(){
-	var x=document.getElementById("emailField").value;
+	var x=document.getElementById("idFieldEmail").value;
 	var atpos=x.indexOf("@");
 	var dotpos=x.lastIndexOf(".");
 	if (atpos<1 || dotpos<atpos+2 || dotpos+2>=x.length) {
@@ -76,15 +76,20 @@ function queryActivitiesHostedByUser(){
 	}
 }
 
-function refreshOnEnter(){
-	$("#sectionAccount").show();
-	$("#domainActivities").hide();
-	$("#sectionImage").hide();
-	$("#sectionProgress").hide();
-	$("#btnLogout").hide();
-	$("#sectionUserInfo").html("");
-	$("#sectionActivities").hide();
-	$("#"+g_idBtnCreate).hide();
+function onMouseEnterSectionUserInfo(evt){
+	if (!evt) {evt = window.event;}
+	evt.preventDefault();
+	var sender = (evt.srcElement || evt.target);
+
+	g_domLoggedInUserMenu.show();	
+}
+
+function onMouseLeaveSectionUserInfo(evt){
+	if (!evt) {evt = window.event;}
+	evt.preventDefault();
+	var sender = (evt.srcElement || evt.target);
+
+	g_domLoggedInUserMenu.hide();	
 }
 
 function refreshOnLoggedIn(){
@@ -92,7 +97,17 @@ function refreshOnLoggedIn(){
 	$("#domainActivities").show();
 	$("#sectionImage").show();
 	$("#btnLogout").show();
-	$("#sectionUserInfo").html("Hello, "+g_userName.toString());
+
+	// bind menu to sectionUserInfo
+	var sectionUserInfo=$("#"+g_idSectionUserInfo);
+	sectionUserInfo.show();
+	sectionUserInfo.html("Hello, "+g_userName.toString());
+	sectionUserInfo.bind("mouseenter", onMouseEnterSectionUserInfo);
+	sectionUserInfo.bind("mouseleave", onMouseLeaveSectionUserInfo);
+	g_domLoggedInUserMenu=generateLoggedInUserMenu();
+	sectionUserInfo.append(g_domLoggedInUserMenu);
+	g_domLoggedInUserMenu.hide();
+
 	$("#sectionActivities").show();
 	$("#"+g_idBtnCreate).show();
 	queryActivitiesHostedByUser();
