@@ -15,22 +15,48 @@ import model.Activity;
 
 import org.json.simple.JSONObject;
 
+import play.Play;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class SQLHelper {
+	
+	public static String databaseNameKey="DatabaseName";
+	public static String hostKey="Host";
+	public static String portKey="Port";
+	public static String userKey="User";
+	public static String passwordKey="Password";
 	
 	public static Integer invalidId=-1;
 	public static String logicAND="AND";
 	public static String logicOR="OR";
 	
 	private static Connection connection=null;
-	private String hostName="localhost";
-	private Integer port=3306;
-	private String databaseName="hongkongresort";
-	private String user="root";
-	private String password="";
+	private String databaseName=null;
+	private String host=null;
+	private Integer port=null;
+	private String user=null;
+	private String password=null;
+	
+	public boolean readMySQLConfig(){
+		boolean ret=false;
+		try{
+			String fullPath=Play.application().path()+"/conf/"+"database_config.xml";
+			Map<String, String> attributes=XMLHelper.readDatabaseConfig(fullPath);
+			databaseName=attributes.get(databaseNameKey);
+			host=attributes.get(hostKey);
+			port=Integer.parseInt(attributes.get(portKey));
+			user=attributes.get(userKey);
+			password=attributes.get(passwordKey);
+			ret=true;
+		} catch(Exception e){
+			System.out.println("SQLHelper.readMySQLConfig:"+e.getMessage());
+		}
+		return ret;
+	}
 
 	public static Connection getConnection(){
 		return connection;
@@ -38,11 +64,15 @@ public class SQLHelper {
 	
 	public boolean checkConnection(){
 		try{
+			// lazy init
 			if(connection!=null) return true;
+			boolean configResult=readMySQLConfig();
+			if(configResult==false) return false;
+			
 			Class.forName("com.mysql.jdbc.Driver");
 			StringBuilder connectionBuilder=new StringBuilder();
 			connectionBuilder.append("jdbc:mysql://");
-			connectionBuilder.append(hostName+":");
+			connectionBuilder.append(host+":");
 			connectionBuilder.append(port.toString()+"/");
 			connectionBuilder.append(databaseName);
 			String connectionStr=connectionBuilder.toString();

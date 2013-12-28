@@ -17,3 +17,4 @@ uploadedImages
 uploadedImages/*
 
 /.target
+database_config.xml
