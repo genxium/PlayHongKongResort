@@ -57,10 +57,10 @@ public class DataUtils{
     }
     
     public static boolean validateTitle(String title){
-    		return title.length()>0;
+    		return title.length()>=0;
     }
     
     public static boolean validateContent(String content){
-    		return content.length()>0;
+    		return content.length()>=0;
     }
 }

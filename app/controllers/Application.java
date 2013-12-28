@@ -191,28 +191,32 @@ public class Application extends Controller {
   	  	response().setContentType("text/plain");
   	  	
   	  	Map<String, String[]> formData=request().body().asFormUrlEncoded();
-    	  String[] ids=formData.get("activityId");
+  	  	String[] ids=formData.get("activityId");
   	  	String[] titles=formData.get("activityTitle");
-    	  String[] contents=formData.get("activityContent");
-    	  String[] tokens=formData.get("token");
+  	  	String[] contents=formData.get("activityContent");
+  	  	String[] tokens=formData.get("token");
     	  
-     		Integer activityId=Integer.parseInt(ids[0]);
-     		String title=titles[0];
-     		String content=contents[0];
-     		String token=tokens[0];
+     	Integer activityId=Integer.parseInt(ids[0]);
+    		String title=titles[0];
+    		String content=contents[0];
+    		String token=tokens[0];
      	
      	Integer userId=DataUtils.getUserIdByToken(token);
      	if(userId==DataUtils.invalidId){
      		return badRequest();
      	}
 
-      // validate host relation
-      UserActivityRelation.RelationType type=SQLCommander.queryRelationOfUserAndActivity(userId, activityId);
-      if(type!=UserActivityRelation.RelationType.host){
-        return badRequest();
-      }
+     	// validate host relation
+     	UserActivityRelation.RelationType type=SQLCommander.queryRelationOfUserAndActivity(userId, activityId);
+     	if(type!=UserActivityRelation.RelationType.host){
+     		return badRequest();
+     	}
       
   	  	Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+  	  	if(activity==null || activity.getStatus()!=Activity.StatusType.created){
+  	  		return badRequest();
+  	  	}
+  	  	
   	  	activity.setTitle(title);
   	  	activity.setContent(content);
   	  	
@@ -229,7 +233,7 @@ public class Application extends Controller {
   	  	} catch(Exception e){
   	  		System.out.println("Application.updateActivity:"+e.getMessage());
   	  	}
-    	return ok(resultStr);
+  	  	return ok(resultStr);
     }
     
     public static Result deleteActivity(){
