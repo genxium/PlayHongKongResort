@@ -245,7 +245,12 @@ public class Application extends Controller {
       
         Integer userId=DataUtils.getUserIdByToken(token);
         if(userId==DataUtils.invalidId){
-          return badRequest();
+        		return badRequest();
+        }
+        
+        Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+        if(activity==null || activity.getStatus()!=Activity.StatusType.created){
+        		return badRequest();
         }
 
         // validate host relation
