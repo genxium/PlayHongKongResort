@@ -105,6 +105,38 @@ function onBtnDeleteClicked(evt){
 	}
 }
 
+function onBtnSubmitClicked(evt){
+	if (!evt) {evt = window.event;}
+	evt.preventDefault();
+	var sender = (evt.srcElement || evt.target);
+	
+	var activityId=jQuery.data(sender, g_keyActivityId);
+	var id=activityId;
+	var title=$("."+g_classActivityTitle).val();
+	var content=$("."+g_classActivityContent).val();
+	var token=$.cookie(g_keyLoginStatus.toString());
+
+	try{
+		$.post("/submitActivity", 
+			{
+				ActivityId: id.toString(),
+				ActivityTitle: title.toString(),
+				ActivityContent: content.toString(),
+				UserToken: token.toString()
+			},
+			function(data, status, xhr){
+    				if(status=="success"){
+    					refreshOnLoggedIn();
+    				} else{
+    					
+    				}
+			}
+		);
+	} catch(err){
+		$("#sectionActivities").html(err.message);
+	}
+}
+
 function onBtnCancelClicked(evt){
 	if (!evt) {evt = window.event;}
 	evt.preventDefault();
@@ -137,9 +169,13 @@ function onBtnLogoutClicked(evt){
 
 // Generators
 function generateActivityCell(jsonActivity){
+
+	var arrayStatusName=['created','pending','rejected','accepted','expired'];
+
 	var activityId=jsonActivity[g_keyActivityId];
 	var activityTitle=jsonActivity[g_keyActivityTitle];
 	var activityContent=jsonActivity[g_keyActivityContent];
+	var activityStatus=jsonActivity[g_keyActivityStatus];
 
 	var ret=$('<div>',
 				{
@@ -151,22 +187,32 @@ function generateActivityCell(jsonActivity){
 					html: activityId+" "+activityTitle+" "+activityContent+"<br/>"
 				});
 	ret.append(cellContent);
-	
-	var btnEdit=$('<button>', {
-					class: g_classBtnEdit,
-					text: 'Edit'
+
+	var statusIndicator=$('<div>',{
+					class: g_classActivityStatusIndicator,
+					html: arrayStatusName[parseInt(activityStatus)] 
 				});
-	btnEdit.bind("click", onBtnEditClicked);
+	ret.append(statusIndicator);
 	
-	btnEdit.data(g_keyActivityId, activityId);
-	btnEdit.data(g_keyActivityTitle, activityTitle);
-	btnEdit.data(g_keyActivityContent, activityContent);
+	if(parseInt(activityStatus)==0){ 
+		// this condition is temporarily hard-coded
+		var btnEdit=$('<button>', {
+			class: g_classBtnEdit,
+			text: 'Edit'
+		});
+		btnEdit.bind("click", onBtnEditClicked);
+
+		btnEdit.data(g_keyActivityId, activityId);
+		btnEdit.data(g_keyActivityTitle, activityTitle);
+		btnEdit.data(g_keyActivityContent, activityContent);
+
+		ret.append(btnEdit);
+	}
 	
 	ret.data(g_keyActivityId, activityId);
 	ret.data(g_keyActivityTitle, activityTitle);
 	ret.data(g_keyActivityContent, activityContent);
 
-	ret.append(btnEdit);
 	
 	return ret;
 }
@@ -232,6 +278,14 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 btnDelete.data(g_keyActivityId, activityId);
 	 btnDelete.bind("click", onBtnDeleteClicked);
 	 ret.append(btnDelete);
+
+	 var btnSubmit=$('<button>',{
+	 					class: g_classBtnSubmit,
+	 					text: 'Submit'
+	 				});
+	 btnSubmit.data(g_keyActivityId, activityId);
+	 btnSubmit.bind("click", onBtnSubmitClicked);
+	 ret.append(btnSubmit);
 
 	 var btnCancel=$('<button>',{
 	 					class: g_classBtnCancel,

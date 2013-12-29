@@ -213,13 +213,9 @@ public class Application extends Controller {
   	  	
   	  	String resultStr="Activity not updated!";
   	  	try{
-  	  		if(DataUtils.validateTitle(title)==false || DataUtils.validateContent(content)==false){
-  	  			resultStr="Invalid title or content!";
-  	  		} else{
-  	  			boolean res=SQLCommander.updateActivity(activity);
-  	  			if(res==true){
-  	  				resultStr="Activity updated";
-  	  			}
+  	  		boolean res=SQLCommander.updateActivity(activity);
+  	  		if(res==true){
+  	  			resultStr="Activity updated";
   	  		}
   	  	} catch(Exception e){
   	  		System.out.println("Application.updateActivity:"+e.getMessage());
@@ -267,32 +263,34 @@ public class Application extends Controller {
         
         if(userId==DataUtils.invalidId) return badRequest();
         
+        ObjectNode result = null;
+        
         BasicUser user=SQLCommander.queryUserByUserId(userId);
         UserActivityRelation.RelationType relation=UserActivityRelation.RelationType.host;
         
         try{
         		List<JSONObject> activities=SQLCommander.queryActivitiesByUserAndRelation(user, relation);
         		Iterator<JSONObject> itActivity=activities.iterator();
-        		ObjectNode result = Json.newObject();
+        		result=Json.newObject();
         		
         		while(itActivity.hasNext()){
         			JSONObject activityJSON=itActivity.next();
         			Integer activityId=(Integer)activityJSON.get(Activity.idKey);
         			String activityTitle=(String)activityJSON.get(Activity.titleKey);
         			String activityContent=(String)activityJSON.get(Activity.contentKey);
-        			
+        			Integer activityStatus=(Integer)activityJSON.get(Activity.statusKey);
+
         			ObjectNode singleActivityNode=Json.newObject();
-              singleActivityNode.put(Activity.idKey, activityId.toString());
+        			singleActivityNode.put(Activity.idKey, activityId.toString());
         			singleActivityNode.put(Activity.titleKey, activityTitle);
         			singleActivityNode.put(Activity.contentKey, activityContent);
-        			
+        			singleActivityNode.put(Activity.statusKey, activityStatus.toString());
         			result.put(activityId.toString(), singleActivityNode);
         		}
-        		return ok(result);
         } catch(Exception e){
-        		return badRequest();
+        		System.out.println("");
         }
-        
+        return ok(result);
     }
     
     public static Result submitActivity(){
@@ -300,11 +298,15 @@ public class Application extends Controller {
         response().setContentType("text/plain");
         
         Map<String, String[]> formData=request().body().asFormUrlEncoded();
-        String[] ids=formData.get(Activity.idKey);
-        String[] tokens=formData.get(BasicUser.tokenKey);
-        
-        Integer activityId=Integer.parseInt(ids[0]);
-        String token=tokens[0];
+  	  	String[] ids=formData.get(Activity.idKey);
+  	  	String[] titles=formData.get(Activity.titleKey);
+  	  	String[] contents=formData.get(Activity.contentKey);
+  	  	String[] tokens=formData.get(BasicUser.tokenKey);
+    	  
+     	Integer activityId=Integer.parseInt(ids[0]);
+    		String title=titles[0];
+    		String content=contents[0];
+    		String token=tokens[0];
       
         Integer userId=DataUtils.getUserIdByToken(token);
         if(userId==DataUtils.invalidId){
@@ -318,10 +320,14 @@ public class Application extends Controller {
         
         String resultStr="Activity not submitted!";
         try{
-            boolean res=SQLCommander.submitActivity(userId, activity);
-            if(res==true){
-              resultStr="Activity submitted";
-            }
+  	  		if(DataUtils.validateTitle(title)==false || DataUtils.validateContent(content)==false){
+  	  			resultStr="Invalid title or content!";
+  	  		} else{
+  	  			boolean res=SQLCommander.submitActivity(userId, activity);
+  	  			if(res==true){
+  	  				resultStr="Activity submitted";
+  	  			}
+  	  		}
         } catch(Exception e){
             System.out.println("Application.submitActivity:"+e.getMessage());
         }
@@ -338,24 +344,24 @@ public class Application extends Controller {
     public static Result queryDefaultActivities(){
     		response().setContentType("text/plain");
     		try{
-    			List<JSONObject> activities=SQLCommander.queryAcceptedActivitiesByStatusAndChronologicalOrder();
-			Iterator<JSONObject> itActivity=activities.iterator();
-			ObjectNode result = Json.newObject();
-		
-			while(itActivity.hasNext()){
-				JSONObject activityJSON=itActivity.next();
-				Integer activityId=(Integer)activityJSON.get(Activity.idKey);
-				String activityTitle=(String)activityJSON.get(Activity.titleKey);
-				String activityContent=(String)activityJSON.get(Activity.contentKey);
-			
-				ObjectNode singleActivityNode=Json.newObject();
-				singleActivityNode.put(Activity.idKey, activityId.toString());
-				singleActivityNode.put(Activity.titleKey, activityTitle);
-				singleActivityNode.put(Activity.contentKey, activityContent);
-			
-				result.put(activityId.toString(), singleActivityNode);
-			}
-			return ok(result);
+          	List<JSONObject> activities=SQLCommander.queryAcceptedActivitiesByStatusAndChronologicalOrder();
+      			Iterator<JSONObject> itActivity=activities.iterator();
+      			ObjectNode result = Json.newObject();
+      		
+      			while(itActivity.hasNext()){
+        				JSONObject activityJSON=itActivity.next();
+        				Integer activityId=(Integer)activityJSON.get(Activity.idKey);
+        				String activityTitle=(String)activityJSON.get(Activity.titleKey);
+        				String activityContent=(String)activityJSON.get(Activity.contentKey);
+        			
+        				ObjectNode singleActivityNode=Json.newObject();
+        				singleActivityNode.put(Activity.idKey, activityId.toString());
+        				singleActivityNode.put(Activity.titleKey, activityTitle);
+        				singleActivityNode.put(Activity.contentKey, activityContent);
+        			
+        				result.put(activityId.toString(), singleActivityNode);
+      			}
+      			return ok(result);
     		} catch(Exception e){
 			return badRequest();
 		}

@@ -363,6 +363,7 @@ public class SQLCommander {
 			activityColumnNames.add(Activity.beginDateKey);
 			activityColumnNames.add(Activity.endDateKey);
 			activityColumnNames.add(Activity.capacityKey);
+			activityColumnNames.add(Activity.statusKey);
 			
 			List<String> activityWhereClauses=new LinkedList<String>();
 			Iterator<Integer> itActivityId=activityIds.iterator();

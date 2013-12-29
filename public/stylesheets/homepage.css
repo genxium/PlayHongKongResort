@@ -156,7 +156,7 @@
 	width:	50pt;
 	background-color:	#cccc00;
 	font-size:	13pt;
-	font-color:	#00ffff;
+	color:	#0000ff;
 }
 
 .classBtnUpdate
@@ -168,6 +168,8 @@
 	height: 36pt;
 	font-size: 15pt;
 	margin-top: 10pt;
+	background-color: #CC00FF;
+	color: #cccccc;
 }
 
 .classBtnDelete
@@ -183,6 +185,19 @@
 	background-color: #ff0000;
 }
 
+.classBtnSubmit
+{
+	display: table-cell;
+	position: relative;
+	padding-top: 3pt;
+	width: 64pt;
+	height: 36pt;
+	font-size: 16pt;
+	color: #cccccc;
+	margin-top: 10pt;	
+	background-color: #0000ee;
+}
+
 .classBtnCancel
 {
 	display: table-cell;
@@ -195,11 +210,6 @@
 	margin-left: 50pt;
 }
 
-.classBtnSubmit
-{
-	position: relative;
-}
-
 .classBtnLogout
 {
 	display: table-row;
@@ -207,6 +217,17 @@
 	width: 64pt;
 	height: 36pt;
 	font-size: 15pt;
+}
+
+.classActivityStatusIndicator
+{
+	display: table-cell;
+	position: relative;
+	padding-left: 20pt;
+	padding-right: 10pt;
+	width:	50pt;
+	font-size:	16pt;
+	color:	#ff0000;
 }
 
 #sectionProgress

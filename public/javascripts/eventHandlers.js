@@ -78,19 +78,6 @@ function onBtnCreateClicked(evt){
 	}
 }
 
-function onBtnSubmitClicked(evt){
-	if (!evt) {evt = window.event;}
-	evt.preventDefault();
-	var sender = (evt.srcElement || evt.target);
-	/*
-	$("#formActivity").submit( function(evt){
-		evt.preventDefault();
-	});
-
-	$("#formActivity").submit();
-	*/
-}
-
 function onBtnUploadImageClicked(evt){
 
 	if(validateImage()==false){

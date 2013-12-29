@@ -9,7 +9,7 @@ var g_editingActivityId=(-1);
 // cookie keys
 var g_keyLoginStatus="loginStatusToken";
 
-// structured data keys
+// structured data keys (should be consistent with server-side in a protocol manner)
 var g_keyUserId="UserId";
 var g_keyUserEmail="UserEmail";
 var g_keyUserName="UserName";
@@ -18,6 +18,7 @@ var g_keyUserToken="UserToken";
 var g_keyActivityId="ActivityId";
 var g_keyActivityTitle="ActivityTitle";
 var g_keyActivityContent="ActivityContent";
+var g_keyActivityStatus="ActivityStatus";
 
 // general DOM element key
 var g_classActivityEditor="classActivityEditor";
@@ -26,6 +27,7 @@ var g_classCellActivityContent="classCellActivityContent";
 var g_idSectionUserInfo="idSectionUserInfo";
 var g_idSectionTitle="idSectionTitle";
 var g_idLoggedInUserMenu="idLoggedInUserMenu";
+var g_classActivityStatusIndicator="classActivityStatusIndicator";
 
 // input-box keys
 var g_classActivityTitle="classActivityTitle";
