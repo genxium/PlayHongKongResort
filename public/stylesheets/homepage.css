@@ -1,7 +1,13 @@
 #wrap
 {
 	margin: 0 auto;
-    max-width: 1200px;
+    max-width: 1024px;
+}
+
+#header
+{
+	background: #1d2124;
+	height: 68px;
 }
 
 .classFieldEmail
