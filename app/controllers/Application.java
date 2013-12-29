@@ -75,8 +75,8 @@ public class Application extends Controller {
 	
 		RequestBody body = request().body();
 		Map<String, String[]> formData=body.asFormUrlEncoded();
-		String[] emails=formData.get("email");
-		String[] passwords=formData.get("password");
+		String[] emails=formData.get(BasicUser.emailKey);
+		String[] passwords=formData.get(BasicUser.passwordKey);
 		String email=emails[0];
 		String password=passwords[0];
 		String name=DataUtils.getNameByEmail(email);
@@ -152,7 +152,7 @@ public class Application extends Controller {
   	  	response().setContentType("text/plain");
   	  	
   	  	Map<String, String[]> formData=request().body().asFormUrlEncoded();
-     		String[] tokens=formData.get("token");
+     		String[] tokens=formData.get(BasicUser.tokenKey);
   	  	String token=tokens[0];
 
         String resultStr="Activity not created!";
@@ -188,10 +188,10 @@ public class Application extends Controller {
   	  	response().setContentType("text/plain");
   	  	
   	  	Map<String, String[]> formData=request().body().asFormUrlEncoded();
-  	  	String[] ids=formData.get("activityId");
-  	  	String[] titles=formData.get("activityTitle");
-  	  	String[] contents=formData.get("activityContent");
-  	  	String[] tokens=formData.get("token");
+  	  	String[] ids=formData.get(Activity.idKey);
+  	  	String[] titles=formData.get(Activity.titleKey);
+  	  	String[] contents=formData.get(Activity.contentKey);
+  	  	String[] tokens=formData.get(BasicUser.tokenKey);
     	  
      	Integer activityId=Integer.parseInt(ids[0]);
     		String title=titles[0];
@@ -232,8 +232,8 @@ public class Application extends Controller {
         response().setContentType("text/plain");
         
         Map<String, String[]> formData=request().body().asFormUrlEncoded();
-        String[] ids=formData.get("activityId");
-        String[] tokens=formData.get("token");
+        String[] ids=formData.get(Activity.idKey);
+        String[] tokens=formData.get(BasicUser.tokenKey);
         
         Integer activityId=Integer.parseInt(ids[0]);
         String token=tokens[0];
@@ -300,8 +300,8 @@ public class Application extends Controller {
         response().setContentType("text/plain");
         
         Map<String, String[]> formData=request().body().asFormUrlEncoded();
-        String[] ids=formData.get("activityId");
-        String[] tokens=formData.get("token");
+        String[] ids=formData.get(Activity.idKey);
+        String[] tokens=formData.get(BasicUser.tokenKey);
         
         Integer activityId=Integer.parseInt(ids[0]);
         String token=tokens[0];
@@ -364,7 +364,7 @@ public class Application extends Controller {
     public static Result logout(){
     		response().setContentType("text/plain");
         Map<String, String[]> formData=request().body().asFormUrlEncoded();
-        String[] tokens=formData.get("token");
+        String[] tokens=formData.get(BasicUser.tokenKey);
         String token=tokens[0];
         session().remove(token);
         return ok();
