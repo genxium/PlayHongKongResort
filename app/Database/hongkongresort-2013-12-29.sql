@@ -32,7 +32,7 @@ CREATE TABLE `Activity` (
   `ActivityCapacity` int(32) NOT NULL DEFAULT '0',
   `ActivityStatus` int(3) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ActivityId`)
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +41,7 @@ CREATE TABLE `Activity` (
 
 LOCK TABLES `Activity` WRITE;
 /*!40000 ALTER TABLE `Activity` DISABLE KEYS */;
-INSERT INTO `Activity` VALUES (32,'Testing Edit Button','lalala','2013-12-26 11:14:42','2013-12-26 11:14:42','2013-12-28 12:59:33',0,3),(33,'Title 33 updating','Another test case.','2013-12-26 11:54:21','2013-12-26 11:54:21','2013-12-26 16:59:45',0,3),(34,'Edit Test','Tom and Jerry','2013-12-26 11:55:58','2013-12-26 11:55:58','2013-12-28 13:18:27',0,3),(35,'uet','sfdfd','2013-12-26 12:08:17','2013-12-26 12:08:17','2013-12-27 13:50:12',0,3),(36,'Testing','lallalalla','2013-12-26 15:43:20','2013-12-26 15:43:20','2013-12-26 16:40:31',0,3),(37,'Hello','Hello World!','2013-12-26 16:48:18','2013-12-26 16:48:18','2013-12-28 02:28:10',0,0),(38,'mytitle ','lalalal','2013-12-27 14:13:48','2013-12-27 14:13:48','2013-12-27 17:25:45',0,0);
+INSERT INTO `Activity` VALUES (32,'Testing Edit Accepted Activities','lalala','2013-12-26 11:14:42','2013-12-26 11:14:42','2013-12-28 17:15:32',0,3),(33,'Title 33 updating','Another test case.','2013-12-26 11:54:21','2013-12-26 11:54:21','2013-12-26 16:59:45',0,3),(34,'Edit Test','Tom and Jerry','2013-12-26 11:55:58','2013-12-26 11:55:58','2013-12-28 13:18:27',0,3),(35,'uet','sfdfd','2013-12-26 12:08:17','2013-12-26 12:08:17','2013-12-27 13:50:12',0,3),(36,'Testing','lallalalla','2013-12-26 15:43:20','2013-12-26 15:43:20','2013-12-26 16:40:31',0,3),(38,'mytitle ','lalalal','2013-12-27 14:13:48','2013-12-27 14:13:48','2013-12-27 17:25:45',0,0),(44,'Hey Hey ','Miao Miao','2013-12-29 08:16:50','2013-12-29 08:16:50','2013-12-29 08:17:00',0,0),(45,'Miao','?','2013-12-29 08:18:39','2013-12-29 08:18:39','2013-12-29 08:18:48',0,0);
 /*!40000 ALTER TABLE `Activity` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -65,7 +65,7 @@ CREATE TABLE `User` (
   UNIQUE KEY `UserEmail` (`UserEmail`),
   KEY `UserGroupId` (`UserGroupId`),
   CONSTRAINT `User_ibfk_1` FOREIGN KEY (`UserGroupId`) REFERENCES `UserGroup` (`GroupId`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -74,7 +74,7 @@ CREATE TABLE `User` (
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
-INSERT INTO `User` VALUES (9,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',0,0,0,'2013-12-23 14:13:30'),(10,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@126.com',0,0,0,'2013-12-23 14:45:19'),(11,'kk','e10adc3949ba59abbe56e057f20f883e','kk@gmail.com',0,0,0,'2013-12-27 14:13:30'),(12,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',0,0,0,'2013-12-28 04:21:15');
+INSERT INTO `User` VALUES (9,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',0,0,0,'2013-12-23 14:13:30'),(10,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@126.com',0,0,0,'2013-12-23 14:45:19'),(11,'kk','e10adc3949ba59abbe56e057f20f883e','kk@gmail.com',0,0,0,'2013-12-27 14:13:30'),(12,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',0,0,0,'2013-12-28 04:21:15'),(13,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@yahoo.com',0,0,0,'2013-12-29 08:16:26');
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -116,13 +116,14 @@ CREATE TABLE `UserActivityRelationTable` (
   `UserActivityRelationId` int(3) NOT NULL,
   `GeneratedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`UserActivityRelationTableId`),
+  UNIQUE KEY `UA_UNI_ID` (`UserId`,`ActivityId`),
   KEY `UserId` (`UserId`),
   KEY `ActivityId` (`ActivityId`),
   KEY `UserActivityRelationId` (`UserActivityRelationId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `User` (`UserId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_2` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_3` FOREIGN KEY (`UserActivityRelationId`) REFERENCES `UserActivityRelation` (`UserActivityRelationId`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -131,7 +132,7 @@ CREATE TABLE `UserActivityRelationTable` (
 
 LOCK TABLES `UserActivityRelationTable` WRITE;
 /*!40000 ALTER TABLE `UserActivityRelationTable` DISABLE KEYS */;
-INSERT INTO `UserActivityRelationTable` VALUES (10,9,32,0,'2013-12-26 11:14:42'),(11,9,33,0,'2013-12-26 11:54:21'),(12,9,34,0,'2013-12-26 11:55:58'),(13,9,35,0,'2013-12-26 12:08:17'),(14,9,36,0,'2013-12-26 15:43:20'),(15,9,37,0,'2013-12-26 16:48:18'),(16,11,38,0,'2013-12-27 14:13:48');
+INSERT INTO `UserActivityRelationTable` VALUES (10,9,32,0,'2013-12-26 11:14:42'),(11,9,33,0,'2013-12-26 11:54:21'),(12,9,34,0,'2013-12-26 11:55:58'),(13,9,35,0,'2013-12-26 12:08:17'),(14,9,36,0,'2013-12-26 15:43:20'),(16,11,38,0,'2013-12-27 14:13:48'),(22,13,44,0,'2013-12-29 08:16:50'),(23,9,45,0,'2013-12-29 08:18:39');
 /*!40000 ALTER TABLE `UserActivityRelationTable` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -191,4 +192,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-12-29  1:13:33
+-- Dump completed on 2013-12-29 16:27:47
