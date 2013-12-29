@@ -5,8 +5,8 @@ function onBtnRegisterClicked(evt){
 
 	$.post("/register",
 			{
-				email: email.toString(),
-				password: password.toString()
+				UserEmail: email.toString(),
+				UserPassword: password.toString()
 			},
 			// post response callback function
 			function(data, status, xhr){
@@ -27,22 +27,22 @@ function onBtnLoginClicked(evt){
 
 	$.post("/login",
 			{
-				email: email.toString(),
-				password: password.toString()
+				UserEmail: email.toString(),
+				UserPassword: password.toString()
 			},
 			// post response callback function
 			function(data, status, xhr){
 				if(status=="success"){
 					var jsonResponse=JSON.parse(data);
-	    				$("#responseSection").html(jsonResponse['userId']);
-	    				g_userName=jsonResponse['email'];
+	    				$("#responseSection").html(jsonResponse['UserId']);
+	    				g_userName=jsonResponse['UserEmail'];
 	    				// store token in cookie iff query succeeds
-	    				$.cookie(g_keyLoginStatus.toString(), jsonResponse['token']);
+	    				$.cookie(g_keyLoginStatus.toString(), jsonResponse['UserToken']);
 	    				// refresh screen
 	    				refreshOnLoggedIn();
 				} else{
-	    				$("#responseSection").html("Query failed");
-	    			}
+
+	    		}
 		    }
 	);
 }
@@ -60,7 +60,7 @@ function onBtnCreateClicked(evt){
 	try{
 		$.post("/createActivity", 
 			{
-				token: userToken.toString()
+				UserToken: userToken.toString()
 			},
 			function(data, status, xhr){
     				if(status=="success"){

@@ -8,15 +8,15 @@ function checkLoginStatus(evt){
 function validateToken(token){
 	$.post("/checkLoginStatus",
 			{
-				token: token.toString(),
+				UserToken: token.toString(),
 			},
 			// post response callback function
 			function(data, status, xhr){
 				if(status=="success"){
 					var obj=JSON.parse(data);
-	    				g_userName=obj['UserEmail'];
+	    				g_userName=obj[g_keyUserEmail];
 	    				// store token in cookie iff query succeeds
-	    				$.cookie(g_keyLoginStatus.toString(), obj['token']);
+	    				$.cookie(g_keyLoginStatus.toString(), obj[g_keyUserToken]);
 	    				// refresh screen
 	    				refreshOnLoggedIn();
 		    		} else{
@@ -38,10 +38,10 @@ function validateImage(){
 }
 
 function validateEmail(){
-	var x=document.getElementById("idFieldEmail").value;
+	var x=document.getElementById(g_idFieldEmail).value;
 	var atpos=x.indexOf("@");
 	var dotpos=x.lastIndexOf(".");
-	if (atpos<1 || dotpos<atpos+2 || dotpos+2>=x.length) {
+	if (atpos<1 || dotpos<atpos+2 || dotpos+1>=x.length) {
 	  alert("Not a valid e-mail address");
 	  return false;
 	}
@@ -55,7 +55,7 @@ function queryActivitiesHostedByUser(){
 	try{
 		$.post("/queryActivitiesHostedByUser", 
 			{
-				token: token.toString()
+				UserToken: token.toString()
 			},
 			function(data, status, xhr){
     				if(status=="success"){

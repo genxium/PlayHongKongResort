@@ -59,10 +59,10 @@ function onBtnUpdateClicked(evt){
 	try{
 		$.post("/updateActivity", 
 			{
-				activityId: id.toString(),
-				activityTitle: title.toString(),
-				activityContent: content.toString(),
-				token: token.toString()
+				ActivityId: id.toString(),
+				ActivityTitle: title.toString(),
+				ActivityContent: content.toString(),
+				UserToken: token.toString()
 			},
 			function(data, status, xhr){
     				if(status=="success"){
@@ -89,8 +89,8 @@ function onBtnDeleteClicked(evt){
 	try{
 		$.post("/deleteActivity", 
 			{
-				activityId: id.toString(),
-				token: token.toString()
+				ActivityId: id.toString(),
+				UserToken: token.toString()
 			},
 			function(data, status, xhr){
     				if(status=="success"){
@@ -119,7 +119,7 @@ function onBtnLogoutClicked(evt){
 	try{
 		$.post("/logout", 
 			{
-				token: token.toString()
+				UserToken: token.toString()
 			},
 			function(data, status, xhr){
     				if(status=="success"){

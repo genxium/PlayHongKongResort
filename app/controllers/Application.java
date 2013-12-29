@@ -44,8 +44,8 @@ public class Application extends Controller {
 	
 		RequestBody body = request().body();
 		Map<String, String[]> formData=body.asFormUrlEncoded();
-		String[] emails=formData.get("email");
-		String[] passwords=formData.get("password");
+		String[] emails=formData.get(BasicUser.emailKey);
+		String[] passwords=formData.get(BasicUser.passwordKey);
 		String email=emails[0];
 		String password=passwords[0];
 		
@@ -55,17 +55,15 @@ public class Application extends Controller {
 
         if(user!=null && user.getPassword().equals(passwordDigest)){
         	
-        		String token = Converter.generateToken(email, password);
-        		Integer userId = user.getUserId();
+    		String token = Converter.generateToken(email, password);
+    		Integer userId = user.getUserId();
+
 		    session(token, userId.toString());
-		    String userIdKey="userId";
-		    String emailKey="email";
-		    String tokenKey="token";
 
 		    ObjectNode result = Json.newObject();
-		    result.put(userIdKey, user.getUserId());
-		    result.put(emailKey, user.getEmail());
-		    result.put(tokenKey, token);
+		    result.put(BasicUser.idKey, user.getUserId());
+		    result.put(BasicUser.emailKey, user.getEmail());
+		    result.put(BasicUser.tokenKey, token);
 		    return ok(result);
         }
         return badRequest("User does not exist!");
@@ -105,7 +103,7 @@ public class Application extends Controller {
             try {
                   session(token, userId.toString());
                   String emailKey=BasicUser.emailKey;
-                  String tokenKey="token";
+                  String tokenKey=BasicUser.tokenKey;
                   ObjectNode result = Json.newObject();
                   result.put(emailKey, user.getEmail());
                   result.put(tokenKey, token);
@@ -113,7 +111,6 @@ public class Application extends Controller {
             } catch (Exception e) {
                   // TODO Auto-generated catch block
             }
-
 		}
   		return ok("User doesn't exist or not logged in");
     }
@@ -205,15 +202,9 @@ public class Application extends Controller {
      	if(userId==DataUtils.invalidId){
      		return badRequest();
      	}
-
-     	// validate host relation
-     	UserActivityRelation.RelationType type=SQLCommander.queryRelationOfUserAndActivity(userId, activityId);
-     	if(type!=UserActivityRelation.RelationType.host){
-     		return badRequest();
-     	}
       
   	  	Activity activity=SQLCommander.queryActivityByActivityId(activityId);
-  	  	if(activity==null || activity.getStatus()!=Activity.StatusType.created){
+  	  	if(SQLCommander.isActivityEditable(userId, activity)==false){
   	  		return badRequest();
   	  	}
   	  	
@@ -237,7 +228,7 @@ public class Application extends Controller {
     }
     
     public static Result deleteActivity(){
-      // define response attributes
+    		// define response attributes
         response().setContentType("text/plain");
         
         Map<String, String[]> formData=request().body().asFormUrlEncoded();
@@ -253,14 +244,8 @@ public class Application extends Controller {
         }
         
         Activity activity=SQLCommander.queryActivityByActivityId(activityId);
-        if(activity==null || activity.getStatus()!=Activity.StatusType.created){
+        if(SQLCommander.isActivityEditable(userId, activity)==false){
         		return badRequest();
-        }
-
-        // validate host relation
-        UserActivityRelation.RelationType type=SQLCommander.queryRelationOfUserAndActivity(userId, activityId);
-        if(type!=UserActivityRelation.RelationType.host){
-          return badRequest();
         }
         
         String resultStr="Activity not deleted!";
@@ -311,11 +296,37 @@ public class Application extends Controller {
     }
     
     public static Result submitActivity(){
-    		// define response attributes
-  	  	response().setContentType("text/plain");
-  	  	String token=DataUtils.getUserToken(request().body());
-  	  	Integer userId=DataUtils.getUserIdByToken(token);
-    		return ok();
+    	// define response attributes
+        response().setContentType("text/plain");
+        
+        Map<String, String[]> formData=request().body().asFormUrlEncoded();
+        String[] ids=formData.get("activityId");
+        String[] tokens=formData.get("token");
+        
+        Integer activityId=Integer.parseInt(ids[0]);
+        String token=tokens[0];
+      
+        Integer userId=DataUtils.getUserIdByToken(token);
+        if(userId==DataUtils.invalidId){
+        		return badRequest();
+        }
+        
+        Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+        if(SQLCommander.isActivityEditable(userId, activity)==false){
+        		return badRequest();
+        }
+        
+        String resultStr="Activity not submitted!";
+        try{
+            boolean res=SQLCommander.submitActivity(userId, activity);
+            if(res==true){
+              resultStr="Activity submitted";
+            }
+        } catch(Exception e){
+            System.out.println("Application.submitActivity:"+e.getMessage());
+        }
+      return ok(resultStr);
+
     }
 
     public static Result joinActivity(){

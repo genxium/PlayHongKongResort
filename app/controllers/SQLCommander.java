@@ -104,9 +104,9 @@ public class SQLCommander {
 		SQLHelper sqlHelper=new SQLHelper();
 		
 		List<String> columnNames=new LinkedList<String>();
-		columnNames.add("UserEmail");
-		columnNames.add("UserPassword");
-		columnNames.add("UserName");
+		columnNames.add(BasicUser.emailKey);
+		columnNames.add(BasicUser.passwordKey);
+		columnNames.add(BasicUser.nameKey);
 		
 		List<Object> columnValues=new LinkedList<Object>();
 		columnValues.add(user.getEmail());
@@ -230,6 +230,30 @@ public class SQLCommander {
 			}
 		}while(false);
 
+		return ret;
+	}
+	
+	public static boolean submitActivity(int userId, Activity activity){
+		boolean ret=false;
+		do{
+			String activityTableName="Activity";
+			try{
+				SQLHelper sqlHelper=new SQLHelper();
+				List<String> columnNames=new LinkedList<String>();
+				columnNames.add(Activity.statusKey);
+				
+				List<Object> columnValues=new LinkedList<Object>();
+				columnValues.add(Activity.StatusType.pending.ordinal());
+				
+				List<String> whereClauses=new LinkedList<String>();
+				whereClauses.add(Activity.idKey+"="+activity.getId());
+		
+				ret=sqlHelper.updateTableByColumnsAndWhereClauses(activityTableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
+
+			} catch(Exception e){
+				System.out.println("SQLCommander.submitActivity:"+e.getMessage());
+			}
+		}while(false);
 		return ret;
 	}
 
@@ -385,25 +409,64 @@ public class SQLCommander {
 	public static UserActivityRelation.RelationType queryRelationOfUserAndActivity(int userId, int activityId){
 		String tableName="UserActivityRelationTable";
 		UserActivityRelation.RelationType ret=null; 
-		
-		SQLHelper sqlHelper=new SQLHelper();
-		// query table UserActivityRelationTable 
-		List<String> relationColumnNames=new LinkedList<String>();
-		relationColumnNames.add(UserActivityRelationTable.relationIdKey);
+		try{
+			SQLHelper sqlHelper=new SQLHelper();
+			// query table UserActivityRelationTable 
+			List<String> relationColumnNames=new LinkedList<String>();
+			relationColumnNames.add(UserActivityRelationTable.relationIdKey);
 
-		List<String> relationWhereClauses=new LinkedList<String>();
-		relationWhereClauses.add(UserActivityRelationTable.userIdKey+"="+userId);
-		relationWhereClauses.add(UserActivityRelationTable.activityIdKey+"="+activityId);
+			List<String> relationWhereClauses=new LinkedList<String>();
+			relationWhereClauses.add(UserActivityRelationTable.userIdKey+"="+userId);
+			relationWhereClauses.add(UserActivityRelationTable.activityIdKey+"="+activityId);
 		
-		List<JSONObject> relationTableRecords=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, relationColumnNames, relationWhereClauses, SQLHelper.logicAND);
+			List<JSONObject> relationTableRecords=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, relationColumnNames, relationWhereClauses, SQLHelper.logicAND);
 		
-		Iterator<JSONObject> itRecord=relationTableRecords.iterator();
-		if(itRecord.hasNext()){
-			JSONObject record=itRecord.next();
-			Integer relationId=(Integer)record.get(UserActivityRelationTable.relationIdKey);
-			ret=UserActivityRelation.RelationType.getTypeForValue(relationId);
+			Iterator<JSONObject> itRecord=relationTableRecords.iterator();
+			if(itRecord.hasNext()){
+				JSONObject record=itRecord.next();
+				Integer relationId=(Integer)record.get(UserActivityRelationTable.relationIdKey);
+				ret=UserActivityRelation.RelationType.getTypeForValue(relationId);
+			}
+		} catch(Exception e){
+			System.out.println("SQLCommander.queryRelationOfUserAndActivity:"+e.getMessage());
 		}
-		
+		return ret;
+	}
+	
+	public static boolean validateOwnershipOfActivity(int userId, int activityId){
+		boolean ret=false;
+		do{
+			// validate host relation
+			UserActivityRelation.RelationType type=SQLCommander.queryRelationOfUserAndActivity(userId, activityId);
+			if(type==null || type!=UserActivityRelation.RelationType.host) break;
+			ret=true;
+		}while(false);
+		return ret;
+	}
+	
+	public static boolean validateOwnershipOfActivity(int userId, Activity activity){
+		boolean ret=false;
+		do{
+			if(activity==null) break;
+			int activityId=activity.getId();
+			ret=validateOwnershipOfActivity(userId, activityId);
+		}while(false);
+		return ret;
+	}
+	
+	public static boolean isActivityEditable(int userId, int activityId){
+		Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+  	  	return isActivityEditable(userId, activity);
+	}
+	
+	public static boolean isActivityEditable(int userId, Activity activity){
+		boolean ret=false;
+		do{
+			if(activity==null) break;
+	     	if(validateOwnershipOfActivity(userId, activity)==false)	break;
+	  	  	if(activity.getStatus()!=Activity.StatusType.created) break;
+	  	  	ret=true;
+		}while(false);
 		return ret;
 	}
 };

@@ -10,6 +10,11 @@ var g_editingActivityId=(-1);
 var g_keyLoginStatus="loginStatusToken";
 
 // structured data keys
+var g_keyUserId="UserId";
+var g_keyUserEmail="UserEmail";
+var g_keyUserName="UserName";
+var g_keyUserToken="UserToken";
+
 var g_keyActivityId="ActivityId";
 var g_keyActivityTitle="ActivityTitle";
 var g_keyActivityContent="ActivityContent";

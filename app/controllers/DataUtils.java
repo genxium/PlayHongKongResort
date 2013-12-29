@@ -28,14 +28,14 @@ public class DataUtils{
     
     public static String getUserToken(MultipartFormData data){
     		Map<String, String[]> formData= data.asFormUrlEncoded();
-		String[] tokens=formData.get("token");
+		String[] tokens=formData.get(BasicUser.tokenKey);
 		String token=tokens[0];
 		return token;
     }
     
     public static String getUserToken(RequestBody body){
-    		Map<String, String[]> formData= body.asFormUrlEncoded();
-		String[] tokens=formData.get("token");
+    	Map<String, String[]> formData= body.asFormUrlEncoded();
+		String[] tokens=formData.get(BasicUser.tokenKey);
 		String token=tokens[0];
 		return token;
     }
