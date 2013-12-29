@@ -1,3 +1,9 @@
+#wrap
+{
+	margin: 0 auto;
+    max-width: 1200px;
+}
+
 .classFieldEmail
 {
 	display: table-row;
@@ -47,19 +53,17 @@
 
 #sectionActivities
 {
-	display: table-cell;
-	padding: 3pt;
-	width: 300pt;
-	height: 60pt;
+	width: 640px;
+	height: 100%;
 	border: 3pt solid #ccccff;
-	overflow: auto;
 }
 
 .cellActivity
 {
-	display: table-row;
-	position: relative;
-	overflow: auto;
+	float: left;
+	width: 200px;
+	margin: 5px 5px;
+	height: 100px;
 	border: 2pt solid #00ccff;
 }
 
