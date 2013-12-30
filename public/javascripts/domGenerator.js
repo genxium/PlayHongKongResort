@@ -177,10 +177,11 @@ function onBtnJoinClicked(evt){
 	evt.preventDefault();
 	var token = $.cookie(g_keyLoginStatus.toString());
 	var activityId=jQuery.data(this, g_keyActivityId);
+	var id=parseInt(activityId);
 	try{
 		$.post("/joinActivity", 
 			{
-				ActivityId: id.toString(),
+				ActivityId: activityId.toString(),
 				UserToken: token.toString()
 			},
 			function(data, status, xhr){

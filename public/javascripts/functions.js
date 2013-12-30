@@ -107,5 +107,5 @@ function refreshOnLoggedIn(){
 	$("#"+g_idBtnCreate).show();
 	queryActivitiesHostedByUser();
 
-	$("#"+g_idSectionDefaultActivities).hide();
+	$("#"+g_idSectionDefaultActivities).css("left","800pt");
 }

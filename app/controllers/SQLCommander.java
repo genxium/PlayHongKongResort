@@ -322,7 +322,7 @@ public class SQLCommander {
 		      		Activity.StatusType status=Activity.StatusType.getTypeForValue((Integer)jsonObject.get(Activity.statusKey));
 		      		activity=new Activity(activityId, title, content, createdTime, beginDate, endDate, capacity, status);
 			    } catch (Exception e) {
-			    	System.out.println("SQLCommander.queryActivityByActivityId:"+e.getMessage());
+			    		System.out.println("SQLCommander.queryActivityByActivityId:"+e.getMessage());
 		        }
 	    	} 	
 		}
@@ -457,13 +457,19 @@ public class SQLCommander {
 	}
 	
 	public static boolean isActivityEditable(int userId, int activityId){
-		Activity activity=SQLCommander.queryActivityByActivityId(activityId);
-  	  	return isActivityEditable(userId, activity);
+		boolean ret=false;
+		do{
+			if(userId==DataUtils.invalidId) break;
+			Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+  	  		ret=isActivityEditable(userId, activity);
+		} while(false);
+		return ret;
 	}
 	
 	public static boolean isActivityEditable(int userId, Activity activity){
 		boolean ret=false;
 		do{
+			if(userId==DataUtils.invalidId) break;
 			if(activity==null) break;
 	     	if(validateOwnershipOfActivity(userId, activity)==false)	break;
 	  	  	if(activity.getStatus()!=Activity.StatusType.created) break;
@@ -476,13 +482,61 @@ public class SQLCommander {
 		boolean ret=false;
 		do{
 			if(user==null) break;
+			int userId=user.getUserId();
+			ret=isActivityJoinable(userId, activity);
+		}while(false);
+		return ret;
+	}
+	
+	public static boolean isActivityJoinable(int userId, Activity activity){
+		boolean ret=false;
+		do{
+			if(userId==DataUtils.invalidId) break;
 			if(activity==null) break;
 			if(activity.getStatus()!=Activity.StatusType.accepted) break;
-			int userId=user.getUserId();
 			int activityId=activity.getId();
 			UserActivityRelation.RelationType relation=queryRelationOfUserAndActivity(userId, activityId);
 			if(relation!=null) break;
 			ret=true;
+		}while(false);
+		return ret;
+	}
+	
+	public static boolean isActivityJoinable(int userId, int activityId){
+		boolean ret=false;
+		do{
+			if(userId==DataUtils.invalidId) break;
+			Activity activity=queryActivityByActivityId(activityId);
+			ret=isActivityJoinable(userId, activity);
+		}while(false);
+		return ret;
+	}
+	
+	public static boolean joinActivity(int userId, int activityId, Timestamp generatedTime){
+		boolean ret=false;
+		do{
+			try{
+				SQLHelper sqlHelper=new SQLHelper();
+				
+				List<String> columnNames=new LinkedList<String>();
+				columnNames.add(UserActivityRelationTable.activityIdKey);
+				columnNames.add(UserActivityRelationTable.userIdKey);
+				columnNames.add(UserActivityRelationTable.relationIdKey);
+				columnNames.add(UserActivityRelationTable.generatedTimeKey);
+				
+				List<Object> columnValues=new LinkedList<Object>();
+				columnValues.add(activityId);
+				columnValues.add(userId);
+				columnValues.add(UserActivityRelation.RelationType.applied.ordinal());
+				columnValues.add(generatedTime.toString());
+				
+				int lastRelationTableId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
+				if(lastRelationTableId==SQLHelper.invalidId) break;
+				
+				ret=true;
+			} catch(Exception e){
+				System.out.println("SQLCommander.joinActivity:"+e.getMessage());
+			}
 		}while(false);
 		return ret;
 	}

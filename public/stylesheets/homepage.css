@@ -10,6 +10,7 @@ html, body
 
 #header
 {
+	position: relative;
 	background: #1d2124;
 	height: 68px;
 }
@@ -37,20 +38,30 @@ html, body
 
 #idSectionUserInfo
 {
-	display: table-cell;
-	position: fixed;
-	left: 700pt;
-	top: 20pt;
+	display: table-column;
+	position: relative;
+	float: right;
 	font-family: Georgia;
 	font-size: 15pt;
-	color: #4455AA;
+	color: #ffffff;
 	border: 3pt solid #cc00ff;
+}
+
+#idBtnCreate
+{
+	display: table-column;
+	position: relative;
+	float: right;
+	width: 64pt;
+	height: 35px;
+	font-size: 15pt;
 }
 
 #idSectionTitle
 {
-	display: table-cell;
+	display: table-column;
 	position: relative;
+	float: left;
 	font-family: Georgia;
 	font-size: 250%;
 	color: #FF8822;
@@ -70,7 +81,10 @@ html, body
 
 #idSectionDefaultActivities
 {
-	
+	left: 80%;
+	width: 645px;
+	height: 100%;
+	border: 3pt solid #ff0000;
 }
 
 .cellActivity
@@ -118,16 +132,6 @@ html, body
 	height: 36pt;
 	font-size: 15pt;
 	margin: 10pt;
-}
-
-#idBtnCreate
-{
-	position: fixed;
-	left: 600pt;
-	top: 20pt;
-	width: 64pt;
-	height: 36pt;
-	font-size: 15pt;
 }
 
 .classActivityEditor
@@ -255,9 +259,8 @@ html, body
 {
 	display: table-cell;
 	position: relative;
-	padding-left: 20pt;
-	padding-right: 10pt;
-	width:	50pt;
+	float: right;
+	vertical-align: text-bottom;
 	font-size:	16pt;
 	color:	#ff0000;
 }

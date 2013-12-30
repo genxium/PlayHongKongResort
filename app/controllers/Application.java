@@ -198,11 +198,7 @@ public class Application extends Controller {
     		String content=contents[0];
     		String token=tokens[0];
      	
-     	Integer userId=DataUtils.getUserIdByToken(token);
-     	if(userId==DataUtils.invalidId){
-     		return badRequest();
-     	}
-      
+     	Integer userId=DataUtils.getUserIdByToken(token); 
   	  	Activity activity=SQLCommander.queryActivityByActivityId(activityId);
   	  	if(SQLCommander.isActivityEditable(userId, activity)==false){
   	  		return badRequest();
@@ -294,7 +290,7 @@ public class Application extends Controller {
     }
     
     public static Result submitActivity(){
-    	// define response attributes
+    		// define response attributes
         response().setContentType("text/plain");
         
         Map<String, String[]> formData=request().body().asFormUrlEncoded();
@@ -309,10 +305,6 @@ public class Application extends Controller {
     		String token=tokens[0];
       
         Integer userId=DataUtils.getUserIdByToken(token);
-        if(userId==DataUtils.invalidId){
-        		return badRequest();
-        }
-        
         Activity activity=SQLCommander.queryActivityByActivityId(activityId);
         if(SQLCommander.isActivityEditable(userId, activity)==false){
         		return badRequest();
@@ -336,8 +328,23 @@ public class Application extends Controller {
     }
 
     public static Result joinActivity(){
-    		// define response attributes
-  	  	response().setContentType("text/plain");
+    	// define response attributes
+        response().setContentType("text/plain");
+        
+        Map<String, String[]> formData=request().body().asFormUrlEncoded();
+  	  	String[] ids=formData.get(Activity.idKey);
+  	  	String[] tokens=formData.get(BasicUser.tokenKey);
+    	  
+     	Integer activityId=Integer.parseInt(ids[0]);
+    		String token=tokens[0];
+      
+        Integer userId=DataUtils.getUserIdByToken(token);
+        Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+        if(SQLCommander.isActivityJoinable(userId, activity)==false){
+        		return badRequest();
+        }
+        
+        
     		return ok();
     }
 
