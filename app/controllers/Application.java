@@ -284,7 +284,7 @@ public class Application extends Controller {
         			result.put(activityId.toString(), singleActivityNode);
         		}
         } catch(Exception e){
-        		System.out.println("");
+        		System.out.println("Application.queryActivitiesHostedByUser:"+e.getMessage());
         }
         return ok(result);
     }
@@ -323,7 +323,7 @@ public class Application extends Controller {
         } catch(Exception e){
             System.out.println("Application.submitActivity:"+e.getMessage());
         }
-      return ok(resultStr);
+        return ok(resultStr);
 
     }
 
@@ -337,14 +337,20 @@ public class Application extends Controller {
     	  
      	Integer activityId=Integer.parseInt(ids[0]);
     		String token=tokens[0];
-      
-        Integer userId=DataUtils.getUserIdByToken(token);
-        Activity activity=SQLCommander.queryActivityByActivityId(activityId);
-        if(SQLCommander.isActivityJoinable(userId, activity)==false){
-        		return badRequest();
-        }
+    		try{
+    			Integer userId=DataUtils.getUserIdByToken(token);
+    			Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+    			if(SQLCommander.isActivityJoinable(userId, activity)==false){
+    				return badRequest();
+    			}
         
-        
+    			boolean ret=SQLCommander.joinActivity(userId, activityId);
+    			if(ret==false){
+    				return badRequest();
+    			}
+    		} catch(Exception e){
+    			System.out.println("Application.joinActivity:"+e.getMessage());
+    		}
     		return ok();
     }
 

@@ -86,9 +86,10 @@ public class Activity {
 	
 	public static Activity create(String title, String content){
 		java.util.Date date= new java.util.Date();
-		Timestamp createdTime=new Timestamp(date.getTime());
-		Timestamp beginDate=new Timestamp(date.getTime());
-		Timestamp endDate=new Timestamp(date.getTime());
+		Timestamp currentTime=new Timestamp(date.getTime());
+		Timestamp createdTime=currentTime;
+		Timestamp beginDate=currentTime;
+		Timestamp endDate=currentTime;
 		int capacity=0;
 		StatusType status=StatusType.created;
 		Activity activity=new Activity(0, title, content, createdTime, beginDate, endDate, capacity, status);

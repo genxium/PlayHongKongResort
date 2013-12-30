@@ -6,8 +6,6 @@ import model.UserActivityRelationTable;
 
 import org.json.simple.JSONObject;
 
-import ch.qos.logback.classic.db.names.ColumnName;
-
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -512,11 +510,13 @@ public class SQLCommander {
 		return ret;
 	}
 	
-	public static boolean joinActivity(int userId, int activityId, Timestamp generatedTime){
+	public static boolean joinActivity(int userId, int activityId){
 		boolean ret=false;
 		do{
 			try{
 				SQLHelper sqlHelper=new SQLHelper();
+				java.util.Date date= new java.util.Date();
+				Timestamp currentTime=new Timestamp(date.getTime());
 				
 				List<String> columnNames=new LinkedList<String>();
 				columnNames.add(UserActivityRelationTable.activityIdKey);
@@ -528,7 +528,7 @@ public class SQLCommander {
 				columnValues.add(activityId);
 				columnValues.add(userId);
 				columnValues.add(UserActivityRelation.RelationType.applied.ordinal());
-				columnValues.add(generatedTime.toString());
+				columnValues.add(currentTime.toString());
 				
 				int lastRelationTableId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
 				if(lastRelationTableId==SQLHelper.invalidId) break;
