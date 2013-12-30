@@ -114,4 +114,6 @@ function refreshOnLoggedIn(){
 	$("#"+g_idSectionOwnedActivities).show();
 	$("#"+g_idBtnCreate).show();
 	queryActivitiesHostedByUser();
+
+	$("#"+g_idSectionDefaultActivities).hide();
 }
