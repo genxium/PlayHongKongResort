@@ -471,4 +471,19 @@ public class SQLCommander {
 		}while(false);
 		return ret;
 	}
+
+	public static boolean isActivityJoinable(BasicUser user, Activity activity){
+		boolean ret=false;
+		do{
+			if(user==null) break;
+			if(activity==null) break;
+			if(activity.getStatus()!=Activity.StatusType.accepted) break;
+			int userId=user.getUserId();
+			int activityId=activity.getId();
+			UserActivityRelation.RelationType relation=queryRelationOfUserAndActivity(userId, activityId);
+			if(relation!=null) break;
+			ret=true;
+		}while(false);
+		return ret;
+	}
 };

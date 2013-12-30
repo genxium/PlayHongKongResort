@@ -54,12 +54,10 @@ function queryDefaultActivities(){
 
 // Assistant Handlers
 function onBtnEditClicked(evt){
-	if (!evt) {evt = window.event;}
-	var sender = (evt.srcElement || evt.target);
 
-	var activityId=jQuery.data(sender, g_keyActivityId);
-	var activityTitle=jQuery.data(sender, g_keyActivityTitle);
-	var activityContent=jQuery.data(sender, g_keyActivityContent);
+	var activityId=jQuery.data(this, g_keyActivityId);
+	var activityTitle=jQuery.data(this, g_keyActivityTitle);
+	var activityContent=jQuery.data(this, g_keyActivityContent);
 	
 	targetSection=$("#domainActivities");
 	targetSection.empty();
@@ -68,19 +66,28 @@ function onBtnEditClicked(evt){
 	targetSection.append(editor);
 }
 
-function onMouseEnterActivityCell(evt){
+function onMouseEnterOwnedActivityCell(evt){
 	
 }
 
-function onMouseLeaveActivityCell(evt){}
+function onMouseLeaveOwnedActivityCell(evt){
+
+}
+
+function onMouseEnterDefaultActivityCell(evt){
+	var btnJoin=jQuery.data(this, g_indexBtnJoin);
+	btnJoin.show();
+}
+
+function onMouseLeaveDefaultActivityCell(evt){
+	var btnJoin=jQuery.data(this, g_indexBtnJoin);
+	btnJoin.hide();
+}
 
 
 function onBtnUpdateClicked(evt){
-	if (!evt) {evt = window.event;}
-	evt.preventDefault();
-	var sender = (evt.srcElement || evt.target);
 	
-	var activityId=jQuery.data(sender, g_keyActivityId);
+	var activityId=jQuery.data(this, g_keyActivityId);
 	var id=activityId;
 	var title=$("."+g_classActivityTitle).val();
 	var content=$("."+g_classActivityContent).val();
@@ -108,11 +115,8 @@ function onBtnUpdateClicked(evt){
 }
 
 function onBtnDeleteClicked(evt){
-	if (!evt) {evt = window.event;}
-	evt.preventDefault();
-	var sender = (evt.srcElement || evt.target);
 	
-	var activityId=jQuery.data(sender, g_keyActivityId);
+	var activityId=jQuery.data(this, g_keyActivityId);
 	var id=activityId;
 	var token=$.cookie(g_keyLoginStatus.toString());
 
@@ -136,11 +140,8 @@ function onBtnDeleteClicked(evt){
 }
 
 function onBtnSubmitClicked(evt){
-	if (!evt) {evt = window.event;}
-	evt.preventDefault();
-	var sender = (evt.srcElement || evt.target);
 	
-	var activityId=jQuery.data(sender, g_keyActivityId);
+	var activityId=jQuery.data(this, g_keyActivityId);
 	var id=activityId;
 	var title=$("."+g_classActivityTitle).val();
 	var content=$("."+g_classActivityContent).val();
@@ -168,12 +169,31 @@ function onBtnSubmitClicked(evt){
 }
 
 function onBtnCancelClicked(evt){
-	if (!evt) {evt = window.event;}
-	evt.preventDefault();
-	var sender = (evt.srcElement || evt.target);
-
 	$("."+g_classActivityEditor).remove();
 	$("#"+g_idBtnCreate).show();
+}
+
+function onBtnJoinClicked(evt){
+	evt.preventDefault();
+	var token = $.cookie(g_keyLoginStatus.toString());
+	var activityId=jQuery.data(this, g_keyActivityId);
+	try{
+		$.post("/joinActivity", 
+			{
+				ActivityId: id.toString(),
+				UserToken: token.toString()
+			},
+			function(data, status, xhr){
+    				if(status=="success"){
+    					refreshOnLoggedIn();
+    				} else{
+    					
+    				}
+			}
+		);
+	} catch(err){
+		$("#"+g_idSectionOwnedActivities).html(err.message);
+	}
 }
 
 function onBtnLogoutClicked(evt){
@@ -263,11 +283,26 @@ function generateDefaultActivityCell(jsonActivity){
 					html: activityId+" "+activityTitle+" "+activityContent+"<br/>"
 				});
 	ret.append(cellContent);
+
+	var btnJoin=$('<button>',
+				{
+					class: g_classBtnJoin,
+					text: 'Join'
+				});
+	btnJoin.data(g_keyActivityId, activityId);
+	btnJoin.bind("click", onBtnJoinClicked);
+	ret.append(btnJoin);
+
+	btnJoin.hide();
 	
+	ret.data(g_indexBtnJoin, btnJoin);
 	ret.data(g_keyActivityId, activityId);
 	ret.data(g_keyActivityTitle, activityTitle);
 	ret.data(g_keyActivityContent, activityContent);
 	
+	ret.bind("mouseenter", onMouseEnterDefaultActivityCell);
+	ret.bind("mouseleave", onMouseLeaveDefaultActivityCell);
+
 	return ret;
 }
 

@@ -49,9 +49,7 @@ function onBtnLoginClicked(evt){
 
 function onBtnCreateClicked(evt){
 
-	if (!evt) {evt = window.event;}
 	evt.preventDefault();
-	var sender = (evt.srcElement || evt.target);
 
 	targetSection=$("#domainActivities");
 	targetSection.empty();

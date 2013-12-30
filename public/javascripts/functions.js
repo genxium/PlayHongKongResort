@@ -77,18 +77,10 @@ function queryActivitiesHostedByUser(){
 }
 
 function onMouseEnterSectionUserInfo(evt){
-	if (!evt) {evt = window.event;}
-	evt.preventDefault();
-	var sender = (evt.srcElement || evt.target);
-
 	g_domLoggedInUserMenu.show();	
 }
 
 function onMouseLeaveSectionUserInfo(evt){
-	if (!evt) {evt = window.event;}
-	evt.preventDefault();
-	var sender = (evt.srcElement || evt.target);
-
 	g_domLoggedInUserMenu.hide();	
 }
 

@@ -50,6 +50,10 @@ var g_classBtnDelete="classBtnDelete";
 var g_classBtnLogout="classBtnLogout";
 var g_classBtnUpdate="classBtnUpdate";
 var g_classBtnCancel="classBtnCancel";
+var g_classBtnJoin="classBtnJoin";
+
+// button indexes for cascaded DOM element search
+var g_indexBtnJoin="indexBtnJoin";
 
 // in memory DOM elements
 var g_domLoggedInUserMenu=null;
