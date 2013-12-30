@@ -395,7 +395,7 @@ public class SQLCommander {
 			columnNames.add(Activity.capacityKey);
 				
 			List<String> whereClauses=new LinkedList<String>();
-			columnNames.add(Activity.statusKey+"="+Activity.StatusType.accepted.ordinal());
+			whereClauses.add(Activity.statusKey+"="+Activity.StatusType.accepted.ordinal());
 
 			List<String> orderClauses=new LinkedList<String>();
 			orderClauses.add(Activity.createdTimeKey);
