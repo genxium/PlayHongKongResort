@@ -26,8 +26,11 @@ var g_classActivityEditorContainer="classActivityEditorContainer";
 var g_classCellActivityContent="classCellActivityContent";
 var g_idSectionUserInfo="idSectionUserInfo";
 var g_idSectionTitle="idSectionTitle";
+var g_idSectionOwnedActivities="idSectionOwnedActivities";
+var g_idSectionDefaultActivities="idSectionDefaultActivities";
 var g_idLoggedInUserMenu="idLoggedInUserMenu";
 var g_classActivityStatusIndicator="classActivityStatusIndicator";
+
 
 // input-box keys
 var g_classActivityTitle="classActivityTitle";

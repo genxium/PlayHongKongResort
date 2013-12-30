@@ -61,11 +61,16 @@ html, body
 
 }
 
-#sectionActivities
+#idSectionOwnedActivities
 {
 	width: 645px;
 	height: 100%;
 	border: 3pt solid #ccccff;
+}
+
+#idSectionDefaultActivities
+{
+	
 }
 
 .cellActivity

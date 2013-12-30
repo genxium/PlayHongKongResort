@@ -49,7 +49,7 @@ function validateEmail(){
 }
 
 function queryActivitiesHostedByUser(){
-	var targetSection=$("#sectionActivities");
+	var targetSection=$("#"+g_idSectionOwnedActivities);
 	targetSection.empty();
 	var token = $.cookie(g_keyLoginStatus.toString());
 	try{
@@ -111,7 +111,7 @@ function refreshOnLoggedIn(){
 	sectionUserInfo.append(g_domLoggedInUserMenu);
 	g_domLoggedInUserMenu.hide();
 
-	$("#sectionActivities").show();
+	$("#"+g_idSectionOwnedActivities).show();
 	$("#"+g_idBtnCreate).show();
 	queryActivitiesHostedByUser();
 }

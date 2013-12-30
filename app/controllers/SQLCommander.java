@@ -395,12 +395,13 @@ public class SQLCommander {
 			columnNames.add(Activity.capacityKey);
 				
 			List<String> whereClauses=new LinkedList<String>();
-			columnNames.add(Activity.statusKey+"="+Activity.StatusType.accepted);
+			columnNames.add(Activity.statusKey+"="+Activity.StatusType.accepted.ordinal());
 
 			List<String> orderClauses=new LinkedList<String>();
 			orderClauses.add(Activity.createdTimeKey);
 			records=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, SQLHelper.directionDescend);
 		
+
 		} catch(Exception e){
 			System.out.println("SQLCommander.queryActivitiesByStatusAndChronologicalOrder:"+e.getMessage());
 		}

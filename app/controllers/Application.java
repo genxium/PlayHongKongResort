@@ -363,8 +363,9 @@ public class Application extends Controller {
       			}
       			return ok(result);
     		} catch(Exception e){
-			return badRequest();
-		}
+            System.out.println("Activity.queryDefaultActivities:"+e.getMessage());
+  			    return badRequest();
+		    }
     }
 
     public static Result logout(){

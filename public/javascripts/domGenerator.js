@@ -17,9 +17,39 @@ function refreshOnEnter(){
 	sectionUserInfo.empty();
 	sectionUserInfo.hide();
 
-	$("#sectionActivities").hide();
+	$("#"+g_idSectionOwnedActivities).hide();
 	$("#"+g_idBtnCreate).hide();
 	$("."+g_classActivityEditor).hide();
+
+	var sectionDefaultActivities=$("#"+g_idSectionDefaultActivities);
+	sectionDefaultActivities.show();
+	queryDefaultActivities();
+}
+
+function queryDefaultActivities(){
+	var targetSection=$("#"+g_idSectionDefaultActivities);
+	targetSection.empty();
+	try{
+		$.post("/queryDefaultActivities", 
+			{
+
+			},
+			function(data, status, xhr){
+    				if(status=="success"){
+    					var jsonResponse=JSON.parse(data);
+    					for(var key in jsonResponse){
+    						var jsonActivity=jsonResponse[key];
+    						var cell=generateDefaultActivityCell(jsonActivity);
+							targetSection.append(cell);
+    					}
+    				} else{
+    					
+    				}
+			}
+		);
+	} catch(err){
+
+	}
 }
 
 // Assistant Handlers
@@ -73,7 +103,7 @@ function onBtnUpdateClicked(evt){
 			}
 		);
 	} catch(err){
-		$("#sectionActivities").html(err.message);
+		$("#"+g_idSectionOwnedActivities).html(err.message);
 	}
 }
 
@@ -101,7 +131,7 @@ function onBtnDeleteClicked(evt){
 			}
 		);
 	} catch(err){
-		$("#sectionActivities").html(err.message);
+		$("#"+g_idSectionOwnedActivities).html(err.message);
 	}
 }
 
@@ -133,7 +163,7 @@ function onBtnSubmitClicked(evt){
 			}
 		);
 	} catch(err){
-		$("#sectionActivities").html(err.message);
+		$("#"+g_idSectionOwnedActivities).html(err.message);
 	}
 }
 
@@ -213,6 +243,30 @@ function generateActivityCell(jsonActivity){
 	ret.data(g_keyActivityTitle, activityTitle);
 	ret.data(g_keyActivityContent, activityContent);
 
+	
+	return ret;
+}
+
+function generateDefaultActivityCell(jsonActivity){
+
+	var activityId=jsonActivity[g_keyActivityId];
+	var activityTitle=jsonActivity[g_keyActivityTitle];
+	var activityContent=jsonActivity[g_keyActivityContent];
+
+	var ret=$('<div>',
+				{
+					class: 'cellActivity'
+				});
+	var cellContent=$('<div>',
+				{
+					class: g_classCellActivityContent,
+					html: activityId+" "+activityTitle+" "+activityContent+"<br/>"
+				});
+	ret.append(cellContent);
+	
+	ret.data(g_keyActivityId, activityId);
+	ret.data(g_keyActivityTitle, activityTitle);
+	ret.data(g_keyActivityContent, activityContent);
 	
 	return ret;
 }
