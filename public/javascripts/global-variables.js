@@ -20,6 +20,8 @@ var g_keyActivityTitle="ActivityTitle";
 var g_keyActivityContent="ActivityContent";
 var g_keyActivityStatus="ActivityStatus";
 
+var g_keyUserActivityRelationId="UserActivityRelationId";
+
 // general DOM element key
 var g_classActivityEditor="classActivityEditor";
 var g_classActivityEditorContainer="classActivityEditorContainer";
@@ -30,7 +32,7 @@ var g_idSectionOwnedActivities="idSectionOwnedActivities";
 var g_idSectionDefaultActivities="idSectionDefaultActivities";
 var g_idLoggedInUserMenu="idLoggedInUserMenu";
 var g_classActivityStatusIndicator="classActivityStatusIndicator";
-
+var g_classAppliedIndicator="classAppliedIndicator";
 
 // input-box keys
 var g_classActivityTitle="classActivityTitle";

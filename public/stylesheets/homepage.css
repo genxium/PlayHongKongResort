@@ -85,6 +85,7 @@ html, body
 	width: 645px;
 	height: 100%;
 	border: 3pt solid #ff0000;
+	overflow: auto;
 }
 
 .cellActivity
@@ -256,6 +257,16 @@ html, body
 }
 
 .classActivityStatusIndicator
+{
+	display: table-cell;
+	position: relative;
+	float: right;
+	vertical-align: text-bottom;
+	font-size:	16pt;
+	color:	#ff0000;
+}
+
+.classAppliedIndicator
 {
 	display: table-cell;
 	position: relative;

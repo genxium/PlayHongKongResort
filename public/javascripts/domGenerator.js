@@ -268,12 +268,13 @@ function generateActivityCell(jsonActivity){
 	return ret;
 }
 
-function generateDefaultActivityCell(jsonActivity){
+function generateDefaultActivityCell(jsonRecord){
 
-	var activityId=jsonActivity[g_keyActivityId];
-	var activityTitle=jsonActivity[g_keyActivityTitle];
-	var activityContent=jsonActivity[g_keyActivityContent];
-
+	var activityId=jsonRecord[g_keyActivityId];
+	var activityTitle=jsonRecord[g_keyActivityTitle];
+	var activityContent=jsonRecord[g_keyActivityContent];
+	var userActivityRelationId=jsonRecord[g_keyUserActivityRelationId];
+	
 	var ret=$('<div>',
 				{
 					class: 'cellActivity'
@@ -285,24 +286,33 @@ function generateDefaultActivityCell(jsonActivity){
 				});
 	ret.append(cellContent);
 
-	var btnJoin=$('<button>',
-				{
-					class: g_classBtnJoin,
-					text: 'Join'
-				});
-	btnJoin.data(g_keyActivityId, activityId);
-	btnJoin.bind("click", onBtnJoinClicked);
-	ret.append(btnJoin);
+	if(userActivityRelationId==null){
+		var btnJoin=$('<button>',
+					{
+						class: g_classBtnJoin,
+						text: 'Join'
+					});
+		btnJoin.data(g_keyActivityId, activityId);
+		btnJoin.bind("click", onBtnJoinClicked);
+		ret.append(btnJoin);
 
-	btnJoin.hide();
+		ret.bind("mouseenter", onMouseEnterDefaultActivityCell);
+		ret.bind("mouseleave", onMouseLeaveDefaultActivityCell);
+		btnJoin.hide();
+	} else{
+		var appliedIndicator=$('<div>',
+							{
+								class: g_classAppliedIndicator,
+								html: 'Applied'
+							});
+		ret.append(appliedIndicator);
+	}
 	
 	ret.data(g_indexBtnJoin, btnJoin);
 	ret.data(g_keyActivityId, activityId);
 	ret.data(g_keyActivityTitle, activityTitle);
 	ret.data(g_keyActivityContent, activityContent);
 	
-	ret.bind("mouseenter", onMouseEnterDefaultActivityCell);
-	ret.bind("mouseleave", onMouseLeaveDefaultActivityCell);
 
 	return ret;
 }

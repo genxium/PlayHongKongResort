@@ -328,7 +328,7 @@ public class Application extends Controller {
     }
 
     public static Result joinActivity(){
-    	// define response attributes
+    		// define response attributes
         response().setContentType("text/plain");
         
         Map<String, String[]> formData=request().body().asFormUrlEncoded();
@@ -357,7 +357,7 @@ public class Application extends Controller {
     public static Result queryDefaultActivities(){
     		response().setContentType("text/plain");
     		try{
-          	List<JSONObject> activities=SQLCommander.queryAcceptedActivitiesByStatusAndChronologicalOrder();
+    				List<JSONObject> activities=SQLCommander.queryAcceptedActivitiesByStatusAndChronologicalOrder();
       			Iterator<JSONObject> itActivity=activities.iterator();
       			ObjectNode result = Json.newObject();
       		
@@ -379,6 +379,75 @@ public class Application extends Controller {
             System.out.println("Activity.queryDefaultActivities:"+e.getMessage());
   			    return badRequest();
 		    }
+    }
+    
+    public static Result queryDefaultActivitiesByUser(){
+		response().setContentType("text/plain");
+		try{
+			Map<String, String[]> formData=request().body().asFormUrlEncoded();
+	  	  	String[] tokens=formData.get(BasicUser.tokenKey);
+	    	  
+	    		String token=tokens[0];
+	    		int userId=DataUtils.getUserIdByToken(token);
+	    		if(userId==DataUtils.invalidId){
+	    			return badRequest();
+	    		}
+			List<JSONObject> records=SQLCommander.queryAcceptedActivitiesByStatusAndChronologicalOrderByUser(userId);
+  			Iterator<JSONObject> itRecord=records.iterator();
+  			ObjectNode result = Json.newObject();
+  		
+  			while(itRecord.hasNext()){
+    				JSONObject recordJson=itRecord.next();
+    				Integer activityId=(Integer)recordJson.get(Activity.idKey);
+    				String activityTitle=(String)recordJson.get(Activity.titleKey);
+    				String activityContent=(String)recordJson.get(Activity.contentKey);
+    				Integer userActivityRelationId=(Integer)recordJson.get(UserActivityRelationTable.relationIdKey);
+    				
+    				ObjectNode singleRecordNode=Json.newObject();
+    				singleRecordNode.put(Activity.idKey, activityId.toString());
+    				singleRecordNode.put(Activity.titleKey, activityTitle);
+    				singleRecordNode.put(Activity.contentKey, activityContent);
+    				if(userActivityRelationId!=null){
+    					singleRecordNode.put(UserActivityRelationTable.relationIdKey, userActivityRelationId.toString());
+    				}
+    				result.put(activityId.toString(), singleRecordNode);
+  			}
+  			return ok(result);
+		} catch(Exception e){
+			System.out.println("Activity.queryDefaultActivities:"+e.getMessage());
+		    return badRequest();
+	    }
+}
+    
+    public static Result queryRelationOfUserAndActivity(){
+    		// define response attributes
+        response().setContentType("text/plain");
+        
+        Map<String, String[]> formData=request().body().asFormUrlEncoded();
+  	  	String[] ids=formData.get(Activity.idKey);
+  	  	String[] tokens=formData.get(BasicUser.tokenKey);
+    	  
+     	Integer activityId=Integer.parseInt(ids[0]);
+    		String token=tokens[0];
+    		
+    		ObjectNode ret=null;
+    		
+    		try{
+    			Integer userId=DataUtils.getUserIdByToken(token);
+    			
+    			UserActivityRelation.RelationType relation=SQLCommander.queryRelationOfUserAndActivity(userId, activityId);
+    			
+    			if(relation==null){
+    				return badRequest();
+    			}
+    			ret=Json.newObject();
+    			ret.put(UserActivityRelationTable.relationIdKey, new Integer(relation.ordinal()).toString());
+  
+    		} catch(Exception e){
+    			System.out.println("Application.joinActivity:"+e.getMessage());
+    			return badRequest();
+    		}
+    		return ok(ret);
     }
 
     public static Result logout(){

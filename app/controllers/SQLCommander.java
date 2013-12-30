@@ -406,6 +406,48 @@ public class SQLCommander {
 		return records;
 	}
 
+	public static List<JSONObject> queryAcceptedActivitiesByStatusAndChronologicalOrderByUser(int userId){
+		List<JSONObject> records=null;
+
+		try{
+			String tableName="Activity";
+			SQLHelper sqlHelper=new SQLHelper();
+
+			// query table Activity
+			List<String> columnNames=new LinkedList<String>();
+			columnNames.add(Activity.idKey);
+			columnNames.add(Activity.titleKey);
+			columnNames.add(Activity.contentKey);
+			columnNames.add(Activity.createdTimeKey);
+			columnNames.add(Activity.beginDateKey);
+			columnNames.add(Activity.endDateKey);
+			columnNames.add(Activity.capacityKey);
+				
+			List<String> whereClauses=new LinkedList<String>();
+			whereClauses.add(Activity.statusKey+"="+Activity.StatusType.accepted.ordinal());
+
+			List<String> orderClauses=new LinkedList<String>();
+			orderClauses.add(Activity.createdTimeKey);
+			List<JSONObject> activityRecords=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, SQLHelper.directionDescend);
+		
+			records=new LinkedList<JSONObject>();
+			Iterator<JSONObject> itActivityRecord=activityRecords.iterator();
+			while(itActivityRecord.hasNext()){
+				JSONObject activityJson=itActivityRecord.next();
+				int activityId=(Integer)activityJson.get(Activity.idKey);
+				UserActivityRelation.RelationType relation=SQLCommander.queryRelationOfUserAndActivity(userId, activityId);
+				JSONObject recordJson=(JSONObject) activityJson.clone();
+				if(relation!=null){
+					recordJson.put(UserActivityRelationTable.relationIdKey, relation.ordinal());
+				}
+				records.add(recordJson);
+			}
+		} catch(Exception e){
+			System.out.println("SQLCommander.queryActivitiesByStatusAndChronologicalOrderByUser:"+e.getMessage());
+		}
+		return records;
+	}
+	
 	public static UserActivityRelation.RelationType queryRelationOfUserAndActivity(int userId, int activityId){
 		String tableName="UserActivityRelationTable";
 		UserActivityRelation.RelationType ret=null; 

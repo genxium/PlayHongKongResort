@@ -76,6 +76,33 @@ function queryActivitiesHostedByUser(){
 	}
 }
 
+function queryDefaultActivitiesByUser(){
+	var targetSection=$("#"+g_idSectionDefaultActivities);
+	targetSection.empty();
+	var token = $.cookie(g_keyLoginStatus.toString());
+	try{
+		$.post("/queryDefaultActivitiesByUser", 
+			{
+				UserToken: token.toString()
+			},
+			function(data, status, xhr){
+    				if(status=="success"){
+    					var jsonResponse=JSON.parse(data);
+    					for(var key in jsonResponse){
+    						var jsonRecord=jsonResponse[key];
+    						var cell=generateDefaultActivityCell(jsonRecord);
+						targetSection.append(cell);
+    					}
+    				} else{
+    					
+    				}
+			}
+		);
+	} catch(err){
+
+	}
+}
+
 function onMouseEnterSectionUserInfo(evt){
 	g_domLoggedInUserMenu.show();	
 }
@@ -107,5 +134,5 @@ function refreshOnLoggedIn(){
 	$("#"+g_idBtnCreate).show();
 	queryActivitiesHostedByUser();
 
-	$("#"+g_idSectionDefaultActivities).css("left","800pt");
+	queryDefaultActivitiesByUser();
 }
