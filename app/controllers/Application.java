@@ -121,32 +121,43 @@ public class Application extends Controller {
     	  response().setContentType("text/plain");
     	  
     	  RequestBody body = request().body();
+    	  
     	  // get file data from request body stream
     	  MultipartFormData data = body.asMultipartFormData();
-    	  FilePart picture = data.getFile("Avatar");
-    	  
+    	  FilePart avatarFile = data.getFile("Avatar");
+
     	  // get user token from request body stream
     	  String token=DataUtils.getUserToken(data);
     	  
-    	  if (picture != null) {
-      	    String fileName = picture.getFilename();
-      	    File file = picture.getFile();
-      		  String contentType=picture.getContentType();
+    	  do{
+    		  	if(avatarFile==null) break;
+      	    String fileName = avatarFile.getFilename();
+      	    File file = avatarFile.getFile();
+      		String contentType=avatarFile.getContentType();
         		try {
-      	    		if(DataUtils.isImage(contentType)){
-                  String rootDir=Play.application().path().getAbsolutePath();
-                  String folderPath=rootDir+"/uploaded_images";
+      	    		if(DataUtils.isImage(contentType)==false) break;
+      	    		int userId=DataUtils.getUserIdByToken(token);
+      	    		if(userId==DataUtils.invalidId) break;
+      	    		BasicUser user=SQLCommander.queryUserByUserId(userId);
+      	    		if(user==null) break;
+      	    			
+      	    		String rootDir=Play.application().path().getAbsolutePath();
+      	    		String folderPath=rootDir+"/uploaded_images";
 
-                  String newImageName=DataUtils.generateUploadedImageName(fileName, token);
-                  String fullImagePath=folderPath+"/"+newImageName;
+      	    		String newImageName=DataUtils.generateUploadedImageName(fileName, token);
+      	    		String avatarFullPath=folderPath+"/"+newImageName;
 
-      	    			file.renameTo(new File(fullImagePath));
-      	        	return ok(newImageName);
-      	    		}
+      	    		boolean result=SQLCommander.uploadUserAvatar(user, avatarFullPath);
+      	    		if(result==false) break;
+      	    		
+      	    		// Save renamed file to server storage at the final step
+      	    		file.renameTo(new File(avatarFullPath));
+      	    		return ok(newImageName);
+      	    		
             } catch (Exception e) {
                 System.out.println("Application.uploadImage:"+e.getMessage());
             }
-    	  }
+    	  }while(false);
     	  return badRequest();
     }
     

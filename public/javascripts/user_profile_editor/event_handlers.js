@@ -1,6 +1,7 @@
 function onBtnUploadAvatarClicked(evt){
 
-	if(validateImage()==false){
+	var file = document.getElementById(g_idFieldAvatar);
+	if(validateImage(file)==false){
 		return;
 	}
 	
@@ -16,7 +17,7 @@ function onBtnUploadAvatarClicked(evt){
 		
 		$.ajax({
 			method: "POST",
-			url: "/upload", 
+			url: "/uploadAvatar", 
 			data: formData,
 			mimeType: "mutltipart/form-data",
 			contentType: false,

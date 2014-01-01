@@ -4,15 +4,6 @@
 
 package model;
 
-import org.json.simple.JSONObject;
-
-import play.libs.Json;
-import utilities.Converter;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import dao.SQLHelper;
-
 public class Image {
 	
 	public static String idKey="ImageId";

@@ -1,5 +1,4 @@
-function validateImage(){
-	var file = document.getElementById("picture");
+function validateImage(file){
 	var fileName = file.value;
 	var ext = fileName.split('.').pop().toLowerCase();
 	if($.inArray(ext, ['gif','png','jpg','jpeg']) == -1) {
