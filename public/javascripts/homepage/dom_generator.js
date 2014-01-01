@@ -6,6 +6,10 @@ function refreshOnEnter(){
 	$("#"+g_idFieldPassword).empty();
 	$("#"+g_idFieldPassword).val("");
 
+	var sectionUserProfileEditor=$("#"+g_idSectionUserProfileEditor);
+	sectionUserProfileEditor.empty();
+	sectionUserProfileEditor.hide();
+
 	$("#"+g_idSectionAccount).show();
 	
 	var sectionActivityEditor=$("#"+g_idSectionActivityEditor);
@@ -219,16 +223,16 @@ function onBtnLogoutClicked(evt){
 
 function onBtnProfileClicked(evt){
 	try{
-		$.get("/user_profile_editor.html",
-			{
+		var userProfileEditorPath="/user_profile_editor.html";
+		var profileEditorPage=$('<iframe>',
+								{
+									class: g_classIFrameUserProfileEditor,
+									src: userProfileEditorPath
+								});
 
-			},
-			function(data, status, xhr){
-				if(status=="success"){
-
-				}
-			}
-		);
+		var sectionUserProfileEditor=$("#"+g_idSectionUserProfileEditor);
+		sectionUserProfileEditor.empty();
+		sectionUserProfileEditor.append(profileEditorPage);
 	} catch (err){
 
 	}

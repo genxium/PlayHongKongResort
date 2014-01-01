@@ -9,7 +9,12 @@ var g_classCellActivityContent="classCellActivityContent";
 
 var g_idSectionAccount="idSectionAccount";
 var g_idSectionUserInfo="idSectionUserInfo";
+
+var g_idSectionUserProfileEditor="idSectionUserProfileEditor";
+var g_classIFrameUserProfileEditor="classIFrameUserProfileEditor";
+
 var g_idSectionTitle="idSectionTitle";
+
 var g_idSectionOwnedActivities="idSectionOwnedActivities";
 var g_idSectionDefaultActivities="idSectionDefaultActivities";
 var g_classActivityStatusIndicator="classActivityStatusIndicator";
