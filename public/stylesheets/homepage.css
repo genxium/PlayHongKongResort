@@ -86,6 +86,26 @@ html, body
 	color: #FF8822;
 }
 
+/* User Profile Editor */
+.idSectionUserProfileEditor{
+	display: table-row;
+	position: relative;
+	height: 256pt;
+	width: 512pt;
+	overflow: auto;
+}
+
+.classIFrameUserProfileEditor
+{
+	display: block;
+	position: relative;
+	height: 30%;
+	width: 100%;
+	max-height: 100%;
+	max-width:	100%;
+	overflow: auto;
+}
+
 /* Activity Editor */
 #idBtnCreate
 {

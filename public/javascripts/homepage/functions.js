@@ -109,6 +109,10 @@ function refreshOnLoggedIn(){
 	sectionActivityEditor.empty();
 	sectionActivityEditor.show();
 
+	var sectionUserProfileEditor=$("#"+g_idSectionUserProfileEditor);
+	sectionUserProfileEditor.empty();
+	sectionUserProfileEditor.show();
+
 	// bind menu to sectionUserInfo
 	var sectionUserInfo=$("#"+g_idSectionUserInfo);
 	sectionUserInfo.show();

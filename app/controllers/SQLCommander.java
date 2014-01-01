@@ -1,6 +1,7 @@
 package controllers;
 import model.BasicUser;
 import model.Activity;
+import model.Image;
 import model.UserActivityRelation;
 import model.UserActivityRelationTable;
 
@@ -46,11 +47,11 @@ public class SQLCommander {
 		        		String email=(String)jsonObject.get(BasicUser.emailKey);
 		      		String password=(String)jsonObject.get(BasicUser.passwordKey);
 		      		String name=(String)jsonObject.get(BasicUser.nameKey);
-          		    user=new BasicUser(userId, email, password, name, false, false, false);
+          		    user=BasicUser.create(userId, email, password, name);
 			    } catch (Exception e) {
 			    	
 		        }
-	    		} 	
+	    	} 	
 		}
 		
 		return user;
@@ -84,11 +85,11 @@ public class SQLCommander {
  			        		Integer userId=(Integer)jsonObject.get(BasicUser.idKey);
  			      		String password=(String)jsonObject.get(BasicUser.passwordKey);
  			      		String name=(String)jsonObject.get(BasicUser.nameKey);
- 	          		    user=new BasicUser(userId, email, password, name, false, false, false);
+ 	          		    user=BasicUser.create(userId, email, password, name);
  				    } catch (Exception e) {
  				    	
  			        }
- 		    		} 	
+ 		    	} 	
  			}
  			
  			return user;
@@ -197,8 +198,7 @@ public class SQLCommander {
 				columnValues.add(activity.getCapacity());
 				
 				whereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activity.getId()));
-				String logicLink=SQLHelper.logicAND;
-				ret=sqlHelper.updateTableByColumnsAndWhereClauses(tableName, columnNames, columnValues, whereClauses, logicLink);
+				ret=sqlHelper.updateTableByColumnsAndWhereClauses(tableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
 			
 			} catch(Exception e){
 				System.out.println("SQLCommander.updateActivity:"+e.getMessage());
@@ -579,6 +579,39 @@ public class SQLCommander {
 			} catch(Exception e){
 				System.out.println("SQLCommander.joinActivity:"+e.getMessage());
 			}
+		}while(false);
+		return ret;
+	}
+
+	public static boolean uploadUserAvatar(BasicUser user, String avatarFullPath){
+		boolean ret=false;
+		do{
+			SQLHelper sqlHelper=new SQLHelper();
+			String imageTableName="Image";
+			String userTableName="User";
+
+			List<String> imageColumnNames=new LinkedList<String>();
+			imageColumnNames.add(Image.urlKey);
+
+			List<Object> imageColumnValues=new LinkedList<Object>();
+			imageColumnValues.add(avatarFullPath);
+
+			int lastImageId=sqlHelper.insertToTableByColumns(imageTableName, imageColumnNames, imageColumnValues);
+			if(lastImageId==sqlHelper.invalidId) break;
+
+			List<String> userColumnNames=new LinkedList<String>();
+			userColumnNames.add(BasicUser.avatarKey);
+
+			List<Object> userColumnValues=new LinkedList<Object>();
+			userColumnValues.add(lastImageId);
+
+			List<String> userWhereClauses=new LinkedList<String>();
+			userWhereClauses.add(BasicUser.idKey+"="+user.getUserId());
+
+			boolean result=sqlHelper.updateTableByColumnsAndWhereClauses(userTableName, userColumnNames, userColumnValues, userWhereClauses, SQLHelper.logicAND);
+			if(result==false) break;
+
+			ret=true;
 		}while(false);
 		return ret;
 	}
