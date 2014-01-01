@@ -1,7 +1,7 @@
 package controllers;
 
 import java.util.Map;
-
+import java.sql.Timestamp;
 import model.BasicUser;
 import play.mvc.*;
 import play.mvc.Http.MultipartFormData;
@@ -62,5 +62,18 @@ public class DataUtils{
     
     public static boolean validateContent(String content){
     		return content.length()>=0;
+    }
+
+    public static String generateUploadedImageName(String originalName, String token){
+            String ret=null;
+            try{
+                java.util.Date date= new java.util.Date();
+                Timestamp currentTime=new Timestamp(date.getTime());
+                Integer userId=getUserIdByToken(token);
+                ret="UID"+userId.toString()+"."+currentTime.toString()+"."+originalName;
+            } catch (Exception e){
+                System.out.println("DataUtils.generateUploadedImageName:"+e.getMessage());
+            }   
+            return ret;
     }
 }

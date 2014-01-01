@@ -115,7 +115,7 @@ public class Application extends Controller {
   		return ok("User doesn't exist or not logged in");
     }
     
-    public static Result uploadingHandler() {
+    public static Result uploadImage() {
     	  // define response attributes
     	  response().setContentType("text/plain");
     	  
@@ -128,23 +128,25 @@ public class Application extends Controller {
     	  String token=DataUtils.getUserToken(data);
     	  
     	  if (picture != null) {
-    	    String fileName = picture.getFilename();
-    	    File file = picture.getFile();
-    		String contentType=picture.getContentType();
-    		try {
-    	    		if(DataUtils.isImage(contentType)){
-    	    			String rootDir=Play.application().path().getAbsolutePath();
-    	    			file.renameTo(new File(rootDir+"/uploadedImages/"+fileName));
-    	        	    return ok("File " + fileName +" uploaded token="+token);
-    	    		}
-        } catch (Exception e) {
-            System.out.println("Problem operating on filesystem");
-        }
-    	    return ok("File " + fileName +"("+contentType+") upload failed");
-    	  } else {
-    	    flash("error", "Missing file");
-    	    return redirect("/assets/homepage.html");
+      	    String fileName = picture.getFilename();
+      	    File file = picture.getFile();
+      		  String contentType=picture.getContentType();
+        		try {
+      	    		if(DataUtils.isImage(contentType)){
+                  String rootDir=Play.application().path().getAbsolutePath();
+                  String folderPath=rootDir+"/uploaded_images";
+
+                  String newImageName=DataUtils.generateUploadedImageName(fileName, token);
+                  String fullImagePath=folderPath+"/"+newImageName;
+
+      	    			file.renameTo(new File(fullImagePath));
+      	        	return ok(newImageName);
+      	    		}
+            } catch (Exception e) {
+                System.out.println("Application.uploadImage:"+e.getMessage());
+            }
     	  }
+    	  return badRequest();
     }
     
     public static Result createActivity(){
