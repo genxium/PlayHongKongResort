@@ -1,3 +1,4 @@
+/* Default Tags */
 html, body
 {
 	margin: 0;
@@ -15,7 +16,35 @@ html, body
 	height: 68px;
 }
 
-.classFieldEmail
+/* Account Sectors */
+#idSectionAccount
+{
+
+}
+
+#idBtnLogin
+{
+	display: table-cell;
+	position: relative;
+	width: 64pt;
+	height: 36pt;
+	font-size: 15pt;
+	margin: 10pt;
+	background-color: #FFcc44;
+}
+
+#idBtnRegister
+{
+	display: table-cell;
+	position: relative;
+	width: 64pt;
+	height: 36pt;
+	font-size: 15pt;
+	margin: 10pt;
+	background-color: #66aaFF;
+}
+
+#idFieldEmail
 {
 	display: table-row;
 	position: relative;
@@ -27,7 +56,7 @@ html, body
 	margin-bottom: 10pt;
 }
 
-.classFieldPassWord
+#idFieldPassWord
 {
 	display: table-row;
 	position: relative;
@@ -47,16 +76,6 @@ html, body
 	border: 3pt solid #cc00ff;
 }
 
-#idBtnCreate
-{
-	display: table-column;
-	position: relative;
-	float: right;
-	width: 64pt;
-	height: 35px;
-	font-size: 15pt;
-}
-
 #idSectionTitle
 {
 	display: table-column;
@@ -67,72 +86,20 @@ html, body
 	color: #FF8822;
 }
 
-#sectionAccount
+/* Activity Editor */
+#idBtnCreate
 {
-
-}
-
-#idSectionOwnedActivities
-{
-	width: 645px;
-	height: 100%;
-	border: 3pt solid #ccccff;
-}
-
-#idSectionDefaultActivities
-{
-	left: 80%;
-	width: 645px;
-	height: 100%;
-	border: 3pt solid #ff0000;
-	overflow: auto;
-}
-
-.cellActivity
-{
-	float: left;
-	width: 200px;
-	margin: 5px 5px;
-	height: 100px;
-	border: 2pt solid #00ccff;
-}
-
-.classCellActivityContent
-{
-	display: table-cell;
+	display: table-column;
 	position: relative;
-	overflow: auto;
-	font-family: Tahoma, sans-serif;
-}
-
-#domainActivities
-{
-
-}
-
-#sectionImage
-{
-	position: relative;
-}
-
-#idBtnLogin
-{
-	display: table-cell;
-	position: relative;
+	float: right;
 	width: 64pt;
-	height: 36pt;
+	height: 35px;
 	font-size: 15pt;
-	margin: 10pt;
 }
 
-#idBtnRegister
+#idSectionActivityEditor
 {
-	display: table-cell;
-	position: relative;
-	width: 64pt;
-	height: 36pt;
-	font-size: 15pt;
-	margin: 10pt;
+
 }
 
 .classActivityEditor
@@ -147,7 +114,7 @@ html, body
 	position: relative;
 }
 
-.classActivityTitle
+.classFieldActivityTitle
 {
 	display: table-row;
 	position: relative;
@@ -159,17 +126,16 @@ html, body
 	font-size: 15pt;
 }
 
-.classActivityContent
+.classFieldActivityContent
 {
 	display: table-row;
 	position: relative;
 	background-color: transparent;
-	height: 100pt;
+	height: 200pt;
 	width: 400pt;
-	max-height: 200pt;
+	max-height: 400pt;
 	max-width:	400pt;
-	font-size: 14pt;
-	overflow: auto;
+	font-size: 15pt;
 }
 
 .classBtnEdit
@@ -234,6 +200,46 @@ html, body
 	margin-left: 50pt;
 }
 
+/* Activity Cells*/
+
+#idSectionOwnedActivities
+{
+	width: 645px;
+	height: 100%;
+	border: 3pt solid #ccccff;
+}
+
+#idSectionDefaultActivities
+{
+	left: 80%;
+	width: 645px;
+	height: 100%;
+	border: 3pt solid #ff0000;
+	overflow: auto;
+}
+
+.classCellActivityContainer
+{
+	float: left;
+	width: 200px;
+	margin: 5px 5px;
+	height: 100px;
+	border: 2pt solid #00ccff;
+}
+
+.classCellActivityTitle
+{
+	display: table-row;
+	position: relative;
+	height: 25pt;
+	width: 200pt;
+	max-height: 25pt;
+	max-width:	200pt;
+	font-size: 15pt;
+	border-bottom: 1pt solid ##00ccff;
+	overflow: hidden;
+}
+
 .classBtnJoin
 {
 	display: table-cell;
@@ -245,15 +251,6 @@ html, body
 	background-color:	#ccccff;
 	font-size:	12pt;
 	color:	#0000ff;
-}
-
-.classBtnLogout
-{
-	display: table-row;
-	position: relative;
-	width: 64pt;
-	height: 36pt;
-	font-size: 15pt;
 }
 
 .classActivityStatusIndicator
@@ -276,7 +273,26 @@ html, body
 	color:	#ff0000;
 }
 
-#sectionProgress
+/* Logged In User Menu */
+.classLoggedInUserMenu
 {
 
+}
+
+.classBtnLogout
+{
+	display: table-row;
+	position: relative;
+	width: 64pt;
+	height: 36pt;
+	font-size: 15pt;
+}
+
+.classBtnProfile
+{
+	display: table-row;
+	position: relative;
+	width: 64pt;
+	height: 36pt;
+	font-size: 15pt;
 }

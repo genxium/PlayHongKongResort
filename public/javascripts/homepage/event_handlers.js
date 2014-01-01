@@ -34,10 +34,10 @@ function onBtnLoginClicked(evt){
 			function(data, status, xhr){
 				if(status=="success"){
 					var jsonResponse=JSON.parse(data);
-	    				$("#responseSection").html(jsonResponse['UserId']);
-	    				g_userName=jsonResponse['UserEmail'];
+	    				$("#responseSection").html(jsonResponse[g_keyUserId]);
+	    				g_userName=jsonResponse[g_keyUserEmail];
 	    				// store token in cookie iff query succeeds
-	    				$.cookie(g_keyLoginStatus.toString(), jsonResponse['UserToken']);
+	    				$.cookie(g_keyLoginStatus.toString(), jsonResponse[g_keyUserToken]);
 	    				// refresh screen
 	    				refreshOnLoggedIn();
 				} else{
@@ -51,8 +51,8 @@ function onBtnCreateClicked(evt){
 
 	evt.preventDefault();
 
-	targetSection=$("#domainActivities");
-	targetSection.empty();
+	sectionActivityEditor=$("#"+g_idSectionActivityEditor);
+	sectionActivityEditor.empty();
 	var userToken=$.cookie(g_keyLoginStatus.toString());
 	
 	try{
@@ -64,7 +64,7 @@ function onBtnCreateClicked(evt){
     				if(status=="success"){
     					var jsonActivity=JSON.parse(data);
 						var editor=generateActivityEditorByJson(jsonActivity);
-						targetSection.append(editor);
+						sectionActivityEditor.append(editor);
 						queryActivitiesHostedByUser();
     				} else{
     					
@@ -72,6 +72,6 @@ function onBtnCreateClicked(evt){
 			}
 		);
 	} catch(err){
-		targetSection.html(err.message);
+		sectionActivityEditor.html(err.message);
 	}
 }

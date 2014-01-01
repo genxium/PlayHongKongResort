@@ -2,16 +2,15 @@
 function refreshOnEnter(){
 
 	$("#"+g_idFieldEmail).empty();
+	$("#"+g_idFieldEmail).val("");
 	$("#"+g_idFieldPassword).empty();
+	$("#"+g_idFieldPassword).val("");
 
-	$("#sectionAccount").show();
+	$("#"+g_idSectionAccount).show();
 	
-	var domainActivities=$("#domainActivities");
-	domainActivities.empty();
-	domainActivities.hide();
-	
-	$("#sectionImage").hide();
-	$("#sectionProgress").hide();
+	var sectionActivityEditor=$("#"+g_idSectionActivityEditor);
+	sectionActivityEditor.empty();
+	sectionActivityEditor.hide();
 
 	var sectionUserInfo=$("#"+g_idSectionUserInfo);
 	sectionUserInfo.empty();
@@ -59,11 +58,11 @@ function onBtnEditClicked(evt){
 	var activityTitle=jQuery.data(this, g_keyActivityTitle);
 	var activityContent=jQuery.data(this, g_keyActivityContent);
 	
-	targetSection=$("#domainActivities");
-	targetSection.empty();
+	sectionActivityEditor=$("#"+g_idSectionActivityEditor);
+	sectionActivityEditor.empty();
 
 	var editor=generateActivityEditor(activityId, activityTitle, activityContent);
-	targetSection.append(editor);
+	sectionActivityEditor.append(editor);
 }
 
 function onMouseEnterOwnedActivityCell(evt){
@@ -218,6 +217,10 @@ function onBtnLogoutClicked(evt){
 	}
 }
 
+function onBtnProfileClicked(evt){
+
+}
+
 // Generators
 function generateActivityCell(jsonActivity){
 
@@ -230,14 +233,23 @@ function generateActivityCell(jsonActivity){
 
 	var ret=$('<div>',
 				{
-					class: 'cellActivity'
+					class: g_classCellActivityContainer
 				});
-	var cellContent=$('<div>',
+
+	var cellActivityTitle=$('<div>',
+				{	
+					class: g_classCellActivityTitle,
+					html: activityTitle
+				});
+	ret.append(cellActivityTitle);
+
+	var cellActivityContent=$('<div>',
 				{
 					class: g_classCellActivityContent,
-					html: activityId+" "+activityTitle+" "+activityContent+"<br/>"
+					html: activityContent
 				});
-	ret.append(cellContent);
+
+	ret.append(cellActivityContent);
 
 	var statusIndicator=$('<div>',{
 					class: g_classActivityStatusIndicator,
@@ -277,14 +289,23 @@ function generateDefaultActivityCell(jsonRecord){
 	
 	var ret=$('<div>',
 				{
-					class: 'cellActivity'
+					class: g_classCellActivityContainer
 				});
-	var cellContent=$('<div>',
+
+	var cellActivityTitle=$('<div>',
+				{	
+					class: g_classCellActivityTitle,
+					html: activityTitle
+				});
+	ret.append(cellActivityTitle);
+
+	var cellActivityContent=$('<div>',
 				{
 					class: g_classCellActivityContent,
-					html: activityId+" "+activityTitle+" "+activityContent+"<br/>"
+					html: activityContent
 				});
-	ret.append(cellContent);
+
+	ret.append(cellActivityContent);
 
 	if(userActivityRelationId==null){
 		var btnJoin=$('<button>',
@@ -344,7 +365,7 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 formContainer.append(titleText);
 	 var titleInput=$('<input>',
 	 				{
-		 				class: g_classActivityTitle,
+		 				class: g_classFieldActivityTitle,
 		 				type: 'text',
 		 				value: activityTitle
 	 				});
@@ -357,7 +378,7 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 formContainer.append(contentText);
 	 var contentInput=$('<TEXTAREA>',
 	 				  {
-	 				  	class: g_classActivityContent, 
+	 				  	class: g_classFieldActivityContent, 
 	 				  });
 	 contentInput.val(activityContent);
 	 formContainer.append(contentInput);
@@ -400,9 +421,8 @@ function generateLoggedInUserMenu(){
 
 	var ret=$('<div>',
 			{
-
+				class: g_classLoggedInUserMenu
 			});
-	ret.id=g_idLoggedInUserMenu;
 
 	var btnLogout=$('<button>',
 			{
@@ -410,8 +430,18 @@ function generateLoggedInUserMenu(){
 				text: 'Logout'		
 			});
 	btnLogout.bind("click", onBtnLogoutClicked);
-
 	ret.append(btnLogout);
+	ret.data(g_indexBtnLogout, btnLogout);
+
+	var btnProfile=$('<button>',
+			{
+				class: g_classBtnProfile,
+				text: 'Profile'
+			});
+
+	btnProfile.bind("click", onBtnProfileClicked);
+	ret.append(btnProfile);
+	ret.data(g_indexBtnProfile, btnProfile);
 
 	return ret;
 }

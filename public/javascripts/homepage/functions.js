@@ -93,20 +93,21 @@ function queryDefaultActivitiesByUser(){
 }
 
 function onMouseEnterSectionUserInfo(evt){
-	g_domLoggedInUserMenu.show();	
+	var menu=jQuery.data(this, g_indexLoggedInUserMenu);
+	menu.show();	
 }
 
 function onMouseLeaveSectionUserInfo(evt){
-	g_domLoggedInUserMenu.hide();	
+	var menu=jQuery.data(this, g_indexLoggedInUserMenu);
+	menu.hide();		
 }
 
 function refreshOnLoggedIn(){
-	$("#sectionAccount").hide();
-	$("#btnLogout").show();
+	$("#"+g_idSectionAccount).hide();
 
-	var domainActivities=$("#domainActivities");
-	domainActivities.empty();
-	domainActivities.show();
+	var sectionActivityEditor=$("#"+g_idSectionActivityEditor);
+	sectionActivityEditor.empty();
+	sectionActivityEditor.show();
 
 	// bind menu to sectionUserInfo
 	var sectionUserInfo=$("#"+g_idSectionUserInfo);
@@ -114,9 +115,10 @@ function refreshOnLoggedIn(){
 	sectionUserInfo.html("Hello, "+g_userName.toString());
 	sectionUserInfo.bind("mouseenter", onMouseEnterSectionUserInfo);
 	sectionUserInfo.bind("mouseleave", onMouseLeaveSectionUserInfo);
-	g_domLoggedInUserMenu=generateLoggedInUserMenu();
-	sectionUserInfo.append(g_domLoggedInUserMenu);
-	g_domLoggedInUserMenu.hide();
+	var menu=generateLoggedInUserMenu();
+	sectionUserInfo.append(menu);
+	sectionUserInfo.data(g_indexLoggedInUserMenu, menu);
+	menu.hide();
 
 	$("#"+g_idSectionOwnedActivities).show();
 	$("#"+g_idBtnCreate).show();

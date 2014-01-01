@@ -3,6 +3,10 @@ var g_nItemsPerPage=1;
 var g_baseTwo=2;
 var g_baseTen=10;
 var g_rootElement = $(":root");
+var g_userName;
+
+// keyboard ids
+var g_idKeyboardEnter=13;
 
 // cookie keys
 var g_keyLoginStatus="loginStatusToken";
