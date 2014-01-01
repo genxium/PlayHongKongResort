@@ -21,9 +21,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class Application extends Controller {
 
+    public static String homepageName="homepage.html";
+
     public static Result index() {
-       //return ok(index.render("Your new application is ready."));
-    	   return ok("Got request " + request() + "!");
+        return show(homepageName);
     }
     
     public static Result show(String page){
@@ -115,14 +116,14 @@ public class Application extends Controller {
   		return ok("User doesn't exist or not logged in");
     }
     
-    public static Result uploadImage() {
+    public static Result uploadAvatar() {
     	  // define response attributes
     	  response().setContentType("text/plain");
     	  
     	  RequestBody body = request().body();
     	  // get file data from request body stream
     	  MultipartFormData data = body.asMultipartFormData();
-    	  FilePart picture = data.getFile("picture");
+    	  FilePart picture = data.getFile("Avatar");
     	  
     	  // get user token from request body stream
     	  String token=DataUtils.getUserToken(data);

@@ -2,9 +2,12 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
+# Global
 GET	 /	controllers.Application.index()
 GET	 /:page	controllers.Application.show(page)
+
+# Home page
+
 POST /login controllers.Application.login()
 POST /register controllers.Application.register()
 POST /checkLoginStatus controllers.Application.checkLoginStatus()
@@ -19,7 +22,7 @@ POST /queryDefaultActivities controllers.Application.queryDefaultActivities()
 POST /queryDefaultActivitiesByUser controllers.Application.queryDefaultActivitiesByUser()
 
 # User Profile Editor
-POST /uploadImage controllers.Application.uploadImage()
+POST /uploadAvatar controllers.Application.uploadAvatar()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

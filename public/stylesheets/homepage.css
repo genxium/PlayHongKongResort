@@ -200,7 +200,7 @@ html, body
 	margin-left: 50pt;
 }
 
-/* Activity Cells*/
+/* Activity Cells */
 
 #idSectionOwnedActivities
 {
@@ -222,8 +222,8 @@ html, body
 {
 	float: left;
 	width: 200px;
-	margin: 5px 5px;
 	height: 100px;
+	margin: 5px 5px;
 	border: 2pt solid #00ccff;
 }
 
@@ -231,12 +231,27 @@ html, body
 {
 	display: table-row;
 	position: relative;
-	height: 25pt;
+	height: 25%;
 	width: 200pt;
-	max-height: 25pt;
+	max-height: 25%;
 	max-width:	200pt;
 	font-size: 15pt;
 	border-bottom: 1pt solid ##00ccff;
+	overflow: hidden;
+}
+
+.classCellActivityContent
+{
+	display: table-row;
+	position: relative;
+	height: 75%;
+	width: 200pt;
+	max-height: 75%;
+	max-width:	200pt;
+	font-size: 15pt;
+	font-family: Georgia;
+	color: #0000aa;
+	border-top: 1pt solid ##00ccff;
 	overflow: hidden;
 }
 

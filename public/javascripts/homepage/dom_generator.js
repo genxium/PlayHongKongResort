@@ -88,8 +88,8 @@ function onBtnUpdateClicked(evt){
 	
 	var activityId=jQuery.data(this, g_keyActivityId);
 	var id=activityId;
-	var title=$("."+g_classActivityTitle).val();
-	var content=$("."+g_classActivityContent).val();
+	var title=$("."+g_classFieldActivityTitle).val();
+	var content=$("."+g_classFieldActivityContent).val();
 	var token=$.cookie(g_keyLoginStatus.toString());
 
 	try{
@@ -142,8 +142,8 @@ function onBtnSubmitClicked(evt){
 	
 	var activityId=jQuery.data(this, g_keyActivityId);
 	var id=activityId;
-	var title=$("."+g_classActivityTitle).val();
-	var content=$("."+g_classActivityContent).val();
+	var title=$("."+g_classFieldActivityTitle).val();
+	var content=$("."+g_classFieldActivityContent).val();
 	var token=$.cookie(g_keyLoginStatus.toString());
 
 	try{
@@ -218,7 +218,20 @@ function onBtnLogoutClicked(evt){
 }
 
 function onBtnProfileClicked(evt){
+	try{
+		$.get("/user_profile_editor.html",
+			{
 
+			},
+			function(data, status, xhr){
+				if(status=="success"){
+
+				}
+			}
+		);
+	} catch (err){
+
+	}
 }
 
 // Generators
