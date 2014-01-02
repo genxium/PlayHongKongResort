@@ -133,7 +133,7 @@ public class Application extends Controller {
     		  	if(avatarFile==null) break;
       	    String fileName = avatarFile.getFilename();
       	    File file = avatarFile.getFile();
-      		String contentType=avatarFile.getContentType();
+      		  String contentType=avatarFile.getContentType();
         		try {
       	    		if(DataUtils.isImage(contentType)==false) break;
       	    		int userId=DataUtils.getUserIdByToken(token);
@@ -142,16 +142,17 @@ public class Application extends Controller {
       	    		if(user==null) break;
       	    			
       	    		String rootDir=Play.application().path().getAbsolutePath();
-      	    		String folderPath=rootDir+"/uploaded_images";
+                String folderName="uploaded_images";
 
       	    		String newImageName=DataUtils.generateUploadedImageName(fileName, token);
-      	    		String avatarFullPath=folderPath+"/"+newImageName;
+                String imageURL="/"+folderName+"/"+newImageName;
+                String imageAbsolutePath=rootDir+imageURL;
 
-      	    		boolean result=SQLCommander.uploadUserAvatar(user, avatarFullPath);
+      	    		boolean result=SQLCommander.uploadUserAvatar(user, imageAbsolutePath, imageURL);
       	    		if(result==false) break;
       	    		
       	    		// Save renamed file to server storage at the final step
-      	    		file.renameTo(new File(avatarFullPath));
+      	    		file.renameTo(new File(imageAbsolutePath));
       	    		return ok(newImageName);
       	    		
             } catch (Exception e) {

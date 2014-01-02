@@ -583,7 +583,7 @@ public class SQLCommander {
 		return ret;
 	}
 
-	public static boolean uploadUserAvatar(BasicUser user, String avatarFullPath){
+	public static boolean uploadUserAvatar(BasicUser user, String imageAbsolutePath, String imageURL){
 		boolean ret=false;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
@@ -591,10 +591,12 @@ public class SQLCommander {
 			String userTableName="User";
 
 			List<String> imageColumnNames=new LinkedList<String>();
+			imageColumnNames.add(Image.absolutePathKey);
 			imageColumnNames.add(Image.urlKey);
 
 			List<Object> imageColumnValues=new LinkedList<Object>();
-			imageColumnValues.add(avatarFullPath);
+			imageColumnValues.add(imageAbsolutePath);
+			imageColumnValues.add(imageURL);
 
 			int lastImageId=sqlHelper.insertToTableByColumns(imageTableName, imageColumnNames, imageColumnValues);
 			if(lastImageId==sqlHelper.invalidId) break;
@@ -614,5 +616,21 @@ public class SQLCommander {
 			ret=true;
 		}while(false);
 		return ret;
+	}
+
+	public static Image queryImageByImageId(int imageId){
+		Image image=null;
+		do{
+			SQLHelper sqlHelper=new SQLHelper();
+			List<String> columnNames=new LinkedList<String>();
+			columnNames.add(Image.urlKey);
+			columnNames.add(Image.absolutePathKey);
+
+			List<String> whereClauses=new LinkedList<String>();
+			whereClauses.add(Image.idKey+"="+SQLHelper.convertToQueryValue(imageId));
+
+			List<JSONObject> images=sqlHelper.queryTableByColumnsAndWhereClauses("Image", columnNames, whereClauses, SQLHelper.logicAND);
+		}while(false);
+		return image;
 	}
 };
