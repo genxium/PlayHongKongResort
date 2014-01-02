@@ -16,7 +16,19 @@ html, body
 	height: 68px;
 }
 
-/* Account Sectors */
+/* Title */
+#idSectionTitle
+{
+	display: table-column;
+ 	position: relative;
+	float: left;
+ 	font-family: Georgia;
+	font-size: 250%;
+	color: #FF8822;
+}
+
+
+/* Account */
 #idSectionAccount
 {
 
@@ -65,25 +77,27 @@ html, body
 	margin: 10pt;
 }
 
+/* User Information */
+
 #idSectionUserInfo
 {
 	display: table-column;
 	position: relative;
 	float: right;
-	font-family: Georgia;
-	font-size: 15pt;
-	color: #ffffff;
 	border: 3pt solid #cc00ff;
 }
 
-#idSectionTitle
-{
-	display: table-column;
+.classSectionGreetingMessage{
+	display: table-row;
 	position: relative;
-	float: left;
 	font-family: Georgia;
-	font-size: 250%;
-	color: #FF8822;
+	font-size: 15pt;
+	color: #ffffff;
+}
+
+.classSectionUserAvatar{
+	width: 50pt;
+	height: 50pt;
 }
 
 /* User Profile Editor */
@@ -109,7 +123,7 @@ html, body
 /* Activity Editor */
 #idBtnCreate
 {
-	display: table-column;
+	display: table-row;
 	position: relative;
 	float: right;
 	width: 64pt;

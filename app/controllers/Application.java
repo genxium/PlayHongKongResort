@@ -61,10 +61,16 @@ public class Application extends Controller {
 
   		    session(token, userId.toString());
 
+          int imageId=user.getAvatar();
+          Image image=SQLCommander.queryImageByImageId(imageId);
+
   		    ObjectNode result = Json.newObject();
   		    result.put(BasicUser.idKey, user.getUserId());
   		    result.put(BasicUser.emailKey, user.getEmail());
   		    result.put(BasicUser.tokenKey, token);
+          if(image!=null){
+              result.put(Image.urlKey, image.getImageURL());
+          }
   		    return ok(result);
         
         }while(false);
@@ -94,25 +100,32 @@ public class Application extends Controller {
     
     public static Result checkLoginStatus(){
         do{
-      		// define response attributes
-      		response().setContentType("text/plain");
+        		// define response attributes
+        		response().setContentType("text/plain");
 
-      		String token=DataUtils.getUserToken(request().body());
-      		Integer userId=DataUtils.getUserIdByToken(token);
-      		BasicUser user=SQLCommander.queryUserByUserId(userId);
-      		
-      		if(user==null) break;
-          try {
-              session(token, userId.toString());
-              String emailKey=BasicUser.emailKey;
-              String tokenKey=BasicUser.tokenKey;
-              ObjectNode result = Json.newObject();
-              result.put(emailKey, user.getEmail());
-              result.put(tokenKey, token);
-              return ok(result);
-          } catch (Exception e) {
-              System.out.println("Application.checkLoginStatus:"+e.getMessage());
-          }
+        		String token=DataUtils.getUserToken(request().body());
+        		Integer userId=DataUtils.getUserIdByToken(token);
+        		BasicUser user=SQLCommander.queryUserByUserId(userId);
+        		
+        		if(user==null) break;
+            try {
+                session(token, userId.toString());
+                String emailKey=BasicUser.emailKey;
+                String tokenKey=BasicUser.tokenKey;
+
+                int imageId=user.getAvatar();
+                Image image=SQLCommander.queryImageByImageId(imageId);
+
+                ObjectNode result = Json.newObject();
+                result.put(emailKey, user.getEmail());
+                result.put(tokenKey, token);
+                if(image!=null){
+                    result.put(Image.urlKey, image.getImageURL());
+                }
+                return ok(result);
+            } catch (Exception e) {
+                System.out.println("Application.checkLoginStatus:"+e.getMessage());
+            }
         }while(false);
   		  return badRequest("User doesn't exist or not logged in");
     }
@@ -141,13 +154,14 @@ public class Application extends Controller {
       	    		if(userId==DataUtils.invalidId) break;
       	    		BasicUser user=SQLCommander.queryUserByUserId(userId);
       	    		if(user==null) break;
-      	    			
-      	    		String rootDir=Play.application().path().getAbsolutePath();
-                String folderName="uploaded_images";
 
+                String urlFolderName="assets/images";
       	    		String newImageName=DataUtils.generateUploadedImageName(fileName, token);
-                String imageURL="/"+folderName+"/"+newImageName;
-                String imageAbsolutePath=rootDir+imageURL;
+                String imageURL="/"+urlFolderName+"/"+newImageName;
+
+                String rootDir=Play.application().path().getAbsolutePath();
+                String absoluteFolderName="public/images";
+                String imageAbsolutePath=rootDir+"/"+absoluteFolderName+"/"+newImageName;
 
       	    		boolean result=SQLCommander.uploadUserAvatar(user, imageAbsolutePath, imageURL);
       	    		if(result==false) break;

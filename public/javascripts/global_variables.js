@@ -4,6 +4,7 @@ var g_baseTwo=2;
 var g_baseTen=10;
 var g_rootElement = $(":root");
 var g_userName;
+var g_userAvatarURL;
 
 // keyboard ids
 var g_idKeyboardEnter=13;

@@ -1,4 +1,7 @@
 // general DOM element key
+
+var g_idSectionTitle="idSectionTitle";
+
 var g_idSectionActivityEditor="idSectionActivityEditor";
 var g_classActivityEditor="classActivityEditor";
 var g_classActivityEditorContainer="classActivityEditorContainer";
@@ -13,12 +16,13 @@ var g_idSectionUserInfo="idSectionUserInfo";
 var g_idSectionUserProfileEditor="idSectionUserProfileEditor";
 var g_classIFrameUserProfileEditor="classIFrameUserProfileEditor";
 
-var g_idSectionTitle="idSectionTitle";
-
 var g_idSectionOwnedActivities="idSectionOwnedActivities";
 var g_idSectionDefaultActivities="idSectionDefaultActivities";
 var g_classActivityStatusIndicator="classActivityStatusIndicator";
 var g_classAppliedIndicator="classAppliedIndicator";
+
+var g_classSectionGreetingMessage="classSectionGreetingMessage";
+var g_classSectionUserAvatar="classSectionUserAvatar";
 var g_classLoggedInUserMenu="classLoggedInUserMenu";
 
 // input-box keys

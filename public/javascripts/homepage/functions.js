@@ -13,15 +13,16 @@ function validateToken(token){
 			// post response callback function
 			function(data, status, xhr){
 				if(status=="success"){
-					var obj=JSON.parse(data);
-	    				g_userName=obj[g_keyUserEmail];
-	    				// store token in cookie iff query succeeds
-	    				$.cookie(g_keyLoginStatus.toString(), obj[g_keyUserToken]);
-	    				// refresh screen
-	    				refreshOnLoggedIn();
-		    		} else{
-		    			$("#responseSection").html("data");
-		    		}
+					var userJson=JSON.parse(data);
+    				g_userName=userJson[g_keyUserEmail];
+    				g_userAvatarURL=userJson[g_keyImageURL];
+    				// store token in cookie iff query succeeds
+    				$.cookie(g_keyLoginStatus.toString(), userJson[g_keyUserToken]);
+    				// refresh screen
+    				refreshOnLoggedIn();
+	    		} else{
+
+	    		}
 		    }
 	);
 }
@@ -116,17 +117,31 @@ function refreshOnLoggedIn(){
 	// bind menu to sectionUserInfo
 	var sectionUserInfo=$("#"+g_idSectionUserInfo);
 	sectionUserInfo.show();
-	sectionUserInfo.html("Hello, "+g_userName.toString());
-	sectionUserInfo.bind("mouseenter", onMouseEnterSectionUserInfo);
-	sectionUserInfo.bind("mouseleave", onMouseLeaveSectionUserInfo);
+
+	var greetingMessage=$('<div>',
+						{
+							class: g_classSectionGreetingMessage,
+							html: "Hello, "+g_userName.toString() 
+						});
+	sectionUserInfo.append(greetingMessage);
+
+	var userAvatar=$('<img>',
+						{
+							class: g_classSectionUserAvatar,
+							src: g_userAvatarURL
+						});
+	sectionUserInfo.append(userAvatar);
+
 	var menu=generateLoggedInUserMenu();
 	sectionUserInfo.append(menu);
 	sectionUserInfo.data(g_indexLoggedInUserMenu, menu);
 	menu.hide();
 
+	sectionUserInfo.bind("mouseenter", onMouseEnterSectionUserInfo);
+	sectionUserInfo.bind("mouseleave", onMouseLeaveSectionUserInfo);
+
 	$("#"+g_idSectionOwnedActivities).show();
 	$("#"+g_idBtnCreate).show();
 	
 	queryActivitiesHostedByUser();
-	queryDefaultActivitiesByUser();
 }
