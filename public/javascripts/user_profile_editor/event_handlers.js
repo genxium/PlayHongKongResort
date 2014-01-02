@@ -1,13 +1,5 @@
-function onBtnUploadAvatarClicked(evt){
-
-	var file = document.getElementById(g_idFieldAvatar);
-	if(validateImage(file)==false){
-		return;
-	}
-	
-	var form = $("#"+g_idFormAvatar);
-
-	form.submit( function(formEvt){
+// Assistant Callback Functions
+function onUploadAvatarFormSubmit(formEvt){
 		var formObj = $(this);
 		var formData = new FormData(this);
 		
@@ -30,6 +22,18 @@ function onBtnUploadAvatarClicked(evt){
 			}
 		});
 		formEvt.preventDefault(); // prevent default action.
-	});
+}
+
+// Event Handlers
+function onBtnUploadAvatarClicked(evt){
+
+	var file = document.getElementById(g_idFieldAvatar);
+	if(validateImage(file)==false){
+		return;
+	}
+	
+	var form = $("#"+g_idFormAvatar);
+	// set callback function of form submission
+	form.submit(onUploadAvatarFormSubmit);
 	form.submit();
 }
