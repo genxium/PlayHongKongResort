@@ -24,3 +24,5 @@ var g_keyActivityContent="ActivityContent";
 var g_keyActivityStatus="ActivityStatus";
 
 var g_keyUserActivityRelationId="UserActivityRelationId";
+
+var g_keyImageURL="ImageURL";

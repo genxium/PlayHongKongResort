@@ -40,80 +40,81 @@ public class Application extends Controller {
     }
     
     public static Result login(){
-		// define response attributes
-		response().setContentType("text/plain");
-	
-		RequestBody body = request().body();
-		Map<String, String[]> formData=body.asFormUrlEncoded();
-		String[] emails=formData.get(BasicUser.emailKey);
-		String[] passwords=formData.get(BasicUser.passwordKey);
-		String email=emails[0];
-		String password=passwords[0];
-		
-		String passwordDigest=Converter.md5(password);
-		
-        BasicUser user=SQLCommander.queryUserByEmail(email);
+    		// define response attributes
+    		response().setContentType("text/plain");
+    	  do{
+      		RequestBody body = request().body();
+      		Map<String, String[]> formData=body.asFormUrlEncoded();
+      		String[] emails=formData.get(BasicUser.emailKey);
+      		String[] passwords=formData.get(BasicUser.passwordKey);
+      		String email=emails[0];
+      		String password=passwords[0];
+      		
+      		String passwordDigest=Converter.md5(password);
+  		
+          BasicUser user=SQLCommander.queryUserByEmail(email);
 
-        if(user!=null && user.getPassword().equals(passwordDigest)){
-        	
-    		String token = Converter.generateToken(email, password);
-    		Integer userId = user.getUserId();
+          if(user==null || user.getPassword().equals(passwordDigest)==false) break;
+          	
+      		String token = Converter.generateToken(email, password);
+      		Integer userId = user.getUserId();
 
-		    session(token, userId.toString());
+  		    session(token, userId.toString());
 
-		    ObjectNode result = Json.newObject();
-		    result.put(BasicUser.idKey, user.getUserId());
-		    result.put(BasicUser.emailKey, user.getEmail());
-		    result.put(BasicUser.tokenKey, token);
-		    return ok(result);
-        }
+  		    ObjectNode result = Json.newObject();
+  		    result.put(BasicUser.idKey, user.getUserId());
+  		    result.put(BasicUser.emailKey, user.getEmail());
+  		    result.put(BasicUser.tokenKey, token);
+  		    return ok(result);
+        
+        }while(false);
         return badRequest("User does not exist!");
     }
     
     public static Result register(){
-    		// define response attributes
-		response().setContentType("text/plain");
-	
-		RequestBody body = request().body();
-		Map<String, String[]> formData=body.asFormUrlEncoded();
-		String[] emails=formData.get(BasicUser.emailKey);
-		String[] passwords=formData.get(BasicUser.passwordKey);
-		String email=emails[0];
-		String password=passwords[0];
-		String name=DataUtils.getNameByEmail(email);
-		
-		String passwordDigest=Converter.md5(password);
-        Guest guest=Guest.create(email, passwordDigest, name);
-        int lastId=SQLCommander.registerUser(guest);
-        if(lastId!=SQLCommander.invalidId){
-        		return ok("Registered");
-        } else{
-        		return ok("Register failed");
-        }
+      	// define response attributes
+  		  response().setContentType("text/plain");
+    	  do{
+        		RequestBody body = request().body();
+        		Map<String, String[]> formData=body.asFormUrlEncoded();
+        		String[] emails=formData.get(BasicUser.emailKey);
+        		String[] passwords=formData.get(BasicUser.passwordKey);
+        		String email=emails[0];
+        		String password=passwords[0];
+        		String name=DataUtils.getNameByEmail(email);
+        		
+        		String passwordDigest=Converter.md5(password);
+            Guest guest=Guest.create(email, passwordDigest, name);
+            int lastId=SQLCommander.registerUser(guest);
+            if(lastId==SQLCommander.invalidId) break;
+            return ok("Registered");
+        }while(false);
+        return badRequest("Register failed");
     }
     
     public static Result checkLoginStatus(){
-		// define response attributes
-		response().setContentType("text/plain");
+        do{
+      		// define response attributes
+      		response().setContentType("text/plain");
 
-		String token=DataUtils.getUserToken(request().body());
-		Integer userId=DataUtils.getUserIdByToken(token);
-		BasicUser user=SQLCommander.queryUserByUserId(userId);
-		
-		if(user!=null){
-            try {
-                  session(token, userId.toString());
-                  String emailKey=BasicUser.emailKey;
-                  String tokenKey=BasicUser.tokenKey;
-                  ObjectNode result = Json.newObject();
-                  result.put(emailKey, user.getEmail());
-                  result.put(tokenKey, token);
-                  return ok(result);
-            } catch (Exception e) {
-                  // TODO Auto-generated catch block
-            }
-		}
-  		return ok("User doesn't exist or not logged in");
+      		String token=DataUtils.getUserToken(request().body());
+      		Integer userId=DataUtils.getUserIdByToken(token);
+      		BasicUser user=SQLCommander.queryUserByUserId(userId);
+      		
+      		if(user==null) break;
+          try {
+              session(token, userId.toString());
+              String emailKey=BasicUser.emailKey;
+              String tokenKey=BasicUser.tokenKey;
+              ObjectNode result = Json.newObject();
+              result.put(emailKey, user.getEmail());
+              result.put(tokenKey, token);
+              return ok(result);
+          } catch (Exception e) {
+              System.out.println("Application.checkLoginStatus:"+e.getMessage());
+          }
+        }while(false);
+  		  return badRequest("User doesn't exist or not logged in");
     }
     
     public static Result uploadAvatar() {
@@ -201,172 +202,157 @@ public class Application extends Controller {
     public static Result updateActivity(){
     	// define response attributes
   	  	response().setContentType("text/plain");
-  	  	
-  	  	Map<String, String[]> formData=request().body().asFormUrlEncoded();
-  	  	String[] ids=formData.get(Activity.idKey);
-  	  	String[] titles=formData.get(Activity.titleKey);
-  	  	String[] contents=formData.get(Activity.contentKey);
-  	  	String[] tokens=formData.get(BasicUser.tokenKey);
+  	  	do{
+    	  	Map<String, String[]> formData=request().body().asFormUrlEncoded();
+    	  	String[] ids=formData.get(Activity.idKey);
+    	  	String[] titles=formData.get(Activity.titleKey);
+    	  	String[] contents=formData.get(Activity.contentKey);
+    	  	String[] tokens=formData.get(BasicUser.tokenKey);
+      	  
+       	  Integer activityId=Integer.parseInt(ids[0]);
+      		String title=titles[0];
+      		String content=contents[0];
+      		String token=tokens[0];
+       	
+       	  Integer userId=DataUtils.getUserIdByToken(token); 
+    	  	Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+    	  	if(SQLCommander.isActivityEditable(userId, activity)==false) break;
+    	  	
+    	  	activity.setTitle(title);
+    	  	activity.setContent(content);
     	  
-     	Integer activityId=Integer.parseInt(ids[0]);
-    		String title=titles[0];
-    		String content=contents[0];
-    		String token=tokens[0];
-     	
-     	Integer userId=DataUtils.getUserIdByToken(token); 
-  	  	Activity activity=SQLCommander.queryActivityByActivityId(activityId);
-  	  	if(SQLCommander.isActivityEditable(userId, activity)==false){
-  	  		return badRequest();
-  	  	}
-  	  	
-  	  	activity.setTitle(title);
-  	  	activity.setContent(content);
-  	  	
-  	  	String resultStr="Activity not updated!";
-  	  	try{
-  	  		boolean res=SQLCommander.updateActivity(activity);
-  	  		if(res==true){
-  	  			resultStr="Activity updated";
-  	  		}
-  	  	} catch(Exception e){
-  	  		System.out.println("Application.updateActivity:"+e.getMessage());
-  	  	}
-  	  	return ok(resultStr);
+      	  try{
+      	  		boolean res=SQLCommander.updateActivity(activity);
+      	  		if(res==false) break;
+      	  } catch(Exception e){
+      	  		System.out.println("Application.updateActivity:"+e.getMessage());
+      	  }
+    	  	return ok("Activity updated");
+        } while(false);
+        return badRequest("Activity not updated!"); 
     }
     
     public static Result deleteActivity(){
     		// define response attributes
         response().setContentType("text/plain");
-        
-        Map<String, String[]> formData=request().body().asFormUrlEncoded();
-        String[] ids=formData.get(Activity.idKey);
-        String[] tokens=formData.get(BasicUser.tokenKey);
-        
-        Integer activityId=Integer.parseInt(ids[0]);
-        String token=tokens[0];
-      
-        Integer userId=DataUtils.getUserIdByToken(token);
-        if(userId==DataUtils.invalidId){
-        		return badRequest();
-        }
-        
-        Activity activity=SQLCommander.queryActivityByActivityId(activityId);
-        if(SQLCommander.isActivityEditable(userId, activity)==false){
-        		return badRequest();
-        }
-        
-        String resultStr="Activity not deleted!";
-        try{
-            boolean res=SQLCommander.deleteActivity(userId, activityId);
-            if(res==true){
-              resultStr="Activity deleted";
+        do{
+            Map<String, String[]> formData=request().body().asFormUrlEncoded();
+            String[] ids=formData.get(Activity.idKey);
+            String[] tokens=formData.get(BasicUser.tokenKey);
+            
+            Integer activityId=Integer.parseInt(ids[0]);
+            String token=tokens[0];
+          
+            Integer userId=DataUtils.getUserIdByToken(token);
+            if(userId==DataUtils.invalidId) break;
+            
+            Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+            if(SQLCommander.isActivityEditable(userId, activity)==false) break;
+            
+            try{
+                boolean res=SQLCommander.deleteActivity(userId, activityId);
+                if(res==false) break;
+            } catch(Exception e){
+                System.out.println("Application.deleteActivity:"+e.getMessage());
             }
-        } catch(Exception e){
-            System.out.println("Application.deleteActivity:"+e.getMessage());
-        }
-      return ok(resultStr);
+            return ok("Activity deleted");
+        } while(false);
+        return badRequest("Activity not deleted!");
     }
 
     public static Result queryActivitiesHostedByUser(){
         response().setContentType("text/plain");
-        String token=DataUtils.getUserToken(request().body());
-        Integer userId=DataUtils.getUserIdByToken(token);
-        
-        if(userId==DataUtils.invalidId) return badRequest();
-        
-        ObjectNode result = null;
-        
-        BasicUser user=SQLCommander.queryUserByUserId(userId);
-        UserActivityRelation.RelationType relation=UserActivityRelation.RelationType.host;
-        
-        try{
-        		List<JSONObject> activities=SQLCommander.queryActivitiesByUserAndRelation(user, relation);
-        		Iterator<JSONObject> itActivity=activities.iterator();
-        		result=Json.newObject();
-        		
-        		while(itActivity.hasNext()){
-        			JSONObject activityJSON=itActivity.next();
-        			Integer activityId=(Integer)activityJSON.get(Activity.idKey);
-        			String activityTitle=(String)activityJSON.get(Activity.titleKey);
-        			String activityContent=(String)activityJSON.get(Activity.contentKey);
-        			Integer activityStatus=(Integer)activityJSON.get(Activity.statusKey);
+        do{
+            String token=DataUtils.getUserToken(request().body());
+            Integer userId=DataUtils.getUserIdByToken(token);
+            
+            if(userId==DataUtils.invalidId) break;
+            
+            ObjectNode result = null;
+            
+            BasicUser user=SQLCommander.queryUserByUserId(userId);
+            UserActivityRelation.RelationType relation=UserActivityRelation.RelationType.host;
+            
+            try{
+            		List<JSONObject> activities=SQLCommander.queryActivitiesByUserAndRelation(user, relation);
+            		Iterator<JSONObject> itActivity=activities.iterator();
+            		result=Json.newObject();
+            		
+            		while(itActivity.hasNext()){
+            			JSONObject activityJSON=itActivity.next();
+            			Integer activityId=(Integer)activityJSON.get(Activity.idKey);
+            			String activityTitle=(String)activityJSON.get(Activity.titleKey);
+            			String activityContent=(String)activityJSON.get(Activity.contentKey);
+            			Integer activityStatus=(Integer)activityJSON.get(Activity.statusKey);
 
-        			ObjectNode singleActivityNode=Json.newObject();
-        			singleActivityNode.put(Activity.idKey, activityId.toString());
-        			singleActivityNode.put(Activity.titleKey, activityTitle);
-        			singleActivityNode.put(Activity.contentKey, activityContent);
-        			singleActivityNode.put(Activity.statusKey, activityStatus.toString());
-        			result.put(activityId.toString(), singleActivityNode);
-        		}
-        } catch(Exception e){
-        		System.out.println("Application.queryActivitiesHostedByUser:"+e.getMessage());
-        }
-        return ok(result);
+            			ObjectNode singleActivityNode=Json.newObject();
+            			singleActivityNode.put(Activity.idKey, activityId.toString());
+            			singleActivityNode.put(Activity.titleKey, activityTitle);
+            			singleActivityNode.put(Activity.contentKey, activityContent);
+            			singleActivityNode.put(Activity.statusKey, activityStatus.toString());
+            			result.put(activityId.toString(), singleActivityNode);
+            		}
+            } catch(Exception e){
+            		System.out.println("Application.queryActivitiesHostedByUser:"+e.getMessage());
+            }
+            return ok(result);
+      }while(false);
+      return badRequest();
     }
     
     public static Result submitActivity(){
     		// define response attributes
         response().setContentType("text/plain");
-        
-        Map<String, String[]> formData=request().body().asFormUrlEncoded();
-  	  	String[] ids=formData.get(Activity.idKey);
-  	  	String[] titles=formData.get(Activity.titleKey);
-  	  	String[] contents=formData.get(Activity.contentKey);
-  	  	String[] tokens=formData.get(BasicUser.tokenKey);
-    	  
-     	Integer activityId=Integer.parseInt(ids[0]);
-    		String title=titles[0];
-    		String content=contents[0];
-    		String token=tokens[0];
-      
-        Integer userId=DataUtils.getUserIdByToken(token);
-        Activity activity=SQLCommander.queryActivityByActivityId(activityId);
-        if(SQLCommander.isActivityEditable(userId, activity)==false){
-        		return badRequest();
-        }
-        
-        String resultStr="Activity not submitted!";
-        try{
-  	  		if(DataUtils.validateTitle(title)==false || DataUtils.validateContent(content)==false){
-  	  			resultStr="Invalid title or content!";
-  	  		} else{
-  	  			boolean res=SQLCommander.submitActivity(userId, activity);
-  	  			if(res==true){
-  	  				resultStr="Activity submitted";
-  	  			}
-  	  		}
-        } catch(Exception e){
-            System.out.println("Application.submitActivity:"+e.getMessage());
-        }
-        return ok(resultStr);
-
+        do{
+            Map<String, String[]> formData=request().body().asFormUrlEncoded();
+      	  	String[] ids=formData.get(Activity.idKey);
+      	  	String[] titles=formData.get(Activity.titleKey);
+      	  	String[] contents=formData.get(Activity.contentKey);
+      	  	String[] tokens=formData.get(BasicUser.tokenKey);
+        	  
+          	Integer activityId=Integer.parseInt(ids[0]);
+        		String title=titles[0];
+        		String content=contents[0];
+        		String token=tokens[0];
+          
+            Integer userId=DataUtils.getUserIdByToken(token);
+            Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+            if(SQLCommander.isActivityEditable(userId, activity)==false) break;
+            
+            try{
+        	  		if(DataUtils.validateTitle(title)==false || DataUtils.validateContent(content)==false) break;
+        	  		boolean res=SQLCommander.submitActivity(userId, activity);
+        	  		if(res==false) break;
+            } catch(Exception e){
+                System.out.println("Application.submitActivity:"+e.getMessage());
+            }
+            return ok("Activity submitted");
+        }while(false);
+        return badRequest("Activity not submitted!");
     }
 
     public static Result joinActivity(){
     		// define response attributes
         response().setContentType("text/plain");
-        
-        Map<String, String[]> formData=request().body().asFormUrlEncoded();
-  	  	String[] ids=formData.get(Activity.idKey);
-  	  	String[] tokens=formData.get(BasicUser.tokenKey);
-    	  
-     	Integer activityId=Integer.parseInt(ids[0]);
-    		String token=tokens[0];
-    		try{
-    			Integer userId=DataUtils.getUserIdByToken(token);
-    			Activity activity=SQLCommander.queryActivityByActivityId(activityId);
-    			if(SQLCommander.isActivityJoinable(userId, activity)==false){
-    				return badRequest();
-    			}
-        
-    			boolean ret=SQLCommander.joinActivity(userId, activityId);
-    			if(ret==false){
-    				return badRequest();
-    			}
-    		} catch(Exception e){
-    			System.out.println("Application.joinActivity:"+e.getMessage());
-    		}
-    		return ok();
+        do{  
+          Map<String, String[]> formData=request().body().asFormUrlEncoded();
+    	  	String[] ids=formData.get(Activity.idKey);
+    	  	String[] tokens=formData.get(BasicUser.tokenKey);
+      	  
+        	Integer activityId=Integer.parseInt(ids[0]);
+      		String token=tokens[0];
+      		try{
+        			Integer userId=DataUtils.getUserIdByToken(token);
+        			Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+        			if(SQLCommander.isActivityJoinable(userId, activity)==false) break;
+        			boolean result=SQLCommander.joinActivity(userId, activityId);
+        			if(result==false) break;
+      		} catch(Exception e){
+        			System.out.println("Application.joinActivity:"+e.getMessage());
+      		}
+      		return ok("Successfully joined activity");
+        }while(false);
+        return badRequest("Could not join activity");
     }
 
     public static Result queryDefaultActivities(){

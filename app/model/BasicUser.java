@@ -70,9 +70,13 @@ public class BasicUser {
 		m_isAdmin=isAdmin;
 	}
 
-	public static BasicUser create(int userId, String email, String password, String name){
-		BasicUser user=new BasicUser(userId, email, password, name, 0, false, false, false);
+	public static BasicUser create(int userId, String email, String password, String name, int avatar){
+		BasicUser user=new BasicUser(userId, email, password, name, avatar, false, false, false);
 		return user;
+	}
+
+	public static BasicUser create(int userId, String email, String password, String name){
+		return create(userId, email, password, name, 0);
 	}
 	
 	public static BasicUser create(String email, String password, String name){
@@ -84,6 +88,7 @@ public class BasicUser {
   		String email=(String)userJson.get(emailKey);
 		String password=(String)userJson.get(passwordKey);
   		String name=(String)userJson.get(nameKey);
-  		return create(id, email, password, name);
+  		int avatar=(Integer)userJson.get(avatarKey);
+  		return create(id, email, password, name, avatar);
 	}
 }
