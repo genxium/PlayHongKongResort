@@ -155,7 +155,7 @@ public class Application extends Controller {
       	    		BasicUser user=SQLCommander.queryUserByUserId(userId);
       	    		if(user==null) break;
 
-                int previousImageId=user.getAvatar();
+                int previousAvatarId=user.getAvatar();
 
                 String urlFolderName="assets/images";
       	    		String newImageName=DataUtils.generateUploadedImageName(fileName, token);
@@ -178,8 +178,15 @@ public class Application extends Controller {
                     // TODO...
                     break;
                 } else{
-                    boolean isPreviousAvatarDeleted=SQLCommander.deleteImageByImageId(previousImageId);
-                    // TODO...
+                    // delete previous avatar file
+                    Image previousAvatar=SQLCommander.queryImageByImageId(previousAvatarId);
+                    String previousAvatarAbsolutePath=previousAvatar.getImageAbsolutePath();
+                    File previousAvatarFile=new File(previousAvatarAbsolutePath);
+                    boolean isPreviousAvatarFileDeleted=previousAvatarFile.delete();
+                    boolean isPreviousAvatarDeleted=SQLCommander.deleteImageByImageId(previousAvatarId);
+                    if(isPreviousAvatarDeleted==true && isPreviousAvatarFileDeleted==true){
+                        System.out.println("Application.uploadAvatar: previous avatar file and record deleted.");    
+                    }
                 }
 
       	    		return ok(newImageName);

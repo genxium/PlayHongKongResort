@@ -32,7 +32,7 @@ CREATE TABLE `Activity` (
   `ActivityCapacity` int(32) NOT NULL DEFAULT '0',
   `ActivityStatus` int(3) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ActivityId`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +41,7 @@ CREATE TABLE `Activity` (
 
 LOCK TABLES `Activity` WRITE;
 /*!40000 ALTER TABLE `Activity` DISABLE KEYS */;
-INSERT INTO `Activity` VALUES (32,'Testing Edit Accepted Activities','lalala','2013-12-26 11:14:42','2013-12-26 11:14:42','2013-12-28 17:15:32',0,3),(33,'Title 33 updating','Another test case.','2013-12-26 11:54:21','2013-12-26 11:54:21','2013-12-26 16:59:45',0,3),(34,'Edit Test','Tom and Jerry','2013-12-26 11:55:58','2013-12-26 11:55:58','2013-12-28 13:18:27',0,3),(35,'uet','sfdfd','2013-12-26 12:08:17','2013-12-26 12:08:17','2013-12-27 13:50:12',0,3),(36,'Testing','lallalalla','2013-12-26 15:43:20','2013-12-26 15:43:20','2013-12-26 16:40:31',0,3),(38,'mytitle ','lalalal','2013-12-27 14:13:48','2013-12-27 14:13:48','2013-12-27 17:25:45',0,0),(46,'Lalala','Miao','2013-12-29 11:32:28','2013-12-29 11:32:28','2013-12-29 12:18:23',0,1),(48,'Testing New Activity','uuuuuppppppppp','2013-12-29 12:21:50','2013-12-29 12:21:50','2013-12-29 12:22:07',0,1),(50,'lalala','lululu','2013-12-30 17:30:55','2013-12-30 17:30:55','2013-12-30 17:31:03',0,0),(51,'','','2014-01-02 14:47:04','2014-01-02 14:47:04','2014-01-02 14:47:04',0,0),(53,'','','2014-01-03 07:17:24','2014-01-03 07:17:24','2014-01-03 07:17:24',0,0);
+INSERT INTO `Activity` VALUES (32,'Testing Edit Accepted Activities','lalala','2013-12-26 11:14:42','2013-12-26 11:14:42','2013-12-28 17:15:32',0,3),(33,'Title 33 updating','Another test case.','2013-12-26 11:54:21','2013-12-26 11:54:21','2013-12-26 16:59:45',0,3),(34,'Edit Test','Tom and Jerry','2013-12-26 11:55:58','2013-12-26 11:55:58','2013-12-28 13:18:27',0,3),(35,'uet','sfdfd','2013-12-26 12:08:17','2013-12-26 12:08:17','2013-12-27 13:50:12',0,3),(36,'Testing','lallalalla','2013-12-26 15:43:20','2013-12-26 15:43:20','2013-12-26 16:40:31',0,3),(38,'mytitle ','lalalal','2013-12-27 14:13:48','2013-12-27 14:13:48','2013-12-27 17:25:45',0,0),(46,'Lalala','Miao','2013-12-29 11:32:28','2013-12-29 11:32:28','2013-12-29 12:18:23',0,1),(48,'Testing New Activity','uuuuuppppppppp','2013-12-29 12:21:50','2013-12-29 12:21:50','2013-12-29 12:22:07',0,1),(50,'lalala','lululu','2013-12-30 17:30:55','2013-12-30 17:30:55','2013-12-30 17:31:03',0,1),(53,'','','2014-01-03 07:17:24','2014-01-03 07:17:24','2014-01-03 07:17:24',0,0),(54,'Lalala','wtf','2014-01-03 08:22:06','2014-01-03 08:22:06','2014-01-03 08:22:15',0,1),(70,'New Activity ','Testing testing','2014-01-03 09:58:36','2014-01-03 09:58:36','2014-01-03 09:58:50',0,0);
 /*!40000 ALTER TABLE `Activity` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -87,7 +87,7 @@ CREATE TABLE `Image` (
   PRIMARY KEY (`ImageId`),
   UNIQUE KEY `ImageAbsolutePath` (`ImageAbsolutePath`),
   UNIQUE KEY `ImageURL` (`ImageURL`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -96,7 +96,7 @@ CREATE TABLE `Image` (
 
 LOCK TABLES `Image` WRITE;
 /*!40000 ALTER TABLE `Image` DISABLE KEYS */;
-INSERT INTO `Image` VALUES (1,'/Users/user/play-2.2.0/PlayHelloWorld/public/images/UID10.2014-01-03 01:08:03.444.pikachu01.png','/assets/images/UID10.2014-01-03 01:08:03.444.pikachu01.png');
+INSERT INTO `Image` VALUES (1,'/Users/user/play-2.2.0/PlayHelloWorld/public/images/UID10.2014-01-03 01:08:03.444.pikachu01.png','/assets/images/UID10.2014-01-03 01:08:03.444.pikachu01.png'),(2,'/Users/user/play-2.2.0/PlayHelloWorld/public/images/UID19.2014-01-03 16:21:45.804.pikachu03.png','/assets/images/UID19.2014-01-03 16:21:45.804.pikachu03.png'),(3,'/Users/user/play-2.2.0/PlayHelloWorld/public/images/UID12.2014-01-03 17:29:39.549.pikachu02.jpeg','/assets/images/UID12.2014-01-03 17:29:39.549.pikachu02.jpeg'),(4,'/Users/user/play-2.2.0/PlayHelloWorld/public/images/UID9.2014-01-03 17:55:49.529.pikachu03.png','/assets/images/UID9.2014-01-03 17:55:49.529.pikachu03.png');
 /*!40000 ALTER TABLE `Image` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -130,7 +130,7 @@ CREATE TABLE `User` (
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
-INSERT INTO `User` VALUES (9,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',0,0,0,'2013-12-23 14:13:30',0),(10,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@126.com',0,0,0,'2013-12-23 14:45:19',1),(11,'kk','e10adc3949ba59abbe56e057f20f883e','kk@gmail.com',0,0,0,'2013-12-27 14:13:30',0),(12,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',0,0,0,'2013-12-28 04:21:15',0),(13,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@yahoo.com',0,0,0,'2013-12-29 08:16:26',0),(18,'kk','e10adc3949ba59abbe56e057f20f883e','kk@hotmail.com',0,0,0,'2014-01-03 08:01:30',0),(19,'sai','e10adc3949ba59abbe56e057f20f883e','sai@126.com',0,0,0,'2014-01-03 08:12:15',0);
+INSERT INTO `User` VALUES (9,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',0,0,0,'2013-12-23 14:13:30',4),(10,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@126.com',0,0,0,'2013-12-23 14:45:19',1),(11,'kk','e10adc3949ba59abbe56e057f20f883e','kk@gmail.com',0,0,0,'2013-12-27 14:13:30',0),(12,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',0,0,0,'2013-12-28 04:21:15',3),(13,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@yahoo.com',0,0,0,'2013-12-29 08:16:26',0),(18,'kk','e10adc3949ba59abbe56e057f20f883e','kk@hotmail.com',0,0,0,'2014-01-03 08:01:30',0),(19,'sai','e10adc3949ba59abbe56e057f20f883e','sai@126.com',0,0,0,'2014-01-03 08:12:15',5);
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -179,7 +179,7 @@ CREATE TABLE `UserActivityRelationTable` (
   CONSTRAINT `UserActivityRelationTable_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `User` (`UserId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_2` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_3` FOREIGN KEY (`UserActivityRelationId`) REFERENCES `UserActivityRelation` (`UserActivityRelationId`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -188,7 +188,7 @@ CREATE TABLE `UserActivityRelationTable` (
 
 LOCK TABLES `UserActivityRelationTable` WRITE;
 /*!40000 ALTER TABLE `UserActivityRelationTable` DISABLE KEYS */;
-INSERT INTO `UserActivityRelationTable` VALUES (10,9,32,0,'2013-12-26 11:14:42'),(11,9,33,0,'2013-12-26 11:54:21'),(12,9,34,0,'2013-12-26 11:55:58'),(13,9,35,0,'2013-12-26 12:08:17'),(14,9,36,0,'2013-12-26 15:43:20'),(16,11,38,0,'2013-12-27 14:13:48'),(24,13,46,0,'2013-12-29 11:32:28'),(26,13,48,0,'2013-12-29 12:21:50'),(28,13,32,1,'2013-12-30 17:10:20'),(29,12,35,1,'2013-12-30 17:21:21'),(30,12,50,0,'2013-12-30 17:30:55'),(31,13,36,1,'2013-12-30 18:28:28'),(32,13,33,1,'2013-12-30 18:30:13'),(33,13,34,1,'2013-12-30 18:30:24'),(34,12,33,1,'2013-12-30 18:32:02'),(35,12,51,0,'2014-01-02 14:47:04'),(36,12,36,1,'2014-01-02 15:20:43'),(37,12,32,1,'2014-01-03 06:28:04'),(38,13,35,1,'2014-01-03 07:02:13'),(40,13,53,0,'2014-01-03 07:17:24'),(41,18,34,1,'2014-01-03 08:05:17'),(42,18,32,1,'2014-01-03 08:07:30'),(43,18,33,1,'2014-01-03 08:09:12'),(44,18,35,1,'2014-01-03 08:10:42'),(45,18,36,1,'2014-01-03 08:11:10'),(46,19,34,1,'2014-01-03 08:13:28'),(47,19,32,1,'2014-01-03 08:18:46'),(48,19,33,1,'2014-01-03 08:18:57');
+INSERT INTO `UserActivityRelationTable` VALUES (10,9,32,0,'2013-12-26 11:14:42'),(11,9,33,0,'2013-12-26 11:54:21'),(12,9,34,0,'2013-12-26 11:55:58'),(13,9,35,0,'2013-12-26 12:08:17'),(14,9,36,0,'2013-12-26 15:43:20'),(16,11,38,0,'2013-12-27 14:13:48'),(24,13,46,0,'2013-12-29 11:32:28'),(26,13,48,0,'2013-12-29 12:21:50'),(28,13,32,1,'2013-12-30 17:10:20'),(29,12,35,1,'2013-12-30 17:21:21'),(30,12,50,0,'2013-12-30 17:30:55'),(31,13,36,1,'2013-12-30 18:28:28'),(32,13,33,1,'2013-12-30 18:30:13'),(33,13,34,1,'2013-12-30 18:30:24'),(34,12,33,1,'2013-12-30 18:32:02'),(36,12,36,1,'2014-01-02 15:20:43'),(37,12,32,1,'2014-01-03 06:28:04'),(38,13,35,1,'2014-01-03 07:02:13'),(40,13,53,0,'2014-01-03 07:17:24'),(41,18,34,1,'2014-01-03 08:05:17'),(42,18,32,1,'2014-01-03 08:07:30'),(43,18,33,1,'2014-01-03 08:09:12'),(44,18,35,1,'2014-01-03 08:10:42'),(45,18,36,1,'2014-01-03 08:11:10'),(46,19,34,1,'2014-01-03 08:13:28'),(47,19,32,1,'2014-01-03 08:18:46'),(48,19,33,1,'2014-01-03 08:18:57'),(49,19,54,0,'2014-01-03 08:22:06'),(57,19,36,1,'2014-01-03 09:12:39'),(66,19,70,0,'2014-01-03 09:58:36'),(67,12,34,1,'2014-01-03 12:13:25');
 /*!40000 ALTER TABLE `UserActivityRelationTable` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -248,4 +248,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-01-03 16:20:48
+-- Dump completed on 2014-01-03 20:15:12
