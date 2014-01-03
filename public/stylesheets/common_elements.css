@@ -1,9 +1,9 @@
 /* Activity Editor */
 #idBtnCreate
 {
-	display: table-row;
+	display: table-column;
 	position: relative;
-	float: right;
+	float: left;
 	width: 64pt;
 	height: 35px;
 	font-size: 15pt;
@@ -11,7 +11,8 @@
 
 #idSectionActivityEditor
 {
-
+	display: table-row;
+	position: relative;
 }
 
 .classActivityEditor

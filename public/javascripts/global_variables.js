@@ -29,3 +29,6 @@ var g_keyUserActivityRelationId="UserActivityRelationId";
 var g_keyImageId="ImageId";
 var g_keyImageURL="ImageURL";
 
+// callback function pointers
+var g_callbackOnActivityEditorRemoved=null;
+

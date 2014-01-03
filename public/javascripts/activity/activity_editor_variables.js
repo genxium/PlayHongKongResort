@@ -14,3 +14,7 @@ var g_classBtnCancel="classBtnCancel";
 var g_idSectionActivityEditor="idSectionActivityEditor";
 var g_classActivityEditor="classActivityEditor";
 var g_classActivityEditorContainer="classActivityEditorContainer";
+
+// button indexes for cascaded DOM element search
+var g_indexBtnEdit="indexBtnEdit";
+var g_indexStatusIndicator="indexStatusIndicator";

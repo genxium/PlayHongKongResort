@@ -6,7 +6,7 @@ html, body
 #wrap
 {
 	margin: 0 auto;
-    max-width: 1024px;
+    max-width: 98%;
 }
 
 #header
@@ -19,14 +19,22 @@ html, body
 /* Title */
 #idSectionTitle
 {
-	display: table-column;
+	display: table-row;
  	position: relative;
-	float: left;
+ 	text-align: center;
  	font-family: Georgia;
 	font-size: 250%;
 	color: #FF8822;
 }
 
+/* Sub Header */
+#idSectionSubHeader{
+	display: table-row;
+ 	position: relative;
+	margin: 10pt;
+	width: 100%;
+	background-color: #ffffff;
+}
 
 /* Account */
 #idSectionAccount
@@ -88,14 +96,19 @@ html, body
 }
 
 .classSectionGreetingMessage{
-	display: table-row;
+	display: table-column-group;
 	position: relative;
+	float: left;
 	font-family: Georgia;
 	font-size: 15pt;
-	color: #ffffff;
+	background-color: #ffffff;
+	color: #333333;
 }
 
 .classSectionUserAvatar{
+	display: table-column-group;
+	position: relative;
+	float: left;
 	width: 50pt;
 	height: 50pt;
 }
@@ -103,7 +116,8 @@ html, body
 /* Logged In User Menu */
 .classLoggedInUserMenu
 {
-
+	display: table-row;
+	position: relative;
 }
 
 .classBtnLogout

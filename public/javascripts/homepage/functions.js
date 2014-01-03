@@ -2,7 +2,12 @@ function checkLoginStatus(evt){
 
 	do{
 		var token = $.cookie(g_keyLoginStatus.toString());
-		if(token==null) break;
+		if(token==null) {
+			// refresh screen
+			refreshOnEnter();
+			queryDefaultActivities();
+			break;
+		}
 		$.post("/checkLoginStatus",
 				{
 					UserToken: token.toString(),
@@ -116,7 +121,7 @@ function refreshOnLoggedIn(){
 	sectionUserInfo.append(userAvatar);
 
 	var menu=generateLoggedInUserMenu();
-	sectionUserInfo.append(menu);
+	greetingMessage.append(menu);
 	sectionUserInfo.data(g_indexLoggedInUserMenu, menu);
 	menu.hide();
 

@@ -40,6 +40,7 @@ function onBtnLoginClicked(evt){
     				$.cookie(g_keyLoginStatus.toString(), jsonResponse[g_keyUserToken]);
     				// refresh screen
     				refreshOnLoggedIn();
+    				queryDefaultActivitiesByUser();
 				} else{
 
 	    		}

@@ -1,6 +1,8 @@
 // general DOM element key
 var g_idSectionTitle="idSectionTitle";
 
+var g_idSectionSubHeader="idSectionSubHeader";
+
 var g_idSectionAccount="idSectionAccount";
 var g_idSectionUserInfo="idSectionUserInfo";
 

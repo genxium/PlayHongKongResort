@@ -2,6 +2,7 @@
 function onBtnCreateClicked(evt){
 
 	evt.preventDefault();
+	$(this).hide();
 
 	sectionActivityEditor=$("#"+g_idSectionActivityEditor);
 	sectionActivityEditor.empty();
@@ -35,6 +36,8 @@ function onBtnUpdateClicked(evt){
 	var content=$("."+g_classFieldActivityContent).val();
 	var token=$.cookie(g_keyLoginStatus.toString());
 
+	var editor=$(this).parent();
+
 	try{
 		$.post("/updateActivity", 
 			{
@@ -45,8 +48,10 @@ function onBtnUpdateClicked(evt){
 			},
 			function(data, status, xhr){
 				if(status=="success"){
-					var editor=this.parentNode;
 					editor.remove();
+					if(g_callbackOnActivityEditorRemoved!=null){
+						g_callbackOnActivityEditorRemoved();
+					}
 				} else{
 
 				}
@@ -62,6 +67,7 @@ function onBtnDeleteClicked(evt){
 	var activityId=jQuery.data(this, g_keyActivityId);
 	var id=activityId;
 	var token=$.cookie(g_keyLoginStatus.toString());
+	var editor=$(this).parent();
 
 	try{
 		$.post("/deleteActivity", 
@@ -71,8 +77,10 @@ function onBtnDeleteClicked(evt){
 			},
 			function(data, status, xhr){
 				if(status=="success"){
-					var editor=this.parentNode;
 					editor.remove();
+					if(g_callbackOnActivityEditorRemoved!=null){
+						g_callbackOnActivityEditorRemoved();
+					}
 				}
 				else{
 
@@ -92,6 +100,8 @@ function onBtnSubmitClicked(evt){
 	var content=$("."+g_classFieldActivityContent).val();
 	var token=$.cookie(g_keyLoginStatus.toString());
 
+	var editor=$(this).parent();
+
 	try{
 		$.post("/submitActivity", 
 			{
@@ -102,8 +112,10 @@ function onBtnSubmitClicked(evt){
 			},
 			function(data, status, xhr){
     			if(status=="success"){
-    				var editor=this.parentNode;
 					editor.remove();
+					if(g_callbackOnActivityEditorRemoved!=null){
+						g_callbackOnActivityEditorRemoved();
+					}
     			} else{
 
     			}
@@ -115,7 +127,7 @@ function onBtnSubmitClicked(evt){
 }
 
 function onBtnCancelClicked(evt){
-	var editor=this.parentNode;
+	var editor=$(this).parent();
 	editor.remove();
 	$("#"+g_idBtnCreate).show();
 }

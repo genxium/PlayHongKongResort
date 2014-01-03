@@ -1,5 +1,6 @@
 $(document).ready(function(){
 	// execute on page loaded
 	$("#"+g_idBtnUploadAvatar).bind("click", onBtnUploadAvatarClicked);
- 	queryActivitiesHostedByUser();
+ 	g_callbackOnActivityEditorRemoved=queryActivitiesHostedByUser;
+ 	g_callbackOnActivityEditorRemoved();
 });

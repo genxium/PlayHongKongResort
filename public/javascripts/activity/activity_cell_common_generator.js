@@ -47,7 +47,7 @@ function onBtnJoinClicked(evt){
 					var cellNode=btnJoin.parentNode; // javascript dom element
 					var cell=$(cellNode); // convert to jQuery element object
 					btnJoin.remove();
-					
+
 					var appliedIndicator=$('<div>',
 					{
 						class: g_classAppliedIndicator,
@@ -115,6 +115,7 @@ function generateActivityCell(jsonActivity){
 		btnEdit.data(g_keyActivityContent, activityContent);
 
 		ret.append(btnEdit);
+		ret.data(g_indexBtnEdit, btnEdit);
 	}
 	
 	ret.data(g_keyActivityId, activityId);
