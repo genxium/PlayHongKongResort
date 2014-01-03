@@ -155,6 +155,8 @@ public class Application extends Controller {
       	    		BasicUser user=SQLCommander.queryUserByUserId(userId);
       	    		if(user==null) break;
 
+                int previousImageId=user.getAvatar();
+
                 String urlFolderName="assets/images";
       	    		String newImageName=DataUtils.generateUploadedImageName(fileName, token);
                 String imageURL="/"+urlFolderName+"/"+newImageName;
@@ -163,15 +165,27 @@ public class Application extends Controller {
                 String absoluteFolderName="public/images";
                 String imageAbsolutePath=rootDir+"/"+absoluteFolderName+"/"+newImageName;
 
-      	    		boolean result=SQLCommander.uploadUserAvatar(user, imageAbsolutePath, imageURL);
-      	    		if(result==false) break;
+      	    		int imageId=SQLCommander.uploadUserAvatar(user, imageAbsolutePath, imageURL);
+      	    		if(imageId==SQLCommander.invalidId) break;
       	    		
       	    		// Save renamed file to server storage at the final step
-      	    		file.renameTo(new File(imageAbsolutePath));
+      	    		boolean renamingResult=file.renameTo(new File(imageAbsolutePath));
+
+                if(renamingResult==false){
+                    System.out.println("Application.uploadAvatar: "+newImageName+" could not be saved.");
+                    // recover table `Image`
+                    boolean isRecovered=SQLCommander.deleteImageByImageId(imageId);
+                    // TODO...
+                    break;
+                } else{
+                    boolean isPreviousAvatarDeleted=SQLCommander.deleteImageByImageId(previousImageId);
+                    // TODO...
+                }
+
       	    		return ok(newImageName);
       	    		
             } catch (Exception e) {
-                System.out.println("Application.uploadImage:"+e.getMessage());
+                System.out.println("Application.uploadAvatar: "+e.getMessage());
             }
     	  }while(false);
     	  return badRequest();

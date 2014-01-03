@@ -222,11 +222,13 @@ public class SQLCommander {
 				relationWhereClauses.add(BasicUser.idKey+"="+SQLHelper.convertToQueryValue(userId));
 				relationWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
 				boolean resultRelationDeletion=sqlHelper.deleteFromTableByWhereClauses(relationTableName, relationWhereClauses, SQLHelper.logicAND);
-				if(resultRelationDeletion==true){
-					List<String> activityWhereClauses=new LinkedList<String>();
-					activityWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
-					ret=sqlHelper.deleteFromTableByWhereClauses(activityTableName, activityWhereClauses, SQLHelper.logicAND);
-				}
+			
+				if(resultRelationDeletion==false) break;
+			
+				List<String> activityWhereClauses=new LinkedList<String>();
+				activityWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
+				ret=sqlHelper.deleteFromTableByWhereClauses(activityTableName, activityWhereClauses, SQLHelper.logicAND);
+			
 			} catch(Exception e){
 				System.out.println("SQLCommander.deleteActivity:"+e.getMessage());
 			}
@@ -592,8 +594,8 @@ public class SQLCommander {
 		return ret;
 	}
 
-	public static boolean uploadUserAvatar(BasicUser user, String imageAbsolutePath, String imageURL){
-		boolean ret=false;
+	public static int uploadUserAvatar(BasicUser user, String imageAbsolutePath, String imageURL){
+		int lastImageId=invalidId;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
 			String imageTableName="Image";
@@ -607,8 +609,8 @@ public class SQLCommander {
 			imageColumnValues.add(imageAbsolutePath);
 			imageColumnValues.add(imageURL);
 
-			int lastImageId=sqlHelper.insertToTableByColumns(imageTableName, imageColumnNames, imageColumnValues);
-			if(lastImageId==sqlHelper.invalidId) break;
+			lastImageId=sqlHelper.insertToTableByColumns(imageTableName, imageColumnNames, imageColumnValues);
+			if(lastImageId==SQLHelper.invalidId) break;
 
 			List<String> userColumnNames=new LinkedList<String>();
 			userColumnNames.add(BasicUser.avatarKey);
@@ -622,9 +624,8 @@ public class SQLCommander {
 			boolean result=sqlHelper.updateTableByColumnsAndWhereClauses(userTableName, userColumnNames, userColumnValues, userWhereClauses, SQLHelper.logicAND);
 			if(result==false) break;
 
-			ret=true;
 		}while(false);
-		return ret;
+		return lastImageId;
 	}
 
 	public static Image queryImageByImageId(int imageId){
@@ -654,5 +655,47 @@ public class SQLCommander {
 			}
 		}while(false);
 		return image;
+	}
+
+	public static boolean deleteImageByImageId(int imageId){
+		boolean ret=false;
+		do{
+			String imageTableName="Image";
+			try{
+				SQLHelper sqlHelper=new SQLHelper();
+				List<String> whereClauses=new LinkedList<String>();
+				whereClauses.add(Image.idKey+"="+SQLHelper.convertToQueryValue(imageId));
+				ret=sqlHelper.deleteFromTableByWhereClauses(imageTableName, whereClauses, SQLHelper.logicAND);
+			} catch (Exception e){
+				System.out.println("SQLCommander.deleteImageByImageId"+e.getMessage());
+			}
+		}while(false);
+		return ret;
+	}
+
+	public static boolean deleteImageWithActivity(int imageId, int activityId){
+		boolean ret=false;
+		do{
+			String imageTableName="Image";
+			try{
+				SQLHelper sqlHelper=new SQLHelper();
+				String relationTableName="ActivityImageRelationTable";
+				List<String> relationWhereClauses=new LinkedList<String>();
+				relationWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
+				relationWhereClauses.add(Image.idKey+"="+SQLHelper.convertToQueryValue(imageId));
+				boolean resultRelationDeletion=sqlHelper.deleteFromTableByWhereClauses(relationTableName, relationWhereClauses, SQLHelper.logicAND);
+				
+				if(resultRelationDeletion==false) break;
+				
+				List<String> imageWhereClauses=new LinkedList<String>();
+				imageWhereClauses.add(Image.idKey+"="+SQLHelper.convertToQueryValue(imageId));
+				ret=sqlHelper.deleteFromTableByWhereClauses(imageTableName, imageWhereClauses, SQLHelper.logicAND);
+				
+			} catch(Exception e){
+				System.out.println("SQLCommander.deleteImageWithActivity:"+e.getMessage());
+			}
+		}while(false);
+
+		return ret;
 	}
 };
