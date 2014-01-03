@@ -17,7 +17,6 @@ function onBtnCreateClicked(evt){
     					var jsonActivity=JSON.parse(data);
 						var editor=generateActivityEditorByJson(jsonActivity);
 						sectionActivityEditor.append(editor);
-						queryActivitiesHostedByUser();
     				} else{
     					
     				}
@@ -45,8 +44,12 @@ function onBtnUpdateClicked(evt){
 				UserToken: token.toString()
 			},
 			function(data, status, xhr){
-				if(status=="success") return true;
-				else return false;
+				if(status=="success"){
+					var editor=this.parentNode;
+					editor.remove();
+				} else{
+
+				}
 			}
 		);
 	} catch(err){
@@ -67,8 +70,13 @@ function onBtnDeleteClicked(evt){
 				UserToken: token.toString()
 			},
 			function(data, status, xhr){
-				if(status=="success") return true;
-				else return false;
+				if(status=="success"){
+					var editor=this.parentNode;
+					editor.remove();
+				}
+				else{
+
+				}
 			}
 		);
 	} catch(err){
@@ -93,8 +101,12 @@ function onBtnSubmitClicked(evt){
 				UserToken: token.toString()
 			},
 			function(data, status, xhr){
-    			if(status=="success")	return true;
-    			else return false;
+    			if(status=="success"){
+    				var editor=this.parentNode;
+					editor.remove();
+    			} else{
+
+    			}
 			}
 		);
 	} catch(err){
@@ -103,11 +115,12 @@ function onBtnSubmitClicked(evt){
 }
 
 function onBtnCancelClicked(evt){
-	$("."+g_classActivityEditor).remove();
-	$("."+g_classBtnCreate).show();
+	var editor=this.parentNode;
+	editor.remove();
+	$("#"+g_idBtnCreate).show();
 }
 
-// generator
+// Generator
 function generateActivityEditorByJson(jsonActivity){
 	var activityId=jsonActivity[g_keyActivityId];
 	var activityTitle=jsonActivity[g_keyActivityTitle];

@@ -1,30 +1,40 @@
 function checkLoginStatus(evt){
-	var token = $.cookie(g_keyLoginStatus.toString());
-	if(token!=null){
-		validateToken(token);
-	}
-}
 
-function validateToken(token){
-	$.post("/checkLoginStatus",
-			{
-				UserToken: token.toString(),
-			},
-			// post response callback function
-			function(data, status, xhr){
-				if(status=="success"){
-					var userJson=JSON.parse(data);
-    				g_userName=userJson[g_keyUserEmail];
-    				g_userAvatarURL=userJson[g_keyImageURL];
-    				// store token in cookie iff query succeeds
-    				$.cookie(g_keyLoginStatus.toString(), userJson[g_keyUserToken]);
-    				// refresh screen
-    				refreshOnLoggedIn();
-	    		} else{
+	do{
+		var token = $.cookie(g_keyLoginStatus.toString());
+		if(token==null) break;
+		$.post("/checkLoginStatus",
+				{
+					UserToken: token.toString(),
+				},
+				// post response callback function
+				function(data, status, xhr){
+					
+					var result=false;
 
-	    		}
-		    }
-	);
+					if(status=="success"){
+						var userJson=JSON.parse(data);
+	    				g_userName=userJson[g_keyUserEmail];
+	    				g_userAvatarURL=userJson[g_keyImageURL];
+	    				// store token in cookie iff query succeeds
+	    				$.cookie(g_keyLoginStatus.toString(), userJson[g_keyUserToken]);
+		    			result=true;
+		    		}
+
+		    		if(result==true){
+						// refresh screen
+					   	refreshOnLoggedIn();
+					   	queryDefaultActivitiesByUser();
+					} else{
+						// refresh screen
+						refreshOnEnter();
+						queryDefaultActivities();
+					}
+			    }
+		);
+	} while(false);
+
+	
 }
 
 function validateEmail(){
@@ -53,7 +63,7 @@ function queryDefaultActivitiesByUser(){
     					for(var key in jsonResponse){
     						var jsonRecord=jsonResponse[key];
     						var cell=generateDefaultActivityCell(jsonRecord);
-						targetSection.append(cell);
+							targetSection.append(cell);
     					}
     				} else{
     					
@@ -113,5 +123,5 @@ function refreshOnLoggedIn(){
 	sectionUserInfo.bind("mouseenter", onMouseEnterSectionUserInfo);
 	sectionUserInfo.bind("mouseleave", onMouseLeaveSectionUserInfo);
 
-	$("."+g_classBtnCreate).show();
+	$("#"+g_idBtnCreate).show();
 }

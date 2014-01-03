@@ -32,6 +32,7 @@ function onMouseLeaveDefaultActivityCell(evt){
 
 function onBtnJoinClicked(evt){
 	evt.preventDefault();
+	var btnJoin=this;
 	var token = $.cookie(g_keyLoginStatus.toString());
 	var activityId=jQuery.data(this, g_keyActivityId);
 	var id=parseInt(activityId);
@@ -42,8 +43,22 @@ function onBtnJoinClicked(evt){
 				UserToken: token.toString()
 			},
 			function(data, status, xhr){
-				if(status=="success") return true;
-				else return false;
+				if(status=="success"){
+					var cellNode=btnJoin.parentNode; // javascript dom element
+					var cell=$(cellNode); // convert to jQuery element object
+					btnJoin.remove();
+					
+					var appliedIndicator=$('<div>',
+					{
+						class: g_classAppliedIndicator,
+						html: 'Applied'
+					});
+					cell.append(appliedIndicator);
+					cell.data(g_indexStatusIndicator, appliedIndicator);
+					
+				} else{
+
+				}
 			}
 		);
 	} catch(err){
@@ -149,6 +164,8 @@ function generateDefaultActivityCell(jsonRecord){
 		ret.bind("mouseenter", onMouseEnterDefaultActivityCell);
 		ret.bind("mouseleave", onMouseLeaveDefaultActivityCell);
 		btnJoin.hide();
+
+		ret.data(g_indexBtnJoin, btnJoin);
 	} else{
 		var appliedIndicator=$('<div>',
 							{
@@ -156,9 +173,10 @@ function generateDefaultActivityCell(jsonRecord){
 								html: 'Applied'
 							});
 		ret.append(appliedIndicator);
+
+		ret.data(g_indexStatusIndicator, appliedIndicator);
 	}
 	
-	ret.data(g_indexBtnJoin, btnJoin);
 	ret.data(g_keyActivityId, activityId);
 	ret.data(g_keyActivityTitle, activityTitle);
 	ret.data(g_keyActivityContent, activityContent);

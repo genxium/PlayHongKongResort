@@ -3,7 +3,7 @@ var g_classFieldActivityTitle="classFieldActivityTitle";
 var g_classFieldActivityContent="classFieldActivityContent";
 
 // button keys
-var g_classBtnCreate="classBtnCreate";
+var g_idBtnCreate="idBtnCreate";
 var g_classBtnEdit="classBtnEdit";
 var g_classBtnSubmit="classBtnSubmit";
 var g_classBtnDelete="classBtnDelete";
