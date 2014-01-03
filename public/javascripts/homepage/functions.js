@@ -38,34 +38,6 @@ function validateEmail(){
 	return true;
 }
 
-function queryActivitiesHostedByUser(){
-	var targetSection=$("#"+g_idSectionOwnedActivities);
-	targetSection.empty();
-	var token = $.cookie(g_keyLoginStatus.toString());
-	try{
-		$.post("/queryActivitiesHostedByUser", 
-			{
-				UserToken: token.toString()
-			},
-			function(data, status, xhr){
-    				if(status=="success"){
-    					var jsonResponse=JSON.parse(data);
-    					for(var key in jsonResponse){
-    						var jsonActivity=jsonResponse[key];
-    						var cell=generateActivityCell(jsonActivity);
-    						var text=cell.html();
-							targetSection.append(cell);
-    					}
-    				} else{
-    					
-    				}
-			}
-		);
-	} catch(err){
-
-	}
-}
-
 function queryDefaultActivitiesByUser(){
 	var targetSection=$("#"+g_idSectionDefaultActivities);
 	targetSection.empty();
@@ -116,6 +88,7 @@ function refreshOnLoggedIn(){
 
 	// bind menu to sectionUserInfo
 	var sectionUserInfo=$("#"+g_idSectionUserInfo);
+	sectionUserInfo.empty();
 	sectionUserInfo.show();
 
 	var greetingMessage=$('<div>',
@@ -140,8 +113,5 @@ function refreshOnLoggedIn(){
 	sectionUserInfo.bind("mouseenter", onMouseEnterSectionUserInfo);
 	sectionUserInfo.bind("mouseleave", onMouseLeaveSectionUserInfo);
 
-	$("#"+g_idSectionOwnedActivities).show();
-	$("#"+g_idBtnCreate).show();
-	
-	queryActivitiesHostedByUser();
+	$("."+g_classBtnCreate).show();
 }

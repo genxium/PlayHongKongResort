@@ -46,32 +46,3 @@ function onBtnLoginClicked(evt){
 		    }
 	);
 }
-
-function onBtnCreateClicked(evt){
-
-	evt.preventDefault();
-
-	sectionActivityEditor=$("#"+g_idSectionActivityEditor);
-	sectionActivityEditor.empty();
-	var userToken=$.cookie(g_keyLoginStatus.toString());
-	
-	try{
-		$.post("/createActivity", 
-			{
-				UserToken: userToken.toString()
-			},
-			function(data, status, xhr){
-    				if(status=="success"){
-    					var jsonActivity=JSON.parse(data);
-						var editor=generateActivityEditorByJson(jsonActivity);
-						sectionActivityEditor.append(editor);
-						queryActivitiesHostedByUser();
-    				} else{
-    					
-    				}
-			}
-		);
-	} catch(err){
-		sectionActivityEditor.html(err.message);
-	}
-}

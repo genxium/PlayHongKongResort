@@ -26,4 +26,6 @@ var g_keyActivityStatus="ActivityStatus";
 
 var g_keyUserActivityRelationId="UserActivityRelationId";
 
+var g_keyImageId="ImageId";
 var g_keyImageURL="ImageURL";
+
