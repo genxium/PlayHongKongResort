@@ -37,6 +37,7 @@ function onBtnLogoutClicked(evt){
     				if(status=="success"){
     					$.removeCookie(g_keyLoginStatus.toString());
     					refreshOnEnter();
+    					queryDefaultActivities();
     				} else{
 
     				}

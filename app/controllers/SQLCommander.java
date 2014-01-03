@@ -75,6 +75,7 @@ public class SQLCommander {
 			columnNames.add(BasicUser.authenticationStatusKey);
 			columnNames.add(BasicUser.genderKey);
 			columnNames.add(BasicUser.lastLoggedInTimeKey);
+			columnNames.add(BasicUser.avatarKey);
 
 			whereClauses.add(BasicUser.emailKey+"="+SQLHelper.convertToQueryValue(email));
 			String logicLink=SQLHelper.logicAND;
@@ -85,12 +86,13 @@ public class SQLCommander {
             try{		 
 	            Iterator<JSONObject> it=results.iterator();
 		        if(it.hasNext()){
-			        JSONObject jsonObject=(JSONObject)it.next();
-			       	Integer userId=(Integer)jsonObject.get(BasicUser.idKey);
-		      		String password=(String)jsonObject.get(BasicUser.passwordKey);
-		      		String name=(String)jsonObject.get(BasicUser.nameKey);
-          		    user=BasicUser.create(userId, email, password, name);
-		    	} 	
+			        JSONObject userJson=(JSONObject)it.next();
+			       	int userId=(Integer)userJson.get(BasicUser.idKey);
+		      		String password=(String)userJson.get(BasicUser.passwordKey);
+		      		String name=(String)userJson.get(BasicUser.nameKey);
+		      		int avatar=(Integer)userJson.get(BasicUser.avatarKey);
+          		    user=BasicUser.create(userId, email, password, name, avatar);
+		    	}
 			} catch (Exception e) {
 				    	
 	        }
