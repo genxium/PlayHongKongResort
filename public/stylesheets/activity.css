@@ -113,6 +113,10 @@
 	margin-left: 50pt;
 }
 
+.classFieldImageOfActivity{
+	display: table-row;
+}
+
 /* Activity Cells */
 
 #idSectionOwnedActivities

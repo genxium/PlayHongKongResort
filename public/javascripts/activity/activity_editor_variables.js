@@ -1,6 +1,7 @@
 // input-box keys
 var g_classFieldActivityTitle="classFieldActivityTitle";
 var g_classFieldActivityContent="classFieldActivityContent";
+var g_classFieldImageOfActivity="classFieldImageOfActivity";
 
 // button keys
 var g_idBtnCreate="idBtnCreate";
@@ -15,6 +16,8 @@ var g_idSectionActivityEditor="idSectionActivityEditor";
 var g_classActivityEditor="classActivityEditor";
 var g_classActivityEditorContainer="classActivityEditorContainer";
 
-// button indexes for cascaded DOM element search
+// DOM indexes for cascaded DOM element search
 var g_indexBtnEdit="indexBtnEdit";
 var g_indexStatusIndicator="indexStatusIndicator";
+var g_indexActivityEditorContainer="indexActivityEditorContainer";
+var g_indexImageOfActivityPrefix="indexImageOfActivityPrefix";

@@ -148,7 +148,7 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 				class: g_classActivityEditor	
 	 			});
 
-	 var formContainer=$('<div>',
+	 var formContainer=$('<form>',
 	 					{
 	 						class: g_classActivityEditorContainer
 	 					});
@@ -177,8 +177,23 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 				  });
 	 contentInput.val(activityContent);
 	 formContainer.append(contentInput);
+
+	 var maxNumberOfImagesForSingleActivity=3;
+	 for (var i = 0; i < maxNumberOfImagesForSingleActivity; i++) {
+	 	var imageName=g_indexImageOfActivityPrefix+i;
+	 	var imageField=$('<input>',
+				 		{
+				 			class: g_classFieldImageOfActivity,
+							type: 'file',
+							name: imageName 	 			
+				 		});
+	 	formContainer.append(imageField);
+	 	formContainer.data(imageName, imageField);
+	 };
+
 	 ret.append(formContainer);
-	 
+	 ret.data(g_indexActivityEditorContainer, formContainer);
+
 	 var btnUpdate=$('<button>',{
 	 					class: g_classBtnUpdate,
 	 					text: 'Update' 
@@ -209,5 +224,6 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 				});
 	 btnCancel.bind("click", onBtnCancelClicked);
 	 ret.append(btnCancel);
+
 	 return ret;
 }
