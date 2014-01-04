@@ -1,3 +1,29 @@
+// Assistant Callback Functions
+function onUpdateFormSubmission(formEvt){
+		var formObj = $(this);
+		var formData = new FormData(this);
+		
+		// append an user token for identity
+		var token = $.cookie(g_keyLoginStatus.toString());
+		formData.append(g_keyUserToken, token);
+		
+		$.ajax({
+			method: "POST",
+			url: "/updateActivity", 
+			data: formData,
+			mimeType: "mutltipart/form-data",
+			contentType: false,
+			processData: false,
+			success: function(data, status, xhr){
+
+			},
+			error: function(xhr, status, errorThrown){
+
+			}
+		});
+		formEvt.preventDefault(); // prevent default action.
+}
+
 // Assistant Handlers
 function onBtnCreateClicked(evt){
 
@@ -29,19 +55,21 @@ function onBtnCreateClicked(evt){
 }
 
 function onBtnUpdateClicked(evt){
+
+	evt.preventDefault();
 	
-	var activityId=jQuery.data(this, g_keyActivityId);
-	var id=activityId;
+	var activityId=$(this).data(g_keyActivityId);
 	var title=$("."+g_classFieldActivityTitle).val();
 	var content=$("."+g_classFieldActivityContent).val();
 	var token=$.cookie(g_keyLoginStatus.toString());
 
 	var editor=$(this).parent();
+	var formData = new FormData(editor);
 
 	try{
 		$.post("/updateActivity", 
 			{
-				ActivityId: id.toString(),
+				ActivityId: activityId.toString(),
 				ActivityTitle: title.toString(),
 				ActivityContent: content.toString(),
 				UserToken: token.toString()
@@ -63,8 +91,10 @@ function onBtnUpdateClicked(evt){
 }
 
 function onBtnDeleteClicked(evt){
+
+	evt.preventDefault();
 	
-	var activityId=jQuery.data(this, g_keyActivityId);
+	var activityId=$(this).data(g_keyActivityId);
 	var id=activityId;
 	var token=$.cookie(g_keyLoginStatus.toString());
 	var editor=$(this).parent();
@@ -93,8 +123,10 @@ function onBtnDeleteClicked(evt){
 }
 
 function onBtnSubmitClicked(evt){
+
+	evt.preventDefault();
 	
-	var activityId=jQuery.data(this, g_keyActivityId);
+	var activityId=$(this).data(g_keyActivityId);
 	var id=activityId;
 	var title=$("."+g_classFieldActivityTitle).val();
 	var content=$("."+g_classFieldActivityContent).val();
@@ -127,6 +159,7 @@ function onBtnSubmitClicked(evt){
 }
 
 function onBtnCancelClicked(evt){
+	evt.preventDefault();
 	var editor=$(this).parent();
 	editor.remove();
 	$("#"+g_idBtnCreate).show();
@@ -143,40 +176,37 @@ function generateActivityEditorByJson(jsonActivity){
 }
 
 function generateActivityEditor(activityId, activityTitle, activityContent){
-	 var ret=$('<div>',
+	 var ret=$('<form>',
 	 			{
 	 				class: g_classActivityEditor	
 	 			});
-
-	 var formContainer=$('<form>',
-	 					{
-	 						class: g_classActivityEditorContainer
-	 					});
 
 	 var titleText=$('<p>',
 	 			 {
 	 			 	html: 'Title'
 				 });
-	 formContainer.append(titleText);
+	 ret.append(titleText);
 	 var titleInput=$('<input>',
 	 				{
 		 				class: g_classFieldActivityTitle,
 		 				type: 'text',
-		 				value: activityTitle
+		 				value: activityTitle,
+		 			 	name: g_keyActivityTitle
 	 				});
-	 formContainer.append(titleInput);
+	 ret.append(titleInput);
 	 var contentText=$('<p>',
 	 			   {
 				   		html: 'Content'
  				   });
 
-	 formContainer.append(contentText);
+	 ret.append(contentText);
 	 var contentInput=$('<TEXTAREA>',
 	 				  {
 	 				  	class: g_classFieldActivityContent, 
+	 				  	name: g_keyActivityContent
 	 				  });
 	 contentInput.val(activityContent);
-	 formContainer.append(contentInput);
+	 ret.append(contentInput);
 
 	 var maxNumberOfImagesForSingleActivity=3;
 	 for (var i = 0; i < maxNumberOfImagesForSingleActivity; i++) {
@@ -187,12 +217,9 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 							type: 'file',
 							name: imageName 	 			
 				 		});
-	 	formContainer.append(imageField);
-	 	formContainer.data(imageName, imageField);
+	 	ret.append(imageField);
+	 	ret.data(imageName, imageField);
 	 };
-
-	 ret.append(formContainer);
-	 ret.data(g_indexActivityEditorContainer, formContainer);
 
 	 var btnUpdate=$('<button>',{
 	 					class: g_classBtnUpdate,

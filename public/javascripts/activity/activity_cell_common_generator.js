@@ -1,9 +1,9 @@
 // Assistant Handlers
 function onBtnEditClicked(evt){
 
-	var activityId=jQuery.data(this, g_keyActivityId);
-	var activityTitle=jQuery.data(this, g_keyActivityTitle);
-	var activityContent=jQuery.data(this, g_keyActivityContent);
+	var activityId=$(this).data(g_keyActivityId);
+	var activityTitle=$(this).data(g_keyActivityTitle);
+	var activityContent=$(this).data(g_keyActivityContent);
 	
 	sectionActivityEditor=$("#"+g_idSectionActivityEditor);
 	sectionActivityEditor.empty();
@@ -21,12 +21,12 @@ function onMouseLeaveOwnedActivityCell(evt){
 }
 
 function onMouseEnterDefaultActivityCell(evt){
-	var btnJoin=jQuery.data(this, g_indexBtnJoin);
+	var btnJoin=$(this).data(g_indexBtnJoin);
 	btnJoin.show();
 }
 
 function onMouseLeaveDefaultActivityCell(evt){
-	var btnJoin=jQuery.data(this, g_indexBtnJoin);
+	var btnJoin=$(this).data(g_indexBtnJoin);
 	btnJoin.hide();
 }
 
@@ -34,7 +34,7 @@ function onBtnJoinClicked(evt){
 	evt.preventDefault();
 	var btnJoin=this;
 	var token = $.cookie(g_keyLoginStatus.toString());
-	var activityId=jQuery.data(this, g_keyActivityId);
+	var activityId=$(this).data(g_keyActivityId);
 	var id=parseInt(activityId);
 	try{
 		$.post("/joinActivity", 

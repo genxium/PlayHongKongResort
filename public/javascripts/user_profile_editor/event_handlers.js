@@ -1,5 +1,5 @@
 // Assistant Callback Functions
-function onUploadAvatarFormSubmit(formEvt){
+function onUploadAvatarFormSubmission(formEvt){
 		var formObj = $(this);
 		var formData = new FormData(this);
 		
@@ -34,6 +34,6 @@ function onBtnUploadAvatarClicked(evt){
 	
 	var form = $("#"+g_idFormAvatar);
 	// set callback function of form submission
-	form.submit(onUploadAvatarFormSubmit);
+	form.submit(onUploadAvatarFormSubmission);
 	form.submit();
 }
