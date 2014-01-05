@@ -321,12 +321,24 @@ public class Application extends Controller {
             			String activityTitle=(String)activityJSON.get(Activity.titleKey);
             			String activityContent=(String)activityJSON.get(Activity.contentKey);
             			Integer activityStatus=(Integer)activityJSON.get(Activity.statusKey);
+            			List<Integer> imageIds=SQLCommander.queryImageIdsByActivityId(activityId);
 
             			ObjectNode singleActivityNode=Json.newObject();
             			singleActivityNode.put(Activity.idKey, activityId.toString());
             			singleActivityNode.put(Activity.titleKey, activityTitle);
             			singleActivityNode.put(Activity.contentKey, activityContent);
             			singleActivityNode.put(Activity.statusKey, activityStatus.toString());
+            			
+            			if(imageIds!=null){
+            			  Iterator<Integer> itImageId=imageIds.iterator();
+            			  if(itImageId!=null && itImageId.hasNext()){
+            				  int firstImageId=itImageId.next();
+            				  Image firstImage=SQLCommander.queryImageByImageId(firstImageId);
+            				  String firstImageURL=firstImage.getImageURL();
+            				  singleActivityNode.put(Image.urlKey, firstImageURL);
+            			  }
+            			}
+                
             			result.put(activityId.toString(), singleActivityNode);
             		}
             } catch(Exception e){
@@ -410,12 +422,7 @@ public class Application extends Controller {
         				singleActivityNode.put(Activity.idKey, activityId.toString());
         				singleActivityNode.put(Activity.titleKey, activityTitle);
         				singleActivityNode.put(Activity.contentKey, activityContent);
-        				if(imageIds!=null && imageIds.size()>0){
-        					int firstImageId=imageIds.indexOf(0);
-        					Image firstImage=SQLCommander.queryImageByImageId(firstImageId);
-        					String firstImageURL=firstImage.getImageURL();
-        					singleActivityNode.put(Image.urlKey, firstImageURL);
-        				}
+        				
         				result.put(activityId.toString(), singleActivityNode);
       			}
       			return ok(result);
@@ -446,7 +453,8 @@ public class Application extends Controller {
     				String activityTitle=(String)recordJson.get(Activity.titleKey);
     				String activityContent=(String)recordJson.get(Activity.contentKey);
     				Integer userActivityRelationId=(Integer)recordJson.get(UserActivityRelationTable.relationIdKey);
-    				
+    				List<Integer> imageIds=SQLCommander.queryImageIdsByActivityId(activityId);
+
     				ObjectNode singleRecordNode=Json.newObject();
     				singleRecordNode.put(Activity.idKey, activityId.toString());
     				singleRecordNode.put(Activity.titleKey, activityTitle);
@@ -454,6 +462,7 @@ public class Application extends Controller {
     				if(userActivityRelationId!=null){
     					singleRecordNode.put(UserActivityRelationTable.relationIdKey, userActivityRelationId.toString());
     				}
+            
     				result.put(activityId.toString(), singleRecordNode);
   			}
   			return ok(result);

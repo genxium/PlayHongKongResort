@@ -75,11 +75,21 @@ function generateActivityCell(jsonActivity){
 	var activityTitle=jsonActivity[g_keyActivityTitle];
 	var activityContent=jsonActivity[g_keyActivityContent];
 	var activityStatus=jsonActivity[g_keyActivityStatus];
+	var coverImageURL=jsonActivity[g_keyImageURL];
 
 	var ret=$('<div>',
 				{
 					class: g_classCellActivityContainer
 				});
+
+	if(coverImageURL!=null){
+		var coverImage=$('<img>',
+							{
+								class: g_classActivityCoverImage,
+								src: coverImageURL
+							});
+		ret.append(coverImage);
+	}
 
 	var cellActivityTitle=$('<div>',
 				{	
@@ -131,11 +141,21 @@ function generateDefaultActivityCell(jsonRecord){
 	var activityTitle=jsonRecord[g_keyActivityTitle];
 	var activityContent=jsonRecord[g_keyActivityContent];
 	var userActivityRelationId=jsonRecord[g_keyUserActivityRelationId];
-	
+	var coverImageURL=jsonRecord[g_keyImageURL];
+
 	var ret=$('<div>',
 				{
 					class: g_classCellActivityContainer
 				});
+
+	if(coverImageURL!=null){
+		var coverImage=$('<img>',
+							{
+								class: g_classActivityCoverImage,
+								src: coverImageURL
+							});
+		ret.append(coverImage);
+	}
 
 	var cellActivityTitle=$('<div>',
 				{	

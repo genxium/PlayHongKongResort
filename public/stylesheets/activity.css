@@ -138,6 +138,12 @@
 	border: 2pt solid #00ccff;
 }
 
+.classActivityCoverImage
+{
+	width: 200px;
+	height: 100px;
+}
+
 .classCellActivityTitle
 {
 	display: table-row;
