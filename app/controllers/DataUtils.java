@@ -80,10 +80,11 @@ public class DataUtils{
             try{
                 java.util.Date date= new java.util.Date();
                 Timestamp currentTime=new Timestamp(date.getTime());
-                ret="UID"+userId.toString()+"."+currentTime.toString()+"."+originalName;
+                Long epochTime=currentTime.getTime();
+                ret="UID"+userId.toString()+"."+epochTime.toString()+"."+originalName;
             } catch (Exception e){
                 System.out.println("DataUtils.generateUploadedImageName:"+e.getMessage());
-            }   
+            }
             return ret;
     }
 }

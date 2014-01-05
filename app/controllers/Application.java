@@ -69,9 +69,9 @@ public class Application extends Controller {
   		    result.put(BasicUser.idKey, user.getUserId());
   		    result.put(BasicUser.emailKey, user.getEmail());
   		    result.put(BasicUser.tokenKey, token);
-          if(image!=null){
-              result.put(Image.urlKey, image.getImageURL());
-          }
+  		    if(image!=null){
+  		    		result.put(Image.urlKey, image.getImageURL());
+  		    }
   		    return ok(result);
         
         }while(false);
@@ -404,12 +404,18 @@ public class Application extends Controller {
         				Integer activityId=(Integer)activityJSON.get(Activity.idKey);
         				String activityTitle=(String)activityJSON.get(Activity.titleKey);
         				String activityContent=(String)activityJSON.get(Activity.contentKey);
-        			
+        				List<Integer> imageIds=SQLCommander.queryImageIdsByActivityId(activityId);
+        				
         				ObjectNode singleActivityNode=Json.newObject();
         				singleActivityNode.put(Activity.idKey, activityId.toString());
         				singleActivityNode.put(Activity.titleKey, activityTitle);
         				singleActivityNode.put(Activity.contentKey, activityContent);
-        			
+        				if(imageIds!=null && imageIds.size()>0){
+        					int firstImageId=imageIds.indexOf(0);
+        					Image firstImage=SQLCommander.queryImageByImageId(firstImageId);
+        					String firstImageURL=firstImage.getImageURL();
+        					singleActivityNode.put(Image.urlKey, firstImageURL);
+        				}
         				result.put(activityId.toString(), singleActivityNode);
       			}
       			return ok(result);
