@@ -6,6 +6,7 @@ import model.BasicUser;
 import play.mvc.*;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.RequestBody;
+import play.mvc.Http.MultipartFormData.FilePart;
 
 public class DataUtils{
 
@@ -17,7 +18,8 @@ public class DataUtils{
 		return ext;
     }
     
-    public static boolean isImage(String contentType){
+    public static boolean isImage(FilePart imageFile){
+    		String contentType=imageFile.getContentType();
     		int slashPos=contentType.indexOf('/');
 		String typePrefix=contentType.substring(0, slashPos);
 		if(typePrefix.compareTo("image")==0){
@@ -26,8 +28,17 @@ public class DataUtils{
 		return false;
     }
     
+    public static boolean validateImage(FilePart imageFile){
+    		boolean ret=false;
+    		do{
+    			if(isImage(imageFile)==false) break;
+    			ret=true;
+    		}while(false);
+    		return ret;
+    }
+    
     public static String getUserToken(MultipartFormData data){
-    		Map<String, String[]> formData= data.asFormUrlEncoded();
+    	Map<String, String[]> formData= data.asFormUrlEncoded();
 		String[] tokens=formData.get(BasicUser.tokenKey);
 		String token=tokens[0];
 		return token;
@@ -64,12 +75,11 @@ public class DataUtils{
     		return content.length()>=0;
     }
 
-    public static String generateUploadedImageName(String originalName, String token){
+    public static String generateUploadedImageName(String originalName, Integer userId){
             String ret=null;
             try{
                 java.util.Date date= new java.util.Date();
                 Timestamp currentTime=new Timestamp(date.getTime());
-                Integer userId=getUserIdByToken(token);
                 ret="UID"+userId.toString()+"."+currentTime.toString()+"."+originalName;
             } catch (Exception e){
                 System.out.println("DataUtils.generateUploadedImageName:"+e.getMessage());

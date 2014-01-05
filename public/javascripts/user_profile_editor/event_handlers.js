@@ -1,5 +1,8 @@
 // Assistant Callback Functions
 function onUploadAvatarFormSubmission(formEvt){
+
+		formEvt.preventDefault(); // prevent default action.
+
 		var formObj = $(this);
 		var formData = new FormData(this);
 		
@@ -21,7 +24,7 @@ function onUploadAvatarFormSubmission(formEvt){
 				$("#"+g_idSectionResponse).html("Failed");
 			}
 		});
-		formEvt.preventDefault(); // prevent default action.
+
 }
 
 // Event Handlers
@@ -35,5 +38,6 @@ function onBtnUploadAvatarClicked(evt){
 	var form = $("#"+g_idFormAvatar);
 	// set callback function of form submission
 	form.submit(onUploadAvatarFormSubmission);
+	// invoke submission
 	form.submit();
 }

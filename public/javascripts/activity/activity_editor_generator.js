@@ -1,11 +1,24 @@
 // Assistant Callback Functions
 function onUpdateFormSubmission(formEvt){
+
+		formEvt.preventDefault(); // prevent default action.
+
 		var formObj = $(this);
 		var formData = new FormData(this);
 		
-		// append an user token for identity
+		// append user token and activity id for identity
 		var token = $.cookie(g_keyLoginStatus.toString());
 		formData.append(g_keyUserToken, token);
+
+		var activityId = $(this).data(g_keyActivityId);
+		formData.append(g_keyActivityId, activityId.toString());
+		
+		// append activity title and content 
+		var activityTitle=$("."+g_classFieldActivityTitle).val();
+		formData.append(g_keyActivityTitle, activityTitle);
+		
+		var activityContent=$("."+g_classFieldActivityContent).val();
+		formData.append(g_keyActivityContent, activityContent);
 		
 		$.ajax({
 			method: "POST",
@@ -21,7 +34,7 @@ function onUpdateFormSubmission(formEvt){
 
 			}
 		});
-		formEvt.preventDefault(); // prevent default action.
+
 }
 
 // Assistant Handlers
@@ -57,16 +70,16 @@ function onBtnCreateClicked(evt){
 function onBtnUpdateClicked(evt){
 
 	evt.preventDefault();
-	
-	var activityId=$(this).data(g_keyActivityId);
-	var title=$("."+g_classFieldActivityTitle).val();
-	var content=$("."+g_classFieldActivityContent).val();
-	var token=$.cookie(g_keyLoginStatus.toString());
 
 	var editor=$(this).parent();
 	var formData = new FormData(editor);
 
 	try{
+		// assign callback function
+		editor.submit(onUpdateFormSubmission);
+		// invoke submission
+		editor.submit();
+		/*	
 		$.post("/updateActivity", 
 			{
 				ActivityId: activityId.toString(),
@@ -85,6 +98,8 @@ function onBtnUpdateClicked(evt){
 				}
 			}
 		);
+		*/
+
 	} catch(err){
 		
 	}
@@ -194,6 +209,7 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 		 			 	name: g_keyActivityTitle
 	 				});
 	 ret.append(titleInput);
+	 
 	 var contentText=$('<p>',
 	 			   {
 				   		html: 'Content'
@@ -252,5 +268,7 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 btnCancel.bind("click", onBtnCancelClicked);
 	 ret.append(btnCancel);
 
+	 ret.data(g_keyActivityId, activityId);
+	 
 	 return ret;
 }

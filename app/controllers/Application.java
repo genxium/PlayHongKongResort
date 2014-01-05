@@ -7,6 +7,7 @@ import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Http.RequestBody;
 import model.*;
 import dao.SQLHelper;
+
 import org.json.simple.JSONObject;
 
 import java.util.Iterator;
@@ -133,69 +134,36 @@ public class Application extends Controller {
     public static Result uploadAvatar() {
     	  // define response attributes
     	  response().setContentType("text/plain");
-    	  
-    	  RequestBody body = request().body();
-    	  
-    	  // get file data from request body stream
-    	  MultipartFormData data = body.asMultipartFormData();
-    	  FilePart avatarFile = data.getFile("Avatar");
 
-    	  // get user token from request body stream
-    	  String token=DataUtils.getUserToken(data);
-    	  
     	  do{
-    		  	if(avatarFile==null) break;
-      	    String fileName = avatarFile.getFilename();
-      	    File file = avatarFile.getFile();
-      		  String contentType=avatarFile.getContentType();
-        		try {
-      	    		if(DataUtils.isImage(contentType)==false) break;
-      	    		int userId=DataUtils.getUserIdByToken(token);
-      	    		if(userId==DataUtils.invalidId) break;
-      	    		BasicUser user=SQLCommander.queryUserByUserId(userId);
-      	    		if(user==null) break;
+    		  RequestBody body = request().body();
+    	  
+    		  // get file data from request body stream
+    		  MultipartFormData data = body.asMultipartFormData();
+    		  FilePart avatarFile = data.getFile("Avatar");
 
-                int previousAvatarId=user.getAvatar();
+    		  // get user token from request body stream
+    		  String token=DataUtils.getUserToken(data);
+    		  int userId=DataUtils.getUserIdByToken(token);
+    		  if(userId==DataUtils.invalidId) break;
+    		  BasicUser user=SQLCommander.queryUserByUserId(userId);
+    		  if(user==null) break;
 
-                String urlFolderName="assets/images";
-      	    		String newImageName=DataUtils.generateUploadedImageName(fileName, token);
-                String imageURL="/"+urlFolderName+"/"+newImageName;
-
-                String rootDir=Play.application().path().getAbsolutePath();
-                String absoluteFolderName="public/images";
-                String imageAbsolutePath=rootDir+"/"+absoluteFolderName+"/"+newImageName;
-
-      	    		int imageId=SQLCommander.uploadUserAvatar(user, imageAbsolutePath, imageURL);
-      	    		if(imageId==SQLCommander.invalidId) break;
-      	    		
-      	    		// Save renamed file to server storage at the final step
-      	    		boolean renamingResult=file.renameTo(new File(imageAbsolutePath));
-
-                if(renamingResult==false){
-                    System.out.println("Application.uploadAvatar: "+newImageName+" could not be saved.");
-                    // recover table `Image`
-                    boolean isRecovered=SQLCommander.deleteImageByImageId(imageId);
-                    // TODO...
-                    break;
-                } else{
-                    // delete previous avatar file
-                    Image previousAvatar=SQLCommander.queryImageByImageId(previousAvatarId);
-                    String previousAvatarAbsolutePath=previousAvatar.getImageAbsolutePath();
-                    File previousAvatarFile=new File(previousAvatarAbsolutePath);
-                    boolean isPreviousAvatarFileDeleted=previousAvatarFile.delete();
-                    boolean isPreviousAvatarDeleted=SQLCommander.deleteImageByImageId(previousAvatarId);
-                    if(isPreviousAvatarDeleted==true && isPreviousAvatarFileDeleted==true){
-                        System.out.println("Application.uploadAvatar: previous avatar file and record deleted.");    
-                    }
-                }
-
-      	    		return ok(newImageName);
-      	    		
-            } catch (Exception e) {
-                System.out.println("Application.uploadAvatar: "+e.getMessage());
-            }
+    		  if(avatarFile==null) break;
+    		  int previousAvatarId=user.getAvatar();
+    		  int newAvatarId=ExtraCommander.saveAvatarFile(avatarFile, user);
+    		  if(newAvatarId==ExtraCommander.invalidId) break;
+                
+           // delete previous avatar record and file
+           boolean isPreviousAvatarDeleted=ExtraCommander.deleteImageRecordAndFileByImageId(previousAvatarId);
+           if(isPreviousAvatarDeleted==true){
+                System.out.println("Application.saveAvatarFile: previous avatar file and record deleted.");    
+           }
+         
+    		  return ok("Avatar uploaded");
+    	  
     	  }while(false);
-    	  return badRequest();
+    	  return badRequest("Avatar not uploaded!");
     }
     
     public static Result createActivity(){
@@ -205,8 +173,6 @@ public class Application extends Controller {
   	  	Map<String, String[]> formData=request().body().asFormUrlEncoded();
      		String[] tokens=formData.get(BasicUser.tokenKey);
   	  	String token=tokens[0];
-
-        String resultStr="Activity not created!";
 
         do{
       	  	Integer userId=DataUtils.getUserIdByToken(token);
@@ -235,36 +201,72 @@ public class Application extends Controller {
     }
     
     public static Result updateActivity(){
-    	// define response attributes
-  	  	response().setContentType("text/plain");
-  	  	do{
-    	  	Map<String, String[]> formData=request().body().asFormUrlEncoded();
-    	  	String[] ids=formData.get(Activity.idKey);
-    	  	String[] titles=formData.get(Activity.titleKey);
-    	  	String[] contents=formData.get(Activity.contentKey);
-    	  	String[] tokens=formData.get(BasicUser.tokenKey);
-      	  
-       	  Integer activityId=Integer.parseInt(ids[0]);
-      		String title=titles[0];
-      		String content=contents[0];
-      		String token=tokens[0];
-       	
-       	  Integer userId=DataUtils.getUserIdByToken(token); 
-    	  	Activity activity=SQLCommander.queryActivityByActivityId(activityId);
-    	  	if(SQLCommander.isActivityEditable(userId, activity)==false) break;
-    	  	
-    	  	activity.setTitle(title);
-    	  	activity.setContent(content);
-    	  
-      	  try{
+        // define response attributes
+        response().setContentType("text/plain");
+        
+        do{
+            RequestBody body = request().body();
+            
+            // get file data from request body stream
+            MultipartFormData data = body.asMultipartFormData();
+            
+            List<FilePart> imageFiles=data.getFiles();
+            
+            // get user token and activity id from request body stream
+            Map<String, String[]> formData= data.asFormUrlEncoded();
+         
+            String[] tokens=formData.get(BasicUser.tokenKey);
+            String[] activityIds=formData.get(Activity.idKey);
+
+            String token=tokens[0];
+            int userId=DataUtils.getUserIdByToken(token);
+            if(userId==DataUtils.invalidId) break;
+	    		BasicUser user=SQLCommander.queryUserByUserId(userId);
+	    		if(user==null) break;
+
+	        int activityId=Integer.parseInt(activityIds[0]);
+	            
+            // get activity title and content
+            String[] activityTitles=formData.get(Activity.titleKey);
+            String[] activityContents=formData.get(Activity.contentKey);
+            
+            String activityTitle=activityTitles[0];
+            String activityContent=activityContents[0];
+           
+    	  		try{
+    	  			Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+        	  		if(SQLCommander.isActivityEditable(userId, activity)==false) break;
+        	  	
+        	  		activity.setTitle(activityTitle);
+        	  		activity.setContent(activityContent);
+        	  		
       	  		boolean res=SQLCommander.updateActivity(activity);
       	  		if(res==false) break;
-      	  } catch(Exception e){
+      	  		
+      	  		// save new images
+      	  		List<Integer> previousImageIds=SQLCommander.queryImageIdsByActivityId(activityId);
+                Iterator<FilePart> imageIterator=imageFiles.iterator();
+                while(imageIterator.hasNext()){
+                		FilePart imageFile=imageIterator.next();
+                  	int newImageId=ExtraCommander.saveImageOfActivity(imageFile, user, activity);
+                  	if(newImageId==ExtraCommander.invalidId) break;
+                }
+                
+                // delete previous images
+                Iterator<Integer> previousImageIdIterator=previousImageIds.iterator();
+                while(previousImageIdIterator.hasNext()){
+                		Integer previousImageId=previousImageIdIterator.next();
+                		boolean isDeleted=ExtraCommander.deleteImageRecordAndFileByImageId(previousImageId);
+                		if(isDeleted==false) break;
+                }
+                
+    	  		} catch(Exception e){
       	  		System.out.println("Application.updateActivity:"+e.getMessage());
-      	  }
-    	  	return ok("Activity updated");
-        } while(false);
-        return badRequest("Activity not updated!"); 
+    	  		}
+    	  		return ok("Activity updated");
+      
+        }while(false);
+        return badRequest("Activity not updated!");
     }
     
     public static Result deleteActivity(){
@@ -494,4 +496,6 @@ public class Application extends Controller {
         session().remove(token);
         return ok();
     }
+    
+    
 }

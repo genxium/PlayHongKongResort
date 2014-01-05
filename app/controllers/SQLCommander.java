@@ -621,8 +621,14 @@ public class SQLCommander {
 			List<String> userWhereClauses=new LinkedList<String>();
 			userWhereClauses.add(BasicUser.idKey+"="+user.getUserId());
 
-			boolean result=sqlHelper.updateTableByColumnsAndWhereClauses(userTableName, userColumnNames, userColumnValues, userWhereClauses, SQLHelper.logicAND);
-			if(result==false) break;
+			boolean updateResult=sqlHelper.updateTableByColumnsAndWhereClauses(userTableName, userColumnNames, userColumnValues, userWhereClauses, SQLHelper.logicAND);
+			if(updateResult==false){
+				boolean isRecovered=deleteImageByImageId(lastImageId);
+				if(isRecovered==true){
+					System.out.println("SQLCommander.uploadUserAvatar: image "+lastImageId+ " reverted");
+				}
+				break;
+			}
 
 		}while(false);
 		return lastImageId;
@@ -697,5 +703,68 @@ public class SQLCommander {
 		}while(false);
 
 		return ret;
+	}
+	
+	public static List<Integer> queryImageIdsByActivityId(int activityId){
+		List<Integer> imageIds=null;
+		do{
+			String tableName="ActivityImageRelationTable";
+			SQLHelper sqlHelper=new SQLHelper();
+			List<String> columnNames=new LinkedList<String>();
+			columnNames.add(Image.idKey);
+			List<String> whereClauses=new LinkedList<String>();
+			whereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
+			List<JSONObject> records=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND);
+			imageIds=new LinkedList<Integer>();
+			Iterator<JSONObject> itRecord=records.iterator();
+			while(itRecord.hasNext()){
+				JSONObject record=itRecord.next();
+				Integer imageId=(Integer)record.get(Image.idKey);
+				imageIds.add(imageId);
+			}
+		}while(false);
+		return imageIds;
+	}
+	
+	public static int uploadImageOfActivity(BasicUser user, Activity activity, String imageAbsolutePath, String imageURL){
+		int lastImageId=invalidId;
+		do{
+			if(user==null) break;
+			if(activity==null) break;
+			SQLHelper sqlHelper=new SQLHelper();
+			String imageTableName="Image";
+			String relationTableName="ActivityImageRelationTable";
+
+			List<String> imageColumnNames=new LinkedList<String>();
+			imageColumnNames.add(Image.absolutePathKey);
+			imageColumnNames.add(Image.urlKey);
+
+			List<Object> imageColumnValues=new LinkedList<Object>();
+			imageColumnValues.add(imageAbsolutePath);
+			imageColumnValues.add(imageURL);
+
+			lastImageId=sqlHelper.insertToTableByColumns(imageTableName, imageColumnNames, imageColumnValues);
+			if(lastImageId==SQLHelper.invalidId) break;
+
+			List<String> relationTableColumnNames=new LinkedList<String>();
+			relationTableColumnNames.add(Activity.idKey);
+			relationTableColumnNames.add(Image.idKey);
+
+			List<Object> relationTableColumnValues=new LinkedList<Object>();
+			relationTableColumnValues.add(activity.getId());
+			relationTableColumnValues.add(lastImageId);
+
+			int lastRecordId=sqlHelper.insertToTableByColumns(relationTableName, relationTableColumnNames, relationTableColumnValues);
+			if(lastRecordId==SQLHelper.invalidId){
+				boolean isRecovered=deleteImageByImageId(lastImageId);
+				if(isRecovered==true){
+					System.out.println("SQLCommander.uploadImageOfActivity: image "+lastImageId+ " reverted");
+				}
+				break;
+			}
+
+		}while(false);
+		return lastImageId;
+
 	}
 };
