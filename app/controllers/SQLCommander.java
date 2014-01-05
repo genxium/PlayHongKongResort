@@ -211,31 +211,7 @@ public class SQLCommander {
 		return ret;
 	}
 
-	public static boolean deleteActivity(int userId, int activityId){
-		boolean ret=false;
-		do{
-			String activityTableName="Activity";
-			try{
-				SQLHelper sqlHelper=new SQLHelper();
-				String relationTableName="UserActivityRelationTable";
-				List<String> relationWhereClauses=new LinkedList<String>();
-				relationWhereClauses.add(BasicUser.idKey+"="+SQLHelper.convertToQueryValue(userId));
-				relationWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
-				boolean resultRelationDeletion=sqlHelper.deleteFromTableByWhereClauses(relationTableName, relationWhereClauses, SQLHelper.logicAND);
-			
-				if(resultRelationDeletion==false) break;
-			
-				List<String> activityWhereClauses=new LinkedList<String>();
-				activityWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
-				ret=sqlHelper.deleteFromTableByWhereClauses(activityTableName, activityWhereClauses, SQLHelper.logicAND);
-			
-			} catch(Exception e){
-				System.out.println("SQLCommander.deleteActivity:"+e.getMessage());
-			}
-		}while(false);
-
-		return ret;
-	}
+	
 	
 	public static boolean submitActivity(int userId, Activity activity){
 		boolean ret=false;
@@ -623,7 +599,7 @@ public class SQLCommander {
 
 			boolean updateResult=sqlHelper.updateTableByColumnsAndWhereClauses(userTableName, userColumnNames, userColumnValues, userWhereClauses, SQLHelper.logicAND);
 			if(updateResult==false){
-				boolean isRecovered=deleteImageByImageId(lastImageId);
+				boolean isRecovered=deleteImageRecordById(lastImageId);
 				if(isRecovered==true){
 					System.out.println("SQLCommander.uploadUserAvatar: image "+lastImageId+ " reverted");
 				}
@@ -663,7 +639,7 @@ public class SQLCommander {
 		return image;
 	}
 
-	public static boolean deleteImageByImageId(int imageId){
+	public static boolean deleteImageRecordById(int imageId){
 		boolean ret=false;
 		do{
 			String imageTableName="Image";
@@ -673,16 +649,15 @@ public class SQLCommander {
 				whereClauses.add(Image.idKey+"="+SQLHelper.convertToQueryValue(imageId));
 				ret=sqlHelper.deleteFromTableByWhereClauses(imageTableName, whereClauses, SQLHelper.logicAND);
 			} catch (Exception e){
-				System.out.println("SQLCommander.deleteImageByImageId"+e.getMessage());
+				System.out.println("SQLCommander.deleteImageRecordById"+e.getMessage());
 			}
 		}while(false);
 		return ret;
 	}
 
-	public static boolean deleteImageWithActivity(int imageId, int activityId){
+	public static boolean deleteImageRecordOfActivityById(int imageId, int activityId){
 		boolean ret=false;
 		do{
-			String imageTableName="Image";
 			try{
 				SQLHelper sqlHelper=new SQLHelper();
 				String relationTableName="ActivityImageRelationTable";
@@ -693,37 +668,87 @@ public class SQLCommander {
 				
 				if(resultRelationDeletion==false) break;
 				
+				String imageTableName="Image";
 				List<String> imageWhereClauses=new LinkedList<String>();
 				imageWhereClauses.add(Image.idKey+"="+SQLHelper.convertToQueryValue(imageId));
 				ret=sqlHelper.deleteFromTableByWhereClauses(imageTableName, imageWhereClauses, SQLHelper.logicAND);
 				
 			} catch(Exception e){
-				System.out.println("SQLCommander.deleteImageWithActivity:"+e.getMessage());
+				System.out.println("SQLCommander.deleteImageRecordOfActivityById:"+e.getMessage());
 			}
 		}while(false);
 
 		return ret;
 	}
-	
+
 	public static List<Integer> queryImageIdsByActivityId(int activityId){
 		List<Integer> imageIds=null;
 		do{
-			String tableName="ActivityImageRelationTable";
+			String relationTableName="ActivityImageRelationTable";
 			SQLHelper sqlHelper=new SQLHelper();
-			List<String> columnNames=new LinkedList<String>();
-			columnNames.add(Image.idKey);
-			List<String> whereClauses=new LinkedList<String>();
-			whereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
-			List<JSONObject> records=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND);
+			List<String> relationColumnNames=new LinkedList<String>();
+			relationColumnNames.add(Image.idKey);
+			List<String> relationWhereClauses=new LinkedList<String>();
+			relationWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
+			List<JSONObject> relationRecords=sqlHelper.queryTableByColumnsAndWhereClauses(relationTableName, relationColumnNames, relationWhereClauses, SQLHelper.logicAND);
+			if(relationRecords==null || relationRecords.size()<=0) break;
+
 			imageIds=new LinkedList<Integer>();
-			Iterator<JSONObject> itRecord=records.iterator();
-			while(itRecord.hasNext()){
-				JSONObject record=itRecord.next();
-				Integer imageId=(Integer)record.get(Image.idKey);
+			Iterator<JSONObject> itRelationRecord=relationRecords.iterator();
+			while(itRelationRecord.hasNext()){
+				JSONObject relationRecord=itRelationRecord.next();
+				Integer imageId=(Integer)relationRecord.get(Image.idKey);
 				imageIds.add(imageId);
 			}
+			
 		}while(false);
 		return imageIds;
+	}
+	
+	public static List<Image> queryImagesByActivityId(int activityId){
+		List<Image> images=null;
+		
+		do{
+			String relationTableName="ActivityImageRelationTable";
+			SQLHelper sqlHelper=new SQLHelper();
+			List<String> relationColumnNames=new LinkedList<String>();
+			relationColumnNames.add(Image.idKey);
+			List<String> relationWhereClauses=new LinkedList<String>();
+			relationWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
+			List<JSONObject> relationRecords=sqlHelper.queryTableByColumnsAndWhereClauses(relationTableName, relationColumnNames, relationWhereClauses, SQLHelper.logicAND);
+			if(relationRecords==null || relationRecords.size()<=0) break;
+
+			String imageTableName="Image";
+			List<String> imageColumnNames=new LinkedList<String>();
+			imageColumnNames.add(Image.idKey);
+			imageColumnNames.add(Image.absolutePathKey);
+			imageColumnNames.add(Image.urlKey);
+
+			List<String> imageWhereClauses=new LinkedList<String>();
+			
+			Iterator<JSONObject> itRelationRecord=relationRecords.iterator();
+			while(itRelationRecord.hasNext()){
+				JSONObject relationRecord=itRelationRecord.next();
+				Integer imageId=(Integer)relationRecord.get(Image.idKey);
+				imageWhereClauses.add(Image.idKey+"="+SQLHelper.convertToQueryValue(imageId));
+			}
+
+			List<JSONObject> imageRecords=sqlHelper.queryTableByColumnsAndWhereClauses(imageTableName, imageColumnNames, imageWhereClauses, SQLHelper.logicOR);
+			if(imageRecords==null || imageRecords.size()<=0) break;
+
+			images=new LinkedList<Image>();
+			Iterator<JSONObject> itImageRecord=imageRecords.iterator();
+			while(itImageRecord.hasNext()){
+				JSONObject imageRecord=itImageRecord.next();
+				Integer imageId=(Integer)imageRecord.get(Image.idKey);
+				String imageAbsolutePath=(String)imageRecord.get(Image.absolutePathKey);
+				String imageURL=(String)imageRecord.get(Image.urlKey);
+				Image image=Image.create(imageId, imageAbsolutePath, imageURL);
+				images.add(image);
+			}
+
+		}while(false);
+		return images;
 	}
 	
 	public static int uploadImageOfActivity(BasicUser user, Activity activity, String imageAbsolutePath, String imageURL){
@@ -756,7 +781,7 @@ public class SQLCommander {
 
 			int lastRecordId=sqlHelper.insertToTableByColumns(relationTableName, relationTableColumnNames, relationTableColumnValues);
 			if(lastRecordId==SQLHelper.invalidId){
-				boolean isRecovered=deleteImageByImageId(lastImageId);
+				boolean isRecovered=deleteImageRecordById(lastImageId);
 				if(isRecovered==true){
 					System.out.println("SQLCommander.uploadImageOfActivity: image "+lastImageId+ " reverted");
 				}
