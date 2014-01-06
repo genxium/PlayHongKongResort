@@ -7,6 +7,7 @@ import play.mvc.Http.MultipartFormData.FilePart;
 import model.Activity;
 import model.BasicUser;
 import model.Image;
+import org.apache.commons.io.*;
 
 import model.UserActivityRelation;
 import model.UserActivityRelationTable;
@@ -119,9 +120,10 @@ public class ExtraCommander extends SQLCommander {
       	    		int imageId=SQLCommander.uploadUserAvatar(user, imageAbsolutePath, imageURL);
       	    		if(imageId==SQLCommander.invalidId) break;
       	    		
-      	    		// Save renamed file to server storage at the final step
-      	    		boolean renamingResult=file.renameTo(new File(imageAbsolutePath));
-      	    		if(renamingResult==false){
+      	    		try{
+      	    			// Save renamed file to server storage at the final step
+      	    			FileUtils.moveFile(file, new File(imageAbsolutePath));
+      	    		} catch(Exception err){
       	    			System.out.println("ExtraCommander.saveAvatarFile: "+newImageName+" could not be saved.");
       	    			// recover table `Image` and `ActivityImageRelationTable`
       	    			boolean isRecovered=SQLCommander.deleteImageRecordById(imageId);
@@ -129,8 +131,7 @@ public class ExtraCommander extends SQLCommander {
       	    				System.out.println("ExtraCommander.saveAvatarFile: "+newImageName+" has been reverted");
       	    			}
       	    			break;
-      	        }
-
+      	    		}
     				ret=imageId;
             } catch (Exception e) {
                 System.out.println("ExtraCommander.saveAvatarFile: "+e.getMessage());
@@ -138,51 +139,50 @@ public class ExtraCommander extends SQLCommander {
 
 		}while(false);
 		return ret;
-}
+  }
 
-public static int saveImageOfActivity(FilePart imageFile, BasicUser user, Activity activity){
-	int ret=invalidId;
-	do{
-		String fileName = imageFile.getFilename();
-		File file = imageFile.getFile();
-		try {
-    			if(DataUtils.validateImage(imageFile)==false) break;
-  	    		if(user==null) break;
-  	    		if(activity==null) break;
-  	    		
-  	    		Integer userId=user.getUserId();
-            Integer activityId=activity.getId();
+  public static int saveImageOfActivity(FilePart imageFile, BasicUser user, Activity activity){
+  	int ret=invalidId;
+  	do{
+  		String fileName = imageFile.getFilename();
+  		File file = imageFile.getFile();
+  		try {
+      			if(DataUtils.validateImage(imageFile)==false) break;
+    	    		if(user==null) break;
+    	    		if(activity==null) break;
+    	    		
+    	    		Integer userId=user.getUserId();
 
-            String urlFolderName="assets/images";
-  	    		String newImageName=DataUtils.generateUploadedImageName(fileName, userId);
-            String imageURL="/"+urlFolderName+"/"+newImageName;
+              String urlFolderName="assets/images";
+    	    		String newImageName=DataUtils.generateUploadedImageName(fileName, userId);
+              String imageURL="/"+urlFolderName+"/"+newImageName;
 
-            String rootDir=Play.application().path().getAbsolutePath();
-            String absoluteFolderName="public/images";
-            String imageAbsolutePath=rootDir+"/"+absoluteFolderName+"/"+newImageName;
+              String rootDir=Play.application().path().getAbsolutePath();
+              String absoluteFolderName="public/images";
+              String imageAbsolutePath=rootDir+"/"+absoluteFolderName+"/"+newImageName;
 
-  	    		int imageId=SQLCommander.uploadImageOfActivity(user, activity, imageAbsolutePath, imageURL);
-  	    		if(imageId==SQLCommander.invalidId) break;
-  	    		
-  	    		// Save renamed file to server storage at the final step
-  	    		boolean renamingResult=file.renameTo(new File(imageAbsolutePath));
-  	    		
-            if(renamingResult==false){
-                System.out.println("ExtraCommander.saveImageOfActivity: "+newImageName+" could not be saved.");
-                // recover table `Image` and `ActivityImageRelationTable`
-                boolean isRecovered=SQLCommander.deleteImageRecordOfActivityById(imageId, activityId);
-                if(isRecovered==true){
-                		System.out.println("ExtraCommander.saveImageOfActivity: "+newImageName+" has been reverted");
-                }
-                break;
-            }
+    	    		int imageId=SQLCommander.uploadImageOfActivity(user, activity, imageAbsolutePath, imageURL);
+    	    		if(imageId==SQLCommander.invalidId) break;
+    	    		
+    	    		try{
+                  // Save renamed file to server storage at the final step
+                  FileUtils.moveFile(file, new File(imageAbsolutePath));
+              } catch(Exception err){
+                  System.out.println("ExtraCommander.saveImageOfActivity: "+newImageName+" could not be saved.");
+                  // recover table `Image` and `ActivityImageRelationTable`
+                  boolean isRecovered=SQLCommander.deleteImageRecordById(imageId);
+                  if(isRecovered==true){
+                    System.out.println("ExtraCommander.saveImageOfActivity: "+newImageName+" has been reverted");
+                  }
+                  break;
+              }
 
-            ret=imageId;
-        } catch (Exception e) {
-            System.out.println("ExtraCommander.saveImageOfActivity: "+e.getMessage());
-        }
+              ret=imageId;
+          } catch (Exception e) {
+              System.out.println("ExtraCommander.saveImageOfActivity: "+e.getMessage());
+          }
 
-	}while(false);
-	return ret;
-}
+  	}while(false);
+  	return ret;
+  }
 }

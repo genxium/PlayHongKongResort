@@ -6,8 +6,6 @@ import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Http.RequestBody;
 import model.*;
-import dao.SQLHelper;
-
 import org.json.simple.JSONObject;
 
 import java.util.Iterator;
