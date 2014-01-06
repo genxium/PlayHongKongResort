@@ -257,7 +257,7 @@ public class Application extends Controller {
             
             // get user token and activity id from request body stream
             Map<String, String[]> formData= data.asFormUrlEncoded();
-         
+            
             String[] tokens=formData.get(BasicUser.tokenKey);
             String[] activityIds=formData.get(Activity.idKey);
 
@@ -286,21 +286,25 @@ public class Application extends Controller {
       	  		boolean res=SQLCommander.updateActivity(activity);
       	  		if(res==false) break;
       	  		
-      	  		  // save new images
-      	  		  List<Image> previousImages=SQLCommander.queryImagesByActivityId(activityId);
-                Iterator<FilePart> imageIterator=imageFiles.iterator();
-                while(imageIterator.hasNext()){
-                		FilePart imageFile=imageIterator.next();
-                  	int newImageId=ExtraCommander.saveImageOfActivity(imageFile, user, activity);
-                  	if(newImageId==ExtraCommander.invalidId) break;
+      	  		// save new images
+      	  		List<Image> previousImages=SQLCommander.queryImagesByActivityId(activityId);
+                if(imageFiles!=null && imageFiles.size()>0){
+      	  			Iterator<FilePart> imageIterator=imageFiles.iterator();
+      	  			while(imageIterator.hasNext()){
+            			FilePart imageFile=imageIterator.next();
+            			int newImageId=ExtraCommander.saveImageOfActivity(imageFile, user, activity);
+              		    if(newImageId==ExtraCommander.invalidId) break;
+            		}
                 }
                 
                 // delete previous images
-                Iterator<Image> itPreviousImage=previousImages.iterator();
-                while(itPreviousImage.hasNext()){
-                		Image previousImage=itPreviousImage.next();
-                		boolean isDeleted=ExtraCommander.deleteImageRecordAndFileOfActivity(previousImage, activityId);
-                		if(isDeleted==false) break;
+                if(previousImages!=null && previousImages.size()>0){
+                    Iterator<Image> itPreviousImage=previousImages.iterator();
+                    while(itPreviousImage.hasNext()){
+                    		Image previousImage=itPreviousImage.next();
+                    		boolean isDeleted=ExtraCommander.deleteImageRecordAndFileOfActivity(previousImage, activityId);
+                    		if(isDeleted==false) break;
+                    }
                 }
                 
     	  		} catch(Exception e){
@@ -311,6 +315,80 @@ public class Application extends Controller {
         }while(false);
         return badRequest("Activity not updated!");
     }
+    
+    public static Result submitActivity(){
+		// define response attributes
+    		response().setContentType("text/plain");
+    		do{
+    			RequestBody body = request().body();
+        
+    			// get file data from request body stream
+    			MultipartFormData data = body.asMultipartFormData();
+        
+    			List<FilePart> imageFiles=data.getFiles();
+        
+    			// get user token and activity id from request body stream
+    			Map<String, String[]> formData= data.asFormUrlEncoded();
+     
+    			String[] tokens=formData.get(BasicUser.tokenKey);
+    			String[] activityIds=formData.get(Activity.idKey);
+
+    			String token=tokens[0];
+    			int userId=DataUtils.getUserIdByToken(token);
+    			if(userId==DataUtils.invalidId) break;
+    			BasicUser user=SQLCommander.queryUserByUserId(userId);
+    			if(user==null) break;
+
+    			int activityId=Integer.parseInt(activityIds[0]);
+          
+    			// get activity title and content
+    			String[] activityTitles=formData.get(Activity.titleKey);
+        		String[] activityContents=formData.get(Activity.contentKey);
+        
+        		String activityTitle=activityTitles[0];
+        		String activityContent=activityContents[0];
+       
+        		try{
+        			if(DataUtils.validateTitle(activityTitle)==false || DataUtils.validateContent(activityContent)==false) break;
+        			Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+        			if(SQLCommander.isActivityEditable(userId, activity)==false) break;
+          
+        			activity.setTitle(activityTitle);
+        			activity.setContent(activityContent);
+            
+        			boolean res=SQLCommander.submitActivity(userId, activity);
+        			if(res==false) break;
+            
+        			// save new images
+                    List<Image> previousImages=SQLCommander.queryImagesByActivityId(activityId);
+                    if(imageFiles!=null && imageFiles.size()>0){
+                        Iterator<FilePart> imageIterator=imageFiles.iterator();
+                        while(imageIterator.hasNext()){
+                            FilePart imageFile=imageIterator.next();
+                            int newImageId=ExtraCommander.saveImageOfActivity(imageFile, user, activity);
+                            if(newImageId==ExtraCommander.invalidId) break;
+                        }
+                    }
+                    
+                    // delete previous images
+                    if(previousImages!=null && previousImages.size()>0){
+                        Iterator<Image> itPreviousImage=previousImages.iterator();
+                        while(itPreviousImage.hasNext()){
+                                Image previousImage=itPreviousImage.next();
+                                boolean isDeleted=ExtraCommander.deleteImageRecordAndFileOfActivity(previousImage, activityId);
+                                if(isDeleted==false) break;
+                        }
+                    }
+        			return ok("Activity submitted");
+
+        		} catch(Exception e){
+        			System.out.println("Application.submitActivity:"+e.getMessage());
+        		}
+
+      	}while(false);
+    		return badRequest("Activity not submitted!");	
+    }
+
     
     public static Result deleteActivity(){
     		// define response attributes
@@ -354,35 +432,35 @@ public class Application extends Controller {
             UserActivityRelation.RelationType relation=UserActivityRelation.RelationType.host;
             
             try{
-            		List<JSONObject> activities=SQLCommander.queryActivitiesByUserAndRelation(user, relation);
-            		Iterator<JSONObject> itActivity=activities.iterator();
-            		result=Json.newObject();
-            		
-            		while(itActivity.hasNext()){
-            			JSONObject activityJSON=itActivity.next();
-            			Integer activityId=(Integer)activityJSON.get(Activity.idKey);
-            			String activityTitle=(String)activityJSON.get(Activity.titleKey);
-            			String activityContent=(String)activityJSON.get(Activity.contentKey);
-            			Integer activityStatus=(Integer)activityJSON.get(Activity.statusKey);
-            			List<Image> images=SQLCommander.queryImagesByActivityId(activityId);
+        		List<JSONObject> activities=SQLCommander.queryActivitiesByUserAndRelation(user, relation);
+        		Iterator<JSONObject> itActivity=activities.iterator();
+        		result=Json.newObject();
+        		
+        		while(itActivity.hasNext()){
+        			JSONObject activityJSON=itActivity.next();
+        			Integer activityId=(Integer)activityJSON.get(Activity.idKey);
+        			String activityTitle=(String)activityJSON.get(Activity.titleKey);
+        			String activityContent=(String)activityJSON.get(Activity.contentKey);
+        			Integer activityStatus=(Integer)activityJSON.get(Activity.statusKey);
+        			List<Image> images=SQLCommander.queryImagesByActivityId(activityId);
 
-            			ObjectNode singleActivityNode=Json.newObject();
-            			singleActivityNode.put(Activity.idKey, activityId.toString());
-            			singleActivityNode.put(Activity.titleKey, activityTitle);
-            			singleActivityNode.put(Activity.contentKey, activityContent);
-            			singleActivityNode.put(Activity.statusKey, activityStatus.toString());
-            			
-            			if(images!=null && images.size()>0){
-              			  Iterator<Image> itImage=images.iterator();
-              			  if(itImage.hasNext()){
-                				  Image firstImage=itImage.next();
-                				  String firstImageURL=firstImage.getImageURL();
-                				  singleActivityNode.put(Image.urlKey, firstImageURL);
-              			  }
-            			}
-                
-            			result.put(activityId.toString(), singleActivityNode);
-            		}
+        			ObjectNode singleActivityNode=Json.newObject();
+        			singleActivityNode.put(Activity.idKey, activityId.toString());
+        			singleActivityNode.put(Activity.titleKey, activityTitle);
+        			singleActivityNode.put(Activity.contentKey, activityContent);
+        			singleActivityNode.put(Activity.statusKey, activityStatus.toString());
+        			
+        			if(images!=null && images.size()>0){
+      			       Iterator<Image> itImage=images.iterator();
+      			       if(itImage.hasNext()){
+        				  Image firstImage=itImage.next();
+        				  String firstImageURL=firstImage.getImageURL();
+        				  singleActivityNode.put(Image.urlKey, firstImageURL);
+      			       }
+        			}
+            
+        			result.put(activityId.toString(), singleActivityNode);
+        		}
             } catch(Exception e){
             		System.out.println("Application.queryActivitiesHostedByUser:"+e.getMessage());
             }
@@ -391,37 +469,7 @@ public class Application extends Controller {
       return badRequest();
     }
     
-    public static Result submitActivity(){
-    		// define response attributes
-        response().setContentType("text/plain");
-        do{
-            Map<String, String[]> formData=request().body().asFormUrlEncoded();
-      	  	String[] ids=formData.get(Activity.idKey);
-      	  	String[] titles=formData.get(Activity.titleKey);
-      	  	String[] contents=formData.get(Activity.contentKey);
-      	  	String[] tokens=formData.get(BasicUser.tokenKey);
-        	  
-          	Integer activityId=Integer.parseInt(ids[0]);
-        		String title=titles[0];
-        		String content=contents[0];
-        		String token=tokens[0];
-          
-            Integer userId=DataUtils.getUserIdByToken(token);
-            Activity activity=SQLCommander.queryActivityByActivityId(activityId);
-            if(SQLCommander.isActivityEditable(userId, activity)==false) break;
-            
-            try{
-        	  		if(DataUtils.validateTitle(title)==false || DataUtils.validateContent(content)==false) break;
-        	  		boolean res=SQLCommander.submitActivity(userId, activity);
-        	  		if(res==false) break;
-            } catch(Exception e){
-                System.out.println("Application.submitActivity:"+e.getMessage());
-            }
-            return ok("Activity submitted");
-        }while(false);
-        return badRequest("Activity not submitted!");
-    }
-
+    
     public static Result joinActivity(){
     		// define response attributes
         response().setContentType("text/plain");

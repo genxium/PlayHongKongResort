@@ -1,6 +1,47 @@
 // Assistant Callback Functions
 function onUpdateFormSubmission(formEvt){
 
+	formEvt.preventDefault(); // prevent default action.
+
+	var formObj = $(this);
+	var formData = new FormData(this);
+	
+	// append user token and activity id for identity
+	var token = $.cookie(g_keyLoginStatus.toString());
+	formData.append(g_keyUserToken, token);
+
+	var activityId = $(this).data(g_keyActivityId);
+	formData.append(g_keyActivityId, activityId.toString());
+	
+	// append activity title and content 
+	var activityTitle=$("."+g_classFieldActivityTitle).val();
+	formData.append(g_keyActivityTitle, activityTitle);
+	
+	var activityContent=$("."+g_classFieldActivityContent).val();
+	formData.append(g_keyActivityContent, activityContent);
+	
+	$.ajax({
+		method: "POST",
+		url: "/updateActivity", 
+		data: formData,
+		mimeType: "mutltipart/form-data",
+		contentType: false,
+		processData: false,
+		success: function(data, status, xhr){
+			formObj.remove();
+			if(g_callbackOnActivityEditorRemoved!=null){
+				g_callbackOnActivityEditorRemoved();
+			}
+		},
+		error: function(xhr, status, errorThrown){
+
+		}
+	});
+
+}
+
+function onSubmitFormSubmission(formEvt){
+
 		formEvt.preventDefault(); // prevent default action.
 
 		var formObj = $(this);
@@ -22,13 +63,16 @@ function onUpdateFormSubmission(formEvt){
 		
 		$.ajax({
 			method: "POST",
-			url: "/updateActivity", 
+			url: "/submitActivity", 
 			data: formData,
 			mimeType: "mutltipart/form-data",
 			contentType: false,
 			processData: false,
 			success: function(data, status, xhr){
-
+				formObj.remove();
+				if(g_callbackOnActivityEditorRemoved!=null){
+					g_callbackOnActivityEditorRemoved();
+				}
 			},
 			error: function(xhr, status, errorThrown){
 
@@ -70,36 +114,13 @@ function onBtnCreateClicked(evt){
 function onBtnUpdateClicked(evt){
 
 	evt.preventDefault();
-
 	var editor=$(this).parent();
-	var formData = new FormData(editor);
 
 	try{
 		// assign callback function
 		editor.submit(onUpdateFormSubmission);
 		// invoke submission
 		editor.submit();
-		/*	
-		$.post("/updateActivity", 
-			{
-				ActivityId: activityId.toString(),
-				ActivityTitle: title.toString(),
-				ActivityContent: content.toString(),
-				UserToken: token.toString()
-			},
-			function(data, status, xhr){
-				if(status=="success"){
-					editor.remove();
-					if(g_callbackOnActivityEditorRemoved!=null){
-						g_callbackOnActivityEditorRemoved();
-					}
-				} else{
-
-				}
-			}
-		);
-		*/
-
 	} catch(err){
 		
 	}
@@ -140,34 +161,13 @@ function onBtnDeleteClicked(evt){
 function onBtnSubmitClicked(evt){
 
 	evt.preventDefault();
-	
-	var activityId=$(this).data(g_keyActivityId);
-	var id=activityId;
-	var title=$("."+g_classFieldActivityTitle).val();
-	var content=$("."+g_classFieldActivityContent).val();
-	var token=$.cookie(g_keyLoginStatus.toString());
-
 	var editor=$(this).parent();
 
 	try{
-		$.post("/submitActivity", 
-			{
-				ActivityId: id.toString(),
-				ActivityTitle: title.toString(),
-				ActivityContent: content.toString(),
-				UserToken: token.toString()
-			},
-			function(data, status, xhr){
-    			if(status=="success"){
-					editor.remove();
-					if(g_callbackOnActivityEditorRemoved!=null){
-						g_callbackOnActivityEditorRemoved();
-					}
-    			} else{
-
-    			}
-			}
-		);
+		// assign callback function
+		editor.submit(onSubmitFormSubmission);
+		// invoke submission
+		editor.submit();
 	} catch(err){
 		
 	}

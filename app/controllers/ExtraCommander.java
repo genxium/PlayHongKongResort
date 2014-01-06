@@ -132,7 +132,7 @@ public class ExtraCommander extends SQLCommander {
       	    			}
       	    			break;
       	    		}
-    				ret=imageId;
+    				    ret=imageId;
             } catch (Exception e) {
                 System.out.println("ExtraCommander.saveAvatarFile: "+e.getMessage());
             }

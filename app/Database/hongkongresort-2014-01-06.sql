@@ -32,7 +32,7 @@ CREATE TABLE `Activity` (
   `ActivityCapacity` int(32) NOT NULL DEFAULT '0',
   `ActivityStatus` int(3) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ActivityId`)
-) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,6 +41,7 @@ CREATE TABLE `Activity` (
 
 LOCK TABLES `Activity` WRITE;
 /*!40000 ALTER TABLE `Activity` DISABLE KEYS */;
+INSERT INTO `Activity` VALUES (74,'Test Cover and Submission','lalala','2014-01-06 15:52:54','2014-01-06 15:52:54','2014-01-06 15:53:17',0,1);
 /*!40000 ALTER TABLE `Activity` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -60,7 +61,7 @@ CREATE TABLE `ActivityImageRelationTable` (
   KEY `FK_ImageId` (`ImageId`),
   CONSTRAINT `FK_ImageId` FOREIGN KEY (`ImageId`) REFERENCES `Image` (`ImageId`),
   CONSTRAINT `FK_ActivityId` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,6 +70,7 @@ CREATE TABLE `ActivityImageRelationTable` (
 
 LOCK TABLES `ActivityImageRelationTable` WRITE;
 /*!40000 ALTER TABLE `ActivityImageRelationTable` DISABLE KEYS */;
+INSERT INTO `ActivityImageRelationTable` VALUES (10,74,29),(11,74,30);
 /*!40000 ALTER TABLE `ActivityImageRelationTable` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -86,7 +88,7 @@ CREATE TABLE `Image` (
   PRIMARY KEY (`ImageId`),
   UNIQUE KEY `ImageAbsolutePath` (`ImageAbsolutePath`),
   UNIQUE KEY `ImageURL` (`ImageURL`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -95,6 +97,7 @@ CREATE TABLE `Image` (
 
 LOCK TABLES `Image` WRITE;
 /*!40000 ALTER TABLE `Image` DISABLE KEYS */;
+INSERT INTO `Image` VALUES (28,'/Users/user/play-2.2.0/PlayHelloWorld/public/images/UID12_1389023564635_MarvelousSeed.jpg','/assets/images/UID12_1389023564635_MarvelousSeed.jpg'),(29,'/Users/user/play-2.2.0/PlayHelloWorld/public/images/UID12_1389023597199_FlameDragon.png','/assets/images/UID12_1389023597199_FlameDragon.png'),(30,'/Users/user/play-2.2.0/PlayHelloWorld/public/images/UID12_1389023597204_pikachu02.jpeg','/assets/images/UID12_1389023597204_pikachu02.jpeg');
 /*!40000 ALTER TABLE `Image` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -128,7 +131,7 @@ CREATE TABLE `User` (
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
-INSERT INTO `User` VALUES (9,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',0,0,0,'2013-12-23 14:13:30',19),(10,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@126.com',0,0,0,'2013-12-23 14:45:19',1),(11,'kk','e10adc3949ba59abbe56e057f20f883e','kk@gmail.com',0,0,0,'2013-12-27 14:13:30',20),(12,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',0,0,0,'2013-12-28 04:21:15',18),(13,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@yahoo.com',0,0,0,'2013-12-29 08:16:26',0),(18,'kk','e10adc3949ba59abbe56e057f20f883e','kk@hotmail.com',0,0,0,'2014-01-03 08:01:30',0),(19,'sai','e10adc3949ba59abbe56e057f20f883e','sai@126.com',0,0,0,'2014-01-03 08:12:15',21),(20,'yukping','e10adc3949ba59abbe56e057f20f883e','yukping@gmail.com',0,0,0,'2014-01-03 16:42:09',8);
+INSERT INTO `User` VALUES (9,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',0,0,0,'2013-12-23 14:13:30',19),(10,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@126.com',0,0,0,'2013-12-23 14:45:19',1),(11,'kk','e10adc3949ba59abbe56e057f20f883e','kk@gmail.com',0,0,0,'2013-12-27 14:13:30',20),(12,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',0,0,0,'2013-12-28 04:21:15',28),(13,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@yahoo.com',0,0,0,'2013-12-29 08:16:26',0),(18,'kk','e10adc3949ba59abbe56e057f20f883e','kk@hotmail.com',0,0,0,'2014-01-03 08:01:30',0),(19,'sai','e10adc3949ba59abbe56e057f20f883e','sai@126.com',0,0,0,'2014-01-03 08:12:15',21),(20,'yukping','e10adc3949ba59abbe56e057f20f883e','yukping@gmail.com',0,0,0,'2014-01-03 16:42:09',8);
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -177,7 +180,7 @@ CREATE TABLE `UserActivityRelationTable` (
   CONSTRAINT `UserActivityRelationTable_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `User` (`UserId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_2` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_3` FOREIGN KEY (`UserActivityRelationId`) REFERENCES `UserActivityRelation` (`UserActivityRelationId`)
-) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -186,6 +189,7 @@ CREATE TABLE `UserActivityRelationTable` (
 
 LOCK TABLES `UserActivityRelationTable` WRITE;
 /*!40000 ALTER TABLE `UserActivityRelationTable` DISABLE KEYS */;
+INSERT INTO `UserActivityRelationTable` VALUES (73,12,74,0,'2014-01-06 15:52:54');
 /*!40000 ALTER TABLE `UserActivityRelationTable` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -245,4 +249,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-01-06 22:25:14
+-- Dump completed on 2014-01-06 23:53:40

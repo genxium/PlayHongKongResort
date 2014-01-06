@@ -201,7 +201,7 @@ public class SQLCommander {
 				columnNames.add(Activity.capacityKey);
 				columnValues.add(activity.getCapacity());
 				
-				whereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activity.getId()));
+				whereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
 				ret=sqlHelper.updateTableByColumnsAndWhereClauses(tableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
 			
 			} catch(Exception e){
@@ -211,8 +211,6 @@ public class SQLCommander {
 		return ret;
 	}
 
-	
-	
 	public static boolean submitActivity(int userId, Activity activity){
 		boolean ret=false;
 		do{
@@ -221,9 +219,21 @@ public class SQLCommander {
 				SQLHelper sqlHelper=new SQLHelper();
 				List<String> columnNames=new LinkedList<String>();
 				columnNames.add(Activity.statusKey);
-				
+				columnNames.add(Activity.titleKey);
+				columnNames.add(Activity.contentKey);
+				columnNames.add(Activity.createdTimeKey);
+				columnNames.add(Activity.beginDateKey);
+				columnNames.add(Activity.endDateKey);
+				columnNames.add(Activity.capacityKey);
+
 				List<Object> columnValues=new LinkedList<Object>();
 				columnValues.add(Activity.StatusType.pending.ordinal());
+				columnValues.add(activity.getTitle());
+				columnValues.add(activity.getContent());
+				columnValues.add(activity.getCreatedTime().toString());
+				columnValues.add(activity.getBeginDate().toString());
+				columnValues.add(activity.getEndDate());
+				columnValues.add(activity.getCapacity());
 				
 				List<String> whereClauses=new LinkedList<String>();
 				whereClauses.add(Activity.idKey+"="+activity.getId());
