@@ -35,7 +35,7 @@ function onBtnJoinClicked(evt){
 	var btnJoin=this;
 	var token = $.cookie(g_keyLoginStatus.toString());
 	var activityId=$(this).data(g_keyActivityId);
-	var id=parseInt(activityId);
+
 	try{
 		$.post("/joinActivity", 
 			{
@@ -201,7 +201,6 @@ function generateDefaultActivityCell(jsonRecord){
 	ret.data(g_keyActivityId, activityId);
 	ret.data(g_keyActivityTitle, activityTitle);
 	ret.data(g_keyActivityContent, activityContent);
-	
 
 	return ret;
 }

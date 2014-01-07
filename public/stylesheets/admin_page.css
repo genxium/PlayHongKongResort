@@ -1,0 +1,32 @@
+.classBtnAccept
+{
+	display: table-cell;
+	position: relative;
+	padding-top: 3pt;
+	width: 64pt;
+	height: 36pt;
+	font-size: 16pt;
+	color: #cccccc;
+	margin-top: 10pt;	
+	background-color: #0000ee;
+	float: right;
+}
+
+#idSectionActivityMonitor
+{
+	left: 80%;
+	width: 645px;
+	height: 100%;
+	border: 3pt solid #ff0000;
+	overflow: auto;
+}
+
+.classAcceptedIndicator
+{
+	display: table-cell;
+	position: relative;
+	float: right;
+	vertical-align: text-bottom;
+	font-size:	16pt;
+	color:	#00ff00;
+}

@@ -38,8 +38,6 @@ function checkLoginStatus(evt){
 			    }
 		);
 	} while(false);
-
-	
 }
 
 function validateEmail(){

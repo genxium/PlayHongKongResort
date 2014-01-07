@@ -37,7 +37,7 @@ public class BasicUser {
 	
 	private String m_password=null;
 	public String getPassword() {return m_password;}
-	private void setPassword(String password) {m_password=password;}
+	public void setPassword(String password) {m_password=password;}
 
 	private String m_name=null;
 	public String getName() {return m_name;}
@@ -47,36 +47,34 @@ public class BasicUser {
 	public int getAvatar() {return m_avatar;}
 	public void setAvatar(int avatar) {m_avatar=avatar;}
 
-	private boolean m_emailIdentity=false;
-	public boolean getEmailIdentity() {return m_emailIdentity;}
-	public void setEmailIdentity(boolean emailIdentity) {m_emailIdentity=emailIdentity;}
+	private UserGroup.GroupType m_userGroup=null;
+	public UserGroup.GroupType getUserGroup() {return m_userGroup;}
+	public void setUserGroup(UserGroup.GroupType userGroup) {m_userGroup=userGroup;}
 
-	private boolean m_photoIdentity=false;	
-	public boolean getPhotoIdentity() {return m_photoIdentity;}
-	public void setPhotoIdentity(boolean photoIdentity) {m_photoIdentity=photoIdentity;}
-	
-	private boolean m_isAdmin=false;
-	protected boolean getIsAdmin() {return m_isAdmin;}
-	private void setIsAdmin(boolean isAdmin) {m_isAdmin=isAdmin;} 
-	
-	public BasicUser(int userId, String email, String password, String name, int avatar, boolean emailIdentity, boolean photoIdentity, boolean isAdmin){
+	public BasicUser(int userId, String email, String password, String name, UserGroup.GroupType userGroup, int avatar){
 		m_userId=userId;
 		m_email=email;
 		m_password=password;
 		m_name=name;
+		m_userGroup=userGroup;
 		m_avatar=avatar;
-		m_emailIdentity=emailIdentity;
-		m_photoIdentity=photoIdentity;
-		m_isAdmin=isAdmin;
 	}
 
-	public static BasicUser create(int userId, String email, String password, String name, int avatar){
-		BasicUser user=new BasicUser(userId, email, password, name, avatar, false, false, false);
+	public static BasicUser create(int userId, String email, String password, String name, UserGroup.GroupType userGroup, int avatar){
+		BasicUser user=new BasicUser(userId, email, password, name, userGroup, avatar);
 		return user;
 	}
 
+	public static BasicUser create(int userId, String email, String password, String name, UserGroup.GroupType userGroup){
+		return create(userId, email, password, name, userGroup, 0);
+	}
+
 	public static BasicUser create(int userId, String email, String password, String name){
-		return create(userId, email, password, name, 0);
+		return create(userId, email, password, name, UserGroup.GroupType.visitor);
+	}
+
+	public static BasicUser create(String email, String password, String name, UserGroup.GroupType userGroup){
+		return create(0, email, password, name, userGroup);
 	}
 	
 	public static BasicUser create(String email, String password, String name){
@@ -88,7 +86,9 @@ public class BasicUser {
   		String email=(String)userJson.get(emailKey);
 		String password=(String)userJson.get(passwordKey);
   		String name=(String)userJson.get(nameKey);
+  		int userGroupId=(Integer)userJson.get(groupIdKey);
+  		UserGroup.GroupType userGroup=UserGroup.GroupType.getTypeForValue(userGroupId);
   		int avatar=(Integer)userJson.get(avatarKey);
-  		return create(id, email, password, name, avatar);
+  		return create(id, email, password, name, userGroup, avatar);
 	}
 }

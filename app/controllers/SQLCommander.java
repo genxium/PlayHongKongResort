@@ -1,9 +1,5 @@
 package controllers;
-import model.BasicUser;
-import model.Activity;
-import model.Image;
-import model.UserActivityRelation;
-import model.UserActivityRelationTable;
+import model.*;
 
 import org.json.simple.JSONObject;
 
@@ -48,9 +44,11 @@ public class SQLCommander {
 	        		String email=(String)userJson.get(BasicUser.emailKey);
 		      		String password=(String)userJson.get(BasicUser.passwordKey);
 		      		String name=(String)userJson.get(BasicUser.nameKey);
+		      		Integer userGroupId=(Integer)userJson.get(BasicUser.groupIdKey);
+		      		UserGroup.GroupType userGroup=UserGroup.GroupType.getTypeForValue(userGroupId);
 		      		Integer avatar=(Integer)userJson.get(BasicUser.avatarKey);
 
-          		    user=BasicUser.create(userId, email, password, name, avatar);
+          		    user=BasicUser.create(userId, email, password, name, userGroup, avatar);
 				} 
 			} catch (Exception e) {
 				    	
@@ -90,9 +88,12 @@ public class SQLCommander {
 			       	int userId=(Integer)userJson.get(BasicUser.idKey);
 		      		String password=(String)userJson.get(BasicUser.passwordKey);
 		      		String name=(String)userJson.get(BasicUser.nameKey);
-		      		int avatar=(Integer)userJson.get(BasicUser.avatarKey);
-          		    user=BasicUser.create(userId, email, password, name, avatar);
-		    	}
+		      		Integer userGroupId=(Integer)userJson.get(BasicUser.groupIdKey);
+		      		UserGroup.GroupType userGroup=UserGroup.GroupType.getTypeForValue(userGroupId);
+		      		Integer avatar=(Integer)userJson.get(BasicUser.avatarKey);
+
+          		    user=BasicUser.create(userId, email, password, name, userGroup, avatar);
+				}
 			} catch (Exception e) {
 				    	
 	        }
@@ -110,11 +111,13 @@ public class SQLCommander {
 		columnNames.add(BasicUser.emailKey);
 		columnNames.add(BasicUser.passwordKey);
 		columnNames.add(BasicUser.nameKey);
+		columnNames.add(BasicUser.groupIdKey);
 		
 		List<Object> columnValues=new LinkedList<Object>();
 		columnValues.add(user.getEmail());
 		columnValues.add(user.getPassword());
 		columnValues.add(user.getName());
+		columnValues.add(user.getUserGroup().ordinal());
 		
 		try{
 			lastInsertedId=sqlHelper.insertToTableByColumns("User", columnNames, columnValues);
@@ -368,37 +371,30 @@ public class SQLCommander {
 		return activityRecords;
 	}
 
-	public static List<JSONObject> queryAcceptedActivitiesByStatusAndChronologicalOrder(){
+	public static List<JSONObject> queryAcceptedActivitiesInChronologicalOrder(){
 		List<JSONObject> records=null;
 
 		try{
-			String tableName="Activity";
-			SQLHelper sqlHelper=new SQLHelper();
-
-			// query table Activity
-			List<String> columnNames=new LinkedList<String>();
-			columnNames.add(Activity.idKey);
-			columnNames.add(Activity.titleKey);
-			columnNames.add(Activity.contentKey);
-			columnNames.add(Activity.createdTimeKey);
-			columnNames.add(Activity.beginDateKey);
-			columnNames.add(Activity.endDateKey);
-			columnNames.add(Activity.capacityKey);
-				
-			List<String> whereClauses=new LinkedList<String>();
-			whereClauses.add(Activity.statusKey+"="+Activity.StatusType.accepted.ordinal());
-
-			List<String> orderClauses=new LinkedList<String>();
-			orderClauses.add(Activity.createdTimeKey);
-			records=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, SQLHelper.directionDescend);
-
+			records=SQLCommander.queryActivitiesByStatusAndChronologicalOrder(Activity.StatusType.accepted);
 		} catch(Exception e){
-			System.out.println("SQLCommander.queryActivitiesByStatusAndChronologicalOrder:"+e.getMessage());
+			System.out.println("SQLCommander.queryAcceptedActivitiesInChronologicalOrder: "+e.getMessage());
 		}
 		return records;
 	}
-
-	public static List<JSONObject> queryAcceptedActivitiesByStatusAndChronologicalOrderByUser(int userId){
+	
+	public static List<JSONObject> queryPendingActivitiesInChronologicalOrder(){
+		List<JSONObject> records=null;
+		do{
+			try{
+				records=SQLCommander.queryActivitiesByStatusAndChronologicalOrder(Activity.StatusType.pending);
+			} catch(Exception e){
+				System.out.println("SQLCommander.queryPendingActivitiesInChronologicalOrder: "+e.getMessage());
+			}
+		}while(false);
+		return records;
+	}
+	
+	public static List<JSONObject> queryAcceptedActivitiesInChronologicalOrderByUser(int userId){
 		List<JSONObject> records=null;
 		do{
 			try{
@@ -436,8 +432,40 @@ public class SQLCommander {
 					records.add(recordJson);
 				}
 			} catch(Exception e){
-				System.out.println("SQLCommander.queryActivitiesByStatusAndChronologicalOrderByUser:"+e.getMessage());
+				System.out.println("SQLCommander.queryAcceptedActivitiesInChronologicalOrderByUser: "+e.getMessage());
 			}
+		}while(false);
+		return records;
+	}
+
+	
+	public static List<JSONObject> queryActivitiesByStatusAndChronologicalOrder(Activity.StatusType status){
+		List<JSONObject> records=null;
+		do{
+		try{
+			String tableName="Activity";
+			SQLHelper sqlHelper=new SQLHelper();
+
+			// query table Activity
+			List<String> columnNames=new LinkedList<String>();
+			columnNames.add(Activity.idKey);
+			columnNames.add(Activity.titleKey);
+			columnNames.add(Activity.contentKey);
+			columnNames.add(Activity.createdTimeKey);
+			columnNames.add(Activity.beginDateKey);
+			columnNames.add(Activity.endDateKey);
+			columnNames.add(Activity.capacityKey);
+				
+			List<String> whereClauses=new LinkedList<String>();
+			whereClauses.add(Activity.statusKey+"="+status.ordinal());
+
+			List<String> orderClauses=new LinkedList<String>();
+			orderClauses.add(Activity.createdTimeKey);
+			records=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, SQLHelper.directionDescend);
+
+		} catch(Exception e){
+			System.out.println("SQLCommander.queryActivitiesByStatusAndChronologicalOrder: "+e.getMessage());
+		}
 		}while(false);
 		return records;
 	}
@@ -489,6 +517,16 @@ public class SQLCommander {
 			if(activity==null) break;
 			int activityId=activity.getId();
 			ret=validateOwnershipOfActivity(userId, activityId);
+		}while(false);
+		return ret;
+	}
+	
+	public static boolean validateAdminAccess(BasicUser user){
+		boolean ret=false;
+		do{
+			if(user==null) break;
+			if(user.getUserGroup()!=UserGroup.GroupType.admin) break;
+			ret=true;
 		}while(false);
 		return ret;
 	}
@@ -575,6 +613,31 @@ public class SQLCommander {
 				ret=true;
 			} catch(Exception e){
 				System.out.println("SQLCommander.joinActivity:"+e.getMessage());
+			}
+		}while(false);
+		return ret;
+	}
+	
+	public static boolean acceptActivity(BasicUser user, Activity activity){
+		boolean ret=false;
+		do{
+			if(user==null) break;
+			if(activity==null) break;
+			if(validateAdminAccess(user)==false) break;
+			try{
+				SQLHelper sqlHelper=new SQLHelper();
+				String activityTableName="Activity";
+			
+				List<String> columnNames=new LinkedList<String>();
+				columnNames.add(Activity.statusKey);
+				List<Object> columnValues=new LinkedList<Object>();
+				columnValues.add(Activity.StatusType.accepted.ordinal());
+				List<String> whereClauses=new LinkedList<String>();
+				whereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activity.getId()));
+			
+				ret=sqlHelper.updateTableByColumnsAndWhereClauses(activityTableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND); 
+			} catch(Exception e){
+				System.out.println("SQLCommander.acceptActivity: "+e.getMessage());
 			}
 		}while(false);
 		return ret;

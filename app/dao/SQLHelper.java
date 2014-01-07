@@ -145,7 +145,7 @@ public class SQLHelper {
 				statement.executeUpdate();
 				bRet=true;
 			} catch (Exception e){
-				System.out.println("SQLHelper.executeUpdate:"+e.getMessage());
+				System.out.println("SQLHelper.executeUpdate: "+e.getMessage());
 			}
 		}
 		return bRet;
