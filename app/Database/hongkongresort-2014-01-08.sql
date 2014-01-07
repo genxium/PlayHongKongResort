@@ -128,7 +128,7 @@ CREATE TABLE `User` (
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
-INSERT INTO `User` VALUES (9,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',0,0,0,'2013-12-23 14:13:30',0),(10,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@126.com',0,0,0,'2013-12-23 14:45:19',0),(11,'kk','e10adc3949ba59abbe56e057f20f883e','kk@gmail.com',0,0,0,'2013-12-27 14:13:30',0),(12,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',0,0,0,'2013-12-28 04:21:15',0),(13,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@yahoo.com',0,0,0,'2013-12-29 08:16:26',0),(18,'kk','e10adc3949ba59abbe56e057f20f883e','kk@hotmail.com',0,0,0,'2014-01-03 08:01:30',0),(19,'sai','e10adc3949ba59abbe56e057f20f883e','sai@126.com',0,0,0,'2014-01-03 08:12:15',0),(20,'yukping','e10adc3949ba59abbe56e057f20f883e','yukping@gmail.com',0,0,0,'2014-01-03 16:42:09',0),(21,'admin','c33367701511b4f6020ec61ded352059','admin@hongkongresort.com',3,0,0,'2014-01-07 16:12:42',0);
+INSERT INTO `User` VALUES (9,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',1,0,0,'2013-12-23 14:13:30',0),(10,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@126.com',1,0,0,'2013-12-23 14:45:19',0),(11,'kk','e10adc3949ba59abbe56e057f20f883e','kk@gmail.com',1,0,0,'2013-12-27 14:13:30',0),(12,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',1,0,0,'2013-12-28 04:21:15',0),(13,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@yahoo.com',1,0,0,'2013-12-29 08:16:26',0),(18,'kk','e10adc3949ba59abbe56e057f20f883e','kk@hotmail.com',1,0,0,'2014-01-03 08:01:30',0),(19,'sai','e10adc3949ba59abbe56e057f20f883e','sai@126.com',1,0,0,'2014-01-03 08:12:15',0),(20,'yukping','e10adc3949ba59abbe56e057f20f883e','yukping@gmail.com',1,0,0,'2014-01-03 16:42:09',0),(21,'admin','c33367701511b4f6020ec61ded352059','admin@hongkongresort.com',3,0,0,'2014-01-07 16:12:42',0);
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -245,4 +245,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-01-08  0:29:23
+-- Dump completed on 2014-01-08  0:41:42
