@@ -1,5 +1,6 @@
 package dao;
 
+import java.nio.charset.UnsupportedCharsetException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -39,6 +40,7 @@ public class SQLHelper {
 
 	private static Connection connection=null;
 	private String databaseName=null;
+	private String charset="?useUnicode=true&amp;characterEncoding=UTF-8";
 	private String host=null;
 	private Integer port=null;
 	private String user=null;
@@ -78,6 +80,7 @@ public class SQLHelper {
 			connectionBuilder.append(host+":");
 			connectionBuilder.append(port.toString()+"/");
 			connectionBuilder.append(databaseName);
+			connectionBuilder.append(charset);
 			String connectionStr=connectionBuilder.toString();
 			connection = DriverManager.getConnection(connectionStr,user,password);
 			if(connection!=null){
@@ -320,15 +323,37 @@ public class SQLHelper {
 	
 	public static String convertToQueryValue(Object item){
 		String res=null;
+		try{
 		if (item instanceof Integer){
 			Integer value=(Integer)item;
 			res=value.toString();
 		}
 		else if (item instanceof String){
 		    String value=(String)item;
-		    res="'"+value+"'";
+		    StringBuilder valueBuilder=new StringBuilder();
+		    for(int i=0;i<value.length();i++){
+		    	char ch=value.charAt(i);
+		    	switch (ch) {
+		    		case '\'': // single column
+		    		{
+		    			valueBuilder.append("\'");
+		    		}
+		    		break;
+		    		default:
+		    		{
+		    			valueBuilder.append(ch);
+		    		}
+		    		break;
+		    	}
+		    }
+		
+		    String securedValue=valueBuilder.toString();
+		    res = "'"+securedValue+"'";
 		} else{
 			// left blank deliberately 
+		}
+		} catch(Exception e){
+			System.out.println("SQLHelper.convertToQueryValue: "+e.getMessage());
 		}
 		return res;
 	}

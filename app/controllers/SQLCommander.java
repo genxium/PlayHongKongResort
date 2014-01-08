@@ -188,22 +188,23 @@ public class SQLCommander {
 				
 				SQLHelper sqlHelper=new SQLHelper();
 				List<String> columnNames=new LinkedList<String>();
-				List<Object> columnValues=new LinkedList<Object>();
-				List<String> whereClauses=new LinkedList<String>();
 				
 				columnNames.add(Activity.titleKey);
-				columnValues.add(activity.getTitle());
 				columnNames.add(Activity.contentKey);
-				columnValues.add(activity.getContent());
 				columnNames.add(Activity.createdTimeKey);
-				columnValues.add(activity.getCreatedTime().toString());
 				columnNames.add(Activity.beginDateKey);
-				columnValues.add(activity.getBeginDate().toString());
 				columnNames.add(Activity.endDateKey);
-				columnValues.add(activity.getEndDate());
 				columnNames.add(Activity.capacityKey);
+				
+				List<Object> columnValues=new LinkedList<Object>();
+				columnValues.add(activity.getTitle());
+				columnValues.add(activity.getContent());
+				columnValues.add(activity.getCreatedTime().toString());
+				columnValues.add(activity.getBeginDate().toString());
+				columnValues.add(activity.getEndDate());
 				columnValues.add(activity.getCapacity());
 				
+				List<String> whereClauses=new LinkedList<String>();
 				whereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
 				ret=sqlHelper.updateTableByColumnsAndWhereClauses(tableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
 			
