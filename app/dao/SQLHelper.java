@@ -30,7 +30,10 @@ public class SQLHelper {
 	public static String portKey="Port";
 	public static String userKey="User";
 	public static String passwordKey="Password";
-	
+	public static String charsetResultKey="CharsetResult";
+	public static String charsetEncodingKey="CharsetEncoding";
+	public static String useUnicodeKey="UseUnicode";
+
 	public static Integer invalidId=-1;
 	public static String logicAND="AND";
 	public static String logicOR="OR";
@@ -40,12 +43,14 @@ public class SQLHelper {
 
 	private static Connection connection=null;
 	private String databaseName=null;
-	private String charset="?useUnicode=true&amp;characterEncoding=UTF-8";
 	private String host=null;
 	private Integer port=null;
 	private String user=null;
 	private String password=null;
-	
+	private String charsetResult=null;
+	private String charsetEncoding=null;
+	private String useUnicode=null;
+
 	public boolean readMySQLConfig(){
 		boolean ret=false;
 		try{
@@ -56,6 +61,9 @@ public class SQLHelper {
 			port=Integer.parseInt(attributes.get(portKey));
 			user=attributes.get(userKey);
 			password=attributes.get(passwordKey);
+			charsetResult=attributes.get(charsetResultKey);
+			charsetEncoding=attributes.get(charsetEncodingKey);
+			useUnicode=attributes.get(useUnicodeKey);
 			ret=true;
 		} catch(Exception e){
 			System.out.println("SQLHelper.readMySQLConfig:"+e.getMessage());
@@ -80,7 +88,11 @@ public class SQLHelper {
 			connectionBuilder.append(host+":");
 			connectionBuilder.append(port.toString()+"/");
 			connectionBuilder.append(databaseName);
-			connectionBuilder.append(charset);
+			if(true){
+				connectionBuilder.append("?"+charsetResult);
+				connectionBuilder.append("&"+charsetEncoding);
+				connectionBuilder.append("&"+useUnicode);
+			}
 			String connectionStr=connectionBuilder.toString();
 			connection = DriverManager.getConnection(connectionStr,user,password);
 			if(connection!=null){
