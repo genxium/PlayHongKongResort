@@ -538,17 +538,27 @@ public class Application extends Controller {
     				Integer activityId=(Integer)activityJSON.get(Activity.idKey);
     				String activityTitle=(String)activityJSON.get(Activity.titleKey);
     				String activityContent=(String)activityJSON.get(Activity.contentKey);
-    				
+    				List<Image> images=SQLCommander.queryImagesByActivityId(activityId);
+
     				ObjectNode singleActivityNode=Json.newObject();
     				singleActivityNode.put(Activity.idKey, activityId.toString());
     				singleActivityNode.put(Activity.titleKey, activityTitle);
     				singleActivityNode.put(Activity.contentKey, activityContent);
     				
+                    if(images!=null && images.size()>0){
+                       Iterator<Image> itImage=images.iterator();
+                       if(itImage.hasNext()){
+                          Image firstImage=itImage.next();
+                          String firstImageURL=firstImage.getImageURL();
+                          singleActivityNode.put(Image.urlKey, firstImageURL);
+                       }
+                    }
+
     				result.put(activityId.toString(), singleActivityNode);
       			}
       			return ok(result);
     		} catch(Exception e){
-                System.out.println("Activity.queryDefaultActivities: "+e.getMessage());
+                System.out.println("Application.queryDefaultActivities: "+e.getMessage());
 		    }
         }while(false);   
         return badRequest();
@@ -567,17 +577,27 @@ public class Application extends Controller {
     				Integer activityId=(Integer)activityJSON.get(Activity.idKey);
     				String activityTitle=(String)activityJSON.get(Activity.titleKey);
     				String activityContent=(String)activityJSON.get(Activity.contentKey);
-    				
+    				List<Image> images=SQLCommander.queryImagesByActivityId(activityId);
+
     				ObjectNode singleActivityNode=Json.newObject();
     				singleActivityNode.put(Activity.idKey, activityId.toString());
     				singleActivityNode.put(Activity.titleKey, activityTitle);
     				singleActivityNode.put(Activity.contentKey, activityContent);
     				
+                    if(images!=null && images.size()>0){
+                       Iterator<Image> itImage=images.iterator();
+                       if(itImage.hasNext()){
+                          Image firstImage=itImage.next();
+                          String firstImageURL=firstImage.getImageURL();
+                          singleActivityNode.put(Image.urlKey, firstImageURL);
+                       }
+                    }
+
     				result.put(activityId.toString(), singleActivityNode);
       			}
       			return ok(result);
     		} catch(Exception e){
-                System.out.println("Activity.queryDefaultActivitiesByHost: "+e.getMessage());
+                System.out.println("Application.queryDefaultActivitiesByHost: "+e.getMessage());
     	    }
         }while(false);
         return badRequest();
@@ -590,9 +610,9 @@ public class Application extends Controller {
     			Map<String, String[]> formData=request().body().asFormUrlEncoded();
     	  	  	String[] tokens=formData.get(BasicUser.tokenKey);
     	    	  
-    	    		String token=tokens[0];
-    	    		int userId=DataUtils.getUserIdByToken(token);
-    	    		if(userId==DataUtils.invalidId) break;
+    	    	String token=tokens[0];
+    	    	int userId=DataUtils.getUserIdByToken(token);
+    	    	if(userId==DataUtils.invalidId) break;
     			List<JSONObject> records=SQLCommander.queryAcceptedActivitiesInChronologicalOrderByUser(userId);
       			Iterator<JSONObject> itRecord=records.iterator();
       			ObjectNode result = Json.newObject();
@@ -603,20 +623,29 @@ public class Application extends Controller {
         				String activityTitle=(String)recordJson.get(Activity.titleKey);
         				String activityContent=(String)recordJson.get(Activity.contentKey);
         				Integer userActivityRelationId=(Integer)recordJson.get(UserActivityRelationTable.relationIdKey);
+                        List<Image> images=SQLCommander.queryImagesByActivityId(activityId);
 
         				ObjectNode singleRecordNode=Json.newObject();
         				singleRecordNode.put(Activity.idKey, activityId.toString());
         				singleRecordNode.put(Activity.titleKey, activityTitle);
         				singleRecordNode.put(Activity.contentKey, activityContent);
         				if(userActivityRelationId!=null){
-        					 singleRecordNode.put(UserActivityRelationTable.relationIdKey, userActivityRelationId.toString());
+        					singleRecordNode.put(UserActivityRelationTable.relationIdKey, userActivityRelationId.toString());
         				}
+                        if(images!=null && images.size()>0){
+                            Iterator<Image> itImage=images.iterator();
+                            if(itImage.hasNext()){
+                                Image firstImage=itImage.next();
+                                String firstImageURL=firstImage.getImageURL();
+                                singleRecordNode.put(Image.urlKey, firstImageURL);
+                            }
+                        }
                 
         				result.put(activityId.toString(), singleRecordNode);
       			}
       			return ok(result);
     		} catch(Exception e){
-    			System.out.println("Activity.queryDefaultActivitiesByUser: "+e.getMessage());   
+    			System.out.println("Application.queryDefaultActivitiesByUser: "+e.getMessage());   
     	    }
         }while(false);
         return badRequest();  
@@ -662,8 +691,33 @@ public class Application extends Controller {
         return ok();
     }
     
-    public static Result queryDefaultActivitiesByPageIndex(int pageIndex){
+    public static Result queryDefaultActivitiesByPageIndex(Integer pageIndex){
         response().setContentType("text/plain");
+         do{
+            try{
+                int itemsPerPage=6; // hard coded for now
+                List<JSONObject> activities=SQLCommander.queryAcceptedActivitiesByPageIndexAndItemsPerPageInChronologicalOrder(pageIndex, itemsPerPage);
+                Iterator<JSONObject> itActivity=activities.iterator();
+                ObjectNode result = Json.newObject();
+            
+                while(itActivity.hasNext()){
+                    JSONObject activityJSON=itActivity.next();
+                    Integer activityId=(Integer)activityJSON.get(Activity.idKey);
+                    String activityTitle=(String)activityJSON.get(Activity.titleKey);
+                    String activityContent=(String)activityJSON.get(Activity.contentKey);
+                    
+                    ObjectNode singleActivityNode=Json.newObject();
+                    singleActivityNode.put(Activity.idKey, activityId.toString());
+                    singleActivityNode.put(Activity.titleKey, activityTitle);
+                    singleActivityNode.put(Activity.contentKey, activityContent);
+                    
+                    result.put(activityId.toString(), singleActivityNode);
+                }
+                return ok(result);
+            } catch(Exception e){
+                System.out.println("Application.queryDefaultActivitiesByPageIndex: "+e.getMessage());
+            }
+        }while(false);
         return badRequest();
     }
 }

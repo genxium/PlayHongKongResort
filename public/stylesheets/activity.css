@@ -115,16 +115,16 @@
 
 #idSectionOwnedActivities
 {
-	width: 645px;
-	height: 100%;
+	width: 645pt;
+	height: 300pt;
 	border: 3pt solid #ccccff;
 }
 
 #idSectionDefaultActivities
 {
 	left: 80%;
-	width: 645px;
-	height: 100%;
+	width: 645pt;
+	height: 300pt;
 	border: 3pt solid #ff0000;
 	overflow: auto;
 }
@@ -132,16 +132,15 @@
 .classCellActivityContainer
 {
 	float: left;
-	width: 200px;
-	height: 100px;
-	margin: 5px 5px;
+	width: 200pt;
+	height: 200pt;
+	margin: 5pt 5pt;
 	border: 2pt solid #00ccff;
 }
 
 .classActivityCoverImage
 {
-	width: 200px;
-	height: 100px;
+	height: 50%;
 }
 
 .classCellActivityTitle

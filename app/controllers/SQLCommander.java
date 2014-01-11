@@ -508,6 +508,10 @@ public class SQLCommander {
 		}while(false);
 		return records;
 	}	
+
+	public static List<JSONObject> queryAcceptedActivitiesByPageIndexAndItemsPerPageInChronologicalOrder(int pageIndex, int itemsPerPage){
+		return queryActivitiesByStatusAndPageIndexAndItemsPerPageInChronologicalOrder(Activity.StatusType.accepted, pageIndex, itemsPerPage);
+	}
 	
 	public static UserActivityRelation.RelationType queryRelationOfUserAndActivity(int userId, int activityId){
 		String tableName="UserActivityRelationTable";
