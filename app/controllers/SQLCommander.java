@@ -4,10 +4,7 @@ import model.*;
 import org.json.simple.JSONObject;
 
 import java.sql.Timestamp;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
+import java.util.*;
 import dao.SQLHelper;
 
 public class SQLCommander {
@@ -376,7 +373,7 @@ public class SQLCommander {
 		List<JSONObject> records=null;
 
 		try{
-			records=SQLCommander.queryActivitiesByStatusAndChronologicalOrder(Activity.StatusType.accepted);
+			records=SQLCommander.queryActivitiesByStatusInChronologicalOrder(Activity.StatusType.accepted);
 		} catch(Exception e){
 			System.out.println("SQLCommander.queryAcceptedActivitiesInChronologicalOrder: "+e.getMessage());
 		}
@@ -387,7 +384,7 @@ public class SQLCommander {
 		List<JSONObject> records=null;
 		do{
 			try{
-				records=SQLCommander.queryActivitiesByStatusAndChronologicalOrder(Activity.StatusType.pending);
+				records=SQLCommander.queryActivitiesByStatusInChronologicalOrder(Activity.StatusType.pending);
 			} catch(Exception e){
 				System.out.println("SQLCommander.queryPendingActivitiesInChronologicalOrder: "+e.getMessage());
 			}
@@ -440,36 +437,77 @@ public class SQLCommander {
 	}
 
 	
-	public static List<JSONObject> queryActivitiesByStatusAndChronologicalOrder(Activity.StatusType status){
+	public static List<JSONObject> queryActivitiesByStatusInChronologicalOrder(Activity.StatusType status){
 		List<JSONObject> records=null;
 		do{
-		try{
-			String tableName="Activity";
-			SQLHelper sqlHelper=new SQLHelper();
+			try{
+				String tableName="Activity";
+				SQLHelper sqlHelper=new SQLHelper();
 
-			// query table Activity
-			List<String> columnNames=new LinkedList<String>();
-			columnNames.add(Activity.idKey);
-			columnNames.add(Activity.titleKey);
-			columnNames.add(Activity.contentKey);
-			columnNames.add(Activity.createdTimeKey);
-			columnNames.add(Activity.beginDateKey);
-			columnNames.add(Activity.endDateKey);
-			columnNames.add(Activity.capacityKey);
-				
-			List<String> whereClauses=new LinkedList<String>();
-			whereClauses.add(Activity.statusKey+"="+status.ordinal());
+				// query table Activity
+				List<String> columnNames=new LinkedList<String>();
+				columnNames.add(Activity.idKey);
+				columnNames.add(Activity.titleKey);
+				columnNames.add(Activity.contentKey);
+				columnNames.add(Activity.createdTimeKey);
+				columnNames.add(Activity.beginDateKey);
+				columnNames.add(Activity.endDateKey);
+				columnNames.add(Activity.capacityKey);
+					
+				List<String> whereClauses=new LinkedList<String>();
+				whereClauses.add(Activity.statusKey+"="+status.ordinal());
 
-			List<String> orderClauses=new LinkedList<String>();
-			orderClauses.add(Activity.createdTimeKey);
-			records=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, SQLHelper.directionDescend);
+				List<String> orderClauses=new LinkedList<String>();
+				orderClauses.add(Activity.createdTimeKey);
+				records=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, SQLHelper.directionDescend);
 
-		} catch(Exception e){
-			System.out.println("SQLCommander.queryActivitiesByStatusAndChronologicalOrder: "+e.getMessage());
-		}
+			} catch(Exception e){
+				System.out.println("SQLCommander.queryActivitiesByStatusInChronologicalOrder: "+e.getMessage());
+			}
 		}while(false);
 		return records;
 	}
+
+	public static List<JSONObject> queryActivitiesByStatusAndPageIndexAndItemsPerPageInChronologicalOrder(Activity.StatusType status, int pageIndex, int itemsPerPage){
+		List<JSONObject> records=null;
+		do{
+			try{
+				String tableName="Activity";
+				SQLHelper sqlHelper=new SQLHelper();
+
+				// query table Activity
+				List<String> columnNames=new LinkedList<String>();
+				columnNames.add(Activity.idKey);
+				columnNames.add(Activity.titleKey);
+				columnNames.add(Activity.contentKey);
+				columnNames.add(Activity.createdTimeKey);
+				columnNames.add(Activity.beginDateKey);
+				columnNames.add(Activity.endDateKey);
+				columnNames.add(Activity.capacityKey);
+					
+				List<String> whereClauses=new LinkedList<String>();
+				whereClauses.add(Activity.statusKey+"="+status.ordinal());
+				
+				List<String> orderClauses=new LinkedList<String>();
+				orderClauses.add(Activity.createdTimeKey);
+				
+				List<String> orderDirections=new LinkedList<String>();
+				orderDirections.add(SQLHelper.directionDescend);
+
+				List<Integer> limits=new LinkedList<Integer>();
+				Integer startingIndex=pageIndex*itemsPerPage;
+				Integer endingIndex=startingIndex+itemsPerPage;
+				limits.add(startingIndex);
+				limits.add(endingIndex);
+
+				records=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, orderDirections, limits);
+
+			} catch(Exception e){
+				System.out.println("SQLCommander.queryActivitiesByStatusAndPageIndexAndItemsPerPageInChronologicalOrder: "+e.getMessage());
+			}
+		}while(false);
+		return records;
+	}	
 	
 	public static UserActivityRelation.RelationType queryRelationOfUserAndActivity(int userId, int activityId){
 		String tableName="UserActivityRelationTable";
@@ -864,6 +902,5 @@ public class SQLCommander {
 
 		}while(false);
 		return lastImageId;
-
 	}
 };

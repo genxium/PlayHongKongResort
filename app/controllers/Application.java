@@ -662,5 +662,8 @@ public class Application extends Controller {
         return ok();
     }
     
-    
+    public static Result queryDefaultActivitiesByPageIndex(int pageIndex){
+        response().setContentType("text/plain");
+        return badRequest();
+    }
 }

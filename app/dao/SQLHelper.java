@@ -1,5 +1,5 @@
 package dao;
-
+import java.util.*;
 import java.nio.charset.UnsupportedCharsetException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Date;
 import java.io.*;
 
 import com.mysql.jdbc.Driver;
@@ -17,11 +16,6 @@ import model.Activity;
 import org.json.simple.JSONObject;
 
 import play.Play;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
 
 public class SQLHelper {
 	
@@ -126,7 +120,7 @@ public class SQLHelper {
 					ret=ResultSetUtil.convertToJSON(resultSet);
 				}
 			} catch (Exception e){
-				System.out.println("SQLHelper.executeSelect:"+e.getMessage());
+				System.out.println("SQLHelper.executeSelect: "+e.getMessage());
 			}
 		}
 		return ret;
@@ -145,7 +139,7 @@ public class SQLHelper {
 				}
 			} catch (Exception e){
 				// return the invalid value for exceptions
-				System.out.println("SQLHelper.executeInsert:"+e.getMessage());
+				System.out.println("SQLHelper.executeInsert: "+e.getMessage());
 			}
 		}
 		return lastId;
@@ -207,8 +201,8 @@ public class SQLHelper {
 		}while(false);
 		return lastId;
 	}
-	
-	public List<JSONObject> queryTableByColumnsAndWhereClauses(String tableName, List<String> columnNames, List<String> whereClauses, String logicLink){
+
+	public List<JSONObject> queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(String tableName, List<String> columnNames, List<String> whereClauses, String whereLink, List<String> orderClauses, List<String> orderDirections, List<Integer> limits){
 		List<JSONObject> ret=null;
 		do{
 			StringBuilder queryBuilder=new StringBuilder();
@@ -217,58 +211,45 @@ public class SQLHelper {
 			while(itName.hasNext()){
 				String name=itName.next();
 				queryBuilder.append(name);
-				if(itName.hasNext()) queryBuilder.append(",");
+				if(itName.hasNext()) queryBuilder.append(", ");
 			}
 			queryBuilder.append(" FROM "+tableName);
 			
-			if(whereClauses.size()>0){
+			if(whereClauses!=null && whereClauses.size()>0){
 				queryBuilder.append(" WHERE ");
 				Iterator<String> itClause=whereClauses.iterator();
 				while(itClause.hasNext()){
 					String clause=itClause.next();
 					queryBuilder.append(clause);
-					if(itClause.hasNext()) queryBuilder.append(" "+logicLink+" ");
-				}
-			}
-			String query=queryBuilder.toString();
-			ret=executeSelect(query);
-		}while(false);
-		return ret;
-	}
-
-	public List<JSONObject> queryTableByColumnsAndWhereClausesAndOrderClauses(String tableName, List<String> columnNames, List<String> whereClauses, String whereLogicLink, List<String> orderClauses, String orderDirection){
-		List<JSONObject> ret=null;
-		do{
-			StringBuilder queryBuilder=new StringBuilder();
-			queryBuilder.append("SELECT ");
-			Iterator<String> itName=columnNames.iterator();
-			while(itName.hasNext()){
-				String name=itName.next();
-				queryBuilder.append(name);
-				if(itName.hasNext()) queryBuilder.append(",");
-			}
-			queryBuilder.append(" FROM "+tableName);
-			
-			if(whereClauses.size()>0){
-				queryBuilder.append(" WHERE ");
-				Iterator<String> itClause=whereClauses.iterator();
-				while(itClause.hasNext()){
-					String clause=itClause.next();
-					queryBuilder.append(clause);
-					if(itClause.hasNext()) queryBuilder.append(" "+whereLogicLink+" ");
+					if(itClause.hasNext()) queryBuilder.append(" "+whereLink+" ");
 				}
 			}
 
-			if(orderClauses.size()>0){
+			if(orderClauses!=null && orderClauses.size()>0){
 				queryBuilder.append(" ORDER BY ");
 				Iterator<String> itClause=orderClauses.iterator();
+				Iterator<String> itDirection=null;
+				if(orderDirections!=null && orderDirections.size()>0){
+					itDirection=orderDirections.iterator();
+				}
 				while(itClause.hasNext()){
 					String clause=itClause.next();
 					queryBuilder.append(clause);
-					if(itClause.hasNext()) queryBuilder.append(",");
+					if(itDirection.hasNext()){
+						String direction=itDirection.next();
+						queryBuilder.append(" "+direction);
+					}
+					if(itClause.hasNext()) queryBuilder.append(", ");
 				}
-				if(orderDirection!=null && orderDirection.length()>0){
-					queryBuilder.append(" "+orderDirection);
+			}
+
+			if(limits!=null && limits.size()>0 && limits.size()<=2){
+				queryBuilder.append(" LIMIT ");
+				Iterator<Integer> itLimit=limits.iterator();
+				while(itLimit.hasNext()){
+					Integer limit=itLimit.next();
+					queryBuilder.append(limit.toString());
+					if(itLimit.hasNext()) queryBuilder.append(", ");
 				}
 			}
 
@@ -277,6 +258,26 @@ public class SQLHelper {
 		}while(false);
 		return ret;
 	}
+
+	public List<JSONObject> queryTableByColumnsAndWhereClausesAndOrderClauses(String tableName, List<String> columnNames, List<String> whereClauses, String whereLink, List<String> orderClauses, String orderDirection){
+		List<String> orderDirections=null;
+		do{
+			if(orderDirection==null) break;
+			orderDirections=new LinkedList<String>();
+			Iterator<String> itClause=orderClauses.iterator();
+			while(itClause.hasNext()){
+				String clause=itClause.next();
+				orderDirections.add(orderDirection);
+			}
+		}while(false);
+		return queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, whereLink, orderClauses, orderDirections, null);
+	}
+	
+	public List<JSONObject> queryTableByColumnsAndWhereClauses(String tableName, List<String> columnNames, List<String> whereClauses, String whereLink){
+		return queryTableByColumnsAndWhereClausesAndOrderClauses(tableName, columnNames, whereClauses, whereLink, null, null);
+	}
+
+	
 	
 	public boolean updateTableByColumnsAndWhereClauses(String tableName, List<String> columnNames, List<Object> columnValues, List<String> whereClauses, String logicLink){
 		boolean ret=false;
