@@ -691,10 +691,14 @@ public class Application extends Controller {
         return ok();
     }
     
-    public static Result queryDefaultActivitiesByPageIndex(Integer pageIndex){
+    public static Result queryDefaultActivitiesByPageIndex(){
         response().setContentType("text/plain");
          do{
             try{
+                Map<String, String[]> formData=request().body().asFormUrlEncoded();
+                String[] pageIndexes=formData.get("pageIndex");
+                Integer pageIndex=Integer.parseInt(pageIndexes[0]);
+
                 int itemsPerPage=6; // hard coded for now
                 List<JSONObject> activities=SQLCommander.queryAcceptedActivitiesByPageIndexAndItemsPerPageInChronologicalOrder(pageIndex, itemsPerPage);
                 Iterator<JSONObject> itActivity=activities.iterator();
@@ -705,12 +709,21 @@ public class Application extends Controller {
                     Integer activityId=(Integer)activityJSON.get(Activity.idKey);
                     String activityTitle=(String)activityJSON.get(Activity.titleKey);
                     String activityContent=(String)activityJSON.get(Activity.contentKey);
-                    
+                    List<Image> images=SQLCommander.queryImagesByActivityId(activityId);
+
                     ObjectNode singleActivityNode=Json.newObject();
                     singleActivityNode.put(Activity.idKey, activityId.toString());
                     singleActivityNode.put(Activity.titleKey, activityTitle);
                     singleActivityNode.put(Activity.contentKey, activityContent);
-                    
+                    if(images!=null && images.size()>0){
+                        Iterator<Image> itImage=images.iterator();
+                        if(itImage.hasNext()){
+                            Image firstImage=itImage.next();
+                            String firstImageURL=firstImage.getImageURL();
+                            singleActivityNode.put(Image.urlKey, firstImageURL);
+                        }
+                    }
+                        
                     result.put(activityId.toString(), singleActivityNode);
                 }
                 return ok(result);

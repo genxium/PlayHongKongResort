@@ -47,3 +47,9 @@ function onBtnLoginClicked(evt){
 		    }
 	);
 }
+
+function onSectionDefaultActivitiesScrolled(evt){
+	if( $(this).scrollTop() + $(this).height() >= $(document).height() ){
+		alert("Bottom!");
+	}
+}

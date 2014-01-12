@@ -31,3 +31,6 @@ var g_classBtnProfile="classBtnProfile";
 var g_indexLoggedInUserMenu="indexLoggedInUserMenu";
 var g_indexBtnLogout="indexBtnLogout";
 var g_indexBtnProfile="indexBtnProfile";
+
+// variable indexes
+var g_indexSectionDefaultActivitiesPageIndex="pageIndex";

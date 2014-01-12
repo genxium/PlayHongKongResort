@@ -25,6 +25,33 @@ function queryDefaultActivities(){
 	}
 }
 
+function queryDefaultActivitiesByPageIndex(){
+	var targetSection=$("#"+g_idSectionDefaultActivities);
+	targetSection.empty();
+	var pageIndex=targetSection.data(g_indexSectionDefaultActivitiesPageIndex);
+	try{
+		$.post("/queryDefaultActivitiesByPageIndex", 
+			{
+				pageIndex: pageIndex.toString(), 
+			},
+			function(data, status, xhr){
+    				if(status=="success"){
+    					var jsonResponse=JSON.parse(data);
+    					for(var key in jsonResponse){
+    						var jsonActivity=jsonResponse[key];
+    						var cell=generateDefaultActivityCell(jsonActivity);
+							targetSection.append(cell);
+    					}
+    				} else{
+    					
+    				}
+			}
+		);
+	} catch(err){
+
+	}
+}
+
 // Assistant Handlers
 function onBtnLogoutClicked(evt){
 	var token = $.cookie(g_keyLoginStatus.toString());

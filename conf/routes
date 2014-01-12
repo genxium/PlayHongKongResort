@@ -21,7 +21,7 @@ POST /queryActivitiesHostedByUser controllers.Application.queryActivitiesHostedB
 POST /queryDefaultActivities controllers.Application.queryDefaultActivities()
 POST /queryDefaultActivitiesByUser controllers.Application.queryDefaultActivitiesByUser()
 
-GET  /queryDefaultActivitiesByPageIndex controllers.Application.queryDefaultActivitiesByPageIndex(pageIndex: Integer ?= 1)
+POST  /queryDefaultActivitiesByPageIndex controllers.Application.queryDefaultActivitiesByPageIndex()
 
 # User Profile Editor
 POST /uploadAvatar controllers.Application.uploadAvatar()

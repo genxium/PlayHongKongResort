@@ -1,5 +1,9 @@
 $(document).ready(function(){
 	// execute on page loaded
+	var sectionDefaultActivities=$("#"+g_idSectionDefaultActivities); 
+	sectionDefaultActivities.bind("scroll", onSectionDefaultActivitiesScrolled);
+	sectionDefaultActivities.data(g_indexSectionDefaultActivitiesPageIndex, 0);
+
 	checkLoginStatus();
 	g_callbackOnActivityEditorRemoved=refreshOnLoggedIn;
 	$("#"+g_idBtnRegister).bind("click", onBtnRegisterClicked);

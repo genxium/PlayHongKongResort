@@ -5,7 +5,7 @@ function checkLoginStatus(evt){
 		if(token==null) {
 			// refresh screen
 			refreshOnEnter();
-			queryDefaultActivities();
+			queryDefaultActivitiesByPageIndex();
 			break;
 		}
 		$.post("/checkLoginStatus",
@@ -33,7 +33,7 @@ function checkLoginStatus(evt){
 					} else{
 						// refresh screen
 						refreshOnEnter();
-						queryDefaultActivities();
+						queryDefaultActivitiesByPageIndex();
 					}
 			    }
 		);
