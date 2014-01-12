@@ -1,4 +1,4 @@
-// general DOM element key
+// general DOM element keys
 var g_idSectionTitle="idSectionTitle";
 
 var g_idSectionSubHeader="idSectionSubHeader";
@@ -27,10 +27,10 @@ var g_classBtnLogout="classBtnLogout";
 
 var g_classBtnProfile="classBtnProfile";
 
+var g_idBtnPreviousPage="idBtnPreviousPage";
+var g_idBtnNextPage="idBtnNextPage";
+
 // button indexes for cascaded DOM element search
 var g_indexLoggedInUserMenu="indexLoggedInUserMenu";
 var g_indexBtnLogout="indexBtnLogout";
 var g_indexBtnProfile="indexBtnProfile";
-
-// variable indexes
-var g_indexSectionDefaultActivitiesPageIndex="pageIndex";

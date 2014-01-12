@@ -30,3 +30,21 @@
 	font-size:	16pt;
 	color:	#00ff00;
 }
+
+#idBtnPreviousPage
+{
+	display: table-column;
+	position: relative;
+	width: 100pt;
+	height: 75pt;
+	font-size: 12pt;
+}
+
+#idBtnNextPage
+{
+	display: table-column;
+	position: relative;
+	width: 100pt;
+	height: 75pt;
+	font-size: 12pt;
+}

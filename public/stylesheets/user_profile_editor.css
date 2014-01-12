@@ -18,3 +18,29 @@
 	overflow: auto;
 }
 
+/* Activity Cells */
+#idSectionOwnedActivities
+{
+	width: 645pt;
+	height: 300pt;
+	border: 3pt solid #ccccff;
+	overflow: auto;
+}
+
+#idBtnPreviousPage
+{
+	display: table-column;
+	position: relative;
+	width: 100pt;
+	height: 75pt;
+	font-size: 12pt;
+}
+
+#idBtnNextPage
+{
+	display: table-column;
+	position: relative;
+	width: 100pt;
+	height: 75pt;
+	font-size: 12pt;
+}

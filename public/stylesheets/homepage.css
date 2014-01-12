@@ -139,3 +139,31 @@ html, body
 	height: 36pt;
 	font-size: 15pt;
 }
+
+/* Activity Cells */
+#idSectionDefaultActivities
+{
+	left: 80%;
+	width: 645pt;
+	height: 300pt;
+	border: 3pt solid #ff0000;
+	overflow: auto;
+}
+
+#idBtnPreviousPage
+{
+	display: table-column;
+	position: relative;
+	width: 100pt;
+	height: 75pt;
+	font-size: 12pt;
+}
+
+#idBtnNextPage
+{
+	display: table-column;
+	position: relative;
+	width: 100pt;
+	height: 75pt;
+	font-size: 12pt;
+}

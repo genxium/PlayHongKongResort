@@ -18,10 +18,14 @@ import utilities.Converter;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+
 public class Application extends Controller {
 
     public static String s_homepageName="homepage.html";
     public static String s_indexImageOfActivityPrefix="indexImageOfActivityPrefix";
+    public static String s_pageIndexKey="pageIndex";
+
+    public static Integer s_itemsPerPage=6; // hard coded for now
 
     public static Result index() {
         return show(s_homepageName);
@@ -449,12 +453,63 @@ public class Application extends Controller {
         return badRequest("Activity not accepted!");
     }
 
+    public static Result queryDefaultActivities(){
+        response().setContentType("text/plain");
+         do{
+            try{
+                Map<String, String[]> formData=request().body().asFormUrlEncoded();
+                String[] pageIndexes=formData.get(s_pageIndexKey);
+                if(pageIndexes==null) break;
+
+                Integer pageIndex=Integer.parseInt(pageIndexes[0]);
+
+                List<JSONObject> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(pageIndex, s_itemsPerPage);
+                Iterator<JSONObject> itActivity=activities.iterator();
+                ObjectNode result = Json.newObject();
+            
+                while(itActivity.hasNext()){
+                    JSONObject activityJSON=itActivity.next();
+                    Integer activityId=(Integer)activityJSON.get(Activity.idKey);
+                    String activityTitle=(String)activityJSON.get(Activity.titleKey);
+                    String activityContent=(String)activityJSON.get(Activity.contentKey);
+                    List<Image> images=SQLCommander.queryImagesByActivityId(activityId);
+
+                    ObjectNode singleActivityNode=Json.newObject();
+                    singleActivityNode.put(Activity.idKey, activityId.toString());
+                    singleActivityNode.put(Activity.titleKey, activityTitle);
+                    singleActivityNode.put(Activity.contentKey, activityContent);
+                    if(images!=null && images.size()>0){
+                        Iterator<Image> itImage=images.iterator();
+                        if(itImage.hasNext()){
+                            Image firstImage=itImage.next();
+                            String firstImageURL=firstImage.getImageURL();
+                            singleActivityNode.put(Image.urlKey, firstImageURL);
+                        }
+                    }
+                        
+                    result.put(activityId.toString(), singleActivityNode);
+                }
+                return ok(result);
+            } catch(Exception e){
+                System.out.println("Application.queryDefaultActivities: "+e.getMessage());
+            }
+        }while(false);
+        return badRequest();
+    }
+
     public static Result queryActivitiesHostedByUser(){
         response().setContentType("text/plain");
         do{
-            String token=DataUtils.getUserToken(request().body());
-            Integer userId=DataUtils.getUserIdByToken(token);
+            Map<String, String[]> formData=request().body().asFormUrlEncoded();
+            String[] pageIndexes=formData.get(s_pageIndexKey);
+            if(pageIndexes==null) break;
+            Integer pageIndex=Integer.parseInt(pageIndexes[0]);
             
+            String[] tokens=formData.get(BasicUser.tokenKey);
+            if(tokens==null) break;
+            String token=tokens[0];
+
+            Integer userId=DataUtils.getUserIdByToken(token);
             if(userId==DataUtils.invalidId) break;
             
             ObjectNode result = null;
@@ -463,7 +518,7 @@ public class Application extends Controller {
             UserActivityRelation.RelationType relation=UserActivityRelation.RelationType.host;
             
             try{
-        		List<JSONObject> activities=SQLCommander.queryActivitiesByUserAndRelation(user, relation);
+        		List<JSONObject> activities=SQLCommander.queryActivitiesByUserAndRelation(user, relation, pageIndex, s_itemsPerPage);
         		Iterator<JSONObject> itActivity=activities.iterator();
         		result=Json.newObject();
         		
@@ -489,13 +544,12 @@ public class Application extends Controller {
         				  singleActivityNode.put(Image.urlKey, firstImageURL);
       			       }
         			}
-            
         			result.put(activityId.toString(), singleActivityNode);
         		}
+                return ok(result);
             } catch(Exception e){
-            		System.out.println("Application.queryActivitiesHostedByUser:"+e.getMessage());
+            	System.out.println("Application.queryActivitiesHostedByUser:"+e.getMessage());
             }
-            return ok(result);
       }while(false);
       return badRequest();
     }
@@ -525,50 +579,16 @@ public class Application extends Controller {
         return badRequest("Could not join activity");
     }
 
-    public static Result queryDefaultActivities(){
+    public static Result queryDefaultActivitiesByAdmin(){
 		response().setContentType("text/plain");
         do{
     		try{
-    			List<JSONObject> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder();
-      			Iterator<JSONObject> itActivity=activities.iterator();
-      			ObjectNode result = Json.newObject();
-      		
-      			while(itActivity.hasNext()){
-    				JSONObject activityJSON=itActivity.next();
-    				Integer activityId=(Integer)activityJSON.get(Activity.idKey);
-    				String activityTitle=(String)activityJSON.get(Activity.titleKey);
-    				String activityContent=(String)activityJSON.get(Activity.contentKey);
-    				List<Image> images=SQLCommander.queryImagesByActivityId(activityId);
-
-    				ObjectNode singleActivityNode=Json.newObject();
-    				singleActivityNode.put(Activity.idKey, activityId.toString());
-    				singleActivityNode.put(Activity.titleKey, activityTitle);
-    				singleActivityNode.put(Activity.contentKey, activityContent);
-    				
-                    if(images!=null && images.size()>0){
-                       Iterator<Image> itImage=images.iterator();
-                       if(itImage.hasNext()){
-                          Image firstImage=itImage.next();
-                          String firstImageURL=firstImage.getImageURL();
-                          singleActivityNode.put(Image.urlKey, firstImageURL);
-                       }
-                    }
-
-    				result.put(activityId.toString(), singleActivityNode);
-      			}
-      			return ok(result);
-    		} catch(Exception e){
-                System.out.println("Application.queryDefaultActivities: "+e.getMessage());
-		    }
-        }while(false);   
-        return badRequest();
-    }
-    
-    public static Result queryDefaultActivitiesByHost(){
-		response().setContentType("text/plain");
-        do{
-    		try{
-    			List<JSONObject> activities=SQLCommander.queryPendingActivitiesInChronologicalOrder();
+                Map<String, String[]> formData=request().body().asFormUrlEncoded();
+                String[] pageIndexes=formData.get(s_pageIndexKey);
+                if(pageIndexes==null) break;
+                Integer pageIndex=Integer.parseInt(pageIndexes[0]);
+                
+    			List<JSONObject> activities=SQLCommander.queryPendingActivitiesInChronologicalOrder(pageIndex, s_itemsPerPage);
       			Iterator<JSONObject> itActivity=activities.iterator();
       			ObjectNode result = Json.newObject();
       		
@@ -608,12 +628,18 @@ public class Application extends Controller {
         do{
     		try{
     			Map<String, String[]> formData=request().body().asFormUrlEncoded();
+
+                String[] pageIndexes=formData.get(s_pageIndexKey);
+                if(pageIndexes==null) break;
+                Integer pageIndex=Integer.parseInt(pageIndexes[0]);
+                
     	  	  	String[] tokens=formData.get(BasicUser.tokenKey);
-    	    	  
+    	    	if(tokens==null) break;
     	    	String token=tokens[0];
+
     	    	int userId=DataUtils.getUserIdByToken(token);
     	    	if(userId==DataUtils.invalidId) break;
-    			List<JSONObject> records=SQLCommander.queryAcceptedActivitiesInChronologicalOrderByUser(userId);
+    			List<JSONObject> records=SQLCommander.queryAcceptedActivitiesByUserIdInChronologicalOrder(pageIndex, s_itemsPerPage, userId);
       			Iterator<JSONObject> itRecord=records.iterator();
       			ObjectNode result = Json.newObject();
       		
@@ -649,37 +675,34 @@ public class Application extends Controller {
     	    }
         }while(false);
         return badRequest();  
-}
+    }
     
     public static Result queryRelationOfUserAndActivity(){
-    		// define response attributes
+    	// define response attributes
         response().setContentType("text/plain");
-        
-        Map<String, String[]> formData=request().body().asFormUrlEncoded();
-  	  	String[] ids=formData.get(Activity.idKey);
-  	  	String[] tokens=formData.get(BasicUser.tokenKey);
-    	  
-     	Integer activityId=Integer.parseInt(ids[0]);
-    		String token=tokens[0];
-    		
-    		ObjectNode ret=null;
-    		
-    		try{
+        do{
+            try{
+                Map<String, String[]> formData=request().body().asFormUrlEncoded();
+          	  	String[] ids=formData.get(Activity.idKey);
+          	  	String[] tokens=formData.get(BasicUser.tokenKey);
+            	  
+             	Integer activityId=Integer.parseInt(ids[0]);
+        		String token=tokens[0];
+        		
+        		ObjectNode ret=null;
     			Integer userId=DataUtils.getUserIdByToken(token);
+    			UserActivityRelation.RelationType relation=SQLCommander.queryRelationOfUserIdAndActivity(userId, activityId);
     			
-    			UserActivityRelation.RelationType relation=SQLCommander.queryRelationOfUserAndActivity(userId, activityId);
-    			
-    			if(relation==null){
-    				return badRequest();
-    			}
+    			if(relation==null) break;
     			ret=Json.newObject();
     			ret.put(UserActivityRelationTable.relationIdKey, new Integer(relation.ordinal()).toString());
-  
-    		} catch(Exception e){
-    			System.out.println("Application.joinActivity:"+e.getMessage());
-    			return badRequest();
-    		}
-    		return ok(ret);
+
+        		return ok(ret);
+            } catch(Exception e){
+                System.out.println("Application.queryRelationOfUserAndActivity: "+e.getMessage());
+            }
+        }while(false);
+        return badRequest();
     }
 
     public static Result logout(){
@@ -689,48 +712,5 @@ public class Application extends Controller {
         String token=tokens[0];
         session().remove(token);
         return ok();
-    }
-    
-    public static Result queryDefaultActivitiesByPageIndex(){
-        response().setContentType("text/plain");
-         do{
-            try{
-                Map<String, String[]> formData=request().body().asFormUrlEncoded();
-                String[] pageIndexes=formData.get("pageIndex");
-                Integer pageIndex=Integer.parseInt(pageIndexes[0]);
-
-                int itemsPerPage=6; // hard coded for now
-                List<JSONObject> activities=SQLCommander.queryAcceptedActivitiesByPageIndexAndItemsPerPageInChronologicalOrder(pageIndex, itemsPerPage);
-                Iterator<JSONObject> itActivity=activities.iterator();
-                ObjectNode result = Json.newObject();
-            
-                while(itActivity.hasNext()){
-                    JSONObject activityJSON=itActivity.next();
-                    Integer activityId=(Integer)activityJSON.get(Activity.idKey);
-                    String activityTitle=(String)activityJSON.get(Activity.titleKey);
-                    String activityContent=(String)activityJSON.get(Activity.contentKey);
-                    List<Image> images=SQLCommander.queryImagesByActivityId(activityId);
-
-                    ObjectNode singleActivityNode=Json.newObject();
-                    singleActivityNode.put(Activity.idKey, activityId.toString());
-                    singleActivityNode.put(Activity.titleKey, activityTitle);
-                    singleActivityNode.put(Activity.contentKey, activityContent);
-                    if(images!=null && images.size()>0){
-                        Iterator<Image> itImage=images.iterator();
-                        if(itImage.hasNext()){
-                            Image firstImage=itImage.next();
-                            String firstImageURL=firstImage.getImageURL();
-                            singleActivityNode.put(Image.urlKey, firstImageURL);
-                        }
-                    }
-                        
-                    result.put(activityId.toString(), singleActivityNode);
-                }
-                return ok(result);
-            } catch(Exception e){
-                System.out.println("Application.queryDefaultActivitiesByPageIndex: "+e.getMessage());
-            }
-        }while(false);
-        return badRequest();
     }
 }

@@ -40,7 +40,7 @@ function onBtnLoginClicked(evt){
     				$.cookie(g_keyLoginStatus.toString(), jsonResponse[g_keyUserToken]);
     				// refresh screen
     				refreshOnLoggedIn();
-    				queryDefaultActivitiesByUser();
+    				queryDefaultActivitiesByUser(0);
 				} else{
 
 	    		}
@@ -48,8 +48,33 @@ function onBtnLoginClicked(evt){
 	);
 }
 
+function onBtnPreviousPageClicked(evt){
+	var targetSection=$("#"+g_idSectionDefaultActivities);
+	var pageIndex=targetSection.data(g_pageIndexKey);
+
+	var token = $.cookie(g_keyLoginStatus.toString());
+	if(token==null){
+		queryDefaultActivities(pageIndex-1);
+	} else{
+		queryDefaultActivitiesByUser(pageIndex-1);
+	}
+}
+
+function onBtnNextPageClicked(evt){
+	var targetSection=$("#"+g_idSectionDefaultActivities);
+	var pageIndex=targetSection.data(g_pageIndexKey);
+
+	var token = $.cookie(g_keyLoginStatus.toString());
+	if(token==null){
+		queryDefaultActivities(pageIndex+1);
+	} else{
+		queryDefaultActivitiesByUser(pageIndex+1);
+	}
+}
+
 function onSectionDefaultActivitiesScrolled(evt){
 	if( $(this).scrollTop() + $(this).height() >= $(document).height() ){
+		evt.preventDefault();
 		alert("Bottom!");
 	}
 }

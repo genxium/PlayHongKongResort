@@ -280,6 +280,7 @@ public class SQLCommander {
 		return bRet;
 	}
 	
+	/* querying activities */
 	public static Activity queryActivityByActivityId(int activityId){
 			
 		Activity activity=null;
@@ -320,8 +321,8 @@ public class SQLCommander {
 		} while(false);
 		return activity;
 	}
-	
-	public static List<JSONObject> queryActivitiesByUserAndRelation(BasicUser user, UserActivityRelation.RelationType relation){
+
+	public static List<JSONObject> queryActivitiesByUserAndRelation(BasicUser user, UserActivityRelation.RelationType relation, int pageIndex, int itemsPerPage){
 		List<JSONObject> activityRecords=null;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
@@ -363,112 +364,26 @@ public class SQLCommander {
 				Integer targetActivityId=itActivityId.next();
 				activityWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(targetActivityId));
 			}
-			activityRecords=sqlHelper.queryTableByColumnsAndWhereClauses("Activity", activityColumnNames, activityWhereClauses, SQLHelper.logicOR);
+
+			List<String> activityOrderClauses=new LinkedList<String>();
+			activityOrderClauses.add(Activity.createdTimeKey);
+				
+			List<String> activityOrderDirections=new LinkedList<String>();
+			activityOrderDirections.add(SQLHelper.directionDescend);
+
+			List<Integer> limits=new LinkedList<Integer>();
+			Integer startingIndex=pageIndex*itemsPerPage;
+			Integer endingIndex=startingIndex+itemsPerPage;
+			limits.add(startingIndex);
+			limits.add(endingIndex);
+
+			activityRecords=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits("Activity", activityColumnNames, activityWhereClauses, SQLHelper.logicOR, activityOrderClauses, activityOrderDirections, limits);
 			
 		}while(false);
 		return activityRecords;
 	}
-
-	public static List<JSONObject> queryAcceptedActivitiesInChronologicalOrder(){
-		List<JSONObject> records=null;
-
-		try{
-			records=SQLCommander.queryActivitiesByStatusInChronologicalOrder(Activity.StatusType.accepted);
-		} catch(Exception e){
-			System.out.println("SQLCommander.queryAcceptedActivitiesInChronologicalOrder: "+e.getMessage());
-		}
-		return records;
-	}
 	
-	public static List<JSONObject> queryPendingActivitiesInChronologicalOrder(){
-		List<JSONObject> records=null;
-		do{
-			try{
-				records=SQLCommander.queryActivitiesByStatusInChronologicalOrder(Activity.StatusType.pending);
-			} catch(Exception e){
-				System.out.println("SQLCommander.queryPendingActivitiesInChronologicalOrder: "+e.getMessage());
-			}
-		}while(false);
-		return records;
-	}
-	
-	public static List<JSONObject> queryAcceptedActivitiesInChronologicalOrderByUser(int userId){
-		List<JSONObject> records=null;
-		do{
-			try{
-				String tableName="Activity";
-				SQLHelper sqlHelper=new SQLHelper();
-
-				// query table Activity
-				List<String> columnNames=new LinkedList<String>();
-				columnNames.add(Activity.idKey);
-				columnNames.add(Activity.titleKey);
-				columnNames.add(Activity.contentKey);
-				columnNames.add(Activity.createdTimeKey);
-				columnNames.add(Activity.beginDateKey);
-				columnNames.add(Activity.endDateKey);
-				columnNames.add(Activity.capacityKey);
-					
-				List<String> whereClauses=new LinkedList<String>();
-				whereClauses.add(Activity.statusKey+"="+Activity.StatusType.accepted.ordinal());
-
-				List<String> orderClauses=new LinkedList<String>();
-				orderClauses.add(Activity.createdTimeKey);
-				List<JSONObject> activityRecords=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, SQLHelper.directionDescend);
-				if(activityRecords==null || activityRecords.size()<=0) break;
-
-				records=new LinkedList<JSONObject>();
-				Iterator<JSONObject> itActivityRecord=activityRecords.iterator();
-				while(itActivityRecord.hasNext()){
-					JSONObject activityJson=itActivityRecord.next();
-					int activityId=(Integer)activityJson.get(Activity.idKey);
-					UserActivityRelation.RelationType relation=SQLCommander.queryRelationOfUserAndActivity(userId, activityId);
-					JSONObject recordJson=(JSONObject) activityJson.clone();
-					if(relation!=null){
-						recordJson.put(UserActivityRelationTable.relationIdKey, relation.ordinal());
-					}
-					records.add(recordJson);
-				}
-			} catch(Exception e){
-				System.out.println("SQLCommander.queryAcceptedActivitiesInChronologicalOrderByUser: "+e.getMessage());
-			}
-		}while(false);
-		return records;
-	}
-
-	
-	public static List<JSONObject> queryActivitiesByStatusInChronologicalOrder(Activity.StatusType status){
-		List<JSONObject> records=null;
-		do{
-			try{
-				String tableName="Activity";
-				SQLHelper sqlHelper=new SQLHelper();
-
-				// query table Activity
-				List<String> columnNames=new LinkedList<String>();
-				columnNames.add(Activity.idKey);
-				columnNames.add(Activity.titleKey);
-				columnNames.add(Activity.contentKey);
-				columnNames.add(Activity.createdTimeKey);
-				columnNames.add(Activity.beginDateKey);
-				columnNames.add(Activity.endDateKey);
-				columnNames.add(Activity.capacityKey);
-					
-				List<String> whereClauses=new LinkedList<String>();
-				whereClauses.add(Activity.statusKey+"="+status.ordinal());
-
-				List<String> orderClauses=new LinkedList<String>();
-				orderClauses.add(Activity.createdTimeKey);
-				records=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, SQLHelper.directionDescend);
-
-			} catch(Exception e){
-				System.out.println("SQLCommander.queryActivitiesByStatusInChronologicalOrder: "+e.getMessage());
-			}
-		}while(false);
-		return records;
-	}
-
-	public static List<JSONObject> queryActivitiesByStatusAndPageIndexAndItemsPerPageInChronologicalOrder(Activity.StatusType status, int pageIndex, int itemsPerPage){
+	public static List<JSONObject> queryActivitiesByStatusInChronologicalOrder(Activity.StatusType status, int pageIndex, int itemsPerPage){
 		List<JSONObject> records=null;
 		do{
 			try{
@@ -503,17 +418,80 @@ public class SQLCommander {
 				records=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, orderDirections, limits);
 
 			} catch(Exception e){
-				System.out.println("SQLCommander.queryActivitiesByStatusAndPageIndexAndItemsPerPageInChronologicalOrder: "+e.getMessage());
+				System.out.println("SQLCommander.queryActivitiesByStatusInChronologicalOrder: "+e.getMessage());
 			}
 		}while(false);
 		return records;
 	}	
 
-	public static List<JSONObject> queryAcceptedActivitiesByPageIndexAndItemsPerPageInChronologicalOrder(int pageIndex, int itemsPerPage){
-		return queryActivitiesByStatusAndPageIndexAndItemsPerPageInChronologicalOrder(Activity.StatusType.accepted, pageIndex, itemsPerPage);
+	public static List<JSONObject> queryPendingActivitiesInChronologicalOrder(int pageIndex, int itemsPerPage){
+		return queryActivitiesByStatusInChronologicalOrder(Activity.StatusType.pending, pageIndex, itemsPerPage);
+	}
+
+	public static List<JSONObject> queryAcceptedActivitiesInChronologicalOrder(int pageIndex, int itemsPerPage){
+		return queryActivitiesByStatusInChronologicalOrder(Activity.StatusType.accepted, pageIndex, itemsPerPage);
+	}
+
+	public static List<JSONObject> queryActivitiesByStatusAndUserIdInChronologicalOrder(Activity.StatusType status, int pageIndex, int itemsPerPage, int userId){
+		List<JSONObject> records=null;
+		do{
+			try{
+				String tableName="Activity";
+				SQLHelper sqlHelper=new SQLHelper();
+
+				// query table Activity
+				List<String> columnNames=new LinkedList<String>();
+				columnNames.add(Activity.idKey);
+				columnNames.add(Activity.titleKey);
+				columnNames.add(Activity.contentKey);
+				columnNames.add(Activity.createdTimeKey);
+				columnNames.add(Activity.beginDateKey);
+				columnNames.add(Activity.endDateKey);
+				columnNames.add(Activity.capacityKey);
+					
+				List<String> whereClauses=new LinkedList<String>();
+				whereClauses.add(Activity.statusKey+"="+status.ordinal());
+				
+				List<String> orderClauses=new LinkedList<String>();
+				orderClauses.add(Activity.createdTimeKey);
+				
+				List<String> orderDirections=new LinkedList<String>();
+				orderDirections.add(SQLHelper.directionDescend);
+
+				List<Integer> limits=new LinkedList<Integer>();
+				Integer startingIndex=pageIndex*itemsPerPage;
+				Integer endingIndex=startingIndex+itemsPerPage;
+				limits.add(startingIndex);
+				limits.add(endingIndex);
+
+				List<JSONObject> activityRecords=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, orderDirections, limits);
+				if(activityRecords==null || activityRecords.size()<=0) break;
+
+				records=new LinkedList<JSONObject>();
+				Iterator<JSONObject> itActivityRecord=activityRecords.iterator();
+				while(itActivityRecord.hasNext()){
+					JSONObject activityJson=itActivityRecord.next();
+					int activityId=(Integer)activityJson.get(Activity.idKey);
+					UserActivityRelation.RelationType relation=SQLCommander.queryRelationOfUserIdAndActivity(userId, activityId);
+					JSONObject recordJson=(JSONObject) activityJson.clone();
+					if(relation!=null){
+						recordJson.put(UserActivityRelationTable.relationIdKey, relation.ordinal());
+					}
+					records.add(recordJson);
+				}
+
+			} catch(Exception e){
+				System.out.println("SQLCommander.queryActivitiesByStatusAndUserIdInChronologicalOrder: "+e.getMessage());
+			}
+		}while(false);
+		return records;
+	}
+
+	public static List<JSONObject> queryAcceptedActivitiesByUserIdInChronologicalOrder(int pageIndex, int itemsPerPage, int userId){
+		return queryActivitiesByStatusAndUserIdInChronologicalOrder(Activity.StatusType.accepted, pageIndex, itemsPerPage, userId);
 	}
 	
-	public static UserActivityRelation.RelationType queryRelationOfUserAndActivity(int userId, int activityId){
+	public static UserActivityRelation.RelationType queryRelationOfUserIdAndActivity(int userId, int activityId){
 		String tableName="UserActivityRelationTable";
 		UserActivityRelation.RelationType ret=null; 
 		do{
@@ -537,7 +515,7 @@ public class SQLCommander {
 					ret=UserActivityRelation.RelationType.getTypeForValue(relationId);
 				}
 			} catch(Exception e){
-				System.out.println("SQLCommander.queryRelationOfUserAndActivity:"+e.getMessage());
+				System.out.println("SQLCommander.queryRelationOfUserIdAndActivity:"+e.getMessage());
 			}
 		}while(false);
 		return ret;
@@ -547,7 +525,7 @@ public class SQLCommander {
 		boolean ret=false;
 		do{
 			// validate host relation
-			UserActivityRelation.RelationType type=SQLCommander.queryRelationOfUserAndActivity(userId, activityId);
+			UserActivityRelation.RelationType type=SQLCommander.queryRelationOfUserIdAndActivity(userId, activityId);
 			if(type==null || type!=UserActivityRelation.RelationType.host) break;
 			ret=true;
 		}while(false);
@@ -613,7 +591,7 @@ public class SQLCommander {
 			if(activity==null) break;
 			if(activity.getStatus()!=Activity.StatusType.accepted) break;
 			int activityId=activity.getId();
-			UserActivityRelation.RelationType relation=queryRelationOfUserAndActivity(userId, activityId);
+			UserActivityRelation.RelationType relation=queryRelationOfUserIdAndActivity(userId, activityId);
 			if(relation!=null) break;
 			ret=true;
 		}while(false);

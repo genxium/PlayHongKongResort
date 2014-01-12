@@ -112,23 +112,6 @@
 }
 
 /* Activity Cells */
-
-#idSectionOwnedActivities
-{
-	width: 645pt;
-	height: 300pt;
-	border: 3pt solid #ccccff;
-}
-
-#idSectionDefaultActivities
-{
-	left: 80%;
-	width: 645pt;
-	height: 300pt;
-	border: 3pt solid #ff0000;
-	overflow: auto;
-}
-
 .classCellActivityContainer
 {
 	float: left;

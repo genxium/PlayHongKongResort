@@ -41,3 +41,22 @@ function onBtnUploadAvatarClicked(evt){
 	// invoke submission
 	form.submit();
 }
+
+function onBtnPreviousPageClicked(evt){
+	var targetSection=$("#"+g_idSectionOwnedActivities);
+	var pageIndex=targetSection.data(g_pageIndexKey);
+	queryActivitiesHostedByUser(pageIndex-1);
+}
+
+function onBtnNextPageClicked(evt){
+	var targetSection=$("#"+g_idSectionOwnedActivities);
+	var pageIndex=targetSection.data(g_pageIndexKey);
+	queryActivitiesHostedByUser(pageIndex+1);
+}
+
+function onSectionOwnedActivitiesScrolled(evt){
+	if( $(this).scrollTop() + $(this).height() >= $(document).height() ){
+		evt.preventDefault();
+		alert("Bottom!");
+	}
+}

@@ -5,7 +5,7 @@ function checkLoginStatus(evt){
 		if(token==null) {
 			// refresh screen
 			refreshOnEnter();
-			queryDefaultActivitiesByPageIndex();
+			queryDefaultActivities(0);
 			break;
 		}
 		$.post("/checkLoginStatus",
@@ -29,11 +29,11 @@ function checkLoginStatus(evt){
 		    		if(result==true){
 						// refresh screen
 					   	refreshOnLoggedIn();
-					   	queryDefaultActivitiesByUser();
+					   	queryDefaultActivitiesByUser(0);
 					} else{
 						// refresh screen
 						refreshOnEnter();
-						queryDefaultActivitiesByPageIndex();
+						queryDefaultActivities(0);
 					}
 			    }
 		);
@@ -49,33 +49,6 @@ function validateEmail(){
 	  return false;
 	}
 	return true;
-}
-
-function queryDefaultActivitiesByUser(){
-	var targetSection=$("#"+g_idSectionDefaultActivities);
-	targetSection.empty();
-	var token = $.cookie(g_keyLoginStatus.toString());
-	try{
-		$.post("/queryDefaultActivitiesByUser", 
-			{
-				UserToken: token.toString()
-			},
-			function(data, status, xhr){
-    				if(status=="success"){
-    					var jsonResponse=JSON.parse(data);
-    					for(var key in jsonResponse){
-    						var jsonRecord=jsonResponse[key];
-    						var cell=generateDefaultActivityCell(jsonRecord);
-							targetSection.append(cell);
-    					}
-    				} else{
-    					
-    				}
-			}
-		);
-	} catch(err){
-
-	}
 }
 
 function onMouseEnterSectionUserInfo(evt){

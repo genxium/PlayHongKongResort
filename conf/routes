@@ -18,16 +18,15 @@ POST /submitActivity controllers.Application.submitActivity()
 POST /joinActivity controllers.Application.joinActivity()
 POST /logout controllers.Application.logout()
 POST /queryActivitiesHostedByUser controllers.Application.queryActivitiesHostedByUser()
-POST /queryDefaultActivities controllers.Application.queryDefaultActivities()
 POST /queryDefaultActivitiesByUser controllers.Application.queryDefaultActivitiesByUser()
 
-POST  /queryDefaultActivitiesByPageIndex controllers.Application.queryDefaultActivitiesByPageIndex()
+POST  /queryDefaultActivities controllers.Application.queryDefaultActivities()
 
 # User Profile Editor
 POST /uploadAvatar controllers.Application.uploadAvatar()
 
 # Admin Page
-POST /queryDefaultActivitiesByHost controllers.Application.queryDefaultActivitiesByHost()
+POST /queryDefaultActivitiesByAdmin controllers.Application.queryDefaultActivitiesByAdmin()
 POST /acceptActivity controllers.Application.acceptActivity()
 
 # Map static resources from the /public folder to the /assets URL path

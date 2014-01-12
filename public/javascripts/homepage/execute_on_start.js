@@ -2,9 +2,10 @@ $(document).ready(function(){
 	// execute on page loaded
 	var sectionDefaultActivities=$("#"+g_idSectionDefaultActivities); 
 	sectionDefaultActivities.bind("scroll", onSectionDefaultActivitiesScrolled);
-	sectionDefaultActivities.data(g_indexSectionDefaultActivitiesPageIndex, 0);
+	sectionDefaultActivities.data(g_pageIndexKey, 0);
 
 	checkLoginStatus();
+
 	g_callbackOnActivityEditorRemoved=refreshOnLoggedIn;
 	$("#"+g_idBtnRegister).bind("click", onBtnRegisterClicked);
 	$("#"+g_idBtnLogin).bind("click", onBtnLoginClicked);
@@ -15,4 +16,7 @@ $(document).ready(function(){
     		$("#"+g_idBtnLogin).click();
   		}
 	});
+	
+	$("#"+g_idBtnPreviousPage).bind("click", onBtnPreviousPageClicked);
+	$("#"+g_idBtnNextPage).bind("click", onBtnNextPageClicked);
 });

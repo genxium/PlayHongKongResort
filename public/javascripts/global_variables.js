@@ -32,3 +32,5 @@ var g_keyImageURL="ImageURL";
 // callback function pointers
 var g_callbackOnActivityEditorRemoved=null;
 
+// general keys
+var g_pageIndexKey="pageIndex";

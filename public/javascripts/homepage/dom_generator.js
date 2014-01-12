@@ -1,20 +1,26 @@
 // Assistant Functions
-function queryDefaultActivities(){
-	var targetSection=$("#"+g_idSectionDefaultActivities);
-	targetSection.empty();
+function queryDefaultActivities(pageIndex){
 	try{
 		$.post("/queryDefaultActivities", 
 			{
-
+				pageIndex: pageIndex.toString()
 			},
 			function(data, status, xhr){
     				if(status=="success"){
     					var jsonResponse=JSON.parse(data);
-    					for(var key in jsonResponse){
-    						var jsonActivity=jsonResponse[key];
-    						var cell=generateDefaultActivityCell(jsonActivity);
-							targetSection.append(cell);
-    					}
+    					if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
+							var targetSection=$("#"+g_idSectionDefaultActivities);
+    						// clean target section
+	    					targetSection.empty();
+    						// update page index of the target section
+    						targetSection.data(g_pageIndexKey, pageIndex);
+	    					// display contents
+	    					for(var key in jsonResponse){
+	    						var jsonActivity=jsonResponse[key];
+	    						var cell=generateDefaultActivityCell(jsonActivity);
+								targetSection.append(cell);
+	    					}
+						}
     				} else{
     					
     				}
@@ -25,22 +31,29 @@ function queryDefaultActivities(){
 	}
 }
 
-function queryDefaultActivitiesByPageIndex(){
-	var targetSection=$("#"+g_idSectionDefaultActivities);
-	targetSection.empty();
-	var pageIndex=targetSection.data(g_indexSectionDefaultActivitiesPageIndex);
+function queryDefaultActivitiesByUser(pageIndex){
+	var token = $.cookie(g_keyLoginStatus.toString());
 	try{
-		$.post("/queryDefaultActivitiesByPageIndex", 
+		$.post("/queryDefaultActivitiesByUser", 
 			{
-				pageIndex: pageIndex.toString(), 
+				UserToken: token.toString(),
+				pageIndex: pageIndex.toString()
 			},
 			function(data, status, xhr){
     				if(status=="success"){
     					var jsonResponse=JSON.parse(data);
-    					for(var key in jsonResponse){
-    						var jsonActivity=jsonResponse[key];
-    						var cell=generateDefaultActivityCell(jsonActivity);
-							targetSection.append(cell);
+    					if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
+    						var targetSection=$("#"+g_idSectionDefaultActivities);
+    						// clean target section
+	    					targetSection.empty();
+    						// update page index of the target section
+    						targetSection.data(g_pageIndexKey, pageIndex);
+	    					// display contents
+	    					for(var key in jsonResponse){
+	    						var jsonRecord=jsonResponse[key];
+	    						var cell=generateDefaultActivityCell(jsonRecord);
+								targetSection.append(cell);
+	    					}
     					}
     				} else{
     					
@@ -51,6 +64,7 @@ function queryDefaultActivitiesByPageIndex(){
 
 	}
 }
+
 
 // Assistant Handlers
 function onBtnLogoutClicked(evt){
