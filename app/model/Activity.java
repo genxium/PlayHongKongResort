@@ -10,8 +10,8 @@ public class Activity {
 	public static String titleKey="ActivityTitle";
 	public static String contentKey="ActivityContent";
 	public static String createdTimeKey="ActivityCreatedTime";
-	public static String beginDateKey="ActivityBeginDate";
-	public static String endDateKey="ActivityEndDate";
+	public static String beginTimeKey="ActivityBeginTime";
+	public static String deadlineKey="ActivityApplicationDeadline";
 	public static String capacityKey="ActivityCapacity";
 	public static String statusKey="ActivityStatus";
 
@@ -57,13 +57,13 @@ public class Activity {
 	public Timestamp getCreatedTime() {return m_createdTime;}
 	public void setCreatedTime(Timestamp createdTime) {m_createdTime=createdTime;}
 
-	private Timestamp m_beginDate=null;
-	public Timestamp getBeginDate() {return m_beginDate;}
-	public void setBeginDate(Timestamp beginDate) {m_beginDate=beginDate;}
+	private Timestamp m_beginTime=null;
+	public Timestamp getBeginTime() {return m_beginTime;}
+	public void setBeginTime(Timestamp beginTime) {m_beginTime=beginTime;}
 
-	private Timestamp m_endDate=null; 
-	public Timestamp getEndDate() {return m_endDate;}
-	public void setEndDate(Timestamp endDate) {m_endDate=endDate;}
+	private Timestamp m_deadline=null; 
+	public Timestamp getDeadline() {return m_deadline;}
+	public void setDeadline(Timestamp deadline) {m_deadline=deadline;}
 	
 	private int m_capacity=0;
 	public int getCapacity() {return m_capacity;}
@@ -73,13 +73,13 @@ public class Activity {
 	public StatusType getStatus() {return m_status;}
 	public void setStatus(StatusType status) {m_status=status;}
 	
-	public Activity(int id, String title, String content, Timestamp createdTime, Timestamp beginDate, Timestamp endDate, int capacity, StatusType status){
+	public Activity(int id, String title, String content, Timestamp createdTime, Timestamp beginTime, Timestamp deadline, int capacity, StatusType status){
 		m_id=id;
 		m_title=title;
 		m_content=content;
 		m_createdTime=createdTime;
-		m_beginDate=beginDate;
-		m_endDate=endDate;
+		m_beginTime=beginTime;
+		m_deadline=deadline;
 		m_capacity=capacity;
 		m_status=status;
 	}
@@ -88,11 +88,11 @@ public class Activity {
 		java.util.Date date= new java.util.Date();
 		Timestamp currentTime=new Timestamp(date.getTime());
 		Timestamp createdTime=currentTime;
-		Timestamp beginDate=currentTime;
-		Timestamp endDate=currentTime;
+		Timestamp beginTime=currentTime;
+		Timestamp deadline=currentTime;
 		int capacity=0;
 		StatusType status=StatusType.created;
-		Activity activity=new Activity(0, title, content, createdTime, beginDate, endDate, capacity, status);
+		Activity activity=new Activity(0, title, content, createdTime, beginTime, deadline, capacity, status);
 		return activity;
 	}
 

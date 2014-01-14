@@ -135,8 +135,8 @@ public class SQLCommander {
 		columnNames.add(Activity.titleKey);
 		columnNames.add(Activity.contentKey);
 		columnNames.add(Activity.createdTimeKey);
-		columnNames.add(Activity.beginDateKey);
-		columnNames.add(Activity.endDateKey);
+		columnNames.add(Activity.beginTimeKey);
+		columnNames.add(Activity.deadlineKey);
 		columnNames.add(Activity.capacityKey);
 		
 		List<Object> columnValues=new LinkedList<Object>();
@@ -144,8 +144,8 @@ public class SQLCommander {
 		columnValues.add(activity.getTitle());
 		columnValues.add(activity.getContent());
 		columnValues.add(activity.getCreatedTime().toString());
-		columnValues.add(activity.getBeginDate().toString());
-		columnValues.add(activity.getEndDate().toString());
+		columnValues.add(activity.getBeginTime().toString());
+		columnValues.add(activity.getDeadline().toString());
 		columnValues.add(activity.getCapacity());
 		
 		try{
@@ -189,16 +189,16 @@ public class SQLCommander {
 				columnNames.add(Activity.titleKey);
 				columnNames.add(Activity.contentKey);
 				columnNames.add(Activity.createdTimeKey);
-				columnNames.add(Activity.beginDateKey);
-				columnNames.add(Activity.endDateKey);
+				columnNames.add(Activity.beginTimeKey);
+				columnNames.add(Activity.deadlineKey);
 				columnNames.add(Activity.capacityKey);
 				
 				List<Object> columnValues=new LinkedList<Object>();
 				columnValues.add(activity.getTitle());
 				columnValues.add(activity.getContent());
 				columnValues.add(activity.getCreatedTime().toString());
-				columnValues.add(activity.getBeginDate().toString());
-				columnValues.add(activity.getEndDate());
+				columnValues.add(activity.getBeginTime().toString());
+				columnValues.add(activity.getDeadline());
 				columnValues.add(activity.getCapacity());
 				
 				List<String> whereClauses=new LinkedList<String>();
@@ -223,8 +223,8 @@ public class SQLCommander {
 				columnNames.add(Activity.titleKey);
 				columnNames.add(Activity.contentKey);
 				columnNames.add(Activity.createdTimeKey);
-				columnNames.add(Activity.beginDateKey);
-				columnNames.add(Activity.endDateKey);
+				columnNames.add(Activity.beginTimeKey);
+				columnNames.add(Activity.deadlineKey);
 				columnNames.add(Activity.capacityKey);
 
 				List<Object> columnValues=new LinkedList<Object>();
@@ -232,8 +232,8 @@ public class SQLCommander {
 				columnValues.add(activity.getTitle());
 				columnValues.add(activity.getContent());
 				columnValues.add(activity.getCreatedTime().toString());
-				columnValues.add(activity.getBeginDate().toString());
-				columnValues.add(activity.getEndDate());
+				columnValues.add(activity.getBeginTime().toString());
+				columnValues.add(activity.getDeadline());
 				columnValues.add(activity.getCapacity());
 				
 				List<String> whereClauses=new LinkedList<String>();
@@ -291,8 +291,8 @@ public class SQLCommander {
 			columnNames.add(Activity.titleKey);
 			columnNames.add(Activity.contentKey);
 			columnNames.add(Activity.createdTimeKey);
-			columnNames.add(Activity.beginDateKey);
-			columnNames.add(Activity.endDateKey);
+			columnNames.add(Activity.beginTimeKey);
+			columnNames.add(Activity.deadlineKey);
 			columnNames.add(Activity.capacityKey);
 			columnNames.add(Activity.statusKey);
 
@@ -309,11 +309,11 @@ public class SQLCommander {
 		      		String title=(String)jsonObject.get(Activity.titleKey);
 		      		String content=(String)jsonObject.get(Activity.contentKey);
 		      		Timestamp createdTime=(Timestamp)jsonObject.get(Activity.createdTimeKey);
-		      		Timestamp beginDate=(Timestamp)jsonObject.get(Activity.beginDateKey);
-		      		Timestamp endDate=(Timestamp)jsonObject.get(Activity.endDateKey);
+		      		Timestamp beginTime=(Timestamp)jsonObject.get(Activity.beginTimeKey);
+		      		Timestamp deadline=(Timestamp)jsonObject.get(Activity.deadlineKey);
 		      		int capacity=(Integer)jsonObject.get(Activity.capacityKey);
 		      		Activity.StatusType status=Activity.StatusType.getTypeForValue((Integer)jsonObject.get(Activity.statusKey));
-		      		activity=new Activity(activityId, title, content, createdTime, beginDate, endDate, capacity, status);
+		      		activity=new Activity(activityId, title, content, createdTime, beginTime, deadline, capacity, status);
 				}  	
 			} catch (Exception e) {
 				System.out.println("SQLCommander.queryActivityByActivityId:"+e.getMessage());
@@ -353,8 +353,8 @@ public class SQLCommander {
 			activityColumnNames.add(Activity.titleKey);
 			activityColumnNames.add(Activity.contentKey);
 			activityColumnNames.add(Activity.createdTimeKey);
-			activityColumnNames.add(Activity.beginDateKey);
-			activityColumnNames.add(Activity.endDateKey);
+			activityColumnNames.add(Activity.beginTimeKey);
+			activityColumnNames.add(Activity.deadlineKey);
 			activityColumnNames.add(Activity.capacityKey);
 			activityColumnNames.add(Activity.statusKey);
 			
@@ -396,8 +396,8 @@ public class SQLCommander {
 				columnNames.add(Activity.titleKey);
 				columnNames.add(Activity.contentKey);
 				columnNames.add(Activity.createdTimeKey);
-				columnNames.add(Activity.beginDateKey);
-				columnNames.add(Activity.endDateKey);
+				columnNames.add(Activity.beginTimeKey);
+				columnNames.add(Activity.deadlineKey);
 				columnNames.add(Activity.capacityKey);
 					
 				List<String> whereClauses=new LinkedList<String>();
@@ -445,8 +445,8 @@ public class SQLCommander {
 				columnNames.add(Activity.titleKey);
 				columnNames.add(Activity.contentKey);
 				columnNames.add(Activity.createdTimeKey);
-				columnNames.add(Activity.beginDateKey);
-				columnNames.add(Activity.endDateKey);
+				columnNames.add(Activity.beginTimeKey);
+				columnNames.add(Activity.deadlineKey);
 				columnNames.add(Activity.capacityKey);
 					
 				List<String> whereClauses=new LinkedList<String>();
@@ -884,5 +884,27 @@ public class SQLCommander {
 
 		}while(false);
 		return lastImageId;
+	}
+
+	public static List<BasicUser> queryUsersByActivityIdAndRelation(int activityId, UserActivityRelation relation){
+		List<BasicUser> users=null;
+		do{
+			try{
+				SQLHelper sqlHelper=new SQLHelper();
+				String relationTableName="UserActivityRelationTable";
+				List<String> relationColumnNames=new LinkedList<String>();
+				relationColumnNames.add(BasicUser.idKey);
+				List<String> relationWhereClauses=new LinkedList<String>();
+				relationWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
+				List<String> relationOrderClauses=new LinkedList<String>();
+				relationWhereClauses.add(UserActivityRelationTable.generatedTimeKey);
+				List<JSONObject> relationRecords=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(relationTableName, relationColumnNames, relationWhereClauses, SQLHelper.logicAND, relationOrderClauses, null, null);
+				if(relationRecords==null || relationRecords.size()>0) break;
+
+			} catch(Exception e){
+				System.out.println("SQLCommander.queryUsersByActivityIdAndRelation: "+e.getMessage());
+			}
+		}while(false);
+		return users;
 	}
 };

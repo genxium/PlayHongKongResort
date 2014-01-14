@@ -23,6 +23,8 @@ public class BasicUser {
 	public static String authenticationStatusKey="UserAuthenticationStatus";
 	public static String genderKey="UserGender";
 	public static String lastLoggedInTimeKey="UserLastLoggedInTime";
+	public static String lastLoggedOutTimeKey="UserLastLoggedOutTime";
+	public static String lastExitTimeKey="UserLastExitTime";
 	public static String avatarKey="UserAvatar";
 
 	public static String tokenKey="UserToken";

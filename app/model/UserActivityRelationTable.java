@@ -7,5 +7,7 @@ public class UserActivityRelationTable {
 	public static String activityIdKey="ActivityId";
 	public static String relationIdKey="UserActivityRelationId";
 	public static String generatedTimeKey="GeneratedTime";
-	
+	public static String lastApplyingTimeKey="LastApplyingTime";
+	public static String lastAcceptedTimeKey="LastAcceptedTime";
+	public static String lastRejectedTimeKey="LastRejectedTime";
 }

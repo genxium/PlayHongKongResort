@@ -221,7 +221,10 @@ public class SQLHelper {
 				while(itClause.hasNext()){
 					String clause=itClause.next();
 					queryBuilder.append(clause);
-					if(itClause.hasNext()) queryBuilder.append(" "+whereLink+" ");
+					if(itClause.hasNext()){
+						if(whereLink==null) queryBuilder.append(" AND ");
+						else queryBuilder.append(" "+whereLink+" ");
+					}
 				}
 			}
 
@@ -235,7 +238,7 @@ public class SQLHelper {
 				while(itClause.hasNext()){
 					String clause=itClause.next();
 					queryBuilder.append(clause);
-					if(itDirection.hasNext()){
+					if(itDirection!=null && itDirection.hasNext()){
 						String direction=itDirection.next();
 						queryBuilder.append(" "+direction);
 					}
