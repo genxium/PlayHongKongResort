@@ -14,8 +14,12 @@ var g_classBtnCancel="classBtnCancel";
 // general dom elements
 var g_idSectionActivityEditor="idSectionActivityEditor";
 var g_classActivityEditor="classActivityEditor";
+var g_classSelectionBeginTime="classSelectionBeginTime";
 
 // DOM indexes for cascaded DOM element search
 var g_indexBtnEdit="indexBtnEdit";
 var g_indexStatusIndicator="indexStatusIndicator";
 var g_indexImageOfActivityPrefix="indexImageOfActivityPrefix";
+
+// general variables
+var g_maxNumberOfImagesForSingleActivity=3;

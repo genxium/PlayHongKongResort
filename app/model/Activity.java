@@ -84,19 +84,16 @@ public class Activity {
 		m_status=status;
 	}
 	
-	public static Activity create(String title, String content){
-		java.util.Date date= new java.util.Date();
-		Timestamp currentTime=new Timestamp(date.getTime());
-		Timestamp createdTime=currentTime;
-		Timestamp beginTime=currentTime;
-		Timestamp deadline=currentTime;
-		int capacity=0;
+	public static Activity create(String title, String content, Timestamp createdTime, Timestamp beginTime, Timestamp deadline, int capacity){
 		StatusType status=StatusType.created;
 		Activity activity=new Activity(0, title, content, createdTime, beginTime, deadline, capacity, status);
 		return activity;
 	}
 
 	public static Activity create(){
-		return create("","");
+		java.util.Date date= new java.util.Date();
+		Timestamp currentTime=new Timestamp(date.getTime());
+		int capacity=0;
+		return create("", "", currentTime, currentTime, currentTime, capacity);
 	}
 };

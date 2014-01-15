@@ -25,14 +25,14 @@ DROP TABLE IF EXISTS `Activity`;
 CREATE TABLE `Activity` (
   `ActivityId` int(32) NOT NULL AUTO_INCREMENT,
   `ActivityTitle` varchar(32) NOT NULL,
-  `ActivityContent` blob NOT NULL,
+  `ActivityContent` mediumtext,
   `ActivityCreatedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `ActivityBeginTime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `ActivityApplicationDeadline` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `ActivityCapacity` int(32) NOT NULL DEFAULT '0',
   `ActivityStatus` int(3) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ActivityId`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -61,7 +61,7 @@ CREATE TABLE `ActivityImageRelationTable` (
   KEY `FK_ImageId` (`ImageId`),
   CONSTRAINT `FK_ActivityId` FOREIGN KEY (`ActivityId`) REFERENCES `activity` (`ActivityId`),
   CONSTRAINT `FK_ImageId` FOREIGN KEY (`ImageId`) REFERENCES `image` (`ImageId`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -134,7 +134,7 @@ CREATE TABLE `UserActivityRelationTable` (
   CONSTRAINT `UserActivityRelationTable_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `user` (`UserId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_2` FOREIGN KEY (`ActivityId`) REFERENCES `activity` (`ActivityId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_3` FOREIGN KEY (`UserActivityRelationId`) REFERENCES `useractivityrelation` (`UserActivityRelationId`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -160,7 +160,7 @@ CREATE TABLE `image` (
   PRIMARY KEY (`ImageId`),
   UNIQUE KEY `ImageAbsolutePath` (`ImageAbsolutePath`),
   UNIQUE KEY `ImageURL` (`ImageURL`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -252,4 +252,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-01-15  1:18:19
+-- Dump completed on 2014-01-16  1:24:02

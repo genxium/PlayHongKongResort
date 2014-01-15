@@ -128,50 +128,51 @@ public class SQLCommander {
 	public static int createActivity(Activity activity, Integer userId){
 	
 		int lastActivityId=invalidId;
-		// DAO
-		SQLHelper sqlHelper=new SQLHelper();
-		List<String> columnNames=new LinkedList<String>();
-		
-		columnNames.add(Activity.titleKey);
-		columnNames.add(Activity.contentKey);
-		columnNames.add(Activity.createdTimeKey);
-		columnNames.add(Activity.beginTimeKey);
-		columnNames.add(Activity.deadlineKey);
-		columnNames.add(Activity.capacityKey);
-		
-		List<Object> columnValues=new LinkedList<Object>();
-		
-		columnValues.add(activity.getTitle());
-		columnValues.add(activity.getContent());
-		columnValues.add(activity.getCreatedTime().toString());
-		columnValues.add(activity.getBeginTime().toString());
-		columnValues.add(activity.getDeadline().toString());
-		columnValues.add(activity.getCapacity());
-		
-		try{
-			int tmpLastActivityId=sqlHelper.insertToTableByColumns("Activity", columnNames, columnValues);
-			if(tmpLastActivityId!=SQLHelper.invalidId){
-				columnNames.clear();
-				columnValues.clear();
-				
-				columnNames.add(UserActivityRelationTable.activityIdKey);
-				columnNames.add(UserActivityRelationTable.userIdKey);
-				columnNames.add(UserActivityRelationTable.relationIdKey);
-				columnNames.add(UserActivityRelationTable.generatedTimeKey);
-				
-				columnValues.add(tmpLastActivityId);
-				columnValues.add(userId);
-				columnValues.add(UserActivityRelation.RelationType.host.ordinal());
-				columnValues.add(activity.getCreatedTime().toString());
-				
-				int lastRelationTableId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
-				if(lastRelationTableId!=SQLHelper.invalidId){
+		do{
+			SQLHelper sqlHelper=new SQLHelper();
+			List<String> columnNames=new LinkedList<String>();
+			
+			columnNames.add(Activity.titleKey);
+			columnNames.add(Activity.contentKey);
+			columnNames.add(Activity.createdTimeKey);
+			columnNames.add(Activity.beginTimeKey);
+			columnNames.add(Activity.deadlineKey);
+			columnNames.add(Activity.capacityKey);
+			
+			List<Object> columnValues=new LinkedList<Object>();
+			
+			columnValues.add(activity.getTitle());
+			columnValues.add(activity.getContent());
+			columnValues.add(activity.getCreatedTime().toString());
+			columnValues.add(activity.getBeginTime().toString());
+			columnValues.add(activity.getDeadline().toString());
+			columnValues.add(activity.getCapacity());
+			
+			try{
+				int tmpLastActivityId=sqlHelper.insertToTableByColumns("Activity", columnNames, columnValues);
+				if(tmpLastActivityId!=SQLHelper.invalidId){
+					columnNames.clear();
+					columnValues.clear();
+					
+					columnNames.add(UserActivityRelationTable.activityIdKey);
+					columnNames.add(UserActivityRelationTable.userIdKey);
+					columnNames.add(UserActivityRelationTable.relationIdKey);
+					columnNames.add(UserActivityRelationTable.generatedTimeKey);
+					
+					columnValues.add(tmpLastActivityId);
+					columnValues.add(userId);
+					columnValues.add(UserActivityRelation.RelationType.host.ordinal());
+					columnValues.add(activity.getCreatedTime().toString());
+					
+					int lastRelationTableId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
+					if(lastRelationTableId==SQLHelper.invalidId) break;
+					
 					lastActivityId=tmpLastActivityId;
 				}
+			} catch (Exception e){
+				System.out.println("SQLCommander.createActivity:"+e.getMessage());
 			}
-		} catch (Exception e){
-			System.out.println("SQLCommander.createActivity:"+e.getMessage());
-		}
+		}while(false);
 		return lastActivityId;
 	}
 	
@@ -182,7 +183,6 @@ public class SQLCommander {
 			int activityId=activity.getId();
 			
 			try{
-				
 				SQLHelper sqlHelper=new SQLHelper();
 				List<String> columnNames=new LinkedList<String>();
 				
@@ -206,7 +206,7 @@ public class SQLCommander {
 				ret=sqlHelper.updateTableByColumnsAndWhereClauses(tableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
 			
 			} catch(Exception e){
-				System.out.println("SQLCommander.updateActivity:"+e.getMessage());
+				System.out.println("SQLCommander.updateActivity: "+e.getMessage());
 			}
 		}while(false);
 		return ret;
