@@ -17,6 +17,7 @@
 
 .classActivityEditor
 {
+	display: table-cell;
 	position: relative;
 	margin-top: 20pt;
 }

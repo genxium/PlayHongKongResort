@@ -238,30 +238,27 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 var titleText=$('<p>',
 	 			 {
 	 			 	html: 'Title'
-				 });
-	 ret.append(titleText);
+				 }).appendTo(ret);
+
 	 var titleInput=$('<input>',
 	 				{
 		 				class: g_classFieldActivityTitle,
 		 				type: 'text',
 		 				value: activityTitle,
 		 			 	name: g_keyActivityTitle
-	 				});
-	 ret.append(titleInput);
+	 				}).appendTo(ret);
 	 
 	 var contentText=$('<p>',
 	 			   {
 				   		html: 'Content'
- 				   });
+ 				   }).appendTo(ret);
 
-	 ret.append(contentText);
 	 var contentInput=$('<TEXTAREA>',
 	 				  {
 	 				  	class: g_classFieldActivityContent, 
 	 				  	name: g_keyActivityContent
-	 				  });
+	 				  }).appendTo(ret);
 	 contentInput.val(activityContent);
-	 ret.append(contentInput);
 
 	 for (var i = 0; i < g_maxNumberOfImagesForSingleActivity; i++) {
 	 	var imageName=g_indexImageOfActivityPrefix+i;
@@ -270,57 +267,209 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 				 			class: g_classFieldImageOfActivity,
 							type: 'file',
 							name: imageName 	 			
-				 		});
-	 	ret.append(imageField);
+				 		}).appendTo(ret);
 	 	ret.data(imageName, imageField);
 	 }
 
-	 var sectionBeginTime=$('<div>');
+	 var currentTime=new Date();
+	 var currentYear=currentTime.getFullYear();
+
+	 var numberOfYears=30;
+	 var numberOfMonths=12;
+	 var numberOfDays=31;
+	 var numberOfHours=24;
+	 var interval=15; // in minutes
+	 var numberOfIntervals=4;
+
+	 var years=[];
+	 for(var i=0;i<numberOfYears;i++){
+	 	years.push(i+currentYear);
+	 }
+	 var months=[];
+	 for(var i=0;i<numberOfMonths;i++){
+	 	months.push(i+1);
+	 }
+	 var days=[];
+	 for(var i=0;i<numberOfDays;i++){
+	 	days.push(i+1);
+	 }
+	 var hours=[];
+	 for(var i=0;i<numberOfHours;i++){
+	 	hours.push(i+1);
+	 }
+	 var intervals=[];
+	 for(var i=0;i<numberOfIntervals;i++){
+	 	intervals.push(i*interval);
+	 }
+
+	 
+	 /* Begin Time */
+	 var sectionBeginTime=$('<p>',
+	 						{
+	 							html: "Begin Time: "
+	 						}).appendTo(ret);
+
 	 var selectionBeginTimeYear=$('<select>',
 						 	{
 						 		class: g_classSelectionBeginTime	
-						 	});
+						 	}).appendTo(sectionBeginTime);
 
-	 var years=[2014, 2015, 2016, 2017];
-	 for(year in years){
-	 	var option=$('<option>',
-	 				{
-	 					value: year.toString(),
-	 					text: year.toString(), 
-	 				}).appendTo(selectionBeginTimeYear);
+	 for(var i=0;i<years.length;i++){
+	 	var year=years[i];
+	 	var option=$('<option>').appendTo(selectionBeginTimeYear);
+	 	option.text(year.toString());
+	 	option.val(year);
 	 }
-	 ret.append(sectionBeginTime);
 
+	 var selectionBeginTimeMonth=$('<select>',
+						 	{
+						 		class: g_classSelectionBeginTime	
+						 	}).appendTo(sectionBeginTime);
+
+	 for(var i=0;i<months.length;i++){
+	 	var month=months[i];
+	 	var option=$('<option>').appendTo(selectionBeginTimeMonth);
+	 	option.text(month.toString());
+	 	option.val(month);
+	 }
+
+	 var selectionBeginTimeDay=$('<select>',
+						 	{
+						 		class: g_classSelectionBeginTime	
+						 	}).appendTo(sectionBeginTime);
+
+	 for(var i=0;i<days.length;i++){
+	 	var day=days[i];
+	 	var option=$('<option>').appendTo(selectionBeginTimeDay);
+	 	option.text(day.toString());
+	 	option.val(day);
+	 }	 
+
+	 sectionBeginTime.append('/');
+
+	 var selectionBeginTimeHours=$('<select>',
+						 	{
+						 		class: g_classSelectionBeginTime	
+						 	}).appendTo(sectionBeginTime);
+ 
+	 for(var i=0;i<hours.length;i++){
+	 	var hour=hours[i];
+	 	var option=$('<option>').appendTo(selectionBeginTimeHours);
+	 	option.text(hour.toString());
+	 	option.val(hour);
+	 }
+
+	 sectionBeginTime.append(':');
+
+	 var selectionBeginTimeInterval=$('<select>',
+						 	{
+						 		class: g_classSelectionBeginTime	
+						 	}).appendTo(sectionBeginTime);
+
+	 for(var i=0;i<intervals.length;i++){
+	 	var interval=intervals[i];
+	 	var option=$('<option>').appendTo(selectionBeginTimeInterval);
+	 	option.text(interval.toString());
+	 	option.val(interval);
+	 }		 
+
+	 /* Deadline */
+	 var sectionDeadline=$('<p>',
+	 						{
+	 							html: "Deadline: "
+	 						}).appendTo(ret);
+
+	 var selectionDeadlineYear=$('<select>',
+						 	{
+						 		class: g_classSelectionDeadline	
+						 	}).appendTo(sectionDeadline);
+
+	 for(var i=0;i<years.length;i++){
+	 	var year=years[i];
+	 	var option=$('<option>').appendTo(selectionDeadlineYear);
+	 	option.text(year.toString());
+	 	option.val(year);
+	 }
+
+	 var selectionDeadlineMonth=$('<select>',
+						 	{
+						 		class: g_classSelectionDeadline	
+						 	}).appendTo(sectionDeadline);
+
+	 for(var i=0;i<months.length;i++){
+	 	var month=months[i];
+	 	var option=$('<option>').appendTo(selectionDeadlineMonth);
+	 	option.text(month.toString());
+	 	option.val(month);
+	 }
+
+	 var selectionDeadlineDay=$('<select>',
+						 	{
+						 		class: g_classSelectionDeadline	
+						 	}).appendTo(sectionDeadline);
+
+	 for(var i=0;i<days.length;i++){
+	 	var day=days[i];
+	 	var option=$('<option>').appendTo(selectionDeadlineDay);
+	 	option.text(day.toString());
+	 	option.val(day);
+	 }	 
+
+	 sectionDeadline.append('/');
+
+	 var selectionDeadlineHours=$('<select>',
+						 	{
+						 		class: g_classSelectionDeadline	
+						 	}).appendTo(sectionDeadline);
+ 
+	 for(var i=0;i<hours.length;i++){
+	 	var hour=hours[i];
+	 	var option=$('<option>').appendTo(selectionDeadlineHours);
+	 	option.text(hour.toString());
+	 	option.val(hour);
+	 }
+
+	 sectionDeadline.append(':');
+
+	 var selectionDeadlineInterval=$('<select>',
+						 	{
+						 		class: g_classSelectionDeadline	
+						 	}).appendTo(sectionDeadline);
+
+	 for(var i=0;i<intervals.length;i++){
+	 	var interval=intervals[i];
+	 	var option=$('<option>').appendTo(selectionDeadlineInterval);
+	 	option.text(interval.toString());
+	 	option.val(interval);
+	 }
+
+	 /* Associated Buttons */
 	 var btnUpdate=$('<button>',{
 	 					class: g_classBtnUpdate,
 	 					text: 'Update' 
-	 				});
+	 				}).appendTo(ret);
 	 btnUpdate.data(g_keyActivityId, activityId);
 	 btnUpdate.bind("click", onBtnUpdateClicked);
-	 ret.append(btnUpdate);
 
 	 var btnDelete=$('<button>',{
 	 					class: g_classBtnDelete,
 	 					text: 'Delete' 
-					 });
+					 }).appendTo(ret);
 	 btnDelete.data(g_keyActivityId, activityId);
 	 btnDelete.bind("click", onBtnDeleteClicked);
-	 ret.append(btnDelete);
 
 	 var btnSubmit=$('<button>',{
 	 					class: g_classBtnSubmit,
 	 					text: 'Submit'
-	 				});
+	 				}).appendTo(ret);
 	 btnSubmit.data(g_keyActivityId, activityId);
 	 btnSubmit.bind("click", onBtnSubmitClicked);
-	 ret.append(btnSubmit);
 
 	 var btnCancel=$('<button>',{
 	 					class: g_classBtnCancel,
 	 					text: 'Cancel'
-	 				});
+	 				}).appendTo(ret);
 	 btnCancel.bind("click", onBtnCancelClicked);
-	 ret.append(btnCancel);
 
 	 ret.data(g_keyActivityId, activityId);
 	 

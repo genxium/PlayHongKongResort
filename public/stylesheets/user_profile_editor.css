@@ -2,6 +2,7 @@
 .idSectionUserProfileEditor{
 	display: table-row;
 	position: relative;
+	float: right;
 	height: 256pt;
 	width: 512pt;
 	overflow: auto;
@@ -21,6 +22,8 @@
 /* Activity Cells */
 #idSectionOwnedActivities
 {
+	display: table-cell;
+	position: relative;
 	width: 645pt;
 	height: 300pt;
 	border: 3pt solid #ccccff;

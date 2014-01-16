@@ -15,6 +15,7 @@ var g_classBtnCancel="classBtnCancel";
 var g_idSectionActivityEditor="idSectionActivityEditor";
 var g_classActivityEditor="classActivityEditor";
 var g_classSelectionBeginTime="classSelectionBeginTime";
+var g_classSelectionDeadline="classSelectionDeadline";
 
 // DOM indexes for cascaded DOM element search
 var g_indexBtnEdit="indexBtnEdit";
