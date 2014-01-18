@@ -59,8 +59,8 @@ CREATE TABLE `ActivityImageRelationTable` (
   PRIMARY KEY (`ActivityImageRelationTableId`),
   KEY `FK_ActivityId` (`ActivityId`),
   KEY `FK_ImageId` (`ImageId`),
-  CONSTRAINT `FK_ActivityId` FOREIGN KEY (`ActivityId`) REFERENCES `activity` (`ActivityId`),
-  CONSTRAINT `FK_ImageId` FOREIGN KEY (`ImageId`) REFERENCES `image` (`ImageId`)
+  CONSTRAINT `FK_ActivityId` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`),
+  CONSTRAINT `FK_ImageId` FOREIGN KEY (`ImageId`) REFERENCES `Image` (`ImageId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -96,7 +96,7 @@ CREATE TABLE `User` (
   PRIMARY KEY (`UserId`),
   UNIQUE KEY `UserEmail` (`UserEmail`),
   KEY `UserGroupId` (`UserGroupId`),
-  CONSTRAINT `FK_UserGroupId` FOREIGN KEY (`UserGroupId`) REFERENCES `usergroup` (`GroupId`)
+  CONSTRAINT `FK_UserGroupId` FOREIGN KEY (`UserGroupId`) REFERENCES `UserGroup` (`GroupId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -131,9 +131,9 @@ CREATE TABLE `UserActivityRelationTable` (
   KEY `UserId` (`UserId`),
   KEY `ActivityId` (`ActivityId`),
   KEY `UserActivityRelationId` (`UserActivityRelationId`),
-  CONSTRAINT `UserActivityRelationTable_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `user` (`UserId`),
-  CONSTRAINT `UserActivityRelationTable_ibfk_2` FOREIGN KEY (`ActivityId`) REFERENCES `activity` (`ActivityId`),
-  CONSTRAINT `UserActivityRelationTable_ibfk_3` FOREIGN KEY (`UserActivityRelationId`) REFERENCES `useractivityrelation` (`UserActivityRelationId`)
+  CONSTRAINT `UserActivityRelationTable_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `User` (`UserId`),
+  CONSTRAINT `UserActivityRelationTable_ibfk_2` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`),
+  CONSTRAINT `UserActivityRelationTable_ibfk_3` FOREIGN KEY (`UserActivityRelationId`) REFERENCES `UserActivityRelation` (`UserActivityRelationId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -147,13 +147,13 @@ LOCK TABLES `UserActivityRelationTable` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `image`
+-- Table structure for table `Image`
 --
 
-DROP TABLE IF EXISTS `image`;
+DROP TABLE IF EXISTS `Image`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `image` (
+CREATE TABLE `Image` (
   `ImageId` int(32) NOT NULL AUTO_INCREMENT,
   `ImageAbsolutePath` varchar(128) NOT NULL,
   `ImageURL` varchar(64) NOT NULL,
@@ -164,22 +164,22 @@ CREATE TABLE `image` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `image`
+-- Dumping data for table `Image`
 --
 
-LOCK TABLES `image` WRITE;
-/*!40000 ALTER TABLE `image` DISABLE KEYS */;
-/*!40000 ALTER TABLE `image` ENABLE KEYS */;
+LOCK TABLES `Image` WRITE;
+/*!40000 ALTER TABLE `Image` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Image` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `useractivityrelation`
+-- Table structure for table `UserActivityRelation`
 --
 
-DROP TABLE IF EXISTS `useractivityrelation`;
+DROP TABLE IF EXISTS `UserActivityRelation`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `useractivityrelation` (
+CREATE TABLE `UserActivityRelation` (
   `UserActivityRelationId` int(3) NOT NULL,
   `UserActivityRelationName` varchar(32) NOT NULL,
   PRIMARY KEY (`UserActivityRelationId`)
@@ -187,23 +187,23 @@ CREATE TABLE `useractivityrelation` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `useractivityrelation`
+-- Dumping data for table `UserActivityRelation`
 --
 
-LOCK TABLES `useractivityrelation` WRITE;
-/*!40000 ALTER TABLE `useractivityrelation` DISABLE KEYS */;
-INSERT INTO `useractivityrelation` VALUES (0,'host'),(1,'applied'),(2,'selected'),(3,'present'),(4,'absent');
-/*!40000 ALTER TABLE `useractivityrelation` ENABLE KEYS */;
+LOCK TABLES `UserActivityRelation` WRITE;
+/*!40000 ALTER TABLE `UserActivityRelation` DISABLE KEYS */;
+INSERT INTO `UserActivityRelation` VALUES (0,'host'),(1,'applied'),(2,'selected'),(3,'present'),(4,'absent');
+/*!40000 ALTER TABLE `UserActivityRelation` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `usergroup`
+-- Table structure for table `UserGroup`
 --
 
-DROP TABLE IF EXISTS `usergroup`;
+DROP TABLE IF EXISTS `UserGroup`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `usergroup` (
+CREATE TABLE `UserGroup` (
   `GroupId` int(32) NOT NULL,
   `GroupName` varchar(32) NOT NULL,
   PRIMARY KEY (`GroupId`)
@@ -211,23 +211,23 @@ CREATE TABLE `usergroup` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `usergroup`
+-- Dumping data for table `UserGroup`
 --
 
-LOCK TABLES `usergroup` WRITE;
-/*!40000 ALTER TABLE `usergroup` DISABLE KEYS */;
-INSERT INTO `usergroup` VALUES (0,'visitor'),(1,'user'),(2,'manager'),(3,'admin');
-/*!40000 ALTER TABLE `usergroup` ENABLE KEYS */;
+LOCK TABLES `UserGroup` WRITE;
+/*!40000 ALTER TABLE `UserGroup` DISABLE KEYS */;
+INSERT INTO `UserGroup` VALUES (0,'visitor'),(1,'user'),(2,'manager'),(3,'admin');
+/*!40000 ALTER TABLE `UserGroup` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `userrelation`
+-- Table structure for table `UserRelation`
 --
 
-DROP TABLE IF EXISTS `userrelation`;
+DROP TABLE IF EXISTS `UserRelation`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `userrelation` (
+CREATE TABLE `UserRelation` (
   `UserRelationId` int(2) NOT NULL,
   `UserRelationName` varchar(32) NOT NULL,
   PRIMARY KEY (`UserRelationId`)
@@ -235,12 +235,12 @@ CREATE TABLE `userrelation` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `userrelation`
+-- Dumping data for table `UserRelation`
 --
 
-LOCK TABLES `userrelation` WRITE;
-/*!40000 ALTER TABLE `userrelation` DISABLE KEYS */;
-/*!40000 ALTER TABLE `userrelation` ENABLE KEYS */;
+LOCK TABLES `UserRelation` WRITE;
+/*!40000 ALTER TABLE `UserRelation` DISABLE KEYS */;
+/*!40000 ALTER TABLE `UserRelation` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
