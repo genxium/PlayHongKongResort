@@ -198,7 +198,7 @@ public class SQLCommander {
 				columnValues.add(activity.getContent());
 				columnValues.add(activity.getCreatedTime().toString());
 				columnValues.add(activity.getBeginTime().toString());
-				columnValues.add(activity.getDeadline());
+				columnValues.add(activity.getDeadline().toString());
 				columnValues.add(activity.getCapacity());
 				
 				List<String> whereClauses=new LinkedList<String>();
@@ -233,7 +233,7 @@ public class SQLCommander {
 				columnValues.add(activity.getContent());
 				columnValues.add(activity.getCreatedTime().toString());
 				columnValues.add(activity.getBeginTime().toString());
-				columnValues.add(activity.getDeadline());
+				columnValues.add(activity.getDeadline().toString());
 				columnValues.add(activity.getCapacity());
 				
 				List<String> whereClauses=new LinkedList<String>();

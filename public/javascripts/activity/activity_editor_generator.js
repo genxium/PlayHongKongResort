@@ -33,7 +33,28 @@ function onUpdateFormSubmission(formEvt){
 		
 		var activityContent=$("."+g_classFieldActivityContent).val();
 		formData.append(g_keyActivityContent, activityContent);
-		
+
+		// append activity begin time and deadline
+		var sectionBeginTime=$(this).data(g_indexSectionBeginTime);
+		var beginTimeNodes=sectionBeginTime.children();
+		var beginTimeYear=beginTimeNodes[0].value;
+		var beginTimeMonth=beginTimeNodes[1].value;
+		var beginTimeDay=beginTimeNodes[2].value;
+		var beginTimeHour=beginTimeNodes[3].value;
+		var beginTimeMinute=beginTimeNodes[4].value;
+		var beginTime=beginTimeYear+"-"+beginTimeMonth+"-"+beginTimeDay+" "+beginTimeHour+":"+beginTimeMinute+":00";
+		formData.append(g_keyActivityBeginTime, beginTime);
+
+		var sectionDeadline=$(this).data(g_indexSectionDeadline);
+		var deadlineNodes=sectionDeadline.children();
+		var deadlineYear=deadlineNodes[0].value;
+		var deadlineMonth=deadlineNodes[1].value;
+		var deadlineDay=deadlineNodes[2].value;
+		var deadlineHour=deadlineNodes[3].value;
+		var deadlineMinute=deadlineNodes[4].value;
+		var deadline=deadlineYear+"-"+deadlineMonth+"-"+deadlineDay+" "+deadlineHour+":"+deadlineMinute+":00";
+		formData.append(g_keyActivityDeadline, deadline);
+
 		$.ajax({
 			method: "POST",
 			url: "/updateActivity", 
@@ -88,6 +109,27 @@ function onSubmitFormSubmission(formEvt){
 		
 		var activityContent=$("."+g_classFieldActivityContent).val();
 		formData.append(g_keyActivityContent, activityContent);
+		
+		// append activity begin time and deadline
+		var sectionBeginTime=$(this).data(g_indexSectionBeginTime);
+		var beginTimeNodes=sectionBeginTime.children();
+		var beginTimeYear=beginTimeNodes[0].value;
+		var beginTimeMonth=beginTimeNodes[1].value;
+		var beginTimeDay=beginTimeNodes[2].value;
+		var beginTimeHour=beginTimeNodes[3].value;
+		var beginTimeMinute=beginTimeNodes[4].value;
+		var beginTime=beginTimeYear+"-"+beginTimeMonth+"-"+beginTimeDay+" "+beginTimeHour+":"+beginTimeMinute+":00";
+		formData.append(g_keyActivityBeginTime, beginTime);
+
+		var sectionDeadline=$(this).data(g_indexSectionDeadline);
+		var deadlineNodes=sectionDeadline.children();
+		var deadlineYear=deadlineNodes[0].value;
+		var deadlineMonth=deadlineNodes[1].value;
+		var deadlineDay=deadlineNodes[2].value;
+		var deadlineHour=deadlineNodes[3].value;
+		var deadlineMinute=deadlineNodes[4].value;
+		var deadline=deadlineYear+"-"+deadlineMonth+"-"+deadlineDay+" "+deadlineHour+":"+deadlineMinute+":00";
+		formData.append(g_keyActivityDeadline, deadline);
 		
 		$.ajax({
 			method: "POST",
@@ -161,7 +203,7 @@ function onBtnUpdateClicked(evt){
 		// invoke submission
 		editor.submit();
 	} catch(err){
-		
+		// $("."+g_classFieldActivityContent).val(err);
 	}
 }
 
@@ -208,7 +250,7 @@ function onBtnSubmitClicked(evt){
 		// invoke submission
 		editor.submit();
 	} catch(err){
-		
+		// $("."+g_classFieldActivityContent).val(err);
 	}
 }
 
@@ -309,6 +351,8 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 							html: "Begin Time: "
 	 						}).appendTo(ret);
 
+	 ret.data(g_indexSectionBeginTime, sectionBeginTime);
+
 	 var selectionBeginTimeYear=$('<select>',
 						 	{
 						 		class: g_classSelectionBeginTime	
@@ -378,6 +422,8 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 						{
 	 							html: "Deadline: "
 	 						}).appendTo(ret);
+
+	 ret.data(g_indexSectionDeadline, sectionDeadline);
 
 	 var selectionDeadlineYear=$('<select>',
 						 	{

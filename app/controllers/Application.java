@@ -17,7 +17,7 @@ import play.libs.Json;
 import utilities.Converter;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
+import java.sql.Timestamp;
 
 public class Application extends Controller {
 
@@ -253,41 +253,50 @@ public class Application extends Controller {
         response().setContentType("text/plain");
         
         do{
-            RequestBody body = request().body();
-            
-            // get file data from request body stream
-            MultipartFormData data = body.asMultipartFormData();
-            
-            List<FilePart> imageFiles=data.getFiles();
-            
-            // get user token and activity id from request body stream
-            Map<String, String[]> formData= data.asFormUrlEncoded();
-            
-            String[] tokens=formData.get(BasicUser.tokenKey);
-            String[] activityIds=formData.get(Activity.idKey);
+            try{
+                RequestBody body = request().body();
+                
+                // get file data from request body stream
+                MultipartFormData data = body.asMultipartFormData();
+                
+                List<FilePart> imageFiles=data.getFiles();
+                
+                // get user token and activity id from request body stream
+                Map<String, String[]> formData= data.asFormUrlEncoded();
+                
+                String[] tokens=formData.get(BasicUser.tokenKey);
+                String[] activityIds=formData.get(Activity.idKey);
 
-            String token=tokens[0];
-            int userId=DataUtils.getUserIdByToken(token);
-            if(userId==DataUtils.invalidId) break;
-  	    		BasicUser user=SQLCommander.queryUserByUserId(userId);
-  	    		if(user==null) break;
+                String token=tokens[0];
+                int userId=DataUtils.getUserIdByToken(token);
+                if(userId==DataUtils.invalidId) break;
+      	    		BasicUser user=SQLCommander.queryUserByUserId(userId);
+      	    		if(user==null) break;
 
-  	        int activityId=Integer.parseInt(activityIds[0]);
-	            
-            // get activity title and content
-            String[] activityTitles=formData.get(Activity.titleKey);
-            String[] activityContents=formData.get(Activity.contentKey);
-            
-            String activityTitle=activityTitles[0];
-            String activityContent=activityContents[0];
-           
-    	  		try{
-    	  			Activity activity=SQLCommander.queryActivityByActivityId(activityId);
-        	  		if(SQLCommander.isActivityEditable(userId, activity)==false) break;
-        	  	
-        	  		activity.setTitle(activityTitle);
-        	  		activity.setContent(activityContent);
-        	  		
+      	        int activityId=Integer.parseInt(activityIds[0]);
+    	            
+                // get activity title and content
+                String[] activityTitles=formData.get(Activity.titleKey);
+                String[] activityContents=formData.get(Activity.contentKey);
+                
+                String activityTitle=activityTitles[0];
+                String activityContent=activityContents[0];
+               
+                // get activity begin time and deadline
+                String[] activityBeginTimes=formData.get(Activity.beginTimeKey);
+                String[] activityDeadlines=formData.get(Activity.deadlineKey);
+
+                String activityBeginTime=activityBeginTimes[0];
+                String activityDeadline=activityDeadlines[0];
+
+	  			Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+    	  		if(SQLCommander.isActivityEditable(userId, activity)==false) break;
+    	  	
+    	  		activity.setTitle(activityTitle);
+    	  		activity.setContent(activityContent);
+                activity.setBeginTime(Timestamp.valueOf(activityBeginTime));
+    	  		activity.setDeadline(Timestamp.valueOf(activityDeadline));
+
       	  		boolean res=SQLCommander.updateActivity(activity);
       	  		if(res==false) break;
       	  		
@@ -311,11 +320,11 @@ public class Application extends Controller {
                     		if(isDeleted==false) break;
                     }
                 }
-                
-    	  		} catch(Exception e){
-      	  		System.out.println("Application.updateActivity:"+e.getMessage());
-    	  		}
-    	  		return ok("Activity updated");
+            
+	  		} catch(Exception e){
+  	  		    System.out.println("Application.updateActivity:"+e.getMessage());
+	  		}
+	  		return ok("Activity updated");
       
         }while(false);
         return badRequest("Activity not updated!");
@@ -325,41 +334,50 @@ public class Application extends Controller {
 		// define response attributes
     		response().setContentType("text/plain");
     		do{
-    			RequestBody body = request().body();
-        
-    			// get file data from request body stream
-    			MultipartFormData data = body.asMultipartFormData();
-        
-    			List<FilePart> imageFiles=data.getFiles();
-        
-    			// get user token and activity id from request body stream
-    			Map<String, String[]> formData= data.asFormUrlEncoded();
-     
-    			String[] tokens=formData.get(BasicUser.tokenKey);
-    			String[] activityIds=formData.get(Activity.idKey);
+                try{
+        			RequestBody body = request().body();
+            
+        			// get file data from request body stream
+        			MultipartFormData data = body.asMultipartFormData();
+            
+        			List<FilePart> imageFiles=data.getFiles();
+            
+        			// get user token and activity id from request body stream
+        			Map<String, String[]> formData= data.asFormUrlEncoded();
+         
+        			String[] tokens=formData.get(BasicUser.tokenKey);
+        			String[] activityIds=formData.get(Activity.idKey);
 
-    			String token=tokens[0];
-    			int userId=DataUtils.getUserIdByToken(token);
-    			if(userId==DataUtils.invalidId) break;
-    			BasicUser user=SQLCommander.queryUserByUserId(userId);
-    			if(user==null) break;
+        			String token=tokens[0];
+        			int userId=DataUtils.getUserIdByToken(token);
+        			if(userId==DataUtils.invalidId) break;
+        			BasicUser user=SQLCommander.queryUserByUserId(userId);
+        			if(user==null) break;
 
-    			int activityId=Integer.parseInt(activityIds[0]);
-          
-    			// get activity title and content
-    			String[] activityTitles=formData.get(Activity.titleKey);
-        		String[] activityContents=formData.get(Activity.contentKey);
-        
-        		String activityTitle=activityTitles[0];
-        		String activityContent=activityContents[0];
-       
-        		try{
+        			int activityId=Integer.parseInt(activityIds[0]);
+              
+        			// get activity title and content
+        			String[] activityTitles=formData.get(Activity.titleKey);
+            		String[] activityContents=formData.get(Activity.contentKey);
+            
+            		String activityTitle=activityTitles[0];
+            		String activityContent=activityContents[0];
+
+                    // get activity begin time and deadline
+                    String[] activityBeginTimes=formData.get(Activity.beginTimeKey);
+                    String[] activityDeadlines=formData.get(Activity.deadlineKey);
+
+                    String activityBeginTime=activityBeginTimes[0];
+                    String activityDeadline=activityDeadlines[0];
+        		
         			if(DataUtils.validateTitle(activityTitle)==false || DataUtils.validateContent(activityContent)==false) break;
         			Activity activity=SQLCommander.queryActivityByActivityId(activityId);
         			if(SQLCommander.isActivityEditable(userId, activity)==false) break;
           
         			activity.setTitle(activityTitle);
         			activity.setContent(activityContent);
+                    activity.setBeginTime(Timestamp.valueOf(activityBeginTime));
+                    activity.setDeadline(Timestamp.valueOf(activityDeadline));
             
         			boolean res=SQLCommander.submitActivity(userId, activity);
         			if(res==false) break;

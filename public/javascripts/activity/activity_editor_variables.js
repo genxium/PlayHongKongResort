@@ -21,6 +21,8 @@ var g_classSelectionDeadline="classSelectionDeadline";
 var g_indexBtnEdit="indexBtnEdit";
 var g_indexStatusIndicator="indexStatusIndicator";
 var g_indexImageOfActivityPrefix="indexImageOfActivityPrefix";
+var g_indexSectionBeginTime="indexSectionBeginTime";
+var g_indexSectionDeadline="indexSectionDeadline";
 
 // general variables
 var g_maxNumberOfImagesForSingleActivity=3;

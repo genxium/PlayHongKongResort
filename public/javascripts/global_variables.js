@@ -23,6 +23,9 @@ var g_keyActivityId="ActivityId";
 var g_keyActivityTitle="ActivityTitle";
 var g_keyActivityContent="ActivityContent";
 var g_keyActivityStatus="ActivityStatus";
+var g_keyActivityCreatedTime="ActivityCreatedTime";
+var g_keyActivityBeginTime="ActivityBeginTime";
+var g_keyActivityDeadline="ActivityApplicationDeadline";
 
 var g_keyUserActivityRelationId="UserActivityRelationId";
 
