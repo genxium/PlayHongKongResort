@@ -37,21 +37,21 @@ function onUpdateFormSubmission(formEvt){
 		// append activity begin time and deadline
 		var sectionBeginTime=$(this).data(g_indexSectionBeginTime);
 		var beginTimeNodes=sectionBeginTime.children();
-		var beginTimeYear=beginTimeNodes[0].value;
-		var beginTimeMonth=beginTimeNodes[1].value;
-		var beginTimeDay=beginTimeNodes[2].value;
-		var beginTimeHour=beginTimeNodes[3].value;
-		var beginTimeMinute=beginTimeNodes[4].value;
+		var beginTimeYear=formatDigits(beginTimeNodes[0].value, 4);
+		var beginTimeMonth=formatDigits(beginTimeNodes[1].value, 2);
+		var beginTimeDay=formatDigits(beginTimeNodes[2].value, 2);
+		var beginTimeHour=formatDigits(beginTimeNodes[3].value, 2);
+		var beginTimeMinute=formatDigits(beginTimeNodes[4].value, 2);
 		var beginTime=beginTimeYear+"-"+beginTimeMonth+"-"+beginTimeDay+" "+beginTimeHour+":"+beginTimeMinute+":00";
 		formData.append(g_keyActivityBeginTime, beginTime);
 
 		var sectionDeadline=$(this).data(g_indexSectionDeadline);
 		var deadlineNodes=sectionDeadline.children();
-		var deadlineYear=deadlineNodes[0].value;
-		var deadlineMonth=deadlineNodes[1].value;
-		var deadlineDay=deadlineNodes[2].value;
-		var deadlineHour=deadlineNodes[3].value;
-		var deadlineMinute=deadlineNodes[4].value;
+		var deadlineYear=formatDigits(deadlineNodes[0].value, 4);
+		var deadlineMonth=formatDigits(deadlineNodes[1].value, 2);
+		var deadlineDay=formatDigits(deadlineNodes[2].value, 2);
+		var deadlineHour=formatDigits(deadlineNodes[3].value, 2);
+		var deadlineMinute=formatDigits(deadlineNodes[4].value, 2);
 		var deadline=deadlineYear+"-"+deadlineMonth+"-"+deadlineDay+" "+deadlineHour+":"+deadlineMinute+":00";
 		formData.append(g_keyActivityDeadline, deadline);
 
@@ -110,27 +110,26 @@ function onSubmitFormSubmission(formEvt){
 		var activityContent=$("."+g_classFieldActivityContent).val();
 		formData.append(g_keyActivityContent, activityContent);
 		
-		// append activity begin time and deadline
 		var sectionBeginTime=$(this).data(g_indexSectionBeginTime);
 		var beginTimeNodes=sectionBeginTime.children();
-		var beginTimeYear=beginTimeNodes[0].value;
-		var beginTimeMonth=beginTimeNodes[1].value;
-		var beginTimeDay=beginTimeNodes[2].value;
-		var beginTimeHour=beginTimeNodes[3].value;
-		var beginTimeMinute=beginTimeNodes[4].value;
+		var beginTimeYear=formatDigits(beginTimeNodes[0].value, 4);
+		var beginTimeMonth=formatDigits(beginTimeNodes[1].value, 2);
+		var beginTimeDay=formatDigits(beginTimeNodes[2].value, 2);
+		var beginTimeHour=formatDigits(beginTimeNodes[3].value, 2);
+		var beginTimeMinute=formatDigits(beginTimeNodes[4].value, 2);
 		var beginTime=beginTimeYear+"-"+beginTimeMonth+"-"+beginTimeDay+" "+beginTimeHour+":"+beginTimeMinute+":00";
 		formData.append(g_keyActivityBeginTime, beginTime);
 
 		var sectionDeadline=$(this).data(g_indexSectionDeadline);
 		var deadlineNodes=sectionDeadline.children();
-		var deadlineYear=deadlineNodes[0].value;
-		var deadlineMonth=deadlineNodes[1].value;
-		var deadlineDay=deadlineNodes[2].value;
-		var deadlineHour=deadlineNodes[3].value;
-		var deadlineMinute=deadlineNodes[4].value;
+		var deadlineYear=formatDigits(deadlineNodes[0].value, 4);
+		var deadlineMonth=formatDigits(deadlineNodes[1].value, 2);
+		var deadlineDay=formatDigits(deadlineNodes[2].value, 2);
+		var deadlineHour=formatDigits(deadlineNodes[3].value, 2);
+		var deadlineMinute=formatDigits(deadlineNodes[4].value, 2);
 		var deadline=deadlineYear+"-"+deadlineMonth+"-"+deadlineDay+" "+deadlineHour+":"+deadlineMinute+":00";
 		formData.append(g_keyActivityDeadline, deadline);
-		
+
 		$.ajax({
 			method: "POST",
 			url: "/submitActivity", 
@@ -160,6 +159,12 @@ function isFileValid(file){
 		ret=true;
 	}while(false);
  	return ret;
+}
+
+function formatDigits(value, numberOfDigits){
+	var valueStr=value.toString();
+	while(valueStr.length<numberOfDigits) valueStr="0"+valueStr;
+	return valueStr;
 }
 
 // Assistant Handlers
@@ -337,7 +342,7 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 }
 	 var hours=[];
 	 for(var i=0;i<numberOfHours;i++){
-	 	hours.push(i+1);
+	 	hours.push(i);
 	 }
 	 var intervals=[];
 	 for(var i=0;i<numberOfIntervals;i++){
@@ -521,3 +526,4 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 
 	 return ret;
 }
+

@@ -115,10 +115,13 @@ public class SQLHelper {
 		if(checkConnection()==true){
 			try{
 				Statement statement= connection.createStatement(); 
-				ResultSet resultSet=statement.executeQuery(query);
-				if(resultSet!=null){
-					ret=ResultSetUtil.convertToJSON(resultSet);
+				ResultSet rs=statement.executeQuery(query);
+				if(rs!=null){
+					ret=ResultSetUtil.convertToJSON(rs);
+					rs.close();
 				}
+				statement.close();
+				query=null;
 			} catch (Exception e){
 				System.out.println("SQLHelper.executeSelect: "+e.getMessage());
 			}
@@ -136,7 +139,10 @@ public class SQLHelper {
 				ResultSet rs = statement.getGeneratedKeys();
 				if (rs != null && rs.next()) {
 					lastId = (int) rs.getLong(1);
+					rs.close();
 				}
+				statement.close();
+				query=null;
 			} catch (Exception e){
 				// return the invalid value for exceptions
 				System.out.println("SQLHelper.executeInsert: "+e.getMessage());
@@ -152,6 +158,8 @@ public class SQLHelper {
 				PreparedStatement statement= connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS); 
 				// the following command returns the last inserted row id for the auto incremented key
 				statement.executeUpdate();
+				statement.close();
+				query=null;
 				bRet=true;
 			} catch (Exception e){
 				System.out.println("SQLHelper.executeUpdate: "+e.getMessage());
