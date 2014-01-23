@@ -19,7 +19,7 @@ function queryActivitiesHostedByUser(pageIndex){
 			function(data, status, xhr){
     				if(status=="success"){
     					var jsonResponse=JSON.parse(data);
-    					if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
+    					if(jsonResponse!=null){
     						var targetSection=$("#"+g_idSectionOwnedActivities);
     						// clean target section
 	    					targetSection.empty();

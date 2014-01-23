@@ -22,40 +22,38 @@ import java.util.List;
 import dao.SQLHelper; 
 
 public class ExtraCommander extends SQLCommander {
-
-  public static boolean deleteActivity(int userId, int activityId){
+ 
+  public static boolean deleteActivity(int activityId){
       boolean ret=false;
       do{
-        
-        try{
-          SQLHelper sqlHelper=new SQLHelper();
-          String relationTableName="UserActivityRelationTable";
-          List<String> relationWhereClauses=new LinkedList<String>();
-          relationWhereClauses.add(BasicUser.idKey+"="+SQLHelper.convertToQueryValue(userId));
-          relationWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
-          boolean resultRelationDeletion=sqlHelper.deleteFromTableByWhereClauses(relationTableName, relationWhereClauses, SQLHelper.logicAND);
-        
-          if(resultRelationDeletion==false) break;
-        
-          List<Image> previousImages=queryImagesByActivityId(activityId);
-          if(previousImages!=null && previousImages.size()>0){
-              // delete previous images
-              Iterator<Image> itPreviousImage=previousImages.iterator();
-              while(itPreviousImage.hasNext()){
-                  Image previousImage=itPreviousImage.next();
-                  boolean isDeleted=deleteImageRecordAndFileOfActivity(previousImage, activityId);
-                  if(isDeleted==false) break;
-              }
-          }
-              
-          String activityTableName="Activity";   
-          List<String> activityWhereClauses=new LinkedList<String>();
-          activityWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
-          ret=sqlHelper.deleteFromTableByWhereClauses(activityTableName, activityWhereClauses, SQLHelper.logicAND);
-        
-        } catch(Exception e){
-          System.out.println("ExtraCommander.deleteActivity:"+e.getMessage());
-        }
+	        try{
+		          SQLHelper sqlHelper=new SQLHelper();
+		          String relationTableName="UserActivityRelationTable";
+		          List<String> relationWhereClauses=new LinkedList<String>();
+		          relationWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
+		          boolean resultRelationDeletion=sqlHelper.deleteFromTableByWhereClauses(relationTableName, relationWhereClauses, SQLHelper.logicAND);
+		        
+		          if(resultRelationDeletion==false) break;
+		        
+		          List<Image> previousImages=queryImagesByActivityId(activityId);
+		          if(previousImages!=null && previousImages.size()>0){
+		              // delete previous images
+		              Iterator<Image> itPreviousImage=previousImages.iterator();
+		              while(itPreviousImage.hasNext()){
+		                  Image previousImage=itPreviousImage.next();
+		                  boolean isDeleted=deleteImageRecordAndFileOfActivity(previousImage, activityId);
+		                  if(isDeleted==false) break;
+		              }
+		          }
+		              
+		          String activityTableName="Activity";   
+		          List<String> activityWhereClauses=new LinkedList<String>();
+		          activityWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
+		          ret=sqlHelper.deleteFromTableByWhereClauses(activityTableName, activityWhereClauses, SQLHelper.logicAND);
+		        
+	        } catch(Exception e){
+	        		System.out.println("ExtraCommander.deleteActivity:"+e.getMessage());
+	        }
       }while(false);
 
       return ret;

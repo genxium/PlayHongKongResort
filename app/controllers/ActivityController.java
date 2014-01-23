@@ -19,7 +19,7 @@ import utilities.Converter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 
-public class ActivityDetailController extends Controller {
+public class ActivityController extends Controller {
 
 	public static String s_pageIndexKey="pageIndex";
     public static Integer s_usersPerPage=10; // hard coded for now

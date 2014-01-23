@@ -431,7 +431,7 @@ public class Application extends Controller {
             if(SQLCommander.isActivityEditable(userId, activity)==false) break;
             
             try{
-                boolean res=ExtraCommander.deleteActivity(userId, activityId);
+                boolean res=ExtraCommander.deleteActivity(activityId);
                 if(res==false) break;
             } catch(Exception e){
                 System.out.println("Application.deleteActivity: "+e.getMessage());
@@ -439,36 +439,6 @@ public class Application extends Controller {
             return ok("Activity deleted");
         } while(false);
         return badRequest("Activity not completely deleted!");
-    }
-
-    public static Result acceptActivity(){
-        // define response attributes
-        response().setContentType("text/plain");
-        do{
-            Map<String, String[]> formData=request().body().asFormUrlEncoded();
-            String[] ids=formData.get(Activity.idKey);
-            String[] tokens=formData.get(BasicUser.tokenKey);
-            
-            Integer activityId=Integer.parseInt(ids[0]);
-            String token=tokens[0];
-          
-            Integer userId=DataUtils.getUserIdByToken(token);
-            if(userId==DataUtils.invalidId) break;
-            BasicUser user=SQLCommander.queryUserByUserId(userId);
-            if(user==null) break;
-            
-            Activity activity=SQLCommander.queryActivityByActivityId(activityId);
-            if(activity==null) break;
-            
-            try{
-                boolean res=SQLCommander.acceptActivity(user, activity);
-                if(res==false) break;
-            } catch(Exception e){
-                System.out.println("Application.acceptActivity: "+e.getMessage());
-            }
-            return ok("Activity accepted");
-        } while(false);
-        return badRequest("Activity not accepted!");
     }
 
     public static Result queryDefaultActivities(){
@@ -537,6 +507,7 @@ public class Application extends Controller {
             
             try{
         		List<JSONObject> activities=SQLCommander.queryActivitiesByUserAndRelation(user, relation, pageIndex, s_itemsPerPage);
+				if(activities==null) break;
         		Iterator<JSONObject> itActivity=activities.iterator();
         		result=Json.newObject();
         		
@@ -569,7 +540,7 @@ public class Application extends Controller {
             	System.out.println("Application.queryActivitiesHostedByUser:"+e.getMessage());
             }
       }while(false);
-      return badRequest();
+      return ok();
     }
     
     
@@ -597,50 +568,6 @@ public class Application extends Controller {
         return badRequest("Could not join activity");
     }
 
-    public static Result queryDefaultActivitiesByAdmin(){
-		response().setContentType("text/plain");
-        do{
-    		try{
-                Map<String, String[]> formData=request().body().asFormUrlEncoded();
-                String[] pageIndexes=formData.get(s_pageIndexKey);
-                if(pageIndexes==null) break;
-                Integer pageIndex=Integer.parseInt(pageIndexes[0]);
-                
-    			List<JSONObject> activities=SQLCommander.queryPendingActivitiesInChronologicalOrder(pageIndex, s_itemsPerPage);
-      			Iterator<JSONObject> itActivity=activities.iterator();
-      			ObjectNode result = Json.newObject();
-      		
-      			while(itActivity.hasNext()){
-    				JSONObject activityJSON=itActivity.next();
-    				Integer activityId=(Integer)activityJSON.get(Activity.idKey);
-    				String activityTitle=(String)activityJSON.get(Activity.titleKey);
-    				String activityContent=(String)activityJSON.get(Activity.contentKey);
-    				List<Image> images=SQLCommander.queryImagesByActivityId(activityId);
-
-    				ObjectNode singleActivityNode=Json.newObject();
-    				singleActivityNode.put(Activity.idKey, activityId.toString());
-    				singleActivityNode.put(Activity.titleKey, activityTitle);
-    				singleActivityNode.put(Activity.contentKey, activityContent);
-    				
-                    if(images!=null && images.size()>0){
-                       Iterator<Image> itImage=images.iterator();
-                       if(itImage.hasNext()){
-                          Image firstImage=itImage.next();
-                          String firstImageURL=firstImage.getImageURL();
-                          singleActivityNode.put(Image.urlKey, firstImageURL);
-                       }
-                    }
-
-    				result.put(activityId.toString(), singleActivityNode);
-      			}
-      			return ok(result);
-    		} catch(Exception e){
-                System.out.println("Application.queryDefaultActivitiesByHost: "+e.getMessage());
-    	    }
-        }while(false);
-        return badRequest();
-    }
-    
     public static Result queryDefaultActivitiesByUser(){
 		response().setContentType("text/plain");
         do{
@@ -658,6 +585,7 @@ public class Application extends Controller {
     	    	int userId=DataUtils.getUserIdByToken(token);
     	    	if(userId==DataUtils.invalidId) break;
     			List<JSONObject> records=SQLCommander.queryAcceptedActivitiesByUserIdInChronologicalOrder(pageIndex, s_itemsPerPage, userId);
+				if(records==null) break;
       			Iterator<JSONObject> itRecord=records.iterator();
       			ObjectNode result = Json.newObject();
       		

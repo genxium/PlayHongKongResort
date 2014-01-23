@@ -1,9 +1,9 @@
-function queryDefaultActivitiesByAdmin(pageIndex){
+function queryPendingActivitiesByAdmin(pageIndex){
 	do{
 		var token = $.cookie(g_keyLoginStatus.toString());
 		if(token==null) break;
 		try{
-			$.post("/queryDefaultActivitiesByAdmin",
+			$.post("/queryPendingActivitiesByAdmin",
 				{
 					UserToken: token.toString(),
 					pageIndex: pageIndex.toString()
