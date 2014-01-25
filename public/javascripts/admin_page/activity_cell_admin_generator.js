@@ -37,6 +37,43 @@ function onBtnAcceptClicked(evt){
 	}
 }
 
+function onBtnDeleteClicked(evt){
+	evt.preventDefault();
+	var btnDelete=this;
+	var token = $.cookie(g_keyLoginStatus.toString());
+	var activityId=$(this).data(g_keyActivityId);
+
+	try{
+		$.post("/deleteActivityByAdmin", 
+			{
+				ActivityId: activityId.toString(),
+				UserToken: token.toString()
+			},
+			function(data, status, xhr){
+				if(status=="success"){
+
+					var cellNode=btnAccept.parentNode; // javascript dom element
+					var cell=$(cellNode); // convert to jQuery element object
+					btnAccept.remove();
+
+					var appliedIndicator=$('<div>',
+					{
+						class: g_classAcceptedIndicator,
+						html: 'Deleted'
+					});
+					cell.append(appliedIndicator);
+					cell.data(g_indexStatusIndicator, appliedIndicator);
+					
+				} else{
+
+				}
+			}
+		);
+	} catch(err){
+
+	}
+}
+
 // Generators
 function generateActivityCellForAdmin(activityJson){
 	var arrayStatusName=['created','pending','rejected','accepted','expired'];

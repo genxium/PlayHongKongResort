@@ -127,7 +127,51 @@ public class AdminController extends Controller {
       			}
       			return ok(result);
     		} catch(Exception e){
-                System.out.println("Application.queryPendingActivitiesByAdmin: "+e.getMessage());
+                System.out.println("AdminController.queryPendingActivitiesByAdmin: "+e.getMessage());
+    	    }
+        }while(false);
+        return badRequest();
+    }
+    
+    public static Result queryAcceptedActivitiesByAdmin(){
+		response().setContentType("text/plain");
+        do{
+    		try{
+                Map<String, String[]> formData=request().body().asFormUrlEncoded();
+                String[] pageIndexes=formData.get(s_pageIndexKey);
+                if(pageIndexes==null) break;
+                Integer pageIndex=Integer.parseInt(pageIndexes[0]);
+                
+    			List<JSONObject> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(pageIndex, s_itemsPerPage);
+      			Iterator<JSONObject> itActivity=activities.iterator();
+      			ObjectNode result = Json.newObject();
+      		
+      			while(itActivity.hasNext()){
+    				JSONObject activityJSON=itActivity.next();
+    				Integer activityId=(Integer)activityJSON.get(Activity.idKey);
+    				String activityTitle=(String)activityJSON.get(Activity.titleKey);
+    				String activityContent=(String)activityJSON.get(Activity.contentKey);
+    				List<Image> images=SQLCommander.queryImagesByActivityId(activityId);
+
+    				ObjectNode singleActivityNode=Json.newObject();
+    				singleActivityNode.put(Activity.idKey, activityId.toString());
+    				singleActivityNode.put(Activity.titleKey, activityTitle);
+    				singleActivityNode.put(Activity.contentKey, activityContent);
+    				
+                    if(images!=null && images.size()>0){
+                       Iterator<Image> itImage=images.iterator();
+                       if(itImage.hasNext()){
+                          Image firstImage=itImage.next();
+                          String firstImageURL=firstImage.getImageURL();
+                          singleActivityNode.put(Image.urlKey, firstImageURL);
+                       }
+                    }
+
+    				result.put(activityId.toString(), singleActivityNode);
+      			}
+      			return ok(result);
+    		} catch(Exception e){
+                System.out.println("AdminController.queryAcceptedActivitiesByAdmin: "+e.getMessage());
     	    }
         }while(false);
         return badRequest();

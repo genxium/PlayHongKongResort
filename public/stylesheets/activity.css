@@ -136,7 +136,8 @@
 	max-height: 25%;
 	max-width:	200pt;
 	font-size: 15pt;
-	border-bottom: 1pt solid ##00ccff;
+    border-style: solid;
+	border-bottom: thick dotted #00ccff;
 	overflow: hidden;
 }
 
@@ -151,7 +152,7 @@
 	font-size: 15pt;
 	font-family: Georgia;
 	color: #0000aa;
-	border-top: 1pt solid ##00ccff;
+	border-top: 1pt solid #00ccff;
 	overflow: hidden;
 }
 

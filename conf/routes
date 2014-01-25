@@ -28,6 +28,7 @@ POST /uploadAvatar controllers.Application.uploadAvatar()
 # Admin Page
 POST /queryPendingActivitiesByAdmin controllers.AdminController.queryPendingActivitiesByAdmin()
 POST /acceptActivity controllers.AdminController.acceptActivity()
+POST /deleteActivityByAdmin controllers.AdminController.deleteActivityByAdmin()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
