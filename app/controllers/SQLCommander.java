@@ -399,7 +399,7 @@ public class SQLCommander {
 				columnNames.add(Activity.beginTimeKey);
 				columnNames.add(Activity.deadlineKey);
 				columnNames.add(Activity.capacityKey);
-					
+	            columnNames.add(Activity.statusKey);				
 				List<String> whereClauses=new LinkedList<String>();
 				whereClauses.add(Activity.statusKey+"="+status.ordinal());
 				
@@ -448,7 +448,7 @@ public class SQLCommander {
 				columnNames.add(Activity.beginTimeKey);
 				columnNames.add(Activity.deadlineKey);
 				columnNames.add(Activity.capacityKey);
-					
+	            columnNames.add(Activity.statusKey);					
 				List<String> whereClauses=new LinkedList<String>();
 				whereClauses.add(Activity.statusKey+"="+status.ordinal());
 				

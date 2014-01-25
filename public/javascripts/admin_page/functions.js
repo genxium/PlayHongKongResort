@@ -11,7 +11,7 @@ function queryPendingActivitiesByAdmin(pageIndex){
 				function(data, status, xhr){
 	    				if(status=="success"){
 	    					var jsonResponse=JSON.parse(data);
-	    					if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
+	    					if(jsonResponse!=null){
 	    						var targetSection=$("#"+g_idSectionActivityMonitor);
 	    						// clean target section
 		    					targetSection.empty();
@@ -48,7 +48,7 @@ function queryAcceptedActivitiesByAdmin(pageIndex){
 				function(data, status, xhr){
 	    				if(status=="success"){
 	    					var jsonResponse=JSON.parse(data);
-	    					if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
+	    					if(jsonResponse!=null){
 	    						var targetSection=$("#"+g_idSectionActivityMonitor);
 	    						// clean target section
 		    					targetSection.empty();

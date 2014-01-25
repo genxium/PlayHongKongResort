@@ -1,13 +1,13 @@
 function onBtnPreviousPageClicked(evt){
 	var targetSection=$("#"+g_idSectionActivityMonitor);
 	var pageIndex=targetSection.data(g_pageIndexKey);
-	queryPendingActivitiesByAdmin(pageIndex-1);
+	queryActivitiesByAdmin(pageIndex-1);
 }
 
 function onBtnNextPageClicked(evt){
 	var targetSection=$("#"+g_idSectionActivityMonitor);
 	var pageIndex=targetSection.data(g_pageIndexKey);
-	queryPendingActivitiesByAdmin(pageIndex+1);
+	queryActivitiesByAdmin(pageIndex+1);
 }
 
 function onBtnSwitchMonitorClicked(evt){
@@ -17,10 +17,12 @@ function onBtnSwitchMonitorClicked(evt){
         {
             g_statusToQuery=1;    
         }
+		break;
         case 1:
         {
             g_statusToQuery=0;
-        }       
+        }     
+		break;  
     }
     queryActivitiesByAdmin(0);    
 }

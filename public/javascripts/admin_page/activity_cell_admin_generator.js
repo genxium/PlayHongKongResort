@@ -19,13 +19,12 @@ function onBtnAcceptClicked(evt){
 					var cell=$(cellNode); // convert to jQuery element object
 					btnAccept.remove();
 
-					var appliedIndicator=$('<div>',
+					var acceptedIndicator=$('<div>',
 					{
 						class: g_classAcceptedIndicator,
 						html: 'Accepted'
-					});
-					cell.append(appliedIndicator);
-					cell.data(g_indexStatusIndicator, appliedIndicator);
+					}).appendTo(cell);
+					cell.data(g_indexStatusIndicator, acceptedIndicator);
 					
 				} else{
 
@@ -52,17 +51,16 @@ function onBtnDeleteClicked(evt){
 			function(data, status, xhr){
 				if(status=="success"){
 
-					var cellNode=btnAccept.parentNode; // javascript dom element
+					var cellNode=btnDelete.parentNode; // javascript dom element
 					var cell=$(cellNode); // convert to jQuery element object
-					btnAccept.remove();
+					btnDelete.remove();
 
-					var appliedIndicator=$('<div>',
+					var deletedIndicator=$('<div>',
 					{
-						class: g_classAcceptedIndicator,
+						class: g_classDeletedIndicator,
 						html: 'Deleted'
-					});
-					cell.append(appliedIndicator);
-					cell.data(g_indexStatusIndicator, appliedIndicator);
+					}).appendTo(cell);
+					cell.data(g_indexStatusIndicator, deletedIndicator);
 					
 				} else{
 
@@ -116,23 +114,29 @@ function generateActivityCellForAdmin(activityJson){
 	var statusIndicator=$('<div>',{
 					class: g_classActivityStatusIndicator,
 					html: arrayStatusName[parseInt(activityStatus)] 
-				});
-	ret.append(statusIndicator);
-	 
+				}).appendTo(ret);
+	
 	// this condition is temporarily hard-coded
-	var btnAccept=$('<button>', {
-		class: g_classBtnAccept,
-		text: 'Accept'
-	});
-	btnAccept.bind("click", onBtnAcceptClicked);
+	if(parseInt(activityStatus)==1){
+        var btnAccept=$('<button>', {
+            class: g_classBtnAccept,
+            text: 'Accept'
+        }).appendTo(ret);
+        btnAccept.bind("click", onBtnAcceptClicked);
+        btnAccept.data(g_keyActivityId, activityId);
+        ret.data(g_indexBtnAccept, btnAccept);
+    }
 
-	btnAccept.data(g_keyActivityId, activityId);
-	btnAccept.data(g_keyActivityTitle, activityTitle);
-	btnAccept.data(g_keyActivityContent, activityContent);
-
-	ret.append(btnAccept);
-	ret.data(g_indexBtnAccept, btnAccept);
-
+    if(parseInt(activityStatus)==3){
+        var btnDelete=$('<button>', {
+            class: g_classBtnDelete,
+            text: 'Delete'
+        }).appendTo(ret);
+        btnDelete.bind("click", onBtnDeleteClicked);
+        btnDelete.data(g_keyActivityId, activityId);
+        ret.data(g_indexBtnDelete, btnDelete);
+    }
+    
 	ret.data(g_keyActivityId, activityId);
 	ret.data(g_keyActivityTitle, activityTitle);
 	ret.data(g_keyActivityContent, activityContent);

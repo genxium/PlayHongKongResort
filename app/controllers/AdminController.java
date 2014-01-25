@@ -107,13 +107,14 @@ public class AdminController extends Controller {
     				Integer activityId=(Integer)activityJSON.get(Activity.idKey);
     				String activityTitle=(String)activityJSON.get(Activity.titleKey);
     				String activityContent=(String)activityJSON.get(Activity.contentKey);
+                    Integer activityStatus=(Integer)activityJSON.get(Activity.statusKey);
     				List<Image> images=SQLCommander.queryImagesByActivityId(activityId);
 
     				ObjectNode singleActivityNode=Json.newObject();
     				singleActivityNode.put(Activity.idKey, activityId.toString());
     				singleActivityNode.put(Activity.titleKey, activityTitle);
     				singleActivityNode.put(Activity.contentKey, activityContent);
-    				
+                    singleActivityNode.put(Activity.statusKey, activityStatus.toString());    				
                     if(images!=null && images.size()>0){
                        Iterator<Image> itImage=images.iterator();
                        if(itImage.hasNext()){
@@ -151,12 +152,14 @@ public class AdminController extends Controller {
     				Integer activityId=(Integer)activityJSON.get(Activity.idKey);
     				String activityTitle=(String)activityJSON.get(Activity.titleKey);
     				String activityContent=(String)activityJSON.get(Activity.contentKey);
-    				List<Image> images=SQLCommander.queryImagesByActivityId(activityId);
+    				Integer activityStatus=(Integer)activityJSON.get(Activity.statusKey);
+                    List<Image> images=SQLCommander.queryImagesByActivityId(activityId);
 
     				ObjectNode singleActivityNode=Json.newObject();
     				singleActivityNode.put(Activity.idKey, activityId.toString());
     				singleActivityNode.put(Activity.titleKey, activityTitle);
     				singleActivityNode.put(Activity.contentKey, activityContent);
+                    singleActivityNode.put(Activity.statusKey, activityStatus.toString());    				
     				
                     if(images!=null && images.size()>0){
                        Iterator<Image> itImage=images.iterator();
@@ -174,6 +177,6 @@ public class AdminController extends Controller {
                 System.out.println("AdminController.queryAcceptedActivitiesByAdmin: "+e.getMessage());
     	    }
         }while(false);
-        return badRequest();
+        return ok();
     }
 }
