@@ -1,4 +1,4 @@
-// Assistant Callback Functions
+// Assistive Callback Functions
 function onUpdateFormSubmission(formEvt){
 	do{
 		formEvt.preventDefault(); // prevent default action.
@@ -150,7 +150,7 @@ function onSubmitFormSubmission(formEvt){
 	}while(false);
 }
 
-// Assistant functions
+// Assistive functions
 function isFileValid(file){
 	var ret=false;
 	do{
@@ -167,7 +167,7 @@ function formatDigits(value, numberOfDigits){
 	return valueStr;
 }
 
-// Assistant Handlers
+// Assistive Handlers
 function onBtnCreateClicked(evt){
 
 	evt.preventDefault();
@@ -266,11 +266,11 @@ function onBtnCancelClicked(evt){
 	$("#"+g_idBtnCreate).show();
 }
 
-// Generator
-function generateActivityEditorByJson(jsonActivity){
-	var activityId=jsonActivity[g_keyActivityId];
-	var activityTitle=jsonActivity[g_keyActivityTitle];
-	var activityContent=jsonActivity[g_keyActivityContent];
+// Generators
+function generateActivityEditorByJson(activityJson){
+	var activityId=activityJson[g_keyActivityId];
+	var activityTitle=activityJson[g_keyActivityTitle];
+	var activityContent=activityJson[g_keyActivityContent];
 	
 	var ret=generateActivityEditor(activityId, activityTitle, activityContent);
 	return ret;

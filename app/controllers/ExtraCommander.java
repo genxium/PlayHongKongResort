@@ -5,7 +5,7 @@ import java.io.File;
 import play.Play;
 import play.mvc.Http.MultipartFormData.FilePart;
 import model.Activity;
-import model.BasicUser;
+import model.User;
 import model.Image;
 import org.apache.commons.io.*;
 
@@ -97,7 +97,7 @@ public class ExtraCommander extends SQLCommander {
       return ret;
   }
 	
-	public static int saveAvatarFile(FilePart imageFile, BasicUser user){
+	public static int saveAvatarFile(FilePart imageFile, User user){
 		int ret=invalidId;
 		do{
 			String fileName = imageFile.getFilename();
@@ -139,7 +139,7 @@ public class ExtraCommander extends SQLCommander {
 		return ret;
   }
 
-  public static int saveImageOfActivity(FilePart imageFile, BasicUser user, Activity activity){
+  public static int saveImageOfActivity(FilePart imageFile, User user, Activity activity){
   	int ret=invalidId;
   	do{
   		String fileName = imageFile.getFilename();

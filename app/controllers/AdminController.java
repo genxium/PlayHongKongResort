@@ -33,14 +33,14 @@ public class AdminController extends Controller {
         do{
             Map<String, String[]> formData=request().body().asFormUrlEncoded();
             String[] ids=formData.get(Activity.idKey);
-            String[] tokens=formData.get(BasicUser.tokenKey);
+            String[] tokens=formData.get(User.tokenKey);
             
             Integer activityId=Integer.parseInt(ids[0]);
             String token=tokens[0];
           
             Integer userId=DataUtils.getUserIdByToken(token);
             if(userId==DataUtils.invalidId) break;
-            BasicUser user=SQLCommander.queryUserByUserId(userId);
+            User user=SQLCommander.queryUserByUserId(userId);
             if(user==null) break;
             
             Activity activity=SQLCommander.queryActivityByActivityId(activityId);
@@ -63,7 +63,7 @@ public class AdminController extends Controller {
         do{
             Map<String, String[]> formData=request().body().asFormUrlEncoded();
             String[] ids=formData.get(Activity.idKey);
-            String[] tokens=formData.get(BasicUser.tokenKey);
+            String[] tokens=formData.get(User.tokenKey);
             
             Integer activityId=Integer.parseInt(ids[0]);
             String token=tokens[0];
@@ -71,7 +71,7 @@ public class AdminController extends Controller {
             Integer userId=DataUtils.getUserIdByToken(token);
             if(userId==DataUtils.invalidId) break;
             
-            BasicUser user=SQLCommander.queryUserByUserId(userId);
+            User user=SQLCommander.queryUserByUserId(userId);
             if(user==null) break;
             
             if(SQLCommander.validateAdminAccess(user)==false) break;

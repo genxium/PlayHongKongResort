@@ -14,7 +14,7 @@ public class Activity {
 	public static String deadlineKey="ActivityApplicationDeadline";
 	public static String capacityKey="ActivityCapacity";
 	public static String statusKey="ActivityStatus";
-
+	
 	public enum StatusType{
 		created(0), 
 		pending(1),
@@ -41,35 +41,35 @@ public class Activity {
 	    }
 	};
 	
-	private int m_id=0;
+	protected int m_id=0;
 	public int getId() {return m_id;}
 	public void setId(int id) {m_id=id;}
 
-	private String m_title=null;
+	protected String m_title=null;
 	public String getTitle() {return m_title;}
 	public void setTitle(String title) {m_title=title;}
 	
-	private String m_content=null;
+	protected String m_content=null;
 	public String getContent() {return m_content;}
 	public void setContent(String content) {m_content=content;}
 
-	private Timestamp m_createdTime=null;
+	protected Timestamp m_createdTime=null;
 	public Timestamp getCreatedTime() {return m_createdTime;}
 	public void setCreatedTime(Timestamp createdTime) {m_createdTime=createdTime;}
 
-	private Timestamp m_beginTime=null;
+	protected Timestamp m_beginTime=null;
 	public Timestamp getBeginTime() {return m_beginTime;}
 	public void setBeginTime(Timestamp beginTime) {m_beginTime=beginTime;}
 
-	private Timestamp m_deadline=null; 
+	protected Timestamp m_deadline=null; 
 	public Timestamp getDeadline() {return m_deadline;}
 	public void setDeadline(Timestamp deadline) {m_deadline=deadline;}
 	
-	private int m_capacity=0;
+	protected int m_capacity=0;
 	public int getCapacity() {return m_capacity;}
 	public void setCapacity(int capacity) {m_capacity=capacity;}
 	
-	private StatusType m_status=StatusType.created;
+	protected StatusType m_status=StatusType.created;
 	public StatusType getStatus() {return m_status;}
 	public void setStatus(StatusType status) {m_status=status;}
 	

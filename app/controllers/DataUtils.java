@@ -2,7 +2,7 @@ package controllers;
 
 import java.util.Map;
 import java.sql.Timestamp;
-import model.BasicUser;
+import model.User;
 import play.mvc.*;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.RequestBody;
@@ -39,14 +39,14 @@ public class DataUtils{
     
     public static String getUserToken(MultipartFormData data){
     	Map<String, String[]> formData= data.asFormUrlEncoded();
-		String[] tokens=formData.get(BasicUser.tokenKey);
+		String[] tokens=formData.get(User.tokenKey);
 		String token=tokens[0];
 		return token;
     }
     
     public static String getUserToken(RequestBody body){
     	Map<String, String[]> formData= body.asFormUrlEncoded();
-		String[] tokens=formData.get(BasicUser.tokenKey);
+		String[] tokens=formData.get(User.tokenKey);
 		String token=tokens[0];
 		return token;
     }

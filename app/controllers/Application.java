@@ -49,14 +49,14 @@ public class Application extends Controller {
     	  do{
       		RequestBody body = request().body();
       		Map<String, String[]> formData=body.asFormUrlEncoded();
-      		String[] emails=formData.get(BasicUser.emailKey);
-      		String[] passwords=formData.get(BasicUser.passwordKey);
+      		String[] emails=formData.get(User.emailKey);
+      		String[] passwords=formData.get(User.passwordKey);
       		String email=emails[0];
       		String password=passwords[0];
       		
       		String passwordDigest=Converter.md5(password);
   		
-          BasicUser user=SQLCommander.queryUserByEmail(email);
+          User user=SQLCommander.queryUserByEmail(email);
 
           if(user==null || user.getPassword().equals(passwordDigest)==false) break;
           	
@@ -69,9 +69,9 @@ public class Application extends Controller {
           Image image=SQLCommander.queryImageByImageId(imageId);
 
   		    ObjectNode result = Json.newObject();
-  		    result.put(BasicUser.idKey, user.getUserId());
-  		    result.put(BasicUser.emailKey, user.getEmail());
-  		    result.put(BasicUser.tokenKey, token);
+  		    result.put(User.idKey, user.getUserId());
+  		    result.put(User.emailKey, user.getEmail());
+  		    result.put(User.tokenKey, token);
   		    if(image!=null){
   		    		result.put(Image.urlKey, image.getImageURL());
   		    }
@@ -87,15 +87,15 @@ public class Application extends Controller {
     	  do{
         		RequestBody body = request().body();
         		Map<String, String[]> formData=body.asFormUrlEncoded();
-        		String[] emails=formData.get(BasicUser.emailKey);
-        		String[] passwords=formData.get(BasicUser.passwordKey);
+        		String[] emails=formData.get(User.emailKey);
+        		String[] passwords=formData.get(User.passwordKey);
         		String email=emails[0];
         		String password=passwords[0];
         		String name=DataUtils.getNameByEmail(email);
         		UserGroup.GroupType userGroup=UserGroup.GroupType.user;
 
         		String passwordDigest=Converter.md5(password);    
-                BasicUser user=BasicUser.create(email, passwordDigest, name, userGroup);
+                User user=User.create(email, passwordDigest, name, userGroup);
                 int lastId=SQLCommander.registerUser(user);
                 if(lastId==SQLCommander.invalidId) break;
                 return ok("Registered");
@@ -110,13 +110,13 @@ public class Application extends Controller {
 
         		String token=DataUtils.getUserToken(request().body());
         		Integer userId=DataUtils.getUserIdByToken(token);
-        		BasicUser user=SQLCommander.queryUserByUserId(userId);
+        		User user=SQLCommander.queryUserByUserId(userId);
         		
         		if(user==null) break;
             try {
                 session(token, userId.toString());
-                String emailKey=BasicUser.emailKey;
-                String tokenKey=BasicUser.tokenKey;
+                String emailKey=User.emailKey;
+                String tokenKey=User.tokenKey;
 
                 int imageId=user.getAvatar();
                 Image image=SQLCommander.queryImageByImageId(imageId);
@@ -150,7 +150,7 @@ public class Application extends Controller {
     		  String token=DataUtils.getUserToken(data);
     		  int userId=DataUtils.getUserIdByToken(token);
     		  if(userId==DataUtils.invalidId) break;
-    		  BasicUser user=SQLCommander.queryUserByUserId(userId);
+    		  User user=SQLCommander.queryUserByUserId(userId);
     		  if(user==null) break;
 
     		  if(avatarFile==null) break;
@@ -176,7 +176,7 @@ public class Application extends Controller {
   	  	response().setContentType("text/plain");
   	  	
   	  	Map<String, String[]> formData=request().body().asFormUrlEncoded();
-     		String[] tokens=formData.get(BasicUser.tokenKey);
+     		String[] tokens=formData.get(User.tokenKey);
   	  	String token=tokens[0];
 
         do{
@@ -212,7 +212,7 @@ public class Application extends Controller {
             try{
                 Map<String, String[]> formData=request().body().asFormUrlEncoded();
                 String[] ids=formData.get(Activity.idKey);
-                String[] tokens=formData.get(BasicUser.tokenKey);
+                String[] tokens=formData.get(User.tokenKey);
                 
                 Integer activityId=Integer.parseInt(ids[0]);
                 String token=tokens[0];
@@ -264,13 +264,13 @@ public class Application extends Controller {
                 // get user token and activity id from request body stream
                 Map<String, String[]> formData= data.asFormUrlEncoded();
                 
-                String[] tokens=formData.get(BasicUser.tokenKey);
+                String[] tokens=formData.get(User.tokenKey);
                 String[] activityIds=formData.get(Activity.idKey);
 
                 String token=tokens[0];
                 int userId=DataUtils.getUserIdByToken(token);
                 if(userId==DataUtils.invalidId) break;
-      	    		BasicUser user=SQLCommander.queryUserByUserId(userId);
+      	    		User user=SQLCommander.queryUserByUserId(userId);
       	    		if(user==null) break;
 
       	        int activityId=Integer.parseInt(activityIds[0]);
@@ -345,13 +345,13 @@ public class Application extends Controller {
         			// get user token and activity id from request body stream
         			Map<String, String[]> formData= data.asFormUrlEncoded();
          
-        			String[] tokens=formData.get(BasicUser.tokenKey);
+        			String[] tokens=formData.get(User.tokenKey);
         			String[] activityIds=formData.get(Activity.idKey);
 
         			String token=tokens[0];
         			int userId=DataUtils.getUserIdByToken(token);
         			if(userId==DataUtils.invalidId) break;
-        			BasicUser user=SQLCommander.queryUserByUserId(userId);
+        			User user=SQLCommander.queryUserByUserId(userId);
         			if(user==null) break;
 
         			int activityId=Integer.parseInt(activityIds[0]);
@@ -419,7 +419,7 @@ public class Application extends Controller {
         do{
             Map<String, String[]> formData=request().body().asFormUrlEncoded();
             String[] ids=formData.get(Activity.idKey);
-            String[] tokens=formData.get(BasicUser.tokenKey);
+            String[] tokens=formData.get(User.tokenKey);
             
             Integer activityId=Integer.parseInt(ids[0]);
             String token=tokens[0];
@@ -493,7 +493,7 @@ public class Application extends Controller {
             if(pageIndexes==null) break;
             Integer pageIndex=Integer.parseInt(pageIndexes[0]);
             
-            String[] tokens=formData.get(BasicUser.tokenKey);
+            String[] tokens=formData.get(User.tokenKey);
             if(tokens==null) break;
             String token=tokens[0];
 
@@ -502,7 +502,7 @@ public class Application extends Controller {
             
             ObjectNode result = null;
             
-            BasicUser user=SQLCommander.queryUserByUserId(userId);
+            User user=SQLCommander.queryUserByUserId(userId);
             UserActivityRelation.RelationType relation=UserActivityRelation.RelationType.host;
             
             try{
@@ -550,7 +550,7 @@ public class Application extends Controller {
         do{  
           Map<String, String[]> formData=request().body().asFormUrlEncoded();
     	  	String[] ids=formData.get(Activity.idKey);
-    	  	String[] tokens=formData.get(BasicUser.tokenKey);
+    	  	String[] tokens=formData.get(User.tokenKey);
       	  
         	Integer activityId=Integer.parseInt(ids[0]);
       		String token=tokens[0];
@@ -578,7 +578,7 @@ public class Application extends Controller {
                 if(pageIndexes==null) break;
                 Integer pageIndex=Integer.parseInt(pageIndexes[0]);
                 
-    	  	  	String[] tokens=formData.get(BasicUser.tokenKey);
+    	  	  	String[] tokens=formData.get(User.tokenKey);
     	    	if(tokens==null) break;
     	    	String token=tokens[0];
 
@@ -630,7 +630,7 @@ public class Application extends Controller {
             try{
                 Map<String, String[]> formData=request().body().asFormUrlEncoded();
           	  	String[] ids=formData.get(Activity.idKey);
-          	  	String[] tokens=formData.get(BasicUser.tokenKey);
+          	  	String[] tokens=formData.get(User.tokenKey);
             	  
              	Integer activityId=Integer.parseInt(ids[0]);
         		String token=tokens[0];
@@ -654,7 +654,7 @@ public class Application extends Controller {
     public static Result logout(){
     		response().setContentType("text/plain");
         Map<String, String[]> formData=request().body().asFormUrlEncoded();
-        String[] tokens=formData.get(BasicUser.tokenKey);
+        String[] tokens=formData.get(User.tokenKey);
         String token=tokens[0];
         session().remove(token);
         return ok();

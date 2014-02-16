@@ -1,34 +1,36 @@
 package controllers;
 import model.*;
+import model.UserActivityRelation.RelationType;
 
 import org.json.simple.JSONObject;
 
 import java.sql.Timestamp;
 import java.util.*;
+
 import dao.SQLHelper;
 
 public class SQLCommander {
 	
 	public static Integer invalidId=(-1);
 	
- 	public static BasicUser queryUserByUserId(Integer userId){
+ 	public static User queryUserByUserId(Integer userId){
  		
- 		BasicUser user=null;
+ 		User user=null;
  		do{
 	 		String tableName="User";
 	 		List<String> columnNames=new LinkedList<String>();
 	 		List<String> whereClauses=new LinkedList<String>();
 	 		
-	 		columnNames.add(BasicUser.emailKey);
-	 		columnNames.add(BasicUser.passwordKey);
-	 		columnNames.add(BasicUser.nameKey);
-	 		columnNames.add(BasicUser.groupIdKey);
-			columnNames.add(BasicUser.authenticationStatusKey);
-			columnNames.add(BasicUser.genderKey);
-			columnNames.add(BasicUser.lastLoggedInTimeKey);
-			columnNames.add(BasicUser.avatarKey);
+	 		columnNames.add(User.emailKey);
+	 		columnNames.add(User.passwordKey);
+	 		columnNames.add(User.nameKey);
+	 		columnNames.add(User.groupIdKey);
+			columnNames.add(User.authenticationStatusKey);
+			columnNames.add(User.genderKey);
+			columnNames.add(User.lastLoggedInTimeKey);
+			columnNames.add(User.avatarKey);
 
-			whereClauses.add(BasicUser.idKey+"="+SQLHelper.convertToQueryValue(userId));
+			whereClauses.add(User.idKey+"="+SQLHelper.convertToQueryValue(userId));
 			String logicLink=SQLHelper.logicAND;
 			
 			SQLHelper sqlHelper=new SQLHelper();
@@ -38,14 +40,14 @@ public class SQLCommander {
 	            Iterator<JSONObject> it=results.iterator();
 		        if(it.hasNext()){
 			        JSONObject userJson=(JSONObject)it.next();
-	        		String email=(String)userJson.get(BasicUser.emailKey);
-		      		String password=(String)userJson.get(BasicUser.passwordKey);
-		      		String name=(String)userJson.get(BasicUser.nameKey);
-		      		Integer userGroupId=(Integer)userJson.get(BasicUser.groupIdKey);
+	        		String email=(String)userJson.get(User.emailKey);
+		      		String password=(String)userJson.get(User.passwordKey);
+		      		String name=(String)userJson.get(User.nameKey);
+		      		Integer userGroupId=(Integer)userJson.get(User.groupIdKey);
 		      		UserGroup.GroupType userGroup=UserGroup.GroupType.getTypeForValue(userGroupId);
-		      		Integer avatar=(Integer)userJson.get(BasicUser.avatarKey);
+		      		Integer avatar=(Integer)userJson.get(User.avatarKey);
 
-          		    user=BasicUser.create(userId, email, password, name, userGroup, avatar);
+          		    user=User.create(userId, email, password, name, userGroup, avatar);
 				} 
 			} catch (Exception e) {
 				    	
@@ -54,25 +56,25 @@ public class SQLCommander {
 		return user;
 	}
  	
- 	public static BasicUser queryUserByEmail(String email){
+ 	public static User queryUserByEmail(String email){
  
- 		BasicUser user=null;
+ 		User user=null;
  		do{
 	 		String tableName="User";
 	 		
 	 		List<String> columnNames=new LinkedList<String>();
 	 		List<String> whereClauses=new LinkedList<String>();
 	 		
-	 		columnNames.add(BasicUser.idKey);
-	 		columnNames.add(BasicUser.passwordKey);
-	 		columnNames.add(BasicUser.nameKey);
-	 		columnNames.add(BasicUser.groupIdKey);
-			columnNames.add(BasicUser.authenticationStatusKey);
-			columnNames.add(BasicUser.genderKey);
-			columnNames.add(BasicUser.lastLoggedInTimeKey);
-			columnNames.add(BasicUser.avatarKey);
+	 		columnNames.add(User.idKey);
+	 		columnNames.add(User.passwordKey);
+	 		columnNames.add(User.nameKey);
+	 		columnNames.add(User.groupIdKey);
+			columnNames.add(User.authenticationStatusKey);
+			columnNames.add(User.genderKey);
+			columnNames.add(User.lastLoggedInTimeKey);
+			columnNames.add(User.avatarKey);
 
-			whereClauses.add(BasicUser.emailKey+"="+SQLHelper.convertToQueryValue(email));
+			whereClauses.add(User.emailKey+"="+SQLHelper.convertToQueryValue(email));
 			String logicLink=SQLHelper.logicAND;
 			
 			SQLHelper sqlHelper=new SQLHelper();
@@ -82,14 +84,14 @@ public class SQLCommander {
 	            Iterator<JSONObject> it=results.iterator();
 		        if(it.hasNext()){
 			        JSONObject userJson=(JSONObject)it.next();
-			       	int userId=(Integer)userJson.get(BasicUser.idKey);
-		      		String password=(String)userJson.get(BasicUser.passwordKey);
-		      		String name=(String)userJson.get(BasicUser.nameKey);
-		      		Integer userGroupId=(Integer)userJson.get(BasicUser.groupIdKey);
+			       	int userId=(Integer)userJson.get(User.idKey);
+		      		String password=(String)userJson.get(User.passwordKey);
+		      		String name=(String)userJson.get(User.nameKey);
+		      		Integer userGroupId=(Integer)userJson.get(User.groupIdKey);
 		      		UserGroup.GroupType userGroup=UserGroup.GroupType.getTypeForValue(userGroupId);
-		      		Integer avatar=(Integer)userJson.get(BasicUser.avatarKey);
+		      		Integer avatar=(Integer)userJson.get(User.avatarKey);
 
-          		    user=BasicUser.create(userId, email, password, name, userGroup, avatar);
+          		    user=User.create(userId, email, password, name, userGroup, avatar);
 				}
 			} catch (Exception e) {
 				    	
@@ -98,17 +100,17 @@ public class SQLCommander {
  		return user;
  	}
 
-	public static int registerUser(BasicUser user){
+	public static int registerUser(User user){
 		int lastInsertedId=invalidId;
 		
 		// DAO
 		SQLHelper sqlHelper=new SQLHelper();
 		
 		List<String> columnNames=new LinkedList<String>();
-		columnNames.add(BasicUser.emailKey);
-		columnNames.add(BasicUser.passwordKey);
-		columnNames.add(BasicUser.nameKey);
-		columnNames.add(BasicUser.groupIdKey);
+		columnNames.add(User.emailKey);
+		columnNames.add(User.passwordKey);
+		columnNames.add(User.nameKey);
+		columnNames.add(User.groupIdKey);
 		
 		List<Object> columnValues=new LinkedList<Object>();
 		columnValues.add(user.getEmail());
@@ -248,7 +250,7 @@ public class SQLCommander {
 		return ret;
 	}
 
-	public static boolean createUserActivityRelation(int activityId, BasicUser user, UserActivityRelation.RelationType relation){
+	public static boolean createUserActivityRelation(int activityId, User user, UserActivityRelation.RelationType relation){
 		
 		boolean bRet=false;
 		
@@ -321,8 +323,35 @@ public class SQLCommander {
 		} while(false);
 		return activity;
 	}
+	
+	public static ActivityDetail queryActivityDetailByActivityId(int activityId){
+		ActivityDetail activityDetail=null;
+		do{
+			Activity activity=queryActivityByActivityId(activityId);
+			List<Image> images=queryImagesByActivityId(activityId);
+			List<BasicUser> participants=new ArrayList<BasicUser>();
+			List<BasicUser> appliedParticipants=SQLCommander.queryUsersByActivityIdAndRelation(activityId, UserActivityRelation.RelationType.applied);
+			List<BasicUser> selectedParticipants=SQLCommander.queryUsersByActivityIdAndRelation(activityId, UserActivityRelation.RelationType.selected);
+			
+			Iterator<BasicUser> itApplied=appliedParticipants.iterator();
+			while(itApplied.hasNext()){
+				BasicUser participant=itApplied.next();
+				participants.add(participant);
+			}
+			
+			Iterator<BasicUser> itSelected=selectedParticipants.iterator();
+			while(itSelected.hasNext()){
+				BasicUser participant=itSelected.next();
+				participants.add(participant);
+			}
+			
+			activityDetail=new ActivityDetail(activity, images, participants);
+			
+		}while(false);
+		return activityDetail;
+	}
 
-	public static List<JSONObject> queryActivitiesByUserAndRelation(BasicUser user, UserActivityRelation.RelationType relation, int pageIndex, int itemsPerPage){
+	public static List<JSONObject> queryActivitiesByUserAndRelation(User user, UserActivityRelation.RelationType relation, int pageIndex, int itemsPerPage){
 		List<JSONObject> activityRecords=null;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
@@ -542,7 +571,7 @@ public class SQLCommander {
 		return ret;
 	}
 	
-	public static boolean validateAdminAccess(BasicUser user){
+	public static boolean validateAdminAccess(User user){
 		boolean ret=false;
 		do{
 			if(user==null) break;
@@ -574,7 +603,7 @@ public class SQLCommander {
 		return ret;
 	}
 
-	public static boolean isActivityJoinable(BasicUser user, Activity activity){
+	public static boolean isActivityJoinable(User user, Activity activity){
 		boolean ret=false;
 		do{
 			if(user==null) break;
@@ -639,7 +668,7 @@ public class SQLCommander {
 		return ret;
 	}
 	
-	public static boolean acceptActivity(BasicUser user, Activity activity){
+	public static boolean acceptActivity(User user, Activity activity){
 		boolean ret=false;
 		do{
 			if(user==null) break;
@@ -664,7 +693,7 @@ public class SQLCommander {
 		return ret;
 	}
 
-	public static int uploadUserAvatar(BasicUser user, String imageAbsolutePath, String imageURL){
+	public static int uploadUserAvatar(User user, String imageAbsolutePath, String imageURL){
 		int lastImageId=invalidId;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
@@ -683,13 +712,13 @@ public class SQLCommander {
 			if(lastImageId==SQLHelper.invalidId) break;
 
 			List<String> userColumnNames=new LinkedList<String>();
-			userColumnNames.add(BasicUser.avatarKey);
+			userColumnNames.add(User.avatarKey);
 
 			List<Object> userColumnValues=new LinkedList<Object>();
 			userColumnValues.add(lastImageId);
 
 			List<String> userWhereClauses=new LinkedList<String>();
-			userWhereClauses.add(BasicUser.idKey+"="+user.getUserId());
+			userWhereClauses.add(User.idKey+"="+user.getUserId());
 
 			boolean updateResult=sqlHelper.updateTableByColumnsAndWhereClauses(userTableName, userColumnNames, userColumnValues, userWhereClauses, SQLHelper.logicAND);
 			if(updateResult==false){
@@ -845,7 +874,7 @@ public class SQLCommander {
 		return images;
 	}
 	
-	public static int uploadImageOfActivity(BasicUser user, Activity activity, String imageAbsolutePath, String imageURL){
+	public static int uploadImageOfActivity(User user, Activity activity, String imageAbsolutePath, String imageURL){
 		int lastImageId=invalidId;
 		do{
 			if(user==null) break;
@@ -886,16 +915,17 @@ public class SQLCommander {
 		return lastImageId;
 	}
 
-	public static List<BasicUser> queryUsersByActivityIdAndRelation(int activityId, UserActivityRelation relation){
+	public static List<BasicUser> queryUsersByActivityIdAndRelation(int activityId, RelationType relation){
 		List<BasicUser> users=null;
 		do{
 			try{
 				SQLHelper sqlHelper=new SQLHelper();
 				String relationTableName="UserActivityRelationTable";
 				List<String> relationColumnNames=new LinkedList<String>();
-				relationColumnNames.add(BasicUser.idKey);
+				relationColumnNames.add(User.idKey);
 				List<String> relationWhereClauses=new LinkedList<String>();
 				relationWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
+				relationWhereClauses.add(UserActivityRelationTable.idKey+"="+SQLHelper.convertToQueryValue(relation.ordinal()));
 				List<String> relationOrderClauses=new LinkedList<String>();
 				relationWhereClauses.add(UserActivityRelationTable.generatedTimeKey);
 				List<JSONObject> relationRecords=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(relationTableName, relationColumnNames, relationWhereClauses, SQLHelper.logicAND, relationOrderClauses, null, null);
