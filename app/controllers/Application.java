@@ -629,10 +629,10 @@ public class Application extends Controller {
         do{
             try{
                 Map<String, String[]> formData=request().body().asFormUrlEncoded();
-          	  	String[] ids=formData.get(Activity.idKey);
+          	  	String[] activityIds=formData.get(Activity.idKey);
           	  	String[] tokens=formData.get(User.tokenKey);
             	  
-             	Integer activityId=Integer.parseInt(ids[0]);
+             	Integer activityId=Integer.parseInt(activityIds[0]);
         		String token=tokens[0];
         		
         		ObjectNode ret=null;

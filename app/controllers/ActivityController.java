@@ -15,14 +15,14 @@ public class ActivityController extends Controller {
     public static Result queryActivityDetail(){
     	response().setContentType("text/plain");
         do{
-            Map<String, String[]> formData=request().body().asFormUrlEncoded();
-            String[] activityIds=formData.get(Activity.idKey);
-            if(activityIds==null) break;
-            int activityId=Integer.parseInt(activityIds[0]);
-                        
             ObjectNode result = null;
             
             try{
+            	Map<String, String[]> formData=request().body().asFormUrlEncoded();
+          	  	String[] activityIds=formData.get(Activity.idKey);
+          	  	  
+             	Integer activityId=Integer.parseInt(activityIds[0]);
+        		
         		ActivityDetail activityDetail=SQLCommander.queryActivityDetailByActivityId(activityId);
             	if(activityDetail==null) break;
             	result=activityDetail.toObjectNode();   			

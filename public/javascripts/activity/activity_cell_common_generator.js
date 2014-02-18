@@ -66,6 +66,30 @@ function onBtnJoinClicked(evt){
 	}
 }
 
+function onBtnDetailClicked(evt){
+    evt.preventDefault();
+    var activityId=$(this).data(g_keyActivityId);
+
+    try{
+        $.ajax({
+            method: "POST",
+            url: "/queryActivityDetail",
+            data:{
+            	ActivityId: activityId.toString()
+            },
+            success: function(data, status, xhr){
+                alert(data);
+            },
+            error: function(xhr, status, errorThrown){
+
+            }
+        });
+    } catch(err){
+
+    }
+
+}
+
 // Generators
 function generateActivityCell(jsonActivity){
 
@@ -87,44 +111,38 @@ function generateActivityCell(jsonActivity){
 							{
 								class: g_classActivityCoverImage,
 								src: coverImageURL
-							});
-		ret.append(coverImage);
+							}).appendTo(ret);
 	}
 
 	var cellActivityTitle=$('<div>',
 				{	
 					class: g_classCellActivityTitle,
 					html: activityTitle
-				});
-	ret.append(cellActivityTitle);
+				}).appendTo(cellActivityTitle);
 
 	var cellActivityContent=$('<div>',
 				{
 					class: g_classCellActivityContent,
 					html: activityContent
-				});
-
-	ret.append(cellActivityContent);
+				}).appendTo(ret);
 
 	var statusIndicator=$('<div>',{
 					class: g_classActivityStatusIndicator,
 					html: arrayStatusName[parseInt(activityStatus)] 
-				});
-	ret.append(statusIndicator);
+				}).appendTo(ret);
 	
 	if(parseInt(activityStatus)==0){ 
 		// this condition is temporarily hard-coded
 		var btnEdit=$('<button>', {
 			class: g_classBtnEdit,
 			text: 'Edit'
-		});
+		}).appendTo(ret);
 		btnEdit.bind("click", onBtnEditClicked);
 
 		btnEdit.data(g_keyActivityId, activityId);
 		btnEdit.data(g_keyActivityTitle, activityTitle);
 		btnEdit.data(g_keyActivityContent, activityContent);
 
-		ret.append(btnEdit);
 		ret.data(g_indexBtnEdit, btnEdit);
 	}
 	
@@ -139,7 +157,6 @@ function generateDefaultActivityCell(jsonRecord){
 
 	var activityId=jsonRecord[g_keyActivityId];
 	var activityTitle=jsonRecord[g_keyActivityTitle];
-	var activityContent=jsonRecord[g_keyActivityContent];
 	var userActivityRelationId=jsonRecord[g_keyUserActivityRelationId];
 	var coverImageURL=jsonRecord[g_keyImageURL];
 
@@ -153,24 +170,14 @@ function generateDefaultActivityCell(jsonRecord){
 							{
 								class: g_classActivityCoverImage,
 								src: coverImageURL
-							});
-		ret.append(coverImage);
+							}).appendTo(ret);
 	}
 
 	var cellActivityTitle=$('<div>',
 				{	
 					class: g_classCellActivityTitle,
 					html: activityTitle
-				});
-	ret.append(cellActivityTitle);
-
-	var cellActivityContent=$('<div>',
-				{
-					class: g_classCellActivityContent,
-					html: activityContent
-				});
-
-	ret.append(cellActivityContent);
+				}).appendTo(ret);
 
 	if(userActivityRelationId==null){
 		var btnJoin=$('<button>',
@@ -199,14 +206,15 @@ function generateDefaultActivityCell(jsonRecord){
 	var btnDetail=$('<button>',
                         {
                             class: g_classBtnDetail,
-                            text: 'detail'
+                            text: 'Detail'
                         }).appendTo(ret);
+    btnDetail.data(g_keyActivityId, activityId);
+    btnDetail.bind("click", onBtnDetailClicked);
 
     ret.data(g_indexBtnDetail, btnDetail);
 	
 	ret.data(g_keyActivityId, activityId);
 	ret.data(g_keyActivityTitle, activityTitle);
-	ret.data(g_keyActivityContent, activityContent);
 
 	return ret;
 }

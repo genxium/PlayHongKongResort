@@ -161,8 +161,7 @@
 	display: table-cell;
 	position: relative;
 	float: right;
-	vertical-align: text-bottom;
-	padding-left: 20pt;
+	vertical-align: bottom;
 	width:	50pt;
 	background-color:	#ccccff;
 	font-size:	12pt;
@@ -172,9 +171,8 @@
 .classBtnDetail{
     display: table-cell;
     position: relative;
-    float: right;
-    vertical-align: text-bottom;
-    padding-left: 20pt;
+    float: left;
+    vertical-align: bottom;
     width:	50pt;
     background-color:	#ccccff;
     font-size:	12pt;
@@ -186,7 +184,7 @@
 	display: table-cell;
 	position: relative;
 	float: right;
-	vertical-align: text-bottom;
+	vertical-align: bottom;
 	font-size:	16pt;
 	color:	#ff0000;
 }
@@ -196,7 +194,7 @@
 	display: table-cell;
 	position: relative;
 	float: right;
-	vertical-align: text-bottom;
+	vertical-align: bottom;
 	font-size:	16pt;
 	color:	#ff0000;
 }

@@ -333,16 +333,20 @@ public class SQLCommander {
 			List<BasicUser> appliedParticipants=SQLCommander.queryUsersByActivityIdAndRelation(activityId, UserActivityRelation.RelationType.applied);
 			List<BasicUser> selectedParticipants=SQLCommander.queryUsersByActivityIdAndRelation(activityId, UserActivityRelation.RelationType.selected);
 			
-			Iterator<BasicUser> itApplied=appliedParticipants.iterator();
-			while(itApplied.hasNext()){
-				BasicUser participant=itApplied.next();
-				participants.add(participant);
+			if(appliedParticipants!=null){
+				Iterator<BasicUser> itApplied=appliedParticipants.iterator();
+				while(itApplied.hasNext()){
+					BasicUser participant=itApplied.next();
+					participants.add(participant);
+				}
 			}
 			
-			Iterator<BasicUser> itSelected=selectedParticipants.iterator();
-			while(itSelected.hasNext()){
-				BasicUser participant=itSelected.next();
-				participants.add(participant);
+			if(selectedParticipants!=null){
+				Iterator<BasicUser> itSelected=selectedParticipants.iterator();
+				while(itSelected.hasNext()){
+					BasicUser participant=itSelected.next();
+					participants.add(participant);
+				}
 			}
 			
 			activityDetail=new ActivityDetail(activity, images, participants);
