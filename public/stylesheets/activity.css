@@ -169,6 +169,18 @@
 	color:	#0000ff;
 }
 
+.classBtnDetail{
+    display: table-cell;
+    position: relative;
+    float: right;
+    vertical-align: text-bottom;
+    padding-left: 20pt;
+    width:	50pt;
+    background-color:	#ccccff;
+    font-size:	12pt;
+    color:	#0000ff;
+}
+
 .classActivityStatusIndicator
 {
 	display: table-cell;

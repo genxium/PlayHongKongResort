@@ -10,6 +10,8 @@ var g_classAppliedIndicator="classAppliedIndicator";
 
 // button keys
 var g_classBtnJoin="classBtnJoin";
+var g_classBtnDetail="classBtnDetail";
 
 // button indexes for cascaded DOM element search
 var g_indexBtnJoin="indexBtnJoin";
+var g_indexBtnDetail="indexBtnDetail";

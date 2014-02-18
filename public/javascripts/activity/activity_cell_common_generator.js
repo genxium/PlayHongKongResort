@@ -177,10 +177,9 @@ function generateDefaultActivityCell(jsonRecord){
 					{
 						class: g_classBtnJoin,
 						text: 'Join'
-					});
+					}).appendTo(ret);
 		btnJoin.data(g_keyActivityId, activityId);
 		btnJoin.bind("click", onBtnJoinClicked);
-		ret.append(btnJoin);
 
 		ret.bind("mouseenter", onMouseEnterDefaultActivityCell);
 		ret.bind("mouseleave", onMouseLeaveDefaultActivityCell);
@@ -192,11 +191,18 @@ function generateDefaultActivityCell(jsonRecord){
 							{
 								class: g_classAppliedIndicator,
 								html: 'Applied'
-							});
-		ret.append(appliedIndicator);
+							}).appendTo(ret);
 
 		ret.data(g_indexStatusIndicator, appliedIndicator);
 	}
+
+	var btnDetail=$('<button>',
+                        {
+                            class: g_classBtnDetail,
+                            text: 'detail'
+                        }).appendTo(ret);
+
+    ret.data(g_indexBtnDetail, btnDetail);
 	
 	ret.data(g_keyActivityId, activityId);
 	ret.data(g_keyActivityTitle, activityTitle);

@@ -132,7 +132,7 @@ public class Application extends Controller {
                 System.out.println("Application.checkLoginStatus:"+e.getMessage());
             }
         }while(false);
-  		  return badRequest("User doesn't exist or not logged in");
+  	    return badRequest("User doesn't exist or not logged in");
     }
     
     public static Result uploadAvatar() {

@@ -8,35 +8,31 @@ function checkLoginStatus(evt){
 			queryDefaultActivities(0);
 			break;
 		}
-		$.post("/checkLoginStatus",
-				{
-					UserToken: token.toString(),
-				},
-				// post response callback function
-				function(data, status, xhr){
-					
-					var result=false;
 
-					if(status=="success"){
-						var userJson=JSON.parse(data);
-	    				g_userName=userJson[g_keyUserEmail];
-	    				g_userAvatarURL=userJson[g_keyImageURL];
-	    				// store token in cookie iff query succeeds
-	    				$.cookie(g_keyLoginStatus.toString(), userJson[g_keyUserToken]);
-		    			result=true;
-		    		}
+		$.ajax({
+            method: "POST",
+            url: "/checkLoginStatus",
+            data: {
+                UserToken: token.toString()
+            },
+            success: function(data, status, xhr){
+                var userJson=JSON.parse(data);
+                g_userName=userJson[g_keyUserEmail];
+                g_userAvatarURL=userJson[g_keyImageURL];
+                // store token in cookie iff query succeeds
+                $.cookie(g_keyLoginStatus.toString(), userJson[g_keyUserToken]);
+                // refresh screen
+                refreshOnLoggedIn();
+                queryDefaultActivitiesByUser(0);
+            },
+            error: function(xhr, status, errorThrown){
+                // refresh screen
+                $.removeCookie(g_keyLoginStatus.toString());
+                refreshOnEnter();
+                queryDefaultActivities(0);
+            }
+        });
 
-		    		if(result==true){
-						// refresh screen
-					   	refreshOnLoggedIn();
-					   	queryDefaultActivitiesByUser(0);
-					} else{
-						// refresh screen
-						refreshOnEnter();
-						queryDefaultActivities(0);
-					}
-			    }
-		);
 	} while(false);
 }
 
