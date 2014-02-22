@@ -70,24 +70,12 @@ function onBtnDetailClicked(evt){
     evt.preventDefault();
     var activityId=$(this).data(g_keyActivityId);
 
-    try{
-        $.ajax({
-            method: "POST",
-            url: "/queryActivityDetail",
-            data:{
-            	ActivityId: activityId.toString()
-            },
-            success: function(data, status, xhr){
-                alert(data);
-            },
-            error: function(xhr, status, errorThrown){
+	try{
+		var activityDetailPagePath="/show?page=activity_detail_page.html";
+		var activityDetailPage=window.open(activityDetailPagePath);
+	} catch (err){
 
-            }
-        });
-    } catch(err){
-
-    }
-
+	}
 }
 
 // Generators

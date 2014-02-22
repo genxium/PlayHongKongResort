@@ -16,8 +16,8 @@ function queryDefaultActivities(pageIndex){
     						targetSection.data(g_pageIndexKey, pageIndex);
 	    					// display contents
 	    					for(var key in jsonResponse){
-	    						var jsonActivity=jsonResponse[key];
-	    						var cell=generateActivityCell(jsonActivity, false, 0);
+	    						var activityJson=jsonResponse[key];
+	    						var cell=generateActivityCell(activityJson, false, 0);
 								targetSection.append(cell);
 	    					}
 						}
@@ -50,8 +50,8 @@ function queryDefaultActivitiesByUser(pageIndex){
     						targetSection.data(g_pageIndexKey, pageIndex);
 	    					// display contents
 	    					for(var key in jsonResponse){
-	    						var jsonRecord=jsonResponse[key];
-	    						var cell=generateActivityCell(jsonRecord, true, 0);
+	    						var activityJson=jsonResponse[key];
+	    						var cell=generateActivityCell(activityJson, true, 0);
 								targetSection.append(cell);
 	    					}
     					}
@@ -91,19 +91,8 @@ function onBtnLogoutClicked(evt){
 
 function onBtnProfileClicked(evt){
 	try{
-		var userProfileEditorPath="/user_profile_editor.html";
+		var userProfileEditorPath="/show?page=user_profile_editor.html";
 		var userProfileEditorPage=window.open(userProfileEditorPath);
-		/*
-		var profileEditorPage=$('<iframe>',
-								{
-									class: g_classIFrameUserProfileEditor,
-									src: userProfileEditorPath
-								});
-
-		var sectionUserProfileEditor=$("#"+g_idSectionUserProfileEditor);
-		sectionUserProfileEditor.empty();
-		sectionUserProfileEditor.append(profileEditorPage);
-		*/
 	} catch (err){
 
 	}

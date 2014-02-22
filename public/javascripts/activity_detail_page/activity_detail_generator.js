@@ -30,13 +30,22 @@ function onParticipantsSelectionFormSubmission(formEvt){
 }
 
 // Generators
-function generateActivityDetailByJson(activityJson){
+function generateActivityDetailViewByJson(activityJson){
 	var activityId=activityJson[g_keyActivityId];
 	var activityTitle=activityJson[g_keyActivityTitle];
 	var activityContent=activityJson[g_keyActivityContent];
 	var activityImages=activityJson[g_keyActivityImages];
-	
-	var ret=generateActivityEditor(activityId, activityTitle, activityContent);
+
+    var ret=$.('<div>',{
+            
+        });
+    
+    var title=$.('<p>',{
+            html: activityTitle.toString()
+        }).appendTo(ret);
+        
+    var content=$.('<p>',{
+            html: activityContent.toString()
+        }).appendTo(ret); 	
 	return ret;
 }
-

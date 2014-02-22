@@ -32,15 +32,15 @@ public class Application extends Controller {
     }
     
     public static Result show(String page){
-    		try{
-    			String fullPath=Play.application().path()+"/app/views/"+page;
-    			File file=new File(fullPath);
-    			String content = new Scanner(file).useDelimiter("\\A").next();
-    			response().setContentType("text/html");
-    			return ok(content);
-    		} catch(IOException e){
-    			return badRequest();
-    		}
+		try{
+			String fullPath=Play.application().path()+"/app/views/"+page;
+			File file=new File(fullPath);
+			String content = new Scanner(file).useDelimiter("\\A").next();
+			response().setContentType("text/html");
+			return ok(content);
+		} catch(IOException e){
+			return badRequest();
+		}
     }
     
     public static Result login(){
