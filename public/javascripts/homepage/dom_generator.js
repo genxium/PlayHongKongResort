@@ -17,7 +17,7 @@ function queryDefaultActivities(pageIndex){
 	    					// display contents
 	    					for(var key in jsonResponse){
 	    						var jsonActivity=jsonResponse[key];
-	    						var cell=generateDefaultActivityCell(jsonActivity);
+	    						var cell=generateActivityCell(jsonActivity, false, 0);
 								targetSection.append(cell);
 	    					}
 						}
@@ -51,7 +51,7 @@ function queryDefaultActivitiesByUser(pageIndex){
 	    					// display contents
 	    					for(var key in jsonResponse){
 	    						var jsonRecord=jsonResponse[key];
-	    						var cell=generateDefaultActivityCell(jsonRecord);
+	    						var cell=generateActivityCell(jsonRecord, true, 0);
 								targetSection.append(cell);
 	    					}
     					}

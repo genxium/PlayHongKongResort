@@ -28,7 +28,7 @@ function queryActivitiesHostedByUser(pageIndex){
 	    					// display contents
 	    					for(var key in jsonResponse){
 	    						var jsonActivity=jsonResponse[key];
-	    						var cell=generateActivityCell(jsonActivity);
+	    						var cell=generateActivityCell(jsonActivity, true, 1);
 	    						var text=cell.html();
 								targetSection.append(cell);
 	    					}

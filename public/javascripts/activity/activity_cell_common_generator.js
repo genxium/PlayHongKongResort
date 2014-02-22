@@ -91,15 +91,28 @@ function onBtnDetailClicked(evt){
 }
 
 // Generators
-function generateActivityCell(jsonActivity){
+
+/*
+
+function generateActivityCell(activityJson, isLoggedIn, mode) returns a complete DOM(cell) of an activity
+
+activityJson(string): the json string that contains activity information;
+isLoggedIn(boolean): [true,false] indicating user status;
+mode: [0,1] 0 indicates that the cell is generated for home page while 1 indicates that the cell is generated for profile page.
+
+*/
+function generateActivityCell(activityJson, isLoggedIn, mode){
 
 	var arrayStatusName=['created','pending','rejected','accepted','expired'];
 
-	var activityId=jsonActivity[g_keyActivityId];
-	var activityTitle=jsonActivity[g_keyActivityTitle];
-	var activityContent=jsonActivity[g_keyActivityContent];
-	var activityStatus=jsonActivity[g_keyActivityStatus];
-	var coverImageURL=jsonActivity[g_keyImageURL];
+	var activityId=activityJson[g_keyActivityId];
+	var activityTitle=activityJson[g_keyActivityTitle];
+    var activityContent=activityJson
+
+	var coverImageURL=activityJson[g_keyImageURL];
+	
+    var userActivityRelationId=activityJson[g_keyUserActivityRelationId];
+	var activityStatus=activityJson[g_keyActivityStatus];
 
 	var ret=$('<div>',
 				{
@@ -120,101 +133,73 @@ function generateActivityCell(jsonActivity){
 					html: activityTitle
 				}).appendTo(cellActivityTitle);
 
-	var cellActivityContent=$('<div>',
-				{
-					class: g_classCellActivityContent,
-					html: activityContent
-				}).appendTo(ret);
+    switch (mode){
+        case 0:{
+            if(userActivityRelationId==null){
+                var btnJoin=$('<button>',
+                            {
+                                class: g_classBtnJoin,
+                                text: 'Join'
+                            }).appendTo(ret);
+                btnJoin.data(g_keyActivityId, activityId);
+                btnJoin.bind("click", onBtnJoinClicked);
 
-	var statusIndicator=$('<div>',{
-					class: g_classActivityStatusIndicator,
-					html: arrayStatusName[parseInt(activityStatus)] 
-				}).appendTo(ret);
-	
-	if(parseInt(activityStatus)==0){ 
-		// this condition is temporarily hard-coded
-		var btnEdit=$('<button>', {
-			class: g_classBtnEdit,
-			text: 'Edit'
-		}).appendTo(ret);
-		btnEdit.bind("click", onBtnEditClicked);
+                ret.bind("mouseenter", onMouseEnterDefaultActivityCell);
+                ret.bind("mouseleave", onMouseLeaveDefaultActivityCell);
+                btnJoin.hide();
 
-		btnEdit.data(g_keyActivityId, activityId);
-		btnEdit.data(g_keyActivityTitle, activityTitle);
-		btnEdit.data(g_keyActivityContent, activityContent);
+                ret.data(g_indexBtnJoin, btnJoin);
+            } else{
+                var appliedIndicator=$('<div>',
+                                    {
+                                        class: g_classAppliedIndicator,
+                                        html: 'Applied'
+                                    }).appendTo(ret);
 
-		ret.data(g_indexBtnEdit, btnEdit);
-	}
-	
-	ret.data(g_keyActivityId, activityId);
-	ret.data(g_keyActivityTitle, activityTitle);
-	ret.data(g_keyActivityContent, activityContent);
-	
-	return ret;
-}
+                ret.data(g_indexStatusIndicator, appliedIndicator);
+            }
+            break;
+        }
+        case 1:{
+            if(isLoggedIn==true && activityStatus!=null){
 
-function generateDefaultActivityCell(jsonRecord){
-
-	var activityId=jsonRecord[g_keyActivityId];
-	var activityTitle=jsonRecord[g_keyActivityTitle];
-	var userActivityRelationId=jsonRecord[g_keyUserActivityRelationId];
-	var coverImageURL=jsonRecord[g_keyImageURL];
-
-	var ret=$('<div>',
-				{
-					class: g_classCellActivityContainer
-				});
-
-	if(coverImageURL!=null){
-		var coverImage=$('<img>',
-							{
-								class: g_classActivityCoverImage,
-								src: coverImageURL
-							}).appendTo(ret);
-	}
-
-	var cellActivityTitle=$('<div>',
-				{	
-					class: g_classCellActivityTitle,
-					html: activityTitle
-				}).appendTo(ret);
-
-	if(userActivityRelationId==null){
-		var btnJoin=$('<button>',
-					{
-						class: g_classBtnJoin,
-						text: 'Join'
-					}).appendTo(ret);
-		btnJoin.data(g_keyActivityId, activityId);
-		btnJoin.bind("click", onBtnJoinClicked);
-
-		ret.bind("mouseenter", onMouseEnterDefaultActivityCell);
-		ret.bind("mouseleave", onMouseLeaveDefaultActivityCell);
-		btnJoin.hide();
-
-		ret.data(g_indexBtnJoin, btnJoin);
-	} else{
-		var appliedIndicator=$('<div>',
-							{
-								class: g_classAppliedIndicator,
-								html: 'Applied'
-							}).appendTo(ret);
-
-		ret.data(g_indexStatusIndicator, appliedIndicator);
-	}
-
-	var btnDetail=$('<button>',
-                        {
-                            class: g_classBtnDetail,
-                            text: 'Detail'
+                var statusIndicator=$('<div>',{
+                            class: g_classActivityStatusIndicator,
+                            html: arrayStatusName[parseInt(activityStatus)] 
                         }).appendTo(ret);
+                
+                if(parseInt(activityStatus)==0){ 
+                    // this condition is temporarily hard-coded
+                    var btnEdit=$('<button>', {
+                        class: g_classBtnEdit,
+                        text: 'Edit'
+                    }).appendTo(ret);
+                    btnEdit.bind("click", onBtnEditClicked);
+
+                    btnEdit.data(g_keyActivityId, activityId);
+                    btnEdit.data(g_keyActivityTitle, activityTitle);
+                    if(activityContent!=null){
+                        btnEdit.data(g_keyActivityContent, activityContent);
+                    }
+                    ret.data(g_indexBtnEdit, btnEdit);
+                }
+            }
+            break;
+        }
+    }
+	
+	var btnDetail=$('<button>',
+                    {
+                        class: g_classBtnDetail,
+                        text: 'Detail'
+                    }).appendTo(ret);
     btnDetail.data(g_keyActivityId, activityId);
     btnDetail.bind("click", onBtnDetailClicked);
 
     ret.data(g_indexBtnDetail, btnDetail);
-	
+
 	ret.data(g_keyActivityId, activityId);
 	ret.data(g_keyActivityTitle, activityTitle);
-
+	
 	return ret;
 }
