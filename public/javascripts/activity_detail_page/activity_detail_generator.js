@@ -36,15 +36,15 @@ function generateActivityDetailViewByJson(activityJson){
 	var activityContent=activityJson[g_keyActivityContent];
 	var activityImages=activityJson[g_keyActivityImages];
 
-    var ret=$.('<div>',{
+    var ret=$('<div>',{
             
         });
     
-    var title=$.('<p>',{
+    var title=$('<p>',{
             html: activityTitle.toString()
         }).appendTo(ret);
         
-    var content=$.('<p>',{
+    var content=$('<p>',{
             html: activityContent.toString()
         }).appendTo(ret); 	
 	return ret;

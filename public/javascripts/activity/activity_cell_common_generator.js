@@ -71,9 +71,10 @@ function onBtnDetailClicked(evt){
     var activityId=$(this).data(g_keyActivityId);
 
 	try{
-		var activityDetailPagePath="/show?page=activity_detail_page.html";
-		var activityDetailPage=window.open(activityDetailPagePath);
-	} catch (err){
+		var activityDetailPagePath="/showActivityDetailPage?activityId="+activityId.toString();
+		window.open(activityDetailPagePath);
+	
+    } catch (err){
 
 	}
 }
@@ -119,7 +120,7 @@ function generateActivityCell(activityJson, isLoggedIn, mode){
 				{	
 					class: g_classCellActivityTitle,
 					html: activityTitle
-				}).appendTo(cellActivityTitle);
+				}).appendTo(ret);
 
     switch (mode){
         case 0:{

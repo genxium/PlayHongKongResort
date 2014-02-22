@@ -5,6 +5,7 @@
 # Global
 GET	 /	controllers.Application.index()
 GET	 /show	controllers.Application.show(page: String)
+GET /showActivityDetailPage controllers.ActivityController.showActivityDetailPage(activityId: String)
 
 # Home page
 
