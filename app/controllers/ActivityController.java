@@ -4,7 +4,7 @@ import play.mvc.*;
 import model.Activity;
 import model.ActivityDetail;
 import model.Image;
-
+import model.BasicUser;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
@@ -44,10 +44,12 @@ public class ActivityController extends Controller {
     	int activityIdInt=Integer.valueOf(activityId);
     	ActivityDetail activityDetail=SQLCommander.queryActivityDetailByActivityId(activityIdInt);
     	List<Image> activityImages=activityDetail.getImages();
-    	List<String> activityImageUrls=new ArrayList();
+    	List<String> activityImageUrls=new ArrayList<String>();
+        List<BasicUser> appliedParticipants=activityDetail.getAppliedParticipants();
+        List<BasicUser> selectedParticipants=activityDetail.getSelectedParticipants();
     	for(int i=0;i<activityImages.size();i++){
     		activityImageUrls.add(activityImages.get(i).getImageURL());
     	}
-    	return ok(views.html.activity_detail_page.render(activityDetail.getTitle(),  activityDetail.getContent(), activityImageUrls));
+    	return ok(views.html.activity_detail_page.render(activityDetail.getTitle(),  activityDetail.getContent(), activityImageUrls, appliedParticipants, selectedParticipants));
     }
 }

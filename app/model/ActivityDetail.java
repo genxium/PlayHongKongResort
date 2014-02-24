@@ -14,8 +14,8 @@ import controllers.SQLCommander;
 public class ActivityDetail extends Activity {
 
 	public static String imagesKey="ActivityImages";
-	public static String participantsKey="ActivityParticipants";
-	
+	public static String appliedParticipantsKey="ActivityAppliedParticipants";
+	public static String selectedParticipantsKey="ActivitySelectedParticipants";
 	protected List<Image> m_images=null;
 	public List<Image> getImages() {return m_images;}
 	public void setImages(List<Image> images){
@@ -31,36 +31,53 @@ public class ActivityDetail extends Activity {
 		}
 	}
 	
-	protected List<BasicUser> m_participants=null;
-	public List<BasicUser> getParticipants() {return m_participants;}
-	public void setParticipants(List<BasicUser> participants){
-		if(m_participants!=null){
-			m_participants.clear();
+	protected List<BasicUser> m_appliedParticipants=null;
+	public List<BasicUser> getAppliedParticipants() {return m_appliedParticipants;}
+	public void setAppliedParticipants(List<BasicUser> appliedParticipants){
+		if(m_appliedParticipants!=null){
+			m_appliedParticipants.clear();
 		} else{
-			m_participants=new ArrayList<BasicUser>();
+			m_appliedParticipants=new ArrayList<BasicUser>();
 		}
-		Iterator<BasicUser> it=participants.iterator();
+		Iterator<BasicUser> it=appliedParticipants.iterator();
 		while(it.hasNext()){
 			BasicUser participant=it.next();
-			m_participants.add(participant);
+			m_appliedParticipants.add(participant);
 		}
 	}
 	
-	public ActivityDetail(int id, String title, String content,
-			Timestamp createdTime, Timestamp beginTime, Timestamp deadline,
-			int capacity, StatusType status, List<Image> images, List<BasicUser> participants) {
-		super(id, title, content, createdTime, beginTime, deadline, capacity, status);
-		m_images=images;
-		m_participants=participants;
-		// TODO Auto-generated constructor stub
+	protected List<BasicUser> m_selectedParticipants=null;
+	public List<BasicUser> getSelectedParticipants() {return m_selectedParticipants;}
+	public void setSelectedParticipants(List<BasicUser> selectedParticipants){
+		if(m_selectedParticipants!=null){
+			m_selectedParticipants.clear();
+		} else{
+			m_selectedParticipants=new ArrayList<BasicUser>();
+		}
+		Iterator<BasicUser> it=selectedParticipants.iterator();
+		while(it.hasNext()){
+			BasicUser participant=it.next();
+			m_selectedParticipants.add(participant);
+		}
 	}
 
-	public ActivityDetail(Activity activity, List<Image> images, List<BasicUser> participants){
+	public ActivityDetail(int id, String title, String content,
+			Timestamp createdTime, Timestamp beginTime, Timestamp deadline,
+			int capacity, StatusType status, List<Image> images, 
+            List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants) {
+		super(id, title, content, createdTime, beginTime, deadline, capacity, status);
+		m_images=images;
+		m_appliedParticipants=appliedParticipants;
+        m_selectedParticipants=selectedParticipants;
+	}
+
+	public ActivityDetail(Activity activity, List<Image> images, List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants){
 		super(activity.getId(), activity.getTitle(), activity.getContent(), 
 			activity.getCreatedTime(), activity.getBeginTime(), activity.getDeadline(), 
 			activity.getCapacity(), activity.getStatus());
 		m_images=images;
-		m_participants=participants;
+		m_appliedParticipants=appliedParticipants;
+        m_selectedParticipants=selectedParticipants;
 	}
 	
 	public ObjectNode toObjectNode(){
@@ -86,17 +103,30 @@ public class ActivityDetail extends Activity {
 		       ret.put(ActivityDetail.imagesKey, imagesNode);
 			}
 			
-			if(m_participants!=null && m_participants.size()>0){
-				ObjectNode participantsNode=Json.newObject();
-				Iterator<BasicUser> itParticipant=m_participants.iterator();
+			if(m_appliedParticipants!=null && m_appliedParticipants.size()>0){
+				ObjectNode appliedParticipantsNode=Json.newObject();
+				Iterator<BasicUser> itParticipant=m_appliedParticipants.iterator();
 				while(itParticipant.hasNext()){
 					ObjectNode singleParticipantNode=Json.newObject();
 					BasicUser participant=itParticipant.next();
 					singleParticipantNode.put(BasicUser.emailKey, participant.getEmail());
 					singleParticipantNode.put(BasicUser.nameKey, participant.getName());
-					participantsNode.put(BasicUser.idKey, singleParticipantNode);
+					appliedParticipantsNode.put(BasicUser.idKey, singleParticipantNode);
 				}
-				ret.put(ActivityDetail.participantsKey, participantsNode);
+				ret.put(ActivityDetail.appliedParticipantsKey, appliedParticipantsNode);
+			}
+			
+            if(m_selectedParticipants!=null && m_selectedParticipants.size()>0){
+				ObjectNode selectedParticipantsNode=Json.newObject();
+				Iterator<BasicUser> itParticipant=m_selectedParticipants.iterator();
+				while(itParticipant.hasNext()){
+					ObjectNode singleParticipantNode=Json.newObject();
+					BasicUser participant=itParticipant.next();
+					singleParticipantNode.put(BasicUser.emailKey, participant.getEmail());
+					singleParticipantNode.put(BasicUser.nameKey, participant.getName());
+					selectedParticipantsNode.put(BasicUser.idKey, singleParticipantNode);
+				}
+				ret.put(ActivityDetail.selectedParticipantsKey, selectedParticipantsNode);
 			}
         }while(false);
 		return ret;

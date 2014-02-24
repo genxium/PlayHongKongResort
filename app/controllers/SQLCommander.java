@@ -4,6 +4,8 @@ import model.UserActivityRelation.RelationType;
 
 import org.json.simple.JSONObject;
 
+import utilities.DataUtils;
+
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -329,27 +331,10 @@ public class SQLCommander {
 		do{
 			Activity activity=queryActivityByActivityId(activityId);
 			List<Image> images=queryImagesByActivityId(activityId);
-			List<BasicUser> participants=new ArrayList<BasicUser>();
 			List<BasicUser> appliedParticipants=SQLCommander.queryUsersByActivityIdAndRelation(activityId, UserActivityRelation.RelationType.applied);
 			List<BasicUser> selectedParticipants=SQLCommander.queryUsersByActivityIdAndRelation(activityId, UserActivityRelation.RelationType.selected);
 			
-			if(appliedParticipants!=null){
-				Iterator<BasicUser> itApplied=appliedParticipants.iterator();
-				while(itApplied.hasNext()){
-					BasicUser participant=itApplied.next();
-					participants.add(participant);
-				}
-			}
-			
-			if(selectedParticipants!=null){
-				Iterator<BasicUser> itSelected=selectedParticipants.iterator();
-				while(itSelected.hasNext()){
-					BasicUser participant=itSelected.next();
-					participants.add(participant);
-				}
-			}
-			
-			activityDetail=new ActivityDetail(activity, images, participants);
+			activityDetail=new ActivityDetail(activity, images, appliedParticipants, selectedParticipants);
 			
 		}while(false);
 		return activityDetail;
@@ -920,7 +905,7 @@ public class SQLCommander {
 	}
 
 	public static List<BasicUser> queryUsersByActivityIdAndRelation(int activityId, RelationType relation){
-		List<BasicUser> users=null;
+		List<BasicUser> users=new ArrayList<BasicUser>();
 		do{
 			try{
 				SQLHelper sqlHelper=new SQLHelper();
@@ -929,12 +914,20 @@ public class SQLCommander {
 				relationColumnNames.add(User.idKey);
 				List<String> relationWhereClauses=new LinkedList<String>();
 				relationWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
-				relationWhereClauses.add(UserActivityRelationTable.idKey+"="+SQLHelper.convertToQueryValue(relation.ordinal()));
+				relationWhereClauses.add(UserActivityRelationTable.relationIdKey+"="+SQLHelper.convertToQueryValue(relation.ordinal()));
 				List<String> relationOrderClauses=new LinkedList<String>();
-				relationWhereClauses.add(UserActivityRelationTable.generatedTimeKey);
+				relationOrderClauses.add(UserActivityRelationTable.generatedTimeKey);
 				List<JSONObject> relationRecords=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(relationTableName, relationColumnNames, relationWhereClauses, SQLHelper.logicAND, relationOrderClauses, null, null);
-				if(relationRecords==null || relationRecords.size()>0) break;
-
+				if(relationRecords==null || relationRecords.size()<=0) break;
+				
+				Iterator<JSONObject> it=relationRecords.iterator();
+				while(it.hasNext()){
+					JSONObject relationRecord=it.next();
+					Integer userId=(Integer)relationRecord.get(BasicUser.idKey);
+					BasicUser user=queryUserByUserId(userId);
+					users.add(user);
+				}
+				
 			} catch(Exception e){
 				System.out.println("SQLCommander.queryUsersByActivityIdAndRelation: "+e.getMessage());
 			}

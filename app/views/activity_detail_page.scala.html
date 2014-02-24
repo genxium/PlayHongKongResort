@@ -1,4 +1,4 @@
-@(activityTitle: String, activityContent: String, activityImageUrls: List[String])
+@(activityTitle: String, activityContent: String, activityImageUrls: List[String], appliedParticipants: List[model.BasicUser], selectedParticipants: List[model.BasicUser])
 <!-- scala style parameters list, NOTE THAT one MUST put this comment BELOW the parameters' declaration! -->
 
 <!DOCTYPE html>
@@ -33,6 +33,21 @@
     	@for(url <- activityImageUrls){
     		<img src=@url/>
     	}
-    	
+    
+        <p>Selected:</p>
+         
+        @if(selectedParticipants!=null){
+            @for(selectedParticipant <- selectedParticipants){
+                <p style="background-color: #33CCFF">@selectedParticipant.getEmail()</p>      
+            }
+        }
+
+        <p>Applied:</p>
+
+        @if(appliedParticipants!=null){
+            @for(appliedParticipant <- appliedParticipants){
+                <p style="background-color: pink">@appliedParticipant.getEmail()</p>      
+            }
+        }
     </body>
 </html>
