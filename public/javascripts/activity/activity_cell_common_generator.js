@@ -71,11 +71,29 @@ function onBtnDetailClicked(evt){
     var activityId=$(this).data(g_keyActivityId);
 
 	try{
-		var activityDetailPagePath="/showActivityDetailPage?activityId="+activityId.toString();
-		window.open(activityDetailPagePath);
-	
-    } catch (err){
+		$.get("/queryActivityDetail", 
+			{
+				ActivityId: activityId.toString(),
+			},
+			function(data, status, xhr){
+				if(status=="success"){
+                    if(data!=null){
+                        try{
+    				        var activityDetailJson=JSON.parse(data);
+                        } catch(err){
 
+                        }
+                    }
+                    var detailPage=window.open(); 
+                    detailPage.document.write("<html>Hello!</html>");
+					
+				} else{
+
+				}
+			}
+		);
+	} catch(err){
+        alert(err.toString());
 	}
 }
 

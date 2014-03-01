@@ -184,8 +184,8 @@ function onBtnCreateClicked(evt){
 			},
 			function(data, status, xhr){
     				if(status=="success"){
-    					var jsonActivity=JSON.parse(data);
-						var editor=generateActivityEditorByJson(jsonActivity);
+    					var activityJson=JSON.parse(data);
+						var editor=generateActivityEditorByJson(activityJson);
 						sectionActivityEditor.append(editor);
     				} else{
     					
