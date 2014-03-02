@@ -18,17 +18,11 @@ public class ActivityController extends Controller {
 	public static String s_pageIndexKey="pageIndex";
     public static Integer s_usersPerPage=10; // hard coded for now
  
-    public static Result queryActivityDetail(){
+    public static Result queryActivityDetail(Integer activityId){
 		response().setContentType("text/plain");
 		do{
 		    ObjectNode result = null;
-		    
 		    try{
-		    	Map<String, String[]> formData=request().body().asFormUrlEncoded();
-		  	  	String[] activityIds=formData.get(Activity.idKey);
-		  	  	  
-		     	Integer activityId=Integer.parseInt(activityIds[0]);
-				
 				ActivityDetail activityDetail=SQLCommander.queryActivityDetailByActivityId(activityId);
 		    	if(activityDetail==null) break;
 		    	result=activityDetail.toObjectNode();   			
@@ -40,9 +34,8 @@ public class ActivityController extends Controller {
         return ok();
     }
     
-    public static Result showActivityDetailPage(String activityId){
-    	int activityIdInt=Integer.valueOf(activityId);
-    	ActivityDetail activityDetail=SQLCommander.queryActivityDetailByActivityId(activityIdInt);
+    public static Result showActivityDetailPage(Integer activityId){
+    	ActivityDetail activityDetail=SQLCommander.queryActivityDetailByActivityId(activityId);
     	List<Image> activityImages=activityDetail.getImages();
     	List<String> activityImageUrls=new ArrayList<String>();
         List<BasicUser> appliedParticipants=activityDetail.getAppliedParticipants();

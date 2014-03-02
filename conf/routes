@@ -5,7 +5,6 @@
 # Global
 GET	 /	controllers.Application.index()
 GET	 /show	controllers.Application.show(page: String)
-GET /showActivityDetailPage controllers.ActivityController.showActivityDetailPage(activityId: String)
 
 # Home page
 
@@ -33,7 +32,8 @@ POST /acceptActivity controllers.AdminController.acceptActivity()
 POST /deleteActivityByAdmin controllers.AdminController.deleteActivityByAdmin()
 
 # Activity Detail Page
-GET /queryActivityDetail controllers.ActivityController.queryActivityDetail()
+GET /showActivityDetailPage controllers.ActivityController.showActivityDetailPage(activityId: Integer) 
+GET /queryActivityDetail controllers.ActivityController.queryActivityDetail(activityId: Integer)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

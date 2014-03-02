@@ -71,28 +71,9 @@ function onBtnDetailClicked(evt){
     var activityId=$(this).data(g_keyActivityId);
 
 	try{
-		$.get("/queryActivityDetail", 
-			{
-				ActivityId: activityId.toString(),
-			},
-			function(data, status, xhr){
-				if(status=="success"){
-                    if(data!=null){
-                        try{
-    				        var activityDetailJson=JSON.parse(data);
-                        } catch(err){
-
-                        }
-                    }
-                    var detailPage=window.open(); 
-                    detailPage.document.write("<html>Hello!</html>");
-					
-				} else{
-
-				}
-			}
-		);
-	} catch(err){
+        var detailPagePath="/showActivityDetailPage?activityId="+activityId.toString();
+        window.open(detailPagePath);
+    } catch(err){
         alert(err.toString());
 	}
 }
