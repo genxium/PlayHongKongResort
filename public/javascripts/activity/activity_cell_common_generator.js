@@ -69,12 +69,14 @@ function onBtnJoinClicked(evt){
 function onBtnDetailClicked(evt){
     evt.preventDefault();
     var activityId=$(this).data(g_keyActivityId);
-
+    
 	try{
         var detailPagePath="/showActivityDetailPage?activityId="+activityId.toString();
         var detailPage=window.open(detailPagePath);
-        detailPage.g_activityId=activityId;
-
+        callbackOnPageLoaded(detailPage, function(){
+                                                    loadJavaScript(detailPage, "queryActivityDetail("+activityId.toString()+");");
+                                         }
+        );
     } catch(err){
         alert(err.toString());
 	}

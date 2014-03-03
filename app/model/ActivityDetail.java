@@ -96,6 +96,7 @@ public class ActivityDetail extends Activity {
 		       while(itImage.hasNext()){
 		    	  ObjectNode singleImageNode=Json.newObject();
 				  Image image=itImage.next();
+                  Integer imageId=image.getImageId();
 				  String imageURL=image.getImageURL();
 				  singleImageNode.put(Image.urlKey, imageURL);
 				  imagesNode.put(Image.idKey, singleImageNode);

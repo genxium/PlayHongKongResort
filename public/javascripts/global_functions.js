@@ -1,3 +1,43 @@
+function callbackOnPageLoaded(windowHandle, callbackFunc){
+    do{ 
+        if(callbackFunc==null) break;
+        var signaled=false;
+        windowHandle.onload=windowHandle.onreadystatechange=function(){
+            if(!signaled && (this.readyState==null || this.readyState=='complete')){
+                signaled=true;
+                callbackFunc();
+            }
+        };
+    }while(false);
+}
+
+function loadJavaScript(windowHandle, script, callbackFunc){
+    do{
+        var doc=windowHandle.document;
+        if(doc==null) break;
+        var scriptNode=doc.createElement('script');
+        var textNode=doc.createTextNode(script);
+        scriptNode.appendChild(textNode);
+        
+        do{ 
+            if(callbackFunc==null) break;
+            var signaled=false;
+            scriptNode.onload=scriptNode.onreadystatechange=function(){
+                if(!signaled && (this.readyState==null || this.readyState=='complete')){
+                    signaled=true;
+                    callbackFunc();
+                }
+            };
+        }while(false);
+
+        var heads=doc.getElementsByTagName("head");
+        if(heads==null) break;
+        var head=heads[0];
+        if(head==null) break;
+        head.appendChild(scriptNode);
+    }while(false);
+}
+
 function loadScriptFile(windowHandle, path, filetype, callbackFunc){
     do{
         var fileRef=null;
@@ -12,37 +52,47 @@ function loadScriptFile(windowHandle, path, filetype, callbackFunc){
             fileRef.setAttribute("href", path)
         } else;
         if (typeof fileRef=="undefined") break;
+        
+        do{
+            if(callbackFunc==null) break;
+            var signaled=false;
+            fileRef.onload=fileRef.onreadystatechange=function(){
+                if(!signaled && (this.readyState==null || this.readyState=='complete')){
+                    signaled=true;
+                    callbackFunc();
+                }
+            };
+        }while(false);
+
         var heads=windowHandle.document.getElementsByTagName("head");
         if(heads==null) break;
         var head=heads[0];
         if(head==null) break;
         head.appendChild(fileRef);
-        
-        if(callbackFunc==null) break;
-        fileRef.onload=callbackFunc;
+
     }while(false);
 }
 
 function loadJquery(windowHandle, callbackFunc){
     do{
-        loadScriptFile(windowHandle, "javascripts/jquery-2.0.3.min.js", "js", callbackFunc);
+        loadScriptFile(windowHandle, "assets/javascripts/jquery-2.0.3.min.js", "js", callbackFunc);
     }while(false);
 }
 
 function loadJqueryPlugins(windowHandle){
     do{
         // jquery-cookie
-        loadScriptFile(windowHandle, "javascripts/jquery-cookie.js", "js", null);
+        loadScriptFile(windowHandle, "assets/javascripts/jquery-cookie.js", "js", null);
         // jquery-ui
-        loadScriptFile(windowHandle, "javascripts/jquery-ui.js", "js", null);
+        loadScriptFile(windowHandle, "assets/javascripts/jquery-ui.js", "js", null);
     }while(false);
 }
 
 function loadCommonScripts(windowHandle){
     do{
         // global_variables
-        loadScriptFile(windowHandle, "javascripts/global_variables.js", "js", null);
+        loadScriptFile(windowHandle, "assets/javascripts/global_variables.js", "js", null);
         // global_functions
-        loadScriptFile(windowHandle, "javascripts/global_functions.js", "js", null);
+        loadScriptFile(windowHandle, "assets/javascripts/global_functions.js", "js", null);
     }while(false);
 }
