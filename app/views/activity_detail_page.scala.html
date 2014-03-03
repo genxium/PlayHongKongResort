@@ -5,7 +5,7 @@
 
 <html>
     <head>
-        <title>活動詳情</title>
+        <title>Detail</title>
         
         <!-- style sheets -->
 		<link rel="stylesheet" media="screen" href="stylesheets/activity.css" type="text/css">
@@ -28,6 +28,9 @@
         
     </head>
     <body>
+        <script>
+            alert(g_activityId);
+        </script>
     	<p>@activityTitle</p>
         <div>@activityContent</div>
     	@for(url <- activityImageUrls){

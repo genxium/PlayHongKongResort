@@ -72,7 +72,9 @@ function onBtnDetailClicked(evt){
 
 	try{
         var detailPagePath="/showActivityDetailPage?activityId="+activityId.toString();
-        window.open(detailPagePath);
+        var detailPage=window.open(detailPagePath);
+        detailPage.g_activityId=activityId;
+
     } catch(err){
         alert(err.toString());
 	}
