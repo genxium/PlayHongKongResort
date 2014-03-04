@@ -32,8 +32,8 @@ POST /acceptActivity controllers.AdminController.acceptActivity()
 POST /deleteActivityByAdmin controllers.AdminController.deleteActivityByAdmin()
 
 # Activity Detail Page
-GET /showActivityDetailPage controllers.ActivityController.showActivityDetailPage(activityId: Integer) 
 GET /queryActivityDetail controllers.ActivityController.queryActivityDetail(activityId: Integer)
+POST /updateActivityParticipants controllers.ActivityController.updateActivityParticipants()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

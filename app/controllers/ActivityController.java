@@ -5,12 +5,15 @@ import model.Activity;
 import model.ActivityDetail;
 import model.Image;
 import model.BasicUser;
+import model.User;
+
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import utilities.DataUtils;
 import views.html.*;
 
 public class ActivityController extends Controller {
@@ -33,16 +36,30 @@ public class ActivityController extends Controller {
 		}while(false);
         return ok();
     }
-    
-    public static Result showActivityDetailPage(Integer activityId){
-    	ActivityDetail activityDetail=SQLCommander.queryActivityDetailByActivityId(activityId);
-    	List<Image> activityImages=activityDetail.getImages();
-    	List<String> activityImageUrls=new ArrayList<String>();
-        List<BasicUser> appliedParticipants=activityDetail.getAppliedParticipants();
-        List<BasicUser> selectedParticipants=activityDetail.getSelectedParticipants();
-    	for(int i=0;i<activityImages.size();i++){
-    		activityImageUrls.add(activityImages.get(i).getImageURL());
-    	}
-    	return ok(views.html.activity_detail_page.render(activityDetail.getTitle(),  activityDetail.getContent(), activityImageUrls, appliedParticipants, selectedParticipants));
+
+    public static Result updateActivityParticipants(){
+    	// define response attributes
+  	  	response().setContentType("text/plain");
+        
+        do{
+      	  	try{
+                Map<String, String[]> formData=request().body().asFormUrlEncoded();
+                String[] tokens=formData.get(User.tokenKey);
+                String token=tokens[0];
+                String[] activityIds=formData.get(Activity.idKey);
+                Integer activityId=Integer.valueOf(activityIds[0]);
+
+                Integer userId=DataUtils.getUserIdByToken(token);
+                if(userId==DataUtils.invalidId) break;
+
+                if(SQLCommander.validateOwnershipOfActivity(userId, activityId)==false) break;
+                
+      	  	} catch(Exception e){
+      	  	    System.out.println("ActivityController.updateActivityParticipants: "+e.getMessage());
+      	  	}
+
+        }while(false);
+
+  	  	return badRequest();
     }
 }

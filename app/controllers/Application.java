@@ -178,29 +178,28 @@ public class Application extends Controller {
     	// define response attributes
   	  	response().setContentType("text/plain");
   	  	
-  	  	Map<String, String[]> formData=request().body().asFormUrlEncoded();
-     		String[] tokens=formData.get(User.tokenKey);
-  	  	String token=tokens[0];
-
         do{
-      	  	Integer userId=DataUtils.getUserIdByToken(token);
-            if(userId==DataUtils.invalidId) break;
-
-            // create blank draft
-      	  	Activity activity=Activity.create();
-      	  	
       	  	try{
+                Map<String, String[]> formData=request().body().asFormUrlEncoded();
+                String[] tokens=formData.get(User.tokenKey);
+                String token=tokens[0];
 
-      	  			int lastActivityId=SQLCommander.createActivity(activity, userId);
-      	  			if(lastActivityId!=SQLCommander.invalidId){
+                Integer userId=DataUtils.getUserIdByToken(token);
+                if(userId==DataUtils.invalidId) break;
+
+                // create blank draft
+                Activity activity=Activity.create();
+
+                int lastActivityId=SQLCommander.createActivity(activity, userId);
+                if(lastActivityId!=SQLCommander.invalidId){
                     activity.setId(lastActivityId);
                     ObjectNode activityNode=Json.newObject();
                     activityNode.put(Activity.idKey, new Integer(lastActivityId).toString());
                     return ok(activityNode);
-      	  			}
+                }
 
       	  	} catch(Exception e){
-      	  	    System.out.println("Application.createActivity:"+e.getMessage());
+      	  	    System.out.println("Application.createActivity: "+e.getMessage());
       	  	}
 
         }while(false);

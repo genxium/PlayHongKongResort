@@ -208,7 +208,7 @@ function onBtnUpdateClicked(evt){
 		// invoke submission
 		editor.submit();
 	} catch(err){
-		// $("."+g_classFieldActivityContent).val(err);
+
 	}
 }
 
@@ -255,7 +255,7 @@ function onBtnSubmitClicked(evt){
 		// invoke submission
 		editor.submit();
 	} catch(err){
-		// $("."+g_classFieldActivityContent).val(err);
+		
 	}
 }
 

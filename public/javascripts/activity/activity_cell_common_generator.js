@@ -71,7 +71,7 @@ function onBtnDetailClicked(evt){
     var activityId=$(this).data(g_keyActivityId);
     
 	try{
-        var detailPagePath="/showActivityDetailPage?activityId="+activityId.toString();
+        var detailPagePath="/show?page=activity_detail_page.html";
         var detailPage=window.open(detailPagePath);
         callbackOnPageLoaded(detailPage, function(){
                                                     loadJavaScript(detailPage, "queryActivityDetail("+activityId.toString()+");");

@@ -5,14 +5,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import play.api.libs.json.JsArray;
 import play.libs.Json;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import controllers.SQLCommander;
 
 public class ActivityDetail extends Activity {
 
