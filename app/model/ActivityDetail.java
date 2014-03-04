@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import play.api.libs.json.JsArray;
 import play.libs.Json;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import controllers.SQLCommander;
@@ -91,41 +94,42 @@ public class ActivityDetail extends Activity {
         	ret.put(Activity.statusKey, String.valueOf(m_status));
     			
 			if(m_images!=null && m_images.size()>0){
-			   ObjectNode imagesNode=Json.newObject();
+			   ArrayNode imagesNode=new ArrayNode(JsonNodeFactory.instance);
 		       Iterator<Image> itImage=m_images.iterator();
 		       while(itImage.hasNext()){
 		    	  ObjectNode singleImageNode=Json.newObject();
 				  Image image=itImage.next();
                   Integer imageId=image.getImageId();
 				  String imageURL=image.getImageURL();
+				  singleImageNode.put(Image.idKey, imageId);
 				  singleImageNode.put(Image.urlKey, imageURL);
-				  imagesNode.put(Image.idKey, singleImageNode);
+				  imagesNode.add(singleImageNode);
 		       }
 		       ret.put(ActivityDetail.imagesKey, imagesNode);
 			}
 			
 			if(m_appliedParticipants!=null && m_appliedParticipants.size()>0){
-				ObjectNode appliedParticipantsNode=Json.newObject();
+				ArrayNode appliedParticipantsNode=new ArrayNode(JsonNodeFactory.instance);
 				Iterator<BasicUser> itParticipant=m_appliedParticipants.iterator();
 				while(itParticipant.hasNext()){
 					ObjectNode singleParticipantNode=Json.newObject();
 					BasicUser participant=itParticipant.next();
 					singleParticipantNode.put(BasicUser.emailKey, participant.getEmail());
 					singleParticipantNode.put(BasicUser.nameKey, participant.getName());
-					appliedParticipantsNode.put(BasicUser.idKey, singleParticipantNode);
+					appliedParticipantsNode.add(singleParticipantNode);
 				}
 				ret.put(ActivityDetail.appliedParticipantsKey, appliedParticipantsNode);
 			}
 			
             if(m_selectedParticipants!=null && m_selectedParticipants.size()>0){
-				ObjectNode selectedParticipantsNode=Json.newObject();
+				ArrayNode  selectedParticipantsNode=new ArrayNode(JsonNodeFactory.instance);
 				Iterator<BasicUser> itParticipant=m_selectedParticipants.iterator();
 				while(itParticipant.hasNext()){
 					ObjectNode singleParticipantNode=Json.newObject();
 					BasicUser participant=itParticipant.next();
 					singleParticipantNode.put(BasicUser.emailKey, participant.getEmail());
 					singleParticipantNode.put(BasicUser.nameKey, participant.getName());
-					selectedParticipantsNode.put(BasicUser.idKey, singleParticipantNode);
+					selectedParticipantsNode.add(singleParticipantNode);
 				}
 				ret.put(ActivityDetail.selectedParticipantsKey, selectedParticipantsNode);
 			}

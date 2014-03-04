@@ -35,6 +35,7 @@ function generateActivityDetailViewByJson(activityJson){
 	var activityTitle=activityJson[g_keyActivityTitle];
 	var activityContent=activityJson[g_keyActivityContent];
 	var activityImages=activityJson[g_keyActivityImages];
+    alert(JSON.stringify(activityImages));
     var ret=$('<div>',{
             
         });
@@ -53,13 +54,14 @@ function generateActivityDetailViewByJson(activityJson){
             
         }).appendTo(ret);
 
-        for(var activityImage in activityImages){
-           alert(JSON.stringify(activityImage));
-           var image=activityImage[g_keyImageId];
-           var imageUrl=image[g_keyImageURL];
-           var imageNode=$('<img>',{
-                src: imageUrl.toString()   
-           }).appendTo(imagesNode);
+        for(var key in activityImages){
+           if(activityImages.hasOwnProperty(key)){
+               var activityImage=activityImages[key];
+               var imageUrl=activityImage[g_keyImageURL];
+               var imageNode=$('<img>',{
+                    src: imageUrl.toString()   
+               }).appendTo(imagesNode);
+           }
         }
 
     }while(false);
