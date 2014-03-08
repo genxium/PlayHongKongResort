@@ -2,28 +2,43 @@
 function onParticipantsSelectionFormSubmission(formEvt){
 	do{
 		formEvt.preventDefault(); // prevent default action.
+        var inputs = $("."+g_classParticipantsSelection);
+        var appliedParticipants=new Array();
+        var selectedParticipants=new Array();
+        inputs.each(function() {
+            var value = $(this).val();
+            if(this.checked){
+                selectedParticipants.push(value);
+            } else{
+                appliedParticipants.push(value);
+            }
+        });
 
-		var formObj = $(this);
-		var formData = new FormData(this);
-		
 		// append user token and activity id for identity
 		var token = $.cookie(g_keyLoginStatus.toString());
-		formData.append(g_keyUserToken, token);
-
+        if(token==null) break;
 		var activityId = $(this).data(g_keyActivityId);
-		formData.append(g_keyActivityId, activityId.toString());
-		
-		$.ajax({
-			method: "POST",
-			url: "/updateActivityParticipants", 
-			data: formData,
-			success: function(data, status, xhr){
-                alert(data);
-			},
-			error: function(xhr, status, errorThrown){
-
-			}
-		});
+        if(activityId==null) break;
+        try{
+            $.post("/updateActivityParticipants", 
+                {
+                    ActivityId: activityId.toString(),
+                    UserToken: token.toString(),
+                    ActivityAppliedParticipants: JSON.stringify(appliedParticipants),
+                    ActivitySelectedParticipants: JSON.stringify(selectedParticipants)
+                },
+                function(data, status, xhr){
+                    if(status=="success"){
+                        alert("successful!");
+                    }
+                    else{
+                        alert("unsuccessful!");
+                    }
+                }
+            );
+        } catch(err){
+            alert(err); 
+        }
 	}while(false);
 }
 
@@ -73,19 +88,25 @@ function generateActivityDetailViewByJson(activityJson){
                }).appendTo(imagesNode);
            }
         }
-    
-        var selectionForm=$('<form>').appendTo(ret);
+
+        var token=$.cookie(g_keyLoginStatus.toString());
+        if(token==null) break;     
+        var selectionForm=$('<form>',{
+            id: g_idParticipantsSelectionForm
+        }).appendTo(ret);
         for(var key in selectedParticipants){
             if(selectedParticipants.hasOwnProperty(key)){
                 selectedParticipant=selectedParticipants[key];
                 var email=selectedParticipant[g_keyUserEmail];
+                var id=appliedParticipant[g_keyUserId];
                 var label=$('<label>', {
                     text: email  
                 }).appendTo(selectionForm);
                 label.css("background-color", "blue");
                 var checkbox=$('<input>',{
                     type: "checkbox",
-                    value: email,
+                    class: g_classParticipantsSelection,
+                    value: id,
                 }).appendTo(label);
                 $('<br>').appendTo(selectionForm);
                 
@@ -96,13 +117,15 @@ function generateActivityDetailViewByJson(activityJson){
             if(appliedParticipants.hasOwnProperty(key)){
                 appliedParticipant=appliedParticipants[key];
                 var email=appliedParticipant[g_keyUserEmail];
+                var id=appliedParticipant[g_keyUserId];
                 var label=$('<label>', {
                     text: email,
                 }).appendTo(selectionForm);
                 label.css("background-color", "pink");
                 var checkbox=$('<input>',{
                     type: "checkbox",
-                    value: email,
+                    class: g_classParticipantsSelection,
+                    value: id,
                 }).appendTo(label);
                 $('<br>').appendTo(selectionForm);
             }
@@ -111,8 +134,8 @@ function generateActivityDetailViewByJson(activityJson){
         var btnSubmit=$('<button>',{
 	 					text: 'Submit'
 	 				}).appendTo(selectionForm);
-         btnSubmit.data(g_keyActivityId, activityId);
-         btnSubmit.bind("click", onBtnSubmitClicked);
+        btnSubmit.bind("click", onBtnSubmitClicked);
+        selectionForm.data(g_keyActivityId, activityId);
 
     }while(false);
 	return ret;

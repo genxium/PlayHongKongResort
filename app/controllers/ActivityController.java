@@ -1,5 +1,7 @@
 package controllers;
 
+import play.api.libs.json.JsArray;
+import play.api.libs.json.JsValue;
 import play.mvc.*;
 import model.Activity;
 import model.ActivityDetail;
@@ -48,12 +50,14 @@ public class ActivityController extends Controller {
                 String token=tokens[0];
                 String[] activityIds=formData.get(Activity.idKey);
                 Integer activityId=Integer.valueOf(activityIds[0]);
+                String[] appliedParticipants= formData.get(ActivityDetail.appliedParticipantsKey);
+                String[] selectedParticipants= formData.get(ActivityDetail.selectedParticipantsKey);
 
                 Integer userId=DataUtils.getUserIdByToken(token);
                 if(userId==DataUtils.invalidId) break;
-
                 if(SQLCommander.validateOwnershipOfActivity(userId, activityId)==false) break;
                 
+
       	  	} catch(Exception e){
       	  	    System.out.println("ActivityController.updateActivityParticipants: "+e.getMessage());
       	  	}

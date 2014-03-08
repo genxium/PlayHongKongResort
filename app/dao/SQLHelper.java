@@ -288,8 +288,6 @@ public class SQLHelper {
 		return queryTableByColumnsAndWhereClausesAndOrderClauses(tableName, columnNames, whereClauses, whereLink, null, null);
 	}
 
-	
-	
 	public boolean updateTableByColumnsAndWhereClauses(String tableName, List<String> columnNames, List<Object> columnValues, List<String> whereClauses, String logicLink){
 		boolean ret=false;
 		do{			

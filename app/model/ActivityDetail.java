@@ -111,6 +111,7 @@ public class ActivityDetail extends Activity {
 				while(itParticipant.hasNext()){
 					ObjectNode singleParticipantNode=Json.newObject();
 					BasicUser participant=itParticipant.next();
+                    singleParticipantNode.put(BasicUser.idKey, participant.getUserId());
 					singleParticipantNode.put(BasicUser.emailKey, participant.getEmail());
 					singleParticipantNode.put(BasicUser.nameKey, participant.getName());
 					appliedParticipantsNode.add(singleParticipantNode);
@@ -124,6 +125,7 @@ public class ActivityDetail extends Activity {
 				while(itParticipant.hasNext()){
 					ObjectNode singleParticipantNode=Json.newObject();
 					BasicUser participant=itParticipant.next();
+                    singleParticipantNode.put(BasicUser.idKey, participant.getUserId());
 					singleParticipantNode.put(BasicUser.emailKey, participant.getEmail());
 					singleParticipantNode.put(BasicUser.nameKey, participant.getName());
 					selectedParticipantsNode.add(singleParticipantNode);

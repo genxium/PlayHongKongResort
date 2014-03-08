@@ -934,4 +934,35 @@ public class SQLCommander {
 		}while(false);
 		return users;
 	}
+
+    public static boolean updateRelationOfUserIdAndActivity(Integer ownerId, Integer userId, Integer activityId, RelationType relation){
+        boolean ret=false;
+        do{
+            try{
+                SQLHelper sqlHelper=new SQLHelper();
+                java.util.Date date= new java.util.Date();
+                Timestamp currentTime=new Timestamp(date.getTime());
+
+                List<String> columnNames=new LinkedList<String>();
+                columnNames.add(UserActivityRelationTable.relationIdKey);
+                columnNames.add(UserActivityRelationTable.generatedTimeKey);
+
+                List<Object> columnValues=new LinkedList<Object>();
+                columnValues.add(relation.ordinal());
+                columnValues.add(currentTime.toString());
+
+                List<String> whereClauses=new LinkedList<String>();
+                whereClauses.add(UserActivityRelationTable.activityIdKey+"="+SQLHelper.convertToQueryValue(activityId));
+                whereClauses.add(UserActivityRelationTable.userIdKey+"="+SQLHelper.convertToQueryValue(userId));
+
+                String relationTableName="UserActivityRelationTable";
+                boolean result=sqlHelper.updateTableByColumnsAndWhereClauses(relationTableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
+                if(result==false) break;
+                ret=true;
+            } catch(Exception e){
+                System.out.println("SQLCommander.joinActivity:"+e.getMessage());
+            }
+        }while(false);
+        return ret;
+    }
 };
