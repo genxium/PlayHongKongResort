@@ -21,6 +21,22 @@ public class ActivityController extends Controller {
 
 	public static String s_pageIndexKey="pageIndex";
     public static Integer s_usersPerPage=10; // hard coded for now
+
+    public static Result queryActivityOwnership(){
+        do{
+            Map<String, String[]> formData=request().body().asFormUrlEncoded();
+            String[] tokens=formData.get(User.tokenKey);
+            String token=tokens[0];
+            String[] activityIds=formData.get(Activity.idKey);
+            Integer activityId=Integer.valueOf(activityIds[0]);
+
+            Integer ownerId=DataUtils.getUserIdByToken(token);
+            if(ownerId==DataUtils.invalidId) break;
+            if(SQLCommander.validateOwnershipOfActivity(ownerId, activityId)==false) break;
+            return ok();
+        }while(false);
+        return badRequest();
+    }
  
     public static Result queryActivityDetail(Integer activityId){
 		response().setContentType("text/plain");

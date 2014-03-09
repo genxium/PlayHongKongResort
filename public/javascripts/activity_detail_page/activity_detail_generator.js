@@ -97,11 +97,12 @@ function generateActivityDetailViewByJson(activityJson){
            }
         }
 
-        var token=$.cookie(g_keyLoginStatus.toString());
-        if(token==null) break;     
+        
         var selectionForm=$('<form>',{
             id: g_idParticipantsSelectionForm
         }).appendTo(ret);
+
+        var labels=new Array();
         for(var key in selectedParticipants){
             if(selectedParticipants.hasOwnProperty(key)){
                 selectedParticipant=selectedParticipants[key];
@@ -111,13 +112,8 @@ function generateActivityDetailViewByJson(activityJson){
                     text: email  
                 }).appendTo(selectionForm);
                 label.css("background-color", "aquamarine ");
-                var checkbox=$('<input>',{
-                    type: "checkbox",
-                    class: g_classParticipantsSelection,
-                    value: id,
-                }).appendTo(label);
-                checkbox.checked=true;
-                checkbox.data(g_indexParticipantsSelectionLabel, label);
+                label.data(g_indexParticipantSelectionStatus, g_statusSelected);
+                labels.push(label);
                 $('<br>').appendTo(selectionForm);
                 
             }
@@ -132,22 +128,46 @@ function generateActivityDetailViewByJson(activityJson){
                     text: email,
                 }).appendTo(selectionForm);
                 label.css("background-color", "pink");
-                var checkbox=$('<input>',{
-                    type: "checkbox",
-                    class: g_classParticipantsSelection,
-                    value: id,
-                }).appendTo(label);
-                checkbox.data(g_indexParticipantsSelectionLabel, label);
-                checkbox.checked=false;
+                label.data(g_indexParticipantSelectionStatus, g_statusApplied);
+                labels.push(label);
                 $('<br>').appendTo(selectionForm);
             }
         }
-	 
-        var btnSubmit=$('<button>',{
-	 					text: 'Submit'
-	 				}).appendTo(selectionForm);
-        btnSubmit.bind("click", onBtnSubmitClicked);
-        selectionForm.data(g_keyActivityId, activityId);
+        
+        var token=$.cookie(g_keyLoginStatus.toString());
+	    if(token==null) break;
+        $.post("/queryActivityOwnership",
+            {
+                UserToken: token.toString(),
+                ActivityId: activityId.toString() 
+            },
+            function(data, status, xhr){
+                if(status=="success"){
+                    for(var i=0;i<labels.length;i++){
+                        var label=labels[i];
+                        var checkbox=$('<input>',{
+                            type: "checkbox",
+                            class: g_classParticipantsSelection,
+                            value: id,
+                        }).appendTo(label);
+                        if($(label).data(g_indexParticipantSelectionStatus)==g_statusSelected){
+                            checkbox.checked=true;
+                        } else{
+                            checkbox.checked=false
+                        }
+                        checkbox.data(g_indexParticipantsSelectionLabel, label);
+                    }
+                    var btnSubmit=$('<button>',{
+                                    text: 'Submit'
+                                }).appendTo(selectionForm);
+                    btnSubmit.bind("click", onBtnSubmitClicked);
+                    selectionForm.data(g_keyActivityId, activityId);
+                }
+                else{
+                    alert("unsuccessful!");
+                }
+            }
+        );
 
     }while(false);
 	return ret;
