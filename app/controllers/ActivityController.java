@@ -1,13 +1,12 @@
 package controllers;
 
+import model.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONValue;
 import play.api.libs.json.JsArray;
 import play.api.libs.json.JsValue;
+import play.api.libs.json.Json;
 import play.mvc.*;
-import model.Activity;
-import model.ActivityDetail;
-import model.Image;
-import model.BasicUser;
-import model.User;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -50,14 +49,29 @@ public class ActivityController extends Controller {
                 String token=tokens[0];
                 String[] activityIds=formData.get(Activity.idKey);
                 Integer activityId=Integer.valueOf(activityIds[0]);
-                String[] appliedParticipants= formData.get(ActivityDetail.appliedParticipantsKey);
-                String[] selectedParticipants= formData.get(ActivityDetail.selectedParticipantsKey);
+                String[] appliedParticipantsJsonStrs= formData.get(ActivityDetail.appliedParticipantsKey);
+                String[] selectedParticipantsJsonStrs= formData.get(ActivityDetail.selectedParticipantsKey);
 
-                Integer userId=DataUtils.getUserIdByToken(token);
-                if(userId==DataUtils.invalidId) break;
-                if(SQLCommander.validateOwnershipOfActivity(userId, activityId)==false) break;
-                
+                String appliedParticipantsJsonStr=appliedParticipantsJsonStrs.length>0?appliedParticipantsJsonStrs[0]:"[]";
+                String selectedParticipantsJsonStr=selectedParticipantsJsonStrs.length>0?selectedParticipantsJsonStrs[0]:"[]";
 
+                JSONArray appliedParticipantsJson= (JSONArray)JSONValue.parse(appliedParticipantsJsonStr);
+                JSONArray selectedParticipantsJson= (JSONArray)JSONValue.parse(selectedParticipantsJsonStr);
+
+                Integer ownerId=DataUtils.getUserIdByToken(token);
+                if(ownerId==DataUtils.invalidId) break;
+                if(SQLCommander.validateOwnershipOfActivity(ownerId, activityId)==false) break;
+
+                for(int i=0;i<appliedParticipantsJson.size();i++){
+                    Integer userId=Integer.valueOf((String)appliedParticipantsJson.get(i));
+                    SQLCommander.updateRelationOfUserIdAndActivity(ownerId, userId, activityId, UserActivityRelation.RelationType.applied);
+                }
+
+                for(int i=0;i<selectedParticipantsJson.size();i++){
+                    Integer userId=Integer.valueOf((String)selectedParticipantsJson.get(i));
+                    SQLCommander.updateRelationOfUserIdAndActivity(ownerId, userId, activityId, UserActivityRelation.RelationType.selected);
+                }
+                return ok();
       	  	} catch(Exception e){
       	  	    System.out.println("ActivityController.updateActivityParticipants: "+e.getMessage());
       	  	}

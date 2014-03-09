@@ -5,3 +5,6 @@ var g_idSectionParticipants="idSectionParticipants";
 
 var g_idParticipantsSelectionForm="idParticipantsSelectionForm";
 var g_classParticipantsSelection="classParticipantsSelection";
+
+// indexes
+var g_indexParticipantsSelectionLabel="participantsSelectionLabel";

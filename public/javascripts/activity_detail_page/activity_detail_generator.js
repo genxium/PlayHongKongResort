@@ -29,7 +29,15 @@ function onParticipantsSelectionFormSubmission(formEvt){
                 },
                 function(data, status, xhr){
                     if(status=="success"){
-                        alert("successful!");
+                        inputs.each(function() {
+                            var label=$(this).data(g_indexParticipantsSelectionLabel);
+                            var value = $(this).val();
+                            if(this.checked){
+                                label.css("background-color", "aquamarine");
+                            } else{
+                                label.css("background-color", "pink");
+                            }
+                        });
                     }
                     else{
                         alert("unsuccessful!");
@@ -98,16 +106,18 @@ function generateActivityDetailViewByJson(activityJson){
             if(selectedParticipants.hasOwnProperty(key)){
                 selectedParticipant=selectedParticipants[key];
                 var email=selectedParticipant[g_keyUserEmail];
-                var id=appliedParticipant[g_keyUserId];
+                var id=selectedParticipant[g_keyUserId];
                 var label=$('<label>', {
                     text: email  
                 }).appendTo(selectionForm);
-                label.css("background-color", "blue");
+                label.css("background-color", "aquamarine ");
                 var checkbox=$('<input>',{
                     type: "checkbox",
                     class: g_classParticipantsSelection,
                     value: id,
                 }).appendTo(label);
+                checkbox.checked=true;
+                checkbox.data(g_indexParticipantsSelectionLabel, label);
                 $('<br>').appendTo(selectionForm);
                 
             }
@@ -127,6 +137,8 @@ function generateActivityDetailViewByJson(activityJson){
                     class: g_classParticipantsSelection,
                     value: id,
                 }).appendTo(label);
+                checkbox.data(g_indexParticipantsSelectionLabel, label);
+                checkbox.checked=false;
                 $('<br>').appendTo(selectionForm);
             }
         }
