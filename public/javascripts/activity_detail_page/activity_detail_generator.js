@@ -107,12 +107,13 @@ function generateActivityDetailViewByJson(activityJson){
             if(selectedParticipants.hasOwnProperty(key)){
                 selectedParticipant=selectedParticipants[key];
                 var email=selectedParticipant[g_keyUserEmail];
-                var id=selectedParticipant[g_keyUserId];
+                var userId=selectedParticipant[g_keyUserId];
                 var label=$('<label>', {
                     text: email  
                 }).appendTo(selectionForm);
                 label.css("background-color", "aquamarine ");
                 label.data(g_indexParticipantSelectionStatus, g_statusSelected);
+                label.data(g_keyUserId, userId);
                 labels.push(label);
                 $('<br>').appendTo(selectionForm);
                 
@@ -123,12 +124,13 @@ function generateActivityDetailViewByJson(activityJson){
             if(appliedParticipants.hasOwnProperty(key)){
                 appliedParticipant=appliedParticipants[key];
                 var email=appliedParticipant[g_keyUserEmail];
-                var id=appliedParticipant[g_keyUserId];
+                var userId=appliedParticipant[g_keyUserId];
                 var label=$('<label>', {
                     text: email,
                 }).appendTo(selectionForm);
                 label.css("background-color", "pink");
                 label.data(g_indexParticipantSelectionStatus, g_statusApplied);
+                label.data(g_keyUserId, userId);
                 labels.push(label);
                 $('<br>').appendTo(selectionForm);
             }
@@ -145,6 +147,7 @@ function generateActivityDetailViewByJson(activityJson){
                 if(status=="success"){
                     for(var i=0;i<labels.length;i++){
                         var label=labels[i];
+                        var userId=$(label).data(g_keyUserId);
                         var selectionStatus=$(label).data(g_indexParticipantSelectionStatus);
                         var checkStatus=true;
                         if(selectionStatus==g_statusSelected){
@@ -155,7 +158,7 @@ function generateActivityDetailViewByJson(activityJson){
                         var checkbox=$('<input>',{
                             type: "checkbox",
                             class: g_classParticipantsSelection,
-                            value: id,
+                            value: userId,
                             checked: checkStatus
                         }).appendTo(label);
                         checkbox.data(g_indexParticipantsSelectionLabel, label);
