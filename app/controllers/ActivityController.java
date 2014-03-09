@@ -80,12 +80,18 @@ public class ActivityController extends Controller {
 
                 for(int i=0;i<appliedParticipantsJson.size();i++){
                     Integer userId=Integer.valueOf((String)appliedParticipantsJson.get(i));
-                    SQLCommander.updateRelationOfUserIdAndActivity(ownerId, userId, activityId, UserActivityRelation.RelationType.applied);
+                    boolean result=SQLCommander.updateRelationOfUserIdAndActivity(ownerId, userId, activityId, UserActivityRelation.RelationType.applied);
+                    if(result==false){
+                        System.out.println("uid: "+userId+" activityid: "+activityId+" to relation: 0 failed");    
+                    }
                 }
 
                 for(int i=0;i<selectedParticipantsJson.size();i++){
                     Integer userId=Integer.valueOf((String)selectedParticipantsJson.get(i));
-                    SQLCommander.updateRelationOfUserIdAndActivity(ownerId, userId, activityId, UserActivityRelation.RelationType.selected);
+                    boolean result=SQLCommander.updateRelationOfUserIdAndActivity(ownerId, userId, activityId, UserActivityRelation.RelationType.selected);
+                    if(result==false){
+                        System.out.println("uid: "+userId+" activityid: "+activityId+" to relation: 1 failed");    
+                    }
                 }
                 return ok();
       	  	} catch(Exception e){

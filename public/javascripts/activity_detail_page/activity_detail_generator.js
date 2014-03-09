@@ -145,16 +145,19 @@ function generateActivityDetailViewByJson(activityJson){
                 if(status=="success"){
                     for(var i=0;i<labels.length;i++){
                         var label=labels[i];
+                        var selectionStatus=$(label).data(g_indexParticipantSelectionStatus);
+                        var checkStatus=true;
+                        if(selectionStatus==g_statusSelected){
+                            checkStatus=true;
+                        } else{
+                            checkStatus=false;
+                        }
                         var checkbox=$('<input>',{
                             type: "checkbox",
                             class: g_classParticipantsSelection,
                             value: id,
+                            checked: checkStatus
                         }).appendTo(label);
-                        if($(label).data(g_indexParticipantSelectionStatus)==g_statusSelected){
-                            checkbox.checked=true;
-                        } else{
-                            checkbox.checked=false
-                        }
                         checkbox.data(g_indexParticipantsSelectionLabel, label);
                     }
                     var btnSubmit=$('<button>',{
