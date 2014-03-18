@@ -13,23 +13,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class ActivityDetail extends Activity {
 
-	public static String imagesKey="ActivityImages";
+
 	public static String appliedParticipantsKey="ActivityAppliedParticipants";
 	public static String selectedParticipantsKey="ActivitySelectedParticipants";
-	protected List<Image> m_images=null;
-	public List<Image> getImages() {return m_images;}
-	public void setImages(List<Image> images){
-		if(m_images!=null){
-			m_images.clear();
-		} else{
-			m_images=new ArrayList<Image>();
-		}
-		Iterator<Image> it=images.iterator();
-		while(it.hasNext()){
-			Image image=it.next();
-			m_images.add(image);
-		}
-	}
 	
 	protected List<BasicUser> m_appliedParticipants=null;
 	public List<BasicUser> getAppliedParticipants() {return m_appliedParticipants;}
