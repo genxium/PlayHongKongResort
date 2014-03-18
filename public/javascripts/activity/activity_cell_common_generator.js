@@ -1,14 +1,10 @@
 // Assistant Handlers
 function onBtnEditClicked(evt){
-
-	var activityId=$(this).data(g_keyActivityId);
-	var activityTitle=$(this).data(g_keyActivityTitle);
-	var activityContent=$(this).data(g_keyActivityContent);
-	
+    var activityJson=$(this).data(g_keyActivityJson);
 	sectionActivityEditor=$("#"+g_idSectionActivityEditor);
 	sectionActivityEditor.empty();
 
-	var editor=generateActivityEditor(activityId, activityTitle, activityContent);
+	var editor=generateActivityEditorByJson(activityJson);
 	sectionActivityEditor.append(editor);
 }
 
@@ -167,12 +163,7 @@ function generateActivityCell(activityJson, isLoggedIn, mode){
                         text: 'Edit'
                     }).appendTo(ret);
                     btnEdit.bind("click", onBtnEditClicked);
-
-                    btnEdit.data(g_keyActivityId, activityId);
-                    btnEdit.data(g_keyActivityTitle, activityTitle);
-                    if(activityContent!=null){
-                        btnEdit.data(g_keyActivityContent, activityContent);
-                    }
+                    btnEdit.data(g_keyActivityJson, activityJson); 
                     ret.data(g_indexBtnEdit, btnEdit);
                 }
             }

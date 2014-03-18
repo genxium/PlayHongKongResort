@@ -19,6 +19,7 @@ var g_keyUserName="UserName";
 var g_keyUserToken="UserToken";
 var g_keyUserAvatar="UserAvatar";
 
+var g_keyActivityJson="ActivityJson";
 var g_keyActivityId="ActivityId";
 var g_keyActivityTitle="ActivityTitle";
 var g_keyActivityContent="ActivityContent";

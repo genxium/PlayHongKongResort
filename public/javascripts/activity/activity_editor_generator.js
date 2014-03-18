@@ -268,15 +268,11 @@ function onBtnCancelClicked(evt){
 
 // Generators
 function generateActivityEditorByJson(activityJson){
-	var activityId=activityJson[g_keyActivityId];
-	var activityTitle=activityJson[g_keyActivityTitle];
-	var activityContent=activityJson[g_keyActivityContent];
-	
-	var ret=generateActivityEditor(activityId, activityTitle, activityContent);
-	return ret;
-}
+	 var activityId=activityJson[g_keyActivityId];
+	 var activityTitle=activityJson[g_keyActivityTitle];
+	 var activityContent=activityJson[g_keyActivityContent];
+	 var activityImages=activityJson[g_keyActivityImages];
 
-function generateActivityEditor(activityId, activityTitle, activityContent){
 	 var ret=$('<form>',
 	 			{
 	 				class: g_classActivityEditor	
@@ -307,6 +303,31 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 				  }).appendTo(ret);
 	 contentInput.val(activityContent);
 
+     do{
+        if(activityImages==null) break;
+        var imagesNode=$('<p>',{
+            
+        }).appendTo(ret);
+
+        for(var key in activityImages){
+           if(activityImages.hasOwnProperty(key)){
+               var activityImage=activityImages[key];
+               var imageUrl=activityImage[g_keyImageURL];
+               var imageNode=$('<img>',{
+                    src: imageUrl.toString()   
+               }).appendTo(imagesNode);
+           }
+        }
+     }while(false);
+	 
+     var sectionBeginTime=generateBeginTimeSelection("Begin Time: ", g_classSelectionBeginTime); 
+     ret.append(sectionBeginTime);
+     ret.data(g_indexSectionBeginTime, sectionBeginTime);
+     
+     var sectionDeadline=generateDeadlineSelection("Deadline: ", g_classSelectionDeadline);
+     ret.append(sectionDeadline);
+     ret.data(g_indexSectionDeadline, sectionDeadline);
+
 	 for (var i = 0; i < g_maxNumberOfImagesForSingleActivity; i++) {
 	 	var imageName=g_indexImageOfActivityPrefix+i;
 	 	var imageField=$('<input>',
@@ -318,181 +339,6 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 	ret.data(imageName, imageField);
 	 }
 
-	 var currentTime=new Date();
-	 var currentYear=currentTime.getFullYear();
-
-	 var numberOfYears=30;
-	 var numberOfMonths=12;
-	 var numberOfDays=31;
-	 var numberOfHours=24;
-	 var interval=15; // in minutes
-	 var numberOfIntervals=4;
-
-	 var years=[];
-	 for(var i=0;i<numberOfYears;i++){
-	 	years.push(i+currentYear);
-	 }
-	 var months=[];
-	 for(var i=0;i<numberOfMonths;i++){
-	 	months.push(i+1);
-	 }
-	 var days=[];
-	 for(var i=0;i<numberOfDays;i++){
-	 	days.push(i+1);
-	 }
-	 var hours=[];
-	 for(var i=0;i<numberOfHours;i++){
-	 	hours.push(i);
-	 }
-	 var intervals=[];
-	 for(var i=0;i<numberOfIntervals;i++){
-	 	intervals.push(i*interval);
-	 }
-
-	 
-	 /* Begin Time */
-	 var sectionBeginTime=$('<p>',
-	 						{
-	 							html: "Begin Time: "
-	 						}).appendTo(ret);
-
-	 ret.data(g_indexSectionBeginTime, sectionBeginTime);
-
-	 var selectionBeginTimeYear=$('<select>',
-						 	{
-						 		class: g_classSelectionBeginTime	
-						 	}).appendTo(sectionBeginTime);
-
-	 for(var i=0;i<years.length;i++){
-	 	var year=years[i];
-	 	var option=$('<option>').appendTo(selectionBeginTimeYear);
-	 	option.text(year.toString());
-	 	option.val(year);
-	 }
-
-	 var selectionBeginTimeMonth=$('<select>',
-						 	{
-						 		class: g_classSelectionBeginTime	
-						 	}).appendTo(sectionBeginTime);
-
-	 for(var i=0;i<months.length;i++){
-	 	var month=months[i];
-	 	var option=$('<option>').appendTo(selectionBeginTimeMonth);
-	 	option.text(month.toString());
-	 	option.val(month);
-	 }
-
-	 var selectionBeginTimeDay=$('<select>',
-						 	{
-						 		class: g_classSelectionBeginTime	
-						 	}).appendTo(sectionBeginTime);
-
-	 for(var i=0;i<days.length;i++){
-	 	var day=days[i];
-	 	var option=$('<option>').appendTo(selectionBeginTimeDay);
-	 	option.text(day.toString());
-	 	option.val(day);
-	 }	 
-
-	 sectionBeginTime.append('/');
-
-	 var selectionBeginTimeHours=$('<select>',
-						 	{
-						 		class: g_classSelectionBeginTime	
-						 	}).appendTo(sectionBeginTime);
- 
-	 for(var i=0;i<hours.length;i++){
-	 	var hour=hours[i];
-	 	var option=$('<option>').appendTo(selectionBeginTimeHours);
-	 	option.text(hour.toString());
-	 	option.val(hour);
-	 }
-
-	 sectionBeginTime.append(':');
-
-	 var selectionBeginTimeInterval=$('<select>',
-						 	{
-						 		class: g_classSelectionBeginTime	
-						 	}).appendTo(sectionBeginTime);
-
-	 for(var i=0;i<intervals.length;i++){
-	 	var interval=intervals[i];
-	 	var option=$('<option>').appendTo(selectionBeginTimeInterval);
-	 	option.text(interval.toString());
-	 	option.val(interval);
-	 }		 
-
-	 /* Deadline */
-	 var sectionDeadline=$('<p>',
-	 						{
-	 							html: "Deadline: "
-	 						}).appendTo(ret);
-
-	 ret.data(g_indexSectionDeadline, sectionDeadline);
-
-	 var selectionDeadlineYear=$('<select>',
-						 	{
-						 		class: g_classSelectionDeadline	
-						 	}).appendTo(sectionDeadline);
-
-	 for(var i=0;i<years.length;i++){
-	 	var year=years[i];
-	 	var option=$('<option>').appendTo(selectionDeadlineYear);
-	 	option.text(year.toString());
-	 	option.val(year);
-	 }
-
-	 var selectionDeadlineMonth=$('<select>',
-						 	{
-						 		class: g_classSelectionDeadline	
-						 	}).appendTo(sectionDeadline);
-
-	 for(var i=0;i<months.length;i++){
-	 	var month=months[i];
-	 	var option=$('<option>').appendTo(selectionDeadlineMonth);
-	 	option.text(month.toString());
-	 	option.val(month);
-	 }
-
-	 var selectionDeadlineDay=$('<select>',
-						 	{
-						 		class: g_classSelectionDeadline	
-						 	}).appendTo(sectionDeadline);
-
-	 for(var i=0;i<days.length;i++){
-	 	var day=days[i];
-	 	var option=$('<option>').appendTo(selectionDeadlineDay);
-	 	option.text(day.toString());
-	 	option.val(day);
-	 }	 
-
-	 sectionDeadline.append('/');
-
-	 var selectionDeadlineHours=$('<select>',
-						 	{
-						 		class: g_classSelectionDeadline	
-						 	}).appendTo(sectionDeadline);
- 
-	 for(var i=0;i<hours.length;i++){
-	 	var hour=hours[i];
-	 	var option=$('<option>').appendTo(selectionDeadlineHours);
-	 	option.text(hour.toString());
-	 	option.val(hour);
-	 }
-
-	 sectionDeadline.append(':');
-
-	 var selectionDeadlineInterval=$('<select>',
-						 	{
-						 		class: g_classSelectionDeadline	
-						 	}).appendTo(sectionDeadline);
-
-	 for(var i=0;i<intervals.length;i++){
-	 	var interval=intervals[i];
-	 	var option=$('<option>').appendTo(selectionDeadlineInterval);
-	 	option.text(interval.toString());
-	 	option.val(interval);
-	 }
 
 	 /* Associated Buttons */
 	 var btnUpdate=$('<button>',{
@@ -527,3 +373,83 @@ function generateActivityEditor(activityId, activityTitle, activityContent){
 	 return ret;
 }
 
+function generateDateSelection(sectionName, className){
+	 var currentTime=new Date();
+	 var currentYear=currentTime.getFullYear();
+
+	 var numberOfYears=30;
+	 var numberOfMonths=12;
+	 var numberOfDays=31;
+	 var numberOfHours=24;
+	 var interval=15; // in minutes
+	 var numberOfIntervals=4;
+
+	 var years=[];
+	 for(var i=0;i<numberOfYears;i++){
+	 	years.push(i+currentYear);
+	 }
+	 var months=[];
+	 for(var i=0;i<numberOfMonths;i++){
+	 	months.push(i+1);
+	 }
+	 var days=[];
+	 for(var i=0;i<numberOfDays;i++){
+	 	days.push(i+1);
+	 }
+	 var hours=[];
+	 for(var i=0;i<numberOfHours;i++){
+	 	hours.push(i);
+	 }
+	 var intervals=[];
+	 for(var i=0;i<numberOfIntervals;i++){
+	 	intervals.push(i*interval);
+	 }
+
+	 var ret=$('<p>',
+                {
+                    html: sectionName.toString()
+                });
+
+
+	 var selectionYear=generateSelectionWidget(years, className);
+     ret.append(selectionYear);
+
+	 var selectionMonth=generateSelectionWidget(months, className);
+     ret.append(selectionMonth);
+
+	 var selectionDay=generateSelectionWidget(days, className);
+     ret.append(selectionDay);
+
+	 ret.append('/');
+
+     var selectionHour=generateSelectionWidget(hours, className);
+     ret.append(selectionHour);
+
+	 ret.append(':');
+
+	 var selectionInterval=generateSelectionWidget(intervals, className);
+     ret.append(selectionInterval);
+
+     return ret;
+}
+
+function generateSelectionWidget(arr, className){
+    var ret=$('<select>',{
+                class: className
+            });
+    for(var i=0;i<arr.length;i++){
+        var element=arr[i];
+	 	var option=$('<option>').appendTo(ret);
+	 	option.text(element.toString());
+	 	option.val(element);
+    }
+    return ret;
+}
+
+function generateBeginTimeSelection(){
+    return generateDateSelection("Begin Time: ", g_classSelectionBeginTime);
+}
+
+function generateDeadlineSelection(){
+    return generateDateSelection("Deadline: ", g_classSelectionDeadline);
+}
