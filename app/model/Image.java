@@ -4,6 +4,9 @@
 
 package model;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import play.libs.Json;
+
 public class Image {
 	
 	public static String idKey="ImageId";
@@ -32,4 +35,17 @@ public class Image {
 		Image image=new Image(imageId, imageAbsolutePath, imageURL);
 		return image;
 	}
+
+    public ObjectNode toObjectNode(){
+        ObjectNode ret= Json.newObject();
+        do {
+            try{
+                ret.put(idKey, m_imageId);
+                ret.put(urlKey, m_imageURL);
+            } catch (Exception e){
+
+            }
+        }while(false);
+        return ret;
+    }
 }

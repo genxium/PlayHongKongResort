@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.tools.corba.se.idl.constExpr.Times;
+import controllers.SQLCommander;
 import org.json.simple.JSONObject;
 import play.libs.Json;
 
@@ -20,7 +21,6 @@ public class Activity {
 	public static String deadlineKey="ActivityApplicationDeadline";
 	public static String capacityKey="ActivityCapacity";
 	public static String statusKey="ActivityStatus";
-    public static String imagesKey="ActivityImages";
 
 	public enum StatusType{
 		created(0),
@@ -80,19 +80,15 @@ public class Activity {
 	public StatusType getStatus() {return m_status;}
 	public void setStatus(StatusType status) {m_status=status;}
 
-    protected List<Image> m_images=null;
-    public List<Image> getImages() {return m_images;}
-    public void setImages(List<Image> images){
-        if(m_images!=null){
-            m_images.clear();
-        } else{
-            m_images=new ArrayList<Image>();
-        }
-        Iterator<Image> it=images.iterator();
-        while(it.hasNext()){
-            Image image=it.next();
-            m_images.add(image);
-        }
+    public Activity(){
+        m_id=0;
+        m_title=new String();
+        m_content=new String();
+        m_createdTime=new Timestamp(new Date().getTime());
+        m_beginTime=new Timestamp(new Date().getTime());
+        m_deadline=new Timestamp(new Date().getTime());
+        m_capacity=0;
+        m_status=StatusType.created;
     }
 
     public Activity(JSONObject activityJson){
@@ -112,35 +108,9 @@ public class Activity {
         }while(false);
     }
 
-	public Activity(int id, String title, String content, Timestamp createdTime, Timestamp beginTime, Timestamp deadline, int capacity, StatusType status){
-		m_id=id;
-		m_title=title;
-		m_content=content;
-		m_createdTime=createdTime;
-		m_beginTime=beginTime;
-		m_deadline=deadline;
-		m_capacity=capacity;
-		m_status=status;
-	}
-
-	public static Activity create(String title, String content, Timestamp createdTime, Timestamp beginTime, Timestamp deadline, int capacity){
-		StatusType status=StatusType.created;
-		Activity activity=new Activity(0, title, content, createdTime, beginTime, deadline, capacity, status);
-		return activity;
-	}
-
-	public static Activity create(){
-		java.util.Date date= new java.util.Date();
-		Timestamp currentTime=new Timestamp(date.getTime());
-		int capacity=0;
-		return create("", "", currentTime, currentTime, currentTime, capacity);
-	}
-
     public ObjectNode toObjectNode(){
-        ObjectNode ret = null;
+        ObjectNode ret = Json.newObject();;
         do{
-            ret= Json.newObject();
-
             ret.put(Activity.idKey, String.valueOf(m_id));
             ret.put(Activity.titleKey, m_title);
             ret.put(Activity.contentKey, m_content);
@@ -149,21 +119,20 @@ public class Activity {
             ret.put(Activity.deadlineKey, m_deadline.toString());
             ret.put(Activity.capacityKey, String.valueOf(m_capacity));
             ret.put(Activity.statusKey, String.valueOf(m_status));
+        }while(false);
+        return ret;
+    }
 
-            if(m_images!=null && m_images.size()>0){
-                ArrayNode imagesNode=new ArrayNode(JsonNodeFactory.instance);
-                Iterator<Image> itImage=m_images.iterator();
-                while(itImage.hasNext()){
-                    ObjectNode singleImageNode=Json.newObject();
-                    Image image=itImage.next();
-                    Integer imageId=image.getImageId();
-                    String imageURL=image.getImageURL();
-                    singleImageNode.put(Image.idKey, imageId);
-                    singleImageNode.put(Image.urlKey, imageURL);
-                    imagesNode.add(singleImageNode);
-                }
-                ret.put(ActivityDetail.imagesKey, imagesNode);
+    public ObjectNode toObjectNodeWithImages(){
+        ObjectNode ret = toObjectNode();
+        do{
+            List<Image> images=SQLCommander.queryImagesByActivityId(m_id);
+            if(images==null) break;
+            ArrayNode imagesNode=new ArrayNode(JsonNodeFactory.instance);
+            for(Image image : images){
+                imagesNode.add(image.toObjectNode());
             }
+            ret.put(ActivityDetail.imagesKey, imagesNode);
         }while(false);
         return ret;
     }

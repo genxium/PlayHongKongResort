@@ -11,16 +11,17 @@ GET	 /show	controllers.Application.show(page: String)
 POST /login controllers.Application.login()
 POST /register controllers.Application.register()
 POST /checkLoginStatus controllers.Application.checkLoginStatus()
-POST /createActivity controllers.Application.createActivity()
-POST /updateActivity controllers.Application.updateActivity()
-POST /deleteActivity controllers.Application.deleteActivity()
-POST /submitActivity controllers.Application.submitActivity()
-POST /joinActivity controllers.Application.joinActivity()
 POST /logout controllers.Application.logout()
-POST /queryActivitiesHostedByUser controllers.Application.queryActivitiesHostedByUser()
-POST /queryDefaultActivitiesByUser controllers.Application.queryDefaultActivitiesByUser()
 
-POST  /queryDefaultActivities controllers.Application.queryDefaultActivities()
+POST /createActivity controllers.ActivityController.createActivity()
+POST /updateActivity controllers.ActivityController.updateActivity()
+POST /deleteActivity controllers.ActivityController.deleteActivity()
+POST /submitActivity controllers.ActivityController.submitActivity()
+POST /joinActivity controllers.ActivityController.joinActivity()
+
+POST  /queryDefaultActivities controllers.ActivityQueryController.queryDefaultActivities()
+POST /queryActivitiesHostedByUser controllers.ActivityQueryController.queryActivitiesHostedByUser()
+POST /queryDefaultActivitiesByUser controllers.ActivityQueryController.queryDefaultActivitiesByUser()
 
 # User Profile Editor
 POST /uploadAvatar controllers.Application.uploadAvatar()
@@ -32,7 +33,7 @@ POST /acceptActivity controllers.AdminController.acceptActivity()
 POST /deleteActivityByAdmin controllers.AdminController.deleteActivityByAdmin()
 
 # Activity Detail Page
-GET /queryActivityDetail controllers.ActivityController.queryActivityDetail(activityId: Integer)
+GET /queryActivityDetail controllers.ActivityQueryController.queryActivityDetail(activityId: Integer)
 POST /updateActivityParticipants controllers.ActivityController.updateActivityParticipants()
 POST /queryActivityOwnership controllers.ActivityController.queryActivityOwnership()
 

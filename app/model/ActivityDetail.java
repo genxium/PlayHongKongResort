@@ -2,20 +2,38 @@ package model;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.json.simple.JSONObject;
 import play.libs.Json;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import scala.util.parsing.json.JSON;
 
 public class ActivityDetail extends Activity {
 
-
+    public static String imagesKey="ActivityImages";
 	public static String appliedParticipantsKey="ActivityAppliedParticipants";
 	public static String selectedParticipantsKey="ActivitySelectedParticipants";
+
+    protected List<Image> m_images=null;
+    public List<Image> getImages() {return m_images;}
+    public void setImages(List<Image> images){
+        if(m_images!=null){
+            m_images.clear();
+        } else{
+            m_images=new ArrayList<Image>();
+        }
+        Iterator<Image> it=images.iterator();
+        while(it.hasNext()){
+            Image image=it.next();
+            m_images.add(image);
+        }
+    }
 	
 	protected List<BasicUser> m_appliedParticipants=null;
 	public List<BasicUser> getAppliedParticipants() {return m_appliedParticipants;}
@@ -47,20 +65,24 @@ public class ActivityDetail extends Activity {
 		}
 	}
 
-	public ActivityDetail(int id, String title, String content,
-			Timestamp createdTime, Timestamp beginTime, Timestamp deadline,
-			int capacity, StatusType status, List<Image> images, 
-            List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants) {
-		super(id, title, content, createdTime, beginTime, deadline, capacity, status);
-		m_images=images;
-		m_appliedParticipants=appliedParticipants;
+    public ActivityDetail(Activity activity, List<Image> images, List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants){
+        super();
+        m_id=activity.getId();
+        m_title=activity.getTitle();
+        m_content=activity.getContent();
+        m_createdTime=activity.getCreatedTime();
+        m_beginTime=activity.getBeginTime();
+        m_deadline=activity.getDeadline();
+        m_capacity=activity.getCapacity();
+        m_status=activity.getStatus();
+        m_images=images;
+        m_appliedParticipants=appliedParticipants;
         m_selectedParticipants=selectedParticipants;
-	}
+    }
 
-	public ActivityDetail(Activity activity, List<Image> images, List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants){
-		super(activity.getId(), activity.getTitle(), activity.getContent(), 
-			activity.getCreatedTime(), activity.getBeginTime(), activity.getDeadline(), 
-			activity.getCapacity(), activity.getStatus());
+	public ActivityDetail(JSONObject activityJson, List<Image> images,
+            List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants) {
+		super(activityJson);
 		m_images=images;
 		m_appliedParticipants=appliedParticipants;
         m_selectedParticipants=selectedParticipants;
@@ -76,17 +98,10 @@ public class ActivityDetail extends Activity {
         	ret.put(Activity.contentKey, m_content);
         	ret.put(Activity.statusKey, String.valueOf(m_status));
     			
-			if(m_images!=null && m_images.size()>0){
+			if(m_images!=null){
 			   ArrayNode imagesNode=new ArrayNode(JsonNodeFactory.instance);
-		       Iterator<Image> itImage=m_images.iterator();
-		       while(itImage.hasNext()){
-		    	  ObjectNode singleImageNode=Json.newObject();
-				  Image image=itImage.next();
-                  Integer imageId=image.getImageId();
-				  String imageURL=image.getImageURL();
-				  singleImageNode.put(Image.idKey, imageId);
-				  singleImageNode.put(Image.urlKey, imageURL);
-				  imagesNode.add(singleImageNode);
+                for(Image image : m_images){
+		    	  imagesNode.add(image.toObjectNode());
 		       }
 		       ret.put(ActivityDetail.imagesKey, imagesNode);
 			}

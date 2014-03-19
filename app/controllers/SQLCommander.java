@@ -15,7 +15,7 @@ public class SQLCommander {
 	
 	public static Integer invalidId=(-1);
 	
- 	public static User queryUserByUserId(Integer userId){
+ 	public static User queryUser(Integer userId){
  		
  		User user=null;
  		do{
@@ -285,7 +285,7 @@ public class SQLCommander {
 	}
 	
 	/* querying activities */
-	public static Activity queryActivityByActivityId(int activityId){
+	public static Activity queryActivity(int activityId){
 			
 		Activity activity=null;
 		do{
@@ -309,18 +309,11 @@ public class SQLCommander {
 			try{
 	            Iterator<JSONObject> it=results.iterator();
 		        if(it.hasNext()){
-			        JSONObject jsonObject=(JSONObject)it.next();
-		      		String title=(String)jsonObject.get(Activity.titleKey);
-		      		String content=(String)jsonObject.get(Activity.contentKey);
-		      		Timestamp createdTime=(Timestamp)jsonObject.get(Activity.createdTimeKey);
-		      		Timestamp beginTime=(Timestamp)jsonObject.get(Activity.beginTimeKey);
-		      		Timestamp deadline=(Timestamp)jsonObject.get(Activity.deadlineKey);
-		      		int capacity=(Integer)jsonObject.get(Activity.capacityKey);
-		      		Activity.StatusType status=Activity.StatusType.getTypeForValue((Integer)jsonObject.get(Activity.statusKey));
-		      		activity=new Activity(activityId, title, content, createdTime, beginTime, deadline, capacity, status);
+			        JSONObject activityJson=(JSONObject)it.next();
+		      		activity=new Activity(activityJson);
 				}  	
 			} catch (Exception e) {
-				System.out.println("SQLCommander.queryActivityByActivityId:"+e.getMessage());
+				System.out.println("SQLCommander.queryActivity:"+e.getMessage());
 	        }
 		} while(false);
 		return activity;
@@ -329,7 +322,7 @@ public class SQLCommander {
 	public static ActivityDetail queryActivityDetailByActivityId(int activityId){
 		ActivityDetail activityDetail=null;
 		do{
-			Activity activity=queryActivityByActivityId(activityId);
+			Activity activity= queryActivity(activityId);
 			List<Image> images=queryImagesByActivityId(activityId);
 			List<BasicUser> appliedParticipants=SQLCommander.queryUsersByActivityIdAndRelation(activityId, UserActivityRelation.RelationType.applied);
 			List<BasicUser> selectedParticipants=SQLCommander.queryUsersByActivityIdAndRelation(activityId, UserActivityRelation.RelationType.selected);
@@ -340,8 +333,8 @@ public class SQLCommander {
 		return activityDetail;
 	}
 
-	public static List<JSONObject> queryActivitiesByUserAndRelation(User user, UserActivityRelation.RelationType relation, int pageIndex, int itemsPerPage){
-		List<JSONObject> activityRecords=null;
+	public static List<Activity> queryActivitiesByUserAndRelation(User user, UserActivityRelation.RelationType relation, int pageIndex, int itemsPerPage){
+		List<Activity> ret=null;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
 			// query table UserActivityRelationTable 
@@ -356,9 +349,7 @@ public class SQLCommander {
 			if(relationTableRecords==null || relationTableRecords.size()<=0) break;
 
 			List<Integer> activityIds=new LinkedList<Integer>();
-			Iterator<JSONObject> itRecord=relationTableRecords.iterator();
-			while(itRecord.hasNext()){
-				JSONObject record=itRecord.next();
+			for(JSONObject record : relationTableRecords){
 				Integer activityId=(Integer)record.get(UserActivityRelationTable.activityIdKey);
 				activityIds.add(activityId);
 			}
@@ -377,11 +368,9 @@ public class SQLCommander {
 			activityColumnNames.add(Activity.statusKey);
 			
 			List<String> activityWhereClauses=new LinkedList<String>();
-			Iterator<Integer> itActivityId=activityIds.iterator();
-			while(itActivityId.hasNext()){
-				Integer targetActivityId=itActivityId.next();
-				activityWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(targetActivityId));
-			}
+            for(Integer activityId : activityIds){
+                activityWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
+            }
 
 			List<String> activityOrderClauses=new LinkedList<String>();
 			activityOrderClauses.add(Activity.createdTimeKey);
@@ -395,14 +384,19 @@ public class SQLCommander {
 			limits.add(startingIndex);
 			limits.add(endingIndex);
 
-			activityRecords=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits("Activity", activityColumnNames, activityWhereClauses, SQLHelper.logicOR, activityOrderClauses, activityOrderDirections, limits);
-			
+			List<JSONObject> activityJsons=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits("Activity", activityColumnNames, activityWhereClauses, SQLHelper.logicOR, activityOrderClauses, activityOrderDirections, limits);
+			if(activityJsons==null) break;
+            ret=new ArrayList<Activity>();
+            for(JSONObject activityJson : activityJsons){
+                ret.add(new Activity(activityJson));
+            }
+
 		}while(false);
-		return activityRecords;
+		return ret;
 	}
 	
-	public static List<JSONObject> queryActivitiesByStatusInChronologicalOrder(Activity.StatusType status, int pageIndex, int itemsPerPage){
-		List<JSONObject> records=null;
+	public static List<Activity> queryActivitiesByStatusInChronologicalOrder(Activity.StatusType status, int pageIndex, int itemsPerPage){
+		List<Activity> ret=null;
 		do{
 			try{
 				String tableName="Activity";
@@ -433,25 +427,30 @@ public class SQLCommander {
 				limits.add(startingIndex);
 				limits.add(endingIndex);
 
-				records=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, orderDirections, limits);
+                List<JSONObject> activitiesJson=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, orderDirections, limits);
+                if(activitiesJson==null) break;
+                ret=new ArrayList<Activity>();
+                for(JSONObject activityJson : activitiesJson){
+                    ret.add(new Activity(activityJson));
+                }
 
 			} catch(Exception e){
 				System.out.println("SQLCommander.queryActivitiesByStatusInChronologicalOrder: "+e.getMessage());
 			}
 		}while(false);
-		return records;
+		return ret;
 	}	
 
-	public static List<JSONObject> queryPendingActivitiesInChronologicalOrder(int pageIndex, int itemsPerPage){
+	public static List<Activity> queryPendingActivitiesInChronologicalOrder(int pageIndex, int itemsPerPage){
 		return queryActivitiesByStatusInChronologicalOrder(Activity.StatusType.pending, pageIndex, itemsPerPage);
 	}
 
-	public static List<JSONObject> queryAcceptedActivitiesInChronologicalOrder(int pageIndex, int itemsPerPage){
+	public static List<Activity> queryAcceptedActivitiesInChronologicalOrder(int pageIndex, int itemsPerPage){
 		return queryActivitiesByStatusInChronologicalOrder(Activity.StatusType.accepted, pageIndex, itemsPerPage);
 	}
 
-	public static List<JSONObject> queryActivitiesByStatusAndUserIdInChronologicalOrder(Activity.StatusType status, int pageIndex, int itemsPerPage, int userId){
-		List<JSONObject> records=null;
+	public static List<Activity> queryActivitiesByStatusAndUserIdInChronologicalOrder(Activity.StatusType status, int pageIndex, int itemsPerPage, int userId){
+		List<Activity> ret=null;
 		do{
 			try{
 				String tableName="Activity";
@@ -482,30 +481,22 @@ public class SQLCommander {
 				limits.add(startingIndex);
 				limits.add(endingIndex);
 
-				List<JSONObject> activityRecords=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, orderDirections, limits);
-				if(activityRecords==null || activityRecords.size()<=0) break;
+				List<JSONObject> activitiesJson=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, orderDirections, limits);
+				if(activitiesJson==null) break;
 
-				records=new LinkedList<JSONObject>();
-				Iterator<JSONObject> itActivityRecord=activityRecords.iterator();
-				while(itActivityRecord.hasNext()){
-					JSONObject activityJson=itActivityRecord.next();
-					int activityId=(Integer)activityJson.get(Activity.idKey);
-					UserActivityRelation.RelationType relation=SQLCommander.queryRelationOfUserIdAndActivity(userId, activityId);
-					JSONObject recordJson=(JSONObject) activityJson.clone();
-					if(relation!=null){
-						recordJson.put(UserActivityRelationTable.relationIdKey, relation.ordinal());
-					}
-					records.add(recordJson);
+                ret=new ArrayList<Activity>();
+				for(JSONObject activityJson : activitiesJson){
+					ret.add(new Activity(activityJson));
 				}
 
 			} catch(Exception e){
 				System.out.println("SQLCommander.queryActivitiesByStatusAndUserIdInChronologicalOrder: "+e.getMessage());
 			}
 		}while(false);
-		return records;
+		return ret;
 	}
 
-	public static List<JSONObject> queryAcceptedActivitiesByUserIdInChronologicalOrder(int pageIndex, int itemsPerPage, int userId){
+	public static List<Activity> queryAcceptedActivitiesByUserIdInChronologicalOrder(int pageIndex, int itemsPerPage, int userId){
 		return queryActivitiesByStatusAndUserIdInChronologicalOrder(Activity.StatusType.accepted, pageIndex, itemsPerPage, userId);
 	}
 	
@@ -574,7 +565,7 @@ public class SQLCommander {
 		boolean ret=false;
 		do{
 			if(userId==DataUtils.invalidId) break;
-			Activity activity=SQLCommander.queryActivityByActivityId(activityId);
+			Activity activity=SQLCommander.queryActivity(activityId);
   	  		ret=isActivityEditable(userId, activity);
 		} while(false);
 		return ret;
@@ -620,7 +611,7 @@ public class SQLCommander {
 		boolean ret=false;
 		do{
 			if(userId==DataUtils.invalidId) break;
-			Activity activity=queryActivityByActivityId(activityId);
+			Activity activity= queryActivity(activityId);
 			ret=isActivityJoinable(userId, activity);
 		}while(false);
 		return ret;
@@ -924,7 +915,7 @@ public class SQLCommander {
 				while(it.hasNext()){
 					JSONObject relationRecord=it.next();
 					Integer userId=(Integer)relationRecord.get(BasicUser.idKey);
-					BasicUser user=queryUserByUserId(userId);
+					BasicUser user= queryUser(userId);
 					users.add(user);
 				}
 				
