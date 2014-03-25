@@ -5,6 +5,8 @@ var g_baseTen=10;
 var g_rootElement = $(":root");
 var g_userName;
 var g_userAvatarURL;
+var g_directionForward=(+1);
+var g_directionBackward=(-1);
 
 // keyboard ids
 var g_idKeyboardEnter=13;
@@ -40,4 +42,6 @@ var g_keyImageURL="ImageURL";
 var g_callbackOnActivityEditorRemoved=null;
 
 // general keys
-var g_pageIndexKey="pageIndex";
+var g_keyRefIndex="refIndex";
+var g_keyNumItems="numItems";
+var g_keyDirection="direction";

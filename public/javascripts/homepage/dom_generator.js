@@ -1,10 +1,13 @@
 // Assistant Functions
-function queryDefaultActivities(pageIndex){
+function queryDefaultActivities(refIndex, numItems, direction){
+	var params={};
+	params[g_keyRefIndex]=refIndex.toString();
+	params[g_keyNumItems]=numItems.toString();
+	params[g_keyDirection]=direction.toString();
+	
 	try{
-		$.post("/queryDefaultActivities", 
-			{
-				pageIndex: pageIndex.toString()
-			},
+		$.get("/queryDefaultActivities", 
+			params,
 			function(data, status, xhr){
     				if(status=="success"){
     					var jsonResponse=JSON.parse(data);
@@ -31,19 +34,23 @@ function queryDefaultActivities(pageIndex){
 	}
 }
 
-function queryDefaultActivitiesByUser(pageIndex){
+function queryDefaultActivitiesByUser(refIndex, numItems, direction){
+	var params={};
+	params[g_keyRefIndex]=refIndex.toString();
+	params[g_keyNumItems]=numItems.toString();
+	params[g_keyDirection]=direction.toString();
+	
 	var token = $.cookie(g_keyLoginStatus.toString());
+	params[g_keyUserToken]=token;
+	
 	try{
-		$.post("/queryDefaultActivitiesByUser", 
-			{
-				UserToken: token.toString(),
-				pageIndex: pageIndex.toString()
-			},
+		$.get("/queryDefaultActivitiesByUser", 
+			params,
 			function(data, status, xhr){
     				if(status=="success"){
     					var jsonResponse=JSON.parse(data);
     					if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
-    						var targetSection=$("#"+g_idSectionDefaultActivities);
+							var targetSection=$("#"+g_idSectionDefaultActivities);
     						// clean target section
 	    					targetSection.empty();
     						// update page index of the target section
@@ -51,10 +58,10 @@ function queryDefaultActivitiesByUser(pageIndex){
 	    					// display contents
 	    					for(var key in jsonResponse){
 	    						var activityJson=jsonResponse[key];
-	    						var cell=generateActivityCell(activityJson, true, 0);
+	    						var cell=generateActivityCell(activityJson, false, 0);
 								targetSection.append(cell);
 	    					}
-    					}
+						}
     				} else{
     					
     				}
@@ -64,8 +71,6 @@ function queryDefaultActivitiesByUser(pageIndex){
 
 	}
 }
-
-
 // Assistant Handlers
 function onBtnLogoutClicked(evt){
 	var token = $.cookie(g_keyLoginStatus.toString());

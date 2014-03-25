@@ -19,9 +19,9 @@ POST /deleteActivity controllers.ActivityController.deleteActivity()
 POST /submitActivity controllers.ActivityController.submitActivity()
 POST /joinActivity controllers.ActivityController.joinActivity()
 
-POST  /queryDefaultActivities controllers.ActivityQueryController.queryDefaultActivities()
+GET  /queryDefaultActivities controllers.ActivityQueryController.queryDefaultActivities(refIndex: Integer, numItems: Integer, direction: Integer)
+GET /queryDefaultActivitiesByUser controllers.ActivityQueryController.queryDefaultActivitiesByUser(refIndex: Integer, numItems: Integer, direction: Integer, token: String)
 POST /queryActivitiesHostedByUser controllers.ActivityQueryController.queryActivitiesHostedByUser()
-POST /queryDefaultActivitiesByUser controllers.ActivityQueryController.queryDefaultActivitiesByUser()
 
 # User Profile Editor
 POST /uploadAvatar controllers.Application.uploadAvatar()
