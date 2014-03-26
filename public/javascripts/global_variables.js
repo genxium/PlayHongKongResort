@@ -1,5 +1,5 @@
 // constants
-var g_nItemsPerPage=1;
+var g_numItemsPerPage=6;
 var g_baseTwo=2;
 var g_baseTen=10;
 var g_rootElement = $(":root");
@@ -42,6 +42,7 @@ var g_keyImageURL="ImageURL";
 var g_callbackOnActivityEditorRemoved=null;
 
 // general keys
+var g_keyPageIndex="pageIndex";
 var g_keyRefIndex="refIndex";
 var g_keyNumItems="numItems";
 var g_keyDirection="direction";

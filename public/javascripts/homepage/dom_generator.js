@@ -15,8 +15,6 @@ function queryDefaultActivities(refIndex, numItems, direction){
 							var targetSection=$("#"+g_idSectionDefaultActivities);
     						// clean target section
 	    					targetSection.empty();
-    						// update page index of the target section
-    						targetSection.data(g_pageIndexKey, pageIndex);
 	    					// display contents
 	    					for(var key in jsonResponse){
 	    						var activityJson=jsonResponse[key];
@@ -53,8 +51,6 @@ function queryDefaultActivitiesByUser(refIndex, numItems, direction){
 							var targetSection=$("#"+g_idSectionDefaultActivities);
     						// clean target section
 	    					targetSection.empty();
-    						// update page index of the target section
-    						targetSection.data(g_pageIndexKey, pageIndex);
 	    					// display contents
 	    					for(var key in jsonResponse){
 	    						var activityJson=jsonResponse[key];

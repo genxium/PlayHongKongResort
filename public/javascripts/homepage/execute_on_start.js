@@ -2,8 +2,6 @@ $(document).ready(function(){
 	// execute on page loaded
 	var sectionDefaultActivities=$("#"+g_idSectionDefaultActivities); 
 	sectionDefaultActivities.bind("scroll", onSectionDefaultActivitiesScrolled);
-	sectionDefaultActivities.data(g_pageIndexKey, 0);
-
 	checkLoginStatus();
 
 	g_callbackOnActivityEditorRemoved=refreshOnLoggedIn;

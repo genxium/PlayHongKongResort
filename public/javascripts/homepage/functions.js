@@ -5,7 +5,7 @@ function checkLoginStatus(evt){
 		if(token==null) {
 			// refresh screen
 			refreshOnEnter();
-			queryDefaultActivities(0);
+			queryDefaultActivities(0, g_numItemsPerPage, g_directionForward);
 			break;
 		}
 

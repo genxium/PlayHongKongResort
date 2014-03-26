@@ -14,6 +14,9 @@ import dao.SQLHelper;
 public class SQLCommander {
 	
 	public static Integer invalidId=(-1);
+
+    public static Integer s_directionForward=(+1);
+    public static Integer s_directionBackward=(-1);
 	
  	public static User queryUser(Integer userId){
  		
@@ -333,7 +336,7 @@ public class SQLCommander {
 		return activityDetail;
 	}
 
-	public static List<Activity> queryActivitiesByUserAndRelation(User user, UserActivityRelation.RelationType relation, int pageIndex, int itemsPerPage){
+	public static List<Activity> queryActivitiesByUserAndRelation(User user, UserActivityRelation.RelationType relation){
 		List<Activity> ret=null;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
@@ -372,19 +375,7 @@ public class SQLCommander {
                 activityWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
             }
 
-			List<String> activityOrderClauses=new LinkedList<String>();
-			activityOrderClauses.add(Activity.createdTimeKey);
-				
-			List<String> activityOrderDirections=new LinkedList<String>();
-			activityOrderDirections.add(SQLHelper.directionDescend);
-
-			List<Integer> limits=new LinkedList<Integer>();
-			Integer startingIndex=pageIndex*itemsPerPage;
-			Integer endingIndex=startingIndex+itemsPerPage;
-			limits.add(startingIndex);
-			limits.add(endingIndex);
-
-			List<JSONObject> activityJsons=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits("Activity", activityColumnNames, activityWhereClauses, SQLHelper.logicOR, activityOrderClauses, activityOrderDirections, limits);
+            List<JSONObject> activityJsons=sqlHelper.queryTableByColumnsAndWhereClauses("Activity", activityColumnNames, activityWhereClauses, SQLHelper.logicOR);
 			if(activityJsons==null) break;
             ret=new ArrayList<Activity>();
             for(JSONObject activityJson : activityJsons){
@@ -395,7 +386,7 @@ public class SQLCommander {
 		return ret;
 	}
 	
-	public static List<Activity> queryActivitiesByStatusInChronologicalOrder(Activity.StatusType status, int pageIndex, int itemsPerPage){
+	public static List<Activity> queryActivitiesByStatusInChronologicalOrder(Activity.StatusType status, int refIndex, int numItems, int direction){
 		List<Activity> ret=null;
 		do{
 			try{
@@ -412,22 +403,24 @@ public class SQLCommander {
 				columnNames.add(Activity.deadlineKey);
 				columnNames.add(Activity.capacityKey);
 	            columnNames.add(Activity.statusKey);				
-				List<String> whereClauses=new LinkedList<String>();
+
+                List<String> whereClauses=new LinkedList<String>();
 				whereClauses.add(Activity.statusKey+"="+status.ordinal());
-				
-				List<String> orderClauses=new LinkedList<String>();
-				orderClauses.add(Activity.createdTimeKey);
-				
-				List<String> orderDirections=new LinkedList<String>();
-				orderDirections.add(SQLHelper.directionDescend);
 
-				List<Integer> limits=new LinkedList<Integer>();
-				Integer startingIndex=pageIndex*itemsPerPage;
-				Integer endingIndex=startingIndex+itemsPerPage;
-				limits.add(startingIndex);
-				limits.add(endingIndex);
+                Integer startingIndex=null;
+                Integer endingIndex=null;
+                if(direction==s_directionForward){
+                    startingIndex=refIndex+1;
+                    endingIndex=refIndex+numItems;
+                } else{
+                    startingIndex=refIndex-numItems;
+                    endingIndex=refIndex-1;
+                }
 
-                List<JSONObject> activitiesJson=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, orderDirections, limits);
+                whereClauses.add(Activity.idKey+">="+SQLHelper.convertToQueryValue(startingIndex));
+                whereClauses.add(Activity.idKey+"<="+SQLHelper.convertToQueryValue(endingIndex));
+
+                List<JSONObject> activitiesJson=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND);
                 if(activitiesJson==null) break;
                 ret=new ArrayList<Activity>();
                 for(JSONObject activityJson : activitiesJson){
@@ -441,15 +434,15 @@ public class SQLCommander {
 		return ret;
 	}	
 
-	public static List<Activity> queryPendingActivitiesInChronologicalOrder(int pageIndex, int itemsPerPage){
-		return queryActivitiesByStatusInChronologicalOrder(Activity.StatusType.pending, pageIndex, itemsPerPage);
+	public static List<Activity> queryPendingActivitiesInChronologicalOrder(int refIndex, int numItems, int direction){
+		return queryActivitiesByStatusInChronologicalOrder(Activity.StatusType.pending, refIndex, numItems, direction);
 	}
 
-	public static List<Activity> queryAcceptedActivitiesInChronologicalOrder(int pageIndex, int itemsPerPage){
-		return queryActivitiesByStatusInChronologicalOrder(Activity.StatusType.accepted, pageIndex, itemsPerPage);
+	public static List<Activity> queryAcceptedActivitiesInChronologicalOrder(int refIndex, int numItems, int direction){
+		return queryActivitiesByStatusInChronologicalOrder(Activity.StatusType.accepted, refIndex, numItems, direction);
 	}
 
-	public static List<Activity> queryActivitiesByStatusAndUserIdInChronologicalOrder(Activity.StatusType status, int pageIndex, int itemsPerPage, int userId){
+	public static List<Activity> queryActivitiesByStatusAndUserIdInChronologicalOrder(Activity.StatusType status, int refIndex, int numItems, int direction, int userId){
 		List<Activity> ret=null;
 		do{
 			try{
@@ -468,20 +461,21 @@ public class SQLCommander {
 	            columnNames.add(Activity.statusKey);					
 				List<String> whereClauses=new LinkedList<String>();
 				whereClauses.add(Activity.statusKey+"="+status.ordinal());
-				
-				List<String> orderClauses=new LinkedList<String>();
-				orderClauses.add(Activity.createdTimeKey);
-				
-				List<String> orderDirections=new LinkedList<String>();
-				orderDirections.add(SQLHelper.directionDescend);
 
-				List<Integer> limits=new LinkedList<Integer>();
-				Integer startingIndex=pageIndex*itemsPerPage;
-				Integer endingIndex=startingIndex+itemsPerPage;
-				limits.add(startingIndex);
-				limits.add(endingIndex);
+                Integer startingIndex=null;
+                Integer endingIndex=null;
+                if(direction==s_directionForward){
+                    startingIndex=refIndex+1;
+                    endingIndex=refIndex+numItems;
+                } else{
+                    startingIndex=refIndex-numItems;
+                    endingIndex=refIndex-1;
+                }
 
-				List<JSONObject> activitiesJson=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, orderDirections, limits);
+                whereClauses.add(Activity.idKey+">="+SQLHelper.convertToQueryValue(startingIndex));
+                whereClauses.add(Activity.idKey+"<="+SQLHelper.convertToQueryValue(endingIndex));
+
+				List<JSONObject> activitiesJson=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND);
 				if(activitiesJson==null) break;
 
                 ret=new ArrayList<Activity>();
@@ -496,8 +490,8 @@ public class SQLCommander {
 		return ret;
 	}
 
-	public static List<Activity> queryAcceptedActivitiesByUserIdInChronologicalOrder(int pageIndex, int itemsPerPage, int userId){
-		return queryActivitiesByStatusAndUserIdInChronologicalOrder(Activity.StatusType.accepted, pageIndex, itemsPerPage, userId);
+	public static List<Activity> queryAcceptedActivitiesByUserIdInChronologicalOrder(int refIndex, int numItems, int direction, int userId){
+		return queryActivitiesByStatusAndUserIdInChronologicalOrder(Activity.StatusType.accepted, refIndex, numItems, direction, userId);
 	}
 	
 	public static UserActivityRelation.RelationType queryRelationOfUserIdAndActivity(int userId, int activityId){

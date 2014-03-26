@@ -27,8 +27,8 @@ POST /queryActivitiesHostedByUser controllers.ActivityQueryController.queryActiv
 POST /uploadAvatar controllers.Application.uploadAvatar()
 
 # Admin Page
-POST /queryPendingActivitiesByAdmin controllers.AdminController.queryPendingActivitiesByAdmin()
-POST /queryAcceptedActivitiesByAdmin controllers.AdminController.queryAcceptedActivitiesByAdmin()
+POST /queryPendingActivitiesByAdmin controllers.AdminController.queryPendingActivitiesByAdmin(refIndex: Integer, numItems: Integer, direction: Integer)
+POST /queryAcceptedActivitiesByAdmin controllers.AdminController.queryAcceptedActivitiesByAdmin(refIndex: Integer, numItems: Integer, direction: Integer)
 POST /acceptActivity controllers.AdminController.acceptActivity()
 POST /deleteActivityByAdmin controllers.AdminController.deleteActivityByAdmin()
 

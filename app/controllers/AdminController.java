@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class AdminController extends Controller {
 
     public static String s_lastActivityId="lastActivityId";
-    public static Integer s_itemsPerPage=6; // hard coded for now
 
     public static Result acceptActivity(){
         // define response attributes
@@ -79,16 +78,11 @@ public class AdminController extends Controller {
         return badRequest("Activity not completely deleted!");
     }
 
-    public static Result queryPendingActivitiesByAdmin(){
+    public static Result queryPendingActivitiesByAdmin(Integer refIndex, Integer numItems, Integer direction){
 		response().setContentType("text/plain");
         do{
     		try{
-                Map<String, String[]> formData=request().body().asFormUrlEncoded();
-                String[] lastActivityIds=formData.get(s_lastActivityId);
-                if(lastActivityIds==null) break;
-                Integer lastActivityId=Integer.parseInt(lastActivityIds[0]);
-                
-    			List<Activity> activities=SQLCommander.queryPendingActivitiesInChronologicalOrder(lastActivityId, s_itemsPerPage);
+                List<Activity> activities=SQLCommander.queryPendingActivitiesInChronologicalOrder(refIndex, numItems, direction);
       			if(activities==null) break;
                 ObjectNode result = Json.newObject();
       		
@@ -103,16 +97,11 @@ public class AdminController extends Controller {
         return badRequest();
     }
     
-    public static Result queryAcceptedActivitiesByAdmin(){
+    public static Result queryAcceptedActivitiesByAdmin(Integer refIndex, Integer numItems, Integer direction){
 		response().setContentType("text/plain");
         do{
     		try{
-                Map<String, String[]> formData=request().body().asFormUrlEncoded();
-                String[] lastActivityIds=formData.get(s_lastActivityId);
-                if(lastActivityIds==null) break;
-                Integer lastActivityId=Integer.parseInt(lastActivityIds[0]);
-                
-    			List<Activity> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(lastActivityId, s_itemsPerPage);
+    			List<Activity> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(refIndex, numItems, direction);
       			if(activities==null) break;
 
                 ObjectNode result = Json.newObject();

@@ -95,10 +95,19 @@ function generateActivityCell(activityJson, isLoggedIn, mode){
 
 	var activityId=activityJson[g_keyActivityId];
 	var activityTitle=activityJson[g_keyActivityTitle];
-    var activityContent=activityJson
+    
+    var coverImageURL=null;
+    do{
+        var activityImages=activityJson[g_keyActivityImages];
+        if(activityImages==null) break;
+        for(var key in activityImages){
+           if(activityImages.hasOwnProperty(key)){
+               var activityImage=activityImages[key];
+               coverImageURL=activityImage[g_keyImageURL];
+           }
+        }
+    }while(false);
 
-	var coverImageURL=activityJson[g_keyImageURL];
-	
     var userActivityRelationId=activityJson[g_keyUserActivityRelationId];
 	var activityStatus=activityJson[g_keyActivityStatus];
 

@@ -15,8 +15,6 @@ public class ActivityQueryController extends Controller {
     public static String s_refIndex="refIndex";
 	public static String s_numItems="numItems";
 	public static String s_direction="direction";
-	public static Integer s_directionForward=(+1);
-	public static Integer s_directionBackward=(-1);
 
     public static Result queryActivityDetail(Integer activityId){
         response().setContentType("text/plain");
@@ -38,7 +36,7 @@ public class ActivityQueryController extends Controller {
         response().setContentType("text/plain");
         do{
             try{
-                List<Activity> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(lastActivityId, s_itemsPerPage);
+                List<Activity> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(refIndex, numItems, direction);
                 ObjectNode result = play.libs.Json.newObject();
 
                 for(Activity activity : activities){
@@ -58,7 +56,7 @@ public class ActivityQueryController extends Controller {
             try{
                 int userId=DataUtils.getUserIdByToken(token);
                 if(userId==DataUtils.invalidId) break;
-                List<Activity> activities=SQLCommander.queryAcceptedActivitiesByUserIdInChronologicalOrder(lastActivityId, s_itemsPerPage, userId);
+                List<Activity> activities=SQLCommander.queryAcceptedActivitiesByUserIdInChronologicalOrder(refIndex, numItems, direction, userId);
                 if(activities==null) break;
                 ObjectNode result = Json.newObject();
 
@@ -76,7 +74,7 @@ public class ActivityQueryController extends Controller {
         response().setContentType("text/plain");
         do{
             Map<String, String[]> formData=request().body().asFormUrlEncoded();
-            String[] lastActivityIds=formData.get(s_lastActivityId);
+            String[] lastActivityIds=formData.get(s_refIndex);
             if(lastActivityIds==null) break;
             Integer lastActivityId=Integer.parseInt(lastActivityIds[0]);
 
@@ -91,7 +89,7 @@ public class ActivityQueryController extends Controller {
             UserActivityRelation.RelationType relation=UserActivityRelation.RelationType.host;
 
             try{
-                List<Activity> activities=SQLCommander.queryActivitiesByUserAndRelation(user, relation, lastActivityId, s_itemsPerPage);
+                List<Activity> activities=SQLCommander.queryActivitiesByUserAndRelation(user, relation);
                 if(activities==null) break;
                 ObjectNode result = play.libs.Json.newObject();
 
