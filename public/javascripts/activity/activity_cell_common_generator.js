@@ -104,6 +104,7 @@ function generateActivityCell(activityJson, isLoggedIn, mode){
            if(activityImages.hasOwnProperty(key)){
                var activityImage=activityImages[key];
                coverImageURL=activityImage[g_keyImageURL];
+               break;
            }
         }
     }while(false);

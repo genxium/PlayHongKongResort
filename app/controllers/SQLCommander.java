@@ -295,6 +295,7 @@ public class SQLCommander {
 	 		String tableName="Activity";
 
 	 		List<String> columnNames=new LinkedList<String>();
+            columnNames.add(Activity.idKey);
 			columnNames.add(Activity.titleKey);
 			columnNames.add(Activity.contentKey);
 			columnNames.add(Activity.createdTimeKey);

@@ -70,18 +70,9 @@ public class ActivityQueryController extends Controller {
         }while(false);
         return badRequest();
     }
-    public static Result queryActivitiesHostedByUser(){
+    public static Result queryActivitiesHostedByUser(Integer refIndex, Integer numItems, Integer direction, String token){
         response().setContentType("text/plain");
         do{
-            Map<String, String[]> formData=request().body().asFormUrlEncoded();
-            String[] lastActivityIds=formData.get(s_refIndex);
-            if(lastActivityIds==null) break;
-            Integer lastActivityId=Integer.parseInt(lastActivityIds[0]);
-
-            String[] tokens=formData.get(User.tokenKey);
-            if(tokens==null) break;
-            String token=tokens[0];
-
             Integer userId= DataUtils.getUserIdByToken(token);
             if(userId==DataUtils.invalidId) break;
 

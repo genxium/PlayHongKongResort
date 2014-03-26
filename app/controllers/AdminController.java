@@ -16,8 +16,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class AdminController extends Controller {
 
-    public static String s_lastActivityId="lastActivityId";
-
     public static Result acceptActivity(){
         // define response attributes
         response().setContentType("text/plain");
@@ -78,10 +76,18 @@ public class AdminController extends Controller {
         return badRequest("Activity not completely deleted!");
     }
 
-    public static Result queryPendingActivitiesByAdmin(Integer refIndex, Integer numItems, Integer direction){
+    public static Result queryPendingActivitiesByAdmin(Integer refIndex, Integer numItems, Integer direction, String token){
 		response().setContentType("text/plain");
         do{
     		try{
+                Integer userId=DataUtils.getUserIdByToken(token);
+                if(userId==DataUtils.invalidId) break;
+
+                User user=SQLCommander.queryUser(userId);
+                if(user==null) break;
+
+                if(SQLCommander.validateAdminAccess(user)==false) break;
+
                 List<Activity> activities=SQLCommander.queryPendingActivitiesInChronologicalOrder(refIndex, numItems, direction);
       			if(activities==null) break;
                 ObjectNode result = Json.newObject();
@@ -97,11 +103,19 @@ public class AdminController extends Controller {
         return badRequest();
     }
     
-    public static Result queryAcceptedActivitiesByAdmin(Integer refIndex, Integer numItems, Integer direction){
+    public static Result queryAcceptedActivitiesByAdmin(Integer refIndex, Integer numItems, Integer direction, String token){
 		response().setContentType("text/plain");
         do{
     		try{
-    			List<Activity> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(refIndex, numItems, direction);
+                Integer userId=DataUtils.getUserIdByToken(token);
+                if(userId==DataUtils.invalidId) break;
+
+                User user=SQLCommander.queryUser(userId);
+                if(user==null) break;
+
+                if(SQLCommander.validateAdminAccess(user)==false) break;
+
+                List<Activity> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(refIndex, numItems, direction);
       			if(activities==null) break;
 
                 ObjectNode result = Json.newObject();
