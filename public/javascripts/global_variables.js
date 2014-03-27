@@ -28,7 +28,7 @@ var g_keyActivityContent="ActivityContent";
 var g_keyActivityStatus="ActivityStatus";
 var g_keyActivityCreatedTime="ActivityCreatedTime";
 var g_keyActivityBeginTime="ActivityBeginTime";
-var g_keyActivityDeadline="ActivityApplicationDeadline";
+var g_keyActivityDeadline="ActivityApplictionDeadline";
 var g_keyActivityImages="ActivityImages";
 	 
 var g_keyActivityAppliedParticipants="ActivityAppliedParticipants";
@@ -43,6 +43,9 @@ var g_callbackOnActivityEditorRemoved=null;
 
 // general keys
 var g_keyPageIndex="pageIndex";
+var g_keyStartingIndex="startingIndex";
+var g_keyEndingIndex="endingIndex";
+
 var g_keyRefIndex="refIndex";
 var g_keyNumItems="numItems";
 var g_keyDirection="direction";

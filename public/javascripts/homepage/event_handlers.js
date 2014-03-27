@@ -40,7 +40,7 @@ function onBtnLoginClicked(evt){
     				$.cookie(g_keyLoginStatus.toString(), jsonResponse[g_keyUserToken]);
     				// refresh screen
     				refreshOnLoggedIn();
-    				queryDefaultActivitiesByUser(0);
+    				queryDefaultActivitiesByUser(0, g_numItemsPerPage, g_directionForward);
 				} else{
 
 	    		}

@@ -15,9 +15,18 @@ function queryDefaultActivities(refIndex, numItems, direction){
 							var targetSection=$("#"+g_idSectionDefaultActivities);
     						// clean target section
 	    					targetSection.empty();
+
+	    					var count=Object.keys(jsonResponse).length;
 	    					// display contents
 	    					for(var key in jsonResponse){
 	    						var activityJson=jsonResponse[key];
+	    						var activityId=activityJson[g_keyActivityId];
+	    						if(key==0){
+	    						    targetSection.data(g_keyStartingIndex, activityId);
+	    						}
+	    						if(key==count-1){
+	    						    targetSection.data(g_keyEndingIndex, activityId);
+	    						}
 	    						var cell=generateActivityCell(activityJson, false, 0);
 								targetSection.append(cell);
 	    					}
@@ -51,9 +60,17 @@ function queryDefaultActivitiesByUser(refIndex, numItems, direction){
 							var targetSection=$("#"+g_idSectionDefaultActivities);
     						// clean target section
 	    					targetSection.empty();
+
+	    					var count=Object.keys(jsonResponse).length;
 	    					// display contents
 	    					for(var key in jsonResponse){
 	    						var activityJson=jsonResponse[key];
+	    						if(key==0){
+                                    targetSection.data(g_keyStartingIndex, activityId);
+                                }
+                                if(key==count-1){
+                                    targetSection.data(g_keyEndingIndex, activityId);
+                                }
 	    						var cell=generateActivityCell(activityJson, false, 0);
 								targetSection.append(cell);
 	    					}
@@ -79,7 +96,7 @@ function onBtnLogoutClicked(evt){
     				if(status=="success"){
     					$.removeCookie(g_keyLoginStatus.toString());
     					refreshOnEnter();
-    					queryDefaultActivities();
+    					queryDefaultActivities(0, g_numItemsPerPage, g_directionForward);
     				} else{
 
     				}

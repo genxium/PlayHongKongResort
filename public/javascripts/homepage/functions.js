@@ -8,13 +8,12 @@ function checkLoginStatus(evt){
 			queryDefaultActivities(0, g_numItemsPerPage, g_directionForward);
 			break;
 		}
-
+        var params={};
+        params[g_keyUserToken]=token.toString();
 		$.ajax({
             method: "POST",
             url: "/checkLoginStatus",
-            data: {
-                UserToken: token.toString()
-            },
+            data: params,
             success: function(data, status, xhr){
                 var userJson=JSON.parse(data);
                 g_userName=userJson[g_keyUserEmail];
@@ -23,13 +22,13 @@ function checkLoginStatus(evt){
                 $.cookie(g_keyLoginStatus.toString(), userJson[g_keyUserToken]);
                 // refresh screen
                 refreshOnLoggedIn();
-                queryDefaultActivitiesByUser(0);
+                queryDefaultActivitiesByUser(0, g_numItemsPerPage, g_directionForward, token);
             },
             error: function(xhr, status, errorThrown){
                 // refresh screen
                 $.removeCookie(g_keyLoginStatus.toString());
                 refreshOnEnter();
-                queryDefaultActivities(0);
+                queryDefaultActivities(0, g_numItemsPerPage, g_directionForward);
             }
         });
 
