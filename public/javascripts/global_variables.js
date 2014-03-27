@@ -13,6 +13,7 @@ var g_idKeyboardEnter=13;
 
 // cookie keys
 var g_keyLoginStatus="loginStatusToken";
+var g_keyToken="token";
 
 // structured data keys (should be consistent with server-side in a protocol manner)
 var g_keyUserId="UserId";

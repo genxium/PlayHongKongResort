@@ -50,25 +50,31 @@ function onBtnLoginClicked(evt){
 
 function onBtnPreviousPageClicked(evt){
 	var targetSection=$("#"+g_idSectionDefaultActivities);
-	var pageIndex=targetSection.data(g_pageIndexKey);
+
+	var pageIndex=targetSection.data(g_keyPageIndex);
+    var startingIndex=targetSection.data(g_keyStartingIndex);
+    var endingIndex=targetSection.data(g_keyEndingIndex);
 
 	var token = $.cookie(g_keyLoginStatus.toString());
 	if(token==null){
-		queryDefaultActivities(pageIndex-1);
+		queryDefaultActivities(startingIndex, g_numItemsPerPage, g_directionBackward);
 	} else{
-		queryDefaultActivitiesByUser(pageIndex-1);
+		queryDefaultActivitiesByUser(startingIndex, g_numItemsPerPage, g_directionBackward, token);
 	}
 }
 
 function onBtnNextPageClicked(evt){
 	var targetSection=$("#"+g_idSectionDefaultActivities);
-	var pageIndex=targetSection.data(g_pageIndexKey);
+
+    var pageIndex=targetSection.data(g_keyPageIndex);
+    var startingIndex=targetSection.data(g_keyStartingIndex);
+    var endingIndex=targetSection.data(g_keyEndingIndex);
 
 	var token = $.cookie(g_keyLoginStatus.toString());
 	if(token==null){
-		queryDefaultActivities(pageIndex+1);
+		queryDefaultActivities(endingIndex, g_numItemsPerPage, g_directionForward);
 	} else{
-		queryDefaultActivitiesByUser(pageIndex+1);
+		queryDefaultActivitiesByUser(endingIndex, g_numItemsPerPage, g_directionForward, token);
 	}
 }
 

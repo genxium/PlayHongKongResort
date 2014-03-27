@@ -15,20 +15,21 @@ function queryDefaultActivities(refIndex, numItems, direction){
 							var targetSection=$("#"+g_idSectionDefaultActivities);
     						// clean target section
 	    					targetSection.empty();
-
+                            var idx=0;
 	    					var count=Object.keys(jsonResponse).length;
 	    					// display contents
 	    					for(var key in jsonResponse){
 	    						var activityJson=jsonResponse[key];
 	    						var activityId=activityJson[g_keyActivityId];
-	    						if(key==0){
+	    						if(idx==0){
 	    						    targetSection.data(g_keyStartingIndex, activityId);
 	    						}
-	    						if(key==count-1){
+	    						if(idx==count-1){
 	    						    targetSection.data(g_keyEndingIndex, activityId);
 	    						}
 	    						var cell=generateActivityCell(activityJson, false, 0);
 								targetSection.append(cell);
+								++idx;
 	    					}
 						}
     				} else{
@@ -48,7 +49,7 @@ function queryDefaultActivitiesByUser(refIndex, numItems, direction){
 	params[g_keyDirection]=direction.toString();
 	
 	var token = $.cookie(g_keyLoginStatus.toString());
-	params[g_keyUserToken]=token;
+	params[g_keyToken]=token;
 	
 	try{
 		$.get("/queryDefaultActivitiesByUser", 
@@ -61,18 +62,21 @@ function queryDefaultActivitiesByUser(refIndex, numItems, direction){
     						// clean target section
 	    					targetSection.empty();
 
+                            var idx=0;
 	    					var count=Object.keys(jsonResponse).length;
 	    					// display contents
 	    					for(var key in jsonResponse){
 	    						var activityJson=jsonResponse[key];
-	    						if(key==0){
+	    						var activityId=activityJson[g_keyActivityId];
+	    						if(idx==0){
                                     targetSection.data(g_keyStartingIndex, activityId);
                                 }
-                                if(key==count-1){
+                                if(idx==count-1){
                                     targetSection.data(g_keyEndingIndex, activityId);
                                 }
 	    						var cell=generateActivityCell(activityJson, false, 0);
 								targetSection.append(cell);
+								++idx;
 	    					}
 						}
     				} else{
