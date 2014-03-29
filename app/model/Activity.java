@@ -117,7 +117,7 @@ public class Activity {
             ret.put(Activity.beginTimeKey, m_beginTime.toString());
             ret.put(Activity.deadlineKey, m_deadline.toString());
             ret.put(Activity.capacityKey, String.valueOf(m_capacity));
-            ret.put(Activity.statusKey, String.valueOf(m_status));
+            ret.put(Activity.statusKey, String.valueOf(m_status.ordinal()));
         }while(false);
         return ret;
     }
