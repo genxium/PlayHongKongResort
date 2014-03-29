@@ -59,7 +59,7 @@ function onBtnPreviousPageClicked(evt){
 	if(token==null){
 		queryDefaultActivities(startingIndex, g_numItemsPerPage, g_directionBackward);
 	} else{
-		queryDefaultActivitiesByUser(startingIndex, g_numItemsPerPage, g_directionBackward, token);
+		queryDefaultActivitiesByUser(startingIndex, g_numItemsPerPage, g_directionBackward);
 	}
 }
 
@@ -74,7 +74,7 @@ function onBtnNextPageClicked(evt){
 	if(token==null){
 		queryDefaultActivities(endingIndex, g_numItemsPerPage, g_directionForward);
 	} else{
-		queryDefaultActivitiesByUser(endingIndex, g_numItemsPerPage, g_directionForward, token);
+		queryDefaultActivitiesByUser(endingIndex, g_numItemsPerPage, g_directionForward);
 	}
 }
 

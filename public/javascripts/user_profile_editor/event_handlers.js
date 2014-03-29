@@ -45,13 +45,19 @@ function onBtnUploadAvatarClicked(evt){
 function onBtnPreviousPageClicked(evt){
 	var targetSection=$("#"+g_idSectionOwnedActivities);
 	var pageIndex=targetSection.data(g_pageIndexKey);
-	queryActivitiesHostedByUser(pageIndex-1);
+    var startingIndex=targetSection.data(g_keyStartingIndex);
+    var endingIndex=targetSection.data(g_keyEndingIndex);
+
+	queryActivitiesHostedByUser(startingIndex, g_numItemsPerPage, g_directionBackward);
 }
 
 function onBtnNextPageClicked(evt){
 	var targetSection=$("#"+g_idSectionOwnedActivities);
 	var pageIndex=targetSection.data(g_pageIndexKey);
-	queryActivitiesHostedByUser(pageIndex+1);
+    var startingIndex=targetSection.data(g_keyStartingIndex);
+    var endingIndex=targetSection.data(g_keyEndingIndex);
+
+	queryActivitiesHostedByUser(endingIndex, g_numItemsPerPage, g_directionForward);
 }
 
 function onSectionOwnedActivitiesScrolled(evt){

@@ -8,31 +8,43 @@ function validateImage(file){
 	return true;
 }
 
-function queryActivitiesHostedByUser(pageIndex){
+function queryActivitiesHostedByUser(refIndex, numItems, direction){
+    var params={};
+    params[g_keyRefIndex]=refIndex.toString();
+    params[g_keyNumItems]=numItems.toString();
+    params[g_keyDirection]=direction.toString();
+
 	var token = $.cookie(g_keyLoginStatus.toString());
+    params[g_keyToken]=token;
+
 	try{
-		$.post("/queryActivitiesHostedByUser", 
-			{
-				UserToken: token.toString(),
-				pageIndex: pageIndex.toString() 
-			},
+		$.get("/queryActivitiesHostedByUser", 
+            params,
 			function(data, status, xhr){
     				if(status=="success"){
     					var jsonResponse=JSON.parse(data);
-    					if(jsonResponse!=null){
-    						var targetSection=$("#"+g_idSectionOwnedActivities);
+                        var count=Object.keys(jsonResponse).length;
+    					if(jsonResponse!=null && count>0){
+							var targetSection=$("#"+g_idSectionOwnedActivities);
     						// clean target section
 	    					targetSection.empty();
-    						// update page index of the target section
-    						targetSection.data(g_pageIndexKey, pageIndex);
+
+                            var idx=0;
 	    					// display contents
 	    					for(var key in jsonResponse){
-	    						var jsonActivity=jsonResponse[key];
-	    						var cell=generateActivityCell(jsonActivity, true, 1);
-	    						var text=cell.html();
+	    						var activityJson=jsonResponse[key];
+	    						var activityId=activityJson[g_keyActivityId];
+	    						if(idx==0){
+                                    targetSection.data(g_keyStartingIndex, activityId);
+                                }
+                                if(idx==count-1){
+                                    targetSection.data(g_keyEndingIndex, activityId);
+                                }
+	    						var cell=generateActivityCell(activityJson, true, g_modeProfile);
 								targetSection.append(cell);
+								++idx;
 	    					}
-    					}	
+                        }
     				} else{
     					
     				}

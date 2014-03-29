@@ -27,7 +27,7 @@ function queryDefaultActivities(refIndex, numItems, direction){
 	    						if(idx==count-1){
 	    						    targetSection.data(g_keyEndingIndex, activityId);
 	    						}
-	    						var cell=generateActivityCell(activityJson, false, 0);
+	    						var cell=generateActivityCell(activityJson, false, g_modeHomepage);
 								targetSection.append(cell);
 								++idx;
 	    					}
@@ -57,13 +57,13 @@ function queryDefaultActivitiesByUser(refIndex, numItems, direction){
 			function(data, status, xhr){
     				if(status=="success"){
     					var jsonResponse=JSON.parse(data);
-    					if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
+	    				var count=Object.keys(jsonResponse).length;
+    					if(jsonResponse!=null && count>0){
 							var targetSection=$("#"+g_idSectionDefaultActivities);
     						// clean target section
 	    					targetSection.empty();
 
                             var idx=0;
-	    					var count=Object.keys(jsonResponse).length;
 	    					// display contents
 	    					for(var key in jsonResponse){
 	    						var activityJson=jsonResponse[key];
@@ -74,7 +74,7 @@ function queryDefaultActivitiesByUser(refIndex, numItems, direction){
                                 if(idx==count-1){
                                     targetSection.data(g_keyEndingIndex, activityId);
                                 }
-	    						var cell=generateActivityCell(activityJson, false, 0);
+	    						var cell=generateActivityCell(activityJson, true, g_modeHomepage);
 								targetSection.append(cell);
 								++idx;
 	    					}

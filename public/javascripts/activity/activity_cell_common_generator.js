@@ -86,7 +86,7 @@ function generateActivityCell(activityJson, isLoggedIn, mode) returns a complete
 
 activityJson(string): the json string that contains activity information;
 isLoggedIn(boolean): [true,false] indicating user status;
-mode: [0,1] 0 indicates that the cell is generated for home page while 1 indicates that the cell is generated for profile page.
+mode: g_modeHomepage indicates that the cell is generated for home page while g_modeProfile indicates that the cell is generated for profile page.
 
 */
 function generateActivityCell(activityJson, isLoggedIn, mode){
@@ -111,6 +111,7 @@ function generateActivityCell(activityJson, isLoggedIn, mode){
 
     var userActivityRelationId=activityJson[g_keyUserActivityRelationId];
 	var activityStatus=activityJson[g_keyActivityStatus];
+    var statusStr=arrayStatusName[parseInt(activityStatus)];
 
 	var ret=$('<div>',
 				{
@@ -132,7 +133,7 @@ function generateActivityCell(activityJson, isLoggedIn, mode){
 				}).appendTo(ret);
 
     switch (mode){
-        case 0:{
+        case g_modeHomepage:{
             if(userActivityRelationId==null){
                 var btnJoin=$('<button>',
                             {
@@ -158,12 +159,12 @@ function generateActivityCell(activityJson, isLoggedIn, mode){
             }
             break;
         }
-        case 1:{
+        case g_modeProfile:{
             if(isLoggedIn==true && activityStatus!=null){
 
                 var statusIndicator=$('<div>',{
                             class: g_classActivityStatusIndicator,
-                            html: arrayStatusName[parseInt(activityStatus)] 
+                            html: statusStr 
                         }).appendTo(ret);
                 
                 if(parseInt(activityStatus)==0){ 

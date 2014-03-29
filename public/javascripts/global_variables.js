@@ -7,6 +7,8 @@ var g_userName;
 var g_userAvatarURL;
 var g_directionForward=(+1);
 var g_directionBackward=(-1);
+var g_modeHomepage=0;
+var g_modeProfile=1;
 
 // keyboard ids
 var g_idKeyboardEnter=13;

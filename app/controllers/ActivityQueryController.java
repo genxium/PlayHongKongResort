@@ -85,7 +85,7 @@ public class ActivityQueryController extends Controller {
                 ObjectNode result = play.libs.Json.newObject();
 
                 for(Activity activity : activities){
-                    result.put(String.valueOf(activity.getId()), activity.toObjectNode());
+                    result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages());
                 }
                 return ok(result);
             } catch(Exception e){
