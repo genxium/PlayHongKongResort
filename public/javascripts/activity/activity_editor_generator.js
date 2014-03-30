@@ -65,7 +65,7 @@ function onUpdateFormSubmission(formEvt){
 			success: function(data, status, xhr){
 				formObj.remove();
 				if(g_callbackOnActivityEditorRemoved!=null){
-					g_callbackOnActivityEditorRemoved(0);
+					g_callbackOnActivityEditorRemoved(0, g_numItemsPerPage, g_directionForward);
 				}
 			},
 			error: function(xhr, status, errorThrown){
@@ -140,7 +140,7 @@ function onSubmitFormSubmission(formEvt){
 			success: function(data, status, xhr){
 				formObj.remove();
 				if(g_callbackOnActivityEditorRemoved!=null){
-					g_callbackOnActivityEditorRemoved(0);
+					g_callbackOnActivityEditorRemoved(0, g_numItemsPerPage, g_directionForward);
 				}
 			},
 			error: function(xhr, status, errorThrown){

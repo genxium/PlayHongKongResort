@@ -6,37 +6,16 @@ function queryDefaultActivities(refIndex, numItems, direction){
 	params[g_keyDirection]=direction.toString();
 	
 	try{
-		$.get("/queryDefaultActivities", 
-			params,
-			function(data, status, xhr){
-    				if(status=="success"){
-    					var jsonResponse=JSON.parse(data);
-    					if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
-							var targetSection=$("#"+g_idSectionDefaultActivities);
-    						// clean target section
-	    					targetSection.empty();
-                            var idx=0;
-	    					var count=Object.keys(jsonResponse).length;
-	    					// display contents
-	    					for(var key in jsonResponse){
-	    						var activityJson=jsonResponse[key];
-	    						var activityId=activityJson[g_keyActivityId];
-	    						if(idx==0){
-	    						    targetSection.data(g_keyStartingIndex, activityId);
-	    						}
-	    						if(idx==count-1){
-	    						    targetSection.data(g_keyEndingIndex, activityId);
-	    						}
-	    						var cell=generateActivityCell(activityJson, false, g_modeHomepage);
-								targetSection.append(cell);
-								++idx;
-	    					}
-						}
-    				} else{
-    					
-    				}
-			}
-		);
+		$.ajax({
+            method: "GET", 
+            url: "/queryDefaultActivities", 
+			data: params,
+			success: g_callbackOnQueryActivitiesSuccess,
+            error: function(data, status, xhr){
+                
+            } 		
+        });
+
 	} catch(err){
 
 	}
@@ -52,38 +31,15 @@ function queryDefaultActivitiesByUser(refIndex, numItems, direction){
 	params[g_keyToken]=token;
 	
 	try{
-		$.get("/queryDefaultActivitiesByUser", 
-			params,
-			function(data, status, xhr){
-    				if(status=="success"){
-    					var jsonResponse=JSON.parse(data);
-	    				var count=Object.keys(jsonResponse).length;
-    					if(jsonResponse!=null && count>0){
-							var targetSection=$("#"+g_idSectionDefaultActivities);
-    						// clean target section
-	    					targetSection.empty();
-
-                            var idx=0;
-	    					// display contents
-	    					for(var key in jsonResponse){
-	    						var activityJson=jsonResponse[key];
-	    						var activityId=activityJson[g_keyActivityId];
-	    						if(idx==0){
-                                    targetSection.data(g_keyStartingIndex, activityId);
-                                }
-                                if(idx==count-1){
-                                    targetSection.data(g_keyEndingIndex, activityId);
-                                }
-	    						var cell=generateActivityCell(activityJson, true, g_modeHomepage);
-								targetSection.append(cell);
-								++idx;
-	    					}
-						}
-    				} else{
-    					
-    				}
-			}
-		);
+		$.ajax({
+            method: "GET", 
+            url: "/queryDefaultActivitiesByUser", 
+			data: params,
+			success: g_callbackOnQueryActivitiesSuccess,
+            error: function(data, status, xhr){
+                
+            } 		
+        });
 	} catch(err){
 
 	}

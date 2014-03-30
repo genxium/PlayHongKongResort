@@ -34,3 +34,6 @@ var g_idBtnNextPage="idBtnNextPage";
 var g_indexLoggedInUserMenu="indexLoggedInUserMenu";
 var g_indexBtnLogout="indexBtnLogout";
 var g_indexBtnProfile="indexBtnProfile";
+
+// callback functions
+var g_callbackOnQueryActivitiesSuccess=null;

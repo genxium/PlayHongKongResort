@@ -5,6 +5,8 @@ $(document).ready(function(){
 	checkLoginStatus();
 
 	g_callbackOnActivityEditorRemoved=refreshOnLoggedIn;
+    g_callbackOnQueryActivitiesSuccess=onQueryActivitiesSuccess;
+
 	$("#"+g_idBtnRegister).bind("click", onBtnRegisterClicked);
 	$("#"+g_idBtnLogin).bind("click", onBtnLoginClicked);
 	$("#"+g_idBtnCreate).bind("click", onBtnCreateClicked);
