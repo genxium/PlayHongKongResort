@@ -10,13 +10,19 @@ function onUpdateFormSubmission(formEvt){
 		var newImages=formObj.children("."+g_classNewImage);
 		var newImagesCount=newImages.length;
 		for(var i=0;i<newImagesCount;i++){
-		    var field=newImages[i];
-            var files=field.files;
-            var count=files.length;
-            if(count==1) {
-                var file=files[0];
-                formData.append(g_indexNewImage+"-"+i.toString(), file);
-            }
+		    do{
+                var field=newImages[i];
+                var checkbox=$(field).data(g_indexCheckbox);
+                if(checkbox==null) break;
+                var checked=checkbox.checked;
+                if(checked==false) break;
+                var files=field.files;
+                var count=files.length;
+                if(count==1) {
+                    var file=files[0];
+                    formData.append(g_indexNewImage+"-"+i.toString(), file);
+                }
+            }while(false);
 		}
 
 		// append user token and activity id for identity
@@ -54,6 +60,7 @@ function onUpdateFormSubmission(formEvt){
 		var deadline=deadlineYear+"-"+deadlineMonth+"-"+deadlineDay+" "+deadlineHour+":"+deadlineMinute+":00";
 		formData.append(g_keyActivityDeadline, deadline);
 
+        alert(formData);
 		$.ajax({
 			method: "POST",
 			url: "/updateActivity", 
@@ -175,11 +182,11 @@ function previewImage(input) {
             }).appendTo(node);
             var checkbox=$('<input>',{
                    type: "checkbox",
-                   class: g_classNewCheckbox,
                    checked: true
             }).appendTo(node);
             $(input).after(node);
             $(input).data(g_indexAssociatedImage, node);
+            $(input).data(g_indexCheckbox, checkbox);
         }
 
         reader.readAsDataURL(image);
@@ -347,7 +354,9 @@ function generateActivityEditorByJson(activityJson){
 
         for(var key in activityImages){
            if(activityImages.hasOwnProperty(key)){
-               var node=$('<p>').appendTo(imagesNode);
+               var node=$('<p>',{
+                    class: g_classOldImage
+               }).appendTo(imagesNode);
                var activityImage=activityImages[key];
                var imageUrl=activityImage[g_keyImageURL];
                var imageNode=$('<img>',{
@@ -355,11 +364,11 @@ function generateActivityEditorByJson(activityJson){
                }).appendTo(node);
                var checkbox=$('<input>',{
                    type: "checkbox",
-                   class: g_classOldCheckbox,
-                   checked: true
+                   checked: false
                }).appendTo(node);
                var imageId=activityImage[g_keyImageId];
                checkbox.data(g_keyImageId, imageId);
+               node.data(g_indexCheckbox);
            }
         }
      }while(false);

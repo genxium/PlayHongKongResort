@@ -1,6 +1,7 @@
 // input-box keys
 var g_classFieldActivityTitle="classFieldActivityTitle";
 var g_classFieldActivityContent="classFieldActivityContent";
+var g_classOldImage="classOldImage";
 var g_classNewImage="classNewImage";
 
 // button keys
@@ -16,8 +17,6 @@ var g_idSectionActivityEditor="idSectionActivityEditor";
 var g_classActivityEditor="classActivityEditor";
 var g_classSelectionBeginTime="classSelectionBeginTime";
 var g_classSelectionDeadline="classSelectionDeadline";
-var g_classOldCheckbox="classOldCheckbox";
-var g_classNewCheckbox="classNewCheckbox";
 
 // DOM indexes for cascaded DOM element search
 var g_indexBtnEdit="indexBtnEdit";
@@ -29,6 +28,7 @@ var g_indexAssociatedImage="indexAssociatedImage";
 
 var g_indexOldImage="indexOldImage";
 var g_indexNewImage="indexNewImage";
+var g_indexCheckbox="indexCheckbox";
 
 // general variables
 var g_maxNumberOfImagesForSingleActivity=3;

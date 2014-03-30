@@ -235,6 +235,7 @@ public class ActivityController extends Controller {
 
             } catch(Exception e){
                 System.out.println("Application.updateActivity:"+e.getMessage());
+                break;
             }
             return ok("Activity updated");
 
