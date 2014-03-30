@@ -5,7 +5,7 @@ var g_idSectionResponse="idSectionResponse";
 
 var g_idSectionOwnedActivities="idSectionOwnedActivities";
 
-// input-box keys
+// input-field keys
 var g_idFieldAvatar="idFieldAvatar";
 
 // button keys

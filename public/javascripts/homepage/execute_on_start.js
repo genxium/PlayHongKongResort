@@ -1,11 +1,13 @@
 $(document).ready(function(){
+
+    // initialize callback functions
+    g_callbackOnActivityEditorRemoved=refreshOnLoggedIn;
+    g_callbackOnQueryActivitiesSuccess=onQueryActivitiesSuccess;
+
 	// execute on page loaded
 	var sectionDefaultActivities=$("#"+g_idSectionDefaultActivities); 
 	sectionDefaultActivities.bind("scroll", onSectionDefaultActivitiesScrolled);
 	checkLoginStatus();
-
-	g_callbackOnActivityEditorRemoved=refreshOnLoggedIn;
-    g_callbackOnQueryActivitiesSuccess=onQueryActivitiesSuccess;
 
 	$("#"+g_idBtnRegister).bind("click", onBtnRegisterClicked);
 	$("#"+g_idBtnLogin).bind("click", onBtnLoginClicked);

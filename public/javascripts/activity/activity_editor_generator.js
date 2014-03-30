@@ -4,22 +4,21 @@ function onUpdateFormSubmission(formEvt){
 		formEvt.preventDefault(); // prevent default action.
 
 		var formObj = $(this);
-		var formData = new FormData(this);
-		/*
+		var formData = new FormData();
+
 		// check files
-		var iFiles=0;
-		for (iFiles = 0; iFiles < g_maxNumberOfImagesForSingleActivity; iFiles++) {
-		 	var imageName=g_indexImageOfActivityPrefix+iFiles;
-		 	var imageField=formObj.data(imageName);
-		 	var files=imageField.files;
-		 	var length=files.length;
-		 	if(length>1) break; // invalid field exist
-		 	var file=files[0];
-		 	var checkResult=isFileValid(file);
-		 	if(checkResult==false) break;
+		var newImages=formObj.children("."+g_classNewImage);
+		var newImagesCount=newImages.length;
+		for(var i=0;i<newImagesCount;i++){
+		    var field=newImages[i];
+            var files=field.files;
+            var count=files.length;
+            if(count==1) {
+                var file=files[0];
+                formData.append(g_indexNewImage+"-"+i.toString(), file);
+            }
 		}
-		if(iFiles<g_maxNumberOfImagesForSingleActivity) break;
-		*/
+
 		// append user token and activity id for identity
 		var token = $.cookie(g_keyLoginStatus.toString());
 		formData.append(g_keyUserToken, token);
@@ -60,8 +59,8 @@ function onUpdateFormSubmission(formEvt){
 			url: "/updateActivity", 
 			data: formData,
 			mimeType: "mutltipart/form-data",
-			contentType: false,
-			processData: false,
+			contentType: false, // tell jQuery not to set contentType
+			processData: false, // tell jQuery not to process the data
 			success: function(data, status, xhr){
 				formObj.remove();
 				if(g_callbackOnActivityEditorRemoved!=null){
@@ -148,6 +147,43 @@ function onSubmitFormSubmission(formEvt){
 			}
 		});
 	}while(false);
+}
+
+function previewImage(input) {
+    do{
+        var images=input.files;
+        if (images==null) break;
+        var image=images[0];
+        if(image==null) break;
+        var count=images.length;
+        if(count==0 || count>1){
+            alert("Choose only 1 image at a time!!!");
+            break;
+        }
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            var legacy=$(input).data(g_indexAssociatedImage);
+            if(legacy!=null){
+                legacy.remove();
+                $(input).removeData(g_indexAssociatedImage);
+            }
+
+            var node=$('<p>');
+            var imageNode=$('<img>', {
+                   src: e.target.result
+            }).appendTo(node);
+            var checkbox=$('<input>',{
+                   type: "checkbox",
+                   class: g_classNewCheckbox,
+                   checked: true
+            }).appendTo(node);
+            $(input).after(node);
+            $(input).data(g_indexAssociatedImage, node);
+        }
+
+        reader.readAsDataURL(image);
+    }while(false);
 }
 
 // Assistive functions
@@ -311,15 +347,35 @@ function generateActivityEditorByJson(activityJson){
 
         for(var key in activityImages){
            if(activityImages.hasOwnProperty(key)){
+               var node=$('<p>').appendTo(imagesNode);
                var activityImage=activityImages[key];
                var imageUrl=activityImage[g_keyImageURL];
                var imageNode=$('<img>',{
                     src: imageUrl.toString()   
-               }).appendTo(imagesNode);
+               }).appendTo(node);
+               var checkbox=$('<input>',{
+                   type: "checkbox",
+                   class: g_classOldCheckbox,
+                   checked: true
+               }).appendTo(node);
+               var imageId=activityImage[g_keyImageId];
+               checkbox.data(g_keyImageId, imageId);
            }
         }
      }while(false);
-	 
+
+	 for (var i = 0; i < g_maxNumberOfImagesForSingleActivity; i++) {
+	 	var imageField=$('<input>',
+				 		{
+				 			class: g_classNewImage,
+							type: 'file'
+				 		}).appendTo(ret);
+	    imageField.change(function(){
+            previewImage(this);
+        });
+	 }
+
+	 // schedules
      var sectionBeginTime=generateBeginTimeSelection("Begin Time: ", g_classSelectionBeginTime); 
      ret.append(sectionBeginTime);
      ret.data(g_indexSectionBeginTime, sectionBeginTime);
@@ -327,18 +383,6 @@ function generateActivityEditorByJson(activityJson){
      var sectionDeadline=generateDeadlineSelection("Deadline: ", g_classSelectionDeadline);
      ret.append(sectionDeadline);
      ret.data(g_indexSectionDeadline, sectionDeadline);
-
-	 for (var i = 0; i < g_maxNumberOfImagesForSingleActivity; i++) {
-	 	var imageName=g_indexImageOfActivityPrefix+i;
-	 	var imageField=$('<input>',
-				 		{
-				 			class: g_classFieldImageOfActivity,
-							type: 'file',
-							name: imageName 	 			
-				 		}).appendTo(ret);
-	 	ret.data(imageName, imageField);
-	 }
-
 
 	 /* Associated Buttons */
 	 var btnUpdate=$('<button>',{
