@@ -11,13 +11,11 @@ import play.mvc.Result;
 import utilities.DataUtils;
 
 import java.sql.Timestamp;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ActivityController extends Controller {
 
-    public static String s_indexImageOfActivityPrefix="indexImageOfActivityPrefix";
+    public static String s_indexOldImage="indexOldImage";
 
     public static Result queryActivityOwnership(){
         do{
@@ -117,49 +115,6 @@ public class ActivityController extends Controller {
         return badRequest();
     }
 
-    public static Result editActivity(){
-        // define response attributes
-        response().setContentType("text/plain");
-        do{
-            try{
-                Map<String, String[]> formData=request().body().asFormUrlEncoded();
-                String[] ids=formData.get(Activity.idKey);
-                String[] tokens=formData.get(User.tokenKey);
-
-                Integer activityId=Integer.parseInt(ids[0]);
-                String token=tokens[0];
-
-                Integer userId=DataUtils.getUserIdByToken(token);
-                if(userId==DataUtils.invalidId) break;
-
-                Activity activity=SQLCommander.queryActivity(activityId);
-                if(SQLCommander.isActivityEditable(userId, activity)==false) break;
-
-                ObjectNode singleActivityNode=Json.newObject();
-                singleActivityNode.put(Activity.idKey, activityId.toString());
-                singleActivityNode.put(Activity.titleKey, activity.getTitle());
-                singleActivityNode.put(Activity.contentKey, activity.getContent());
-
-                List<Image> images=SQLCommander.queryImagesByActivityId(activityId);
-                if(images!=null && images.size()>0){
-                    Integer index=0;
-                    Iterator<Image> itImage=images.iterator();
-                    while(itImage.hasNext()){
-                        Image image=itImage.next();
-                        String protocolKey=s_indexImageOfActivityPrefix+index.toString();
-                        singleActivityNode.put(protocolKey, image.getImageURL());
-                        ++index;
-                    }
-                }
-
-                return ok(singleActivityNode);
-            } catch(Exception e){
-                System.out.println("Application.editActivity:"+e.getMessage());
-            }
-        } while(false);
-        return badRequest("Not allowed to edit!");
-    }
-
     public static Result updateActivity(){
         // define response attributes
         response().setContentType("text/plain");
@@ -223,13 +178,25 @@ public class ActivityController extends Controller {
                     }
                 }
 
+                // selected old images
+                String[] selectedOldImagesRaw=formData.get(s_indexOldImage);
+                JSONArray selectedOldImagesJson=(JSONArray)JSONValue.parse(selectedOldImagesRaw[0]);
+                Set<Integer> selectedOldImagesSet=new HashSet<Integer>();
+                for(int i=0;i<selectedOldImagesJson.size();i++){
+                    String imageIdStr=(String)selectedOldImagesJson.get(i);
+                    Integer imageId=Integer.valueOf(imageIdStr);
+                    selectedOldImagesSet.add(imageId);
+                }
+
                 // delete previous images
                 if(previousImages!=null && previousImages.size()>0){
                     Iterator<Image> itPreviousImage=previousImages.iterator();
                     while(itPreviousImage.hasNext()){
                         Image previousImage=itPreviousImage.next();
-                        boolean isDeleted=ExtraCommander.deleteImageRecordAndFileOfActivity(previousImage, activityId);
-                        if(isDeleted==false) break;
+                        if(selectedOldImagesSet.contains(previousImage.getImageId())==false){
+                            boolean isDeleted=ExtraCommander.deleteImageRecordAndFileOfActivity(previousImage, activityId);
+                            if(isDeleted==false) break;
+                        }
                     }
                 }
 

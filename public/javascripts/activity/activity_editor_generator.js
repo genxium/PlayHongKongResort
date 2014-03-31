@@ -14,8 +14,7 @@ function onUpdateFormSubmission(formEvt){
                 var field=newImages[i];
                 var checkbox=$(field).data(g_indexCheckbox);
                 if(checkbox==null) break;
-                var checked=checkbox.checked;
-                if(checked==false) break;
+                if(checkbox.checked==false) break;
                 var files=field.files;
                 var count=files.length;
                 if(count==1) {
@@ -24,6 +23,20 @@ function onUpdateFormSubmission(formEvt){
                 }
             }while(false);
 		}
+
+        var oldImages=formObj.children("."+g_classOldImage);
+        var oldImagesCount=oldImages.length;
+        var selectedOldImages=new Array();
+        for(var i=0;i<oldImagesCount;i++){
+            do{
+                var field=oldImages[i];
+                var checkbox=$(field).data(g_indexCheckbox);
+                if(checkbox.checked==false) break;
+                var imageId=$(field).data(g_keyImageId);
+                selectedOldImages.push(imageId);
+            }while(false);     
+        }
+        formData.append(g_indexOldImage, JSON.stringify(selectedOldImages));
 
 		// append user token and activity id for identity
 		var token = $.cookie(g_keyLoginStatus.toString());
@@ -60,7 +73,6 @@ function onUpdateFormSubmission(formEvt){
 		var deadline=deadlineYear+"-"+deadlineMonth+"-"+deadlineDay+" "+deadlineHour+":"+deadlineMinute+":00";
 		formData.append(g_keyActivityDeadline, deadline);
 
-        alert(formData);
 		$.ajax({
 			method: "POST",
 			url: "/updateActivity", 
@@ -194,6 +206,10 @@ function previewImage(input) {
 }
 
 // Assistive functions
+function countSelectedImages(){
+    
+}
+
 function isFileValid(file){
 	var ret=false;
 	do{
@@ -367,19 +383,20 @@ function generateActivityEditorByJson(activityJson){
                    checked: false
                }).appendTo(node);
                var imageId=activityImage[g_keyImageId];
-               checkbox.data(g_keyImageId, imageId);
+               node.data(g_keyImageId, imageId);
                node.data(g_indexCheckbox);
            }
         }
      }while(false);
 
 	 for (var i = 0; i < g_maxNumberOfImagesForSingleActivity; i++) {
+	 	var lineBreak=$('<br>').appendTo(ret);
 	 	var imageField=$('<input>',
 				 		{
 				 			class: g_classNewImage,
 							type: 'file'
 				 		}).appendTo(ret);
-	    imageField.change(function(){
+		imageField.change(function(){
             previewImage(this);
         });
 	 }
