@@ -183,8 +183,7 @@ public class ActivityController extends Controller {
                 JSONArray selectedOldImagesJson=(JSONArray)JSONValue.parse(selectedOldImagesRaw[0]);
                 Set<Integer> selectedOldImagesSet=new HashSet<Integer>();
                 for(int i=0;i<selectedOldImagesJson.size();i++){
-                    String imageIdStr=(String)selectedOldImagesJson.get(i);
-                    Integer imageId=Integer.valueOf(imageIdStr);
+                    Integer imageId=((Long)selectedOldImagesJson.get(i)).intValue();
                     selectedOldImagesSet.add(imageId);
                 }
 

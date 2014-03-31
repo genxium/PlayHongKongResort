@@ -14,7 +14,9 @@ function onUpdateFormSubmission(formEvt){
                 var field=newImages[i];
                 var checkbox=$(field).data(g_indexCheckbox);
                 if(checkbox==null) break;
-                if(checkbox.checked==false) break;
+                // Note that checkbox.checked doesn't work here because of jQuery encapsulation!
+                var isChecked=checkbox.is(':checked');
+                if(isChecked.checked==false) break;
                 var files=field.files;
                 var count=files.length;
                 if(count==1) {
@@ -31,7 +33,10 @@ function onUpdateFormSubmission(formEvt){
             do{
                 var field=oldImages[i];
                 var checkbox=$(field).data(g_indexCheckbox);
-                if(checkbox.checked==false) break;
+                if(checkbox==null) break;
+                // Note that checkbox.checked doesn't work here because of jQuery encapsulation!
+                var isChecked=checkbox.is(':checked');
+                if(isChecked==false) break;
                 var imageId=$(field).data(g_keyImageId);
                 selectedOldImages.push(imageId);
             }while(false);     
@@ -364,15 +369,12 @@ function generateActivityEditorByJson(activityJson){
 
      do{
         if(activityImages==null) break;
-        var imagesNode=$('<p>',{
-            
-        }).appendTo(ret);
 
         for(var key in activityImages){
            if(activityImages.hasOwnProperty(key)){
                var node=$('<p>',{
                     class: g_classOldImage
-               }).appendTo(imagesNode);
+               }).appendTo(ret);
                var activityImage=activityImages[key];
                var imageUrl=activityImage[g_keyImageURL];
                var imageNode=$('<img>',{
@@ -384,7 +386,7 @@ function generateActivityEditorByJson(activityJson){
                }).appendTo(node);
                var imageId=activityImage[g_keyImageId];
                node.data(g_keyImageId, imageId);
-               node.data(g_indexCheckbox);
+               node.data(g_indexCheckbox, checkbox);
            }
         }
      }while(false);
