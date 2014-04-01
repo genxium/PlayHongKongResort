@@ -14,22 +14,7 @@ function queryPendingActivitiesByAdmin(refIndex, numItems, direction){
 		        method: "GET",
 		        url: "/queryPendingActivitiesByAdmin",
 		        data: params,
-		        success: function(data, status, xhr){
-                        var jsonResponse=JSON.parse(data);
-                        if(jsonResponse!=null){
-                            var targetSection=$("#"+g_idSectionActivityMonitor);
-                            // clean target section
-                            targetSection.empty();
-                            // update page index of the target section
-                            targetSection.data(g_pageIndexKey, pageIndex);
-                            // display contents
-                            for(var key in jsonResponse){
-                                var jsonRecord=jsonResponse[key];
-                                var cell=generateActivityCellForAdmin(jsonRecord);
-                                targetSection.append(cell);
-                            }
-                        }
-                },
+		        success: onQueryActivitiesSuccess,
                 error: function(data, status, xhr){
 
                 }
@@ -56,22 +41,7 @@ function queryAcceptedActivitiesByAdmin(refIndex, numItems, direction){
                 method: "GET",
                 url: "/queryAcceptedActivitiesByAdmin",
                 data: params,
-                success: function(data, status, xhr){
-                        var jsonResponse=JSON.parse(data);
-                        if(jsonResponse!=null){
-                            var targetSection=$("#"+g_idSectionActivityMonitor);
-                            // clean target section
-                            targetSection.empty();
-                            // update page index of the target section
-                            targetSection.data(g_pageIndexKey, pageIndex);
-                            // display contents
-                            for(var key in jsonResponse){
-                                var jsonRecord=jsonResponse[key];
-                                var cell=generateActivityCellForAdmin(jsonRecord);
-                                targetSection.append(cell);
-                            }
-                        }
-                },
+                success: onQueryActivitiesSuccess,
                 error: function(data, status, xhr){
 
                 }

@@ -80,7 +80,19 @@ function generateActivityCellForAdmin(activityJson){
 	var activityTitle=activityJson[g_keyActivityTitle];
 	var activityContent=activityJson[g_keyActivityContent];
 	var activityStatus=activityJson[g_keyActivityStatus];
-	var coverImageURL=activityJson[g_keyImageURL];
+    
+    var coverImageURL=null;
+    do{
+        var activityImages=activityJson[g_keyActivityImages];
+        if(activityImages==null) break;
+        for(var key in activityImages){
+           if(activityImages.hasOwnProperty(key)){
+               var activityImage=activityImages[key];
+               coverImageURL=activityImage[g_keyImageURL];
+               break;
+           }
+        }
+    }while(false);
 
 	var ret=$('<div>',
 				{
