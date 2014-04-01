@@ -99,7 +99,7 @@ public class ActivityController extends Controller {
                 Activity activity=new Activity();
 
                 int lastActivityId=SQLCommander.createActivity(activity, userId);
-                if(lastActivityId!=SQLCommander.invalidId){
+                if(lastActivityId!=SQLCommander.s_invalidId){
                     activity.setId(lastActivityId);
                     ObjectNode activityNode= Json.newObject();
                     activityNode.put(Activity.idKey, new Integer(lastActivityId).toString());
@@ -175,7 +175,7 @@ public class ActivityController extends Controller {
                     while(imageIterator.hasNext()){
                         Http.MultipartFormData.FilePart imageFile=imageIterator.next();
                         int newImageId=ExtraCommander.saveImageOfActivity(imageFile, user, activity);
-                        if(newImageId==ExtraCommander.invalidId) break;
+                        if(newImageId==ExtraCommander.s_invalidId) break;
                     }
                 }
 

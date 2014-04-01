@@ -7,8 +7,6 @@ import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Http.RequestBody;
 import model.*;
 
-import java.util.Iterator;
-import java.util.List;
 import java.io.*;
 import java.util.*;
 
@@ -17,8 +15,6 @@ import utilities.Converter;
 import utilities.DataUtils;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import java.sql.Timestamp;
 
 public class Application extends Controller {
 
@@ -95,7 +91,7 @@ public class Application extends Controller {
         		String passwordDigest=Converter.md5(password);    
                 User user=User.create(email, passwordDigest, name, userGroup);
                 int lastId=SQLCommander.registerUser(user);
-                if(lastId==SQLCommander.invalidId) break;
+                if(lastId==SQLCommander.s_invalidId) break;
                 return ok("Registered");
         }while(false);
         return badRequest("Register failed");
@@ -154,7 +150,7 @@ public class Application extends Controller {
     		  if(avatarFile==null) break;
     		  int previousAvatarId=user.getAvatar();
     		  int newAvatarId=ExtraCommander.saveAvatarFile(avatarFile, user);
-    		  if(newAvatarId==ExtraCommander.invalidId) break;
+    		  if(newAvatarId==ExtraCommander.s_invalidId) break;
                 
            // delete previous avatar record and file
            Image previousAvatar=SQLCommander.queryImageByImageId(previousAvatarId);

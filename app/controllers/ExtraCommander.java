@@ -11,12 +11,6 @@ import model.Image;
 
 import org.apache.commons.io.*;
 
-import model.UserActivityRelation;
-import model.UserActivityRelationTable;
-
-import org.json.simple.JSONObject;
-
-import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -100,7 +94,7 @@ public class ExtraCommander extends SQLCommander {
   }
 	
 	public static int saveAvatarFile(FilePart imageFile, User user){
-		int ret=invalidId;
+		int ret= s_invalidId;
 		do{
 			String fileName = imageFile.getFilename();
 			File file = imageFile.getFile();
@@ -118,7 +112,7 @@ public class ExtraCommander extends SQLCommander {
                 String imageAbsolutePath=rootDir+"/"+absoluteFolderName+"/"+newImageName;
 
       	    		int imageId=SQLCommander.uploadUserAvatar(user, imageAbsolutePath, imageURL);
-      	    		if(imageId==SQLCommander.invalidId) break;
+      	    		if(imageId==SQLCommander.s_invalidId) break;
       	    		
       	    		try{
       	    			// Save renamed file to server storage at the final step
@@ -142,7 +136,7 @@ public class ExtraCommander extends SQLCommander {
   }
 
   public static int saveImageOfActivity(FilePart imageFile, User user, Activity activity){
-  	int ret=invalidId;
+  	int ret= s_invalidId;
   	do{
   		String fileName = imageFile.getFilename();
   		File file = imageFile.getFile();
@@ -162,7 +156,7 @@ public class ExtraCommander extends SQLCommander {
               String imageAbsolutePath=rootDir+"/"+absoluteFolderName+"/"+newImageName;
 
     	    		int imageId=SQLCommander.uploadImageOfActivity(user, activity, imageAbsolutePath, imageURL);
-    	    		if(imageId==SQLCommander.invalidId) break;
+    	    		if(imageId==SQLCommander.s_invalidId) break;
     	    		
     	    		try{
                   // Save renamed file to server storage at the final step

@@ -13,8 +13,8 @@ import dao.SQLHelper;
 
 public class SQLCommander {
 	
-	public static Integer invalidId=(-1);
-
+	public static Integer s_invalidId =(-1);
+    public static Integer s_initialActivityId=0;
     public static Integer s_directionForward=(+1);
     public static Integer s_directionBackward=(-1);
 	
@@ -106,7 +106,7 @@ public class SQLCommander {
  	}
 
 	public static int registerUser(User user){
-		int lastInsertedId=invalidId;
+		int lastInsertedId= s_invalidId;
 		
 		// DAO
 		SQLHelper sqlHelper=new SQLHelper();
@@ -134,7 +134,7 @@ public class SQLCommander {
 
 	public static int createActivity(Activity activity, Integer userId){
 	
-		int lastActivityId=invalidId;
+		int lastActivityId= s_invalidId;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
 			List<String> columnNames=new LinkedList<String>();
@@ -266,7 +266,7 @@ public class SQLCommander {
 		
 		try{
 			int lastId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
-			if(lastId!=invalidId){
+			if(lastId!= s_invalidId){
 				bRet=true;
 			}
 		} catch(Exception e){
@@ -406,10 +406,15 @@ public class SQLCommander {
                     endingIndex=refIndex-1;
                 }
 
-                whereClauses.add(Activity.idKey+">="+SQLHelper.convertToQueryValue(startingIndex));
-                whereClauses.add(Activity.idKey+"<="+SQLHelper.convertToQueryValue(endingIndex));
-
-                List<JSONObject> activitiesJson=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND);
+                List<Integer> limits=new ArrayList<Integer>();
+                if(refIndex==s_initialActivityId){
+                    // initial query
+                    limits.add(endingIndex-startingIndex);
+                } else{
+                    whereClauses.add(Activity.idKey+">="+SQLHelper.convertToQueryValue(startingIndex));
+                    whereClauses.add(Activity.idKey+"<="+SQLHelper.convertToQueryValue(endingIndex));
+                }
+                List<JSONObject> activitiesJson=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, SQLHelper.logicAND, null, null, limits);
                 if(activitiesJson==null) break;
                 ret=new ArrayList<Activity>();
                 for(JSONObject activityJson : activitiesJson){
@@ -461,10 +466,15 @@ public class SQLCommander {
                     endingIndex=refIndex-1;
                 }
 
-                whereClauses.add(Activity.idKey+">="+SQLHelper.convertToQueryValue(startingIndex));
-                whereClauses.add(Activity.idKey+"<="+SQLHelper.convertToQueryValue(endingIndex));
-
-				List<JSONObject> activitiesJson=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, columnNames, whereClauses, SQLHelper.logicAND);
+                List<Integer> limits=new ArrayList<Integer>();
+                if(refIndex==s_initialActivityId){
+                    // initial query
+                    limits.add(endingIndex-startingIndex);
+                } else{
+                    whereClauses.add(Activity.idKey+">="+SQLHelper.convertToQueryValue(startingIndex));
+                    whereClauses.add(Activity.idKey+"<="+SQLHelper.convertToQueryValue(endingIndex));
+                }
+				List<JSONObject> activitiesJson=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, SQLHelper.logicAND, null, null, limits);
 				if(activitiesJson==null) break;
 
                 ret=new ArrayList<Activity>();
@@ -657,7 +667,7 @@ public class SQLCommander {
 	}
 
 	public static int uploadUserAvatar(User user, String imageAbsolutePath, String imageURL){
-		int lastImageId=invalidId;
+		int lastImageId= s_invalidId;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
 			String imageTableName="Image";
@@ -838,7 +848,7 @@ public class SQLCommander {
 	}
 	
 	public static int uploadImageOfActivity(User user, Activity activity, String imageAbsolutePath, String imageURL){
-		int lastImageId=invalidId;
+		int lastImageId= s_invalidId;
 		do{
 			if(user==null) break;
 			if(activity==null) break;
