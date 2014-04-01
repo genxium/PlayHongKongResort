@@ -156,6 +156,7 @@ public class ActivityController extends Controller {
                 String activityBeginTime=activityBeginTimes[0];
                 String activityDeadline=activityDeadlines[0];
 
+                if(DataUtils.validateTitle(activityTitle)==false || DataUtils.validateContent(activityContent)==false) break;
                 Activity activity=SQLCommander.queryActivity(activityId);
                 if(SQLCommander.isActivityEditable(userId, activity)==false) break;
 
@@ -216,13 +217,8 @@ public class ActivityController extends Controller {
             try{
                 Http.RequestBody body = request().body();
 
-                // get file data from request body stream
-                Http.MultipartFormData data = body.asMultipartFormData();
-
-                List<Http.MultipartFormData.FilePart> imageFiles=data.getFiles();
-
                 // get user token and activity id from request body stream
-                Map<String, String[]> formData= data.asFormUrlEncoded();
+                Map<String, String[]> formData= body.asFormUrlEncoded();
 
                 String[] tokens=formData.get(User.tokenKey);
                 String[] activityIds=formData.get(Activity.idKey);
@@ -235,52 +231,11 @@ public class ActivityController extends Controller {
 
                 int activityId=Integer.parseInt(activityIds[0]);
 
-                // get activity title and content
-                String[] activityTitles=formData.get(Activity.titleKey);
-                String[] activityContents=formData.get(Activity.contentKey);
-
-                String activityTitle=activityTitles[0];
-                String activityContent=activityContents[0];
-
-                // get activity begin time and deadline
-                String[] activityBeginTimes=formData.get(Activity.beginTimeKey);
-                String[] activityDeadlines=formData.get(Activity.deadlineKey);
-
-                String activityBeginTime=activityBeginTimes[0];
-                String activityDeadline=activityDeadlines[0];
-
-                if(DataUtils.validateTitle(activityTitle)==false || DataUtils.validateContent(activityContent)==false) break;
                 Activity activity=SQLCommander.queryActivity(activityId);
                 if(SQLCommander.isActivityEditable(userId, activity)==false) break;
 
-                activity.setTitle(activityTitle);
-                activity.setContent(activityContent);
-                activity.setBeginTime(Timestamp.valueOf(activityBeginTime));
-                activity.setDeadline(Timestamp.valueOf(activityDeadline));
-
                 boolean res=SQLCommander.submitActivity(userId, activity);
                 if(res==false) break;
-
-                // save new images
-                List<Image> previousImages=SQLCommander.queryImagesByActivityId(activityId);
-                if(imageFiles!=null && imageFiles.size()>0){
-                    Iterator<Http.MultipartFormData.FilePart> imageIterator=imageFiles.iterator();
-                    while(imageIterator.hasNext()){
-                        Http.MultipartFormData.FilePart imageFile=imageIterator.next();
-                        int newImageId=ExtraCommander.saveImageOfActivity(imageFile, user, activity);
-                        if(newImageId==ExtraCommander.invalidId) break;
-                    }
-                }
-
-                // delete previous images
-                if(previousImages!=null && previousImages.size()>0){
-                    Iterator<Image> itPreviousImage=previousImages.iterator();
-                    while(itPreviousImage.hasNext()){
-                        Image previousImage=itPreviousImage.next();
-                        boolean isDeleted=ExtraCommander.deleteImageRecordAndFileOfActivity(previousImage, activityId);
-                        if(isDeleted==false) break;
-                    }
-                }
                 return ok("Activity submitted");
 
             } catch(Exception e){

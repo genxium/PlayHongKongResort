@@ -1,9 +1,36 @@
-// Assistive Callback Functions
-function onUpdateFormSubmission(formEvt){
-	do{
-		formEvt.preventDefault(); // prevent default action.
+// Assistive functions
+function countSelectedImages(){
 
-		var formObj = $(this);
+}
+
+function isFileValid(file){
+	var ret=false;
+	do{
+		var fileSizeLimit= (1<<20)// 2 mega bytes
+		if(file.size>fileSizeLimit) break;
+		ret=true;
+	}while(false);
+ 	return ret;
+}
+
+function formatDigits(value, numberOfDigits){
+	var valueStr=value.toString();
+	while(valueStr.length<numberOfDigits) valueStr="0"+valueStr;
+	return valueStr;
+}
+
+function setNonSubmittable(){
+    g_submittable=false;
+}
+
+function setSubmittable(){
+    g_submittable=true;
+}
+
+// Assistive Callback Functions
+function onUpdateFormSubmission(editor){
+	do{
+		var formObj = $(editor);
 		var formData = new FormData();
 
 		// check files
@@ -47,7 +74,7 @@ function onUpdateFormSubmission(formEvt){
 		var token = $.cookie(g_keyLoginStatus.toString());
 		formData.append(g_keyUserToken, token);
 
-		var activityId = $(this).data(g_keyActivityId);
+		var activityId = formObj.data(g_keyActivityId);
 		formData.append(g_keyActivityId, activityId.toString());
 		
 		// append activity title and content 
@@ -58,7 +85,7 @@ function onUpdateFormSubmission(formEvt){
 		formData.append(g_keyActivityContent, activityContent);
 
 		// append activity begin time and deadline
-		var sectionBeginTime=$(this).data(g_indexSectionBeginTime);
+		var sectionBeginTime=formObj.data(g_indexSectionBeginTime);
 		var beginTimeNodes=sectionBeginTime.children();
 		var beginTimeYear=formatDigits(beginTimeNodes[0].value, 4);
 		var beginTimeMonth=formatDigits(beginTimeNodes[1].value, 2);
@@ -68,7 +95,7 @@ function onUpdateFormSubmission(formEvt){
 		var beginTime=beginTimeYear+"-"+beginTimeMonth+"-"+beginTimeDay+" "+beginTimeHour+":"+beginTimeMinute+":00";
 		formData.append(g_keyActivityBeginTime, beginTime);
 
-		var sectionDeadline=$(this).data(g_indexSectionDeadline);
+		var sectionDeadline=formObj.data(g_indexSectionDeadline);
 		var deadlineNodes=sectionDeadline.children();
 		var deadlineYear=formatDigits(deadlineNodes[0].value, 4);
 		var deadlineMonth=formatDigits(deadlineNodes[1].value, 2);
@@ -86,10 +113,8 @@ function onUpdateFormSubmission(formEvt){
 			contentType: false, // tell jQuery not to set contentType
 			processData: false, // tell jQuery not to process the data
 			success: function(data, status, xhr){
-				formObj.remove();
-				if(g_callbackOnActivityEditorRemoved!=null){
-					g_callbackOnActivityEditorRemoved(0, g_numItemsPerPage, g_directionForward);
-				}
+			    setSubmittable();
+                alert("You can submit the application now!");
 			},
 			error: function(xhr, status, errorThrown){
 
@@ -98,68 +123,26 @@ function onUpdateFormSubmission(formEvt){
 	}while(false);
 }
 
-function onSubmitFormSubmission(formEvt){
+function onSubmitFormSubmission(editor){
 	do{
-		formEvt.preventDefault(); // prevent default action.
+        if(g_submittable==false) {
+            alert("You have to update the activity before submission!");
+            break;
+        }
+		var formObj = $(editor);
+		var params={};
 
-		var formObj = $(this);
-		var formData = new FormData(this);
-		/*
-		// check files
-		var iFiles=0;
-		for (iFiles = 0; iFiles < g_maxNumberOfImagesForSingleActivity; iFiles++) {
-		 	var imageName=g_indexImageOfActivityPrefix+iFiles;
-		 	var imageField=formObj.data(imageName);
-		 	var files=imageField.files;
-		 	var length=files.length;
-		 	if(length>1) break; // invalid field exist
-		 	var file=files[0];
-		 	var checkResult=isFileValid(file);
-		 	if(checkResult==false) break;
-		}
-		if(iFiles<g_maxNumberOfImagesForSingleActivity) break;
-		*/
 		// append user token and activity id for identity
 		var token = $.cookie(g_keyLoginStatus.toString());
-		formData.append(g_keyUserToken, token);
+		params[g_keyUserToken]=token;
 
-		var activityId = $(this).data(g_keyActivityId);
-		formData.append(g_keyActivityId, activityId.toString());
-		
-		// append activity title and content 
-		var activityTitle=$("."+g_classFieldActivityTitle).val();
-		formData.append(g_keyActivityTitle, activityTitle);
-		
-		var activityContent=$("."+g_classFieldActivityContent).val();
-		formData.append(g_keyActivityContent, activityContent);
-		
-		var sectionBeginTime=$(this).data(g_indexSectionBeginTime);
-		var beginTimeNodes=sectionBeginTime.children();
-		var beginTimeYear=formatDigits(beginTimeNodes[0].value, 4);
-		var beginTimeMonth=formatDigits(beginTimeNodes[1].value, 2);
-		var beginTimeDay=formatDigits(beginTimeNodes[2].value, 2);
-		var beginTimeHour=formatDigits(beginTimeNodes[3].value, 2);
-		var beginTimeMinute=formatDigits(beginTimeNodes[4].value, 2);
-		var beginTime=beginTimeYear+"-"+beginTimeMonth+"-"+beginTimeDay+" "+beginTimeHour+":"+beginTimeMinute+":00";
-		formData.append(g_keyActivityBeginTime, beginTime);
-
-		var sectionDeadline=$(this).data(g_indexSectionDeadline);
-		var deadlineNodes=sectionDeadline.children();
-		var deadlineYear=formatDigits(deadlineNodes[0].value, 4);
-		var deadlineMonth=formatDigits(deadlineNodes[1].value, 2);
-		var deadlineDay=formatDigits(deadlineNodes[2].value, 2);
-		var deadlineHour=formatDigits(deadlineNodes[3].value, 2);
-		var deadlineMinute=formatDigits(deadlineNodes[4].value, 2);
-		var deadline=deadlineYear+"-"+deadlineMonth+"-"+deadlineDay+" "+deadlineHour+":"+deadlineMinute+":00";
-		formData.append(g_keyActivityDeadline, deadline);
+		var activityId = formObj.data(g_keyActivityId);
+		params[g_keyActivityId]=activityId.toString();
 
 		$.ajax({
 			method: "POST",
-			url: "/submitActivity", 
-			data: formData,
-			mimeType: "mutltipart/form-data",
-			contentType: false,
-			processData: false,
+			url: "/submitActivity",
+			data: params,
 			success: function(data, status, xhr){
 				formObj.remove();
 				if(g_callbackOnActivityEditorRemoved!=null){
@@ -201,6 +184,9 @@ function previewImage(input) {
                    type: "checkbox",
                    checked: true
             }).appendTo(node);
+            checkbox.change(function(){
+                setNonSubmittable();
+            });
             $(input).after(node);
             $(input).data(g_indexAssociatedImage, node);
             $(input).data(g_indexCheckbox, checkbox);
@@ -208,27 +194,6 @@ function previewImage(input) {
 
         reader.readAsDataURL(image);
     }while(false);
-}
-
-// Assistive functions
-function countSelectedImages(){
-    
-}
-
-function isFileValid(file){
-	var ret=false;
-	do{
-		var fileSizeLimit= (1<<20)// 2 mega bytes
-		if(file.size>fileSizeLimit) break;
-		ret=true;
-	}while(false);
- 	return ret;
-}
-
-function formatDigits(value, numberOfDigits){
-	var valueStr=value.toString();
-	while(valueStr.length<numberOfDigits) valueStr="0"+valueStr;
-	return valueStr;
 }
 
 // Assistive Handlers
@@ -267,10 +232,7 @@ function onBtnUpdateClicked(evt){
 	var editor=$(this).parent();
 
 	try{
-		// assign callback function
-		editor.submit(onUpdateFormSubmission);
-		// invoke submission
-		editor.submit();
+	    onUpdateFormSubmission(editor);
 	} catch(err){
 
 	}
@@ -314,10 +276,7 @@ function onBtnSubmitClicked(evt){
 	var editor=$(this).parent();
 
 	try{
-		// assign callback function
-		editor.submit(onSubmitFormSubmission);
-		// invoke submission
-		editor.submit();
+        onSubmitFormSubmission(editor);
 	} catch(err){
 		
 	}
@@ -332,6 +291,9 @@ function onBtnCancelClicked(evt){
 
 // Generators
 function generateActivityEditorByJson(activityJson){
+
+     setSubmittable();
+
 	 var activityId=activityJson[g_keyActivityId];
 	 var activityTitle=activityJson[g_keyActivityTitle];
 	 var activityContent=activityJson[g_keyActivityContent];
@@ -354,18 +316,24 @@ function generateActivityEditorByJson(activityJson){
 		 				value: activityTitle,
 		 			 	name: g_keyActivityTitle
 	 				}).appendTo(ret);
-	 
+    titleInput.change(function(){
+        setNonSubmittable();
+    });
+
 	 var contentText=$('<p>',
 	 			   {
 				   		html: 'Content'
  				   }).appendTo(ret);
 
-	 var contentInput=$('<TEXTAREA>',
+	 var contentInput=$('<textarea>',
 	 				  {
 	 				  	class: g_classFieldActivityContent, 
 	 				  	name: g_keyActivityContent
 	 				  }).appendTo(ret);
 	 contentInput.val(activityContent);
+     contentInput.change(function(){
+        setNonSubmittable();
+     });
 
      do{
         if(activityImages==null) break;
@@ -382,8 +350,11 @@ function generateActivityEditorByJson(activityJson){
                }).appendTo(node);
                var checkbox=$('<input>',{
                    type: "checkbox",
-                   checked: false
+                   checked: true
                }).appendTo(node);
+               checkbox.change(function(){
+                   setNonSubmittable();
+               });
                var imageId=activityImage[g_keyImageId];
                node.data(g_keyImageId, imageId);
                node.data(g_indexCheckbox, checkbox);
@@ -399,6 +370,7 @@ function generateActivityEditorByJson(activityJson){
 							type: 'file'
 				 		}).appendTo(ret);
 		imageField.change(function(){
+		    setNonSubmittable();
             previewImage(this);
         });
 	 }
@@ -481,7 +453,6 @@ function generateDateSelection(sectionName, className){
                 {
                     html: sectionName.toString()
                 });
-
 
 	 var selectionYear=generateSelectionWidget(years, className);
      ret.append(selectionYear);

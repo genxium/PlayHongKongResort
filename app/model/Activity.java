@@ -138,8 +138,11 @@ public class Activity {
 
     public ObjectNode toObjectNodeWithImagesAndRelation(int userId){
         ObjectNode ret=toObjectNodeWithImages();
-        UserActivityRelation.RelationType relation=SQLCommander.queryRelationOfUserIdAndActivity(userId, m_id);
-        ret.put(UserActivityRelationTable.relationIdKey, relation.ordinal());
+        do{
+            UserActivityRelation.RelationType relation=SQLCommander.queryRelationOfUserIdAndActivity(userId, m_id);
+            if(relation==null) break;
+            ret.put(UserActivityRelationTable.relationIdKey, relation.ordinal());
+        }while(false);
         return ret;
     }
 };

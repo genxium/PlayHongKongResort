@@ -227,22 +227,10 @@ public class SQLCommander {
 				SQLHelper sqlHelper=new SQLHelper();
 				List<String> columnNames=new LinkedList<String>();
 				columnNames.add(Activity.statusKey);
-				columnNames.add(Activity.titleKey);
-				columnNames.add(Activity.contentKey);
-				columnNames.add(Activity.createdTimeKey);
-				columnNames.add(Activity.beginTimeKey);
-				columnNames.add(Activity.deadlineKey);
-				columnNames.add(Activity.capacityKey);
 
 				List<Object> columnValues=new LinkedList<Object>();
 				columnValues.add(Activity.StatusType.pending.ordinal());
-				columnValues.add(activity.getTitle());
-				columnValues.add(activity.getContent());
-				columnValues.add(activity.getCreatedTime().toString());
-				columnValues.add(activity.getBeginTime().toString());
-				columnValues.add(activity.getDeadline().toString());
-				columnValues.add(activity.getCapacity());
-				
+
 				List<String> whereClauses=new LinkedList<String>();
 				whereClauses.add(Activity.idKey+"="+activity.getId());
 		
