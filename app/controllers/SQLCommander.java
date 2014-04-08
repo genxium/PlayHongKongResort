@@ -1,4 +1,5 @@
 package controllers;
+import com.google.common.collect.ImmutableMap;
 import model.*;
 import model.UserActivityRelation.RelationType;
 
@@ -12,12 +13,18 @@ import java.util.*;
 import dao.SQLHelper;
 
 public class SQLCommander {
-	
+
+    public static Integer ACTIVITY_ID=0;
+
+    public static Map<Integer, String> s_columnMap = ImmutableMap.of(
+            ACTIVITY_ID, Activity.idKey
+    );
+
 	public static Integer s_invalidId =(-1);
-    public static Integer s_initialActivityId=0;
+    public static Integer s_initialRefIndex =0;
     public static Integer s_directionForward=(+1);
     public static Integer s_directionBackward=(-1);
-	
+
  	public static User queryUser(Integer userId){
  		
  		User user=null;
@@ -375,7 +382,7 @@ public class SQLCommander {
 		return ret;
 	}
 
-    public static List<Activity> queryActivities(Activity.StatusType status, int refIndex, int numItems, int direction, Integer userId){
+    public static List<Activity> queryActivities(Activity.StatusType status, int refIndex, int sortKey, String sortDirection, int numItems, int direction, Integer userId){
         List<Activity> ret=null;
         do{
             try{
@@ -395,18 +402,26 @@ public class SQLCommander {
                 List<String> whereClauses=new LinkedList<String>();
                 whereClauses.add(Activity.statusKey+"="+status.ordinal());
 
-                if(refIndex==s_initialActivityId){
-                    whereClauses.add(Activity.idKey+">="+SQLHelper.convertToQueryValue(s_initialActivityId));
+                String columnName=s_columnMap.get(sortKey);
+                List<String> orderClauses=new LinkedList<String>();
+                orderClauses.add(columnName);
+
+                List<String> orderDirections=new LinkedList<String>();
+                orderDirections.add(sortDirection);
+
+                if(refIndex== s_initialRefIndex){
+                    whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(s_initialRefIndex));
+
                 } else if(direction==s_directionForward){
-                    whereClauses.add(Activity.idKey+">="+SQLHelper.convertToQueryValue(refIndex+1));
+                    whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(refIndex+1));
                 } else{
-                    whereClauses.add(Activity.idKey+"<="+SQLHelper.convertToQueryValue(refIndex-1));
+                    whereClauses.add(columnName+"<="+SQLHelper.convertToQueryValue(refIndex-1));
                 }
 
                 List<Integer> limits=new ArrayList<Integer>();
                 limits.add(numItems);
 
-                List<JSONObject> activitiesJson=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, SQLHelper.logicAND, null, null, limits);
+                List<JSONObject> activitiesJson=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, orderDirections, limits);
                 if(activitiesJson==null) break;
 
                 ret=new ArrayList<Activity>();
@@ -415,22 +430,22 @@ public class SQLCommander {
                 }
 
             } catch(Exception e){
-                System.out.println("SQLCommander.queryActivitiesByStatusAndUserIdInChronologicalOrder: "+e.getMessage());
+                System.out.println("SQLCommander.queryActivities: "+e.getMessage());
             }
         }while(false);
         return ret;
     }
 
 	public static List<Activity> queryPendingActivitiesInChronologicalOrder(int refIndex, int numItems, int direction){
-		return queryActivities(Activity.StatusType.pending, refIndex, numItems, direction, null);
+		return queryActivities(Activity.StatusType.pending, refIndex, ACTIVITY_ID, SQLHelper.directionDescend, numItems, direction, null);
 	}
 
 	public static List<Activity> queryAcceptedActivitiesInChronologicalOrder(int refIndex, int numItems, int direction){
-		return queryActivities(Activity.StatusType.accepted, refIndex, numItems, direction, null);
+		return queryActivities(Activity.StatusType.accepted, refIndex, ACTIVITY_ID, SQLHelper.directionDescend, numItems, direction, null);
 	}
 
 	public static List<Activity> queryAcceptedActivitiesByUserIdInChronologicalOrder(int refIndex, int numItems, int direction, int userId){
-		return queryActivities(Activity.StatusType.accepted, refIndex, numItems, direction, userId);
+		return queryActivities(Activity.StatusType.accepted, refIndex, ACTIVITY_ID, SQLHelper.directionDescend, numItems, direction, userId);
 	}
 	
 	public static UserActivityRelation.RelationType queryRelationOfUserIdAndActivity(int userId, int activityId){
