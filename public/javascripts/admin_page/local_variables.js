@@ -2,7 +2,8 @@
 var g_idSectionActivityMonitor="idSectionActivityMonitor";
 
 // buttons
-var g_idBtnSwitchMonitor="idBtnSwitchMonitor";
+var g_idSelectFilter="idSelectFilter";
+var g_classFilterOption="classFilterOption";
 var g_idBtnPreviousPage="idBtnPreviousPage";
 var g_idBtnNextPage="idBtnNextPage";
 

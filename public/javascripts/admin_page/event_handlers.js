@@ -18,19 +18,9 @@ function onBtnNextPageClicked(evt){
     queryActivitiesByAdmin(endingIndex, g_numItemsPerPage, g_directionForward);
 }
 
-function onBtnSwitchMonitorClicked(evt){
+function onSelectFilterChanged(evt){
     evt.preventDefault();
-    switch (g_statusToQuery){
-        case 0:
-        {
-            g_statusToQuery=1;    
-        }
-		break;
-        case 1:
-        {
-            g_statusToQuery=0;
-        }     
-		break;  
-    }
+    var selector=$(this);
+    g_statusToQuery=parseInt(selector.val());
     queryActivitiesByAdmin(0, g_numItemsPerPage, g_directionForward);
 }

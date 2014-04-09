@@ -1,9 +1,11 @@
 function onQueryActivitiesSuccess(data, status, xhr){
+
+    var targetSection=$("#"+g_idSectionActivityMonitor);
+    // clean target section
+    targetSection.empty();
+
     var jsonResponse=JSON.parse(data);
     if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
-        var targetSection=$("#"+g_idSectionActivityMonitor);
-        // clean target section
-        targetSection.empty();
         var idx=0;
         var count=Object.keys(jsonResponse).length;
         // display contents

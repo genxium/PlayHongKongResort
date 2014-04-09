@@ -6,5 +6,5 @@ $(document).ready(function(){
 
 	$("#"+g_idBtnPreviousPage).bind("click", onBtnPreviousPageClicked);
 	$("#"+g_idBtnNextPage).bind("click", onBtnNextPageClicked);
-    $("#"+g_idBtnSwitchMonitor).bind("click", onBtnSwitchMonitorClicked);
+    $("#"+g_idSelectFilter).bind("change", onSelectFilterChanged);
 });
