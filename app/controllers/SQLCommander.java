@@ -26,13 +26,13 @@ public class SQLCommander {
     public static Integer s_directionBackward=(-1);
 
  	public static User queryUser(Integer userId){
- 		
+
  		User user=null;
  		do{
 	 		String tableName="User";
 	 		List<String> columnNames=new LinkedList<String>();
 	 		List<String> whereClauses=new LinkedList<String>();
-	 		
+
 	 		columnNames.add(User.emailKey);
 	 		columnNames.add(User.passwordKey);
 	 		columnNames.add(User.nameKey);
@@ -44,7 +44,7 @@ public class SQLCommander {
 
 			whereClauses.add(User.idKey+"="+SQLHelper.convertToQueryValue(userId));
 			String logicLink=SQLHelper.logicAND;
-			
+
 			SQLHelper sqlHelper=new SQLHelper();
 	 		List<JSONObject> results=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, columnNames, whereClauses, logicLink);
 			if(results==null || results.size()<=0) break;
@@ -60,23 +60,23 @@ public class SQLCommander {
 		      		Integer avatar=(Integer)userJson.get(User.avatarKey);
 
           		    user=User.create(userId, email, password, name, userGroup, avatar);
-				} 
+				}
 			} catch (Exception e) {
-				    	
-		    } 
+
+		    }
 		} while(false);
 		return user;
 	}
- 	
+
  	public static User queryUserByEmail(String email){
- 
+
  		User user=null;
  		do{
 	 		String tableName="User";
-	 		
+
 	 		List<String> columnNames=new LinkedList<String>();
 	 		List<String> whereClauses=new LinkedList<String>();
-	 		
+
 	 		columnNames.add(User.idKey);
 	 		columnNames.add(User.passwordKey);
 	 		columnNames.add(User.nameKey);
@@ -88,11 +88,11 @@ public class SQLCommander {
 
 			whereClauses.add(User.emailKey+"="+SQLHelper.convertToQueryValue(email));
 			String logicLink=SQLHelper.logicAND;
-			
+
 			SQLHelper sqlHelper=new SQLHelper();
-	 		List<JSONObject> results=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, columnNames, whereClauses, logicLink); 			
+	 		List<JSONObject> results=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, columnNames, whereClauses, logicLink);
 	 	    if(results==null || results.size()<=0) break;
-            try{		 
+            try{
 	            Iterator<JSONObject> it=results.iterator();
 		        if(it.hasNext()){
 			        JSONObject userJson=(JSONObject)it.next();
@@ -106,7 +106,7 @@ public class SQLCommander {
           		    user=User.create(userId, email, password, name, userGroup, avatar);
 				}
 			} catch (Exception e) {
-				    	
+
 	        }
 		} while(false);
  		return user;
@@ -114,73 +114,73 @@ public class SQLCommander {
 
 	public static int registerUser(User user){
 		int lastInsertedId= s_invalidId;
-		
+
 		// DAO
 		SQLHelper sqlHelper=new SQLHelper();
-		
+
 		List<String> columnNames=new LinkedList<String>();
 		columnNames.add(User.emailKey);
 		columnNames.add(User.passwordKey);
 		columnNames.add(User.nameKey);
 		columnNames.add(User.groupIdKey);
-		
+
 		List<Object> columnValues=new LinkedList<Object>();
 		columnValues.add(user.getEmail());
 		columnValues.add(user.getPassword());
 		columnValues.add(user.getName());
 		columnValues.add(user.getUserGroup().ordinal());
-		
+
 		try{
 			lastInsertedId=sqlHelper.insertToTableByColumns("User", columnNames, columnValues);
 			sqlHelper=null;
 		} catch (Exception e){
-			
+
 		}
 		return lastInsertedId;
 	}
 
 	public static int createActivity(Activity activity, Integer userId){
-	
+
 		int lastActivityId= s_invalidId;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
 			List<String> columnNames=new LinkedList<String>();
-			
+
 			columnNames.add(Activity.titleKey);
 			columnNames.add(Activity.contentKey);
 			columnNames.add(Activity.createdTimeKey);
 			columnNames.add(Activity.beginTimeKey);
 			columnNames.add(Activity.deadlineKey);
 			columnNames.add(Activity.capacityKey);
-			
+
 			List<Object> columnValues=new LinkedList<Object>();
-			
+
 			columnValues.add(activity.getTitle());
 			columnValues.add(activity.getContent());
 			columnValues.add(activity.getCreatedTime().toString());
 			columnValues.add(activity.getBeginTime().toString());
 			columnValues.add(activity.getDeadline().toString());
 			columnValues.add(activity.getCapacity());
-			
+
 			try{
 				int tmpLastActivityId=sqlHelper.insertToTableByColumns("Activity", columnNames, columnValues);
 				if(tmpLastActivityId!=SQLHelper.invalidId){
 					columnNames.clear();
 					columnValues.clear();
-					
+
 					columnNames.add(UserActivityRelationTable.activityIdKey);
 					columnNames.add(UserActivityRelationTable.userIdKey);
 					columnNames.add(UserActivityRelationTable.relationIdKey);
 					columnNames.add(UserActivityRelationTable.generatedTimeKey);
-					
+
 					columnValues.add(tmpLastActivityId);
 					columnValues.add(userId);
 					columnValues.add(UserActivityRelation.RelationType.host.ordinal());
 					columnValues.add(activity.getCreatedTime().toString());
-					
+
 					int lastRelationTableId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
 					if(lastRelationTableId==SQLHelper.invalidId) break;
-					
+
 					lastActivityId=tmpLastActivityId;
 				}
 			} catch (Exception e){
@@ -189,24 +189,24 @@ public class SQLCommander {
 		}while(false);
 		return lastActivityId;
 	}
-	
+
 	public static boolean updateActivity(Activity activity){
 		boolean ret=false;
 		do{
 			String tableName="Activity";
 			int activityId=activity.getId();
-			
+
 			try{
 				SQLHelper sqlHelper=new SQLHelper();
 				List<String> columnNames=new LinkedList<String>();
-				
+
 				columnNames.add(Activity.titleKey);
 				columnNames.add(Activity.contentKey);
 				columnNames.add(Activity.createdTimeKey);
 				columnNames.add(Activity.beginTimeKey);
 				columnNames.add(Activity.deadlineKey);
 				columnNames.add(Activity.capacityKey);
-				
+
 				List<Object> columnValues=new LinkedList<Object>();
 				columnValues.add(activity.getTitle());
 				columnValues.add(activity.getContent());
@@ -214,11 +214,11 @@ public class SQLCommander {
 				columnValues.add(activity.getBeginTime().toString());
 				columnValues.add(activity.getDeadline().toString());
 				columnValues.add(activity.getCapacity());
-				
+
 				List<String> whereClauses=new LinkedList<String>();
 				whereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
 				ret=sqlHelper.updateTableByColumnsAndWhereClauses(tableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
-			
+
 			} catch(Exception e){
 				System.out.println("SQLCommander.updateActivity: "+e.getMessage());
 			}
@@ -240,7 +240,7 @@ public class SQLCommander {
 
 				List<String> whereClauses=new LinkedList<String>();
 				whereClauses.add(Activity.idKey+"="+activity.getId());
-		
+
 				ret=sqlHelper.updateTableByColumnsAndWhereClauses(activityTableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
 
 			} catch(Exception e){
@@ -251,40 +251,40 @@ public class SQLCommander {
 	}
 
 	public static boolean createUserActivityRelation(int activityId, User user, UserActivityRelation.RelationType relation){
-		
+
 		boolean bRet=false;
-		
+
 		int userId=user.getUserId();
 		int relationId=relation.ordinal();
-		
+
 		SQLHelper sqlHelper=new SQLHelper();
-		
+
 		List<String> columnNames=new LinkedList<String>();
-		
+
 		columnNames.add(UserActivityRelationTable.userIdKey);
 		columnNames.add(UserActivityRelationTable.activityIdKey);
 		columnNames.add(UserActivityRelationTable.relationIdKey);
-		
+
 		List<Object> columnValues=new LinkedList<Object>();
-		
+
 		columnValues.add(userId);
 		columnValues.add(activityId);
 		columnValues.add(relationId);
-		
+
 		try{
 			int lastId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
 			if(lastId!= s_invalidId){
 				bRet=true;
 			}
 		} catch(Exception e){
-			
+
 		}
 		return bRet;
 	}
-	
+
 	/* querying activities */
 	public static Activity queryActivity(int activityId){
-			
+
 		Activity activity=null;
 		do{
 	 		String tableName="Activity";
@@ -310,14 +310,14 @@ public class SQLCommander {
 		        if(it.hasNext()){
 			        JSONObject activityJson=(JSONObject)it.next();
 		      		activity=new Activity(activityJson);
-				}  	
+				}
 			} catch (Exception e) {
 				System.out.println("SQLCommander.queryActivity:"+e.getMessage());
 	        }
 		} while(false);
 		return activity;
 	}
-	
+
 	public static ActivityDetail queryActivityDetailByActivityId(int activityId){
 		ActivityDetail activityDetail=null;
 		do{
@@ -325,9 +325,9 @@ public class SQLCommander {
 			List<Image> images=queryImagesByActivityId(activityId);
 			List<BasicUser> appliedParticipants=SQLCommander.queryUsersByActivityIdAndRelation(activityId, UserActivityRelation.RelationType.applied);
 			List<BasicUser> selectedParticipants=SQLCommander.queryUsersByActivityIdAndRelation(activityId, UserActivityRelation.RelationType.selected);
-			
+
 			activityDetail=new ActivityDetail(activity, images, appliedParticipants, selectedParticipants);
-			
+
 		}while(false);
 		return activityDetail;
 	}
@@ -336,14 +336,14 @@ public class SQLCommander {
 		List<Activity> ret=null;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
-			// query table UserActivityRelationTable 
+			// query table UserActivityRelationTable
 			List<String> relationColumnNames=new LinkedList<String>();
 			relationColumnNames.add(UserActivityRelationTable.activityIdKey);
-			
+
 			List<String> relationWhereClauses=new LinkedList<String>();
 			relationWhereClauses.add(UserActivityRelationTable.userIdKey+"="+user.getUserId());
 			relationWhereClauses.add(UserActivityRelationTable.relationIdKey+"="+relation.ordinal());
-			
+
 			List<JSONObject> relationTableRecords=sqlHelper.queryTableByColumnsAndWhereClauses("UserActivityRelationTable", relationColumnNames, relationWhereClauses, SQLHelper.logicAND);
 			if(relationTableRecords==null || relationTableRecords.size()<=0) break;
 
@@ -352,9 +352,9 @@ public class SQLCommander {
 				Integer activityId=(Integer)record.get(UserActivityRelationTable.activityIdKey);
 				activityIds.add(activityId);
 			}
-				
+
 			if(activityIds==null || activityIds.size()<=0) break;
-			
+
 			// query table Activity
 			List<String> activityColumnNames=new LinkedList<String>();
 			activityColumnNames.add(Activity.idKey);
@@ -365,7 +365,7 @@ public class SQLCommander {
 			activityColumnNames.add(Activity.deadlineKey);
 			activityColumnNames.add(Activity.capacityKey);
 			activityColumnNames.add(Activity.statusKey);
-			
+
 			List<String> activityWhereClauses=new LinkedList<String>();
             for(Integer activityId : activityIds){
                 activityWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
@@ -382,7 +382,7 @@ public class SQLCommander {
 		return ret;
 	}
 
-    public static List<Activity> queryActivities(Activity.StatusType status, int refIndex, int sortKey, String sortDirection, int numItems, int direction, Integer userId){
+    public static List<Activity> queryActivities(Activity.StatusType status, Integer refIndex, Integer sortKey, String sortDirection, Integer numItems, Integer direction, Integer userId){
         List<Activity> ret=null;
         do{
             try{
@@ -436,32 +436,28 @@ public class SQLCommander {
         return ret;
     }
 
-	public static List<Activity> queryPendingActivitiesInChronologicalOrder(int refIndex, int numItems, int direction){
-		return queryActivities(Activity.StatusType.pending, refIndex, ACTIVITY_ID, SQLHelper.directionDescend, numItems, direction, null);
+	public static List<Activity> queryPendingActivitiesInChronologicalOrder(Integer refIndex, Integer numItems, Integer direction, Integer userId){
+		return queryActivities(Activity.StatusType.pending, refIndex, ACTIVITY_ID, SQLHelper.directionDescend, numItems, direction, userId);
 	}
 
-	public static List<Activity> queryAcceptedActivitiesInChronologicalOrder(int refIndex, int numItems, int direction){
-		return queryActivities(Activity.StatusType.accepted, refIndex, ACTIVITY_ID, SQLHelper.directionDescend, numItems, direction, null);
-	}
-
-	public static List<Activity> queryAcceptedActivitiesByUserIdInChronologicalOrder(int refIndex, int numItems, int direction, int userId){
+	public static List<Activity> queryAcceptedActivitiesInChronologicalOrder(Integer refIndex, Integer numItems, Integer direction, Integer userId){
 		return queryActivities(Activity.StatusType.accepted, refIndex, ACTIVITY_ID, SQLHelper.directionDescend, numItems, direction, userId);
 	}
-	
+
 	public static UserActivityRelation.RelationType queryRelationOfUserIdAndActivity(int userId, int activityId){
 		String tableName="UserActivityRelationTable";
-		UserActivityRelation.RelationType ret=null; 
+		UserActivityRelation.RelationType ret=null;
 		do{
 			try{
 				SQLHelper sqlHelper=new SQLHelper();
-				// query table UserActivityRelationTable 
+				// query table UserActivityRelationTable
 				List<String> relationColumnNames=new LinkedList<String>();
 				relationColumnNames.add(UserActivityRelationTable.relationIdKey);
 
 				List<String> relationWhereClauses=new LinkedList<String>();
 				relationWhereClauses.add(UserActivityRelationTable.userIdKey+"="+userId);
 				relationWhereClauses.add(UserActivityRelationTable.activityIdKey+"="+activityId);
-			
+
 				List<JSONObject> relationTableRecords=sqlHelper.queryTableByColumnsAndWhereClauses(tableName, relationColumnNames, relationWhereClauses, SQLHelper.logicAND);
 				if(relationTableRecords==null || relationTableRecords.size()<=0) break;
 
@@ -477,7 +473,7 @@ public class SQLCommander {
 		}while(false);
 		return ret;
 	}
-	
+
 	public static boolean validateOwnershipOfActivity(int userId, int activityId){
 		boolean ret=false;
 		do{
@@ -488,7 +484,7 @@ public class SQLCommander {
 		}while(false);
 		return ret;
 	}
-	
+
 	public static boolean validateOwnershipOfActivity(int userId, Activity activity){
 		boolean ret=false;
 		do{
@@ -498,7 +494,7 @@ public class SQLCommander {
 		}while(false);
 		return ret;
 	}
-	
+
 	public static boolean validateAdminAccess(User user){
 		boolean ret=false;
 		do{
@@ -508,7 +504,7 @@ public class SQLCommander {
 		}while(false);
 		return ret;
 	}
-	
+
 	public static boolean isActivityEditable(int userId, int activityId){
 		boolean ret=false;
 		do{
@@ -518,7 +514,7 @@ public class SQLCommander {
 		} while(false);
 		return ret;
 	}
-	
+
 	public static boolean isActivityEditable(int userId, Activity activity){
 		boolean ret=false;
 		do{
@@ -540,7 +536,7 @@ public class SQLCommander {
 		}while(false);
 		return ret;
 	}
-	
+
 	public static boolean isActivityJoinable(int userId, Activity activity){
 		boolean ret=false;
 		do{
@@ -554,7 +550,7 @@ public class SQLCommander {
 		}while(false);
 		return ret;
 	}
-	
+
 	public static boolean isActivityJoinable(int userId, int activityId){
 		boolean ret=false;
 		do{
@@ -564,7 +560,7 @@ public class SQLCommander {
 		}while(false);
 		return ret;
 	}
-	
+
 	public static boolean joinActivity(int userId, int activityId){
 		boolean ret=false;
 		do{
@@ -572,22 +568,22 @@ public class SQLCommander {
 				SQLHelper sqlHelper=new SQLHelper();
 				java.util.Date date= new java.util.Date();
 				Timestamp currentTime=new Timestamp(date.getTime());
-				
+
 				List<String> columnNames=new LinkedList<String>();
 				columnNames.add(UserActivityRelationTable.activityIdKey);
 				columnNames.add(UserActivityRelationTable.userIdKey);
 				columnNames.add(UserActivityRelationTable.relationIdKey);
 				columnNames.add(UserActivityRelationTable.generatedTimeKey);
-				
+
 				List<Object> columnValues=new LinkedList<Object>();
 				columnValues.add(activityId);
 				columnValues.add(userId);
 				columnValues.add(UserActivityRelation.RelationType.applied.ordinal());
 				columnValues.add(currentTime.toString());
-				
+
 				int lastRelationTableId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
 				if(lastRelationTableId==SQLHelper.invalidId) break;
-				
+
 				ret=true;
 			} catch(Exception e){
 				System.out.println("SQLCommander.joinActivity:"+e.getMessage());
@@ -595,7 +591,7 @@ public class SQLCommander {
 		}while(false);
 		return ret;
 	}
-	
+
 	public static boolean acceptActivity(User user, Activity activity){
 		boolean ret=false;
 		do{
@@ -605,15 +601,15 @@ public class SQLCommander {
 			try{
 				SQLHelper sqlHelper=new SQLHelper();
 				String activityTableName="Activity";
-			
+
 				List<String> columnNames=new LinkedList<String>();
 				columnNames.add(Activity.statusKey);
 				List<Object> columnValues=new LinkedList<Object>();
 				columnValues.add(Activity.StatusType.accepted.ordinal());
 				List<String> whereClauses=new LinkedList<String>();
 				whereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activity.getId()));
-			
-				ret=sqlHelper.updateTableByColumnsAndWhereClauses(activityTableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND); 
+
+				ret=sqlHelper.updateTableByColumnsAndWhereClauses(activityTableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
 			} catch(Exception e){
 				System.out.println("SQLCommander.acceptActivity: "+e.getMessage());
 			}
@@ -716,14 +712,14 @@ public class SQLCommander {
 				relationWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
 				relationWhereClauses.add(Image.idKey+"="+SQLHelper.convertToQueryValue(imageId));
 				boolean resultRelationDeletion=sqlHelper.deleteFromTableByWhereClauses(relationTableName, relationWhereClauses, SQLHelper.logicAND);
-				
+
 				if(resultRelationDeletion==false) break;
-				
+
 				String imageTableName="Image";
 				List<String> imageWhereClauses=new LinkedList<String>();
 				imageWhereClauses.add(Image.idKey+"="+SQLHelper.convertToQueryValue(imageId));
 				ret=sqlHelper.deleteFromTableByWhereClauses(imageTableName, imageWhereClauses, SQLHelper.logicAND);
-				
+
 			} catch(Exception e){
 				System.out.println("SQLCommander.deleteImageRecordOfActivityById:"+e.getMessage());
 			}
@@ -751,14 +747,14 @@ public class SQLCommander {
 				Integer imageId=(Integer)relationRecord.get(Image.idKey);
 				imageIds.add(imageId);
 			}
-			
+
 		}while(false);
 		return imageIds;
 	}
-	
+
 	public static List<Image> queryImagesByActivityId(int activityId){
 		List<Image> images=null;
-		
+
 		do{
 			String relationTableName="ActivityImageRelationTable";
 			SQLHelper sqlHelper=new SQLHelper();
@@ -776,7 +772,7 @@ public class SQLCommander {
 			imageColumnNames.add(Image.urlKey);
 
 			List<String> imageWhereClauses=new LinkedList<String>();
-			
+
 			Iterator<JSONObject> itRelationRecord=relationRecords.iterator();
 			while(itRelationRecord.hasNext()){
 				JSONObject relationRecord=itRelationRecord.next();
@@ -801,7 +797,7 @@ public class SQLCommander {
 		}while(false);
 		return images;
 	}
-	
+
 	public static int uploadImageOfActivity(User user, Activity activity, String imageAbsolutePath, String imageURL){
 		int lastImageId= s_invalidId;
 		do{
@@ -858,7 +854,7 @@ public class SQLCommander {
 				relationOrderClauses.add(UserActivityRelationTable.generatedTimeKey);
 				List<JSONObject> relationRecords=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(relationTableName, relationColumnNames, relationWhereClauses, SQLHelper.logicAND, relationOrderClauses, null, null);
 				if(relationRecords==null || relationRecords.size()<=0) break;
-				
+
 				Iterator<JSONObject> it=relationRecords.iterator();
 				while(it.hasNext()){
 					JSONObject relationRecord=it.next();
@@ -866,7 +862,7 @@ public class SQLCommander {
 					BasicUser user= queryUser(userId);
 					users.add(user);
 				}
-				
+
 			} catch(Exception e){
 				System.out.println("SQLCommander.queryUsersByActivityIdAndRelation: "+e.getMessage());
 			}

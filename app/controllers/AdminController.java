@@ -88,7 +88,7 @@ public class AdminController extends Controller {
 
                 if(SQLCommander.validateAdminAccess(user)==false) break;
 
-                List<Activity> activities=SQLCommander.queryPendingActivitiesInChronologicalOrder(refIndex, numItems, direction);
+                List<Activity> activities=SQLCommander.queryPendingActivitiesInChronologicalOrder(refIndex, numItems, direction, null);
       			if(activities==null) break;
                 ObjectNode result = Json.newObject();
       		
@@ -115,7 +115,7 @@ public class AdminController extends Controller {
 
                 if(SQLCommander.validateAdminAccess(user)==false) break;
 
-                List<Activity> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(refIndex, numItems, direction);
+                List<Activity> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(refIndex, numItems, direction, null);
       			if(activities==null) break;
 
                 ObjectNode result = Json.newObject();

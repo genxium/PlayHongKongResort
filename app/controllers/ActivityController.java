@@ -17,6 +17,34 @@ public class ActivityController extends Controller {
 
     public static String s_indexOldImage="indexOldImage";
 
+    public static Result query(Integer refIndex, Integer numItems, Integer direction, String token){
+        response().setContentType("text/plain");
+        do{
+            try{
+                Integer userId=null;
+                if(token!=null){
+                    userId=DataUtils.getUserIdByToken(token);
+                }
+                if(userId==DataUtils.invalidId) break;
+                List<Activity> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(refIndex, numItems, direction, userId);
+                if(activities==null) break;
+                ObjectNode result = Json.newObject();
+
+                for(Activity activity : activities){
+                    if(userId!=null){
+                        result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImagesAndRelation(userId));
+                    } else{
+                        result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages());
+                    }
+                }
+                return ok(result);
+            } catch(Exception e){
+
+            }
+        }while(false);
+        return badRequest();
+    }
+
     public static Result queryActivityOwnership(){
         do{
             Map<String, String[]> formData=request().body().asFormUrlEncoded();

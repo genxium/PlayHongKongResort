@@ -36,7 +36,7 @@ public class ActivityQueryController extends Controller {
         response().setContentType("text/plain");
         do{
             try{
-                List<Activity> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(refIndex, numItems, direction);
+                List<Activity> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(refIndex, numItems, direction, null);
                 ObjectNode result = play.libs.Json.newObject();
 
                 for(Activity activity : activities){
@@ -56,7 +56,7 @@ public class ActivityQueryController extends Controller {
             try{
                 int userId=DataUtils.getUserIdByToken(token);
                 if(userId==DataUtils.invalidId) break;
-                List<Activity> activities=SQLCommander.queryAcceptedActivitiesByUserIdInChronologicalOrder(refIndex, numItems, direction, userId);
+                List<Activity> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(refIndex, numItems, direction, userId);
                 if(activities==null) break;
                 ObjectNode result = Json.newObject();
 
@@ -70,6 +70,7 @@ public class ActivityQueryController extends Controller {
         }while(false);
         return badRequest();
     }
+
     public static Result queryActivitiesHostedByUser(Integer refIndex, Integer numItems, Integer direction, String token){
         response().setContentType("text/plain");
         do{
