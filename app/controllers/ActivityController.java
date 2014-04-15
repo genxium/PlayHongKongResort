@@ -9,13 +9,12 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.DataUtils;
+import views.html.helper.form;
 
 import java.sql.Timestamp;
 import java.util.*;
 
 public class ActivityController extends Controller {
-
-    public static String s_indexOldImage="indexOldImage";
 
     public static Result query(Integer refIndex, Integer numItems, Integer direction, String token, Integer relation){
         response().setContentType("text/plain");
@@ -166,7 +165,7 @@ public class ActivityController extends Controller {
         return badRequest();
     }
 
-    public static Result updateActivity(){
+    public static Result update(){
         // define response attributes
         response().setContentType("text/plain");
 
@@ -176,37 +175,23 @@ public class ActivityController extends Controller {
 
                 // get file data from request body stream
                 Http.MultipartFormData data = body.asMultipartFormData();
-
                 List<Http.MultipartFormData.FilePart> imageFiles=data.getFiles();
 
-                // get user token and activity id from request body stream
                 Map<String, String[]> formData= data.asFormUrlEncoded();
 
-                String[] tokens=formData.get(User.tokenKey);
-                String[] activityIds=formData.get(Activity.idKey);
+                String token=formData.get(User.tokenKey)[0];
 
-                String token=tokens[0];
-                int userId=DataUtils.getUserIdByToken(token);
-                if(userId==DataUtils.invalidId) break;
+                if(token==null) break;
+                Integer userId=DataUtils.getUserIdByToken(token);
+                if(userId==null || userId==DataUtils.invalidId) break;
                 User user=SQLCommander.queryUser(userId);
                 if(user==null) break;
 
-                int activityId=Integer.parseInt(activityIds[0]);
-
-                // get activity title and content
-                String[] activityTitles=formData.get(Activity.titleKey);
-                String[] activityContents=formData.get(Activity.contentKey);
-
-                String activityTitle=activityTitles[0];
-                String activityContent=activityContents[0];
-
-                // get activity begin time and deadline
-                String[] activityBeginTimes=formData.get(Activity.beginTimeKey);
-                String[] activityDeadlines=formData.get(Activity.deadlineKey);
-
-                String activityBeginTime=activityBeginTimes[0];
-                String activityDeadline=activityDeadlines[0];
-
+                Integer activityId=Integer.valueOf(formData.get(Activity.idKey)[0]);
+                String activityTitle=formData.get(Activity.titleKey)[0];
+                String activityContent=formData.get(Activity.contentKey)[0];
+                String activityBeginTime=formData.get(Activity.beginTimeKey)[0];
+                String activityDeadline=formData.get(Activity.deadlineKey)[0];
                 if(DataUtils.validateTitle(activityTitle)==false || DataUtils.validateContent(activityContent)==false) break;
                 Activity activity=SQLCommander.queryActivity(activityId);
                 if(SQLCommander.isActivityEditable(userId, activity)==false) break;
@@ -231,7 +216,7 @@ public class ActivityController extends Controller {
                 }
 
                 // selected old images
-                String[] selectedOldImagesRaw=formData.get(s_indexOldImage);
+                String[] selectedOldImagesRaw=formData.get("indexOldImage");
                 JSONArray selectedOldImagesJson=(JSONArray)JSONValue.parse(selectedOldImagesRaw[0]);
                 Set<Integer> selectedOldImagesSet=new HashSet<Integer>();
                 for(int i=0;i<selectedOldImagesJson.size();i++){
@@ -252,7 +237,7 @@ public class ActivityController extends Controller {
                 }
 
             } catch(Exception e){
-                System.out.println("Application.updateActivity:"+e.getMessage());
+                System.out.println("ActivityController.update:"+e.getMessage());
                 break;
             }
             return ok("Activity updated");

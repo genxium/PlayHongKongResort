@@ -106,8 +106,8 @@ function onUpdateFormSubmission(editor){
 		formData.append(g_keyActivityDeadline, deadline);
 
 		$.ajax({
-			method: "POST",
-			url: "/updateActivity", 
+			method: "PUT",
+			url: "/activity/update",
 			data: formData,
 			mimeType: "mutltipart/form-data",
 			contentType: false, // tell jQuery not to set contentType

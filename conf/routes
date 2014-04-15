@@ -14,11 +14,11 @@ POST /checkLoginStatus controllers.Application.checkLoginStatus()
 POST /logout controllers.Application.logout()
 
 POST /createActivity controllers.ActivityController.createActivity()
-POST /updateActivity controllers.ActivityController.updateActivity()
 POST /deleteActivity controllers.ActivityController.deleteActivity()
 POST /submitActivity controllers.ActivityController.submitActivity()
 POST /joinActivity controllers.ActivityController.joinActivity()
 
+PUT /activity/update controllers.ActivityController.update()
 GET /activity/query controllers.ActivityController.query(refIndex: Integer, numItems: Integer, direction: Integer, token: String ?= null, relation: Integer ?=null)
 GET /activity/detail controllers.ActivityController.detail(activityId: Integer)
 
