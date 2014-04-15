@@ -17,8 +17,11 @@ function queryActivitiesHostedByUser(refIndex, numItems, direction){
 	var token = $.cookie(g_keyLoginStatus.toString());
     params[g_keyToken]=token;
 
+    var relation=0;
+    params[g_keyRelation]=relation;
+
 	try{
-		$.get("/queryActivitiesHostedByUser", 
+		$.get("/activity/query",
             params,
 			function(data, status, xhr){
     				if(status=="success"){
@@ -46,7 +49,7 @@ function queryActivitiesHostedByUser(refIndex, numItems, direction){
 	    					}
                         }
     				} else{
-    					
+
     				}
 			}
 		);

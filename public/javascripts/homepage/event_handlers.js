@@ -40,7 +40,7 @@ function onBtnLoginClicked(evt){
     				$.cookie(g_keyLoginStatus.toString(), jsonResponse[g_keyUserToken]);
     				// refresh screen
     				refreshOnLoggedIn();
-    				queryDefaultActivitiesByUser(0, g_numItemsPerPage, g_directionForward);
+    				queryDefaultActivities(0, g_numItemsPerPage, g_directionForward);
 				} else{
 
 	    		}
@@ -50,17 +50,11 @@ function onBtnLoginClicked(evt){
 
 function onBtnPreviousPageClicked(evt){
 	var targetSection=$("#"+g_idSectionDefaultActivities);
-
 	var pageIndex=targetSection.data(g_keyPageIndex);
     var startingIndex=targetSection.data(g_keyStartingIndex);
     var endingIndex=targetSection.data(g_keyEndingIndex);
 
-	var token = $.cookie(g_keyLoginStatus.toString());
-	if(token==null){
-		queryDefaultActivities(startingIndex, g_numItemsPerPage, g_directionBackward);
-	} else{
-		queryDefaultActivitiesByUser(startingIndex, g_numItemsPerPage, g_directionBackward);
-	}
+    queryDefaultActivities(startingIndex, g_numItemsPerPage, g_directionBackward);
 }
 
 function onBtnNextPageClicked(evt){
@@ -70,12 +64,7 @@ function onBtnNextPageClicked(evt){
     var startingIndex=targetSection.data(g_keyStartingIndex);
     var endingIndex=targetSection.data(g_keyEndingIndex);
 
-	var token = $.cookie(g_keyLoginStatus.toString());
-	if(token==null){
-		queryDefaultActivities(endingIndex, g_numItemsPerPage, g_directionForward);
-	} else{
-		queryDefaultActivitiesByUser(endingIndex, g_numItemsPerPage, g_directionForward);
-	}
+    queryDefaultActivities(endingIndex, g_numItemsPerPage, g_directionForward);
 }
 
 function onSectionDefaultActivitiesScrolled(evt){

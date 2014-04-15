@@ -17,7 +17,7 @@ public class ActivityController extends Controller {
 
     public static String s_indexOldImage="indexOldImage";
 
-    public static Result query(Integer refIndex, Integer numItems, Integer direction, String token){
+    public static Result query(Integer refIndex, Integer numItems, Integer direction, String token, Integer relation){
         response().setContentType("text/plain");
         do{
             try{
@@ -26,7 +26,14 @@ public class ActivityController extends Controller {
                     userId=DataUtils.getUserIdByToken(token);
                 }
                 if(userId==DataUtils.invalidId) break;
-                List<Activity> activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(refIndex, numItems, direction, userId);
+                List<Activity> activities=null;
+
+                if(relation!=null){
+                    UserActivityRelation.RelationType relationship=UserActivityRelation.RelationType.getTypeForValue(relation);
+                    activities=SQLCommander.queryActivities(userId, relationship);
+                } else{
+                    activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(refIndex, numItems, direction, userId);
+                }
                 if(activities==null) break;
                 ObjectNode result = Json.newObject();
 
@@ -37,6 +44,22 @@ public class ActivityController extends Controller {
                         result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages());
                     }
                 }
+                return ok(result);
+            } catch(Exception e){
+
+            }
+        }while(false);
+        return badRequest();
+    }
+
+    public static Result detail(Integer activityId){
+        response().setContentType("text/plain");
+        do{
+            ObjectNode result = null;
+            try{
+                ActivityDetail activityDetail=SQLCommander.queryActivityDetail(activityId);
+                if(activityDetail==null) break;
+                result=activityDetail.toObjectNode();
                 return ok(result);
             } catch(Exception e){
 

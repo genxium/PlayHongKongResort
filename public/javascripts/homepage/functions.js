@@ -22,7 +22,7 @@ function checkLoginStatus(evt){
                 $.cookie(g_keyLoginStatus.toString(), userJson[g_keyUserToken]);
                 // refresh screen
                 refreshOnLoggedIn();
-                queryDefaultActivitiesByUser(0, g_numItemsPerPage, g_directionForward, token);
+                queryDefaultActivities(0, g_numItemsPerPage, g_directionForward);
             },
             error: function(xhr, status, errorThrown){
                 // refresh screen

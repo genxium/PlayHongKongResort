@@ -19,10 +19,8 @@ POST /deleteActivity controllers.ActivityController.deleteActivity()
 POST /submitActivity controllers.ActivityController.submitActivity()
 POST /joinActivity controllers.ActivityController.joinActivity()
 
-GET /activity/query controllers.ActivityController.query(refIndex: Integer, numItems: Integer, direction: Integer, token: String ?= null)
-GET  /queryDefaultActivities controllers.ActivityQueryController.queryDefaultActivities(refIndex: Integer, numItems: Integer, direction: Integer)
-GET /queryDefaultActivitiesByUser controllers.ActivityQueryController.queryDefaultActivitiesByUser(refIndex: Integer, numItems: Integer, direction: Integer, token: String)
-GET /queryActivitiesHostedByUser controllers.ActivityQueryController.queryActivitiesHostedByUser(refIndex: Integer, numItems: Integer, direction: Integer, token: String)
+GET /activity/query controllers.ActivityController.query(refIndex: Integer, numItems: Integer, direction: Integer, token: String ?= null, relation: Integer ?=null)
+GET /activity/detail controllers.ActivityController.detail(activityId: Integer)
 
 # User Profile Editor
 POST /uploadAvatar controllers.Application.uploadAvatar()
@@ -34,7 +32,6 @@ POST /acceptActivity controllers.AdminController.acceptActivity()
 POST /deleteActivityByAdmin controllers.AdminController.deleteActivityByAdmin()
 
 # Activity Detail Page
-GET /queryActivityDetail controllers.ActivityQueryController.queryActivityDetail(activityId: Integer)
 POST /updateActivityParticipants controllers.ActivityController.updateActivityParticipants()
 POST /queryActivityOwnership controllers.ActivityController.queryActivityOwnership()
 

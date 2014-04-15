@@ -4,46 +4,26 @@ function queryDefaultActivities(refIndex, numItems, direction){
 	params[g_keyRefIndex]=refIndex.toString();
 	params[g_keyNumItems]=numItems.toString();
 	params[g_keyDirection]=direction.toString();
-	
-	try{
-		$.ajax({
-            method: "GET", 
-            url: "/queryDefaultActivities", 
-			data: params,
-			success: g_callbackOnQueryActivitiesSuccess,
-            error: function(data, status, xhr){
-                
-            } 		
-        });
 
-	} catch(err){
-
-	}
-}
-
-function queryDefaultActivitiesByUser(refIndex, numItems, direction){
-	var params={};
-	params[g_keyRefIndex]=refIndex.toString();
-	params[g_keyNumItems]=numItems.toString();
-	params[g_keyDirection]=direction.toString();
-	
 	var token = $.cookie(g_keyLoginStatus.toString());
-	params[g_keyToken]=token;
-	
+    if(token!=null) params[g_keyToken]=token;
+
 	try{
 		$.ajax({
             method: "GET", 
-            url: "/queryDefaultActivitiesByUser", 
+            url: "/activity/query",
 			data: params,
 			success: g_callbackOnQueryActivitiesSuccess,
             error: function(data, status, xhr){
                 
             } 		
         });
+
 	} catch(err){
 
 	}
 }
+
 // Assistant Handlers
 function onBtnLogoutClicked(evt){
 	var token = $.cookie(g_keyLoginStatus.toString());

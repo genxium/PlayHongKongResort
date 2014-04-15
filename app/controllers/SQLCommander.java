@@ -318,7 +318,7 @@ public class SQLCommander {
 		return activity;
 	}
 
-	public static ActivityDetail queryActivityDetailByActivityId(int activityId){
+	public static ActivityDetail queryActivityDetail(int activityId){
 		ActivityDetail activityDetail=null;
 		do{
 			Activity activity= queryActivity(activityId);
@@ -332,7 +332,7 @@ public class SQLCommander {
 		return activityDetail;
 	}
 
-	public static List<Activity> queryActivitiesByUserAndRelation(User user, UserActivityRelation.RelationType relation){
+	public static List<Activity> queryActivities(Integer userId, UserActivityRelation.RelationType relation){
 		List<Activity> ret=null;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
@@ -341,7 +341,7 @@ public class SQLCommander {
 			relationColumnNames.add(UserActivityRelationTable.activityIdKey);
 
 			List<String> relationWhereClauses=new LinkedList<String>();
-			relationWhereClauses.add(UserActivityRelationTable.userIdKey+"="+user.getUserId());
+			relationWhereClauses.add(UserActivityRelationTable.userIdKey+"="+userId);
 			relationWhereClauses.add(UserActivityRelationTable.relationIdKey+"="+relation.ordinal());
 
 			List<JSONObject> relationTableRecords=sqlHelper.queryTableByColumnsAndWhereClauses("UserActivityRelationTable", relationColumnNames, relationWhereClauses, SQLHelper.logicAND);

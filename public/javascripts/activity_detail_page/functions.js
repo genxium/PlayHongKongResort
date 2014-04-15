@@ -1,20 +1,22 @@
 function queryActivityDetail(activityId){
+    var params={};
+    params['activityId']=activityId;
     try{
-		$.get("/queryActivityDetail", 
-			{
-				activityId: activityId.toString(),
-			},
-			function(data, status, xhr){
-				if(status=="success"){
-                    var activityDetailJson=JSON.parse(data);
-				    displayActivityDetail(activityDetailJson);	
-				} else{
+        $.ajax({
+            method: "GET",
+            url: "/activity/detail",
+            data: params,
+            success: function(data, status, xhr){
+                var activityDetailJson=JSON.parse(data);
+                displayActivityDetail(activityDetailJson);
+            },
+            error: function(xhr, status, errThrown){
 
-				}
-			}
-		);
-    }catch(err){
-    
+            }
+        });
+
+    } catch(err){
+
     }
 }
 
