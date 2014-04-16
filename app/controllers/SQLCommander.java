@@ -15,9 +15,11 @@ import dao.SQLHelper;
 public class SQLCommander {
 
     public static Integer ACTIVITY_ID=0;
+    public static Integer COMMENT_ON_ACTIVITY_ID=1;
 
     public static Map<Integer, String> s_columnMap = ImmutableMap.of(
-            ACTIVITY_ID, Activity.idKey
+            ACTIVITY_ID, Activity.idKey,
+            COMMENT_ON_ACTIVITY_ID, CommentOnActivity.ID
     );
 
 	public static Integer s_invalidId =(-1);
@@ -473,6 +475,62 @@ public class SQLCommander {
 		}while(false);
 		return ret;
 	}
+
+    public static List<CommentOnActivity> queryComments(Integer activityId, Integer refIndex,  Integer sortKey, String sortDirection, Integer numItems, Integer direction, Integer commentType){
+         
+        List<CommentOnActivity> ret=null;
+        do{
+            try{
+                String tableName="CommentOnActivity";
+                SQLHelper sqlHelper=new SQLHelper();
+                //
+                // query table CommentOnActivity
+                List<String> columnNames=new LinkedList<String>();
+                columnNames.add(CommentOnActivity.ID);
+                columnNames.add(CommentOnActivity.CONTENT);
+                columnNames.add(CommentOnActivity.COMMENTER_ID);
+                columnNames.add(CommentOnActivity.PREDECESSOR_ID);
+                columnNames.add(CommentOnActivity.ACTIVITY_ID);
+                columnNames.add(CommentOnActivity.COMMENT_TYPE);
+                columnNames.add(CommentOnActivity.GENERATED_TIME);
+                
+                List<String> whereClauses=new LinkedList<String>();
+                whereClauses.add(CommentOnActivity.ACTIVITY_ID+"="+activityId);
+                whereClauses.add(CommentOnActivity.COMMENT_TYPE+"="+commentType);
+
+                String columnName=s_columnMap.get(sortKey);
+                List<String> orderClauses=new LinkedList<String>();
+                orderClauses.add(columnName);
+
+                List<String> orderDirections=new LinkedList<String>();
+                orderDirections.add(sortDirection);
+
+                if(refIndex== s_initialRefIndex){
+                    whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(s_initialRefIndex));
+
+                } else if(direction==s_directionForward){
+                    whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(refIndex+1));
+                } else{
+                    whereClauses.add(columnName+"<="+SQLHelper.convertToQueryValue(refIndex-1));
+                }
+
+                List<Integer> limits=new ArrayList<Integer>();
+                limits.add(numItems);
+
+                List<JSONObject> commentsJson=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, orderDirections, limits);
+                if(commentsJson==null) break;
+
+                ret=new ArrayList<CommentOnActivity>();
+                for(JSONObject commentJson : commentsJson){
+                    ret.add(new CommentOnActivity(commentJson));
+                }
+
+            } catch(Exception e){
+
+            }
+        }while(false);
+        return ret;
+    }
 
 	public static boolean validateOwnershipOfActivity(int userId, int activityId){
 		boolean ret=false;

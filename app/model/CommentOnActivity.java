@@ -1,6 +1,7 @@
 package model;
 
 import java.sql.Timestamp;
+import org.json.simple.JSONObject;
 
 public class CommentOnActivity {
     public static final String ID="CommentAId";
@@ -26,5 +27,22 @@ public class CommentOnActivity {
     public Integer getPredecessorId() {return m_predecessorId;}
     public Integer getCommentType() {return m_commentType;}
     public Timestamp getGeneratedTime() {return m_generatedTime;}
+
+
+    public CommentOnActivity(JSONObject commentJson){
+        do{
+            try{
+                m_id=(Integer)commentJson.get(ID);
+                m_content=(String)commentJson.get(CONTENT);
+                m_commenterId=(Integer)commentJson.get(COMMENTER_ID);
+                m_activityId=(Integer)commentJson.get(ACTIVITY_ID);
+                m_predecessorId=(Integer)commentJson.get(PREDECESSOR_ID);
+                m_commentType=(Integer)commentJson.get(COMMENT_TYPE);
+                m_generatedTime=(Timestamp)commentJson.get(GENERATED_TIME);
+            }catch(Exception e){
+
+            }
+        }while(false);
+    }
 }
 
