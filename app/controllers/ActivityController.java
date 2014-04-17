@@ -1,6 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import dao.SQLHelper;
 import model.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
@@ -9,7 +10,6 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.DataUtils;
-import views.html.helper.form;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -67,14 +67,8 @@ public class ActivityController extends Controller {
         return badRequest();
     }
 
-    public static Result queryActivityOwnership(){
+    public static Result ownership(String token, Integer activityId){
         do{
-            Map<String, String[]> formData=request().body().asFormUrlEncoded();
-            String[] tokens=formData.get(User.tokenKey);
-            String token=tokens[0];
-            String[] activityIds=formData.get(Activity.idKey);
-            Integer activityId=Integer.valueOf(activityIds[0]);
-
             Integer ownerId=DataUtils.getUserIdByToken(token);
             if(ownerId==DataUtils.invalidId) break;
             if(SQLCommander.validateOwnershipOfActivity(ownerId, activityId)==false) break;
@@ -132,29 +126,70 @@ public class ActivityController extends Controller {
   	  	return badRequest();
     }
 
-    public static Result createActivity(){
+    public static Result create(){
         // define response attributes
         response().setContentType("text/plain");
 
         do{
             try{
                 Map<String, String[]> formData=request().body().asFormUrlEncoded();
-                String[] tokens=formData.get(User.tokenKey);
-                String token=tokens[0];
+                String token=formData.get(User.tokenKey)[0];
 
+                if(token==null) break;
                 Integer userId=DataUtils.getUserIdByToken(token);
                 if(userId==DataUtils.invalidId) break;
 
                 // create blank draft
                 Activity activity=new Activity();
 
-                int lastActivityId=SQLCommander.createActivity(activity, userId);
-                if(lastActivityId!=SQLCommander.s_invalidId){
-                    activity.setId(lastActivityId);
-                    ObjectNode activityNode= Json.newObject();
-                    activityNode.put(Activity.idKey, new Integer(lastActivityId).toString());
-                    return ok(activityNode);
+                int lastActivityId= SQLHelper.INVALID_ID;
+
+                SQLHelper sqlHelper=new SQLHelper();
+                List<String> columnNames=new LinkedList<String>();
+
+                columnNames.add(Activity.titleKey);
+                columnNames.add(Activity.contentKey);
+                columnNames.add(Activity.createdTimeKey);
+                columnNames.add(Activity.beginTimeKey);
+                columnNames.add(Activity.deadlineKey);
+                columnNames.add(Activity.capacityKey);
+
+                List<Object> columnValues=new LinkedList<Object>();
+
+                columnValues.add(activity.getTitle());
+                columnValues.add(activity.getContent());
+                columnValues.add(activity.getCreatedTime().toString());
+                columnValues.add(activity.getBeginTime().toString());
+                columnValues.add(activity.getDeadline().toString());
+                columnValues.add(activity.getCapacity());
+
+                int tmpLastActivityId=sqlHelper.insertToTableByColumns("Activity", columnNames, columnValues);
+                if(tmpLastActivityId!=SQLHelper.INVALID_ID){
+                    columnNames.clear();
+                    columnValues.clear();
+
+                    columnNames.add(UserActivityRelationTable.activityIdKey);
+                    columnNames.add(UserActivityRelationTable.userIdKey);
+                    columnNames.add(UserActivityRelationTable.relationIdKey);
+                    columnNames.add(UserActivityRelationTable.generatedTimeKey);
+
+                    columnValues.add(tmpLastActivityId);
+                    columnValues.add(userId);
+                    columnValues.add(UserActivityRelation.RelationType.host.ordinal());
+                    columnValues.add(activity.getCreatedTime().toString());
+
+                    int lastRelationTableId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
+                    if(lastRelationTableId==SQLHelper.INVALID_ID) break;
+
+                    lastActivityId=tmpLastActivityId;
                 }
+
+                if(lastActivityId==SQLHelper.INVALID_ID) break;
+
+                activity.setId(lastActivityId);
+                ObjectNode activityNode= Json.newObject();
+                activityNode.put(Activity.idKey, new Integer(lastActivityId).toString());
+                return ok(activityNode);
 
             } catch(Exception e){
                 System.out.println("Application.createActivity: "+e.getMessage());
@@ -246,7 +281,7 @@ public class ActivityController extends Controller {
         return badRequest("Activity not updated!");
     }
 
-    public static Result submitActivity(){
+    public static Result submit(){
         // define response attributes
         response().setContentType("text/plain");
         do{
@@ -270,8 +305,21 @@ public class ActivityController extends Controller {
                 Activity activity=SQLCommander.queryActivity(activityId);
                 if(SQLCommander.isActivityEditable(userId, activity)==false) break;
 
-                boolean res=SQLCommander.submitActivity(userId, activity);
-                if(res==false) break;
+                String activityTableName="Activity";
+
+                SQLHelper sqlHelper=new SQLHelper();
+                List<String> columnNames=new LinkedList<String>();
+                columnNames.add(Activity.statusKey);
+
+                List<Object> columnValues=new LinkedList<Object>();
+                columnValues.add(Activity.StatusType.pending.ordinal());
+
+                List<String> whereClauses=new LinkedList<String>();
+                whereClauses.add(Activity.idKey+"="+activity.getId());
+
+                boolean ret=sqlHelper.updateTableByColumnsAndWhereClauses(activityTableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
+
+                if(ret==false) break;
                 return ok("Activity submitted");
 
             } catch(Exception e){
@@ -283,7 +331,7 @@ public class ActivityController extends Controller {
     }
 
 
-    public static Result deleteActivity(){
+    public static Result delete(){
         // define response attributes
         response().setContentType("text/plain");
         do{
@@ -311,26 +359,42 @@ public class ActivityController extends Controller {
         return badRequest("Activity not completely deleted!");
     }
 
-    public static Result joinActivity(){
+    public static Result join(){
         // define response attributes
         response().setContentType("text/plain");
         do{
-            Map<String, String[]> formData=request().body().asFormUrlEncoded();
-            String[] ids=formData.get(Activity.idKey);
-            String[] tokens=formData.get(User.tokenKey);
-
-            Integer activityId=Integer.parseInt(ids[0]);
-            String token=tokens[0];
             try{
+                Map<String, String[]> formData=request().body().asFormUrlEncoded();
+                Integer activityId=Integer.parseInt(formData.get(Activity.idKey)[0]);
+                String token=formData.get(User.tokenKey)[0];
+
                 Integer userId=DataUtils.getUserIdByToken(token);
                 Activity activity=SQLCommander.queryActivity(activityId);
                 if(SQLCommander.isActivityJoinable(userId, activity)==false) break;
-                boolean result=SQLCommander.joinActivity(userId, activityId);
-                if(result==false) break;
+
+                SQLHelper sqlHelper=new SQLHelper();
+                java.util.Date date= new java.util.Date();
+                Timestamp currentTime=new Timestamp(date.getTime());
+
+                List<String> columnNames=new LinkedList<String>();
+                columnNames.add(UserActivityRelationTable.activityIdKey);
+                columnNames.add(UserActivityRelationTable.userIdKey);
+                columnNames.add(UserActivityRelationTable.relationIdKey);
+                columnNames.add(UserActivityRelationTable.generatedTimeKey);
+
+                List<Object> columnValues=new LinkedList<Object>();
+                columnValues.add(activityId);
+                columnValues.add(userId);
+                columnValues.add(UserActivityRelation.RelationType.applied.ordinal());
+                columnValues.add(currentTime.toString());
+
+                int lastRelationTableId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
+                if(lastRelationTableId==SQLHelper.INVALID_ID) break;
+
+                return ok("Successfully joined activity");
             } catch(Exception e){
                 System.out.println("Application.joinActivity:"+e.getMessage());
             }
-            return ok("Successfully joined activity");
         }while(false);
         return badRequest("Could not join activity");
     }

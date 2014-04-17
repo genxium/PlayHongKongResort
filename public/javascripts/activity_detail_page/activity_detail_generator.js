@@ -138,42 +138,44 @@ function generateActivityDetailViewByJson(activityJson){
         
         var token=$.cookie(g_keyLoginStatus.toString());
 	    if(token==null) break;
-        $.post("/queryActivityOwnership",
-            {
-                UserToken: token.toString(),
-                ActivityId: activityId.toString() 
+
+	    var params={};
+	    params["token"]=token.toString();
+	    params["activityId"]=activityId;
+
+	    $.ajax({
+	        type: "GET",
+	        url: "/activity/ownership",
+	        data: params,
+	        success: function(data, status, xhr){
+                 for(var i=0;i<labels.length;i++){
+                     var label=labels[i];
+                     var userId=$(label).data(g_keyUserId);
+                     var selectionStatus=$(label).data(g_indexParticipantSelectionStatus);
+                     var checkStatus=true;
+                     if(selectionStatus==g_statusSelected){
+                         checkStatus=true;
+                     } else{
+                         checkStatus=false;
+                     }
+                     var checkbox=$('<input>',{
+                         type: "checkbox",
+                         class: g_classParticipantsSelection,
+                         value: userId,
+                         checked: checkStatus
+                     }).appendTo(label);
+                     checkbox.data(g_indexParticipantsSelectionLabel, label);
+                 }
+                 var btnSubmit=$('<button>',{
+                                 text: 'Submit'
+                             }).appendTo(selectionForm);
+                 btnSubmit.bind("click", onBtnSubmitClicked);
+                 selectionForm.data(g_keyActivityId, activityId);
             },
-            function(data, status, xhr){
-                if(status=="success"){
-                    for(var i=0;i<labels.length;i++){
-                        var label=labels[i];
-                        var userId=$(label).data(g_keyUserId);
-                        var selectionStatus=$(label).data(g_indexParticipantSelectionStatus);
-                        var checkStatus=true;
-                        if(selectionStatus==g_statusSelected){
-                            checkStatus=true;
-                        } else{
-                            checkStatus=false;
-                        }
-                        var checkbox=$('<input>',{
-                            type: "checkbox",
-                            class: g_classParticipantsSelection,
-                            value: userId,
-                            checked: checkStatus
-                        }).appendTo(label);
-                        checkbox.data(g_indexParticipantsSelectionLabel, label);
-                    }
-                    var btnSubmit=$('<button>',{
-                                    text: 'Submit'
-                                }).appendTo(selectionForm);
-                    btnSubmit.bind("click", onBtnSubmitClicked);
-                    selectionForm.data(g_keyActivityId, activityId);
-                }
-                else{
-                    alert("unsuccessful!");
-                }
+            error: function(xhr, status, errThrown){
+
             }
-        );
+	    });
 
     }while(false);
 	return ret;

@@ -32,31 +32,32 @@ function onBtnJoinClicked(evt){
 	var token = $.cookie(g_keyLoginStatus.toString());
 	var activityId=$(this).data(g_keyActivityId);
 
+    var params={};
+    params[g_keyActivityId]=activityId.toString();
+    params[g_keyUserToken]=token.toString();
+
 	try{
-		$.post("/joinActivity", 
-			{
-				ActivityId: activityId.toString(),
-				UserToken: token.toString()
-			},
-			function(data, status, xhr){
-				if(status=="success"){
-					var cellNode=btnJoin.parentNode; // javascript dom element
-					var cell=$(cellNode); // convert to jQuery element object
-					btnJoin.remove();
+		$.ajax({
+		    type: "POST",
+		    url: "/activity/join",
+		    data: params,
+		    success: function(data, status, xhr){
+                 var cellNode=btnJoin.parentNode; // javascript dom element
+                 var cell=$(cellNode); // convert to jQuery element object
+                 btnJoin.remove();
 
-					var appliedIndicator=$('<div>',
-					{
-						class: g_classAppliedIndicator,
-						html: 'Applied'
-					});
-					cell.append(appliedIndicator);
-					cell.data(g_indexStatusIndicator, appliedIndicator);
-					
-				} else{
+                 var appliedIndicator=$('<div>',
+                 {
+                     class: g_classAppliedIndicator,
+                     html: 'Applied'
+                 });
+                 cell.append(appliedIndicator);
+                 cell.data(g_indexStatusIndicator, appliedIndicator);
+            },
+            error: function(xhr, status, errThrown){
 
-				}
-			}
-		);
+            }
+		});
 	} catch(err){
 
 	}

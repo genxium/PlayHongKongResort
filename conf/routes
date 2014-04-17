@@ -13,12 +13,11 @@ POST /register controllers.Application.register()
 POST /checkLoginStatus controllers.Application.checkLoginStatus()
 POST /logout controllers.Application.logout()
 
-POST /createActivity controllers.ActivityController.createActivity()
-POST /deleteActivity controllers.ActivityController.deleteActivity()
-POST /submitActivity controllers.ActivityController.submitActivity()
-POST /joinActivity controllers.ActivityController.joinActivity()
-
+POST /activity/delete controllers.ActivityController.delete()
+POST /activity/join controllers.ActivityController.join()
+POST /activity/create controllers.ActivityController.create()
 PUT /activity/update controllers.ActivityController.update()
+PUT /activity/submit controllers.ActivityController.submit()
 GET /activity/query controllers.ActivityController.query(refIndex: Integer, numItems: Integer, direction: Integer, token: String ?= null, relation: Integer ?=null)
 GET /activity/detail controllers.ActivityController.detail(activityId: Integer)
 
@@ -33,7 +32,7 @@ POST /deleteActivityByAdmin controllers.AdminController.deleteActivityByAdmin()
 
 # Activity Detail Page
 POST /updateActivityParticipants controllers.ActivityController.updateActivityParticipants()
-POST /queryActivityOwnership controllers.ActivityController.queryActivityOwnership()
+GET /activity/ownership controllers.ActivityController.ownership(token: String ?=null, activityId: Integer ?=null)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

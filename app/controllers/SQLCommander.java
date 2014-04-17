@@ -141,57 +141,6 @@ public class SQLCommander {
 		return lastInsertedId;
 	}
 
-	public static int createActivity(Activity activity, Integer userId){
-
-		int lastActivityId= s_invalidId;
-		do{
-			SQLHelper sqlHelper=new SQLHelper();
-			List<String> columnNames=new LinkedList<String>();
-
-			columnNames.add(Activity.titleKey);
-			columnNames.add(Activity.contentKey);
-			columnNames.add(Activity.createdTimeKey);
-			columnNames.add(Activity.beginTimeKey);
-			columnNames.add(Activity.deadlineKey);
-			columnNames.add(Activity.capacityKey);
-
-			List<Object> columnValues=new LinkedList<Object>();
-
-			columnValues.add(activity.getTitle());
-			columnValues.add(activity.getContent());
-			columnValues.add(activity.getCreatedTime().toString());
-			columnValues.add(activity.getBeginTime().toString());
-			columnValues.add(activity.getDeadline().toString());
-			columnValues.add(activity.getCapacity());
-
-			try{
-				int tmpLastActivityId=sqlHelper.insertToTableByColumns("Activity", columnNames, columnValues);
-				if(tmpLastActivityId!=SQLHelper.invalidId){
-					columnNames.clear();
-					columnValues.clear();
-
-					columnNames.add(UserActivityRelationTable.activityIdKey);
-					columnNames.add(UserActivityRelationTable.userIdKey);
-					columnNames.add(UserActivityRelationTable.relationIdKey);
-					columnNames.add(UserActivityRelationTable.generatedTimeKey);
-
-					columnValues.add(tmpLastActivityId);
-					columnValues.add(userId);
-					columnValues.add(UserActivityRelation.RelationType.host.ordinal());
-					columnValues.add(activity.getCreatedTime().toString());
-
-					int lastRelationTableId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
-					if(lastRelationTableId==SQLHelper.invalidId) break;
-
-					lastActivityId=tmpLastActivityId;
-				}
-			} catch (Exception e){
-				System.out.println("SQLCommander.createActivity:"+e.getMessage());
-			}
-		}while(false);
-		return lastActivityId;
-	}
-
 	public static boolean updateActivity(Activity activity){
 		boolean ret=false;
 		do{
@@ -223,30 +172,6 @@ public class SQLCommander {
 
 			} catch(Exception e){
 				System.out.println("SQLCommander.updateActivity: "+e.getMessage());
-			}
-		}while(false);
-		return ret;
-	}
-
-	public static boolean submitActivity(int userId, Activity activity){
-		boolean ret=false;
-		do{
-			String activityTableName="Activity";
-			try{
-				SQLHelper sqlHelper=new SQLHelper();
-				List<String> columnNames=new LinkedList<String>();
-				columnNames.add(Activity.statusKey);
-
-				List<Object> columnValues=new LinkedList<Object>();
-				columnValues.add(Activity.StatusType.pending.ordinal());
-
-				List<String> whereClauses=new LinkedList<String>();
-				whereClauses.add(Activity.idKey+"="+activity.getId());
-
-				ret=sqlHelper.updateTableByColumnsAndWhereClauses(activityTableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
-
-			} catch(Exception e){
-				System.out.println("SQLCommander.submitActivity:"+e.getMessage());
 			}
 		}while(false);
 		return ret;
@@ -493,7 +418,7 @@ public class SQLCommander {
                 columnNames.add(CommentOnActivity.ACTIVITY_ID);
                 columnNames.add(CommentOnActivity.COMMENT_TYPE);
                 columnNames.add(CommentOnActivity.GENERATED_TIME);
-                
+
                 List<String> whereClauses=new LinkedList<String>();
                 whereClauses.add(CommentOnActivity.ACTIVITY_ID+"="+activityId);
                 whereClauses.add(CommentOnActivity.COMMENT_TYPE+"="+commentType);
@@ -619,37 +544,6 @@ public class SQLCommander {
 		return ret;
 	}
 
-	public static boolean joinActivity(int userId, int activityId){
-		boolean ret=false;
-		do{
-			try{
-				SQLHelper sqlHelper=new SQLHelper();
-				java.util.Date date= new java.util.Date();
-				Timestamp currentTime=new Timestamp(date.getTime());
-
-				List<String> columnNames=new LinkedList<String>();
-				columnNames.add(UserActivityRelationTable.activityIdKey);
-				columnNames.add(UserActivityRelationTable.userIdKey);
-				columnNames.add(UserActivityRelationTable.relationIdKey);
-				columnNames.add(UserActivityRelationTable.generatedTimeKey);
-
-				List<Object> columnValues=new LinkedList<Object>();
-				columnValues.add(activityId);
-				columnValues.add(userId);
-				columnValues.add(UserActivityRelation.RelationType.applied.ordinal());
-				columnValues.add(currentTime.toString());
-
-				int lastRelationTableId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
-				if(lastRelationTableId==SQLHelper.invalidId) break;
-
-				ret=true;
-			} catch(Exception e){
-				System.out.println("SQLCommander.joinActivity:"+e.getMessage());
-			}
-		}while(false);
-		return ret;
-	}
-
 	public static boolean acceptActivity(User user, Activity activity){
 		boolean ret=false;
 		do{
@@ -691,7 +585,7 @@ public class SQLCommander {
 			imageColumnValues.add(imageURL);
 
 			lastImageId=sqlHelper.insertToTableByColumns(imageTableName, imageColumnNames, imageColumnValues);
-			if(lastImageId==SQLHelper.invalidId) break;
+			if(lastImageId==SQLHelper.INVALID_ID) break;
 
 			List<String> userColumnNames=new LinkedList<String>();
 			userColumnNames.add(User.avatarKey);
@@ -874,7 +768,7 @@ public class SQLCommander {
 			imageColumnValues.add(imageURL);
 
 			lastImageId=sqlHelper.insertToTableByColumns(imageTableName, imageColumnNames, imageColumnValues);
-			if(lastImageId==SQLHelper.invalidId) break;
+			if(lastImageId==SQLHelper.INVALID_ID) break;
 
 			List<String> relationTableColumnNames=new LinkedList<String>();
 			relationTableColumnNames.add(Activity.idKey);
@@ -885,7 +779,7 @@ public class SQLCommander {
 			relationTableColumnValues.add(lastImageId);
 
 			int lastRecordId=sqlHelper.insertToTableByColumns(relationTableName, relationTableColumnNames, relationTableColumnValues);
-			if(lastRecordId==SQLHelper.invalidId){
+			if(lastRecordId==SQLHelper.INVALID_ID){
 				boolean isRecovered=deleteImageRecordById(lastImageId);
 				if(isRecovered==true){
 					System.out.println("SQLCommander.uploadImageOfActivity: image "+lastImageId+ " reverted");

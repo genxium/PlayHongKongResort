@@ -1,7 +1,10 @@
 package model;
 
 import java.sql.Timestamp;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.simple.JSONObject;
+import play.libs.Json;
 
 public class CommentOnActivity {
     public static final String ID="CommentAId";
@@ -43,6 +46,16 @@ public class CommentOnActivity {
 
             }
         }while(false);
+    }
+
+    public ObjectNode toObjectNode(){
+        ObjectNode ret = Json.newObject();;
+        do{
+            ret.put(ID, String.valueOf(m_id));
+            ret.put(CONTENT, m_content);
+            ret.put(GENERATED_TIME, m_generatedTime.toString());
+        }while(false);
+        return ret;
     }
 }
 

@@ -116,7 +116,7 @@ function onUpdateFormSubmission(editor){
 			    setSubmittable();
                 alert("You can submit the application now!");
 			},
-			error: function(xhr, status, errorThrown){
+			error: function(xhr, status, err){
 
 			}
 		});
@@ -140,8 +140,8 @@ function onSubmitFormSubmission(editor){
 		params[g_keyActivityId]=activityId.toString();
 
 		$.ajax({
-			method: "POST",
-			url: "/submitActivity",
+			method: "PUT",
+			url: "/activity/submit",
 			data: params,
 			success: function(data, status, xhr){
 				formObj.remove();
@@ -149,7 +149,7 @@ function onSubmitFormSubmission(editor){
 					g_callbackOnActivityEditorRemoved(0, g_numItemsPerPage, g_directionForward);
 				}
 			},
-			error: function(xhr, status, errorThrown){
+			error: function(xhr, status, err){
 
 			}
 		});
@@ -204,25 +204,27 @@ function onBtnCreateClicked(evt){
 
 	sectionActivityEditor=$("#"+g_idSectionActivityEditor);
 	sectionActivityEditor.empty();
-	var userToken=$.cookie(g_keyLoginStatus.toString());
-	
+	var token=$.cookie(g_keyLoginStatus.toString());
+
+	var params={};
+	params[g_keyUserToken]=token;
+
 	try{
-		$.post("/createActivity", 
-			{
-				UserToken: userToken.toString()
-			},
-			function(data, status, xhr){
-    				if(status=="success"){
-    					var activityJson=JSON.parse(data);
-						var editor=generateActivityEditorByJson(activityJson);
-						sectionActivityEditor.append(editor);
-    				} else{
-    					
-    				}
-			}
-		);
+        $.ajax({
+            type: "POST",
+            url: "/activity/create",
+            data: params,
+            success: function(data, status, xhr){
+                var activityJson=JSON.parse(data);
+                var editor=generateActivityEditorByJson(activityJson);
+                sectionActivityEditor.append(editor);
+            },
+            error: function(xhr, status, errThrown){
+
+            }
+        });
 	} catch(err){
-		
+
 	}
 }
 
@@ -243,28 +245,28 @@ function onBtnDeleteClicked(evt){
 	evt.preventDefault();
 	
 	var activityId=$(this).data(g_keyActivityId);
-	var id=activityId;
 	var token=$.cookie(g_keyLoginStatus.toString());
 	var editor=$(this).parent();
 
-	try{
-		$.post("/deleteActivity", 
-			{
-				ActivityId: id.toString(),
-				UserToken: token.toString()
-			},
-			function(data, status, xhr){
-				if(status=="success"){
-					editor.remove();
-					if(g_callbackOnActivityEditorRemoved!=null){
-						g_callbackOnActivityEditorRemoved(0);
-					}
-				}
-				else{
+    var params={};
+    params[g_keyActivityId]=activityId.toString();
+    params[g_keyUserToken]=token.toString();
 
-				}
-			}
-		);
+	try{
+	    $.ajax({
+	        type: "POST",
+	        url: "activity/delete",
+	        data: params,
+	        success: function(data, status, xhr){
+                 editor.remove();
+                 if(g_callbackOnActivityEditorRemoved!=null){
+                     g_callbackOnActivityEditorRemoved(0);
+                 }
+            }
+	        error: function(xhr, status, err){
+
+	        }
+	    });
 	} catch(err){
 		
 	}

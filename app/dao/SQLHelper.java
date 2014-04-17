@@ -1,17 +1,10 @@
 package dao;
 import java.util.*;
-import java.nio.charset.UnsupportedCharsetException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
-import java.io.*;
-
-import com.mysql.jdbc.Driver;
-
-import model.Activity;
 
 import org.json.simple.JSONObject;
 
@@ -28,7 +21,7 @@ public class SQLHelper {
 	public static String charsetEncodingKey="CharsetEncoding";
 	public static String useUnicodeKey="UseUnicode";
 
-	public static Integer invalidId=-1;
+	public static Integer INVALID_ID =(-1);
 	public static String logicAND="AND";
 	public static String logicOR="OR";
 	
@@ -130,7 +123,7 @@ public class SQLHelper {
 	}
 
 	public Integer executeInsert(String query){
-		Integer lastId=invalidId;
+		Integer lastId= INVALID_ID;
 		if(checkConnection()==true){
 			try{
 				PreparedStatement statement= connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS); 
@@ -169,7 +162,7 @@ public class SQLHelper {
 	}
 	
 	public Integer insertToTableByColumns(String tableName, List<String> columnNames, List<Object> columnValues){
-		Integer lastId=invalidId;
+		Integer lastId= INVALID_ID;
 		do{
 			if(columnNames.size()!=columnValues.size()) break;
 			
