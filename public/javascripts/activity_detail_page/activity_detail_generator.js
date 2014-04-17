@@ -166,11 +166,13 @@ function generateActivityDetailViewByJson(activityJson){
                      }).appendTo(label);
                      checkbox.data(g_indexParticipantsSelectionLabel, label);
                  }
-                 var btnSubmit=$('<button>',{
-                                 text: 'Submit'
-                             }).appendTo(selectionForm);
-                 btnSubmit.bind("click", onBtnSubmitClicked);
-                 selectionForm.data(g_keyActivityId, activityId);
+                 if(labels.length>0){
+                     var btnSubmit=$('<button>',{
+                                     text: 'Submit'
+                                 }).appendTo(selectionForm);
+                     btnSubmit.bind("click", onBtnSubmitClicked);
+                     selectionForm.data(g_keyActivityId, activityId);
+                 }
             },
             error: function(xhr, status, errThrown){
 

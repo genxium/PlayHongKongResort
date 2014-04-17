@@ -28,7 +28,7 @@ function setSubmittable(){
 }
 
 // Assistive Callback Functions
-function onUpdateFormSubmission(editor){
+function onSave(editor){
 	do{
 		var formObj = $(editor);
 		var formData = new FormData();
@@ -73,9 +73,6 @@ function onUpdateFormSubmission(editor){
 		// append user token and activity id for identity
 		var token = $.cookie(g_keyLoginStatus.toString());
 		formData.append(g_keyUserToken, token);
-
-		var activityId = formObj.data(g_keyActivityId);
-		formData.append(g_keyActivityId, activityId.toString());
 		
 		// append activity title and content 
 		var activityTitle=$("."+g_classFieldActivityTitle).val();
@@ -105,9 +102,17 @@ function onUpdateFormSubmission(editor){
 		var deadline=deadlineYear+"-"+deadlineMonth+"-"+deadlineDay+" "+deadlineHour+":"+deadlineMinute+":00";
 		formData.append(g_keyActivityDeadline, deadline);
 
+        var isNewActivity=false;
+		var activityId = formObj.data(g_keyActivityId);
+		if(activityId==null) isNewActivity=true;
+
+		if(isNewActivity==false){
+		    formData.append(g_keyActivityId, activityId.toString());
+        }
+
 		$.ajax({
-			method: "PUT",
-			url: "/activity/update",
+			method: "POST",
+			url: "/activity/save",
 			data: formData,
 			mimeType: "mutltipart/form-data",
 			contentType: false, // tell jQuery not to set contentType
@@ -123,7 +128,7 @@ function onUpdateFormSubmission(editor){
 	}while(false);
 }
 
-function onSubmitFormSubmission(editor){
+function onFormSubmission(editor){
 	do{
         if(g_submittable==false) {
             alert("You have to update the activity before submission!");
@@ -204,37 +209,18 @@ function onBtnCreateClicked(evt){
 
 	sectionActivityEditor=$("#"+g_idSectionActivityEditor);
 	sectionActivityEditor.empty();
-	var token=$.cookie(g_keyLoginStatus.toString());
 
-	var params={};
-	params[g_keyUserToken]=token;
-
-	try{
-        $.ajax({
-            type: "POST",
-            url: "/activity/create",
-            data: params,
-            success: function(data, status, xhr){
-                var activityJson=JSON.parse(data);
-                var editor=generateActivityEditorByJson(activityJson);
-                sectionActivityEditor.append(editor);
-            },
-            error: function(xhr, status, errThrown){
-
-            }
-        });
-	} catch(err){
-
-	}
+	var editor=generateActivityEditorByJson(null);
+    sectionActivityEditor.append(editor);
 }
 
-function onBtnUpdateClicked(evt){
+function onbtnSaveClicked(evt){
 
 	evt.preventDefault();
 	var editor=$(this).parent();
 
 	try{
-	    onUpdateFormSubmission(editor);
+	    onSave(editor);
 	} catch(err){
 
 	}
@@ -262,7 +248,7 @@ function onBtnDeleteClicked(evt){
                  if(g_callbackOnActivityEditorRemoved!=null){
                      g_callbackOnActivityEditorRemoved(0);
                  }
-            }
+            },
 	        error: function(xhr, status, err){
 
 	        }
@@ -278,7 +264,7 @@ function onBtnSubmitClicked(evt){
 	var editor=$(this).parent();
 
 	try{
-        onSubmitFormSubmission(editor);
+        onFormSubmission(editor);
 	} catch(err){
 		
 	}
@@ -295,11 +281,20 @@ function onBtnCancelClicked(evt){
 function generateActivityEditorByJson(activityJson){
 
      setSubmittable();
+     var isNewActivity=false;
+     if(activityJson==null) isNewActivity=true;
 
-	 var activityId=activityJson[g_keyActivityId];
-	 var activityTitle=activityJson[g_keyActivityTitle];
-	 var activityContent=activityJson[g_keyActivityContent];
-	 var activityImages=activityJson[g_keyActivityImages];
+	 var activityId=null;
+	 var activityTitle="";
+	 var activityContent="";
+	 var activityImages=null;
+
+     if(isNewActivity==false){
+        activityId=activityJson[g_keyActivityId];
+        activityTitle=activityJson[g_keyActivityTitle];
+        activityContent=activityJson[g_keyActivityContent];
+        activityImages=activityJson[g_keyActivityImages];
+     }
 
 	 var ret=$('<form>',
 	 			{
@@ -387,25 +382,17 @@ function generateActivityEditorByJson(activityJson){
      ret.data(g_indexSectionDeadline, sectionDeadline);
 
 	 /* Associated Buttons */
-	 var btnUpdate=$('<button>',{
-	 					class: g_classBtnUpdate,
-	 					text: 'Update' 
+	 var btnSave=$('<button>',{
+	 					class: g_classBtnSave,
+	 					text: 'Save'
 	 				}).appendTo(ret);
-	 btnUpdate.data(g_keyActivityId, activityId);
-	 btnUpdate.bind("click", onBtnUpdateClicked);
-
-	 var btnDelete=$('<button>',{
-	 					class: g_classBtnDelete,
-	 					text: 'Delete' 
-					 }).appendTo(ret);
-	 btnDelete.data(g_keyActivityId, activityId);
-	 btnDelete.bind("click", onBtnDeleteClicked);
+	 btnSave.bind("click", onbtnSaveClicked);
 
 	 var btnSubmit=$('<button>',{
 	 					class: g_classBtnSubmit,
 	 					text: 'Submit'
 	 				}).appendTo(ret);
-	 btnSubmit.data(g_keyActivityId, activityId);
+
 	 btnSubmit.bind("click", onBtnSubmitClicked);
 
 	 var btnCancel=$('<button>',{
@@ -414,8 +401,20 @@ function generateActivityEditorByJson(activityJson){
 	 				}).appendTo(ret);
 	 btnCancel.bind("click", onBtnCancelClicked);
 
-	 ret.data(g_keyActivityId, activityId);
-	 
+     if(isNewActivity==false){
+
+         var btnDelete=$('<button>',{
+                            class: g_classBtnDelete,
+                            text: 'Delete'
+                         }).appendTo(ret);
+
+         btnDelete.bind("click", onBtnDeleteClicked);
+
+         btnSave.data(g_keyActivityId, activityId);
+         btnDelete.data(g_keyActivityId, activityId);
+         btnSubmit.data(g_keyActivityId, activityId);
+         ret.data(g_keyActivityId, activityId);
+	 }
 	 return ret;
 }
 

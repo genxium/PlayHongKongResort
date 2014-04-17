@@ -126,81 +126,7 @@ public class ActivityController extends Controller {
   	  	return badRequest();
     }
 
-    public static Result create(){
-        // define response attributes
-        response().setContentType("text/plain");
-
-        do{
-            try{
-                Map<String, String[]> formData=request().body().asFormUrlEncoded();
-                String token=formData.get(User.tokenKey)[0];
-
-                if(token==null) break;
-                Integer userId=DataUtils.getUserIdByToken(token);
-                if(userId==DataUtils.invalidId) break;
-
-                // create blank draft
-                Activity activity=new Activity();
-
-                int lastActivityId= SQLHelper.INVALID_ID;
-
-                SQLHelper sqlHelper=new SQLHelper();
-                List<String> columnNames=new LinkedList<String>();
-
-                columnNames.add(Activity.titleKey);
-                columnNames.add(Activity.contentKey);
-                columnNames.add(Activity.createdTimeKey);
-                columnNames.add(Activity.beginTimeKey);
-                columnNames.add(Activity.deadlineKey);
-                columnNames.add(Activity.capacityKey);
-
-                List<Object> columnValues=new LinkedList<Object>();
-
-                columnValues.add(activity.getTitle());
-                columnValues.add(activity.getContent());
-                columnValues.add(activity.getCreatedTime().toString());
-                columnValues.add(activity.getBeginTime().toString());
-                columnValues.add(activity.getDeadline().toString());
-                columnValues.add(activity.getCapacity());
-
-                int tmpLastActivityId=sqlHelper.insertToTableByColumns("Activity", columnNames, columnValues);
-                if(tmpLastActivityId!=SQLHelper.INVALID_ID){
-                    columnNames.clear();
-                    columnValues.clear();
-
-                    columnNames.add(UserActivityRelationTable.activityIdKey);
-                    columnNames.add(UserActivityRelationTable.userIdKey);
-                    columnNames.add(UserActivityRelationTable.relationIdKey);
-                    columnNames.add(UserActivityRelationTable.generatedTimeKey);
-
-                    columnValues.add(tmpLastActivityId);
-                    columnValues.add(userId);
-                    columnValues.add(UserActivityRelation.RelationType.host.ordinal());
-                    columnValues.add(activity.getCreatedTime().toString());
-
-                    int lastRelationTableId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
-                    if(lastRelationTableId==SQLHelper.INVALID_ID) break;
-
-                    lastActivityId=tmpLastActivityId;
-                }
-
-                if(lastActivityId==SQLHelper.INVALID_ID) break;
-
-                activity.setId(lastActivityId);
-                ObjectNode activityNode= Json.newObject();
-                activityNode.put(Activity.idKey, new Integer(lastActivityId).toString());
-                return ok(activityNode);
-
-            } catch(Exception e){
-                System.out.println("Application.createActivity: "+e.getMessage());
-            }
-
-        }while(false);
-
-        return badRequest();
-    }
-
-    public static Result update(){
+    public static Result save(){
         // define response attributes
         response().setContentType("text/plain");
 
@@ -215,20 +141,35 @@ public class ActivityController extends Controller {
                 Map<String, String[]> formData= data.asFormUrlEncoded();
 
                 String token=formData.get(User.tokenKey)[0];
-
                 if(token==null) break;
                 Integer userId=DataUtils.getUserIdByToken(token);
                 if(userId==null || userId==DataUtils.invalidId) break;
                 User user=SQLCommander.queryUser(userId);
                 if(user==null) break;
 
-                Integer activityId=Integer.valueOf(formData.get(Activity.idKey)[0]);
                 String activityTitle=formData.get(Activity.titleKey)[0];
                 String activityContent=formData.get(Activity.contentKey)[0];
                 String activityBeginTime=formData.get(Activity.beginTimeKey)[0];
                 String activityDeadline=formData.get(Activity.deadlineKey)[0];
+
                 if(DataUtils.validateTitle(activityTitle)==false || DataUtils.validateContent(activityContent)==false) break;
-                Activity activity=SQLCommander.queryActivity(activityId);
+
+                boolean isNewActivity=true;
+                Integer activityId=null;
+                if(formData.containsKey(Activity.idKey)==true){
+                    activityId=Integer.valueOf(formData.get(Activity.idKey)[0]);
+                    isNewActivity=false;
+                }
+                Activity activity=null;
+
+                if(isNewActivity==true){
+                    // create activity
+                    activityId=SQLCommander.createActivity(activityTitle, activityContent, userId);
+                    if(activityId==null || activityId.equals(SQLHelper.INVALID_ID)) break;
+                }
+
+                // update activity
+                activity=SQLCommander.queryActivity(activityId);
                 if(SQLCommander.isActivityEditable(userId, activity)==false) break;
 
                 activity.setTitle(activityTitle);
@@ -237,6 +178,7 @@ public class ActivityController extends Controller {
                 activity.setDeadline(Timestamp.valueOf(activityDeadline));
 
                 boolean res=SQLCommander.updateActivity(activity);
+
                 if(res==false) break;
 
                 // save new images
@@ -251,12 +193,14 @@ public class ActivityController extends Controller {
                 }
 
                 // selected old images
-                String[] selectedOldImagesRaw=formData.get("indexOldImage");
-                JSONArray selectedOldImagesJson=(JSONArray)JSONValue.parse(selectedOldImagesRaw[0]);
                 Set<Integer> selectedOldImagesSet=new HashSet<Integer>();
-                for(int i=0;i<selectedOldImagesJson.size();i++){
-                    Integer imageId=((Long)selectedOldImagesJson.get(i)).intValue();
-                    selectedOldImagesSet.add(imageId);
+
+                if(formData.containsKey("indexOldImage")==true){
+                    JSONArray selectedOldImagesJson=(JSONArray)JSONValue.parse(formData.get("indexOldImage")[0]);
+                    for(int i=0;i<selectedOldImagesJson.size();i++){
+                        Integer imageId=((Long)selectedOldImagesJson.get(i)).intValue();
+                        selectedOldImagesSet.add(imageId);
+                    }
                 }
 
                 // delete previous images
@@ -271,14 +215,12 @@ public class ActivityController extends Controller {
                     }
                 }
 
+                return ok("Activity saved");
             } catch(Exception e){
-                System.out.println("ActivityController.update:"+e.getMessage());
-                break;
-            }
-            return ok("Activity updated");
 
+            }
         }while(false);
-        return badRequest("Activity not updated!");
+        return badRequest("Activity not saved!");
     }
 
     public static Result submit(){
@@ -323,7 +265,7 @@ public class ActivityController extends Controller {
                 return ok("Activity submitted");
 
             } catch(Exception e){
-                System.out.println("Application.submitActivity:"+e.getMessage());
+
             }
 
         }while(false);
@@ -352,7 +294,7 @@ public class ActivityController extends Controller {
                 boolean res=ExtraCommander.deleteActivity(activityId);
                 if(res==false) break;
             } catch(Exception e){
-                System.out.println("Application.deleteActivity: "+e.getMessage());
+
             }
             return ok("Activity deleted");
         } while(false);
@@ -393,7 +335,7 @@ public class ActivityController extends Controller {
 
                 return ok("Successfully joined activity");
             } catch(Exception e){
-                System.out.println("Application.joinActivity:"+e.getMessage());
+
             }
         }while(false);
         return badRequest("Could not join activity");

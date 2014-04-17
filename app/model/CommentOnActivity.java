@@ -7,6 +7,10 @@ import org.json.simple.JSONObject;
 import play.libs.Json;
 
 public class CommentOnActivity {
+
+    public static final Integer TYPE_QA=0;
+    public static final Integer TYPE_ASSESSMENT=1;
+
     public static final String ID="CommentAId";
     public static final String CONTENT="CommentAContent";
     public static final String COMMENTER_ID="CommenterId";

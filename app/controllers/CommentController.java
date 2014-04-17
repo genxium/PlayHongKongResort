@@ -2,17 +2,18 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.SQLHelper;
-import model.Activity;
-import model.CommentOnActivity;
-import model.UserActivityRelation;
-import model.UserActivityRelationTable;
+import model.*;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import utilities.DataUtils;
+import views.html.helper.form;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class CommentController extends Controller {
     public static Result query(Integer activityId, Integer refIndex, Integer numItems, Integer direction, String token){
@@ -34,7 +35,55 @@ public class CommentController extends Controller {
         return badRequest();
     }
 
-    public static Result create(String token, Integer activityId, String content, Integer predecessorId){
+    public static Result submit(){
+        // define response attributes
+        response().setContentType("text/plain");
+
+        do{
+            try{
+                Map<String, String[]> formData=request().body().asFormUrlEncoded();
+                String token=formData.get(User.tokenKey)[0];
+                Integer activityId=Integer.valueOf(formData.get(CommentOnActivity.ACTIVITY_ID)[0]);
+                String content=formData.get(CommentOnActivity.CONTENT)[0];
+                Integer predecessorId=Integer.valueOf(formData.get(CommentOnActivity.PREDECESSOR_ID)[0]);
+
+                if(token==null) break;
+                Integer userId=DataUtils.getUserIdByToken(token);
+                if(userId==DataUtils.invalidId) break;
+
+                // create blank draft
+                CommentOnActivity comment=null;
+
+                int lastCommentId= SQLHelper.INVALID_ID;
+
+                SQLHelper sqlHelper=new SQLHelper();
+                List<String> columnNames=new LinkedList<String>();
+
+                columnNames.add(CommentOnActivity.CONTENT);
+                columnNames.add(CommentOnActivity.ACTIVITY_ID);
+                columnNames.add(CommentOnActivity.COMMENT_TYPE);
+                columnNames.add(CommentOnActivity.COMMENTER_ID);
+                columnNames.add(CommentOnActivity.PREDECESSOR_ID);
+                columnNames.add(CommentOnActivity.GENERATED_TIME);
+
+                List<Object> columnValues=new LinkedList<Object>();
+
+                new Timestamp(new Date().getTime());
+
+                columnValues.add(content);
+                columnValues.add(SQLHelper.convertToQueryValue(activityId));
+                columnValues.add(SQLHelper.convertToQueryValue(CommentOnActivity.TYPE_QA));
+                columnValues.add(SQLHelper.convertToQueryValue(userId));
+                columnValues.add(SQLHelper.convertToQueryValue(predecessorId));
+                columnValues.add(new Timestamp(new Date().getTime()).toString());
+
+                break;
+
+            } catch(Exception e){
+
+            }
+
+        }while(false);
 
         return badRequest();
     }

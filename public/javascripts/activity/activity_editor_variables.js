@@ -9,7 +9,7 @@ var g_idBtnCreate="idBtnCreate";
 var g_classBtnEdit="classBtnEdit";
 var g_classBtnSubmit="classBtnSubmit";
 var g_classBtnDelete="classBtnDelete";
-var g_classBtnUpdate="classBtnUpdate";
+var g_classBtnSave="classBtnSave";
 var g_classBtnCancel="classBtnCancel";
 
 // general dom elements

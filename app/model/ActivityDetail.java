@@ -66,7 +66,6 @@ public class ActivityDetail extends Activity {
 	}
 
     public ActivityDetail(Activity activity, List<Image> images, List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants){
-        super();
         m_id=activity.getId();
         m_title=activity.getTitle();
         m_content=activity.getContent();

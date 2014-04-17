@@ -1,10 +1,12 @@
 package controllers;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import model.*;
 import model.UserActivityRelation.RelationType;
 
 import org.json.simple.JSONObject;
 
+import play.libs.Json;
 import utilities.DataUtils;
 
 import java.sql.Timestamp;
@@ -140,6 +142,48 @@ public class SQLCommander {
 		}
 		return lastInsertedId;
 	}
+
+    public static Integer createActivity(String title, String content, Integer userId){
+        Integer ret=null;
+        do{
+            int lastActivityId= SQLHelper.INVALID_ID;
+
+            SQLHelper sqlHelper=new SQLHelper();
+            List<String> columnNames=new LinkedList<String>();
+
+            columnNames.add(Activity.titleKey);
+            columnNames.add(Activity.contentKey);
+
+            List<Object> columnValues=new LinkedList<Object>();
+
+            columnValues.add(title);
+            columnValues.add(content);
+
+            int tmpLastActivityId=sqlHelper.insertToTableByColumns("Activity", columnNames, columnValues);
+            if(tmpLastActivityId!=SQLHelper.INVALID_ID){
+                columnNames.clear();
+                columnValues.clear();
+
+                columnNames.add(UserActivityRelationTable.activityIdKey);
+                columnNames.add(UserActivityRelationTable.userIdKey);
+                columnNames.add(UserActivityRelationTable.relationIdKey);
+
+                columnValues.add(tmpLastActivityId);
+                columnValues.add(userId);
+                columnValues.add(UserActivityRelation.RelationType.host.ordinal());
+
+                int lastRelationTableId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
+                if(lastRelationTableId==SQLHelper.INVALID_ID) break;
+
+                lastActivityId=tmpLastActivityId;
+            }
+
+            if(lastActivityId==SQLHelper.INVALID_ID) break;
+            ret=lastActivityId;
+
+        }while (false);
+        return ret;
+    }
 
 	public static boolean updateActivity(Activity activity){
 		boolean ret=false;

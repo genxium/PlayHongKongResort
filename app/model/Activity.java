@@ -79,15 +79,8 @@ public class Activity {
 	public StatusType getStatus() {return m_status;}
 	public void setStatus(StatusType status) {m_status=status;}
 
-    public Activity(){
-        m_id=0;
-        m_title=new String();
-        m_content=new String();
-        m_createdTime=new Timestamp(new Date().getTime());
-        m_beginTime=new Timestamp(new Date().getTime());
-        m_deadline=new Timestamp(new Date().getTime());
-        m_capacity=0;
-        m_status=StatusType.created;
+    protected Activity(){
+
     }
 
     public Activity(JSONObject activityJson){
