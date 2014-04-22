@@ -3,6 +3,7 @@ package model;
 import java.sql.Timestamp;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import controllers.SQLCommander;
 import org.json.simple.JSONObject;
 import play.libs.Json;
 
@@ -18,6 +19,8 @@ public class CommentOnActivity {
     public static final String PREDECESSOR_ID="PredecessorId";
     public static final String COMMENT_TYPE="CommentType";
     public static final String GENERATED_TIME="GeneratedTime";
+
+    public static final String COMMENTER_NAME="CommenterName";
 
     protected Integer m_id=null;
     protected String m_content=null;
@@ -55,9 +58,13 @@ public class CommentOnActivity {
     public ObjectNode toObjectNode(){
         ObjectNode ret = Json.newObject();;
         do{
-            ret.put(ID, String.valueOf(m_id));
-            ret.put(CONTENT, m_content);
-            ret.put(GENERATED_TIME, m_generatedTime.toString());
+            try{
+                ret.put(CONTENT, m_content);
+                ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
+                ret.put(GENERATED_TIME, m_generatedTime.toString());
+            } catch (Exception e){
+
+            }
         }while(false);
         return ret;
     }

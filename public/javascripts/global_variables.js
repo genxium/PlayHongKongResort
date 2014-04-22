@@ -42,6 +42,14 @@ var g_keyUserActivityRelationId="UserActivityRelationId";
 var g_keyImageId="ImageId";
 var g_keyImageURL="ImageURL";
 
+var g_keyCommentAId="CommentAId";
+var g_keyCommentAContent="CommentAContent";
+var g_keyCommenterId="CommenterId";
+var g_keyPredecessorId="PredecessorId";
+var g_keyCommentType="CommentType";
+var g_keyGeneratedTime="GeneratedTime";
+var g_keyCommenterName="CommenterName";
+
 // callback function pointers
 var g_callbackOnActivityEditorRemoved=null;
 

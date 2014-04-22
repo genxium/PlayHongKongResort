@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CommentController extends Controller {
+
     public static Result query(Integer activityId, Integer refIndex, Integer numItems, Integer direction, String token){
         response().setContentType("text/plain");
         do{
@@ -27,7 +28,13 @@ public class CommentController extends Controller {
                 if(userId==DataUtils.invalidId) break;
 
                 List<CommentOnActivity> comments=SQLCommander.queryComments(activityId, refIndex, SQLCommander.COMMENT_ON_ACTIVITY_ID, SQLHelper.directionDescend, numItems, direction, 0);
-                return ok();
+
+                ObjectNode result = Json.newObject();
+
+                for(CommentOnActivity comment : comments){
+                    result.put(String.valueOf(comment.getId()), comment.toObjectNode());
+                }
+                return ok(result);
             } catch(Exception e){
 
             }
@@ -64,20 +71,19 @@ public class CommentController extends Controller {
                 columnNames.add(CommentOnActivity.COMMENT_TYPE);
                 columnNames.add(CommentOnActivity.COMMENTER_ID);
                 columnNames.add(CommentOnActivity.PREDECESSOR_ID);
-                columnNames.add(CommentOnActivity.GENERATED_TIME);
 
                 List<Object> columnValues=new LinkedList<Object>();
-
-                new Timestamp(new Date().getTime());
 
                 columnValues.add(content);
                 columnValues.add(SQLHelper.convertToQueryValue(activityId));
                 columnValues.add(SQLHelper.convertToQueryValue(CommentOnActivity.TYPE_QA));
                 columnValues.add(SQLHelper.convertToQueryValue(userId));
                 columnValues.add(SQLHelper.convertToQueryValue(predecessorId));
-                columnValues.add(new Timestamp(new Date().getTime()).toString());
 
-                break;
+                lastCommentId=sqlHelper.insertToTableByColumns("CommentOnActivity", columnNames, columnValues);
+                if(lastCommentId==SQLHelper.INVALID_ID) break;
+
+                return ok();
 
             } catch(Exception e){
 

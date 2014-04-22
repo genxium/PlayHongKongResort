@@ -1,7 +1,8 @@
 package controllers;
 
 import play.*;
-import play.mvc.*;
+import play.mvc.Content;
+import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Http.RequestBody;
@@ -11,6 +12,7 @@ import java.io.*;
 import java.util.*;
 
 import play.libs.Json;
+import play.mvc.Result;
 import utilities.Converter;
 import utilities.DataUtils;
 
@@ -33,8 +35,20 @@ public class Application extends Controller {
 			response().setContentType("text/html");
 			return ok(content);
 		} catch(IOException e){
-			return badRequest();
-		}
+
+        }
+        return badRequest();
+    }
+
+    public static Result detail(Integer activityId){
+        try{
+
+            Content html = views.html.detail.render(activityId);
+            return ok(html);
+        } catch (Exception e){
+
+        }
+        return badRequest();
     }
     
     public static Result login(){

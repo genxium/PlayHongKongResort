@@ -1,3 +1,36 @@
+// Assistive Functions
+function queryActivityDetail(activityId){
+    var params={};
+    params['activityId']=activityId;
+    try{
+        $.ajax({
+            method: "GET",
+            url: "/activity/detail",
+            data: params,
+            success: function(data, status, xhr){
+                var activityDetailJson=JSON.parse(data);
+                displayActivityDetail(activityDetailJson);
+            },
+            error: function(xhr, status, errThrown){
+
+            }
+        });
+
+    } catch(err){
+
+    }
+}
+
+function displayActivityDetail(activityDetailJson){
+    var activityTitle=activityDetailJson[g_keyActivityTitle];
+    var activityContent=activityDetailJson[g_keyActivityContent];
+    var activityImages=activityDetailJson[g_keyActivityImages];
+
+    var body=$("body");
+    var detailView=generateActivityDetailViewByJson(activityDetailJson);
+    body.append(detailView);
+}
+
 // Assistive Callback Functions
 function onParticipantsSelectionFormSubmission(formEvt){
 	do{
@@ -96,7 +129,6 @@ function generateActivityDetailViewByJson(activityJson){
                }).appendTo(imagesNode);
            }
         }
-
         
         var selectionForm=$('<form>',{
             id: g_idParticipantsSelectionForm
@@ -140,7 +172,7 @@ function generateActivityDetailViewByJson(activityJson){
 	    if(token==null) break;
 
 	    var params={};
-	    params["token"]=token.toString();
+	    params["token"]=token;
 	    params["activityId"]=activityId;
 
 	    $.ajax({
@@ -170,6 +202,7 @@ function generateActivityDetailViewByJson(activityJson){
                      var btnSubmit=$('<button>',{
                                      text: 'Submit'
                                  }).appendTo(selectionForm);
+                     btnSubmit.css("font-size", 18);
                      btnSubmit.bind("click", onBtnSubmitClicked);
                      selectionForm.data(g_keyActivityId, activityId);
                  }
@@ -179,6 +212,57 @@ function generateActivityDetailViewByJson(activityJson){
             }
 	    });
 
+        // query comments
+        $.ajax({
+            type: "GET",
+            url: "/comment/query",
+            data: {
+                "activityId": activityId,
+                "refIndex": 0,
+                "numItems": 20,
+                "direction": 1,
+                "token": token
+            },
+            success: function(data, status, xhr){
+                var tb=$('<table>', {
+                    border: "1pt"
+                }).appendTo(ret);
+
+                var jsonResponse=JSON.parse(data);
+                if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
+                    for(var key in jsonResponse){
+                        var commentJson=jsonResponse[key];
+                        var row=$('<tr>').appendTo(tb);
+                        $('<td>',{
+                            text: key
+                        }).appendTo(row);
+                        $('<td>',{
+                            text: commentJson[g_keyCommentAContent]
+                        }).appendTo(row);
+                        $('<td>',{
+                            text: commentJson[g_keyCommenterName]
+                        }).appendTo(row);
+                        $('<td>',{
+                            text: commentJson[g_keyGeneratedTime]
+                        }).appendTo(row);
+                    }
+                }
+            },
+            error: function(xhr, status, err){
+
+            }
+        });
+
+        var commentEditor=generateCommentEditor(activityId);
+        ret.append(commentEditor);
+
     }while(false);
 	return ret;
 }
+
+// execute on start
+$(document).ready(function(){
+	// execute on page loaded
+	var activityId=$('#activityId').attr("value");
+	queryActivityDetail(activityId);
+});
