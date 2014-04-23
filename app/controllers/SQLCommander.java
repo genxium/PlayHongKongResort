@@ -353,7 +353,7 @@ public class SQLCommander {
 		return ret;
 	}
 
-    public static List<Activity> queryActivities(Activity.StatusType status, Integer refIndex, Integer sortKey, String sortDirection, Integer numItems, Integer direction, Integer userId){
+    public static List<Activity> queryActivities(Activity.StatusType status, Object refIndex, Integer sortKey, String sortDirection, Integer numItems, Integer direction, Integer userId){
         List<Activity> ret=null;
         do{
             try{
@@ -380,13 +380,13 @@ public class SQLCommander {
                 List<String> orderDirections=new LinkedList<String>();
                 orderDirections.add(sortDirection);
 
-                if(refIndex== s_initialRefIndex){
+                if(refIndex.equals(s_initialRefIndex)){
                     whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(s_initialRefIndex));
 
                 } else if(direction==s_directionForward){
-                    whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(refIndex+1));
+                    whereClauses.add(columnName+">"+SQLHelper.convertToQueryValue(refIndex));
                 } else{
-                    whereClauses.add(columnName+"<="+SQLHelper.convertToQueryValue(refIndex-1));
+                    whereClauses.add(columnName+"<"+SQLHelper.convertToQueryValue(refIndex));
                 }
 
                 List<Integer> limits=new ArrayList<Integer>();
@@ -407,11 +407,11 @@ public class SQLCommander {
         return ret;
     }
 
-	public static List<Activity> queryPendingActivitiesInChronologicalOrder(Integer refIndex, Integer numItems, Integer direction, Integer userId){
+	public static List<Activity> queryPendingActivitiesInChronologicalOrder(Object refIndex, Integer numItems, Integer direction, Integer userId){
 		return queryActivities(Activity.StatusType.pending, refIndex, ACTIVITY_ID, SQLHelper.directionDescend, numItems, direction, userId);
 	}
 
-	public static List<Activity> queryAcceptedActivitiesInChronologicalOrder(Integer refIndex, Integer numItems, Integer direction, Integer userId){
+	public static List<Activity> queryAcceptedActivitiesInChronologicalOrder(Object refIndex, Integer numItems, Integer direction, Integer userId){
 		return queryActivities(Activity.StatusType.accepted, refIndex, ACTIVITY_ID, SQLHelper.directionDescend, numItems, direction, userId);
 	}
 
@@ -445,7 +445,7 @@ public class SQLCommander {
 		return ret;
 	}
 
-    public static List<CommentOnActivity> queryComments(Integer activityId, Integer refIndex,  Integer sortKey, String sortDirection, Integer numItems, Integer direction, Integer commentType){
+    public static List<CommentOnActivity> queryComments(Integer activityId, Object refIndex,  Integer sortKey, String sortDirection, Integer numItems, Integer direction, Integer commentType){
          
         List<CommentOnActivity> ret=null;
         do{
@@ -474,13 +474,13 @@ public class SQLCommander {
                 List<String> orderDirections=new LinkedList<String>();
                 orderDirections.add(sortDirection);
 
-                if(refIndex== s_initialRefIndex){
+                if(refIndex.equals(s_initialRefIndex)){
                     whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(s_initialRefIndex));
 
                 } else if(direction==s_directionForward){
-                    whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(refIndex+1));
+                    whereClauses.add(columnName+">"+SQLHelper.convertToQueryValue(refIndex));
                 } else{
-                    whereClauses.add(columnName+"<="+SQLHelper.convertToQueryValue(refIndex-1));
+                    whereClauses.add(columnName+"<"+SQLHelper.convertToQueryValue(refIndex));
                 }
 
                 List<Integer> limits=new ArrayList<Integer>();

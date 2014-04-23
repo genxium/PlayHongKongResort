@@ -1,23 +1,21 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import dao.SQLHelper;
-import model.*;
-import play.libs.Json;
+import model.CommentOnActivity;
+import model.User;
 import play.mvc.Controller;
 import play.mvc.Result;
 import utilities.DataUtils;
-import views.html.helper.form;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class CommentController extends Controller {
 
-    public static Result query(Integer activityId, Integer refIndex, Integer numItems, Integer direction, String token){
+    public static Result query(Integer activityId, Object refIndex, Integer numItems, Integer direction, String token){
         response().setContentType("text/plain");
         do{
             try{
@@ -29,10 +27,9 @@ public class CommentController extends Controller {
 
                 List<CommentOnActivity> comments=SQLCommander.queryComments(activityId, refIndex, SQLCommander.COMMENT_ON_ACTIVITY_ID, SQLHelper.directionDescend, numItems, direction, 0);
 
-                ObjectNode result = Json.newObject();
-
+				ArrayNode result=new ArrayNode(JsonNodeFactory.instance);
                 for(CommentOnActivity comment : comments){
-                    result.put(String.valueOf(comment.getId()), comment.toObjectNode());
+                    result.add(comment.toObjectNode());
                 }
                 return ok(result);
             } catch(Exception e){

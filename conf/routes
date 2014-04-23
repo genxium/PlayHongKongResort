@@ -17,15 +17,15 @@ POST /activity/delete controllers.ActivityController.delete()
 POST /activity/join controllers.ActivityController.join()
 POST /activity/save controllers.ActivityController.save()
 PUT /activity/submit controllers.ActivityController.submit()
-GET /activity/query controllers.ActivityController.query(refIndex: Integer, numItems: Integer, direction: Integer, token: String ?= null, relation: Integer ?=null)
+GET /activity/query controllers.ActivityController.query(refIndex: String ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?= null, relation: Integer ?=null)
 GET /activity/detail controllers.ActivityController.detail(activityId: Integer)
 
 # User Profile Editor
 POST /uploadAvatar controllers.Application.uploadAvatar()
 
 # Admin Page
-GET /queryPendingActivitiesByAdmin controllers.AdminController.queryPendingActivitiesByAdmin(refIndex: Integer ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?=null)
-GET /queryAcceptedActivitiesByAdmin controllers.AdminController.queryAcceptedActivitiesByAdmin(refIndex: Integer ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?=null)
+GET /queryPendingActivitiesByAdmin controllers.AdminController.queryPendingActivitiesByAdmin(refIndex: String ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?=null)
+GET /queryAcceptedActivitiesByAdmin controllers.AdminController.queryAcceptedActivitiesByAdmin(refIndex: String ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?=null)
 POST /acceptActivity controllers.AdminController.acceptActivity()
 POST /deleteActivityByAdmin controllers.AdminController.deleteActivityByAdmin()
 
@@ -34,7 +34,7 @@ GET /app/detail controllers.Application.detail(activityId: Integer ?=null)
 POST /updateActivityParticipants controllers.ActivityController.updateActivityParticipants()
 GET /activity/ownership controllers.ActivityController.ownership(token: String ?=null, activityId: Integer ?=null)
 POST /comment/submit controllers.CommentController.submit()
-GET /comment/query controllers.CommentController.query(activityId: Integer ?=null, refIndex: Integer ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?=null)
+GET /comment/query controllers.CommentController.query(activityId: Integer ?=null, refIndex: String ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?=null)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

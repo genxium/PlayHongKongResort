@@ -16,7 +16,7 @@ import java.util.*;
 
 public class ActivityController extends Controller {
 
-    public static Result query(Integer refIndex, Integer numItems, Integer direction, String token, Integer relation){
+    public static Result query(Object refIndex, Integer numItems, Integer direction, String token, Integer relation){
         response().setContentType("text/plain");
         do{
             try{

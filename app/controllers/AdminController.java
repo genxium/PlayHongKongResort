@@ -3,9 +3,6 @@ package controllers;
 import play.mvc.*;
 import model.*;
 
-import org.json.simple.JSONObject;
-
-import java.util.Iterator;
 import java.util.List;
 import java.util.*;
 
@@ -76,7 +73,7 @@ public class AdminController extends Controller {
         return badRequest("Activity not completely deleted!");
     }
 
-    public static Result queryPendingActivitiesByAdmin(Integer refIndex, Integer numItems, Integer direction, String token){
+    public static Result queryPendingActivitiesByAdmin(Object refIndex, Integer numItems, Integer direction, String token){
 		response().setContentType("text/plain");
         do{
     		try{
@@ -103,7 +100,7 @@ public class AdminController extends Controller {
         return badRequest();
     }
     
-    public static Result queryAcceptedActivitiesByAdmin(Integer refIndex, Integer numItems, Integer direction, String token){
+    public static Result queryAcceptedActivitiesByAdmin(Object refIndex, Integer numItems, Integer direction, String token){
 		response().setContentType("text/plain");
         do{
     		try{

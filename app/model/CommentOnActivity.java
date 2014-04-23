@@ -59,6 +59,7 @@ public class CommentOnActivity {
         ObjectNode ret = Json.newObject();;
         do{
             try{
+                ret.put(ID, m_id);
                 ret.put(CONTENT, m_content);
                 ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
                 ret.put(GENERATED_TIME, m_generatedTime.toString());
