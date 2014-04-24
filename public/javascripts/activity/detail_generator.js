@@ -168,6 +168,32 @@ function generateActivityDetailViewByJson(activityJson){
             }
         }
         
+        // query comments
+        $.ajax({
+            type: "GET",
+            url: "/comment/query",
+            data: {
+                "activityId": activityId,
+                "refIndex": 0,
+                "numItems": 20,
+                "direction": 1
+            },
+            success: function(data, status, xhr){
+
+                var jsonResponse=JSON.parse(data);
+                if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
+                    for(var key in jsonResponse){
+                        var commentJson=jsonResponse[key];
+                        var row=generateCommentCell(commentJson).appendTo(ret);
+                        $('<br>').appendTo(ret);
+                    }
+                }
+            },
+            error: function(xhr, status, err){
+
+            }
+        });
+
         var token=$.cookie(g_keyLoginStatus.toString());
 	    if(token==null) break;
 
@@ -211,47 +237,6 @@ function generateActivityDetailViewByJson(activityJson){
 
             }
 	    });
-
-        // query comments
-        $.ajax({
-            type: "GET",
-            url: "/comment/query",
-            data: {
-                "activityId": activityId,
-                "refIndex": 0,
-                "numItems": 20,
-                "direction": 1,
-                "token": token
-            },
-            success: function(data, status, xhr){
-                var tb=$('<table>', {
-                    border: "1pt"
-                }).appendTo(ret);
-
-                var jsonResponse=JSON.parse(data);
-                if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
-                    for(var key in jsonResponse){
-                        var commentJson=jsonResponse[key];
-                        var row=$('<tr>').appendTo(tb);
-                        $('<td>',{
-                            text: key
-                        }).appendTo(row);
-                        $('<td>',{
-                            text: commentJson[g_keyCommentAContent]
-                        }).appendTo(row);
-                        $('<td>',{
-                            text: commentJson[g_keyCommenterName]
-                        }).appendTo(row);
-                        $('<td>',{
-                            text: commentJson[g_keyGeneratedTime]
-                        }).appendTo(row);
-                    }
-                }
-            },
-            error: function(xhr, status, err){
-
-            }
-        });
 
         var commentEditor=generateCommentEditor(activityId);
         ret.append(commentEditor);

@@ -45,6 +45,7 @@ var g_keyImageURL="ImageURL";
 var g_keyCommentAId="CommentAId";
 var g_keyCommentAContent="CommentAContent";
 var g_keyCommenterId="CommenterId";
+var g_keyCommentAParentId="ParentId";
 var g_keyPredecessorId="PredecessorId";
 var g_keyCommentType="CommentType";
 var g_keyGeneratedTime="GeneratedTime";

@@ -25,7 +25,7 @@ public class CommentController extends Controller {
                 }
                 if(userId==DataUtils.invalidId) break;
 
-                List<CommentOnActivity> comments=SQLCommander.queryComments(activityId, refIndex, SQLCommander.COMMENT_ON_ACTIVITY_ID, SQLHelper.directionDescend, numItems, direction, 0);
+                List<CommentOnActivity> comments=SQLCommander.queryTopLevelComments(activityId, refIndex, SQLCommander.COMMENT_ON_ACTIVITY_ID, SQLHelper.directionDescend, numItems, direction, 0);
 
 				ArrayNode result=new ArrayNode(JsonNodeFactory.instance);
                 for(CommentOnActivity comment : comments){
@@ -49,14 +49,10 @@ public class CommentController extends Controller {
                 String token=formData.get(User.tokenKey)[0];
                 Integer activityId=Integer.valueOf(formData.get(CommentOnActivity.ACTIVITY_ID)[0]);
                 String content=formData.get(CommentOnActivity.CONTENT)[0];
-                Integer predecessorId=Integer.valueOf(formData.get(CommentOnActivity.PREDECESSOR_ID)[0]);
 
                 if(token==null) break;
                 Integer userId=DataUtils.getUserIdByToken(token);
                 if(userId==DataUtils.invalidId) break;
-
-                // create blank draft
-                CommentOnActivity comment=null;
 
                 int lastCommentId= SQLHelper.INVALID_ID;
 
@@ -67,7 +63,6 @@ public class CommentController extends Controller {
                 columnNames.add(CommentOnActivity.ACTIVITY_ID);
                 columnNames.add(CommentOnActivity.COMMENT_TYPE);
                 columnNames.add(CommentOnActivity.COMMENTER_ID);
-                columnNames.add(CommentOnActivity.PREDECESSOR_ID);
 
                 List<Object> columnValues=new LinkedList<Object>();
 
@@ -75,7 +70,17 @@ public class CommentController extends Controller {
                 columnValues.add(SQLHelper.convertToQueryValue(activityId));
                 columnValues.add(SQLHelper.convertToQueryValue(CommentOnActivity.TYPE_QA));
                 columnValues.add(SQLHelper.convertToQueryValue(userId));
-                columnValues.add(SQLHelper.convertToQueryValue(predecessorId));
+
+                if(formData.containsKey(CommentOnActivity.PREDECESSOR_ID)){
+                    Integer predecessorId=Integer.valueOf(formData.get(CommentOnActivity.PREDECESSOR_ID)[0]);
+                    columnNames.add(CommentOnActivity.PREDECESSOR_ID);
+                    columnValues.add(SQLHelper.convertToQueryValue(predecessorId));
+                }
+                if(formData.containsKey(CommentOnActivity.PARENT_ID)){
+                    Integer parentId=Integer.valueOf(formData.get(CommentOnActivity.PARENT_ID)[0]);
+                    columnNames.add(CommentOnActivity.PARENT_ID);
+                    columnValues.add(SQLHelper.convertToQueryValue(parentId));
+                }
 
                 lastCommentId=sqlHelper.insertToTableByColumns("CommentOnActivity", columnNames, columnValues);
                 if(lastCommentId==SQLHelper.INVALID_ID) break;
