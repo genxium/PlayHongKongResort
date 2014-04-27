@@ -184,7 +184,7 @@ function generateActivityDetailViewByJson(activityJson){
                 if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
                     for(var key in jsonResponse){
                         var commentJson=jsonResponse[key];
-                        var row=generateCommentCell(commentJson).appendTo(ret);
+                        var row=generateCommentCell(commentJson, activityId).appendTo(ret);
                         $('<br>').appendTo(ret);
                     }
                 }

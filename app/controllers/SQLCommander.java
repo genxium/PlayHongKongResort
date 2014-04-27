@@ -1,12 +1,10 @@
 package controllers;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import model.*;
 import model.UserActivityRelation.RelationType;
 
 import org.json.simple.JSONObject;
 
-import play.libs.Json;
 import utilities.DataUtils;
 
 import java.sql.Timestamp;
@@ -24,10 +22,10 @@ public class SQLCommander {
             COMMENT_ON_ACTIVITY_ID, CommentOnActivity.ID
     );
 
-	public static Integer s_invalidId =(-1);
-    public static String s_initialRefIndex = "0";
-    public static Integer s_directionForward=(+1);
-    public static Integer s_directionBackward=(-1);
+	public static Integer INVALID =(-1);
+    public static String INITIAL_REF_INDEX = "0";
+    public static Integer DIRECTION_FORWARD = (+1);
+    public static Integer DIRECTION_BACKWARD = (-1);
 
  	public static User queryUser(Integer userId){
 
@@ -117,7 +115,7 @@ public class SQLCommander {
  	}
 
 	public static int registerUser(User user){
-		int lastInsertedId= s_invalidId;
+		int lastInsertedId= INVALID;
 
 		// DAO
 		SQLHelper sqlHelper=new SQLHelper();
@@ -244,7 +242,7 @@ public class SQLCommander {
 
 		try{
 			int lastId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
-			if(lastId!= s_invalidId){
+			if(lastId!= INVALID){
 				bRet=true;
 			}
 		} catch(Exception e){
@@ -380,10 +378,10 @@ public class SQLCommander {
                 List<String> orderDirections=new LinkedList<String>();
                 orderDirections.add(sortDirection);
 
-                if(refIndex.equals(s_initialRefIndex)){
-                    whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(s_initialRefIndex));
+                if(refIndex.equals(INITIAL_REF_INDEX)){
+                    whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(INITIAL_REF_INDEX));
 
-                } else if(direction==s_directionForward){
+                } else if(direction== DIRECTION_FORWARD){
                     whereClauses.add(columnName+">"+SQLHelper.convertToQueryValue(refIndex));
                 } else{
                     whereClauses.add(columnName+"<"+SQLHelper.convertToQueryValue(refIndex));
@@ -458,6 +456,7 @@ public class SQLCommander {
                 columnNames.add(CommentOnActivity.ID);
                 columnNames.add(CommentOnActivity.CONTENT);
                 columnNames.add(CommentOnActivity.COMMENTER_ID);
+                columnNames.add(CommentOnActivity.PARENT_ID);
                 columnNames.add(CommentOnActivity.PREDECESSOR_ID);
                 columnNames.add(CommentOnActivity.ACTIVITY_ID);
                 columnNames.add(CommentOnActivity.COMMENT_TYPE);
@@ -466,6 +465,7 @@ public class SQLCommander {
                 List<String> whereClauses=new LinkedList<String>();
                 whereClauses.add(CommentOnActivity.ACTIVITY_ID+"="+activityId);
                 whereClauses.add(CommentOnActivity.COMMENT_TYPE+"="+commentType);
+                whereClauses.add(CommentOnActivity.PARENT_ID+"="+INVALID.toString());
 
                 String columnName=s_columnMap.get(sortKey);
                 List<String> orderClauses=new LinkedList<String>();
@@ -474,9 +474,9 @@ public class SQLCommander {
                 List<String> orderDirections=new LinkedList<String>();
                 orderDirections.add(sortDirection);
 
-                if(refIndex.equals(s_initialRefIndex)){
-                    whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(s_initialRefIndex));
-                } else if(direction==s_directionForward){
+                if(refIndex.equals(INITIAL_REF_INDEX)){
+                    whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(INITIAL_REF_INDEX));
+                } else if(direction== DIRECTION_FORWARD){
                     whereClauses.add(columnName+">"+SQLHelper.convertToQueryValue(refIndex));
                 } else{
                     whereClauses.add(columnName+"<"+SQLHelper.convertToQueryValue(refIndex));
@@ -512,6 +512,7 @@ public class SQLCommander {
                 columnNames.add(CommentOnActivity.ID);
                 columnNames.add(CommentOnActivity.CONTENT);
                 columnNames.add(CommentOnActivity.COMMENTER_ID);
+                columnNames.add(CommentOnActivity.PARENT_ID);
                 columnNames.add(CommentOnActivity.PREDECESSOR_ID);
                 columnNames.add(CommentOnActivity.ACTIVITY_ID);
                 columnNames.add(CommentOnActivity.COMMENT_TYPE);
@@ -528,18 +529,20 @@ public class SQLCommander {
                 List<String> orderDirections=new LinkedList<String>();
                 orderDirections.add(sortDirection);
 
-                if(refIndex.equals(s_initialRefIndex)){
-                    whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(s_initialRefIndex));
+                if(refIndex.equals(INITIAL_REF_INDEX)){
+                    whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(INITIAL_REF_INDEX));
 
-                } else if(direction==s_directionForward){
+                } else if(direction== DIRECTION_FORWARD){
                     whereClauses.add(columnName+">"+SQLHelper.convertToQueryValue(refIndex));
                 } else{
                     whereClauses.add(columnName+"<"+SQLHelper.convertToQueryValue(refIndex));
                 }
 
-                List<Integer> limits=new ArrayList<Integer>();
-                limits.add(numItems);
-
+                List<Integer> limits=null;
+                if(numItems!=null){
+                    limits=new ArrayList<Integer>();
+                    limits.add(numItems);
+                }
                 List<JSONObject> commentsJson=sqlHelper.queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, SQLHelper.logicAND, orderClauses, orderDirections, limits);
                 if(commentsJson==null) break;
 
@@ -668,7 +671,7 @@ public class SQLCommander {
 	}
 
 	public static int uploadUserAvatar(User user, String imageAbsolutePath, String imageURL){
-		int lastImageId= s_invalidId;
+		int lastImageId= INVALID;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
 			String imageTableName="Image";
@@ -849,7 +852,7 @@ public class SQLCommander {
 	}
 
 	public static int uploadImageOfActivity(User user, Activity activity, String imageAbsolutePath, String imageURL){
-		int lastImageId= s_invalidId;
+		int lastImageId= INVALID;
 		do{
 			if(user==null) break;
 			if(activity==null) break;

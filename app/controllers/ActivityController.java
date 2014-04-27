@@ -188,7 +188,7 @@ public class ActivityController extends Controller {
                     while(imageIterator.hasNext()){
                         Http.MultipartFormData.FilePart imageFile=imageIterator.next();
                         int newImageId=ExtraCommander.saveImageOfActivity(imageFile, user, activity);
-                        if(newImageId==ExtraCommander.s_invalidId) break;
+                        if(newImageId==ExtraCommander.INVALID) break;
                     }
                 }
 

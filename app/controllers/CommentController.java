@@ -29,7 +29,7 @@ public class CommentController extends Controller {
 
 				ArrayNode result=new ArrayNode(JsonNodeFactory.instance);
                 for(CommentOnActivity comment : comments){
-                    result.add(comment.toObjectNode());
+                    result.add(comment.toObjectNodeWithSubComments());
                 }
                 return ok(result);
             } catch(Exception e){

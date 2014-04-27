@@ -1,9 +1,13 @@
 package model;
 
 import java.sql.Timestamp;
+import java.util.List;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.SQLCommander;
+import dao.SQLHelper;
 import org.json.simple.JSONObject;
 import play.libs.Json;
 
@@ -22,6 +26,7 @@ public class CommentOnActivity {
     public static final String GENERATED_TIME="GeneratedTime";
 
     public static final String COMMENTER_NAME="CommenterName";
+    public static final String SUB_COMMENTS="SubComments";
 
     protected Integer m_id=null;
     protected String m_content=null;
@@ -45,14 +50,30 @@ public class CommentOnActivity {
     public CommentOnActivity(JSONObject commentJson){
         do{
             try{
-                m_id=(Integer)commentJson.get(ID);
-                m_content=(String)commentJson.get(CONTENT);
-                m_commenterId=(Integer)commentJson.get(COMMENTER_ID);
-                m_activityId=(Integer)commentJson.get(ACTIVITY_ID);
-                m_parentId=(Integer)commentJson.get(PARENT_ID);
-                m_predecessorId=(Integer)commentJson.get(PREDECESSOR_ID);
-                m_commentType=(Integer)commentJson.get(COMMENT_TYPE);
-                m_generatedTime=(Timestamp)commentJson.get(GENERATED_TIME);
+                if(commentJson.containsKey(ID)){
+                    m_id=(Integer)commentJson.get(ID);
+                }
+                if(commentJson.containsKey(CONTENT)){
+                    m_content=(String)commentJson.get(CONTENT);
+                }
+                if(commentJson.containsKey(COMMENTER_ID)){
+                    m_commenterId=(Integer)commentJson.get(COMMENTER_ID);
+                }
+                if(commentJson.containsKey(ACTIVITY_ID)){
+                    m_activityId=(Integer)commentJson.get(ACTIVITY_ID);
+                }
+                if(commentJson.containsKey(PARENT_ID)){
+                    m_parentId=(Integer)commentJson.get(PARENT_ID);
+                }
+                if(commentJson.containsKey(PREDECESSOR_ID)){
+                    m_predecessorId=(Integer)commentJson.get(PREDECESSOR_ID);
+                }
+                if(commentJson.containsKey(COMMENT_TYPE)){
+                    m_commentType=(Integer)commentJson.get(COMMENT_TYPE);
+                }
+                if(commentJson.containsKey(GENERATED_TIME)){
+                    m_generatedTime=(Timestamp)commentJson.get(GENERATED_TIME);
+                }
             }catch(Exception e){
 
             }
@@ -70,6 +91,29 @@ public class CommentOnActivity {
                 ret.put(GENERATED_TIME, m_generatedTime.toString());
             } catch (Exception e){
 
+            }
+        }while(false);
+        return ret;
+    }
+
+    public ObjectNode toObjectNodeWithSubComments(){
+        ObjectNode ret = Json.newObject();
+        do{
+            try{
+                ret.put(ID, m_id);
+                ret.put(PARENT_ID, m_parentId);
+                ret.put(CONTENT, m_content);
+                ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
+                ret.put(GENERATED_TIME, m_generatedTime.toString());
+                List<CommentOnActivity> subComments=SQLCommander.querySubComments(m_id, 0, SQLCommander.COMMENT_ON_ACTIVITY_ID, SQLHelper.directionDescend, null, SQLCommander.DIRECTION_FORWARD, m_commentType);
+
+                ArrayNode subCommentsNode=new ArrayNode(JsonNodeFactory.instance);
+                for(CommentOnActivity subComment : subComments){
+                    subCommentsNode.add(subComment.toObjectNode());
+                }
+                ret.put(SUB_COMMENTS, subCommentsNode);
+            }catch(Exception e){
+            
             }
         }while(false);
         return ret;

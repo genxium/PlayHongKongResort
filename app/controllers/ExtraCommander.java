@@ -94,7 +94,7 @@ public class ExtraCommander extends SQLCommander {
   }
 	
 	public static int saveAvatarFile(FilePart imageFile, User user){
-		int ret= s_invalidId;
+		int ret= INVALID;
 		do{
 			String fileName = imageFile.getFilename();
 			File file = imageFile.getFile();
@@ -112,7 +112,7 @@ public class ExtraCommander extends SQLCommander {
                 String imageAbsolutePath=rootDir+"/"+absoluteFolderName+"/"+newImageName;
 
       	    		int imageId=SQLCommander.uploadUserAvatar(user, imageAbsolutePath, imageURL);
-      	    		if(imageId==SQLCommander.s_invalidId) break;
+      	    		if(imageId==SQLCommander.INVALID) break;
       	    		
       	    		try{
       	    			// Save renamed file to server storage at the final step
@@ -136,7 +136,7 @@ public class ExtraCommander extends SQLCommander {
   }
 
   public static int saveImageOfActivity(FilePart imageFile, User user, Activity activity){
-  	int ret= s_invalidId;
+  	int ret= INVALID;
   	do{
   		String fileName = imageFile.getFilename();
   		File file = imageFile.getFile();
@@ -156,7 +156,7 @@ public class ExtraCommander extends SQLCommander {
               String imageAbsolutePath=rootDir+"/"+absoluteFolderName+"/"+newImageName;
 
     	    		int imageId=SQLCommander.uploadImageOfActivity(user, activity, imageAbsolutePath, imageURL);
-    	    		if(imageId==SQLCommander.s_invalidId) break;
+    	    		if(imageId==SQLCommander.INVALID) break;
     	    		
     	    		try{
                   // Save renamed file to server storage at the final step

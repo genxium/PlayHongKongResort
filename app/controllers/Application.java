@@ -105,7 +105,7 @@ public class Application extends Controller {
         		String passwordDigest=Converter.md5(password);    
                 User user=User.create(email, passwordDigest, name, userGroup);
                 int lastId=SQLCommander.registerUser(user);
-                if(lastId==SQLCommander.s_invalidId) break;
+                if(lastId==SQLCommander.INVALID) break;
                 return ok("Registered");
         }while(false);
         return badRequest("Register failed");
@@ -164,7 +164,7 @@ public class Application extends Controller {
     		  if(avatarFile==null) break;
     		  int previousAvatarId=user.getAvatar();
     		  int newAvatarId=ExtraCommander.saveAvatarFile(avatarFile, user);
-    		  if(newAvatarId==ExtraCommander.s_invalidId) break;
+    		  if(newAvatarId==ExtraCommander.INVALID) break;
                 
            // delete previous avatar record and file
            Image previousAvatar=SQLCommander.queryImageByImageId(previousAvatarId);
