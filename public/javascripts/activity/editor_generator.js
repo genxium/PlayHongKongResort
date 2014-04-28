@@ -21,15 +21,21 @@ function formatDigits(value, numberOfDigits){
 
 function setNonSubmittable(){
     g_submittable=false;
+    g_savable=true;
 }
 
 function setSubmittable(){
     g_submittable=true;
+    g_savable=false;
 }
 
 // Assistive Callback Functions
 function onSave(editor){
 	do{
+	    if(g_savable==false){
+	        alert("You haven't made any changes!");
+	        break;
+	    }
 		var formObj = $(editor);
 		var formData = new FormData();
 
@@ -119,6 +125,10 @@ function onSave(editor){
 			processData: false, // tell jQuery not to process the data
 			success: function(data, status, xhr){
 			    setSubmittable();
+			    var jsonResponse=JSON.parse(data);
+			    if(jsonResponse.hasOwnProperty(g_keyActivityId)){
+			        formObj.data(g_keyActivityId, jsonResponse[g_keyActivityId]);
+			    }
                 alert("You can submit the application now!");
 			},
 			error: function(xhr, status, err){
@@ -131,7 +141,7 @@ function onSave(editor){
 function onFormSubmission(editor){
 	do{
         if(g_submittable==false) {
-            alert("You have to update the activity before submission!");
+            alert("You have to save your changes before submission!");
             break;
         }
 		var formObj = $(editor);

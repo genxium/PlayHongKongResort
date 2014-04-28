@@ -32,7 +32,7 @@ CREATE TABLE `Activity` (
   `ActivityCapacity` int(32) NOT NULL DEFAULT '0',
   `ActivityStatus` int(3) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ActivityId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +41,7 @@ CREATE TABLE `Activity` (
 
 LOCK TABLES `Activity` WRITE;
 /*!40000 ALTER TABLE `Activity` DISABLE KEYS */;
-INSERT INTO `Activity` VALUES (1,'Test activity','','2014-04-28 18:00:02','2013-12-31 16:00:00','2013-12-31 16:00:00',0,3);
+INSERT INTO `Activity` VALUES (1,'Test activity','','2014-04-28 18:00:02','2013-12-31 16:00:00','2013-12-31 16:00:00',0,3),(2,'Test Upload','','2014-04-28 18:31:35','2013-12-31 16:00:00','2013-12-31 16:00:00',0,1),(4,'Test Save and Submit','lalala','2014-04-28 18:38:46','2013-12-31 16:00:00','2013-12-31 16:00:00',0,1),(5,'Test save','','2014-04-28 18:52:34','2013-12-31 16:00:00','2013-12-31 16:00:00',0,0);
 /*!40000 ALTER TABLE `Activity` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -62,7 +62,7 @@ CREATE TABLE `ActivityImageRelationTable` (
   KEY `FK_ImageId` (`ImageId`),
   CONSTRAINT `FK_ActivityId` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`),
   CONSTRAINT `FK_ImageId` FOREIGN KEY (`ImageId`) REFERENCES `Image` (`ImageId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -71,6 +71,7 @@ CREATE TABLE `ActivityImageRelationTable` (
 
 LOCK TABLES `ActivityImageRelationTable` WRITE;
 /*!40000 ALTER TABLE `ActivityImageRelationTable` DISABLE KEYS */;
+INSERT INTO `ActivityImageRelationTable` VALUES (1,2,1,'2014-04-28 18:31:35'),(4,4,4,'2014-04-28 18:38:46'),(5,4,5,'2014-04-28 18:38:46'),(6,5,6,'2014-04-28 18:53:51');
 /*!40000 ALTER TABLE `ActivityImageRelationTable` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -121,7 +122,7 @@ CREATE TABLE `Image` (
   PRIMARY KEY (`ImageId`),
   UNIQUE KEY `ImageAbsolutePath` (`ImageAbsolutePath`),
   UNIQUE KEY `ImageURL` (`ImageURL`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -130,6 +131,7 @@ CREATE TABLE `Image` (
 
 LOCK TABLES `Image` WRITE;
 /*!40000 ALTER TABLE `Image` DISABLE KEYS */;
+INSERT INTO `Image` VALUES (1,'/Users/user/play-2.2.2/PlayHongKongResort/public/images/UID1_1398709895104_pikachu03.png','/assets/images/UID1_1398709895104_pikachu03.png'),(4,'/Users/user/play-2.2.2/PlayHongKongResort/public/images/UID1_1398710326272_FlameDragon.png','/assets/images/UID1_1398710326272_FlameDragon.png'),(5,'/Users/user/play-2.2.2/PlayHongKongResort/public/images/UID1_1398710326276_MarvelousSeed.jpg','/assets/images/UID1_1398710326276_MarvelousSeed.jpg'),(6,'/Users/user/play-2.2.2/PlayHongKongResort/public/images/UID1_1398711231988_pikachu03.png','/assets/images/UID1_1398711231988_pikachu03.png');
 /*!40000 ALTER TABLE `Image` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -221,7 +223,7 @@ CREATE TABLE `UserActivityRelationTable` (
   CONSTRAINT `UserActivityRelationTable_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `User` (`UserId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_2` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_3` FOREIGN KEY (`UserActivityRelationId`) REFERENCES `UserActivityRelation` (`UserActivityRelationId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -230,7 +232,7 @@ CREATE TABLE `UserActivityRelationTable` (
 
 LOCK TABLES `UserActivityRelationTable` WRITE;
 /*!40000 ALTER TABLE `UserActivityRelationTable` DISABLE KEYS */;
-INSERT INTO `UserActivityRelationTable` VALUES (1,4,1,0,'2014-04-28 18:00:02','2014-04-28 18:00:02','2014-04-28 18:00:02','2014-04-28 18:00:02');
+INSERT INTO `UserActivityRelationTable` VALUES (1,4,1,0,'2014-04-28 18:00:02','2014-04-28 18:00:02','2014-04-28 18:00:02','2014-04-28 18:00:02'),(2,1,2,0,'2014-04-28 18:31:35','2014-04-28 18:31:35','2014-04-28 18:31:35','2014-04-28 18:31:35'),(4,1,4,0,'2014-04-28 18:38:46','2014-04-28 18:38:46','2014-04-28 18:38:46','2014-04-28 18:38:46'),(5,1,5,0,'2014-04-28 18:52:34','2014-04-28 18:52:34','2014-04-28 18:52:34','2014-04-28 18:52:34');
 /*!40000 ALTER TABLE `UserActivityRelationTable` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -290,4 +292,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-04-29  2:22:43
+-- Dump completed on 2014-04-29  2:55:48

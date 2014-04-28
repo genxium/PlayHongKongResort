@@ -32,4 +32,5 @@ var g_indexCheckbox="indexCheckbox";
 
 // general variables
 var g_maxNumberOfImagesForSingleActivity=3;
+var g_savable=true;
 var g_submittable=false;

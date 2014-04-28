@@ -213,7 +213,11 @@ public class ActivityController extends Controller {
                     }
                 }
 
-                return ok("Activity saved");
+                ObjectNode ret = Json.newObject();
+                if(isNewActivity==true){
+                    ret.put(Activity.idKey, activityId.toString());
+                }
+                return ok(ret);
             } catch(Exception e){
 
             }
@@ -254,9 +258,9 @@ public class ActivityController extends Controller {
                 List<String> whereClauses=new LinkedList<String>();
                 whereClauses.add(Activity.idKey+"="+activity.getId());
 
-                boolean ret=sqlHelper.update(activityTableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
+                boolean res=sqlHelper.update(activityTableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
+                if(res==false) break;
 
-                if(ret==false) break;
                 return ok("Activity submitted");
 
             } catch(Exception e){

@@ -179,7 +179,6 @@ function generateActivityDetailViewByJson(activityJson){
                 "direction": 1
             },
             success: function(data, status, xhr){
-
                 var jsonResponse=JSON.parse(data);
                 if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
                     for(var key in jsonResponse){
