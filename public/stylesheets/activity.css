@@ -11,8 +11,9 @@
 
 #idSectionActivityEditor
 {
-	display: table-row;
+	display: block;
 	position: relative;
+	clear: both;
 }
 
 .classActivityEditor

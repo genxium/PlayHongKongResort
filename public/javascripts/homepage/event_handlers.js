@@ -1,9 +1,9 @@
 function onBtnRegisterClicked(evt){
 
     do{
-        var username=$("#"+g_idFieldUsername).val();
-        var email=$("#"+g_idFieldEmail).val();
-        var password=$("#"+g_idFieldPassword).val();
+        var username=g_registerUsername.val();
+        var email=g_registerEmail.val();
+        var password=g_registerPassword.val();
 
         if(username==null || username.length==0
             || email==null || email.length==0
@@ -31,15 +31,13 @@ function onBtnRegisterClicked(evt){
 function onBtnLoginClicked(evt){
 	
     do{
-        var username=$("#"+g_idFieldUsername).val();
-        var email=$("#"+g_idFieldEmail).val();
-        var password=$("#"+g_idFieldPassword).val();
+        var email=g_loginUserHandle.val();
+        var password=g_loginPassword.val();
 
-        if( ((username==null || username.length==0) && (email==null || email.length==0))
+        if( (email==null || email.length==0 || validateEmail(email)==false)
             || password==null || password.length==0) break;
 
         var params={};
-        params[g_keyUsername]=username;
         params[g_keyUserEmail]=email;
         params[g_keyUserPassword]=password;
         

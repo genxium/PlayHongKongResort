@@ -4,15 +4,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.SQLHelper;
 import model.*;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONValue;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Http.RequestBody;
 
-import java.sql.Timestamp;
 import java.util.*;
 
 import utilities.Converter;
@@ -28,7 +25,6 @@ public class UserController extends Controller {
             try{
                 Http.RequestBody body = request().body();
                 Map<String, String[]> formData=body.asFormUrlEncoded();
-                String name=formData.get(User.nameKey)[0];
                 String email=formData.get(User.emailKey)[0];
                 String password=formData.get(User.passwordKey)[0];
 
@@ -87,10 +83,12 @@ public class UserController extends Controller {
         return badRequest("Register failed");
     }
     
-    public static Result status(){
+    public static Result status(String token){
+        // define response attributes
+        response().setContentType("text/plain");
         do{
-            try {
-                String token=DataUtils.getUserToken(request().body());
+            try{
+                if(token==null) break;
                 Integer userId=DataUtils.getUserIdByToken(token);
                 User user=SQLCommander.queryUser(userId);
                 
@@ -205,7 +203,7 @@ public class UserController extends Controller {
                 List<String> whereClauses=new LinkedList<String>();
                 whereClauses.add(User.nameKey+"="+SQLHelper.convertToQueryValue(username));
                 
-                List<JSONObject> userJsons=sqlHelper.queryTableByColumnsAndWhereClauses("User", columnNames, whereClauses, SQLHelper.logicAND);
+                List<JSONObject> userJsons=sqlHelper.query("User", columnNames, whereClauses, SQLHelper.logicAND);
                 if(userJsons!=null && userJsons.size()>0) break;
                 return ok();
             } catch(Exception e){
@@ -228,7 +226,7 @@ public class UserController extends Controller {
                 List<String> whereClauses=new LinkedList<String>();
                 whereClauses.add(User.emailKey+"="+SQLHelper.convertToQueryValue(email));
                 
-                List<JSONObject> userJsons=sqlHelper.queryTableByColumnsAndWhereClauses("User", columnNames, whereClauses, SQLHelper.logicAND);
+                List<JSONObject> userJsons=sqlHelper.query("User", columnNames, whereClauses, SQLHelper.logicAND);
                 if(userJsons!=null && userJsons.size()>0) break;
                 return ok();
             } catch(Exception e){

@@ -1,9 +1,24 @@
+// general DOM elements
+var g_sectionLogin=null;
+var g_sectionRegister=null;
+
+var g_loginUserHandle=null;
+var g_loginPassword=null;
+
+var g_registerUsername=null;
+var g_registerEmail=null;
+var g_registerPassword=null;
+
+var g_spanCheckUsername=null;
+var g_spanCheckEmail=null;
+
 // general DOM element keys
 var g_idSectionTitle="idSectionTitle";
 
 var g_idSectionSubHeader="idSectionSubHeader";
 
-var g_idSectionAccount="idSectionAccount";
+var g_idSectionLogin="idSectionLogin";
+var g_idSectionRegister="idSectionRegister";
 var g_idSectionUserInfo="idSectionUserInfo";
 
 var g_idSectionUserProfileEditor="idSectionUserProfileEditor";
@@ -17,9 +32,6 @@ var g_classLoggedInUserMenu="classLoggedInUserMenu";
 
 // input-box keys
 var g_classFieldAccount="classFieldAccount";
-var g_idFieldUsername="idFieldUsername";
-var g_idFieldEmail="idFieldEmail";
-var g_idFieldPassword="idFieldPassword";
 
 // button keys
 var g_idBtnLogin="idBtnLogin";

@@ -31,15 +31,8 @@ html, body
 #idSectionSubHeader{
 	display: table-row;
  	position: relative;
-	margin: 10pt;
 	width: 100%;
 	background-color: #ffffff;
-}
-
-/* Account */
-#idSectionAccount
-{
-
 }
 
 #idBtnLogin
@@ -55,30 +48,29 @@ html, body
 
 #idBtnRegister
 {
-	display: table-cell;
-	position: relative;
 	width: 64pt;
 	height: 36pt;
 	font-size: 15pt;
-	margin: 10pt;
+	margin-bottom: 10pt;
 	background-color: #66aaFF;
+	float: left;
 }
 
-#idFieldUsername
+#idRegisterUsername
 {
 	width: 200pt;
 	height: 30pt;
 	font-size: 15pt;
 }
 
-#idFieldEmail
+#idRegisterEmail
 {
 	width: 200pt;
 	height: 30pt;
 	font-size: 15pt;
 }
 
-#idFieldPassWord
+#idRegisterPassWord
 {
 	width: 200pt;
 	height: 30pt;
@@ -89,10 +81,9 @@ html, body
 
 #idSectionUserInfo
 {
-	display: table-column;
+	display: block;
 	position: relative;
 	float: right;
-	border: 3pt solid #cc00ff;
 }
 
 .classSectionGreetingMessage{
@@ -141,11 +132,13 @@ html, body
 /* Activity Cells */
 #idSectionDefaultActivities
 {
-	left: 80%;
-	width: 645pt;
+    display: block;
+    position: relative;
+	width: 960pt;
 	height: 300pt;
-	border: 3pt solid #ff0000;
+	border: 1pt solid #ff0000;
 	overflow: auto;
+	clear: both;
 }
 
 #idBtnPreviousPage

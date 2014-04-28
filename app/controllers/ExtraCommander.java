@@ -27,7 +27,7 @@ public class ExtraCommander extends SQLCommander {
 		          String relationTableName="UserActivityRelationTable";
 		          List<String> relationWhereClauses=new LinkedList<String>();
 		          relationWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
-		          boolean resultRelationDeletion=sqlHelper.deleteFromTableByWhereClauses(relationTableName, relationWhereClauses, SQLHelper.logicAND);
+		          boolean resultRelationDeletion=sqlHelper.delete(relationTableName, relationWhereClauses, SQLHelper.logicAND);
 		        
 		          if(resultRelationDeletion==false) break;
 		        
@@ -45,7 +45,7 @@ public class ExtraCommander extends SQLCommander {
 		          String activityTableName="Activity";   
 		          List<String> activityWhereClauses=new LinkedList<String>();
 		          activityWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
-		          ret=sqlHelper.deleteFromTableByWhereClauses(activityTableName, activityWhereClauses, SQLHelper.logicAND);
+		          ret=sqlHelper.delete(activityTableName, activityWhereClauses, SQLHelper.logicAND);
 		        
 	        } catch(Exception e){
 	        		System.out.println("ExtraCommander.deleteActivity:"+e.getMessage());

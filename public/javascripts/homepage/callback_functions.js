@@ -1,16 +1,58 @@
+function emptyRegisterFields(){
+    if(g_registerUsername){
+        g_registerUsername.empty();
+        g_registerUsername.val("");
+    }
+    if(g_registerEmail){
+        g_registerEmail.empty();
+        g_registerEmail.val("");
+    }
+    if(g_registerPassword){
+        g_registerPassword.empty();
+        g_registerPassword.val("");
+    }
+    if(g_spanCheckUsername){
+        g_spanCheckUsername.empty();
+    }
+    if(g_spanCheckEmail){
+        g_spanCheckEmail.empty();
+    }
+}
+
+function showAccountSections(){
+   if(g_sectionLogin){
+       g_sectionLogin.show();
+   }
+   if(g_sectionRegister){
+       g_sectionRegister.show();
+   }
+}
+
+function hideAccountSections(){
+   if(g_sectionLogin){
+       g_sectionLogin.hide();
+   }
+   if(g_sectionRegister){
+       g_sectionRegister.hide();
+   }
+}
+
+function removeAccountSections(){
+    if(g_sectionLogin){
+        g_sectionLogin.remove();
+        g_sectionLogin=null;
+    }
+    if(g_sectionRegister){
+        g_sectionRegister.remove();
+        g_sectionRegister=null;
+    }
+}
+
 function refreshOnEnter(){
 
-	$("#"+g_idFieldEmail).empty();
-	$("#"+g_idFieldEmail).val("");
-	$("#"+g_idFieldPassword).empty();
-	$("#"+g_idFieldPassword).val("");
+    showAccountSections();
+    emptyRegisterFields();
 
-	var sectionUserProfileEditor=$("#"+g_idSectionUserProfileEditor);
-	sectionUserProfileEditor.empty();
-	sectionUserProfileEditor.hide();
-
-	$("#"+g_idSectionAccount).show();
-	
 	var sectionActivityEditor=$("#"+g_idSectionActivityEditor);
 	sectionActivityEditor.empty();
 	sectionActivityEditor.hide();

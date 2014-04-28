@@ -161,7 +161,7 @@ public class SQLHelper {
 		return bRet;
 	}
 	
-	public Integer insertToTableByColumns(String tableName, List<String> columnNames, List<Object> columnValues){
+	public Integer insert(String tableName, List<String> columnNames, List<Object> columnValues){
 		Integer lastId= INVALID_ID;
 		do{
 			if(columnNames.size()!=columnValues.size()) break;
@@ -203,7 +203,7 @@ public class SQLHelper {
 		return lastId;
 	}
 
-	public List<JSONObject> queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(String tableName, List<String> columnNames, List<String> whereClauses, String whereLink, List<String> orderClauses, List<String> orderDirections, List<Integer> limits){
+	public List<JSONObject> query(String tableName, List<String> columnNames, List<String> whereClauses, String whereLink, List<String> orderClauses, List<String> orderDirections, List<Integer> limits){
 		List<JSONObject> ret=null;
 		do{
 			StringBuilder queryBuilder=new StringBuilder();
@@ -263,7 +263,7 @@ public class SQLHelper {
 		return ret;
 	}
 
-	public List<JSONObject> queryTableByColumnsAndWhereClausesAndOrderClauses(String tableName, List<String> columnNames, List<String> whereClauses, String whereLink, List<String> orderClauses, String orderDirection){
+	public List<JSONObject> query(String tableName, List<String> columnNames, List<String> whereClauses, String whereLink, List<String> orderClauses, String orderDirection){
 		List<String> orderDirections=null;
 		do{
 			if(orderDirection==null) break;
@@ -274,14 +274,14 @@ public class SQLHelper {
 				orderDirections.add(orderDirection);
 			}
 		}while(false);
-		return queryTableByColumnsAndWhereClausesAndOrderClausesAndLimits(tableName, columnNames, whereClauses, whereLink, orderClauses, orderDirections, null);
+		return query(tableName, columnNames, whereClauses, whereLink, orderClauses, orderDirections, null);
 	}
 	
-	public List<JSONObject> queryTableByColumnsAndWhereClauses(String tableName, List<String> columnNames, List<String> whereClauses, String whereLink){
-		return queryTableByColumnsAndWhereClausesAndOrderClauses(tableName, columnNames, whereClauses, whereLink, null, null);
+	public List<JSONObject> query(String tableName, List<String> columnNames, List<String> whereClauses, String whereLink){
+		return query(tableName, columnNames, whereClauses, whereLink, null, null);
 	}
 
-	public boolean updateTableByColumnsAndWhereClauses(String tableName, List<String> columnNames, List<Object> columnValues, List<String> whereClauses, String logicLink){
+	public boolean update(String tableName, List<String> columnNames, List<Object> columnValues, List<String> whereClauses, String logicLink){
 		boolean ret=false;
 		do{			
 			if(columnNames.size()!=columnValues.size()) break;
@@ -313,7 +313,7 @@ public class SQLHelper {
 		return ret;
 	}
 
-	public boolean deleteFromTableByWhereClauses(String tableName, List<String> whereClauses, String logicLink){
+	public boolean delete(String tableName, List<String> whereClauses, String logicLink){
 		boolean ret=false;
 		do{
 			if(whereClauses.size()<=0) break;
@@ -363,7 +363,7 @@ public class SQLHelper {
 		    }
 		
 		    String securedValue=valueBuilder.toString();
-		    res = "'"+securedValue+"'";
+		    res = "\""+securedValue+"\"";
 		} else{
 			// left blank deliberately 
 		}

@@ -3,14 +3,12 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.SQLHelper;
 import model.*;
-import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import play.mvc.Http.RequestBody;
 import utilities.DataUtils;
 
 import java.sql.Timestamp;
@@ -256,7 +254,7 @@ public class ActivityController extends Controller {
                 List<String> whereClauses=new LinkedList<String>();
                 whereClauses.add(Activity.idKey+"="+activity.getId());
 
-                boolean ret=sqlHelper.updateTableByColumnsAndWhereClauses(activityTableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
+                boolean ret=sqlHelper.update(activityTableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
 
                 if(ret==false) break;
                 return ok("Activity submitted");
@@ -327,7 +325,7 @@ public class ActivityController extends Controller {
                 columnValues.add(UserActivityRelation.RelationType.applied.ordinal());
                 columnValues.add(currentTime.toString());
 
-                int lastRelationTableId=sqlHelper.insertToTableByColumns("UserActivityRelationTable", columnNames, columnValues);
+                int lastRelationTableId=sqlHelper.insert("UserActivityRelationTable", columnNames, columnValues);
                 if(lastRelationTableId==SQLHelper.INVALID_ID) break;
 
                 return ok("Successfully joined activity");
