@@ -36,16 +36,6 @@ CREATE TABLE `Activity` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `Activity`
---
-
-LOCK TABLES `Activity` WRITE;
-/*!40000 ALTER TABLE `Activity` DISABLE KEYS */;
-INSERT INTO `Activity` VALUES (1,'Test activity','','2014-04-28 18:00:02','2013-12-31 16:00:00','2013-12-31 16:00:00',0,3),(2,'Test Upload','','2014-04-28 18:31:35','2013-12-31 16:00:00','2013-12-31 16:00:00',0,1),(4,'Test Save and Submit','lalala','2014-04-28 18:38:46','2013-12-31 16:00:00','2013-12-31 16:00:00',0,1),(5,'Test save','','2014-04-28 18:52:34','2013-12-31 16:00:00','2013-12-31 16:00:00',0,0);
-/*!40000 ALTER TABLE `Activity` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `ActivityImageRelationTable`
 --
 
@@ -64,16 +54,6 @@ CREATE TABLE `ActivityImageRelationTable` (
   CONSTRAINT `FK_ImageId` FOREIGN KEY (`ImageId`) REFERENCES `Image` (`ImageId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `ActivityImageRelationTable`
---
-
-LOCK TABLES `ActivityImageRelationTable` WRITE;
-/*!40000 ALTER TABLE `ActivityImageRelationTable` DISABLE KEYS */;
-INSERT INTO `ActivityImageRelationTable` VALUES (1,2,1,'2014-04-28 18:31:35'),(4,4,4,'2014-04-28 18:38:46'),(5,4,5,'2014-04-28 18:38:46'),(6,5,6,'2014-04-28 18:53:51');
-/*!40000 ALTER TABLE `ActivityImageRelationTable` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `CommentOnActivity`
@@ -100,15 +80,6 @@ CREATE TABLE `CommentOnActivity` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `CommentOnActivity`
---
-
-LOCK TABLES `CommentOnActivity` WRITE;
-/*!40000 ALTER TABLE `CommentOnActivity` DISABLE KEYS */;
-/*!40000 ALTER TABLE `CommentOnActivity` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `Image`
 --
 
@@ -124,16 +95,6 @@ CREATE TABLE `Image` (
   UNIQUE KEY `ImageURL` (`ImageURL`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Image`
---
-
-LOCK TABLES `Image` WRITE;
-/*!40000 ALTER TABLE `Image` DISABLE KEYS */;
-INSERT INTO `Image` VALUES (1,'/Users/user/play-2.2.2/PlayHongKongResort/public/images/UID1_1398709895104_pikachu03.png','/assets/images/UID1_1398709895104_pikachu03.png'),(4,'/Users/user/play-2.2.2/PlayHongKongResort/public/images/UID1_1398710326272_FlameDragon.png','/assets/images/UID1_1398710326272_FlameDragon.png'),(5,'/Users/user/play-2.2.2/PlayHongKongResort/public/images/UID1_1398710326276_MarvelousSeed.jpg','/assets/images/UID1_1398710326276_MarvelousSeed.jpg'),(6,'/Users/user/play-2.2.2/PlayHongKongResort/public/images/UID1_1398711231988_pikachu03.png','/assets/images/UID1_1398711231988_pikachu03.png');
-/*!40000 ALTER TABLE `Image` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `User`
@@ -166,16 +127,6 @@ CREATE TABLE `User` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `User`
---
-
-LOCK TABLES `User` WRITE;
-/*!40000 ALTER TABLE `User` DISABLE KEYS */;
-INSERT INTO `User` VALUES (1,NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',1,0,0,'2014-04-28 17:37:38',0,'2014-04-28 17:37:38','2014-04-28 17:37:38','2014-04-28 17:37:38','genxium'),(4,NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',1,0,0,'2014-04-28 17:59:35',0,'2014-04-28 17:59:35','2014-04-28 17:59:35','2014-04-28 17:59:35','genxium1988'),(5,NULL,'c33367701511b4f6020ec61ded352059','admin@hongkongresort.com',3,0,0,'2014-04-28 18:14:22',0,'2014-04-28 18:14:22','2014-04-28 18:14:22','2014-04-28 18:14:22','admin');
-/*!40000 ALTER TABLE `User` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `UserActivityRelation`
 --
 
@@ -188,16 +139,6 @@ CREATE TABLE `UserActivityRelation` (
   PRIMARY KEY (`UserActivityRelationId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `UserActivityRelation`
---
-
-LOCK TABLES `UserActivityRelation` WRITE;
-/*!40000 ALTER TABLE `UserActivityRelation` DISABLE KEYS */;
-INSERT INTO `UserActivityRelation` VALUES (0,'host'),(1,'applied'),(2,'selected'),(3,'present'),(4,'absent');
-/*!40000 ALTER TABLE `UserActivityRelation` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `UserActivityRelationTable`
@@ -227,16 +168,6 @@ CREATE TABLE `UserActivityRelationTable` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `UserActivityRelationTable`
---
-
-LOCK TABLES `UserActivityRelationTable` WRITE;
-/*!40000 ALTER TABLE `UserActivityRelationTable` DISABLE KEYS */;
-INSERT INTO `UserActivityRelationTable` VALUES (1,4,1,0,'2014-04-28 18:00:02','2014-04-28 18:00:02','2014-04-28 18:00:02','2014-04-28 18:00:02'),(2,1,2,0,'2014-04-28 18:31:35','2014-04-28 18:31:35','2014-04-28 18:31:35','2014-04-28 18:31:35'),(4,1,4,0,'2014-04-28 18:38:46','2014-04-28 18:38:46','2014-04-28 18:38:46','2014-04-28 18:38:46'),(5,1,5,0,'2014-04-28 18:52:34','2014-04-28 18:52:34','2014-04-28 18:52:34','2014-04-28 18:52:34');
-/*!40000 ALTER TABLE `UserActivityRelationTable` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `UserGroup`
 --
 
@@ -251,16 +182,6 @@ CREATE TABLE `UserGroup` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `UserGroup`
---
-
-LOCK TABLES `UserGroup` WRITE;
-/*!40000 ALTER TABLE `UserGroup` DISABLE KEYS */;
-INSERT INTO `UserGroup` VALUES (0,'visitor'),(1,'user'),(2,'manager'),(3,'admin');
-/*!40000 ALTER TABLE `UserGroup` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `UserRelation`
 --
 
@@ -273,15 +194,6 @@ CREATE TABLE `UserRelation` (
   PRIMARY KEY (`UserRelationId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `UserRelation`
---
-
-LOCK TABLES `UserRelation` WRITE;
-/*!40000 ALTER TABLE `UserRelation` DISABLE KEYS */;
-/*!40000 ALTER TABLE `UserRelation` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -292,4 +204,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-04-29  2:55:48
+-- Dump completed on 2014-04-29  3:09:26
