@@ -64,6 +64,8 @@ local.properties
 # Ignore Play! working directory
 bin
 db
+public/images*
+RUNNING_PID
 eclipse
 lib
 log
