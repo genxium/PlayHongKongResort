@@ -22,7 +22,6 @@ var g_idFieldEmail="idFieldEmail";
 var g_idFieldPassword="idFieldPassword";
 
 // button keys
-var g_idBtnCheckUsernameDuplicate="idBtnCheckUsernameDuplicate";
 var g_idBtnLogin="idBtnLogin";
 var g_idBtnRegister="idBtnRegister";
 var g_classBtnLogout="classBtnLogout";

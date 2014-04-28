@@ -313,7 +313,7 @@ function generateActivityEditorByJson(activityJson){
 		 				value: activityTitle,
 		 			 	name: g_keyActivityTitle
 	 				}).appendTo(ret);
-    titleInput.change(function(){
+    titleInput.on("change keyup paste", function(){
         setNonSubmittable();
     });
 
@@ -328,7 +328,7 @@ function generateActivityEditorByJson(activityJson){
 	 				  	name: g_keyActivityContent
 	 				  }).appendTo(ret);
 	 contentInput.val(activityContent);
-     contentInput.change(function(){
+     contentInput.on("change keyup paste", function(){
         setNonSubmittable();
      });
 

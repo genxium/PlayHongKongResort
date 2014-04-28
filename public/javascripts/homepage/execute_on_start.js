@@ -18,21 +18,48 @@ $(document).ready(function(){
     		$("#"+g_idBtnLogin).click();
   		}
 	});
-    $("#"+g_idBtnCheckUsernameDuplicate).on("click", function(){
+
+    $("#"+g_idFieldUsername).on("change keyup paste", function(evt){
         do{
+            evt.preventDefault();
+            $("#idSpanCheckUsername").empty();
             var username=$("#"+g_idFieldUsername).val();
             if(username==null || username.length==0) break;
+
             var params={};
             params["username"]=username;
             $.ajax({
                 type: "GET",
-                url: "/user/duplicate",
+                url: "/user/name/duplicate",
                 data: params,
                 success: function(data, status, xhr){
-                    
+                    $("#idSpanCheckUsername").text("This username can be used :)");        
                 },
                 error: function(xhr, status, err){
-                    
+                    $("#idSpanCheckUsername").text("This username cannot be used :(");        
+                }
+            });
+        }while(false);
+    });	
+    
+    $("#"+g_idFieldEmail).on("change keyup paste", function(evt){
+        do{
+            evt.preventDefault();
+            $("#idSpanCheckEmail").empty();
+            var email=$("#"+g_idFieldEmail).val();
+            if(email==null || email.length==0) break;
+            if(validateEmail(email)==false) break;
+            var params={};
+            params["email"]=email;
+            $.ajax({
+                type: "GET",
+                url: "/user/email/duplicate",
+                data: params,
+                success: function(data, status, xhr){
+                    $("#idSpanCheckEmail").text("This email can be used :)");        
+                },
+                error: function(xhr, status, err){
+                    $("#idSpanCheckEmail").text("This email cannot be used :(");        
                 }
             });
         }while(false);

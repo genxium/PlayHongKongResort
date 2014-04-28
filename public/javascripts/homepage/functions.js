@@ -35,17 +35,6 @@ function checkLoginStatus(evt){
 	} while(false);
 }
 
-function validateEmail(){
-	var x=document.getElementById(g_idFieldEmail).value;
-	var atpos=x.indexOf("@");
-	var dotpos=x.lastIndexOf(".");
-	if (atpos<1 || dotpos<atpos+2 || dotpos+1>=x.length) {
-	  alert("Not a valid e-mail address");
-	  return false;
-	}
-	return true;
-}
-
 function onMouseEnterSectionUserInfo(evt){
 	var menu=jQuery.data(this, g_indexLoggedInUserMenu);
 	menu.show();	
