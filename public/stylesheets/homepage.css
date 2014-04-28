@@ -64,26 +64,24 @@ html, body
 	background-color: #66aaFF;
 }
 
-#idFieldEmail
+#idFieldUsername
 {
-	display: table-row;
-	position: relative;
 	width: 200pt;
 	height: 30pt;
-	left: 50pt;
-	margin-left: 30pt;
-	margin-top: 10pt;
-	margin-bottom: 10pt;
+	font-size: 15pt;
+}
+
+#idFieldEmail
+{
+	width: 200pt;
+	height: 30pt;
 	font-size: 15pt;
 }
 
 #idFieldPassWord
 {
-	display: table-row;
-	position: relative;
 	width: 200pt;
 	height: 30pt;
-	margin: 10pt;
 	font-size: 15pt;
 }
 

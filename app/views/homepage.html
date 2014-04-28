@@ -40,8 +40,17 @@
 			</div>
 
 			<div id="idSectionAccount">
-				Email: <input id="idFieldEmail" class="classFieldAccount" type="text"><br>
-				Password: <input id="idFieldPassword" class="classFieldAccount" type="password"><br>
+                <table border="0">
+                <tr>
+                 <td> Username: </td> <td><input id="idFieldUsername" class="classFieldAccount" type="text"> <button id="idBtnCheckUsernameDuplicate" style="color: red; font-size: 15pt; border: none">check</button></td>
+                </tr>
+				<tr>
+                 <td> Email: </td> <td><input id="idFieldEmail" class="classFieldAccount" type="text"></td>
+                </tr>
+                <tr>
+				 <td> Password: </td> <td><input id="idFieldPassword" class="classFieldAccount" type="password"></td>
+                </tr>
+                </table>
 				<button id="idBtnLogin">login</button>
 				<button id="idBtnRegister">register</button>
 			</div>

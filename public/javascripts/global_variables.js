@@ -20,8 +20,9 @@ var g_keyRelation="relation";
 
 // structured data keys (should be consistent with server-side in a protocol manner)
 var g_keyUserId="UserId";
+var g_keyUsername="Username";
 var g_keyUserEmail="UserEmail";
-var g_keyUserName="UserName";
+var g_keyUserPassword="UserPassword";
 var g_keyUserToken="UserToken";
 var g_keyUserAvatar="UserAvatar";
 

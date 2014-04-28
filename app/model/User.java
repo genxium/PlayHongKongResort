@@ -62,9 +62,9 @@ public class User extends BasicUser {
 	
 	public static User create(JSONObject userJson){
   		int id=(Integer)userJson.get(idKey);
+  		String name=(String)userJson.get(nameKey);
   		String email=(String)userJson.get(emailKey);
 		String password=(String)userJson.get(passwordKey);
-  		String name=(String)userJson.get(nameKey);
   		int userGroupId=(Integer)userJson.get(groupIdKey);
   		UserGroup.GroupType userGroup=UserGroup.GroupType.getTypeForValue(userGroupId);
   		int avatar=(Integer)userJson.get(avatarKey);

@@ -12,7 +12,7 @@ function onUploadAvatarFormSubmission(formEvt){
 		
 		$.ajax({
 			method: "POST",
-			url: "/uploadAvatar", 
+			url: "/user/uploadAvatar", 
 			data: formData,
 			mimeType: "mutltipart/form-data",
 			contentType: false,

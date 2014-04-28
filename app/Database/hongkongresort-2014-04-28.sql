@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.14, for osx10.7 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.17, for Linux (i686)
 --
--- Host: localhost    Database: hongkongresort
+-- Host: localhost    Database: hongkongweb
 -- ------------------------------------------------------
--- Server version	5.6.14
+-- Server version	5.6.17
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -41,7 +41,6 @@ CREATE TABLE `Activity` (
 
 LOCK TABLES `Activity` WRITE;
 /*!40000 ALTER TABLE `Activity` DISABLE KEYS */;
-INSERT INTO `Activity` VALUES (5,'標題 pikachu','內容','2014-02-18 16:25:46','2013-12-31 16:00:00','2013-12-31 16:00:00',0,3),(6,'我是標題','應該看到很多pikachu！','2014-02-22 16:45:51','2013-12-31 16:00:00','2013-12-31 16:00:00',0,3),(7,'順豐','拉拉啦','2014-04-01 17:15:19','2013-12-31 16:00:00','2013-12-31 16:00:00',0,3),(8,'trial','lalala','2014-04-08 17:23:34','2013-12-31 16:00:00','2013-12-31 16:00:00',0,3),(9,'喵','賣個萌？','2014-04-09 17:34:10','2013-12-31 16:00:00','2013-12-31 16:00:00',0,1),(10,'RESTful!','','2014-04-15 18:27:25','2014-12-31 16:00:00','2013-12-31 16:00:00',0,0);
 /*!40000 ALTER TABLE `Activity` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -71,7 +70,6 @@ CREATE TABLE `ActivityImageRelationTable` (
 
 LOCK TABLES `ActivityImageRelationTable` WRITE;
 /*!40000 ALTER TABLE `ActivityImageRelationTable` DISABLE KEYS */;
-INSERT INTO `ActivityImageRelationTable` VALUES (3,5,3,'2014-02-18 16:40:53'),(4,6,4,'2014-02-22 16:46:39'),(5,6,5,'2014-02-22 16:46:39'),(6,6,6,'2014-02-22 16:46:39'),(31,7,31,'2014-04-01 17:15:47'),(32,8,32,'2014-04-08 17:23:55'),(33,9,33,'2014-04-09 17:34:29'),(34,10,34,'2014-04-15 18:40:44');
 /*!40000 ALTER TABLE `ActivityImageRelationTable` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -105,7 +103,6 @@ CREATE TABLE `CommentOnActivity` (
 
 LOCK TABLES `CommentOnActivity` WRITE;
 /*!40000 ALTER TABLE `CommentOnActivity` DISABLE KEYS */;
-INSERT INTO `CommentOnActivity` VALUES (10,'Lalala',12,6,-1,0,'2014-04-27 17:34:09',-1),(11,'reply',12,6,10,0,'2014-04-27 17:34:38',10);
 /*!40000 ALTER TABLE `CommentOnActivity` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -132,7 +129,6 @@ CREATE TABLE `Image` (
 
 LOCK TABLES `Image` WRITE;
 /*!40000 ALTER TABLE `Image` DISABLE KEYS */;
-INSERT INTO `Image` VALUES (3,'/Users/user/play-2.2.0/PlayHongKongResort/public/images/UID12_1392741653975_pikachu03.png','/assets/images/UID12_1392741653975_pikachu03.png'),(4,'/Users/user/play-2.2.0/PlayHongKongResort/public/images/UID12_1393087599431_pikachu01.png','/assets/images/UID12_1393087599431_pikachu01.png'),(5,'/Users/user/play-2.2.0/PlayHongKongResort/public/images/UID12_1393087599476_pikachu02.jpeg','/assets/images/UID12_1393087599476_pikachu02.jpeg'),(6,'/Users/user/play-2.2.0/PlayHongKongResort/public/images/UID12_1393087599480_pikachu03.png','/assets/images/UID12_1393087599480_pikachu03.png'),(31,'/Users/user/play-2.2.2/PlayHongKongResort/public/images/UID12_1396372547817_20120423101701829.jpg','/assets/images/UID12_1396372547817_20120423101701829.jpg'),(32,'/Users/user/play-2.2.2/PlayHongKongResort/public/images/UID21_1396977835541_pikachu04.gif','/assets/images/UID21_1396977835541_pikachu04.gif'),(33,'/Users/user/play-2.2.2/PlayHongKongResort/public/images/UID10_1397064869930_MarvelousSeed.jpg','/assets/images/UID10_1397064869930_MarvelousSeed.jpg'),(34,'/Users/user/play-2.2.2/PlayHongKongResort/public/images/UID12_1397587244804_pikachu03.png','/assets/images/UID12_1397587244804_pikachu03.png');
 /*!40000 ALTER TABLE `Image` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -145,7 +141,7 @@ DROP TABLE IF EXISTS `User`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `User` (
   `UserId` int(32) NOT NULL AUTO_INCREMENT,
-  `UserName` varchar(32) NOT NULL,
+  `DisplayName` varchar(32) DEFAULT NULL,
   `UserPassword` varchar(32) NOT NULL,
   `UserEmail` varchar(32) NOT NULL,
   `UserGroupId` int(2) NOT NULL DEFAULT '0',
@@ -156,8 +152,10 @@ CREATE TABLE `User` (
   `UserLastLoggedOutTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `UserLastExitTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `UserCreatedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `UserName` varchar(32) NOT NULL,
   PRIMARY KEY (`UserId`),
   UNIQUE KEY `UserEmail` (`UserEmail`),
+  UNIQUE KEY `UserName` (`UserName`),
   KEY `UserGroupId` (`UserGroupId`),
   CONSTRAINT `FK_UserGroupId` FOREIGN KEY (`UserGroupId`) REFERENCES `UserGroup` (`GroupId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
@@ -169,7 +167,6 @@ CREATE TABLE `User` (
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
-INSERT INTO `User` VALUES (9,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',1,0,0,'2013-12-23 14:13:30',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(10,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@126.com',1,0,0,'2013-12-23 14:45:19',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(11,'kk','e10adc3949ba59abbe56e057f20f883e','kk@gmail.com',1,0,0,'2013-12-27 14:13:30',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(12,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',1,0,0,'2013-12-28 04:21:15',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(13,'genxium','e10adc3949ba59abbe56e057f20f883e','genxium@yahoo.com',1,0,0,'2013-12-29 08:16:26',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(18,'kk','e10adc3949ba59abbe56e057f20f883e','kk@hotmail.com',1,0,0,'2014-01-03 08:01:30',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(19,'sai','e10adc3949ba59abbe56e057f20f883e','sai@126.com',1,0,0,'2014-01-03 08:12:15',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(20,'yukping','e10adc3949ba59abbe56e057f20f883e','yukping@gmail.com',1,0,0,'2014-01-03 16:42:09',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(21,'admin','c33367701511b4f6020ec61ded352059','admin@hongkongresort.com',3,0,0,'2014-01-07 16:12:42',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(22,'ray','fcea920f7412b5da7be0cf42b8c93759','ray@gmail.com',1,0,0,'2014-01-12 09:11:48',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00');
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -230,7 +227,6 @@ CREATE TABLE `UserActivityRelationTable` (
 
 LOCK TABLES `UserActivityRelationTable` WRITE;
 /*!40000 ALTER TABLE `UserActivityRelationTable` DISABLE KEYS */;
-INSERT INTO `UserActivityRelationTable` VALUES (5,12,5,0,'2014-02-18 16:25:46','0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(6,12,6,0,'2014-02-22 16:45:51','0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(7,11,6,1,'2014-03-09 14:40:50','0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(8,19,6,2,'2014-03-09 14:40:50','0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(9,19,5,2,'2014-03-18 16:20:33','0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(10,12,7,0,'2014-04-01 17:15:19','0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(11,21,8,0,'2014-04-08 17:23:34','0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(12,21,6,1,'2014-04-08 17:24:23','0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(13,10,9,0,'2014-04-09 17:34:10','0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00'),(14,12,10,0,'2014-04-15 18:27:25','0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00');
 /*!40000 ALTER TABLE `UserActivityRelationTable` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -290,4 +286,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-04-28  1:35:23
+-- Dump completed on 2014-04-28  9:36:34

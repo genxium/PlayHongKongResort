@@ -1,51 +1,67 @@
 function onBtnRegisterClicked(evt){
 
-	var email=$("#"+g_idFieldEmail).val();
-	var password=$("#"+g_idFieldPassword).val();
+    do{
+        var username=$("#"+g_idFieldUsername).val();
+        var email=$("#"+g_idFieldEmail).val();
+        var password=$("#"+g_idFieldPassword).val();
 
-	$.post("/register",
-			{
-				UserEmail: email.toString(),
-				UserPassword: password.toString()
-			},
-			// post response callback function
-			function(data, status, xhr){
-		    		if(status=="success"){
-		    			refreshOnEnter();
-		    		}
-		    		else{
-		    			
-		    		}
-		    }
-	);
+        if(username==null || username.length==0
+            || email==null || email.length==0
+            || password==null || password.length==0) break;
+
+        var params={};
+        params[g_keyUsername]=username;
+        params[g_keyUserEmail]=email;
+        params[g_keyUserPassword]=password;
+
+        $.ajax({
+            type: "POST",
+            url: "/user/register",
+            data: params,
+            success: function(data, status, xhr){
+                refreshOnEnter();
+            },
+            error: function(xhr, status, err){
+                
+            }
+        });
+    }while(false);
 }
 
 function onBtnLoginClicked(evt){
 	
-	var email=$("#"+g_idFieldEmail).val();
-	var password=$("#"+g_idFieldPassword).val();
+    do{
+        var username=$("#"+g_idFieldUsername).val();
+        var email=$("#"+g_idFieldEmail).val();
+        var password=$("#"+g_idFieldPassword).val();
 
-	$.post("/login",
-			{
-				UserEmail: email.toString(),
-				UserPassword: password.toString()
-			},
-			// post response callback function
-			function(data, status, xhr){
-				if(status=="success"){
-					var jsonResponse=JSON.parse(data);
-    				g_userName=jsonResponse[g_keyUserEmail];
-    				g_userAvatarURL=jsonResponse[g_keyImageURL];
-    				// store token in cookie iff query succeeds
-    				$.cookie(g_keyLoginStatus.toString(), jsonResponse[g_keyUserToken]);
-    				// refresh screen
-    				refreshOnLoggedIn();
-    				queryDefaultActivities(0, g_numItemsPerPage, g_directionForward);
-				} else{
+        if( ((username==null || username.length==0) && (email==null || email.length==0))
+            || password==null || password.length==0) break;
 
-	    		}
-		    }
-	);
+        var params={};
+        params[g_keyUsername]=username;
+        params[g_keyUserEmail]=email;
+        params[g_keyUserPassword]=password;
+        
+        $.ajax({
+            type: "POST",
+            url: "/user/login",
+            data: params,
+            success: function(data, status, xhr){
+                var jsonResponse=JSON.parse(data);
+                g_userName=jsonResponse[g_keyUserEmail];
+                g_userAvatarURL=jsonResponse[g_keyImageURL];
+                // store token in cookie iff query succeeds
+                $.cookie(g_keyLoginStatus.toString(), jsonResponse[g_keyUserToken]);
+                // refresh screen
+                refreshOnLoggedIn();
+                queryDefaultActivities(0, g_numItemsPerPage, g_directionForward);
+            },
+            error: function(xhr, status, err){
+                
+            }
+        });
+    }while(false);
 }
 
 function onBtnPreviousPageClicked(evt){

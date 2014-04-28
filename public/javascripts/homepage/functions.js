@@ -11,8 +11,8 @@ function checkLoginStatus(evt){
         var params={};
         params[g_keyUserToken]=token.toString();
 		$.ajax({
-            method: "POST",
-            url: "/checkLoginStatus",
+            method: "GET",
+            url: "/user/status",
             data: params,
             success: function(data, status, xhr){
                 var userJson=JSON.parse(data);

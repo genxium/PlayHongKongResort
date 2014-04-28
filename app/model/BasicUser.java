@@ -3,7 +3,7 @@ package model;
 public class BasicUser {
 	public static String idKey="UserId";
 	public static String emailKey="UserEmail";
-	public static String nameKey="UserName";
+	public static String nameKey="Username";
 	public static String avatarKey="UserAvatar";
 	
 	protected int m_userId=0;

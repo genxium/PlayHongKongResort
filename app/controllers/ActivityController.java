@@ -3,12 +3,14 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.SQLHelper;
 import model.*;
+import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.Http.RequestBody;
 import utilities.DataUtils;
 
 import java.sql.Timestamp;
@@ -84,10 +86,8 @@ public class ActivityController extends Controller {
         do{
       	  	try{
                 Map<String, String[]> formData=request().body().asFormUrlEncoded();
-                String[] tokens=formData.get(User.tokenKey);
-                String token=tokens[0];
-                String[] activityIds=formData.get(Activity.idKey);
-                Integer activityId=Integer.valueOf(activityIds[0]);
+                String token=formData.get(User.tokenKey)[0];
+                Integer activityId=Integer.valueOf(formData.get(Activity.idKey)[0]);
                 String[] appliedParticipantsJsonStrs= formData.get(ActivityDetail.appliedParticipantsKey);
                 String[] selectedParticipantsJsonStrs= formData.get(ActivityDetail.selectedParticipantsKey);
 
@@ -233,16 +233,13 @@ public class ActivityController extends Controller {
                 // get user token and activity id from request body stream
                 Map<String, String[]> formData= body.asFormUrlEncoded();
 
-                String[] tokens=formData.get(User.tokenKey);
-                String[] activityIds=formData.get(Activity.idKey);
+                String token=formData.get(User.tokenKey)[0];
+                Integer activityId=Integer.valueOf(formData.get(Activity.idKey)[0]);
 
-                String token=tokens[0];
                 int userId=DataUtils.getUserIdByToken(token);
                 if(userId==DataUtils.invalidId) break;
                 User user=SQLCommander.queryUser(userId);
                 if(user==null) break;
-
-                int activityId=Integer.parseInt(activityIds[0]);
 
                 Activity activity=SQLCommander.queryActivity(activityId);
                 if(SQLCommander.isActivityEditable(userId, activity)==false) break;
