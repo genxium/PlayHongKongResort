@@ -22,6 +22,8 @@ import utilities.General;
 public class UserController extends Controller {
 
     public static Result login(){
+      	// define response attributes
+  		response().setContentType("text/plain");
     	do{
             try{
                 Http.RequestBody body = request().body();
@@ -115,7 +117,9 @@ public class UserController extends Controller {
     }
     
     public static Result uploadAvatar() {
-    	  do{
+        // define response attributes
+        response().setContentType("text/plain");
+     	do{
     		  RequestBody body = request().body();
     	  
     		  // get file data from request body stream
@@ -143,8 +147,8 @@ public class UserController extends Controller {
          
     		  return ok("Avatar uploaded");
     	  
-    	  }while(false);
-    	  return badRequest("Avatar not uploaded!");
+    	}while(false);
+    	return badRequest("Avatar not uploaded!");
     }
     
     public static Result queryRelationOfUserAndActivity(){
@@ -173,6 +177,8 @@ public class UserController extends Controller {
     }
 
     public static Result logout(){
+      	// define response attributes
+  		response().setContentType("text/plain");
         do{
             try{
                 Map<String, String[]> formData=request().body().asFormUrlEncoded();
@@ -187,6 +193,8 @@ public class UserController extends Controller {
     }
      
     public static Result nameDuplicate(String username){
+      	// define response attributes
+  		response().setContentType("text/plain");
         do{
             try{
                 if(username==null) break;
@@ -208,6 +216,8 @@ public class UserController extends Controller {
     }
 
     public static Result emailDuplicate(String email){
+      	// define response attributes
+  		response().setContentType("text/plain");
         do{
             try{
                 if(email==null || General.validateEmail(email)==false) break;
