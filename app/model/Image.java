@@ -7,9 +7,12 @@ package model;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import play.libs.Json;
 import org.json.simple.JSONObject;
+import org.apache.commons.io.FilenameUtils;
 
 public class Image {
-	
+
+	public static String URL_PREFIX="/images/";	
+    public static String FOLDER_PATH="/var/www/html/images/";
 	public static String idKey="ImageId";
 	public static String urlKey="ImageURL";
 	
@@ -22,7 +25,9 @@ public class Image {
 	public void setImageURL(String imageURL) {m_imageURL=imageURL;}
 
     public String getAbsolutePath(){
-        return "";
+        String baseName=FilenameUtils.getBaseName(m_imageURL);
+        String extension=FilenameUtils.getExtension(m_imageURL);
+        return FOLDER_PATH+baseName+"."+extension;
     }
 
 	public Image(int imageId, String imageURL){

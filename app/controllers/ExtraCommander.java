@@ -103,12 +103,10 @@ public class ExtraCommander extends SQLCommander {
       	    		if(user==null) break;
 
       	    		Integer userId=user.getUserId();
-                    String urlFolderName="assets/images";
       	    		String newImageName=DataUtils.generateUploadedImageName(fileName, userId);
-                    String imageURL="/"+urlFolderName+"/"+newImageName;
+                    String imageURL=Image.URL_PREFIX+newImageName;
 
-                    String folderPath="/var/www/html/images/";
-                    String imageAbsolutePath=folderPath+newImageName;
+                    String imageAbsolutePath=Image.FOLDER_PATH+newImageName;
 
       	    		int imageId=SQLCommander.uploadUserAvatar(user, imageURL);
       	    		if(imageId==SQLCommander.INVALID) break;
@@ -146,12 +144,10 @@ public class ExtraCommander extends SQLCommander {
                 
             Integer userId=user.getUserId();
 
-            String urlFolderName="assets/images";
             String newImageName=DataUtils.generateUploadedImageName(fileName, userId);
-            String imageURL="/"+urlFolderName+"/"+newImageName;
+            String imageURL=Image.URL_PREFIX+newImageName;
 
-            String folderPath="/var/www/html/images/";
-            String imageAbsolutePath=folderPath+newImageName;
+            String imageAbsolutePath=Image.FOLDER_PATH+newImageName;
 
             int imageId=SQLCommander.uploadImageOfActivity(user, activity, imageURL);
             if(imageId==SQLCommander.INVALID) break;
