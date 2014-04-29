@@ -670,7 +670,7 @@ public class SQLCommander {
 		return ret;
 	}
 
-	public static int uploadUserAvatar(User user, String imageAbsolutePath, String imageURL){
+	public static int uploadUserAvatar(User user, String imageURL){
 		int lastImageId= INVALID;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
@@ -678,11 +678,9 @@ public class SQLCommander {
 			String userTableName="User";
 
 			List<String> imageColumnNames=new LinkedList<String>();
-			imageColumnNames.add(Image.absolutePathKey);
 			imageColumnNames.add(Image.urlKey);
 
 			List<Object> imageColumnValues=new LinkedList<Object>();
-			imageColumnValues.add(imageAbsolutePath);
 			imageColumnValues.add(imageURL);
 
 			lastImageId=sqlHelper.insert(imageTableName, imageColumnNames, imageColumnValues);
@@ -717,7 +715,6 @@ public class SQLCommander {
 				SQLHelper sqlHelper=new SQLHelper();
 				List<String> columnNames=new LinkedList<String>();
 				columnNames.add(Image.urlKey);
-				columnNames.add(Image.absolutePathKey);
 
 				List<String> whereClauses=new LinkedList<String>();
 				whereClauses.add(Image.idKey+"="+SQLHelper.convertToQueryValue(imageId));
@@ -727,9 +724,7 @@ public class SQLCommander {
 				Iterator<JSONObject> itImage=images.iterator();
 				if(itImage.hasNext()){
 					JSONObject imageJson=itImage.next();
-					String imageAbsolutePath=(String)imageJson.get(Image.absolutePathKey);
-					String imageURL=(String)imageJson.get(Image.urlKey);
-					image=Image.create(imageId, imageAbsolutePath, imageURL);
+					image=new Image(imageJson);
 				}
 			} catch (Exception e){
 
@@ -820,7 +815,6 @@ public class SQLCommander {
 			String imageTableName="Image";
 			List<String> imageColumnNames=new LinkedList<String>();
 			imageColumnNames.add(Image.idKey);
-			imageColumnNames.add(Image.absolutePathKey);
 			imageColumnNames.add(Image.urlKey);
 
 			List<String> imageWhereClauses=new LinkedList<String>();
@@ -838,11 +832,8 @@ public class SQLCommander {
 			images=new LinkedList<Image>();
 			Iterator<JSONObject> itImageRecord=imageRecords.iterator();
 			while(itImageRecord.hasNext()){
-				JSONObject imageRecord=itImageRecord.next();
-				Integer imageId=(Integer)imageRecord.get(Image.idKey);
-				String imageAbsolutePath=(String)imageRecord.get(Image.absolutePathKey);
-				String imageURL=(String)imageRecord.get(Image.urlKey);
-				Image image=Image.create(imageId, imageAbsolutePath, imageURL);
+				JSONObject imageJson=itImageRecord.next();
+				Image image=new Image(imageJson);
 				images.add(image);
 			}
 
@@ -850,7 +841,7 @@ public class SQLCommander {
 		return images;
 	}
 
-	public static int uploadImageOfActivity(User user, Activity activity, String imageAbsolutePath, String imageURL){
+	public static int uploadImageOfActivity(User user, Activity activity, String imageURL){
 		int lastImageId= INVALID;
 		do{
 			if(user==null) break;
@@ -860,11 +851,9 @@ public class SQLCommander {
 			String relationTableName="ActivityImageRelationTable";
 
 			List<String> imageColumnNames=new LinkedList<String>();
-			imageColumnNames.add(Image.absolutePathKey);
 			imageColumnNames.add(Image.urlKey);
 
 			List<Object> imageColumnValues=new LinkedList<Object>();
-			imageColumnValues.add(imageAbsolutePath);
 			imageColumnValues.add(imageURL);
 
 			lastImageId=sqlHelper.insert(imageTableName, imageColumnNames, imageColumnValues);
