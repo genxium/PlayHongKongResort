@@ -443,6 +443,38 @@ public class SQLCommander {
 		return ret;
 	}
 
+	public static CommentOnActivity queryComment(Integer commentId){
+        CommentOnActivity ret=null;
+        do{
+            try{
+                String tableName="CommentOnActivity";
+                SQLHelper sqlHelper=new SQLHelper();
+                
+                // query table CommentOnActivity
+                List<String> columnNames=new LinkedList<String>();
+                columnNames.add(CommentOnActivity.ID);
+                columnNames.add(CommentOnActivity.CONTENT);
+                columnNames.add(CommentOnActivity.COMMENTER_ID);
+                columnNames.add(CommentOnActivity.PARENT_ID);
+                columnNames.add(CommentOnActivity.PREDECESSOR_ID);
+                columnNames.add(CommentOnActivity.ACTIVITY_ID);
+                columnNames.add(CommentOnActivity.COMMENT_TYPE);
+                columnNames.add(CommentOnActivity.GENERATED_TIME);
+
+                List<String> whereClauses=new LinkedList<String>();
+                whereClauses.add(CommentOnActivity.ID+"="+commentId);
+			
+                List<JSONObject> commentsJson=sqlHelper.query(tableName, columnNames, whereClauses, SQLHelper.logicAND);
+                if(commentsJson==null || commentsJson.size()<=0) break;
+
+				ret=new CommentOnActivity(commentsJson.get(0));
+			} catch(Exception e){
+				
+			}
+		}while(false);
+		return ret;
+	}
+
     public static List<CommentOnActivity> queryTopLevelComments(Integer activityId, Object refIndex, Integer sortKey, String sortDirection, Integer numItems, Integer direction, Integer commentType){
          
         List<CommentOnActivity> ret=null;
@@ -450,7 +482,7 @@ public class SQLCommander {
             try{
                 String tableName="CommentOnActivity";
                 SQLHelper sqlHelper=new SQLHelper();
-                //
+				
                 // query table CommentOnActivity
                 List<String> columnNames=new LinkedList<String>();
                 columnNames.add(CommentOnActivity.ID);

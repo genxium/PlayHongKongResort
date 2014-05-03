@@ -7,9 +7,11 @@ function removeReplyEditor(){
     }    
 }
 
-function generateReplyEditor(activityId, parentId, predecessorId){
+function generateReplyEditor(activityId, parentId, predecessorId, toUsername){
     var ret=$('<p>');
-    var input=$('<input>').appendTo(ret); 
+    var input=$('<input>', {
+		placeholder: "to @"+toUsername+":"
+	}).appendTo(ret);
     var btnSubmit=$('<button>',{
         text: "SUBMIT REPLY",
         style: "color: white; background-color: gray; border: none"
@@ -62,36 +64,37 @@ function generateReplyEditor(activityId, parentId, predecessorId){
 
 function generateCommentCell(commentJson, activityId){
     var ret=$('<div>', {
-        class: "classCommentCell",
         style: "border-left: thick solid #000000" 
     });
     
     do{
-        var infoRow=$('<p>').appendTo(ret);
+        var row=$('<p>').appendTo(ret);
         var content=$('<span>', {
             text: commentJson[g_keyCommentAContent],
-            style: "text-align: left; float: left"
-        }).appendTo(infoRow);
+            style: "text-align: left; margin-left: 25pt"
+        }).appendTo(row);
         
         var commenterName=$('<span>', {
             text: commentJson[g_keyCommenterName], 
-            style: "position: absolute; left: 200px"
-        }).appendTo(infoRow);        
+            style: "text-align: left; margin-left: 25pt; color: brown;"
+        }).appendTo(row);        
         
-        var commenterName=$('<span>', {
+        var generatedTime=$('<span>', {
             text: commentJson[g_keyGeneratedTime], 
-            style: "position: absolute; left: 500px; color: blue"
-        }).appendTo(infoRow);        
+            style: "text-align: left; margin-left:  25pt; color: blue"
+        }).appendTo(row);        
         
         var token=$.cookie(g_keyLoginStatus.toString());
         if(token==null) break; 
 
-        $('<br>').appendTo(ret);
-        var operationRow=$('<p>').appendTo(ret);
+        var operations=$('<span>',{
+			style: "margin-left: 20pt"	
+		}).appendTo(row);
+
         var btnReply=$('<button>',{
             text: "reply",
-            style: "position: absolute; left: 500px; color: white; background-color: black; border: none"
-        }).appendTo(operationRow);
+            style: "color: white; background-color: black; border: none"
+        }).appendTo(operations);
 
         var parentId=commentJson[g_keyCommentAParentId];
         var predecessorId=commentJson[g_keyCommentAId];
@@ -102,14 +105,86 @@ function generateCommentCell(commentJson, activityId){
         btnReply.data("ActivityId", activityId);
         btnReply.data("ParentId", parentId);
         btnReply.data("PredecessorId", predecessorId);
+		btnReply.data("CommentCell", ret);
         btnReply.on("click", function(){
             removeReplyEditor();
             var btn=$(this);
             var activityId=btn.data("ActivityId");
             var parentId=btn.data("ParentId");
             var predecessorId=btn.data("PredecessorId");
-            g_replyEditor=generateReplyEditor(activityId, parentId, predecessorId);
-            var commentCell=$(this).closest(".classCommentCell");
+            g_replyEditor=generateReplyEditor(activityId, parentId, predecessorId, commentJson[g_keyCommenterName]);
+            var commentCell=btn.data("CommentCell");
+            commentCell.append(g_replyEditor);
+        });
+
+		// Sub-Comments
+		var subComments=commentJson["SubComments"];
+		for(var key in subComments){
+	 		var subCommentJson=subComments[key];
+			var subCommentCell=generateSubCommentCell(subCommentJson, activityId);		
+			ret.append(subCommentCell);
+		}
+    }while(false);
+    return ret;
+}
+
+function generateSubCommentCell(commentJson, activityId){
+    var ret=$('<div>', {
+        style: "text-indent: 25pt; border-left: thick solid #000000" 
+    });
+    
+    do{
+        var row=$('<p>').appendTo(ret);
+
+		var toWhom=$('<span>', {
+			text: "to @"+commentJson[g_keyReplyeeName]+": ",
+			style: "color: BlueViolet"
+		}).appendTo(row);
+
+        var content=$('<span>', {
+            text: commentJson[g_keyCommentAContent],
+            style: "text-align: left; margin-left: 25pt"
+        }).appendTo(row);
+        
+        var commenterName=$('<span>', {
+            text: commentJson[g_keyCommenterName], 
+            style: "text-align: left; margin-left: 25pt; color: brown;"
+        }).appendTo(row);        
+        
+        var generatedTime=$('<span>', {
+            text: commentJson[g_keyGeneratedTime], 
+            style: "text-align: left; margin-left:  25pt; color: blue"
+        }).appendTo(row);        
+        
+        var token=$.cookie(g_keyLoginStatus.toString());
+        if(token==null) break; 
+
+        var operations=$('<span>',{
+			style: "margin-left: 20pt"	
+		}).appendTo(row);
+
+        var btnReply=$('<button>',{
+            text: "reply",
+            style: "color: white; background-color: black; border: none"
+        }).appendTo(operations);
+        var parentId=commentJson[g_keyCommentAParentId];
+        var predecessorId=commentJson[g_keyCommentAId];
+        if(parentId==(-1)){
+            // root comment
+            parentId=predecessorId;
+        }
+        btnReply.data("ActivityId", activityId);
+        btnReply.data("ParentId", parentId);
+        btnReply.data("PredecessorId", predecessorId);
+		btnReply.data("CommentCell", ret);
+        btnReply.on("click", function(){
+            removeReplyEditor();
+            var btn=$(this);
+            var activityId=btn.data("ActivityId");
+            var parentId=btn.data("ParentId");
+            var predecessorId=btn.data("PredecessorId");
+            g_replyEditor=generateReplyEditor(activityId, parentId, predecessorId, commentJson[g_keyCommenterName]);
+            var commentCell=btn.data("CommentCell");
             commentCell.append(g_replyEditor);
         });
     }while(false);

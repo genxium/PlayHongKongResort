@@ -51,6 +51,7 @@ var g_keyPredecessorId="PredecessorId";
 var g_keyCommentType="CommentType";
 var g_keyGeneratedTime="GeneratedTime";
 var g_keyCommenterName="CommenterName";
+var g_keyReplyeeName="ReplyeeName";
 
 // callback function pointers
 var g_callbackOnActivityEditorRemoved=null;

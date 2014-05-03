@@ -26,6 +26,7 @@ public class CommentOnActivity {
     public static final String GENERATED_TIME="GeneratedTime";
 
     public static final String COMMENTER_NAME="CommenterName";
+	public static final String REPLYEE_NAME="ReplyeeName";
     public static final String SUB_COMMENTS="SubComments";
 
     protected Integer m_id=null;
@@ -96,6 +97,28 @@ public class CommentOnActivity {
         return ret;
     }
 
+    public ObjectNode toSubCommentObjectNode(){
+        ObjectNode ret = Json.newObject();;
+        do{
+            try{
+                ret.put(ID, m_id);
+                ret.put(PARENT_ID, m_parentId);
+                ret.put(CONTENT, m_content);
+                ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
+                ret.put(GENERATED_TIME, m_generatedTime.toString());
+				
+				CommentOnActivity predecessorComment=SQLCommander.queryComment(m_predecessorId);
+				if(predecessorComment==null) break;
+				Integer replyeeId=predecessorComment.getCommenterId();
+				String replyeeName=SQLCommander.queryUser(replyeeId).getName();
+				ret.put(REPLYEE_NAME, replyeeName);
+            } catch (Exception e){
+
+            }
+        }while(false);
+        return ret;
+    }
+
     public ObjectNode toObjectNodeWithSubComments(){
         ObjectNode ret = Json.newObject();
         do{
@@ -109,7 +132,7 @@ public class CommentOnActivity {
 
                 ArrayNode subCommentsNode=new ArrayNode(JsonNodeFactory.instance);
                 for(CommentOnActivity subComment : subComments){
-                    subCommentsNode.add(subComment.toObjectNode());
+                    subCommentsNode.add(subComment.toSubCommentObjectNode());
                 }
                 ret.put(SUB_COMMENTS, subCommentsNode);
             }catch(Exception e){
