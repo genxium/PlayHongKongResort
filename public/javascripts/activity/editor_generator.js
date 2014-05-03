@@ -19,14 +19,20 @@ function formatDigits(value, numberOfDigits){
 	return valueStr;
 }
 
+function setNonSavable(){
+    g_savable=false;
+}
+
+function setSavable(){
+    g_savable=true;
+}
+
 function setNonSubmittable(){
     g_submittable=false;
-    g_savable=true;
 }
 
 function setSubmittable(){
     g_submittable=true;
-    g_savable=false;
 }
 
 // Assistive Callback Functions
@@ -36,6 +42,9 @@ function onSave(editor){
 	        alert("You haven't made any changes!");
 	        break;
 	    }
+		setNonSavable();
+		setNonSubmittable();
+
 		var formObj = $(editor);
 		var formData = new FormData();
 
@@ -49,7 +58,7 @@ function onSave(editor){
                 if(checkbox==null) break;
                 // Note that checkbox.checked doesn't work here because of jQuery encapsulation!
                 var isChecked=checkbox.is(':checked');
-                if(isChecked.checked==false) break;
+                if(isChecked==false) break;
                 var files=field.files;
                 var count=files.length;
                 if(count==1) {
@@ -115,7 +124,7 @@ function onSave(editor){
 		if(isNewActivity==false){
 		    formData.append(g_keyActivityId, activityId.toString());
         }
-
+		
 		$.ajax({
 			method: "POST",
 			url: "/activity/save",
@@ -132,7 +141,7 @@ function onSave(editor){
                 alert("You can submit the application now!");
 			},
 			error: function(xhr, status, err){
-
+				setSavable();
 			}
 		});
 	}while(false);
@@ -144,6 +153,9 @@ function onFormSubmission(editor){
             alert("You have to save your changes before submission!");
             break;
         }
+		setNonSavable();
+		setNonSubmittable();
+
 		var formObj = $(editor);
 		var params={};
 
@@ -165,7 +177,7 @@ function onFormSubmission(editor){
 				}
 			},
 			error: function(xhr, status, err){
-
+				setSubmittable();
 			}
 		});
 	}while(false);
@@ -200,6 +212,7 @@ function previewImage(input) {
                    checked: true
             }).appendTo(node);
             checkbox.change(function(){
+				setSavable();
                 setNonSubmittable();
             });
             $(input).after(node);
@@ -258,6 +271,7 @@ function onBtnDeleteClicked(evt){
                  if(g_callbackOnActivityEditorRemoved!=null){
                      g_callbackOnActivityEditorRemoved(0);
                  }
+				 location.reload();
             },
 	        error: function(xhr, status, err){
 
@@ -289,7 +303,7 @@ function onBtnCancelClicked(evt){
 
 // Generators
 function generateActivityEditorByJson(activityJson){
-
+	 setNonSavable();
      setSubmittable();
      var isNewActivity=false;
      if(activityJson==null) isNewActivity=true;
@@ -323,7 +337,8 @@ function generateActivityEditorByJson(activityJson){
 		 				value: activityTitle,
 		 			 	name: g_keyActivityTitle
 	 				}).appendTo(ret);
-    titleInput.on("change keyup paste", function(){
+    titleInput.on("input paste", function(){
+		setSavable();
         setNonSubmittable();
     });
 
@@ -338,7 +353,8 @@ function generateActivityEditorByJson(activityJson){
 	 				  	name: g_keyActivityContent
 	 				  }).appendTo(ret);
 	 contentInput.val(activityContent);
-     contentInput.on("change keyup paste", function(){
+     contentInput.on("input paste", function(){
+		setSavable();
         setNonSubmittable();
      });
 
@@ -360,6 +376,7 @@ function generateActivityEditorByJson(activityJson){
                    checked: true
                }).appendTo(node);
                checkbox.change(function(){
+				   setSavable();
                    setNonSubmittable();
                });
                var imageId=activityImage[g_keyImageId];
@@ -377,6 +394,7 @@ function generateActivityEditorByJson(activityJson){
 							type: 'file'
 				 		}).appendTo(ret);
 		imageField.change(function(){
+			setSavable();
 		    setNonSubmittable();
             previewImage(this);
         });
