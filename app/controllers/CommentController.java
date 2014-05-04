@@ -46,9 +46,11 @@ public class CommentController extends Controller {
         do{
             try{
                 Map<String, String[]> formData=request().body().asFormUrlEncoded();
+                String content=formData.get(CommentOnActivity.CONTENT)[0];
+				if(content==null || content.length()<=CommentOnActivity.MIN_CONTENT_LENGTH) break;
+
                 String token=formData.get(User.tokenKey)[0];
                 Integer activityId=Integer.valueOf(formData.get(CommentOnActivity.ACTIVITY_ID)[0]);
-                String content=formData.get(CommentOnActivity.CONTENT)[0];
 
                 if(token==null) break;
                 Integer userId=DataUtils.getUserIdByToken(token);

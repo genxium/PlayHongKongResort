@@ -1,3 +1,4 @@
+var g_minContentLength=5;
 var g_replyEditor=null;
 
 function removeReplyEditor(){
@@ -21,34 +22,41 @@ function generateReplyEditor(activityId, parentId, predecessorId, toUsername){
     btnSubmit.data("PredecessorId", predecessorId);
 
     btnSubmit.on("click", function(evt){
-        evt.preventDefault();
-        var btn=$(this);
-        var editor=btn.closest('p');
-        var input=editor.children('input');
-        var content=input.val();
-        var activityId=btn.data("ActivityId");
-        var parentId=btn.data("ParentId");
-        var predecessorId=btn.data("PredecessorId");
-        var token=$.cookie(g_keyLoginStatus.toString());
+		do{
+			evt.preventDefault();
+			var btn=$(this);
+			var editor=btn.closest('p');
+			var input=editor.children('input');
+			var content=input.val();
+			var activityId=btn.data("ActivityId");
+			var parentId=btn.data("ParentId");
+			var predecessorId=btn.data("PredecessorId");
+			var token=$.cookie(g_keyLoginStatus.toString());
 
-        var params={};
-        params["CommentAContent"]=content;
-        params["ParentId"]=parentId;
-        params["PredecessorId"]=predecessorId;
-        params["ActivityId"]=activityId;
-        params["UserToken"]=token;
+			if(content==null || content.length<=g_minContentLength) {
+				alert("Please comment with no less than "+g_minContentLength.toString()+" characters!");
+				break;	
+			}
 
-        $.ajax({
-            type: "POST",
-            url: "/comment/submit",
-            data: params,
-            success: function(data, status, xhr){
-                removeReplyEditor();
-            },
-            error: function(xhr, status, err){
-                alert("Comment not submitted...");
-            }
-        });
+			var params={};
+			params["CommentAContent"]=content;
+			params["ParentId"]=parentId;
+			params["PredecessorId"]=predecessorId;
+			params["ActivityId"]=activityId;
+			params["UserToken"]=token;
+
+			$.ajax({
+				type: "POST",
+				url: "/comment/submit",
+				data: params,
+				success: function(data, status, xhr){
+					removeReplyEditor();
+				},
+				error: function(xhr, status, err){
+					alert("Comment not submitted...");
+				}
+			});
+		}while(false);
     });
 
     var btnCollapse=$('<button>',{
@@ -204,28 +212,35 @@ function generateCommentEditor(activityId){
 
     // jQuery.bind() doesn't work here because the DOM element hasn't been created yet
     btnSubmit.on("click", function(evt){
-        evt.preventDefault();
-        var editor=$(this).closest('div');
-        var input=editor.children('input');
-        var content=input.val();
-        var token=$.cookie(g_keyLoginStatus.toString());
+        do{
+			evt.preventDefault();
+			var editor=$(this).closest('div');
+			var input=editor.children('input');
+			var content=input.val();
+			var token=$.cookie(g_keyLoginStatus.toString());
+			
+			if(content==null || content.length<=g_minContentLength) {
+				alert("Please comment with no less than "+g_minContentLength.toString()+" characters!");
+				break;	
+			}
 
-        var params={};
-        params["CommentAContent"]=content;
-        params["ActivityId"]=activityId;
-        params["UserToken"]=token;
+			var params={};
+			params["CommentAContent"]=content;
+			params["ActivityId"]=activityId;
+			params["UserToken"]=token;
 
-        $.ajax({
-            type: "POST",
-            url: "/comment/submit",
-            data: params,
-            success: function(data, status, xhr){
-                location.reload();
-            },
-            error: function(xhr, status, err){
-                alert("Comment not submitted...");
-            }
-        });
+			$.ajax({
+				type: "POST",
+				url: "/comment/submit",
+				data: params,
+				success: function(data, status, xhr){
+					location.reload();
+				},
+				error: function(xhr, status, err){
+					alert("Comment not submitted...");
+				}
+			});
+		}while(false);
     });
     return ret;
 }

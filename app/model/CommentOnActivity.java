@@ -13,6 +13,7 @@ import play.libs.Json;
 
 public class CommentOnActivity {
 
+	public static final Integer MIN_CONTENT_LENGTH=5;
     public static final Integer TYPE_QA=0;
     public static final Integer TYPE_ASSESSMENT=1;
 
