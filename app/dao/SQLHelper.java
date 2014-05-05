@@ -28,17 +28,16 @@ public class SQLHelper {
 	public static String directionAscend="ASC";
 	public static String directionDescend="DESC";
 
-	private static Connection connection=null;
-	private String databaseName=null;
-	private String host=null;
-	private Integer port=null;
-	private String user=null;
-	private String password=null;
-	private String charsetResult=null;
-	private String charsetEncoding=null;
-	private String useUnicode=null;
+	private static String databaseName=null;
+	private static String host=null;
+	private static Integer port=null;
+	private static String user=null;
+	private static String password=null;
+	private static String charsetResult=null;
+	private static String charsetEncoding=null;
+	private static String useUnicode=null;
 
-	public boolean readMySQLConfig(){
+	public static boolean readMySQLConfig(){
 		boolean ret=false;
 		try{
 			String fullPath=Play.application().path()+"/conf/"+"database_config.xml";
@@ -59,41 +58,45 @@ public class SQLHelper {
 	}
 
 	public static Connection getConnection(){
+		Connection connection=null;
+		do{
+			if(checkConnection(connection)==false) break;
+		}while(false);
 		return connection;
 	}
 	
-	public boolean checkConnection(){
-		try{
-			// lazy init
-			if(connection!=null) return true;
-			boolean configResult=readMySQLConfig();
-			if(configResult==false) return false;
-			
-			Class.forName("com.mysql.jdbc.Driver");
-			StringBuilder connectionBuilder=new StringBuilder();
-			connectionBuilder.append("jdbc:mysql://");
-			connectionBuilder.append(host+":");
-			connectionBuilder.append(port.toString()+"/");
-			connectionBuilder.append(databaseName);
-			if(true){
-				connectionBuilder.append("?"+charsetResult);
-				connectionBuilder.append("&"+charsetEncoding);
-				connectionBuilder.append("&"+useUnicode);
+	public static boolean checkConnection(Connection connection){
+		boolean ret=false;
+		do{
+			try{
+				// lazy init
+				if(connection!=null) return true;
+				boolean configResult=readMySQLConfig();
+				if(configResult==false) return false;
+				
+				Class.forName("com.mysql.jdbc.Driver");
+				StringBuilder connectionBuilder=new StringBuilder();
+				connectionBuilder.append("jdbc:mysql://");
+				connectionBuilder.append(host+":");
+				connectionBuilder.append(port.toString()+"/");
+				connectionBuilder.append(databaseName);
+				if(true){
+					connectionBuilder.append("?"+charsetResult);
+					connectionBuilder.append("&"+charsetEncoding);
+					connectionBuilder.append("&"+useUnicode);
+				}
+				String connectionStr=connectionBuilder.toString();
+				connection = DriverManager.getConnection(connectionStr,user,password);
+				if(connection==null) break;
+				ret=true;
+			}catch(Exception e){
+
 			}
-			String connectionStr=connectionBuilder.toString();
-			connection = DriverManager.getConnection(connectionStr,user,password);
-			if(connection!=null){
-				return true;
-			} else{
-				return false;
-			}
-		}catch(Exception e){
-			System.out.println("SQLHelper.checkConnection:"+e.getMessage());
-			return false;
-		}
+		}while(false);
+		return ret;
 	}
 
-	public void closeConnection(){
+	public static void closeConnection(Connection connection){
 		try{
 			if(connection!=null){
 				connection.close();
@@ -105,7 +108,8 @@ public class SQLHelper {
 
 	public List<JSONObject> executeSelect(String query){
 		List<JSONObject> ret=null;
-		if(checkConnection()==true){
+		Connection connection=null;
+		if(checkConnection(connection)==true){
 			try{
 				Statement statement= connection.createStatement(); 
 				ResultSet rs=statement.executeQuery(query);
@@ -115,6 +119,7 @@ public class SQLHelper {
 				}
 				statement.close();
 				query=null;
+			 	closeConnection(connection);
 			} catch (Exception e){
 				System.out.println("SQLHelper.executeSelect: "+e.getMessage());
 			}
@@ -124,7 +129,8 @@ public class SQLHelper {
 
 	public Integer executeInsert(String query){
 		Integer lastId= INVALID_ID;
-		if(checkConnection()==true){
+		Connection connection=null;
+		if(checkConnection(connection)==true){
 			try{
 				PreparedStatement statement= connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS); 
 				// the following command returns the last inserted row id for the auto incremented key
@@ -136,6 +142,7 @@ public class SQLHelper {
 				}
 				statement.close();
 				query=null;
+				closeConnection(connection);
 			} catch (Exception e){
 				// return the invalid value for exceptions
 				System.out.println("SQLHelper.executeInsert: "+e.getMessage());
@@ -146,13 +153,15 @@ public class SQLHelper {
 	
 	public boolean executeUpdate(String query){
 		boolean bRet=false;
-		if(checkConnection()==true){
+		Connection connection=null;
+		if(checkConnection(connection)==true){
 			try{
 				PreparedStatement statement= connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS); 
 				// the following command returns the last inserted row id for the auto incremented key
 				statement.executeUpdate();
 				statement.close();
 				query=null;
+				closeConnection(connection);
 				bRet=true;
 			} catch (Exception e){
 				System.out.println("SQLHelper.executeUpdate: "+e.getMessage());
