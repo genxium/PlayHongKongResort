@@ -32,7 +32,7 @@ CREATE TABLE `Activity` (
   `ActivityCapacity` int(32) NOT NULL DEFAULT '0',
   `ActivityStatus` int(3) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ActivityId`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -61,7 +61,7 @@ CREATE TABLE `ActivityImageRelationTable` (
   KEY `FK_ImageId` (`ImageId`),
   CONSTRAINT `FK_ActivityId` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`),
   CONSTRAINT `FK_ImageId` FOREIGN KEY (`ImageId`) REFERENCES `Image` (`ImageId`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -94,7 +94,7 @@ CREATE TABLE `CommentOnActivity` (
   KEY `FK_ActivityId` (`ActivityId`),
   CONSTRAINT `CommentOnActivity_ibfk_1` FOREIGN KEY (`CommenterId`) REFERENCES `User` (`UserId`),
   CONSTRAINT `CommentOnActivity_ibfk_2` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -118,7 +118,7 @@ CREATE TABLE `Image` (
   `ImageURL` varchar(64) NOT NULL,
   PRIMARY KEY (`ImageId`),
   UNIQUE KEY `ImageURL` (`ImageURL`)
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -127,7 +127,35 @@ CREATE TABLE `Image` (
 
 LOCK TABLES `Image` WRITE;
 /*!40000 ALTER TABLE `Image` DISABLE KEYS */;
+INSERT INTO `Image` VALUES (1,'/images/UID7_1399355894917_1caadcd816181edf8060f6f89c5b406c.jpeg');
 /*!40000 ALTER TABLE `Image` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `Notification`
+--
+
+DROP TABLE IF EXISTS `Notification`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Notification` (
+  `Id` int(32) NOT NULL AUTO_INCREMENT,
+  `IsRead` int(2) DEFAULT '0',
+  `UserId` int(32) DEFAULT NULL,
+  `Content` varchar(128) NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `FK_Notification_ibfk_1` (`UserId`),
+  CONSTRAINT `FK_Notification_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `User` (`UserId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Notification`
+--
+
+LOCK TABLES `Notification` WRITE;
+/*!40000 ALTER TABLE `Notification` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Notification` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -151,13 +179,15 @@ CREATE TABLE `User` (
   `UserLastExitTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `UserCreatedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `Username` varchar(32) DEFAULT NULL,
+  `VerificationCode` int(32) DEFAULT NULL,
   PRIMARY KEY (`UserId`),
   UNIQUE KEY `UserEmail` (`UserEmail`),
   UNIQUE KEY `UserName` (`Username`),
   UNIQUE KEY `Username_2` (`Username`),
+  UNIQUE KEY `VerificationCode` (`VerificationCode`),
   KEY `UserGroupId` (`UserGroupId`),
   CONSTRAINT `FK_UserGroupId` FOREIGN KEY (`UserGroupId`) REFERENCES `UserGroup` (`GroupId`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -166,7 +196,7 @@ CREATE TABLE `User` (
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
-INSERT INTO `User` VALUES (5,NULL,'c33367701511b4f6020ec61ded352059','admin@hongkongresort.com',3,0,0,'2014-04-28 18:14:22',0,'2014-04-28 18:14:22','2014-04-28 18:14:22','2014-04-28 18:14:22','admin');
+INSERT INTO `User` VALUES (5,NULL,'c33367701511b4f6020ec61ded352059','admin@hongkongresort.com',3,0,0,'2014-04-28 18:14:22',0,'2014-04-28 18:14:22','2014-04-28 18:14:22','2014-04-28 18:14:22','admin',NULL);
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -218,7 +248,7 @@ CREATE TABLE `UserActivityRelationTable` (
   CONSTRAINT `UserActivityRelationTable_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `User` (`UserId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_2` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_3` FOREIGN KEY (`UserActivityRelationId`) REFERENCES `UserActivityRelation` (`UserActivityRelationId`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -286,4 +316,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-05-04  2:28:35
+-- Dump completed on 2014-05-06  9:37:02

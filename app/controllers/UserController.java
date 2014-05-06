@@ -235,4 +235,8 @@ public class UserController extends Controller {
         }while(false);
         return badRequest();
     }
+
+	public static Result emailVerification(String code){
+		return null;
+	}
 }
