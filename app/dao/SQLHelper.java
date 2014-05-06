@@ -56,23 +56,13 @@ public class SQLHelper {
 		}
 		return ret;
 	}
-
+	
 	public static Connection getConnection(){
 		Connection connection=null;
 		do{
-			if(checkConnection(connection)==false) break;
-		}while(false);
-		return connection;
-	}
-	
-	public static boolean checkConnection(Connection connection){
-		boolean ret=false;
-		do{
 			try{
-				// lazy init
-				if(connection!=null) return true;
 				boolean configResult=readMySQLConfig();
-				if(configResult==false) return false;
+				if(configResult==false) break;
 				
 				Class.forName("com.mysql.jdbc.Driver");
 				StringBuilder connectionBuilder=new StringBuilder();
@@ -88,12 +78,11 @@ public class SQLHelper {
 				String connectionStr=connectionBuilder.toString();
 				connection = DriverManager.getConnection(connectionStr,user,password);
 				if(connection==null) break;
-				ret=true;
 			}catch(Exception e){
-
+				System.out.println(e.getMessage());
 			}
 		}while(false);
-		return ret;
+		return connection;
 	}
 
 	public static void closeConnection(Connection connection){
@@ -108,64 +97,58 @@ public class SQLHelper {
 
 	public List<JSONObject> executeSelect(String query){
 		List<JSONObject> ret=null;
-		Connection connection=null;
-		if(checkConnection(connection)==true){
-			try{
-				Statement statement= connection.createStatement(); 
-				ResultSet rs=statement.executeQuery(query);
-				if(rs!=null){
-					ret=ResultSetUtil.convertToJSON(rs);
-					rs.close();
-				}
-				statement.close();
-				query=null;
-			 	closeConnection(connection);
-			} catch (Exception e){
-				System.out.println("SQLHelper.executeSelect: "+e.getMessage());
+		try{
+			Connection connection=getConnection();
+			Statement statement= connection.createStatement(); 
+			ResultSet rs=statement.executeQuery(query);
+			if(rs!=null){
+				ret=ResultSetUtil.convertToJSON(rs);
+				rs.close();
 			}
+			statement.close();
+			query=null;
+			closeConnection(connection);
+		} catch (Exception e){
+			System.out.println("SQLHelper.executeSelect: "+e.getMessage());
 		}
 		return ret;
 	}
 
 	public Integer executeInsert(String query){
 		Integer lastId= INVALID_ID;
-		Connection connection=null;
-		if(checkConnection(connection)==true){
-			try{
-				PreparedStatement statement= connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS); 
-				// the following command returns the last inserted row id for the auto incremented key
-				statement.executeUpdate();
-				ResultSet rs = statement.getGeneratedKeys();
-				if (rs != null && rs.next()) {
-					lastId = (int) rs.getLong(1);
-					rs.close();
-				}
-				statement.close();
-				query=null;
-				closeConnection(connection);
-			} catch (Exception e){
-				// return the invalid value for exceptions
-				System.out.println("SQLHelper.executeInsert: "+e.getMessage());
+		try{
+			Connection connection=getConnection();
+			PreparedStatement statement= connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS); 
+			// the following command returns the last inserted row id for the auto incremented key
+			statement.executeUpdate();
+			ResultSet rs = statement.getGeneratedKeys();
+			if (rs != null && rs.next()) {
+				lastId = (int) rs.getLong(1);
+				rs.close();
 			}
+			statement.close();
+			query=null;
+			closeConnection(connection);
+		} catch (Exception e){
+			// return the invalid value for exceptions
+			System.out.println("SQLHelper.executeInsert: "+e.getMessage());
 		}
 		return lastId;
 	}
 	
 	public boolean executeUpdate(String query){
 		boolean bRet=false;
-		Connection connection=null;
-		if(checkConnection(connection)==true){
-			try{
-				PreparedStatement statement= connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS); 
-				// the following command returns the last inserted row id for the auto incremented key
-				statement.executeUpdate();
-				statement.close();
-				query=null;
-				closeConnection(connection);
-				bRet=true;
-			} catch (Exception e){
-				System.out.println("SQLHelper.executeUpdate: "+e.getMessage());
-			}
+		try{
+			Connection connection=getConnection();
+			PreparedStatement statement= connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS); 
+			// the following command returns the last inserted row id for the auto incremented key
+			statement.executeUpdate();
+			statement.close();
+			query=null;
+			closeConnection(connection);
+			bRet=true;
+		} catch (Exception e){
+			System.out.println("SQLHelper.executeUpdate: "+e.getMessage());
 		}
 		return bRet;
 	}
