@@ -20,28 +20,18 @@ function emptyRegisterFields(){
 }
 
 function showAccountSections(){
-   if(g_sectionLogin){
-       g_sectionLogin.show();
-   }
    if(g_sectionRegister){
        g_sectionRegister.show();
    }
 }
 
 function hideAccountSections(){
-   if(g_sectionLogin){
-       g_sectionLogin.hide();
-   }
    if(g_sectionRegister){
        g_sectionRegister.hide();
    }
 }
 
 function removeAccountSections(){
-    if(g_sectionLogin){
-        g_sectionLogin.remove();
-        g_sectionLogin=null;
-    }
     if(g_sectionRegister){
         g_sectionRegister.remove();
         g_sectionRegister=null;
@@ -56,10 +46,6 @@ function refreshOnEnter(){
 	var sectionActivityEditor=$("#"+g_idSectionActivityEditor);
 	sectionActivityEditor.empty();
 	sectionActivityEditor.hide();
-
-	var sectionUserInfo=$("#"+g_idSectionUserInfo);
-	sectionUserInfo.empty();
-	sectionUserInfo.hide();
 
 	$("#"+g_idBtnCreate).hide();
 	$("."+g_classActivityEditor).hide();

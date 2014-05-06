@@ -27,106 +27,12 @@ html, body
 	color: #FF8822;
 }
 
-/* Sub Header */
-#idSectionSubHeader{
-	display: table-row;
- 	position: relative;
-	width: 100%;
-	background-color: #ffffff;
-}
-
-#idBtnLogin
-{
-	display: table-cell;
-	position: relative;
-	width: 64pt;
-	height: 36pt;
-	font-size: 15pt;
-	margin: 10pt;
-	background-color: #FFcc44;
-}
-
-#idBtnRegister
-{
-	width: 64pt;
-	height: 36pt;
-	font-size: 15pt;
-	margin-bottom: 10pt;
-	background-color: #66aaFF;
-	float: left;
-}
-
-#idRegisterUsername
-{
-	width: 200pt;
-	height: 30pt;
-	font-size: 15pt;
-}
-
-#idRegisterEmail
-{
-	width: 200pt;
-	height: 30pt;
-	font-size: 15pt;
-}
-
-#idRegisterPassWord
-{
-	width: 200pt;
-	height: 30pt;
-	font-size: 15pt;
-}
-
-/* User Information */
-
-#idSectionUserInfo
-{
-	display: block;
-	position: relative;
-	float: right;
-}
-
-.classSectionGreetingMessage{
-	display: table-column-group;
-	position: relative;
-	float: left;
-	font-family: Georgia;
-	font-size: 15pt;
-	background-color: #ffffff;
-	color: #333333;
-}
-
 .classSectionUserAvatar{
 	display: table-column-group;
 	position: relative;
 	float: left;
 	width: 50pt;
 	height: 50pt;
-}
-
-/* Logged In User Menu */
-.classLoggedInUserMenu
-{
-	display: table-row;
-	position: relative;
-}
-
-.classBtnLogout
-{
-	display: table-row;
-	position: relative;
-	width: 64pt;
-	height: 36pt;
-	font-size: 15pt;
-}
-
-.classBtnProfile
-{
-	display: table-row;
-	position: relative;
-	width: 64pt;
-	height: 36pt;
-	font-size: 15pt;
 }
 
 /* Activity Cells */
