@@ -1,4 +1,5 @@
 var g_activityEditor=null;
+var g_sectionActivityEditor=null;
 
 // input-box keys
 var g_classFieldActivityTitle="classFieldActivityTitle";

@@ -91,15 +91,12 @@ function onBtnProfileClicked(evt){
 function onBtnCreateClicked(evt){
 	evt.preventDefault();
 	g_callbackOnEditorCancelled=function(){
-
+		g_sectionActivityEditor.modal("hide");
 	};
+	
 	g_activityEditor.empty();
 	g_activityEditor.append(generateActivityEditorByJson(null));
-	g_activityEditor.modal({
-		keyboard: true,
-		show: true,
-		backdrop: true	
-	});
+	g_sectionActivityEditor.modal("show");
 }
 
 function generateLoginForm(){

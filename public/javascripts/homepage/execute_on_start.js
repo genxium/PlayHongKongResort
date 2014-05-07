@@ -28,7 +28,8 @@ $(document).ready(function(){
 	var registerForm=generateRegisterForm();
     g_sectionRegister.append(registerForm);
 
-	g_activityEditor=$("#idSectionActivityEditor");
+	g_sectionActivityEditor=$("#idSectionActivityEditor");
+	g_activityEditor=$("#idActivityEditor");
 	
     // initialize callback functions
     g_callbackOnActivityEditorRemoved=refreshOnLoggedIn;
