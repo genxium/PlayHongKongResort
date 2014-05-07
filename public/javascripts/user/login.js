@@ -96,7 +96,10 @@ function onBtnCreateClicked(evt){
 	g_activityEditor=generateActivityEditorByJson(null);	
 	g_modalActivityEditor.empty();
 	g_modalActivityEditor.append(g_activityEditor);
-	g_sectionActivityEditor.modal("show");
+	g_sectionActivityEditor.css("height", "80%");
+	g_sectionActivityEditor.modal({
+		show: true
+	});
 }
 
 function generateLoginForm(){
