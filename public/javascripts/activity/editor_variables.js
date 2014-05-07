@@ -1,3 +1,5 @@
+var g_activityEditor=null;
+
 // input-box keys
 var g_classFieldActivityTitle="classFieldActivityTitle";
 var g_classFieldActivityContent="classFieldActivityContent";
@@ -5,15 +7,13 @@ var g_classOldImage="classOldImage";
 var g_classNewImage="classNewImage";
 
 // button keys
-var g_idBtnCreate="idBtnCreate";
 var g_classBtnEdit="classBtnEdit";
 var g_classBtnSubmit="classBtnSubmit";
 var g_classBtnDelete="classBtnDelete";
 var g_classBtnSave="classBtnSave";
 var g_classBtnCancel="classBtnCancel";
 
-// general dom elements
-var g_idSectionActivityEditor="idSectionActivityEditor";
+// classes
 var g_classActivityEditor="classActivityEditor";
 var g_classSelectionBeginTime="classSelectionBeginTime";
 var g_classSelectionDeadline="classSelectionDeadline";
@@ -34,3 +34,6 @@ var g_indexCheckbox="indexCheckbox";
 var g_maxNumberOfImagesForSingleActivity=3;
 var g_savable=false;
 var g_submittable=true;
+
+// callback functions
+var g_callbackOnEditorCancelled=null;

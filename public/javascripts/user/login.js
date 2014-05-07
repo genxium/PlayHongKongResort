@@ -3,8 +3,10 @@ var g_sectionLogin=null;
 var g_loginUserHandle=null;
 var g_loginPassword=null;
 
+var g_btnLogin=null;
 var g_btnLogout=null;
 var g_btnProfile=null;
+var g_btnCreate=null;
 
 var g_callbackOnLoginSuccess=null;
 var g_callbackOnLoginError=null;
@@ -16,7 +18,7 @@ function onBtnLoginClicked(evt){
         var password=g_loginPassword.val();
 
         if( (email==null || email.length==0 || validateEmail(email)==false)
-            || password==null || password.length==0) break;
+            || password==null || password.length==0 || validatePassword(password)==false) break;
 
         var params={};
         params[g_keyUserEmail]=email;
@@ -86,6 +88,20 @@ function onBtnProfileClicked(evt){
     }
 }
 
+function onBtnCreateClicked(evt){
+	evt.preventDefault();
+	g_callbackOnEditorCancelled=function(){
+
+	};
+	g_activityEditor.empty();
+	g_activityEditor.append(generateActivityEditorByJson(null));
+	g_activityEditor.modal({
+		keyboard: true,
+		show: true,
+		backdrop: true	
+	});
+}
+
 function generateLoginForm(){
 	var ret=$('<p>');
 	var span1=$('<span>').appendTo(ret);
@@ -94,18 +110,34 @@ function generateLoginForm(){
 		type: "text",	
 		style: "font-size: 15pt"
 	}).appendTo(span1);
+
+	g_loginUserHandle.keypress(function (evt) {
+  		if (evt.which == 13) {
+  			evt.preventDefault();
+    		g_btnLogin.click();
+  		}
+	});
+
 	var span2=$('<span>').appendTo(ret);
 	g_loginPassword=$('<input>', {
 		placeHolder: "Password",
 		type: "password",
 		style: "font-size: 15pt"
 	}).appendTo(span2);
+
+	g_loginPassword.keypress(function (evt) {
+  		if (evt.which == 13) {
+  			evt.preventDefault();
+    		g_btnLogin.click();
+  		}
+	});
+
 	var span3=$('<span>').appendTo(ret);
-	var btnLogin=$('<button>', {
+	g_btnLogin=$('<button>', {
 		style: "font-size: 15pt; background-color: yellow",	
 		text: "login"
 	}).appendTo(span3);
-	btnLogin.on("click", onBtnLoginClicked);
+	g_btnLogin.on("click", onBtnLoginClicked);
 
 	return ret;	
 }
@@ -131,6 +163,7 @@ function generateLoggedInMenu(){
 	var row2=$('<tr>').appendTo(ret);
 	var cell21=$('<td>').appendTo(row2);
 	var cell22=$('<td>').appendTo(row2);
+	var cell23=$('<td>').appendTo(row2);
 	g_btnLogout=$('<button>', {
 		style: "font-size: 15pt",
 		text: 'Logout'
@@ -141,8 +174,13 @@ function generateLoggedInMenu(){
 		style: "font-size: 15pt",
 		text: 'Profile'
 	}).appendTo(cell22);
-
 	g_btnProfile.on("click", onBtnProfileClicked);
+
+	g_btnCreate=$('<button>', {
+		style: "font-size: 15pt",
+		text: "Create"	
+	}).appendTo(cell23);
+	g_btnCreate.on("click", onBtnCreateClicked);
 
 	return ret;
 }

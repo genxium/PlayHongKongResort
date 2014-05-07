@@ -6,6 +6,7 @@ var g_registerPassword=null;
 
 var g_spanCheckUsername=null;
 var g_spanCheckEmail=null;
+var g_spanCheckPassword=null;
 
 var g_callbackOnRegisterSuccess=null;
 var g_callbackOnRegisterError=null;
@@ -17,8 +18,8 @@ function onBtnRegisterClicked(evt){
         var password=g_registerPassword.val();
 
         if(username==null || username.length==0
-            || email==null || email.length==0
-            || password==null || password.length==0) break;
+            || email==null || email.length==0 || validateEmail(email)==false
+            || password==null || password.length==0 || validatePassword(password)==false) break;
 
         var params={};
         params[g_keyUsername]=username;
@@ -67,11 +68,13 @@ function generateRegisterForm(){
 
 	var row3=$('<tr>').appendTo(ret);
 	var cell31=$('<td>').appendTo(row3);
+	var cell32=$('<td>').appendTo(row3);
 	g_registerPassword=$('<input>', {
 		type: "password",
 		style: "font-size: 15pt",
 		placeHolder: "Password"	
 	}).appendTo(cell31);
+	g_spanCheckPassword=$('<span>').appendTo(cell32);
 
     g_registerUsername.on("input keyup paste", function(evt){
         do{
@@ -102,7 +105,10 @@ function generateRegisterForm(){
             g_spanCheckEmail.empty();
             var email=$(this).val();
             if(email==null || email.length==0) break;
-            if(validateEmail(email)==false) break;
+            if(validateEmail(email)==false) {
+				 g_spanCheckEmail.text("Not valid email format");
+				 break;
+			}
             var params={};
             params["email"]=email;
             $.ajax({
@@ -118,6 +124,21 @@ function generateRegisterForm(){
             });
         }while(false);
     });	
+
+    g_registerPassword.on("input keyup paste", function(evt){
+        do{
+            evt.preventDefault();
+            g_spanCheckEmail.empty();
+            var password=$(this).val();
+            if(password==null || password.length==0) break;
+            if(validatePassword(password)==false) {
+				g_spanCheckPassword.text("Password can only contains alphabet letters and numbers");
+				break;
+			}
+			g_spanCheckPassword.text("");
+        }while(false);
+    });	
+
 	var row4=$('<tr>').appendTo(ret);
 	var cell41=$('<td>').appendTo(row4);
 	var btnRegister=$('<button>', {

@@ -28,6 +28,8 @@ $(document).ready(function(){
 	var registerForm=generateRegisterForm();
     g_sectionRegister.append(registerForm);
 
+	g_activityEditor=$("#idSectionActivityEditor");
+	
     // initialize callback functions
     g_callbackOnActivityEditorRemoved=refreshOnLoggedIn;
     g_callbackOnQueryActivitiesSuccess=onQueryActivitiesSuccess;
@@ -36,14 +38,6 @@ $(document).ready(function(){
 	var sectionDefaultActivities=$("#"+g_idSectionDefaultActivities); 
 	sectionDefaultActivities.on("scroll", onSectionDefaultActivitiesScrolled);
 	checkLoginStatus();
-
-	$("#"+g_idBtnCreate).on("click", onBtnCreateClicked);
-	$("."+g_classFieldAccount).keypress(function (evt) {
-  		if (evt.which == 13) {
-  			evt.preventDefault();
-    		$("#"+g_idBtnLogin).click();
-  		}
-	});
 
 	$("#"+g_idBtnPreviousPage).on("click", onBtnPreviousPageClicked);
 	$("#"+g_idBtnNextPage).on("click", onBtnNextPageClicked);
