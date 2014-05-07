@@ -93,9 +93,9 @@ function onBtnCreateClicked(evt){
 	g_callbackOnEditorCancelled=function(){
 		g_sectionActivityEditor.modal("hide");
 	};
-	
-	g_activityEditor.empty();
-	g_activityEditor.append(generateActivityEditorByJson(null));
+	g_activityEditor=generateActivityEditorByJson(null);	
+	g_modalActivityEditor.empty();
+	g_modalActivityEditor.append(g_activityEditor);
 	g_sectionActivityEditor.modal("show");
 }
 

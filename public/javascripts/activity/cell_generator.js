@@ -1,11 +1,11 @@
 // Assistant Handlers
 function onBtnEditClicked(evt){
     var activityJson=$(this).data(g_keyActivityJson);
-	sectionActivityEditor=$("#"+g_idSectionActivityEditor);
+	sectionActivityEditor=$("#idSectionActivityEditor");
 	sectionActivityEditor.empty();
 
-	var editor=generateActivityEditorByJson(activityJson);
-	sectionActivityEditor.append(editor);
+	g_activityEditor=generateActivityEditorByJson(activityJson);
+	sectionActivityEditor.append(g_activityEditor);
 }
 
 function onMouseEnterOwnedActivityCell(evt){

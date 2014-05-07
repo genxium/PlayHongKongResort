@@ -29,7 +29,7 @@ $(document).ready(function(){
     g_sectionRegister.append(registerForm);
 
 	g_sectionActivityEditor=$("#idSectionActivityEditor");
-	g_activityEditor=$("#idActivityEditor");
+	g_modalActivityEditor=$("#idModalActivityEditor");
 	
     // initialize callback functions
     g_callbackOnActivityEditorRemoved=refreshOnLoggedIn;

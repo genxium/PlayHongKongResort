@@ -278,7 +278,7 @@ function onBtnSubmitClicked(evt){
 
 function onBtnCancelClicked(evt){
 	evt.preventDefault();
-
+	g_activityEditor.remove();
 	if(g_callbackOnEditorCancelled!=null){
 		g_callbackOnEditorCancelled();	
 	}
