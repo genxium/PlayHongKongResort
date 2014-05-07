@@ -5,15 +5,24 @@ $(document).ready(function(){
 	var loginForm=generateLoginForm();
     g_sectionLogin.append(loginForm);
 
-	g_callbackOnLoggedIn=function(){
+	g_callbackOnLoginSuccess=function(){
 		refreshOnLoggedIn();
 		queryDefaultActivities(0, g_numItemsPerPage, g_directionForward);
 	};
 
-	g_callbacnOnEnter=function(){
+	g_callbackOnLoginError=null;
+
+	g_callbackOnEnter=function(){
 		refreshOnEnter();
 		queryDefaultActivities(0, g_numItemsPerPage, g_directionForward);
 	};
+
+	g_callbackOnRegisterSuccess=function(){
+		refreshOnEnter();
+		queryDefaultActivities(0, g_numItemsPerPage, g_directionForward);
+	}
+
+	g_callbackOnRegisterError=null;
 
 	g_sectionRegister=$("#idSectionRegister");
 	var registerForm=generateRegisterForm();

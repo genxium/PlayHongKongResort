@@ -6,8 +6,9 @@ var g_loginPassword=null;
 var g_btnLogout=null;
 var g_btnProfile=null;
 
-var g_callbackOnLoggedIn=null;
-var g_callbacnOnEnter=null;
+var g_callbackOnLoginSuccess=null;
+var g_callbackOnLoginError=null;
+var g_callbackOnEnter=null;
 
 function onBtnLoginClicked(evt){
     do{
@@ -35,12 +36,14 @@ function onBtnLoginClicked(evt){
 					g_sectionLogin.empty();
 					g_sectionLogin.append(generateLoggedInMenu);
 				}
-				if(g_callbackOnLoggedIn!=null){
-					g_callbackOnLoggedIn();	
+				if(g_callbackOnLoginSuccess!=null){
+					g_callbackOnLoginSuccess();	
 				}
             },
             error: function(xhr, status, err){
-                
+                if(g_callbackOnLoginError!=null){
+					g_callbackOnLoginError();	
+				} 
             }
         });
     }while(false);
@@ -61,8 +64,8 @@ function onBtnLogoutClicked(evt){
 					g_sectionLogin.empty();
 					g_sectionLogin.append(generateLoginForm);
 				}
-				if(g_callbacnOnEnter!=null){
-					g_callbacnOnEnter();	
+				if(g_callbackOnEnter!=null){
+					g_callbackOnEnter();	
 				}
 			},
 			error: function(xhr, status, err){
@@ -148,8 +151,8 @@ function checkLoginStatus(evt){
 	do{
 		var token = $.cookie(g_keyLoginStatus.toString());
 		if(token==null) {
-			if(g_callbacnOnEnter!=null){
-				g_callbacnOnEnter();
+			if(g_callbackOnEnter!=null){
+				g_callbackOnEnter();
 			}
 			break;
 		}
@@ -168,15 +171,15 @@ function checkLoginStatus(evt){
 					g_sectionLogin.empty();
 					g_sectionLogin.append(generateLoggedInMenu);
 				}
-				if(g_callbackOnLoggedIn!=null){
-					g_callbackOnLoggedIn();	
+				if(g_callbackOnLoginSuccess!=null){
+					g_callbackOnLoginSuccess();	
 				}
             },
             error: function(xhr, status, errorThrown){
                 // refresh screen
                 $.removeCookie(g_keyLoginStatus.toString());
-            	if(g_callbacnOnEnter!=null){
-					g_callbacnOnEnter();		
+            	if(g_callbackOnEnter!=null){
+					g_callbackOnEnter();		
 				}
 			}
         });

@@ -7,6 +7,9 @@ var g_registerPassword=null;
 var g_spanCheckUsername=null;
 var g_spanCheckEmail=null;
 
+var g_callbackOnRegisterSuccess=null;
+var g_callbackOnRegisterError=null;
+
 function onBtnRegisterClicked(evt){
     do{
         var username=g_registerUsername.val();
@@ -27,10 +30,14 @@ function onBtnRegisterClicked(evt){
             url: "/user/register",
             data: params,
             success: function(data, status, xhr){
-                refreshOnEnter();
+				if(g_callbackOnRegisterSuccess!=null){
+					g_callbackOnRegisterSuccess();
+				}
             },
             error: function(xhr, status, err){
-                
+            	if(g_callbackOnRegisterError!=null){
+					g_callbackOnRegisterError();
+				}   
             }
         });
     }while(false);
