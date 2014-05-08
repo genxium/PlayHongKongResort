@@ -44,7 +44,7 @@ function onBtnUploadAvatarClicked(evt){
 
 function onBtnPreviousPageClicked(evt){
 	var targetSection=$("#"+g_idSectionOwnedActivities);
-	var pageIndex=targetSection.data(g_pageIndexKey);
+	var pageIndex=targetSection.data(g_keyPageIndex);
     var startingIndex=targetSection.data(g_keyStartingIndex);
     var endingIndex=targetSection.data(g_keyEndingIndex);
 
@@ -53,7 +53,7 @@ function onBtnPreviousPageClicked(evt){
 
 function onBtnNextPageClicked(evt){
 	var targetSection=$("#"+g_idSectionOwnedActivities);
-	var pageIndex=targetSection.data(g_pageIndexKey);
+	var pageIndex=targetSection.data(g_keyPageIndex);
     var startingIndex=targetSection.data(g_keyStartingIndex);
     var endingIndex=targetSection.data(g_keyEndingIndex);
 
