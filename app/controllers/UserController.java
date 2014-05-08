@@ -11,12 +11,42 @@ import play.mvc.Result;
 import play.mvc.Http.RequestBody;
 
 import java.util.*;
+import java.util.Properties;
+import java.io.UnsupportedEncodingException;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import utilities.Converter;
 import utilities.DataUtils;
 import utilities.General;
 
 public class UserController extends Controller {
+
+	protected static void sendVerificationEmail(String username, String recipient) {
+		Properties props = new Properties();
+		Session session = Session.getDefaultInstance(props, null);
+		String msgBody = "...";
+						
+		try {
+			Message msg = new MimeMessage(session);
+			msg.setFrom(new InternetAddress("hongkongresort@126.com", "The HongKongResort Team"));
+			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, username));
+			msg.setSubject("Welcome to HongKongResort");
+			msg.setText("Dear "+username+", you're our member now!");
+			Transport.send(msg);
+		} catch (AddressException e) {
+			System.out.println(e.getMessage());	
+		} catch (MessagingException e) {
+			System.out.println(e.getMessage());	
+		} catch (UnsupportedEncodingException e){
+			System.out.println(e.getMessage());	
+		}
+	}
 
     public static Result login(){
       	// define response attributes
@@ -28,7 +58,7 @@ public class UserController extends Controller {
                 String email=formData.get(User.emailKey)[0];
                 String password=formData.get(User.passwordKey)[0];
 
-                if( (email==null || General.validateEmail(email)==false) || password==null) break;
+                if( (email==null || General.validateEmail(email)==false) || (password==null || General.validatePassword(password)==false) ) break;
                 
                 String passwordDigest=Converter.md5(password);
                 User user=SQLCommander.queryUserByEmail(email);
@@ -69,12 +99,14 @@ public class UserController extends Controller {
         		String email=formData.get(User.emailKey)[0];
         		String password=formData.get(User.passwordKey)[0];
 
-                if(name==null || (email==null || General.validateEmail(email)==false) || password==null) break;
+                if(name==null || (email==null || General.validateEmail(email)==false) || (password==null || General.validatePassword(password)==false)) break;
         		UserGroup.GroupType userGroup=UserGroup.GroupType.user;
         		String passwordDigest=Converter.md5(password);    
                 User user=User.create(email, passwordDigest, name, userGroup);
                 int lastId=SQLCommander.registerUser(user);
                 if(lastId==SQLCommander.INVALID) break;
+
+				sendVerificationEmail(user.getName(), user.getEmail());
                 return ok("Registered");
             } catch(Exception e){
                 

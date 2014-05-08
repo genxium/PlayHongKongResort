@@ -90,10 +90,10 @@ function generateRegisterForm(){
                 url: "/user/name/duplicate",
                 data: params,
                 success: function(data, status, xhr){
-                    g_spanCheckUsername.text("This username can be used :)");        
+                    g_spanCheckUsername.text(" This username can be used :)");        
                 },
                 error: function(xhr, status, err){
-                    g_spanCheckUsername.text("This username cannot be used :(");        
+                    g_spanCheckUsername.text(" This username cannot be used :(");        
                 }
             });
         }while(false);
@@ -106,7 +106,7 @@ function generateRegisterForm(){
             var email=$(this).val();
             if(email==null || email.length==0) break;
             if(validateEmail(email)==false) {
-				 g_spanCheckEmail.text("Not valid email format");
+				 g_spanCheckEmail.text(" Not valid email format");
 				 break;
 			}
             var params={};
@@ -116,10 +116,10 @@ function generateRegisterForm(){
                 url: "/user/email/duplicate",
                 data: params,
                 success: function(data, status, xhr){
-                    g_spanCheckEmail.text("This email can be used :)");        
+                    g_spanCheckEmail.text(" This email can be used :)");        
                 },
                 error: function(xhr, status, err){
-                	g_spanCheckEmail.text("This email cannot be used :(");        
+                	g_spanCheckEmail.text(" This email cannot be used :(");        
                 }
             });
         }while(false);
@@ -128,11 +128,11 @@ function generateRegisterForm(){
     g_registerPassword.on("input keyup paste", function(evt){
         do{
             evt.preventDefault();
-            g_spanCheckEmail.empty();
+            g_spanCheckPassword.empty();
             var password=$(this).val();
             if(password==null || password.length==0) break;
             if(validatePassword(password)==false) {
-				g_spanCheckPassword.text("Password can only contains alphabet letters and numbers");
+				g_spanCheckPassword.text(" Password can only contain alphabet letters and numbers");
 				break;
 			}
 			g_spanCheckPassword.text("");
