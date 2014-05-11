@@ -5,6 +5,7 @@ import dao.SQLHelper;
 import model.*;
 import org.json.simple.JSONObject;
 import play.libs.Json;
+import play.mvc.Content;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Http.RequestBody;
@@ -12,6 +13,7 @@ import play.mvc.Result;
 import utilities.Converter;
 import utilities.DataUtils;
 import utilities.General;
+import views.html.email_verification;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -29,7 +31,7 @@ import java.util.Properties;
 
 public class UserController extends Controller {
 
-	protected static void sendVerificationEmail(String username, String recipient) {
+	protected static void sendVerificationEmail(String username, String recipient, String code) {
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
 		String msgBody = "...";
@@ -39,7 +41,8 @@ public class UserController extends Controller {
 			msg.setFrom(new InternetAddress("hongkongresort@126.com", "The HongKongResort Team"));
 			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, username));
 			msg.setSubject("Welcome to HongKongResort");
-			msg.setText("Dear "+username+", you're our member now!");
+            String link="http://107.170.251.163/usr/email/verify?code="+code;
+			msg.setText("Dear "+username+", you're our member now! Please click the following link to complete email verification: "+link);
 			Transport.send(msg);
 		} catch (AddressException e) {
 			System.out.println(e.getMessage());	
@@ -121,14 +124,14 @@ public class UserController extends Controller {
                 where.add(User.ID +"="+SQLHelper.convertToQueryValue(lastId));
 
                 boolean res=sqlHelper.update("User", columnNames, columnValues, where, SQLHelper.AND);
-
-				sendVerificationEmail(user.getName(), user.getEmail());
-                return ok("Registered");
+                if(res==false) break;
+				sendVerificationEmail(user.getName(), user.getEmail(), code);
+                return ok();
             } catch(Exception e){
                 
             }
         }while(false);
-        return badRequest("Register failed");
+        return badRequest();
     }
     
     public static Result status(String token){
@@ -197,16 +200,12 @@ public class UserController extends Controller {
     	return badRequest("Avatar not uploaded!");
     }
     
-    public static Result queryRelationOfUserAndActivity(){
+    public static Result relation(Integer activityId, String token){
     	// define response attributes
         response().setContentType("text/plain");
+        ObjectNode ret=null;
         do{
             try{
-                Map<String, String[]> formData=request().body().asFormUrlEncoded();
-          	  	Integer activityId=Integer.valueOf(formData.get(Activity.ID)[0]);
-          	  	String token=formData.get(User.TOKEN)[0];
-            	  
-        		ObjectNode ret=null;
     			Integer userId=DataUtils.getUserIdByToken(token);
     			UserActivityRelation.RelationType relation=SQLCommander.queryRelationOfUserIdAndActivity(userId, activityId);
     			
@@ -285,6 +284,7 @@ public class UserController extends Controller {
     }
 
 	public static Result emailVerification(String code){
+        response().setContentType("text/plain");
 		do{
 			try{
                 SQLHelper sqlHelper=new SQLHelper();
@@ -299,13 +299,13 @@ public class UserController extends Controller {
 
 				boolean res=sqlHelper.update("User", columnNames, columnValues, whereClauses, SQLHelper.AND);
 
-				if(res==false) break;
-                return ok();
+				Content html = email_verification.render(res);
+                return ok(html);
 			} catch(Exception e) {
 				
 			}
 		}while(false);
-		return null;
+		return badRequest();
 	}
 
     protected static String generateVerificationCode(User user){

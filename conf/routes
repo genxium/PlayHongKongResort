@@ -14,6 +14,7 @@ GET /user/status controllers.UserController.status(token: String ?=null)
 GET /user/name/duplicate controllers.UserController.nameDuplicate(username: String ?=null)
 GET /user/email/duplicate controllers.UserController.emailDuplicate(email: String ?=null)
 GET /user/email/verify controllers.UserController.emailVerification(code: String ?=null)
+GET /user/relation controllers.UserController.relation(activityId: Integer ?=null, token: String ?=null)
 POST /user/logout controllers.UserController.logout()
 
 POST /activity/delete controllers.ActivityController.delete()
