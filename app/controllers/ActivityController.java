@@ -84,10 +84,10 @@ public class ActivityController extends Controller {
         do{
       	  	try{
                 Map<String, String[]> formData=request().body().asFormUrlEncoded();
-                String token=formData.get(User.tokenKey)[0];
-                Integer activityId=Integer.valueOf(formData.get(Activity.idKey)[0]);
-                String[] appliedParticipantsJsonStrs= formData.get(ActivityDetail.appliedParticipantsKey);
-                String[] selectedParticipantsJsonStrs= formData.get(ActivityDetail.selectedParticipantsKey);
+                String token=formData.get(User.TOKEN)[0];
+                Integer activityId=Integer.valueOf(formData.get(Activity.ID)[0]);
+                String[] appliedParticipantsJsonStrs= formData.get(ActivityDetail.APPLIED_PARTICIPANTS);
+                String[] selectedParticipantsJsonStrs= formData.get(ActivityDetail.SELECTED_PARTICIPANTS);
 
                 String appliedParticipantsJsonStr=appliedParticipantsJsonStrs.length>0?appliedParticipantsJsonStrs[0]:"[]";
                 String selectedParticipantsJsonStr=selectedParticipantsJsonStrs.length>0?selectedParticipantsJsonStrs[0]:"[]";
@@ -138,24 +138,24 @@ public class ActivityController extends Controller {
 
                 Map<String, String[]> formData= data.asFormUrlEncoded();
 
-                String token=formData.get(User.tokenKey)[0];
+                String token=formData.get(User.TOKEN)[0];
                 if(token==null) break;
                 Integer userId=DataUtils.getUserIdByToken(token);
                 if(userId==null || userId==DataUtils.invalidId) break;
                 User user=SQLCommander.queryUser(userId);
                 if(user==null) break;
 
-                String activityTitle=formData.get(Activity.titleKey)[0];
-                String activityContent=formData.get(Activity.contentKey)[0];
-                String activityBeginTime=formData.get(Activity.beginTimeKey)[0];
-                String activityDeadline=formData.get(Activity.deadlineKey)[0];
+                String activityTitle=formData.get(Activity.TITLE)[0];
+                String activityContent=formData.get(Activity.CONTENT)[0];
+                String activityBeginTime=formData.get(Activity.BEGIN_TIME)[0];
+                String activityDeadline=formData.get(Activity.DEADLINE)[0];
 
                 if(DataUtils.validateTitle(activityTitle)==false || DataUtils.validateContent(activityContent)==false) break;
 
                 boolean isNewActivity=true;
                 Integer activityId=null;
-                if(formData.containsKey(Activity.idKey)==true){
-                    activityId=Integer.valueOf(formData.get(Activity.idKey)[0]);
+                if(formData.containsKey(Activity.ID)==true){
+                    activityId=Integer.valueOf(formData.get(Activity.ID)[0]);
                     isNewActivity=false;
                 }
                 Activity activity=null;
@@ -215,7 +215,7 @@ public class ActivityController extends Controller {
 
                 ObjectNode ret = Json.newObject();
                 if(isNewActivity==true){
-                    ret.put(Activity.idKey, activityId.toString());
+                    ret.put(Activity.ID, activityId.toString());
                 }
                 return ok(ret);
             } catch(Exception e){
@@ -235,8 +235,8 @@ public class ActivityController extends Controller {
                 // get user token and activity id from request body stream
                 Map<String, String[]> formData= body.asFormUrlEncoded();
 
-                String token=formData.get(User.tokenKey)[0];
-                Integer activityId=Integer.valueOf(formData.get(Activity.idKey)[0]);
+                String token=formData.get(User.TOKEN)[0];
+                Integer activityId=Integer.valueOf(formData.get(Activity.ID)[0]);
 
                 int userId=DataUtils.getUserIdByToken(token);
                 if(userId==DataUtils.invalidId) break;
@@ -250,15 +250,15 @@ public class ActivityController extends Controller {
 
                 SQLHelper sqlHelper=new SQLHelper();
                 List<String> columnNames=new LinkedList<String>();
-                columnNames.add(Activity.statusKey);
+                columnNames.add(Activity.STATUS);
 
                 List<Object> columnValues=new LinkedList<Object>();
                 columnValues.add(Activity.StatusType.pending.ordinal());
 
                 List<String> whereClauses=new LinkedList<String>();
-                whereClauses.add(Activity.idKey+"="+activity.getId());
+                whereClauses.add(Activity.ID +"="+activity.getId());
 
-                boolean res=sqlHelper.update(activityTableName, columnNames, columnValues, whereClauses, SQLHelper.logicAND);
+                boolean res=sqlHelper.update(activityTableName, columnNames, columnValues, whereClauses, SQLHelper.AND);
                 if(res==false) break;
 
                 return ok("Activity submitted");
@@ -277,8 +277,8 @@ public class ActivityController extends Controller {
         response().setContentType("text/plain");
         do{
             Map<String, String[]> formData=request().body().asFormUrlEncoded();
-            String[] ids=formData.get(Activity.idKey);
-            String[] tokens=formData.get(User.tokenKey);
+            String[] ids=formData.get(Activity.ID);
+            String[] tokens=formData.get(User.TOKEN);
 
             Integer activityId=Integer.parseInt(ids[0]);
             String token=tokens[0];
@@ -306,8 +306,8 @@ public class ActivityController extends Controller {
         do{
             try{
                 Map<String, String[]> formData=request().body().asFormUrlEncoded();
-                Integer activityId=Integer.parseInt(formData.get(Activity.idKey)[0]);
-                String token=formData.get(User.tokenKey)[0];
+                Integer activityId=Integer.parseInt(formData.get(Activity.ID)[0]);
+                String token=formData.get(User.TOKEN)[0];
 
                 Integer userId=DataUtils.getUserIdByToken(token);
                 Activity activity=SQLCommander.queryActivity(activityId);
@@ -318,10 +318,10 @@ public class ActivityController extends Controller {
                 Timestamp currentTime=new Timestamp(date.getTime());
 
                 List<String> columnNames=new LinkedList<String>();
-                columnNames.add(UserActivityRelationTable.activityIdKey);
-                columnNames.add(UserActivityRelationTable.userIdKey);
-                columnNames.add(UserActivityRelationTable.relationIdKey);
-                columnNames.add(UserActivityRelationTable.generatedTimeKey);
+                columnNames.add(UserActivityRelationTable.ACTIVITY_ID);
+                columnNames.add(UserActivityRelationTable.USER_ID);
+                columnNames.add(UserActivityRelationTable.RELATION_ID);
+                columnNames.add(UserActivityRelationTable.GENERATED_TIME);
 
                 List<Object> columnValues=new LinkedList<Object>();
                 columnValues.add(activityId);

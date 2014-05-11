@@ -13,8 +13,8 @@ public class Image {
 
 	public static String URL_PREFIX="/images/";	
     public static String FOLDER_PATH="/var/www/html/images/";
-	public static String idKey="ImageId";
-	public static String urlKey="ImageURL";
+	public static String ID ="ImageId";
+	public static String URL ="ImageURL";
 	
 	private int m_imageId=0;
 	public int getImageId() {return m_imageId;}
@@ -37,10 +37,10 @@ public class Image {
     
     public Image(JSONObject imageJson){
         try{
-            if(imageJson.containsKey(idKey)){
-                m_imageId=(Integer)imageJson.get(Image.idKey);
+            if(imageJson.containsKey(ID)){
+                m_imageId=(Integer)imageJson.get(Image.ID);
             }
-            m_imageURL=(String)imageJson.get(Image.urlKey);
+            m_imageURL=(String)imageJson.get(Image.URL);
         } catch(Exception e){
              
         }
@@ -50,8 +50,8 @@ public class Image {
         ObjectNode ret= Json.newObject();
         do {
             try{
-                ret.put(idKey, m_imageId);
-                ret.put(urlKey, m_imageURL);
+                ret.put(ID, m_imageId);
+                ret.put(URL, m_imageURL);
             } catch (Exception e){
 
             }

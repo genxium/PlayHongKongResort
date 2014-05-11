@@ -7,12 +7,12 @@ import org.json.simple.JSONObject;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
-import play.mvc.Result;
 import play.mvc.Http.RequestBody;
+import play.mvc.Result;
+import utilities.Converter;
+import utilities.DataUtils;
+import utilities.General;
 
-import java.util.*;
-import java.util.Properties;
-import java.io.UnsupportedEncodingException;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -20,10 +20,12 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
-import utilities.Converter;
-import utilities.DataUtils;
-import utilities.General;
+import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 public class UserController extends Controller {
 
@@ -55,8 +57,8 @@ public class UserController extends Controller {
             try{
                 Http.RequestBody body = request().body();
                 Map<String, String[]> formData=body.asFormUrlEncoded();
-                String email=formData.get(User.emailKey)[0];
-                String password=formData.get(User.passwordKey)[0];
+                String email=formData.get(User.EMAIL)[0];
+                String password=formData.get(User.PASSWORD)[0];
 
                 if( (email==null || General.validateEmail(email)==false) || (password==null || General.validatePassword(password)==false) ) break;
                 
@@ -74,11 +76,11 @@ public class UserController extends Controller {
                 Image image=SQLCommander.queryImageByImageId(imageId);
 
                 ObjectNode result = Json.newObject();
-                result.put(User.idKey, user.getUserId());
-                result.put(User.emailKey, user.getEmail());
-                result.put(User.tokenKey, token);
+                result.put(User.ID, user.getUserId());
+                result.put(User.EMAIL, user.getEmail());
+                result.put(User.TOKEN, token);
                 if(image!=null){
-                    result.put(Image.urlKey, image.getImageURL());
+                    result.put(Image.URL, image.getImageURL());
                 }
                 return ok(result);
             } catch(Exception e){
@@ -95,9 +97,9 @@ public class UserController extends Controller {
             try{
         		RequestBody body = request().body();
         		Map<String, String[]> formData=body.asFormUrlEncoded();
-                String name=formData.get(User.nameKey)[0];
-        		String email=formData.get(User.emailKey)[0];
-        		String password=formData.get(User.passwordKey)[0];
+                String name=formData.get(User.NAME)[0];
+        		String email=formData.get(User.EMAIL)[0];
+        		String password=formData.get(User.PASSWORD)[0];
 
                 if(name==null || (email==null || General.validateEmail(email)==false) || (password==null || General.validatePassword(password)==false)) break;
         		UserGroup.GroupType userGroup=UserGroup.GroupType.user;
@@ -105,6 +107,20 @@ public class UserController extends Controller {
                 User user=User.create(email, passwordDigest, name, userGroup);
                 int lastId=SQLCommander.registerUser(user);
                 if(lastId==SQLCommander.INVALID) break;
+
+                String code=generateVerificationCode(user);
+                SQLHelper sqlHelper=new SQLHelper();
+
+                List<String> columnNames=new LinkedList<>();
+                columnNames.add(User.VERIFICATION_CODE);
+
+                List<Object> columnValues=new LinkedList<>();
+                columnValues.add(SQLHelper.convertToQueryValue(code));
+
+                List<String> where=new LinkedList<>();
+                where.add(User.ID +"="+SQLHelper.convertToQueryValue(lastId));
+
+                boolean res=sqlHelper.update("User", columnNames, columnValues, where, SQLHelper.AND);
 
 				sendVerificationEmail(user.getName(), user.getEmail());
                 return ok("Registered");
@@ -126,8 +142,8 @@ public class UserController extends Controller {
                 
                 if(user==null) break;
                 session(token, userId.toString());
-                String emailKey=User.emailKey;
-                String tokenKey=User.tokenKey;
+                String emailKey=User.EMAIL;
+                String tokenKey=User.TOKEN;
 
                 int imageId=user.getAvatar();
                 Image image=SQLCommander.queryImageByImageId(imageId);
@@ -136,7 +152,7 @@ public class UserController extends Controller {
                 result.put(emailKey, user.getEmail());
                 result.put(tokenKey, token);
                 if(image!=null){
-                    result.put(Image.urlKey, image.getImageURL());
+                    result.put(Image.URL, image.getImageURL());
                 }
                 return ok(result);
             } catch (Exception e) {
@@ -187,8 +203,8 @@ public class UserController extends Controller {
         do{
             try{
                 Map<String, String[]> formData=request().body().asFormUrlEncoded();
-          	  	Integer activityId=Integer.valueOf(formData.get(Activity.idKey)[0]);
-          	  	String token=formData.get(User.tokenKey)[0];
+          	  	Integer activityId=Integer.valueOf(formData.get(Activity.ID)[0]);
+          	  	String token=formData.get(User.TOKEN)[0];
             	  
         		ObjectNode ret=null;
     			Integer userId=DataUtils.getUserIdByToken(token);
@@ -196,7 +212,7 @@ public class UserController extends Controller {
     			
     			if(relation==null) break;
     			ret=Json.newObject();
-    			ret.put(UserActivityRelationTable.relationIdKey, new Integer(relation.ordinal()).toString());
+    			ret.put(UserActivityRelationTable.RELATION_ID, new Integer(relation.ordinal()).toString());
 
         		return ok(ret);
             } catch(Exception e){
@@ -212,7 +228,7 @@ public class UserController extends Controller {
         do{
             try{
                 Map<String, String[]> formData=request().body().asFormUrlEncoded();
-                String token=formData.get(User.tokenKey)[0];
+                String token=formData.get(User.TOKEN)[0];
                 session().remove(token);
                 return ok();
             } catch(Exception e){
@@ -230,12 +246,12 @@ public class UserController extends Controller {
                 if(username==null) break;
                 SQLHelper sqlHelper=new SQLHelper();
                 List<String> columnNames=new LinkedList<String>();
-                columnNames.add(User.idKey);
+                columnNames.add(User.ID);
 
                 List<String> whereClauses=new LinkedList<String>();
-                whereClauses.add(User.nameKey+"="+SQLHelper.convertToQueryValue(username));
+                whereClauses.add(User.NAME +"="+SQLHelper.convertToQueryValue(username));
                 
-                List<JSONObject> userJsons=sqlHelper.query("User", columnNames, whereClauses, SQLHelper.logicAND);
+                List<JSONObject> userJsons=sqlHelper.query("User", columnNames, whereClauses, SQLHelper.AND);
                 if(userJsons!=null && userJsons.size()>0) break;
                 return ok();
             } catch(Exception e){
@@ -253,12 +269,12 @@ public class UserController extends Controller {
                 if(email==null || General.validateEmail(email)==false) break;
                 SQLHelper sqlHelper=new SQLHelper();
                 List<String> columnNames=new LinkedList<String>();
-                columnNames.add(User.idKey);
+                columnNames.add(User.ID);
 
                 List<String> whereClauses=new LinkedList<String>();
-                whereClauses.add(User.emailKey+"="+SQLHelper.convertToQueryValue(email));
+                whereClauses.add(User.EMAIL +"="+SQLHelper.convertToQueryValue(email));
                 
-                List<JSONObject> userJsons=sqlHelper.query("User", columnNames, whereClauses, SQLHelper.logicAND);
+                List<JSONObject> userJsons=sqlHelper.query("User", columnNames, whereClauses, SQLHelper.AND);
                 if(userJsons!=null && userJsons.size()>0) break;
                 return ok();
             } catch(Exception e){
@@ -273,7 +289,7 @@ public class UserController extends Controller {
 			try{
                 SQLHelper sqlHelper=new SQLHelper();
                 List<String> columnNames=new LinkedList<String>();
-                columnNames.add(User.groupIdKey);
+                columnNames.add(User.GROUP_ID);
 
 				List<Object> columnValues=new LinkedList<Object>();
 				columnValues.add(SQLHelper.convertToQueryValue(UserGroup.GroupType.user.ordinal()));
@@ -281,7 +297,7 @@ public class UserController extends Controller {
                 List<String> whereClauses=new LinkedList<String>();
                 whereClauses.add(User.VERIFICATION_CODE+"="+SQLHelper.convertToQueryValue(code));
 
-				boolean res=sqlHelper.update("User", columnNames, columnValues, whereClauses, SQLHelper.logicAND);
+				boolean res=sqlHelper.update("User", columnNames, columnValues, whereClauses, SQLHelper.AND);
 
 				if(res==false) break;
                 return ok();
@@ -291,4 +307,16 @@ public class UserController extends Controller {
 		}while(false);
 		return null;
 	}
+
+    protected static String generateVerificationCode(User user){
+        String ret=null;
+        do {
+            java.util.Date date = new java.util.Date();
+            Timestamp currentTime = new Timestamp(date.getTime());
+            Long epochTime = currentTime.getTime();
+            String username = user.getName();
+            ret=Converter.md5(epochTime.toString()+username);
+        }while (false);
+        return ret;
+    }
 }

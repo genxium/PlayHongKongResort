@@ -39,14 +39,14 @@ public class DataUtils{
     
     public static String getUserToken(MultipartFormData data){
     	Map<String, String[]> formData= data.asFormUrlEncoded();
-		String[] tokens=formData.get(User.tokenKey);
+		String[] tokens=formData.get(User.TOKEN);
 		String token=tokens[0];
 		return token;
     }
     
     public static String getUserToken(RequestBody body){
     	Map<String, String[]> formData= body.asFormUrlEncoded();
-		String[] tokens=formData.get(User.tokenKey);
+		String[] tokens=formData.get(User.TOKEN);
 		String token=tokens[0];
 		return token;
     }

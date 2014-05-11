@@ -2,7 +2,6 @@ package controllers;
 
 import java.io.File;
 
-import play.Play;
 import play.mvc.Http.MultipartFormData.FilePart;
 import utilities.DataUtils;
 import model.Activity;
@@ -26,8 +25,8 @@ public class ExtraCommander extends SQLCommander {
 		          SQLHelper sqlHelper=new SQLHelper();
 		          String relationTableName="UserActivityRelationTable";
 		          List<String> relationWhereClauses=new LinkedList<String>();
-		          relationWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
-		          boolean resultRelationDeletion=sqlHelper.delete(relationTableName, relationWhereClauses, SQLHelper.logicAND);
+		          relationWhereClauses.add(Activity.ID +"="+SQLHelper.convertToQueryValue(activityId));
+		          boolean resultRelationDeletion=sqlHelper.delete(relationTableName, relationWhereClauses, SQLHelper.AND);
 		        
 		          if(resultRelationDeletion==false) break;
 		        
@@ -44,8 +43,8 @@ public class ExtraCommander extends SQLCommander {
 		              
 		          String activityTableName="Activity";   
 		          List<String> activityWhereClauses=new LinkedList<String>();
-		          activityWhereClauses.add(Activity.idKey+"="+SQLHelper.convertToQueryValue(activityId));
-		          ret=sqlHelper.delete(activityTableName, activityWhereClauses, SQLHelper.logicAND);
+		          activityWhereClauses.add(Activity.ID +"="+SQLHelper.convertToQueryValue(activityId));
+		          ret=sqlHelper.delete(activityTableName, activityWhereClauses, SQLHelper.AND);
 		        
 	        } catch(Exception e){
 	        		System.out.println("ExtraCommander.deleteActivity:"+e.getMessage());

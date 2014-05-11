@@ -1,10 +1,10 @@
 package model;
 
 public class BasicUser {
-	public static String idKey="UserId";
-	public static String emailKey="UserEmail";
-	public static String nameKey="Username";
-	public static String avatarKey="UserAvatar";
+	public static String ID ="UserId";
+	public static String EMAIL ="UserEmail";
+	public static String NAME ="Username";
+	public static String AVATAR ="UserAvatar";
 	
 	protected int m_userId=0;
 	public int getUserId() {return m_userId;}

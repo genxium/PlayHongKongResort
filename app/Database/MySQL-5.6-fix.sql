@@ -1,26 +1,3 @@
-/* 
-  temporary fix for problem with windows installer for MySQL 5.6.10 on Windows 7 machines.
-  I did the procedure on a clean installed MySql, and it worked for me, at least it stopped
-  lines of innodb errors in the log and the use of transient innodb tables. So, do it at
-  your own risk..
-  
-  1. drop these tables from mysql:
-     innodb_index_stats
-     innodb_table_stats
-	 slave_master_info
-     slave_relay_log_info
-     slave_worker_info
-	 
-  2. delete all .frm & .ibd of the tables above.
-  
-  3. run this file to recreate the tables above (source five-tables.sql).
-  
-  4. restart mysqld.
-  
-  Cheers, 
-  CNL
-*/
-
 CREATE TABLE `innodb_index_stats` (
   `database_name` varchar(64) COLLATE utf8_bin NOT NULL,
   `table_name` varchar(64) COLLATE utf8_bin NOT NULL,

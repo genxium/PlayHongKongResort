@@ -18,8 +18,8 @@ public class AdminController extends Controller {
         response().setContentType("text/plain");
         do{
             Map<String, String[]> formData=request().body().asFormUrlEncoded();
-            String[] ids=formData.get(Activity.idKey);
-            String[] tokens=formData.get(User.tokenKey);
+            String[] ids=formData.get(Activity.ID);
+            String[] tokens=formData.get(User.TOKEN);
             
             Integer activityId=Integer.parseInt(ids[0]);
             String token=tokens[0];
@@ -48,8 +48,8 @@ public class AdminController extends Controller {
         response().setContentType("text/plain");
         do{
             Map<String, String[]> formData=request().body().asFormUrlEncoded();
-            String[] ids=formData.get(Activity.idKey);
-            String[] tokens=formData.get(User.tokenKey);
+            String[] ids=formData.get(Activity.ID);
+            String[] tokens=formData.get(User.TOKEN);
             
             Integer activityId=Integer.parseInt(ids[0]);
             String token=tokens[0];

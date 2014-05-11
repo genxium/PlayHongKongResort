@@ -6,24 +6,17 @@ package model;
 
 import org.json.simple.JSONObject;
 
-import play.libs.Json;
-import utilities.Converter;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import dao.SQLHelper;
-
 public class User extends BasicUser {
 	
-	public static String passwordKey="UserPassword";
-	public static String groupIdKey="UserGroupId";
-	public static String authenticationStatusKey="UserAuthenticationStatus";
-	public static String genderKey="UserGender";
-	public static String lastLoggedInTimeKey="UserLastLoggedInTime";
-	public static String lastLoggedOutTimeKey="UserLastLoggedOutTime";
-	public static String lastExitTimeKey="UserLastExitTime";
+	public static String PASSWORD ="UserPassword";
+	public static String GROUP_ID ="UserGroupId";
+	public static String AUTHENTICATION_STATUS ="UserAuthenticationStatus";
+	public static String GENDER ="UserGender";
+	public static String LAST_LOGGED_IN_TIME ="UserLastLoggedInTime";
+	public static String LAST_LOGGED_OUT_TIME ="UserLastLoggedOutTime";
+	public static String LAST_EXIT_TIME ="UserLastExitTime";
 	
-	public static String tokenKey="UserToken";
+	public static String TOKEN ="UserToken";
 	public static String VERIFICATION_CODE="VerificationCode"; 
 	
 	protected String m_password=null;
@@ -33,6 +26,10 @@ public class User extends BasicUser {
 	protected UserGroup.GroupType m_userGroup=null;
 	public UserGroup.GroupType getUserGroup() {return m_userGroup;}
 	public void setUserGroup(UserGroup.GroupType userGroup) {m_userGroup=userGroup;}
+
+    protected String m_verificationCode=null;
+    public String getVerificationCode() {return m_verificationCode;}
+    public void setVerificationCode(String verificationCode) {m_verificationCode=verificationCode;}
 
 	public User(int userId, String email, String password, String name, UserGroup.GroupType userGroup, int avatar){
 		super(userId, email, name, avatar);
@@ -62,13 +59,13 @@ public class User extends BasicUser {
 	}
 	
 	public static User create(JSONObject userJson){
-  		int id=(Integer)userJson.get(idKey);
-  		String name=(String)userJson.get(nameKey);
-  		String email=(String)userJson.get(emailKey);
-		String password=(String)userJson.get(passwordKey);
-  		int userGroupId=(Integer)userJson.get(groupIdKey);
+  		int id=(Integer)userJson.get(ID);
+  		String name=(String)userJson.get(NAME);
+  		String email=(String)userJson.get(EMAIL);
+		String password=(String)userJson.get(PASSWORD);
+  		int userGroupId=(Integer)userJson.get(GROUP_ID);
   		UserGroup.GroupType userGroup=UserGroup.GroupType.getTypeForValue(userGroupId);
-  		int avatar=(Integer)userJson.get(avatarKey);
+  		int avatar=(Integer)userJson.get(AVATAR);
   		return create(id, email, password, name, userGroup, avatar);
 	}
 }

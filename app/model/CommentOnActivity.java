@@ -1,8 +1,5 @@
 package model;
 
-import java.sql.Timestamp;
-import java.util.List;
-
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -10,6 +7,9 @@ import controllers.SQLCommander;
 import dao.SQLHelper;
 import org.json.simple.JSONObject;
 import play.libs.Json;
+
+import java.sql.Timestamp;
+import java.util.List;
 
 public class CommentOnActivity {
 
@@ -129,7 +129,7 @@ public class CommentOnActivity {
                 ret.put(CONTENT, m_content);
                 ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
                 ret.put(GENERATED_TIME, m_generatedTime.toString());
-                List<CommentOnActivity> subComments=SQLCommander.querySubComments(m_id, 0, SQLCommander.COMMENT_ON_ACTIVITY_ID, SQLHelper.directionDescend, null, SQLCommander.DIRECTION_FORWARD, m_commentType);
+                List<CommentOnActivity> subComments=SQLCommander.querySubComments(m_id, 0, SQLCommander.COMMENT_ON_ACTIVITY_ID, SQLHelper.DESCEND, null, SQLCommander.DIRECTION_FORWARD, m_commentType);
 
                 ArrayNode subCommentsNode=new ArrayNode(JsonNodeFactory.instance);
                 for(CommentOnActivity subComment : subComments){

@@ -2,12 +2,12 @@ package model;
 
 public class UserActivityRelationTable {
 
-	public static String idKey="UserActivityRelationTableId";
-	public static String userIdKey="UserId";
-	public static String activityIdKey="ActivityId";
-	public static String relationIdKey="UserActivityRelationId";
-	public static String generatedTimeKey="GeneratedTime";
-	public static String lastApplyingTimeKey="LastApplyingTime";
-	public static String lastAcceptedTimeKey="LastAcceptedTime";
-	public static String lastRejectedTimeKey="LastRejectedTime";
+	public static String ID ="UserActivityRelationTableId";
+	public static String USER_ID ="UserId";
+	public static String ACTIVITY_ID ="ActivityId";
+	public static String RELATION_ID ="UserActivityRelationId";
+	public static String GENERATED_TIME ="GeneratedTime";
+	public static String LAST_APPLYING_TIME ="LastApplyingTime";
+	public static String LAST_ACCEPTED_TIME ="LastAcceptedTime";
+	public static String LAST_REJECTED_TIME ="LastRejectedTime";
 }

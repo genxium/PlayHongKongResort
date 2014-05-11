@@ -1,24 +1,20 @@
 package model;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import org.json.simple.JSONObject;
-import play.libs.Json;
-
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import scala.util.parsing.json.JSON;
+import org.json.simple.JSONObject;
+import play.libs.Json;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class ActivityDetail extends Activity {
 
-    public static String imagesKey="ActivityImages";
-	public static String appliedParticipantsKey="ActivityAppliedParticipants";
-	public static String selectedParticipantsKey="ActivitySelectedParticipants";
+    public static String IMAGES ="ActivityImages";
+	public static String APPLIED_PARTICIPANTS ="ActivityAppliedParticipants";
+	public static String SELECTED_PARTICIPANTS ="ActivitySelectedParticipants";
 
     protected List<Image> m_images=null;
     public List<Image> getImages() {return m_images;}
@@ -92,17 +88,17 @@ public class ActivityDetail extends Activity {
         do{
         	ret=Json.newObject();
     		
-        	ret.put(Activity.idKey, String.valueOf(m_id));
-        	ret.put(Activity.titleKey, m_title);
-        	ret.put(Activity.contentKey, m_content);
-        	ret.put(Activity.statusKey, String.valueOf(m_status));
+        	ret.put(Activity.ID, String.valueOf(m_id));
+        	ret.put(Activity.TITLE, m_title);
+        	ret.put(Activity.CONTENT, m_content);
+        	ret.put(Activity.STATUS, String.valueOf(m_status));
     			
 			if(m_images!=null){
 			   ArrayNode imagesNode=new ArrayNode(JsonNodeFactory.instance);
                 for(Image image : m_images){
 		    	  imagesNode.add(image.toObjectNode());
 		       }
-		       ret.put(ActivityDetail.imagesKey, imagesNode);
+		       ret.put(ActivityDetail.IMAGES, imagesNode);
 			}
 			
 			if(m_appliedParticipants!=null && m_appliedParticipants.size()>0){
@@ -111,12 +107,12 @@ public class ActivityDetail extends Activity {
 				while(itParticipant.hasNext()){
 					ObjectNode singleParticipantNode=Json.newObject();
 					BasicUser participant=itParticipant.next();
-                    singleParticipantNode.put(BasicUser.idKey, participant.getUserId());
-					singleParticipantNode.put(BasicUser.emailKey, participant.getEmail());
-					singleParticipantNode.put(BasicUser.nameKey, participant.getName());
+                    singleParticipantNode.put(BasicUser.ID, participant.getUserId());
+					singleParticipantNode.put(BasicUser.EMAIL, participant.getEmail());
+					singleParticipantNode.put(BasicUser.NAME, participant.getName());
 					appliedParticipantsNode.add(singleParticipantNode);
 				}
-				ret.put(ActivityDetail.appliedParticipantsKey, appliedParticipantsNode);
+				ret.put(ActivityDetail.APPLIED_PARTICIPANTS, appliedParticipantsNode);
 			}
 			
             if(m_selectedParticipants!=null && m_selectedParticipants.size()>0){
@@ -125,12 +121,12 @@ public class ActivityDetail extends Activity {
 				while(itParticipant.hasNext()){
 					ObjectNode singleParticipantNode=Json.newObject();
 					BasicUser participant=itParticipant.next();
-                    singleParticipantNode.put(BasicUser.idKey, participant.getUserId());
-					singleParticipantNode.put(BasicUser.emailKey, participant.getEmail());
-					singleParticipantNode.put(BasicUser.nameKey, participant.getName());
+                    singleParticipantNode.put(BasicUser.ID, participant.getUserId());
+					singleParticipantNode.put(BasicUser.EMAIL, participant.getEmail());
+					singleParticipantNode.put(BasicUser.NAME, participant.getName());
 					selectedParticipantsNode.add(singleParticipantNode);
 				}
-				ret.put(ActivityDetail.selectedParticipantsKey, selectedParticipantsNode);
+				ret.put(ActivityDetail.SELECTED_PARTICIPANTS, selectedParticipantsNode);
 			}
         }while(false);
 		return ret;

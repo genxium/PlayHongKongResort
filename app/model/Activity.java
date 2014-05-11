@@ -12,14 +12,14 @@ import java.util.*;
 
 public class Activity {
 
-	public static String idKey="ActivityId";
-	public static String titleKey="ActivityTitle";
-	public static String contentKey="ActivityContent";
-	public static String createdTimeKey="ActivityCreatedTime";
-	public static String beginTimeKey="ActivityBeginTime";
-	public static String deadlineKey="ActivityApplicationDeadline";
-	public static String capacityKey="ActivityCapacity";
-	public static String statusKey="ActivityStatus";
+	public static String ID ="ActivityId";
+	public static String TITLE="ActivityTitle";
+	public static String CONTENT ="ActivityContent";
+	public static String CREATED_TIME ="ActivityCreatedTime";
+	public static String BEGIN_TIME ="ActivityBeginTime";
+	public static String DEADLINE ="ActivityApplicationDeadline";
+	public static String CAPACITY ="ActivityCapacity";
+	public static String STATUS ="ActivityStatus";
 
 	public enum StatusType{
 		created(0),
@@ -86,14 +86,14 @@ public class Activity {
     public Activity(JSONObject activityJson){
         do{
             try{
-                m_id=(Integer)activityJson.get(idKey);
-                m_title=(String)activityJson.get(titleKey);
-                m_content=(String)activityJson.get(contentKey);
-                m_createdTime=(Timestamp)activityJson.get(createdTimeKey);
-                m_beginTime=(Timestamp)activityJson.get(beginTimeKey);
-                m_deadline=(Timestamp)activityJson.get(deadlineKey);
-                m_capacity=(Integer)activityJson.get(capacityKey);
-                m_status=StatusType.getTypeForValue((Integer)activityJson.get(statusKey));
+                m_id=(Integer)activityJson.get(ID);
+                m_title=(String)activityJson.get(TITLE);
+                m_content=(String)activityJson.get(CONTENT);
+                m_createdTime=(Timestamp)activityJson.get(CREATED_TIME);
+                m_beginTime=(Timestamp)activityJson.get(BEGIN_TIME);
+                m_deadline=(Timestamp)activityJson.get(DEADLINE);
+                m_capacity=(Integer)activityJson.get(CAPACITY);
+                m_status=StatusType.getTypeForValue((Integer)activityJson.get(STATUS));
             }catch(Exception e){
 
             }
@@ -103,14 +103,14 @@ public class Activity {
     public ObjectNode toObjectNode(){
         ObjectNode ret = Json.newObject();;
         do{
-            ret.put(Activity.idKey, String.valueOf(m_id));
-            ret.put(Activity.titleKey, m_title);
-            ret.put(Activity.contentKey, m_content);
-            ret.put(Activity.createdTimeKey, m_createdTime.toString());
-            ret.put(Activity.beginTimeKey, m_beginTime.toString());
-            ret.put(Activity.deadlineKey, m_deadline.toString());
-            ret.put(Activity.capacityKey, String.valueOf(m_capacity));
-            ret.put(Activity.statusKey, String.valueOf(m_status.ordinal()));
+            ret.put(Activity.ID, String.valueOf(m_id));
+            ret.put(Activity.TITLE, m_title);
+            ret.put(Activity.CONTENT, m_content);
+            ret.put(Activity.CREATED_TIME, m_createdTime.toString());
+            ret.put(Activity.BEGIN_TIME, m_beginTime.toString());
+            ret.put(Activity.DEADLINE, m_deadline.toString());
+            ret.put(Activity.CAPACITY, String.valueOf(m_capacity));
+            ret.put(Activity.STATUS, String.valueOf(m_status.ordinal()));
         }while(false);
         return ret;
     }
@@ -124,7 +124,7 @@ public class Activity {
             for(Image image : images){
                 imagesNode.add(image.toObjectNode());
             }
-            ret.put(ActivityDetail.imagesKey, imagesNode);
+            ret.put(ActivityDetail.IMAGES, imagesNode);
         }while(false);
         return ret;
     }
@@ -134,7 +134,7 @@ public class Activity {
         do{
             UserActivityRelation.RelationType relation=SQLCommander.queryRelationOfUserIdAndActivity(userId, m_id);
             if(relation==null) break;
-            ret.put(UserActivityRelationTable.relationIdKey, relation.ordinal());
+            ret.put(UserActivityRelationTable.RELATION_ID, relation.ordinal());
         }while(false);
         return ret;
     }

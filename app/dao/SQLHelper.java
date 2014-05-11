@@ -1,32 +1,30 @@
 package dao;
-import java.util.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
 import org.json.simple.JSONObject;
-
 import play.Play;
+
+import java.sql.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class SQLHelper {
 	
-	public static String databaseNameKey="DatabaseName";
-	public static String hostKey="Host";
-	public static String portKey="Port";
-	public static String userKey="User";
-	public static String passwordKey="Password";
-	public static String charsetResultKey="CharsetResult";
-	public static String charsetEncodingKey="CharsetEncoding";
-	public static String useUnicodeKey="UseUnicode";
+	public static String DATABASE_NAME ="DatabaseName";
+	public static String HOST ="Host";
+	public static String PORT ="Port";
+	public static String USER ="User";
+	public static String PASSWORD ="Password";
+	public static String CHARSET_RESULT ="CharsetResult";
+	public static String CHARSET_ENCODING ="CharsetEncoding";
+	public static String USE_UNICODE ="UseUnicode";
 
 	public static Integer INVALID_ID =(-1);
-	public static String logicAND="AND";
-	public static String logicOR="OR";
-	
-	public static String directionAscend="ASC";
-	public static String directionDescend="DESC";
+	public static String AND ="AND";
+	public static String OR ="OR";
+
+	public static String ASCEND ="ASC";
+	public static String DESCEND ="DESC";
 
 	private static String databaseName=null;
 	private static String host=null;
@@ -42,14 +40,14 @@ public class SQLHelper {
 		try{
 			String fullPath=Play.application().path()+"/conf/"+"database_config.xml";
 			Map<String, String> attributes=XMLHelper.readDatabaseConfig(fullPath);
-			databaseName=attributes.get(databaseNameKey);
-			host=attributes.get(hostKey);
-			port=Integer.parseInt(attributes.get(portKey));
-			user=attributes.get(userKey);
-			password=attributes.get(passwordKey);
-			charsetResult=attributes.get(charsetResultKey);
-			charsetEncoding=attributes.get(charsetEncodingKey);
-			useUnicode=attributes.get(useUnicodeKey);
+			databaseName=attributes.get(DATABASE_NAME);
+			host=attributes.get(HOST);
+			port=Integer.parseInt(attributes.get(PORT));
+			user=attributes.get(USER);
+			password=attributes.get(PASSWORD);
+			charsetResult=attributes.get(CHARSET_RESULT);
+			charsetEncoding=attributes.get(CHARSET_ENCODING);
+			useUnicode=attributes.get(USE_UNICODE);
 			ret=true;
 		} catch(Exception e){
 			System.out.println("SQLHelper.readMySQLConfig:"+e.getMessage());

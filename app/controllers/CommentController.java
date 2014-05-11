@@ -25,7 +25,7 @@ public class CommentController extends Controller {
                 }
                 if(userId==DataUtils.invalidId) break;
 
-                List<CommentOnActivity> comments=SQLCommander.queryTopLevelComments(activityId, refIndex, SQLCommander.COMMENT_ON_ACTIVITY_ID, SQLHelper.directionDescend, numItems, direction, 0);
+                List<CommentOnActivity> comments=SQLCommander.queryTopLevelComments(activityId, refIndex, SQLCommander.COMMENT_ON_ACTIVITY_ID, SQLHelper.DESCEND, numItems, direction, 0);
 
 				ArrayNode result=new ArrayNode(JsonNodeFactory.instance);
                 for(CommentOnActivity comment : comments){
@@ -49,7 +49,7 @@ public class CommentController extends Controller {
                 String content=formData.get(CommentOnActivity.CONTENT)[0];
 				if(content==null || content.length()<=CommentOnActivity.MIN_CONTENT_LENGTH) break;
 
-                String token=formData.get(User.tokenKey)[0];
+                String token=formData.get(User.TOKEN)[0];
                 Integer activityId=Integer.valueOf(formData.get(CommentOnActivity.ACTIVITY_ID)[0]);
 
                 if(token==null) break;

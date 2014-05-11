@@ -13,6 +13,7 @@ POST /user/register controllers.UserController.register()
 GET /user/status controllers.UserController.status(token: String ?=null)
 GET /user/name/duplicate controllers.UserController.nameDuplicate(username: String ?=null)
 GET /user/email/duplicate controllers.UserController.emailDuplicate(email: String ?=null)
+GET /user/email/verify controllers.UserController.emailVerification(code: String ?=null)
 POST /user/logout controllers.UserController.logout()
 
 POST /activity/delete controllers.ActivityController.delete()

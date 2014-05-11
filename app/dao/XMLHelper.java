@@ -3,12 +3,9 @@ import javax.xml.parsers.*;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class XMLHelper{
@@ -28,11 +25,11 @@ public class XMLHelper{
 			
 			ret=new HashMap<String, String>();
 			
-			ret.put(SQLHelper.databaseNameKey, root.getElementsByTagName(SQLHelper.databaseNameKey).item(0).getTextContent());
-			ret.put(SQLHelper.hostKey, root.getElementsByTagName(SQLHelper.hostKey).item(0).getTextContent());
-			ret.put(SQLHelper.portKey, root.getElementsByTagName(SQLHelper.portKey).item(0).getTextContent());
-			ret.put(SQLHelper.userKey, root.getElementsByTagName(SQLHelper.userKey).item(0).getTextContent());
-			ret.put(SQLHelper.passwordKey, root.getElementsByTagName(SQLHelper.passwordKey).item(0).getTextContent());
+			ret.put(SQLHelper.DATABASE_NAME, root.getElementsByTagName(SQLHelper.DATABASE_NAME).item(0).getTextContent());
+			ret.put(SQLHelper.HOST, root.getElementsByTagName(SQLHelper.HOST).item(0).getTextContent());
+			ret.put(SQLHelper.PORT, root.getElementsByTagName(SQLHelper.PORT).item(0).getTextContent());
+			ret.put(SQLHelper.USER, root.getElementsByTagName(SQLHelper.USER).item(0).getTextContent());
+			ret.put(SQLHelper.PASSWORD, root.getElementsByTagName(SQLHelper.PASSWORD).item(0).getTextContent());
 			
 	    } catch (Exception e) {
 			e.printStackTrace();
