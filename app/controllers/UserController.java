@@ -269,6 +269,26 @@ public class UserController extends Controller {
     }
 
 	public static Result emailVerification(String code){
+		do{
+			try{
+                SQLHelper sqlHelper=new SQLHelper();
+                List<String> columnNames=new LinkedList<String>();
+                columnNames.add(User.groupIdKey);
+
+				List<Object> columnValues=new LinkedList<Object>();
+				columnValues.add(SQLHelper.convertToQueryValue(UserGroup.GroupType.user.ordinal()));
+
+                List<String> whereClauses=new LinkedList<String>();
+                whereClauses.add(User.VERIFICATION_CODE+"="+SQLHelper.convertToQueryValue(code));
+
+				boolean res=sqlHelper.update("User", columnNames, columnValues, whereClauses, SQLHelper.logicAND);
+
+				if(res==false) break;
+                return ok();
+			} catch(Exception e) {
+				
+			}
+		}while(false);
 		return null;
 	}
 }

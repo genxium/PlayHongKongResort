@@ -24,6 +24,7 @@ public class User extends BasicUser {
 	public static String lastExitTimeKey="UserLastExitTime";
 	
 	public static String tokenKey="UserToken";
+	public static String VERIFICATION_CODE="VerificationCode"; 
 	
 	protected String m_password=null;
 	public String getPassword() {return m_password;}
