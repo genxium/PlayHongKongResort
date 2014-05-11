@@ -1,5 +1,7 @@
 package model;
 
+import org.json.simple.JSONObject;
+
 public class BasicUser {
 	public static String ID ="UserId";
 	public static String EMAIL ="UserEmail";
@@ -27,5 +29,12 @@ public class BasicUser {
 		m_email=email;
 		m_name=name;
 		m_avatar=avatar;
+	}
+
+	public BasicUser(JSONObject userJson){
+		if(userJson.containsKey(ID)) m_userId=(Integer)userJson.get(ID);	
+		if(userJson.containsKey(NAME)) m_name=(String)userJson.get(NAME);
+		if(userJson.containsKey(EMAIL)) m_email=(String)userJson.get(EMAIL);
+		if(userJson.containsKey(AVATAR)) m_avatar=(Integer)userJson.get(AVATAR);
 	}
 }

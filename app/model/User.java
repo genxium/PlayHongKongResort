@@ -37,6 +37,12 @@ public class User extends BasicUser {
 		m_userGroup=userGroup;
 	}
 
+	public User(JSONObject userJson){
+		super(userJson);
+		if(userJson.containsKey(PASSWORD)) m_password=(String)userJson.get(PASSWORD);
+		if(userJson.containsKey(GROUP_ID)) m_userGroup=UserGroup.GroupType.getTypeForValue((Integer)userJson.get(GROUP_ID));
+	}
+
 	public static User create(int userId, String email, String password, String name, UserGroup.GroupType userGroup, int avatar){
 		User user=new User(userId, email, password, name, userGroup, avatar);
 		return user;
@@ -68,4 +74,5 @@ public class User extends BasicUser {
   		int avatar=(Integer)userJson.get(AVATAR);
   		return create(id, email, password, name, userGroup, avatar);
 	}
+
 }

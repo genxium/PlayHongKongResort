@@ -179,7 +179,7 @@ CREATE TABLE `User` (
   `UserLastExitTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `UserCreatedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `Username` varchar(32) DEFAULT NULL,
-  `VerificationCode` int(32) DEFAULT NULL,
+  `VerificationCode` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`UserId`),
   UNIQUE KEY `UserEmail` (`UserEmail`),
   UNIQUE KEY `UserName` (`Username`),

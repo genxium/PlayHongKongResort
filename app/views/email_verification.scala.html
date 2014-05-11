@@ -1,4 +1,4 @@
-@(success: Boolean)
+@(success: Boolean, username: String, email: String)
 
 <html>
 <head>
@@ -17,9 +17,9 @@
     <script src="@routes.Assets.at("javascripts/animations.js")" type="text/javascript"></script>
 
     @if(success.equals(true)){
-        <p>Succeeded!</p>
+        <p>Dear @username, your email address @email is successfully verified!</p>
     } else {
-        <p>Failed</p>
+        <p>Dear @username, unfortunately we failed to verify your email address @email, please contact hongkongresort@@126.com for technical support.</p>
     }
 
 </head>

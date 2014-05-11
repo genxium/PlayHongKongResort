@@ -41,7 +41,7 @@ public class UserController extends Controller {
 			msg.setFrom(new InternetAddress("hongkongresort@126.com", "The HongKongResort Team"));
 			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, username));
 			msg.setSubject("Welcome to HongKongResort");
-            String link="http://107.170.251.163/usr/email/verify?code="+code;
+            String link="http://107.170.251.163/user/email/verify?code="+code;
 			msg.setText("Dear "+username+", you're our member now! Please click the following link to complete email verification: "+link);
 			Transport.send(msg);
 		} catch (AddressException e) {
@@ -105,7 +105,7 @@ public class UserController extends Controller {
         		String password=formData.get(User.PASSWORD)[0];
 
                 if(name==null || (email==null || General.validateEmail(email)==false) || (password==null || General.validatePassword(password)==false)) break;
-        		UserGroup.GroupType userGroup=UserGroup.GroupType.user;
+        		UserGroup.GroupType userGroup=UserGroup.GroupType.visitor;
         		String passwordDigest=Converter.md5(password);    
                 User user=User.create(email, passwordDigest, name, userGroup);
                 int lastId=SQLCommander.registerUser(user);
@@ -118,7 +118,7 @@ public class UserController extends Controller {
                 columnNames.add(User.VERIFICATION_CODE);
 
                 List<Object> columnValues=new LinkedList<>();
-                columnValues.add(SQLHelper.convertToQueryValue(code));
+                columnValues.add(code);
 
                 List<String> where=new LinkedList<>();
                 where.add(User.ID +"="+SQLHelper.convertToQueryValue(lastId));
@@ -284,7 +284,7 @@ public class UserController extends Controller {
     }
 
 	public static Result emailVerification(String code){
-        response().setContentType("text/plain");
+        response().setContentType("text/html");
 		do{
 			try{
                 SQLHelper sqlHelper=new SQLHelper();
@@ -299,10 +299,23 @@ public class UserController extends Controller {
 
 				boolean res=sqlHelper.update("User", columnNames, columnValues, whereClauses, SQLHelper.AND);
 
-				Content html = email_verification.render(res);
+				columnNames.clear();
+				columnValues.clear();
+
+				columnNames.add(User.ID);
+				columnNames.add(User.EMAIL);
+				columnNames.add(User.NAME);
+				columnNames.add(User.PASSWORD);
+				columnNames.add(User.GROUP_ID);
+				columnNames.add(User.AVATAR);
+
+				List<JSONObject> userJsons=sqlHelper.query("User", columnNames, whereClauses, SQLHelper.AND); 
+				User user = new User(userJsons.get(0));
+
+				Content html = email_verification.render(res, user.getName(), user.getEmail());
                 return ok(html);
 			} catch(Exception e) {
-				
+				System.out.println("emailVerification: "+e.getMessage());
 			}
 		}while(false);
 		return badRequest();
@@ -315,7 +328,9 @@ public class UserController extends Controller {
             Timestamp currentTime = new Timestamp(date.getTime());
             Long epochTime = currentTime.getTime();
             String username = user.getName();
-            ret=Converter.md5(epochTime.toString()+username);
+            String tmp=Converter.md5(epochTime.toString()+username);
+			int length=tmp.length();
+			ret=tmp.substring(0, length/2);
         }while (false);
         return ret;
     }

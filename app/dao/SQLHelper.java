@@ -146,7 +146,7 @@ public class SQLHelper {
 			closeConnection(connection);
 			bRet=true;
 		} catch (Exception e){
-			System.out.println("SQLHelper.executeUpdate: "+e.getMessage());
+			System.out.println("SQLHelper.executeUpdate: "+e.getMessage()+", while query is "+query);
 		}
 		return bRet;
 	}
