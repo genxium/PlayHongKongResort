@@ -67,7 +67,6 @@ db
 public/images*
 RUNNING_PID
 eclipse
-lib
 log
 logs
 modules
