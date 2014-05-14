@@ -2,14 +2,31 @@ package dao;
 import org.json.simple.JSONObject;
 import play.Play;
 
-import java.sql.*;
+import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.apache.commons.pool2.ObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.dbcp2.ConnectionFactory;
+import org.apache.commons.dbcp2.PoolableConnection;
+import org.apache.commons.dbcp2.PoolingDataSource;
+import org.apache.commons.dbcp2.PoolableConnectionFactory;
+import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class SQLHelper {
-	
+
+	protected static DataSource s_dataSource=null;
+		
 	public static String DATABASE_NAME ="DatabaseName";
 	public static String HOST ="Host";
 	public static String PORT ="Port";
@@ -26,60 +43,89 @@ public class SQLHelper {
 	public static String ASCEND ="ASC";
 	public static String DESCEND ="DESC";
 
-	private static String databaseName=null;
-	private static String host=null;
-	private static Integer port=null;
-	private static String user=null;
-	private static String password=null;
-	private static String charsetResult=null;
-	private static String charsetEncoding=null;
-	private static String useUnicode=null;
+	private static String s_databaseName=null;
+	private static String s_host=null;
+	private static Integer s_port=null;
+	private static String s_user=null;
+	private static String s_password=null;
+	private static String s_charsetResult=null;
+	private static String s_charsetEncoding=null;
+	private static String s_useUnicode=null;
 
 	public static boolean readMySQLConfig(){
 		boolean ret=false;
 		try{
 			String fullPath=Play.application().path()+"/conf/"+"database_config.xml";
 			Map<String, String> attributes=XMLHelper.readDatabaseConfig(fullPath);
-			databaseName=attributes.get(DATABASE_NAME);
-			host=attributes.get(HOST);
-			port=Integer.parseInt(attributes.get(PORT));
-			user=attributes.get(USER);
-			password=attributes.get(PASSWORD);
-			charsetResult=attributes.get(CHARSET_RESULT);
-			charsetEncoding=attributes.get(CHARSET_ENCODING);
-			useUnicode=attributes.get(USE_UNICODE);
+			s_databaseName=attributes.get(DATABASE_NAME);
+			s_host=attributes.get(HOST);
+			s_port=Integer.parseInt(attributes.get(PORT));
+			s_user=attributes.get(USER);
+			s_password=attributes.get(PASSWORD);
+			s_charsetResult=attributes.get(CHARSET_RESULT);
+			s_charsetEncoding=attributes.get(CHARSET_ENCODING);
+			s_useUnicode=attributes.get(USE_UNICODE);
 			ret=true;
 		} catch(Exception e){
 			System.out.println("SQLHelper.readMySQLConfig:"+e.getMessage());
 		}
 		return ret;
 	}
-	
-	public static Connection getConnection(){
-		Connection connection=null;
+
+	public static String getConnectionURI(){
+		String ret=null;
 		do{
 			try{
 				boolean configResult=readMySQLConfig();
 				if(configResult==false) break;
 				
 				Class.forName("com.mysql.jdbc.Driver");
-				StringBuilder connectionBuilder=new StringBuilder();
-				connectionBuilder.append("jdbc:mysql://");
-				connectionBuilder.append(host+":");
-				connectionBuilder.append(port.toString()+"/");
-				connectionBuilder.append(databaseName);
-				if(true){
-					connectionBuilder.append("?"+charsetResult);
-					connectionBuilder.append("&"+charsetEncoding);
-					connectionBuilder.append("&"+useUnicode);
-				}
-				String connectionStr=connectionBuilder.toString();
-				connection = DriverManager.getConnection(connectionStr,user,password);
-				if(connection==null) break;
+				StringBuilder builder=new StringBuilder();
+				builder.append("jdbc:mysql://");
+				builder.append(s_host+":");
+				builder.append(s_port.toString()+"/");
+				builder.append(s_databaseName);
+				if(s_charsetResult!=null) builder.append("?"+s_charsetResult);
+				if(s_charsetEncoding!=null) builder.append("&"+s_charsetEncoding);
+				if(s_useUnicode!=null) builder.append("&"+s_useUnicode);
+				ret=builder.toString();
 			}catch(Exception e){
 				System.out.println(e.getMessage());
 			}
 		}while(false);
+		return ret;
+		
+	}
+	
+	public static DataSource setupDataSource(String connectURI) {
+		PoolingDataSource<PoolableConnection> ret=null;
+		try{
+			ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI, s_user, s_password);
+			PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
+			ObjectPool<PoolableConnection> connectionPool = new GenericObjectPool<>(poolableConnectionFactory);
+			poolableConnectionFactory.setPool(connectionPool);
+			ret = new PoolingDataSource<>(connectionPool);
+		} catch(Exception e){
+			System.out.println("SQLHelper.setupDataSource: "+e.getMessage());
+			ret=null;	
+		}
+		return ret;
+	}
+		
+	public static Connection getConnection(){
+		Connection connection=null;
+		try{
+			if(s_dataSource==null){
+				String connectURI=getConnectionURI();
+				System.out.println("connectionURI="+connectURI);
+				s_dataSource=setupDataSource(connectURI);
+			}
+			if(s_dataSource==null) System.out.println("s_dataSource is null");
+			connection=s_dataSource.getConnection();
+		} catch (Exception e) {
+			System.out.println("SQLHelper.getConnection: "+e.getMessage());
+			connection=null;	
+		}
 		return connection;
 	}
 
@@ -97,6 +143,7 @@ public class SQLHelper {
 		List<JSONObject> ret=null;
 		try{
 			Connection connection=getConnection();
+			if(connection==null) System.out.println("executeSelect: connection is null");
 			Statement statement= connection.createStatement(); 
 			ResultSet rs=statement.executeQuery(query);
 			if(rs!=null){
@@ -104,8 +151,8 @@ public class SQLHelper {
 				rs.close();
 			}
 			statement.close();
-			query=null;
 			closeConnection(connection);
+			query=null;
 		} catch (Exception e){
 			System.out.println("SQLHelper.executeSelect: "+e.getMessage());
 		}
@@ -125,8 +172,8 @@ public class SQLHelper {
 				rs.close();
 			}
 			statement.close();
-			query=null;
 			closeConnection(connection);
+			query=null;
 		} catch (Exception e){
 			// return the invalid value for exceptions
 			System.out.println("SQLHelper.executeInsert: "+e.getMessage());
@@ -142,8 +189,8 @@ public class SQLHelper {
 			// the following command returns the last inserted row id for the auto incremented key
 			statement.executeUpdate();
 			statement.close();
-			query=null;
 			closeConnection(connection);
+			query=null;
 			bRet=true;
 		} catch (Exception e){
 			System.out.println("SQLHelper.executeUpdate: "+e.getMessage()+", while query is "+query);
