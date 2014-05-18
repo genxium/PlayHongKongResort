@@ -1,3 +1,6 @@
+// general DOM elements
+var g_sectionDefaultActivities=null;
+
 // general DOM element keys
 var g_idSectionTitle="idSectionTitle";
 var g_idSectionDefaultActivities="idSectionDefaultActivities";

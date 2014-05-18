@@ -21,6 +21,7 @@
 	display: table-cell;
 	position: relative;
 	margin-top: 20pt;
+	padding: 5pt;
 }
 
 .classFieldActivityTitle
@@ -28,11 +29,12 @@
 	display: table-row;
 	position: relative;
 	background-color: transparent;
-	height: 20pt;
+	height: 25pt;
 	width: 400pt;
 	max-height: 50pt;
 	max-width:	400pt;
 	font-size: 15pt;
+	margin-bottom: 2pt;
 }
 
 .classFieldActivityContent
@@ -45,6 +47,7 @@
 	max-height: 400pt;
 	max-width:	400pt;
 	font-size: 15pt;
+	margin-bottom: 2pt;
 }
 
 .classBtnEdit

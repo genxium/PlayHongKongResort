@@ -41,9 +41,7 @@ function removeAccountSections(){
 function refreshOnEnter(){
     showAccountSections();
     emptyRegisterFields();
-
-	var sectionDefaultActivities=$("#"+g_idSectionDefaultActivities);
-	sectionDefaultActivities.show();
+	g_sectionDefaultActivities.show();
 }
 
 function refreshOnLoggedIn(){
@@ -53,9 +51,7 @@ function refreshOnLoggedIn(){
 function onQueryActivitiesSuccess(data, status, xhr){
     var jsonResponse=JSON.parse(data);
     if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
-        var targetSection=$("#"+g_idSectionDefaultActivities);
-        // clean target section
-        targetSection.empty();
+        g_sectionDefaultActivities.empty();
         var idx=0;
         var count=Object.keys(jsonResponse).length;
         // display contents
@@ -63,10 +59,10 @@ function onQueryActivitiesSuccess(data, status, xhr){
             var activityJson=jsonResponse[key];
             var activityId=activityJson[g_keyActivityId];
             if(idx==0){
-                targetSection.data(g_keyStartingIndex, activityId);
+                g_sectionDefaultActivities.data(g_keyStartingIndex, activityId);
             }
             if(idx==count-1){
-                targetSection.data(g_keyEndingIndex, activityId);
+                g_sectionDefaultActivities.data(g_keyEndingIndex, activityId);
             }
             var cell=null;
             var token = $.cookie(g_keyLoginStatus.toString());
@@ -75,7 +71,7 @@ function onQueryActivitiesSuccess(data, status, xhr){
             } else{
                 cell=generateActivityCell(activityJson, true, g_modeHomepage);
             }
-            targetSection.append(cell);
+            g_sectionDefaultActivities.append(cell);
             ++idx;
         }
     }

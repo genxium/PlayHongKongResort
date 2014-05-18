@@ -1,11 +1,17 @@
 // Assistant Handlers
 function onBtnEditClicked(evt){
     var activityJson=$(this).data(g_keyActivityJson);
-	sectionActivityEditor=$("#idSectionActivityEditor");
-	sectionActivityEditor.empty();
-
-	g_activityEditor=generateActivityEditorByJson(activityJson);
-	sectionActivityEditor.append(g_activityEditor);
+	g_callbackOnEditorCancelled=function(){
+		g_sectionActivityEditor.modal("hide");
+	};
+	g_activityEditor=generateActivityEditorByJson(activityJson);	
+	g_modalActivityEditor.empty();
+	g_modalActivityEditor.append(g_activityEditor);
+	g_sectionActivityEditor.css("height", "80%");
+	g_sectionActivityEditor.css("padding", "5pt");
+	g_sectionActivityEditor.modal({
+		show: true
+	});
 }
 
 function onMouseEnterOwnedActivityCell(evt){

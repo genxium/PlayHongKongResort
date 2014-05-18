@@ -1,5 +1,7 @@
+// general DOM elements
+var g_sectionUploadAvatar=null;
+
 // general DOM element key
-var g_idSectionUploadAvatar="idSectionUploadAvatar";
 var g_idFormAvatar="idFormAvatar";
 var g_idSectionResponse="idSectionResponse";
 

@@ -28,16 +28,15 @@ $(document).ready(function(){
 	var registerForm=generateRegisterForm();
     g_sectionRegister.append(registerForm);
 
-	g_sectionActivityEditor=$("#idSectionActivityEditor");
-	g_modalActivityEditor=$("#idModalActivityEditor");
-	
-    // initialize callback functions
+	initActivityEditor();
+	 
+	// initialize callback functions
     g_callbackOnActivityEditorRemoved=refreshOnLoggedIn;
     g_callbackOnQueryActivitiesSuccess=onQueryActivitiesSuccess;
 
 	// execute on page loaded
-	var sectionDefaultActivities=$("#"+g_idSectionDefaultActivities); 
-	sectionDefaultActivities.on("scroll", onSectionDefaultActivitiesScrolled);
+	g_sectionDefaultActivities=$("#idSectionDefaultActivities"); 
+	g_sectionDefaultActivities.on("scroll", onSectionDefaultActivitiesScrolled);
 	checkLoginStatus();
 
 	$("#"+g_idBtnPreviousPage).on("click", onBtnPreviousPageClicked);

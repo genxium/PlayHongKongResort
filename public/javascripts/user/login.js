@@ -81,8 +81,8 @@ function onBtnLogoutClicked(evt){
 
 function onBtnProfileClicked(evt){
 	try{
-		var userProfileEditorPath="/show?page=user_profile_editor.html";
-		var userProfileEditorPage=window.open(userProfileEditorPath);
+		var profilePath="/show?page=profile.html";
+		var profilePage=window.open(profilePath);
     } catch (err){
 
     }
@@ -97,6 +97,7 @@ function onBtnCreateClicked(evt){
 	g_modalActivityEditor.empty();
 	g_modalActivityEditor.append(g_activityEditor);
 	g_sectionActivityEditor.css("height", "80%");
+	g_sectionActivityEditor.css("padding", "5pt");
 	g_sectionActivityEditor.modal({
 		show: true
 	});
@@ -144,48 +145,44 @@ function generateLoginForm(){
 
 function generateLoggedInMenu(){
 
-	var ret=$('<table>');
+	var ret=$('<div>');
 	
-	var row1=$('<tr>').appendTo(ret);
-	var cell11=$('<td>').appendTo(row1);
-	var cell12=$('<td>').appendTo(row1);
-
 	var avatar=$('<img>',{
 		src: g_userAvatarURL,
-		style: "width: 50pt; height 50pt"	
-	}).appendTo(cell11);
+		style: "width: 50pt; height 50pt; float: left"	
+	}).appendTo(ret);
 
-	var greeting=$('<plaintext>',{
+	var rightHalf=$('<div>',{
+		style: "width: 200pt; height 50pt; margin-left: 10pt; float: left"	
+	}).appendTo(ret);
+
+	var greeting=$('<p>',{
 		style: "font-size: 15pt; color: white",
 		text: "Hello, "+g_userName	
-	}).appendTo(cell12);
+	}).appendTo(rightHalf);
 
-	var row2=$('<tr>').appendTo(ret);
-	var cell21=$('<td>').appendTo(row2);
-	var cell22=$('<td>').appendTo(row2);
-	var cell23=$('<td>').appendTo(row2);
 	g_btnLogout=$('<button>', {
-		style: "font-size: 15pt",
+		style: "clear: both; font-size: 15pt; color: white; background-color: crimson",
 		text: 'Logout'
-	}).appendTo(cell22);
+	}).appendTo(rightHalf);
 	g_btnLogout.on("click", onBtnLogoutClicked);
 
 	g_btnProfile=$('<button>', {
-		style: "font-size: 15pt",
+		style: "font-size: 15pt; color: white; background-color: cornflowerblue",
 		text: 'Profile'
-	}).appendTo(cell22);
+	}).appendTo(rightHalf);
 	g_btnProfile.on("click", onBtnProfileClicked);
 
 	g_btnCreate=$('<button>', {
-		style: "font-size: 15pt",
+		style: "font-size: 15pt; margin-left: 10pt; background-color: chartreuse",
 		text: "Create"	
-	}).appendTo(cell23);
+	}).appendTo(rightHalf);
 	g_btnCreate.on("click", onBtnCreateClicked);
 
 	return ret;
 }
 
-function checkLoginStatus(evt){
+function checkLoginStatus(){
 	do{
 		var token = $.cookie(g_keyLoginStatus.toString());
 		if(token==null) {

@@ -1,4 +1,12 @@
 // Assistive Functions
+function refreshOnEnter(){
+
+}
+
+function refreshOnLoggedIn(){
+	
+}
+
 function queryActivityDetail(activityId){
     var params={};
     params['activityId']=activityId;
@@ -26,9 +34,9 @@ function displayActivityDetail(activityDetailJson){
     var activityContent=activityDetailJson[g_keyActivityContent];
     var activityImages=activityDetailJson[g_keyActivityImages];
 
-    var body=$("body");
+    var wrap=$("#wrap");
     var detailView=generateActivityDetailViewByJson(activityDetailJson);
-    body.append(detailView);
+    wrap.append(detailView);
 }
 
 // Assistive Callback Functions
@@ -246,7 +254,25 @@ function generateActivityDetailViewByJson(activityJson){
 
 // execute on start
 $(document).ready(function(){
-	// execute on page loaded
+    // initialize local DOMs
+	g_sectionLogin=$("#idSectionLogin");
+	var loginForm=generateLoginForm();
+    g_sectionLogin.append(loginForm);
+
+	g_callbackOnLoginSuccess=function(){
+		refreshOnLoggedIn();
+	};
+
+	g_callbackOnLoginError=null;
+
+	g_callbackOnEnter=function(){
+		refreshOnEnter();
+	};
+
+	initActivityEditor();
+	
+	checkLoginStatus();
+	
 	var activityId=$('#activityId').attr("value");
 	queryActivityDetail(activityId);
 });

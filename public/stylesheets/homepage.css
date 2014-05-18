@@ -1,8 +1,9 @@
-/* Default Tags */
 html, body
 {
 	margin: 0;
 }
+
+/* Header */
 #wrap
 {
 	margin: 0 auto;
@@ -16,14 +17,13 @@ html, body
 	height: 68px;
 }
 
-/* Title */
 #idSectionTitle
 {
 	display: table-row;
  	position: relative;
  	text-align: center;
  	font-family: Georgia;
-	font-size: 250%;
+	font-size: 24pt;
 	color: #FF8822;
 }
 

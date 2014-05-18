@@ -1,3 +1,11 @@
+function refreshOnEnter(){
+	g_sectionUploadAvatar.hide();
+}
+
+function refreshOnLoggedIn(){
+	g_sectionUploadAvatar.show();
+}
+
 function validateImage(file){
 	var fileName = file.value;
 	var ext = fileName.split('.').pop().toLowerCase();

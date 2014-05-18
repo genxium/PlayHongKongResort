@@ -1,4 +1,12 @@
 // Assistive functions
+function initActivityEditor(){
+	g_sectionActivityEditor=$("#idSectionActivityEditor");
+	g_modalActivityEditor=$("#idModalActivityEditor");
+	g_sectionActivityEditor.hide();
+    g_sectionActivityEditor.modal("hide");
+	g_modalActivityEditor.empty();
+}
+
 function countSelectedImages(){
 
 }
@@ -209,7 +217,7 @@ function previewImage(input) {
                    type: "checkbox",
                    checked: true
             }).appendTo(node);
-            checkbox.change(function(){
+            checkbox.on("change", function(){
 				setSavable();
                 setNonSubmittable();
             });
@@ -358,7 +366,7 @@ function generateActivityEditorByJson(activityJson){
                    type: "checkbox",
                    checked: true
                }).appendTo(node);
-               checkbox.change(function(){
+               checkbox.on("change", function(){
 				   setSavable();
                    setNonSubmittable();
                });
@@ -376,21 +384,25 @@ function generateActivityEditorByJson(activityJson){
 				 			class: g_classNewImage,
 							type: 'file'
 				 		}).appendTo(ret);
-		imageField.change(function(){
+		imageField.on("change", function(){
 			setSavable();
 		    setNonSubmittable();
             previewImage(this);
         });
 	 }
 
-	 // schedules
-     var sectionBeginTime=generateBeginTimeSelection("Begin Time: ", g_classSelectionBeginTime); 
-     ret.append(sectionBeginTime);
-     ret.data(g_indexSectionBeginTime, sectionBeginTime);
-     
-     var sectionDeadline=generateDeadlineSelection("Deadline: ", g_classSelectionDeadline);
+	 // Schedules
+	 var deadline=null;
+	 if(activityJson!=null && activityJson.hasOwnProperty(g_keyActivityDeadline)) deadline=activityJson[g_keyActivityDeadline];
+     var sectionDeadline=generateDateSelection("Deadline: ", g_classSelectionDeadline, deadline);
      ret.append(sectionDeadline);
      ret.data(g_indexSectionDeadline, sectionDeadline);
+
+	 var beginTime=null;
+	 if(activityJson!=null && activityJson.hasOwnProperty(g_keyActivityBeginTime)) beginTime=activityJson[g_keyActivityBeginTime];
+     var sectionBeginTime=generateDateSelection("Begin Time: ", g_classSelectionBeginTime, beginTime); 
+     ret.append(sectionBeginTime);
+     ret.data(g_indexSectionBeginTime, sectionBeginTime);
 
 	 /* Associated Buttons */
 	 var btnSave=$('<button>',{
@@ -429,11 +441,29 @@ function generateActivityEditorByJson(activityJson){
 	 return ret;
 }
 
-function generateDateSelection(sectionName, className){
-	 var currentTime=new Date();
-	 var currentYear=currentTime.getFullYear();
+function generateDateSelection(sectionName, className, time){
 
-	 var numberOfYears=30;
+	 var currentTime=null;
+	 var currentYear=null;
+     var currentMonth=null;	
+	 var currentDay=null;
+	 var currentHour=null;
+	 var currentMin=null;
+
+	 if(time!=null) {
+		 currentTime=new Date(time);
+		 currentYear=currentTime.getFullYear();
+		 currentMonth=currentTime.getMonth()+1;	
+		 currentDay=currentTime.getDate();
+		 currentHour=currentTime.getHours();
+		 currentMin=currentTime.getMinutes();
+	 }
+	 else {
+		 currentTime=new Date();
+		 currentYear=currentTime.getFullYear();
+	 }
+	 
+	 var numberOfYears=2;
 	 var numberOfMonths=12;
 	 var numberOfDays=31;
 	 var numberOfHours=24;
@@ -461,34 +491,33 @@ function generateDateSelection(sectionName, className){
 	 	intervals.push(i*interval);
 	 }
 
-	 var ret=$('<p>',
-                {
-                    html: sectionName.toString()
-                });
+	 var ret=$('<p>', {
+		html: sectionName.toString()
+	 });
 
-	 var selectionYear=generateSelectionWidget(years, className);
+	 var selectionYear=generateSelectionWidget(years, className, currentYear);
      ret.append(selectionYear);
 
-	 var selectionMonth=generateSelectionWidget(months, className);
+	 var selectionMonth=generateSelectionWidget(months, className, currentMonth);
      ret.append(selectionMonth);
 
-	 var selectionDay=generateSelectionWidget(days, className);
+	 var selectionDay=generateSelectionWidget(days, className, currentDay);
      ret.append(selectionDay);
 
 	 ret.append('/');
 
-     var selectionHour=generateSelectionWidget(hours, className);
+     var selectionHour=generateSelectionWidget(hours, className, currentHour);
      ret.append(selectionHour);
 
 	 ret.append(':');
 
-	 var selectionInterval=generateSelectionWidget(intervals, className);
+	 var selectionInterval=generateSelectionWidget(intervals, className, currentMin);
      ret.append(selectionInterval);
 
      return ret;
 }
 
-function generateSelectionWidget(arr, className){
+function generateSelectionWidget(arr, className, value){
     var ret=$('<select>',{
                 class: className
             });
@@ -498,13 +527,10 @@ function generateSelectionWidget(arr, className){
 	 	option.text(element.toString());
 	 	option.val(element);
     }
+	if(value!=null) ret.val(value);
+	ret.on("change", function(){
+		setSavable();
+		setNonSubmittable();	
+	});
     return ret;
-}
-
-function generateBeginTimeSelection(){
-    return generateDateSelection("Begin Time: ", g_classSelectionBeginTime);
-}
-
-function generateDeadlineSelection(){
-    return generateDateSelection("Deadline: ", g_classSelectionDeadline);
 }

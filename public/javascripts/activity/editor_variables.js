@@ -1,3 +1,4 @@
+// general DOM elements
 var g_activityEditor=null;
 var g_modalActivityEditor=null;
 var g_sectionActivityEditor=null;
