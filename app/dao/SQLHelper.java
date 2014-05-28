@@ -143,9 +143,8 @@ public class SQLHelper {
 		List<JSONObject> ret=null;
 		try{
 			Connection connection=getConnection();
-			if(connection==null) System.out.println("executeSelect: connection is null");
-			Statement statement= connection.createStatement(); 
-			ResultSet rs=statement.executeQuery(query);
+			PreparedStatement statement= connection.prepareStatement(query); 
+			ResultSet rs=statement.executeQuery();
 			if(rs!=null){
 				ret=ResultSetUtil.convertToJSON(rs);
 				rs.close();
