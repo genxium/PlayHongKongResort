@@ -1,7 +1,7 @@
 package model;
 
 public class UserActivityRelationTable {
-
+	public static String TABLE ="UserActivityRelationTable";
 	public static String ID ="UserActivityRelationTableId";
 	public static String USER_ID ="UserId";
 	public static String ACTIVITY_ID ="ActivityId";

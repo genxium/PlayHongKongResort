@@ -12,7 +12,7 @@ function queryPendingActivitiesByAdmin(refIndex, numItems, direction){
 		try{
 		    $.ajax({
 		        method: "GET",
-		        url: "/queryPendingActivitiesByAdmin",
+		        url: "/activity/query",
 		        data: params,
 		        success: onQueryActivitiesSuccess,
                 error: function(data, status, xhr){
@@ -39,7 +39,7 @@ function queryAcceptedActivitiesByAdmin(refIndex, numItems, direction){
         try{
             $.ajax({
                 method: "GET",
-                url: "/queryAcceptedActivitiesByAdmin",
+                url: "/activity/query",
                 data: params,
                 success: onQueryActivitiesSuccess,
                 error: function(data, status, xhr){

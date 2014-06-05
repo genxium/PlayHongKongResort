@@ -16,7 +16,7 @@ import java.util.*;
 
 public class ActivityController extends Controller {
 
-    public static Result query(Object refIndex, Integer numItems, Integer direction, String token, Integer relation){
+    public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer relation, Integer status){
         response().setContentType("text/plain");
         do{
             try{
@@ -31,7 +31,8 @@ public class ActivityController extends Controller {
                     UserActivityRelation.RelationType relationship=UserActivityRelation.RelationType.getTypeForValue(relation);
                     activities=SQLCommander.queryActivities(userId, relationship);
                 } else{
-                    activities=SQLCommander.queryAcceptedActivitiesInChronologicalOrder(refIndex, numItems, direction, userId);
+					Activity.StatusType activityStatus=Activity.StatusType.getTypeForValue(status);
+                    activities=SQLCommander.queryActivities(refIndex, Activity.ID, SQLHelper.ASCEND, numItems, direction, activityStatus);
                 }
                 if(activities==null) break;
                 ObjectNode result = Json.newObject();

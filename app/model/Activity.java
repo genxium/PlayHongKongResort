@@ -12,6 +12,7 @@ import java.util.*;
 
 public class Activity {
 
+	public static String TABLE ="Activity";
 	public static String ID ="ActivityId";
 	public static String TITLE="ActivityTitle";
 	public static String CONTENT ="ActivityContent";

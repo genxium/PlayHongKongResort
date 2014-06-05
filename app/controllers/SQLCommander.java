@@ -11,14 +11,6 @@ import java.util.*;
 
 public class SQLCommander {
 
-    public static Integer ACTIVITY_ID=0;
-    public static Integer COMMENT_ON_ACTIVITY_ID=1;
-
-    public static Map<Integer, String> s_columnMap = ImmutableMap.of(
-            ACTIVITY_ID, Activity.ID,
-            COMMENT_ON_ACTIVITY_ID, CommentOnActivity.ID
-    );
-
 	public static Integer INVALID =(-1);
     public static String INITIAL_REF_INDEX = "0";
     public static Integer DIRECTION_FORWARD = (+1);
@@ -302,25 +294,7 @@ public class SQLCommander {
 		List<Activity> ret=null;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
-			// query table UserActivityRelationTable
-			List<String> relationColumnNames=new LinkedList<String>();
-			relationColumnNames.add(UserActivityRelationTable.ACTIVITY_ID);
-
-			List<String> relationWhereClauses=new LinkedList<String>();
-			relationWhereClauses.add(UserActivityRelationTable.USER_ID +"="+userId);
-			relationWhereClauses.add(UserActivityRelationTable.RELATION_ID +"="+relation.ordinal());
-
-			List<JSONObject> relationTableRecords=sqlHelper.query("UserActivityRelationTable", relationColumnNames, relationWhereClauses, SQLHelper.AND);
-			if(relationTableRecords==null || relationTableRecords.size()<=0) break;
-
-			List<Integer> activityIds=new LinkedList<Integer>();
-			for(JSONObject record : relationTableRecords){
-				Integer activityId=(Integer)record.get(UserActivityRelationTable.ACTIVITY_ID);
-				activityIds.add(activityId);
-			}
-
-			if(activityIds==null || activityIds.size()<=0) break;
-
+			
 			// query table Activity
 			List<String> activityColumnNames=new LinkedList<String>();
 			activityColumnNames.add(Activity.ID);
@@ -333,11 +307,13 @@ public class SQLCommander {
 			activityColumnNames.add(Activity.STATUS);
 
 			List<String> activityWhereClauses=new LinkedList<>();
-            for(Integer activityId : activityIds){
-                activityWhereClauses.add(Activity.ID +"="+SQLHelper.convertToQueryValue(activityId));
-            }
+			activityWhereClauses.add("EXISTS (SELECT NULL FROM UserActivityRelationTable WHERE "+
+										UserActivityRelationTable.USER_ID+"="+userId+" AND "+
+										UserActivityRelationTable.RELATION_ID+"="+relation.ordinal()+" AND "+
+										UserActivityRelationTable.TABLE+"."+UserActivityRelationTable.ACTIVITY_ID+"="+Activity.TABLE+"."+Activity.ID+
+									")");
 
-            List<JSONObject> activityJsons=sqlHelper.query("Activity", activityColumnNames, activityWhereClauses, SQLHelper.OR);
+            List<JSONObject> activityJsons=sqlHelper.query("Activity", activityColumnNames, activityWhereClauses, SQLHelper.AND);
 			if(activityJsons==null) break;
             ret=new ArrayList<>();
             for(JSONObject activityJson : activityJsons){
@@ -348,7 +324,7 @@ public class SQLCommander {
 		return ret;
 	}
 
-    public static List<Activity> queryActivities(Activity.StatusType status, Object refIndex, Integer sortKey, String sortDirection, Integer numItems, Integer direction, Integer userId){
+    public static List<Activity> queryActivities(String refIndex, String orderKey, String orderDirection, Integer numItems, Integer direction, Activity.StatusType status){
         List<Activity> ret=null;
         do{
             try{
@@ -368,19 +344,18 @@ public class SQLCommander {
                 List<String> whereClauses=new LinkedList<String>();
                 whereClauses.add(Activity.STATUS +"="+status.ordinal());
 
-                String columnName=s_columnMap.get(sortKey);
                 List<String> orderClauses=new LinkedList<String>();
-                orderClauses.add(columnName);
+                orderClauses.add(orderKey);
 
                 List<String> orderDirections=new LinkedList<String>();
-                orderDirections.add(sortDirection);
+                orderDirections.add(orderDirection);
 
                 if(refIndex.equals(INITIAL_REF_INDEX)){
-                    whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(Integer.valueOf(INITIAL_REF_INDEX)));
+                    whereClauses.add(orderKey+">="+SQLHelper.convertToQueryValue(Integer.valueOf(INITIAL_REF_INDEX)));
                 } else if(direction== DIRECTION_FORWARD){
-                    whereClauses.add(columnName+">"+SQLHelper.convertToQueryValue(refIndex));
+                    whereClauses.add(orderKey+">"+SQLHelper.convertToQueryValue(refIndex));
                 } else{
-                    whereClauses.add(columnName+"<"+SQLHelper.convertToQueryValue(refIndex));
+                    whereClauses.add(orderKey+"<"+SQLHelper.convertToQueryValue(refIndex));
                 }
 
                 List<Integer> limits=new ArrayList<Integer>();
@@ -400,15 +375,6 @@ public class SQLCommander {
         }while(false);
         return ret;
     }
-
-	public static List<Activity> queryPendingActivitiesInChronologicalOrder(Object refIndex, Integer numItems, Integer direction, Integer userId){
-		return queryActivities(Activity.StatusType.pending, refIndex, ACTIVITY_ID, SQLHelper.DESCEND, numItems, direction, userId);
-	}
-
-	public static List<Activity> queryAcceptedActivitiesInChronologicalOrder(Object refIndex, Integer numItems, Integer direction, Integer userId){
-		return queryActivities(Activity.StatusType.accepted, refIndex, ACTIVITY_ID, SQLHelper.DESCEND, numItems, direction, userId);
-	}
-
 	public static UserActivityRelation.RelationType queryRelationOfUserIdAndActivity(int userId, int activityId){
 		String tableName="UserActivityRelationTable";
 		UserActivityRelation.RelationType ret=null;
@@ -471,7 +437,7 @@ public class SQLCommander {
 		return ret;
 	}
 
-    public static List<CommentOnActivity> queryTopLevelComments(Integer activityId, Object refIndex, Integer sortKey, String sortDirection, Integer numItems, Integer direction, Integer commentType){
+    public static List<CommentOnActivity> queryTopLevelComments(Integer activityId, String refIndex, String orderKey, String orderDirection, Integer numItems, Integer direction, Integer commentType){
          
         List<CommentOnActivity> ret=null;
         do{
@@ -495,19 +461,18 @@ public class SQLCommander {
                 whereClauses.add(CommentOnActivity.COMMENT_TYPE+"="+commentType);
                 whereClauses.add(CommentOnActivity.PARENT_ID+"="+INVALID.toString());
 
-                String columnName=s_columnMap.get(sortKey);
                 List<String> orderClauses=new LinkedList<String>();
-                orderClauses.add(columnName);
+                orderClauses.add(orderKey);
 
                 List<String> orderDirections=new LinkedList<String>();
-                orderDirections.add(sortDirection);
+                orderDirections.add(orderDirection);
 
                 if(refIndex.equals(INITIAL_REF_INDEX)){
-                    whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(INITIAL_REF_INDEX));
+                    whereClauses.add(orderKey+">="+SQLHelper.convertToQueryValue(INITIAL_REF_INDEX));
                 } else if(direction== DIRECTION_FORWARD){
-                    whereClauses.add(columnName+">"+SQLHelper.convertToQueryValue(refIndex));
+                    whereClauses.add(orderKey+">"+SQLHelper.convertToQueryValue(refIndex));
                 } else{
-                    whereClauses.add(columnName+"<"+SQLHelper.convertToQueryValue(refIndex));
+                    whereClauses.add(orderKey+"<"+SQLHelper.convertToQueryValue(refIndex));
                 }
 
                 List<Integer> limits=new ArrayList<Integer>();
@@ -528,7 +493,7 @@ public class SQLCommander {
         return ret;
     }
 
-    public static List<CommentOnActivity> querySubComments(Integer parentId, Object refIndex, Integer sortKey, String sortDirection, Integer numItems, Integer direction, Integer commentType){
+    public static List<CommentOnActivity> querySubComments(Integer parentId, Object refIndex, String orderKey, String orderDirection, Integer numItems, Integer direction, Integer commentType){
         List<CommentOnActivity> ret=null;
         do{
             try{
@@ -550,20 +515,19 @@ public class SQLCommander {
                 whereClauses.add(CommentOnActivity.PARENT_ID+"="+parentId);
                 whereClauses.add(CommentOnActivity.COMMENT_TYPE+"="+commentType);
 
-                String columnName=s_columnMap.get(sortKey);
                 List<String> orderClauses=new LinkedList<String>();
-                orderClauses.add(columnName);
+                orderClauses.add(orderKey);
 
                 List<String> orderDirections=new LinkedList<String>();
-                orderDirections.add(sortDirection);
+                orderDirections.add(orderDirection);
 
                 if(refIndex.equals(INITIAL_REF_INDEX)){
-                    whereClauses.add(columnName+">="+SQLHelper.convertToQueryValue(INITIAL_REF_INDEX));
+                    whereClauses.add(orderKey+">="+SQLHelper.convertToQueryValue(INITIAL_REF_INDEX));
 
                 } else if(direction== DIRECTION_FORWARD){
-                    whereClauses.add(columnName+">"+SQLHelper.convertToQueryValue(refIndex));
+                    whereClauses.add(orderKey+">"+SQLHelper.convertToQueryValue(refIndex));
                 } else{
-                    whereClauses.add(columnName+"<"+SQLHelper.convertToQueryValue(refIndex));
+                    whereClauses.add(orderKey+"<"+SQLHelper.convertToQueryValue(refIndex));
                 }
 
                 List<Integer> limits=null;
@@ -687,6 +651,31 @@ public class SQLCommander {
 				columnNames.add(Activity.STATUS);
 				List<Object> columnValues=new LinkedList<Object>();
 				columnValues.add(Activity.StatusType.accepted.ordinal());
+				List<String> whereClauses=new LinkedList<String>();
+				whereClauses.add(Activity.ID +"="+SQLHelper.convertToQueryValue(activity.getId()));
+
+				ret=sqlHelper.update(activityTableName, columnNames, columnValues, whereClauses, SQLHelper.AND);
+			} catch(Exception e){
+
+			}
+		}while(false);
+		return ret;
+	}
+
+	public static boolean rejectActivity(User user, Activity activity){
+		boolean ret=false;
+		do{
+			if(user==null) break;
+			if(activity==null) break;
+			if(validateAdminAccess(user)==false) break;
+			try{
+				SQLHelper sqlHelper=new SQLHelper();
+				String activityTableName="Activity";
+
+				List<String> columnNames=new LinkedList<String>();
+				columnNames.add(Activity.STATUS);
+				List<Object> columnValues=new LinkedList<Object>();
+				columnValues.add(Activity.StatusType.rejected.ordinal());
 				List<String> whereClauses=new LinkedList<String>();
 				whereClauses.add(Activity.ID +"="+SQLHelper.convertToQueryValue(activity.getId()));
 
