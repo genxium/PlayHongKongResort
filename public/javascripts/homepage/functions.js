@@ -42,19 +42,19 @@ function emptyRegisterFields(){
     }
 }
 
-function showAccountSections(){
+function showRegisterSection(){
    if(g_sectionRegister){
        g_sectionRegister.show();
    }
 }
 
-function hideAccountSections(){
+function hideRegisterSection(){
    if(g_sectionRegister){
        g_sectionRegister.hide();
    }
 }
 
-function removeAccountSections(){
+function removeRegisterSection(){
     if(g_sectionRegister){
         g_sectionRegister.remove();
         g_sectionRegister=null;
@@ -62,13 +62,13 @@ function removeAccountSections(){
 }
 
 function refreshOnEnter(){
-    showAccountSections();
+    showRegisterSection();
     emptyRegisterFields();
 	g_sectionDefaultActivities.show();
 }
 
 function refreshOnLoggedIn(){
-    hideAccountSections();
+    hideRegisterSection();
 }
 
 function onQueryActivitiesSuccess(data, status, xhr){
@@ -113,7 +113,7 @@ function queryActivities(refIndex, numItems, direction){
 
 		try{
 			$.ajax({
-				method: "GET",
+				type: "GET",
 				url: "/activity/query",
 				data: params,
 				success: g_callbackOnQueryActivitiesSuccess,

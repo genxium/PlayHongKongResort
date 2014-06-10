@@ -1,19 +1,17 @@
 function onBtnPreviousPageClicked(evt){
-	var targetSection=$("#"+g_idSectionDefaultActivities);
 
-	var pageIndex=targetSection.data(g_keyPageIndex);
-    var startingIndex=targetSection.data(g_keyStartingIndex);
-    var endingIndex=targetSection.data(g_keyEndingIndex);
+	var pageIndex=g_sectionActivityMonitor.data(g_keyPageIndex);
+    var startingIndex=g_sectionActivityMonitor.data(g_keyStartingIndex);
+    var endingIndex=g_sectionActivityMonitor.data(g_keyEndingIndex);
 
     queryActivities(startingIndex, g_numItemsPerPage, g_directionBackward);
 }
 
 function onBtnNextPageClicked(evt){
-    var targetSection=$("#"+g_idSectionActivityMonitor);
 
-    var pageIndex=targetSection.data(g_keyPageIndex);
-    var startingIndex=targetSection.data(g_keyStartingIndex);
-    var endingIndex=targetSection.data(g_keyEndingIndex);
+    var pageIndex=g_sectionActivityMonitor.data(g_keyPageIndex);
+    var startingIndex=g_sectionActivityMonitor.data(g_keyStartingIndex);
+    var endingIndex=g_sectionActivityMonitor.data(g_keyEndingIndex);
 
     queryActivities(endingIndex, g_numItemsPerPage, g_directionForward);
 }
@@ -39,13 +37,13 @@ function onQueryActivitiesSuccess(data, status, xhr){
             var activityJson=jsonResponse[key];
             var activityId=activityJson[g_keyActivityId];
             if(idx==0){
-                targetSection.data(g_keyStartingIndex, activityId);
+                g_sectionActivityMonitor.data(g_keyStartingIndex, activityId);
             }
             if(idx==count-1){
-                targetSection.data(g_keyEndingIndex, activityId);
+                g_sectionActivityMonitor.data(g_keyEndingIndex, activityId);
             }
             var cell=generateActivityCellForAdmin(activityJson);
-            targetSection.append(cell);
+            g_sectionActivityMonitor.append(cell);
             ++idx;
         }
     }

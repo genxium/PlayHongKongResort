@@ -187,8 +187,8 @@
 {
 	display: table-cell;
 	position: relative;
-	float: right;
-	vertical-align: bottom;
+	float: left;
+	margin-left: 2pt;
 	font-size:	16pt;
 	color:	#ff0000;
 }

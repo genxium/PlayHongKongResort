@@ -154,7 +154,7 @@ function onSave(){
 	}while(false);
 }
 
-function onFormSubmission(){
+function onSubmit(){
 	do{
         if(g_submittable==false) {
             alert("You have to save your changes before submission!");
@@ -278,7 +278,7 @@ function onBtnSubmitClicked(evt){
 	evt.preventDefault();
 
 	try{
-        onFormSubmission();
+        onSubmit();
 	} catch(err){
 		
 	}

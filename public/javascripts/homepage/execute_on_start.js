@@ -7,19 +7,19 @@ $(document).ready(function(){
 
 	g_callbackOnLoginSuccess=function(){
 		refreshOnLoggedIn();
-		queryDefaultActivities(0, g_numItemsPerPage, g_directionForward);
+		queryActivities(0, g_numItemsPerPage, g_directionForward);
 	};
 
 	g_callbackOnLoginError=null;
 
 	g_callbackOnEnter=function(){
 		refreshOnEnter();
-		queryDefaultActivities(0, g_numItemsPerPage, g_directionForward);
+		queryActivities(0, g_numItemsPerPage, g_directionForward);
 	};
 
 	g_callbackOnRegisterSuccess=function(){
 		refreshOnEnter();
-		queryDefaultActivities(0, g_numItemsPerPage, g_directionForward);
+		queryActivities(0, g_numItemsPerPage, g_directionForward);
 	}
 
 	g_callbackOnRegisterError=null;
