@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class CommentController extends Controller {
 
-    public static Result query(Integer activityId, Object refIndex, Integer numItems, Integer direction, String token){
+    public static Result query(Integer activityId, String refIndex, Integer numItems, Integer direction, String token){
         response().setContentType("text/plain");
         do{
             try{
@@ -25,9 +25,9 @@ public class CommentController extends Controller {
                 }
                 if(userId==DataUtils.invalidId) break;
 
-                List<CommentOnActivity> comments=SQLCommander.queryTopLevelComments(activityId, refIndex, SQLCommander.COMMENT_ON_ACTIVITY_ID, SQLHelper.DESCEND, numItems, direction, 0);
+                List<CommentOnActivity> comments=SQLCommander.queryTopLevelComments(activityId, refIndex, CommentOnActivity.ID, SQLHelper.DESCEND, numItems, direction, CommentOnActivity.TYPE_QA);
 
-				ArrayNode result=new ArrayNode(JsonNodeFactory.instance);
+		ArrayNode result=new ArrayNode(JsonNodeFactory.instance);
                 for(CommentOnActivity comment : comments){
                     result.add(comment.toObjectNodeWithSubComments());
                 }

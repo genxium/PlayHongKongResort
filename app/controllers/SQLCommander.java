@@ -493,7 +493,7 @@ public class SQLCommander {
         return ret;
     }
 
-    public static List<CommentOnActivity> querySubComments(Integer parentId, Object refIndex, String orderKey, String orderDirection, Integer numItems, Integer direction, Integer commentType){
+    public static List<CommentOnActivity> querySubComments(Integer parentId, String refIndex, String orderKey, String orderDirection, Integer numItems, Integer direction, Integer commentType){
         List<CommentOnActivity> ret=null;
         do{
             try{
