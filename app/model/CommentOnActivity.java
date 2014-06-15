@@ -129,7 +129,7 @@ public class CommentOnActivity {
                 ret.put(CONTENT, m_content);
                 ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
                 ret.put(GENERATED_TIME, m_generatedTime.toString());
-                List<CommentOnActivity> subComments=SQLCommander.querySubComments(m_id, 0, SQLCommander.COMMENT_ON_ACTIVITY_ID, SQLHelper.DESCEND, null, SQLCommander.DIRECTION_FORWARD, m_commentType);
+                List<CommentOnActivity> subComments=SQLCommander.querySubComments(m_id, SQLCommander.INITIAL_REF_INDEX, ID, SQLHelper.DESCEND, null, SQLCommander.DIRECTION_FORWARD, m_commentType);
 
                 ArrayNode subCommentsNode=new ArrayNode(JsonNodeFactory.instance);
                 for(CommentOnActivity subComment : subComments){
