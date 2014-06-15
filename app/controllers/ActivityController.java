@@ -32,9 +32,10 @@ public class ActivityController extends Controller {
                     activities=SQLCommander.queryActivities(userId, relationship);
                 } else{
 					Activity.StatusType activityStatus=Activity.StatusType.getTypeForValue(status);
-                    activities=SQLCommander.queryActivities(refIndex, Activity.ID, SQLHelper.ASCEND, numItems, direction, activityStatus);
+                    activities=SQLCommander.queryActivities(refIndex, Activity.ID, SQLHelper.DESCEND, numItems, direction, activityStatus);
                 }
                 if(activities==null) break;
+				System.out.println("ActivityController.query 1");
                 ObjectNode result = Json.newObject();
 
                 for(Activity activity : activities){
@@ -44,9 +45,10 @@ public class ActivityController extends Controller {
                         result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages());
                     }
                 }
+				System.out.println("ActivityController.query 2");
                 return ok(result);
             } catch(Exception e){
-
+				System.out.println("ActivityController.query, "+e.getMessage());
             }
         }while(false);
         return badRequest();

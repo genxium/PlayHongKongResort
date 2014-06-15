@@ -67,3 +67,9 @@ var g_keyEndingIndex="endingIndex";
 var g_keyRefIndex="refIndex";
 var g_keyNumItems="numItems";
 var g_keyDirection="direction";
+
+// constants
+var g_statusCreated=0;
+var g_statusPending=1;
+var g_statusRejected=2;
+var g_statusAccepted=3;

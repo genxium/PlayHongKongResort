@@ -1,10 +1,20 @@
 // Assistive functions
+function removeActivityEditor(){
+	do{	
+		if(g_sectionActivityEditor==null) break;
+		g_sectionActivityEditor.hide();
+		g_sectionActivityEditor.modal("hide");
+		if(g_modalActivityEditor==null) break;
+		g_modalActivityEditor.empty();
+		if(g_activityEditor==null) break;
+		g_activityEditor.remove();
+	}while(false);
+}
+
 function initActivityEditor(){
 	g_sectionActivityEditor=$("#idSectionActivityEditor");
 	g_modalActivityEditor=$("#idModalActivityEditor");
-	g_sectionActivityEditor.hide();
-    g_sectionActivityEditor.modal("hide");
-	g_modalActivityEditor.empty();
+	removeActivityEditor();
 }
 
 function countSelectedImages(){
@@ -177,7 +187,7 @@ function onSubmit(){
 			url: "/activity/submit",
 			data: params,
 			success: function(data, status, xhr){
-				g_activityEditor.remove();
+				removeActivityEditor();
 				if(g_callbackOnActivityEditorRemoved!=null){
 					g_callbackOnActivityEditorRemoved(0, g_numItemsPerPage, g_directionForward);
 				}
@@ -286,7 +296,7 @@ function onBtnSubmitClicked(evt){
 
 function onBtnCancelClicked(evt){
 	evt.preventDefault();
-	g_activityEditor.remove();
+	removeActivityEditor();
 	if(g_callbackOnEditorCancelled!=null){
 		g_callbackOnEditorCancelled();	
 	}
