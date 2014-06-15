@@ -7,7 +7,9 @@ function onBtnEditClicked(evt){
 	g_activityEditor=generateActivityEditorByJson(activityJson);	
 	g_modalActivityEditor.empty();
 	g_modalActivityEditor.append(g_activityEditor);
-	g_sectionActivityEditor.css("height", "80%");
+
+	g_sectionActivityEditor.css("position", "absolute");
+	g_sectionActivityEditor.css("height", "90%");
 	g_sectionActivityEditor.css("padding", "5pt");
 	g_sectionActivityEditor.modal({
 		show: true
@@ -87,7 +89,7 @@ function onBtnDetailClicked(evt){
 
 function generateActivityCell(activityJson, isLoggedIn, mode) returns a complete DOM(cell) of an activity
 
-activityJson(string): the json string that contains activity information;
+activityJson(object): the json object that contains activity information;
 isLoggedIn(boolean): [true,false] indicating user status;
 mode: g_modeHomepage indicates that the cell is generated for home page while g_modeProfile indicates that the cell is generated for profile page.
 
