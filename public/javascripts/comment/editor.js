@@ -71,11 +71,10 @@ function generateReplyEditor(activityId, parentId, predecessorId, toUsername){
 }
 
 function generateCommentCell(commentJson, activityId){
-    var ret=$('<div>', {
-        style: "border-left: thick solid #000000" 
-    });
+	var ret=$('<div>', {
+		style: "border-left: thick solid #000000" 
+	});
     
-    do{
         var row=$('<p>').appendTo(ret);
         var content=$('<span>', {
             text: commentJson[g_keyCommentAContent],
@@ -92,48 +91,50 @@ function generateCommentCell(commentJson, activityId){
             style: "text-align: left; margin-left:  25pt; color: blue"
         }).appendTo(row);        
         
-        var token=$.cookie(g_keyLoginStatus.toString());
-        if(token==null) break; 
+	do{
+		var token=$.cookie(g_keyLoginStatus.toString());
+		if(token==null) break; 
 
-        var operations=$('<span>',{
-			style: "margin-left: 20pt"	
-		}).appendTo(row);
+		var operations=$('<span>',{
+				style: "margin-left: 20pt"	
+			}).appendTo(row);
 
-        var btnReply=$('<button>',{
-            text: "reply",
-            style: "color: white; background-color: black; border: none"
-        }).appendTo(operations);
+		var btnReply=$('<button>',{
+		    text: "reply",
+		    style: "color: white; background-color: black; border: none"
+		}).appendTo(operations);
 
-        var parentId=commentJson[g_keyCommentAParentId];
-        var predecessorId=commentJson[g_keyCommentAId];
-        if(parentId==(-1)){
-            // root comment
-            parentId=predecessorId;
-        }
-        btnReply.data("ActivityId", activityId);
-        btnReply.data("ParentId", parentId);
-        btnReply.data("PredecessorId", predecessorId);
-		btnReply.data("CommentCell", ret);
-        btnReply.on("click", function(){
-            removeReplyEditor();
-            var btn=$(this);
-            var activityId=btn.data("ActivityId");
-            var parentId=btn.data("ParentId");
-            var predecessorId=btn.data("PredecessorId");
-            g_replyEditor=generateReplyEditor(activityId, parentId, predecessorId, commentJson[g_keyCommenterName]);
-            var commentCell=btn.data("CommentCell");
-            commentCell.append(g_replyEditor);
-        });
-
-		// Sub-Comments
-		var subComments=commentJson["SubComments"];
-		for(var key in subComments){
-	 		var subCommentJson=subComments[key];
-			var subCommentCell=generateSubCommentCell(subCommentJson, activityId);		
-			ret.append(subCommentCell);
+		var parentId=commentJson[g_keyCommentAParentId];
+		var predecessorId=commentJson[g_keyCommentAId];
+		if(parentId==(-1)){
+		    // root comment
+		    parentId=predecessorId;
 		}
-    }while(false);
-    return ret;
+		btnReply.data("ActivityId", activityId);
+		btnReply.data("ParentId", parentId);
+		btnReply.data("PredecessorId", predecessorId);
+			btnReply.data("CommentCell", ret);
+		btnReply.on("click", function(){
+		    removeReplyEditor();
+		    var btn=$(this);
+		    var activityId=btn.data("ActivityId");
+		    var parentId=btn.data("ParentId");
+		    var predecessorId=btn.data("PredecessorId");
+		    g_replyEditor=generateReplyEditor(activityId, parentId, predecessorId, commentJson[g_keyCommenterName]);
+		    var commentCell=btn.data("CommentCell");
+		    commentCell.append(g_replyEditor);
+		});
+	} while(false);
+
+	// Sub-Comments
+	var subComments=commentJson["SubComments"];
+	for(var key in subComments){
+		var subCommentJson=subComments[key];
+		var subCommentCell=generateSubCommentCell(subCommentJson, activityId);		
+		ret.append(subCommentCell);
+	}
+
+	return ret;
 }
 
 function generateSubCommentCell(commentJson, activityId){
