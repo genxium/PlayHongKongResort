@@ -19,4 +19,4 @@ var g_btnPreviousPage=null;
 var g_btnNextPage=null;
 var g_classFilterOption="classFilterOption";
 
-var g_statusToQuery=1; /* 1: pending, 2:rejected, 3:accepted */
+var g_statusToQuery=g_statusPending;

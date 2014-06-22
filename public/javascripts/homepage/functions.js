@@ -107,6 +107,7 @@ function queryActivities(refIndex, numItems, direction){
 		params[g_keyRefIndex]=refIndex.toString();
 		params[g_keyNumItems]=numItems.toString();
 		params[g_keyDirection]=direction.toString();
+		params[g_keyStatus]=g_statusAccepted;
 
 		var token = $.cookie(g_keyLoginStatus.toString());
 		if(token!=null) params[g_keyToken]=token;

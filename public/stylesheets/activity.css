@@ -18,8 +18,9 @@
 
 .classActivityEditor
 {
-	display: table-cell;
+	display: block;
 	position: relative;
+	overflow: auto;	
 	margin-top: 20pt;
 	padding: 5pt;
 }
