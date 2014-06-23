@@ -157,7 +157,7 @@ public class SQLCommander {
 
                 columnValues.add(tmpLastActivityId);
                 columnValues.add(userId);
-                columnValues.add(UserActivityRelation.RelationType.host.ordinal());
+                columnValues.add(UserActivityRelationTable.hosted);
 
                 int lastRelationTableId=sqlHelper.insert("UserActivityRelationTable", columnNames, columnValues);
                 if(lastRelationTableId==SQLHelper.INVALID_ID) break;
@@ -208,12 +208,11 @@ public class SQLCommander {
 		return ret;
 	}
 
-	public static boolean createUserActivityRelation(int activityId, User user, UserActivityRelation.RelationType relation){
+	public static boolean createUserActivityRelation(int activityId, User user, int relation){
 
 		boolean bRet=false;
 
 		int userId=user.getUserId();
-		int relationId=relation.ordinal();
 
 		SQLHelper sqlHelper=new SQLHelper();
 
@@ -227,7 +226,7 @@ public class SQLCommander {
 
 		columnValues.add(userId);
 		columnValues.add(activityId);
-		columnValues.add(relationId);
+		columnValues.add(relation);
 
 		try{
 			int lastId=sqlHelper.insert("UserActivityRelationTable", columnNames, columnValues);
@@ -281,8 +280,8 @@ public class SQLCommander {
 		do{
 			Activity activity= queryActivity(activityId);
 			List<Image> images=queryImagesByActivityId(activityId);
-			List<BasicUser> appliedParticipants=SQLCommander.queryUsersByActivityIdAndRelation(activityId, UserActivityRelation.RelationType.applied);
-			List<BasicUser> selectedParticipants=SQLCommander.queryUsersByActivityIdAndRelation(activityId, UserActivityRelation.RelationType.selected);
+			List<BasicUser> appliedParticipants=SQLCommander.queryUsersByActivityIdAndRelation(activityId, UserActivityRelationTable.applied);
+			List<BasicUser> selectedParticipants=SQLCommander.queryUsersByActivityIdAndRelation(activityId, UserActivityRelationTable.selected);
 
 			activityDetail=new ActivityDetail(activity, images, appliedParticipants, selectedParticipants);
 
@@ -290,7 +289,7 @@ public class SQLCommander {
 		return activityDetail;
 	}
 
-	public static List<Activity> queryActivities(Integer userId, UserActivityRelation.RelationType relation){
+	public static List<Activity> queryActivities(Integer userId, int relation){
 		List<Activity> ret=null;
 		do{
 			SQLHelper sqlHelper=new SQLHelper();
@@ -309,7 +308,7 @@ public class SQLCommander {
 			List<String> activityWhereClauses=new LinkedList<>();
 			activityWhereClauses.add("EXISTS (SELECT NULL FROM UserActivityRelationTable WHERE "+
 										UserActivityRelationTable.USER_ID+"="+userId+" AND "+
-										UserActivityRelationTable.RELATION_ID+"="+relation.ordinal()+" AND "+
+										UserActivityRelationTable.RELATION_ID+"="+relation+" AND "+
 										UserActivityRelationTable.TABLE+"."+UserActivityRelationTable.ACTIVITY_ID+"="+Activity.TABLE+"."+Activity.ID+
 									")");
 
@@ -375,9 +374,9 @@ public class SQLCommander {
         }while(false);
         return ret;
     }
-	public static UserActivityRelation.RelationType queryRelationOfUserIdAndActivity(int userId, int activityId){
+	public static int queryRelationOfUserIdAndActivity(int userId, int activityId){
 		String tableName="UserActivityRelationTable";
-		UserActivityRelation.RelationType ret=null;
+		int ret=UserActivityRelationTable.invalid;
 		do{
 			try{
 				SQLHelper sqlHelper=new SQLHelper();
@@ -395,8 +394,8 @@ public class SQLCommander {
 				Iterator<JSONObject> itRecord=relationTableRecords.iterator();
 				if(itRecord.hasNext()){
 					JSONObject record=itRecord.next();
-					Integer relationId=(Integer)record.get(UserActivityRelationTable.RELATION_ID);
-					ret=UserActivityRelation.RelationType.getTypeForValue(relationId);
+					Integer relation=(Integer)record.get(UserActivityRelationTable.RELATION_ID);
+					ret=relation;
 				}
 			} catch(Exception e){
 				System.out.println("SQLCommander.queryRelationOfUserIdAndActivity:"+e.getMessage());
@@ -554,8 +553,8 @@ public class SQLCommander {
 		boolean ret=false;
 		do{
 			// validate host relation
-			UserActivityRelation.RelationType type=SQLCommander.queryRelationOfUserIdAndActivity(userId, activityId);
-			if(type==null || type!=UserActivityRelation.RelationType.host) break;
+			int relation=SQLCommander.queryRelationOfUserIdAndActivity(userId, activityId);
+			if(relation==UserActivityRelationTable.invalid || relation!=UserActivityRelationTable.hosted) break;
 			ret=true;
 		}while(false);
 		return ret;
@@ -620,8 +619,8 @@ public class SQLCommander {
 			if(activity==null) break;
 			if(activity.getStatus()!=Activity.StatusType.accepted) break;
 			int activityId=activity.getId();
-			UserActivityRelation.RelationType relation=queryRelationOfUserIdAndActivity(userId, activityId);
-			if(relation!=null) break;
+			int relation=queryRelationOfUserIdAndActivity(userId, activityId);
+			if(relation==UserActivityRelationTable.invalid) break;
 			ret=true;
 		}while(false);
 		return ret;
@@ -897,7 +896,7 @@ public class SQLCommander {
 		return lastImageId;
 	}
 
-	public static List<BasicUser> queryUsersByActivityIdAndRelation(int activityId, UserActivityRelation.RelationType relation){
+	public static List<BasicUser> queryUsersByActivityIdAndRelation(int activityId, int relation){
 		List<BasicUser> users=new ArrayList<BasicUser>();
 		do{
 			try{
@@ -907,7 +906,7 @@ public class SQLCommander {
 				relationColumnNames.add(User.ID);
 				List<String> relationWhereClauses=new LinkedList<String>();
 				relationWhereClauses.add(Activity.ID +"="+SQLHelper.convertToQueryValue(activityId));
-				relationWhereClauses.add(UserActivityRelationTable.RELATION_ID +"="+SQLHelper.convertToQueryValue(relation.ordinal()));
+				relationWhereClauses.add(UserActivityRelationTable.RELATION_ID +"="+SQLHelper.convertToQueryValue(relation));
 				List<String> relationOrderClauses=new LinkedList<String>();
 				relationOrderClauses.add(UserActivityRelationTable.GENERATED_TIME);
 				List<JSONObject> relationRecords=sqlHelper.query(relationTableName, relationColumnNames, relationWhereClauses, SQLHelper.AND, relationOrderClauses, null, null);
@@ -928,7 +927,7 @@ public class SQLCommander {
 		return users;
 	}
 
-    public static boolean updateRelationOfUserIdAndActivity(Integer ownerId, Integer userId, Integer activityId, UserActivityRelation.RelationType relation){
+    public static boolean updateRelationOfUserIdAndActivity(Integer ownerId, Integer userId, Integer activityId, int relation){
         boolean ret=false;
         do{
             try{
@@ -941,7 +940,7 @@ public class SQLCommander {
                 columnNames.add(UserActivityRelationTable.GENERATED_TIME);
 
                 List<Object> columnValues=new LinkedList<Object>();
-                columnValues.add(relation.ordinal());
+                columnValues.add(relation);
                 columnValues.add(currentTime.toString());
 
                 List<String> whereClauses=new LinkedList<String>();

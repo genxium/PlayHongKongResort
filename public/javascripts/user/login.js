@@ -109,7 +109,7 @@ function generateLoginForm(){
 	g_loginUserHandle=$('<input>', {
 		placeHolder: "Email",
 		type: "text",	
-		style: "font-size: 15pt"
+		class: "input-medium"
 	}).appendTo(span1);
 
 	g_loginUserHandle.keypress(function (evt) {
@@ -123,7 +123,7 @@ function generateLoginForm(){
 	g_loginPassword=$('<input>', {
 		placeHolder: "Password",
 		type: "password",
-		style: "font-size: 15pt"
+		class: "input-medium"
 	}).appendTo(span2);
 
 	g_loginPassword.keypress(function (evt) {

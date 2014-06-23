@@ -1,8 +1,8 @@
 $(document).ready(function(){
-    // initialize local DOMs
+    	// initialize local DOMs
 	g_sectionLogin=$("#idSectionLogin");
 	var loginForm=generateLoginForm();
-    g_sectionLogin.append(loginForm);
+	g_sectionLogin.append(loginForm);
 
 	g_sectionUploadAvatar=$("#idSectionUploadAvatar");
 
@@ -18,13 +18,16 @@ $(document).ready(function(){
 
 	initActivityEditor();
 
-	var sectionOwnedActivities=$("#"+g_idSectionOwnedActivities); 
-	sectionOwnedActivities.bind("scroll", onSectionOwnedActivitiesScrolled);
-	sectionOwnedActivities.data(g_keyPageIndex, 0);
+	g_activitiesFilter=$("#activitiesFilter");
+	g_activitiesSorter=$("#activitiesSorter");
+
+	g_sectionActivities=$("#idSectionActivities"); 
+	g_sectionActivities.bind("scroll", onSectionActivitiesScrolled);
+	g_sectionActivities.data(g_keyPageIndex, 0);
 
 	$("#"+g_idBtnUploadAvatar).bind("click", onBtnUploadAvatarClicked);
- 	g_callbackOnActivityEditorRemoved=queryActivitiesHostedByUser;
- 	queryActivitiesHostedByUser(0, g_numItemsPerPage, g_directionForward);
+ 	g_callbackOnActivityEditorRemoved=queryActivities;
+ 	queryActivities(0, g_numItemsPerPage, g_directionForward);
 
  	$("#"+g_idBtnPreviousPage).bind("click", onBtnPreviousPageClicked);
 	$("#"+g_idBtnNextPage).bind("click", onBtnNextPageClicked);

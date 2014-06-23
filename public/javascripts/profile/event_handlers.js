@@ -43,26 +43,22 @@ function onBtnUploadAvatarClicked(evt){
 }
 
 function onBtnPreviousPageClicked(evt){
-	var targetSection=$("#"+g_idSectionOwnedActivities);
-	var pageIndex=targetSection.data(g_keyPageIndex);
-    var startingIndex=targetSection.data(g_keyStartingIndex);
-    var endingIndex=targetSection.data(g_keyEndingIndex);
+	
+	var pageIndex=g_sectionActivities.data(g_keyPageIndex);
+    	var startingIndex=g_sectionActivities.data(g_keyStartingIndex);
 
-	queryActivitiesHostedByUser(startingIndex, g_numItemsPerPage, g_directionBackward);
+	queryActivities(startingIndex, g_numItemsPerPage, g_directionBackward);
 }
 
 function onBtnNextPageClicked(evt){
-	var targetSection=$("#"+g_idSectionOwnedActivities);
-	var pageIndex=targetSection.data(g_keyPageIndex);
-    var startingIndex=targetSection.data(g_keyStartingIndex);
-    var endingIndex=targetSection.data(g_keyEndingIndex);
+	var pageIndex=g_sectionActivities.data(g_keyPageIndex);
+    	var endingIndex=g_sectionActivities.data(g_keyEndingIndex);
 
-	queryActivitiesHostedByUser(endingIndex, g_numItemsPerPage, g_directionForward);
+	queryActivities(endingIndex, g_numItemsPerPage, g_directionForward);
 }
 
-function onSectionOwnedActivitiesScrolled(evt){
+function onSectionActivitiesScrolled(evt){
 	if( $(this).scrollTop() + $(this).height() >= $(document).height() ){
 		evt.preventDefault();
-		alert("Bottom!");
 	}
 }

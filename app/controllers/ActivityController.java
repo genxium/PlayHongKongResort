@@ -28,8 +28,7 @@ public class ActivityController extends Controller {
                 List<Activity> activities=null;
 
                 if(relation!=null){
-                    UserActivityRelation.RelationType relationship=UserActivityRelation.RelationType.getTypeForValue(relation);
-                    activities=SQLCommander.queryActivities(userId, relationship);
+                    activities=SQLCommander.queryActivities(userId, relation);
                 } else{
 					Activity.StatusType activityStatus=Activity.StatusType.getTypeForValue(status);
                     activities=SQLCommander.queryActivities(refIndex, Activity.ID, SQLHelper.DESCEND, numItems, direction, activityStatus);
@@ -104,7 +103,7 @@ public class ActivityController extends Controller {
 
                 for(int i=0;i<appliedParticipantsJson.size();i++){
                     Integer userId=Integer.valueOf((String)appliedParticipantsJson.get(i));
-                    boolean result=SQLCommander.updateRelationOfUserIdAndActivity(ownerId, userId, activityId, UserActivityRelation.RelationType.applied);
+                    boolean result=SQLCommander.updateRelationOfUserIdAndActivity(ownerId, userId, activityId, UserActivityRelationTable.applied);
                     if(result==false){
                         System.out.println("uid: "+userId+" activityid: "+activityId+" to relation: 0 failed");    
                     }
@@ -112,7 +111,7 @@ public class ActivityController extends Controller {
 
                 for(int i=0;i<selectedParticipantsJson.size();i++){
                     Integer userId=Integer.valueOf((String)selectedParticipantsJson.get(i));
-                    boolean result=SQLCommander.updateRelationOfUserIdAndActivity(ownerId, userId, activityId, UserActivityRelation.RelationType.selected);
+                    boolean result=SQLCommander.updateRelationOfUserIdAndActivity(ownerId, userId, activityId, UserActivityRelationTable.selected);
                     if(result==false){
                         System.out.println("uid: "+userId+" activityid: "+activityId+" to relation: 1 failed");    
                     }
@@ -329,7 +328,7 @@ public class ActivityController extends Controller {
                 List<Object> columnValues=new LinkedList<Object>();
                 columnValues.add(activityId);
                 columnValues.add(userId);
-                columnValues.add(UserActivityRelation.RelationType.applied.ordinal());
+                columnValues.add(UserActivityRelationTable.applied);
                 columnValues.add(currentTime.toString());
 
                 int lastRelationTableId=sqlHelper.insert("UserActivityRelationTable", columnNames, columnValues);

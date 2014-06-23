@@ -207,11 +207,11 @@ public class UserController extends Controller {
         do{
             try{
     			Integer userId=DataUtils.getUserIdByToken(token);
-    			UserActivityRelation.RelationType relation=SQLCommander.queryRelationOfUserIdAndActivity(userId, activityId);
+    			int relation=SQLCommander.queryRelationOfUserIdAndActivity(userId, activityId);
     			
-    			if(relation==null) break;
+    			if(relation==UserActivityRelationTable.invalid) break;
     			ret=Json.newObject();
-    			ret.put(UserActivityRelationTable.RELATION_ID, new Integer(relation.ordinal()).toString());
+    			ret.put(UserActivityRelationTable.RELATION_ID, String.valueOf(relation));
 
         		return ok(ret);
             } catch(Exception e){
