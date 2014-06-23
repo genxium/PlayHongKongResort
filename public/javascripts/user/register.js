@@ -11,6 +11,13 @@ var g_spanCheckPassword=null;
 var g_callbackOnRegisterSuccess=null;
 var g_callbackOnRegisterError=null;
 
+function initRegisterWidget(){	
+	g_sectionRegister=$("#idSectionRegister");
+	var registerForm=generateRegisterForm();
+    	g_sectionRegister.append(registerForm);
+}
+
+
 function onBtnRegisterClicked(evt){
     do{
         var username=g_registerUsername.val();

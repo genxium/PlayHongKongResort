@@ -28,10 +28,10 @@ public class ActivityController extends Controller {
                 List<Activity> activities=null;
 
                 if(relation!=null){
-                    activities=SQLCommander.queryActivities(userId, relation);
+                    	activities=SQLCommander.queryActivities(userId, relation);
                 } else{
-					Activity.StatusType activityStatus=Activity.StatusType.getTypeForValue(status);
-                    activities=SQLCommander.queryActivities(refIndex, Activity.ID, SQLHelper.DESCEND, numItems, direction, activityStatus);
+			Activity.StatusType activityStatus=Activity.StatusType.getTypeForValue(status);
+                    	activities=SQLCommander.queryActivities(refIndex, Activity.ID, SQLHelper.DESCEND, numItems, direction, activityStatus);
                 }
                 if(activities==null) break;
 				System.out.println("ActivityController.query 1");

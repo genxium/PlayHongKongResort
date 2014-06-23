@@ -254,10 +254,8 @@ function generateActivityDetailViewByJson(activityJson){
 
 // execute on start
 $(document).ready(function(){
-    // initialize local DOMs
-	g_sectionLogin=$("#idSectionLogin");
-	var loginForm=generateLoginForm();
-    g_sectionLogin.append(loginForm);
+	// initialize local DOMs
+	initLoginWidget();
 
 	g_callbackOnLoginSuccess=function(){
 		refreshOnLoggedIn();

@@ -1,9 +1,8 @@
 $(document).ready(function(){
 
-    // initialize local DOMs
-	g_sectionLogin=$("#idSectionLogin");
-	var loginForm=generateLoginForm();
-    g_sectionLogin.append(loginForm);
+    	// initialize local DOMs
+        initLoginWidget();
+	initRegisterWidget();
 
 	g_callbackOnLoginSuccess=function(){
 		refreshOnLoggedIn();
@@ -23,10 +22,6 @@ $(document).ready(function(){
 	}
 
 	g_callbackOnRegisterError=null;
-
-	g_sectionRegister=$("#idSectionRegister");
-	var registerForm=generateRegisterForm();
-    g_sectionRegister.append(registerForm);
 
 	initActivityEditor();
 	 

@@ -159,7 +159,6 @@ public class UserController extends Controller {
                 }
                 return ok(result);
             } catch (Exception e) {
-                System.out.println("Application.checkLoginStatus:"+e.getMessage());
             }
         }while(false);
   	    return badRequest("User doesn't exist or not logged in");

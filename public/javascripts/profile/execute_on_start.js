@@ -1,22 +1,12 @@
 $(document).ready(function(){
     	// initialize local DOMs
-	g_sectionLogin=$("#idSectionLogin");
-	var loginForm=generateLoginForm();
-	g_sectionLogin.append(loginForm);
+	initLoginWidget();
+	g_callbackOnLoginSuccess=refreshOnLoggedIn;
+	g_callbackOnLoginError=null;
+	g_callbackOnEnter=refreshOnEnter
+	initActivityEditor();
 
 	g_sectionUploadAvatar=$("#idSectionUploadAvatar");
-
-	g_callbackOnLoginSuccess=function(){
-		refreshOnLoggedIn();
-	};
-
-	g_callbackOnLoginError=null;
-
-	g_callbackOnEnter=function(){
-		refreshOnEnter();
-	};
-
-	initActivityEditor();
 
 	g_activitiesFilter=$("#activitiesFilter");
 	g_activitiesSorter=$("#activitiesSorter");

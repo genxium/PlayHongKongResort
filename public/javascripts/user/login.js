@@ -12,6 +12,12 @@ var g_callbackOnLoginSuccess=null;
 var g_callbackOnLoginError=null;
 var g_callbackOnEnter=null;
 
+function initLoginWidget(){
+	g_sectionLogin=$("#idSectionLogin");
+	var loginForm=generateLoginForm();
+	g_sectionLogin.append(loginForm);
+}
+
 function onBtnLoginClicked(evt){
     do{
         var email=g_loginUserHandle.val();
