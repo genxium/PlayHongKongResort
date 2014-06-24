@@ -18,38 +18,36 @@ public class ActivityController extends Controller {
 
     public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer relation, Integer status){
         response().setContentType("text/plain");
-        do{
-            try{
-                Integer userId=null;
-                if(token!=null){
-                    userId=DataUtils.getUserIdByToken(token);
-                }
-                if(userId==DataUtils.invalidId) break;
-                List<Activity> activities=null;
+	do{
+		try{
+			Integer userId=null;
+			if(token!=null){
+			    userId=DataUtils.getUserIdByToken(token);
+			}
+			if(userId==DataUtils.invalidId) break;
+			List<Activity> activities=null;
 
-                if(relation!=null){
-                    	activities=SQLCommander.queryActivities(userId, relation);
-                } else{
-			Activity.StatusType activityStatus=Activity.StatusType.getTypeForValue(status);
-                    	activities=SQLCommander.queryActivities(refIndex, Activity.ID, SQLHelper.DESCEND, numItems, direction, activityStatus);
-                }
-                if(activities==null) break;
-				System.out.println("ActivityController.query 1");
-                ObjectNode result = Json.newObject();
+			if(relation!=null){
+				activities=SQLCommander.queryActivities(userId, relation);
+			} else{
+				Activity.StatusType activityStatus=Activity.StatusType.getTypeForValue(status);
+				activities=SQLCommander.queryActivities(refIndex, Activity.ID, SQLHelper.DESCEND, numItems, direction, activityStatus);
+			}
+			if(activities==null) break;
+			ObjectNode result = Json.newObject();
 
-                for(Activity activity : activities){
-                    if(userId!=null){
-                        result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImagesAndRelation(userId));
-                    } else{
-                        result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages());
-                    }
-                }
-				System.out.println("ActivityController.query 2");
-                return ok(result);
-            } catch(Exception e){
-				System.out.println("ActivityController.query, "+e.getMessage());
-            }
-        }while(false);
+			for(Activity activity : activities){
+			    if(userId!=null){
+				result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImagesAndRelation(userId));
+			    } else{
+				result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages());
+			    }
+			}
+			return ok(result);
+		} catch(Exception e){
+			System.out.println("query, "+e.getMessage());
+		}
+	} while(false);
         return badRequest();
     }
 

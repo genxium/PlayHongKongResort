@@ -53,12 +53,11 @@
 
 .classBtnEdit
 {
-	display: table-cell;
 	position: relative;
-	padding-left: 20pt;
-	width:	50pt;
+    	width:	50pt;
+	margin-left:	5pt;
+    	font-size:	12pt;
 	background-color:	#cccc00;
-	font-size:	13pt;
 	color:	#0000ff;
 }
 
@@ -174,14 +173,13 @@
 }
 
 .classBtnDetail{
-    display: table-cell;
-    position: relative;
-    float: left;
-    vertical-align: bottom;
-    width:	50pt;
-    background-color:	#ccccff;
-    font-size:	12pt;
-    color:	#0000ff;
+    	display: table-cell;
+    	position: relative;
+	margin-left: 5pt;
+    	width:	50pt;
+    	font-size:	12pt;
+   	background-color:	#ccccff;
+    	color:	#0000ff;
 }
 
 .classActivityStatusIndicator

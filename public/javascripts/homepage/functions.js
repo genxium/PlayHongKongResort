@@ -90,9 +90,9 @@ function onQueryActivitiesSuccess(data, status, xhr){
             var cell=null;
             var token = $.cookie(g_keyLoginStatus.toString());
             if(token==null){
-                cell=generateActivityCell(activityJson, false, g_modeHomepage);
+                cell=generateActivityCell(activityJson);
             } else{
-                cell=generateActivityCell(activityJson, true, g_modeHomepage);
+                cell=generateActivityCell(activityJson);
             }
             g_sectionDefaultActivities.append(cell);
             ++idx;

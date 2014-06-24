@@ -9,6 +9,10 @@ $(document).ready(function(){
 	g_sectionUploadAvatar=$("#idSectionUploadAvatar");
 
 	g_activitiesFilter=$("#activitiesFilter");
+	g_activitiesFilter.on("change", function(){
+		queryActivities(0, g_numItemsPerPage, g_directionForward);
+	});
+
 	g_activitiesSorter=$("#activitiesSorter");
 
 	g_sectionActivities=$("#idSectionActivities"); 

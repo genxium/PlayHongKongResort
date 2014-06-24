@@ -111,7 +111,6 @@ public class Activity {
             ret.put(Activity.BEGIN_TIME, m_beginTime.toString());
             ret.put(Activity.DEADLINE, m_deadline.toString());
             ret.put(Activity.CAPACITY, String.valueOf(m_capacity));
-            ret.put(Activity.STATUS, String.valueOf(m_status.ordinal()));
         }while(false);
         return ret;
     }
@@ -131,11 +130,18 @@ public class Activity {
     }
 
     public ObjectNode toObjectNodeWithImagesAndRelation(int userId){
+	/*
+		Note that when the activity is queried with a valid user token
+		1. status is only shown when the user is the owner of the activity
+		2. relation is only shown when relation is specified
+ 	*/
         ObjectNode ret=toObjectNodeWithImages();
         do{
-            int relation=SQLCommander.queryRelationOfUserIdAndActivity(userId, m_id);
-            if(relation==UserActivityRelationTable.invalid) break;
-            ret.put(UserActivityRelationTable.RELATION_ID, relation);
+		int relation=SQLCommander.queryRelationOfUserIdAndActivity(userId, m_id);
+		if(relation==UserActivityRelationTable.invalid) break;
+		ret.put(UserActivityRelationTable.RELATION_ID, relation);
+		if((relation&UserActivityRelationTable.hosted)==0) break;
+		ret.put(Activity.STATUS, String.valueOf(m_status.ordinal()));		
         }while(false);
         return ret;
     }

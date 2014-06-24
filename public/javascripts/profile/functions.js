@@ -36,7 +36,7 @@ function queryActivities(refIndex, numItems, direction){
 			success: function(data, status, xhr){
 					var jsonResponse=JSON.parse(data);
 					var count=Object.keys(jsonResponse).length;
-					if(jsonResponse!=null && count>0){
+					if(jsonResponse!=null){
 						// clean target section
 						g_sectionActivities.empty();
 						var idx=0;
@@ -50,7 +50,7 @@ function queryActivities(refIndex, numItems, direction){
 							if(idx==count-1){
 							    g_sectionActivities.data(g_keyEndingIndex, activityId);
 							}
-							var cell=generateActivityCell(activityJson, true, g_modeProfile);
+							var cell=generateActivityCell(activityJson);
 								g_sectionActivities.append(cell);
 								++idx;
 						}
