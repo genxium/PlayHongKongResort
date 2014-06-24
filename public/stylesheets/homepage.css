@@ -1,32 +1,3 @@
-html, body
-{
-	margin: 0;
-}
-
-/* Header */
-#wrap
-{
-	margin: 0 auto;
-    max-width: 98%;
-}
-
-#header
-{
-	position: relative;
-	background: #1d2124;
-	height: 68px;
-}
-
-#idSectionTitle
-{
-	display: table-row;
- 	position: relative;
- 	text-align: center;
- 	font-family: Georgia;
-	font-size: 24pt;
-	color: #FF8822;
-}
-
 .classSectionUserAvatar{
 	display: table-column-group;
 	position: relative;
@@ -45,22 +16,4 @@ html, body
 	border: 1pt solid #ff0000;
 	overflow: auto;
 	clear: both;
-}
-
-#idBtnPreviousPage
-{
-	display: table-column;
-	position: relative;
-	width: 100pt;
-	height: 75pt;
-	font-size: 12pt;
-}
-
-#idBtnNextPage
-{
-	display: table-column;
-	position: relative;
-	width: 100pt;
-	height: 75pt;
-	font-size: 12pt;
 }

@@ -42,24 +42,6 @@
 	color:	blue;
 }
 
-#idBtnPreviousPage
-{
-	display: table-column;
-	position: relative;
-	width: 100pt;
-	height: 75pt;
-	font-size: 12pt;
-}
-
-#idBtnNextPage
-{
-	display: table-column;
-	position: relative;
-	width: 100pt;
-	height: 75pt;
-	font-size: 12pt;
-}
-
 #idSelectFilter
 {
     color: #0000FF;

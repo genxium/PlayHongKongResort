@@ -1,0 +1,19 @@
+#idBtnPreviousPage
+{
+	display: table-column;
+	position: relative;
+	width: 100pt;
+	height: 70pt;
+	margin-right: 3pt;
+	font-size: 12pt;
+}
+
+#idBtnNextPage
+{
+	display: table-column;
+	position: relative;
+	width: 100pt;
+	height: 70pt;
+	margin-left: 3pt;
+	font-size: 12pt;
+}

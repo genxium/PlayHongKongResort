@@ -11,8 +11,7 @@ var g_idSectionResponse="idSectionResponse";
 // input-field keys
 var g_idFieldAvatar="idFieldAvatar";
 
-// button keys
-var g_idBtnUploadAvatar="idBtnUploadAvatar";
-
-var g_idBtnPreviousPage="idBtnPreviousPage";
-var g_idBtnNextPage="idBtnNextPage";
+// buttons
+var g_btnUploadAvatar=null;
+var g_btnPreviousPage=null;
+var g_btnNextPage=null;

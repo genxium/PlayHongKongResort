@@ -1,9 +1,9 @@
 $(document).ready(function(){
     	// initialize local DOMs
 	initLoginWidget();
-	g_callbackOnLoginSuccess=refreshOnLoggedIn;
+	g_callbackOnLoginSuccess=null;
 	g_callbackOnLoginError=null;
-	g_callbackOnEnter=refreshOnEnter;
+	g_callbackOnEnter=null;
 	initActivityEditor();
 
 	g_sectionActivityMonitor=$("#idSectionActivityMonitor");
@@ -19,4 +19,6 @@ $(document).ready(function(){
 	g_btnPreviousPage.on("click", onBtnPreviousPageClicked);
 	g_btnNextPage.on("click", onBtnNextPageClicked);
     	g_selectFilter.on("change", onSelectFilterChanged);
+
+	checkLoginStatus();
 });

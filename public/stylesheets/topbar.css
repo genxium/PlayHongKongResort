@@ -1,0 +1,23 @@
+/* Header */
+#wrap
+{
+	margin: 0 auto;
+	max-width: 98%;
+}
+
+#header
+{
+	position: relative;
+	background: #1d2124;
+	height: 68px;
+}
+
+#idSectionTitle
+{
+	display: table-row;
+ 	position: relative;
+ 	text-align: center;
+ 	font-family: Georgia;
+	font-size: 24pt;
+	color: #ADD8E6;
+}
