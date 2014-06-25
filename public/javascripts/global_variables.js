@@ -3,7 +3,7 @@ var g_numItemsPerPage=6;
 var g_baseTwo=2;
 var g_baseTen=10;
 var g_rootElement = $(":root");
-var g_userName;
+var g_username=null;
 var g_userAvatarURL;
 var g_directionForward=(+1);
 var g_directionBackward=(-1);

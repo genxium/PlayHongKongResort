@@ -108,7 +108,7 @@ public class AdminController extends Controller {
                 boolean ret=false;
 		do{
 			if(user==null) break;
-			if(user.getUserGroup()!=UserGroup.GroupType.admin) break;
+			if(user.getGroupId()!=User.ADMIN) break;
 			ret=true;
 		}while(false);
 		return ret;

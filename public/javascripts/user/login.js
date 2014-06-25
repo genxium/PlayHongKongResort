@@ -36,11 +36,11 @@ function onBtnLoginClicked(evt){
             data: params,
             success: function(data, status, xhr){
                 var userJson=JSON.parse(data);
-                g_userName=userJson[g_keyUserEmail];
+                g_username=userJson[g_keyUsername];
                 g_userAvatarURL=userJson[g_keyImageURL];
                 // store token in cookie iff query succeeds
-                $.cookie(g_keyToken, userJson[g_keyUserToken]);
-		$.cookie(g_keyUid, userJson[g_keyUserId]);
+                $.cookie(g_keyToken, userJson[g_keyUserToken], {path: '/'});
+		$.cookie(g_keyUid, userJson[g_keyUserId], {path: '/'});
 		if(g_sectionLogin!=null){
 			g_sectionLogin.empty();
 			g_sectionLogin.append(generateLoggedInMenu);
@@ -68,8 +68,8 @@ function onBtnLogoutClicked(evt){
 			url: "/user/logout",
 			data: params,
 			success: function(data, status, xhr){
-				$.removeCookie(g_keyToken);
-				$.removeCookie(g_keyUid);
+				$.removeCookie(g_keyToken, {path: '/'});
+				$.removeCookie(g_keyUid, {path: '/'});
 				if(g_sectionLogin!=null){
 					g_sectionLogin.empty();
 					g_sectionLogin.append(generateLoginForm);
@@ -169,7 +169,7 @@ function generateLoggedInMenu(){
 
 	var greeting=$('<p>',{
 		style: "font-size: 15pt; color: white",
-		text: "Hello, "+g_userName	
+		text: "Hello, "+g_username	
 	}).appendTo(rightHalf);
 
 	g_btnLogout=$('<button>', {
@@ -210,10 +210,10 @@ function checkLoginStatus(){
 			data: params,
 			success: function(data, status, xhr){
 				var userJson=JSON.parse(data);
-				g_userName=userJson[g_keyUserEmail];
+				g_username=userJson[g_keyUsername];
 				g_userAvatarURL=userJson[g_keyImageURL];
-				$.cookie(g_keyToken, userJson[g_keyUserToken]);
-				$.cookie(g_keyUid, userJson[g_keyUserId]);
+				$.cookie(g_keyToken, userJson[g_keyUserToken], {path: '/'});
+				$.cookie(g_keyUid, userJson[g_keyUserId], {path: '/'});
 				if(g_sectionLogin!=null){
 					g_sectionLogin.empty();
 					g_sectionLogin.append(generateLoggedInMenu);
@@ -224,8 +224,8 @@ function checkLoginStatus(){
             		},
 			error: function(xhr, status, errorThrown){
 				// refresh screen
-				$.removeCookie(g_keyToken);
-				$.removeCookie(g_keyUid);
+				$.removeCookie(g_keyToken, {path: '/'});
+				$.removeCookie(g_keyUid, {path: '/'});
 				if(g_callbackOnEnter!=null){
 					g_callbackOnEnter();		
 				}

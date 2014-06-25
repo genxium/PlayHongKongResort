@@ -12,9 +12,9 @@ import java.util.*;
 public class SQLCommander {
 
 	public static Integer INVALID =(-1);
-    public static String INITIAL_REF_INDEX = "0";
-    public static Integer DIRECTION_FORWARD = (+1);
-    public static Integer DIRECTION_BACKWARD = (-1);
+	public static String INITIAL_REF_INDEX = "0";
+	public static Integer DIRECTION_FORWARD = (+1);
+	public static Integer DIRECTION_BACKWARD = (-1);
 
  	public static User queryUser(Integer userId){
 
@@ -40,21 +40,14 @@ public class SQLCommander {
 	 		List<JSONObject> results=sqlHelper.query(tableName, names, where, logicLink);
 			if(results==null || results.size()<=0) break;
 			try{
-	            Iterator<JSONObject> it=results.iterator();
-		        if(it.hasNext()){
-			        JSONObject userJson=(JSONObject)it.next();
-	        		String email=(String)userJson.get(User.EMAIL);
-		      		String password=(String)userJson.get(User.PASSWORD);
-		      		String name=(String)userJson.get(User.NAME);
-		      		Integer userGroupId=(Integer)userJson.get(User.GROUP_ID);
-		      		UserGroup.GroupType userGroup=UserGroup.GroupType.getTypeForValue(userGroupId);
-		      		Integer avatar=(Integer)userJson.get(User.AVATAR);
-
-          		    user=User.create(userId, email, password, name, userGroup, avatar);
+				Iterator<JSONObject> it=results.iterator();
+				if(it.hasNext()){
+					JSONObject userJson=(JSONObject)it.next();
+					user=new User(userJson);
 				}
 			} catch (Exception e) {
 
-		    }
+			}
 		} while(false);
 		return user;
 	}
@@ -82,29 +75,22 @@ public class SQLCommander {
 
 			SQLHelper sqlHelper=new SQLHelper();
 	 		List<JSONObject> results=sqlHelper.query(tableName, names, where, logicLink);
-	 	    if(results==null || results.size()<=0) break;
-            try{
-	            Iterator<JSONObject> it=results.iterator();
-		        if(it.hasNext()){
-			        JSONObject userJson=(JSONObject)it.next();
-			       	int userId=(Integer)userJson.get(User.ID);
-		      		String password=(String)userJson.get(User.PASSWORD);
-		      		String name=(String)userJson.get(User.NAME);
-		      		Integer userGroupId=(Integer)userJson.get(User.GROUP_ID);
-		      		UserGroup.GroupType userGroup=UserGroup.GroupType.getTypeForValue(userGroupId);
-		      		Integer avatar=(Integer)userJson.get(User.AVATAR);
-
-          		    user=User.create(userId, email, password, name, userGroup, avatar);
-				}
+			if(results==null || results.size()<=0) break;
+			try{
+				Iterator<JSONObject> it=results.iterator();
+				if(it.hasNext()){
+				JSONObject userJson=(JSONObject)it.next();
+				user=new User(userJson);
+			}
 			} catch (Exception e) {
 
-	        }
+			}
 		} while(false);
  		return user;
  	}
 
 	public static int registerUser(User user){
-		int lastInsertedId= INVALID;
+		int lastInsertedId=INVALID;
 
 		// DAO
 		SQLHelper sqlHelper=new SQLHelper();
@@ -119,13 +105,12 @@ public class SQLCommander {
 		values.add(user.getEmail());
 		values.add(user.getPassword());
 		values.add(user.getName());
-		values.add(user.getUserGroup().ordinal());
+		values.add(user.getGroupId());
 
 		try{
-			lastInsertedId=sqlHelper.insert("User", names, values);
-			sqlHelper=null;
+			lastInsertedId=sqlHelper.insert(User.TABLE, names, values);
 		} catch (Exception e){
-
+			System.out.println("SQLCommander.registerUser, "+e.getMessage());
 		}
 		return lastInsertedId;
 	}
@@ -176,7 +161,6 @@ public class SQLCommander {
 	public static boolean updateActivity(Activity activity){
 		boolean ret=false;
 		do{
-			String tableName="Activity";
 			int activityId=activity.getId();
 
 			try{
@@ -200,7 +184,7 @@ public class SQLCommander {
 
 				List<String> where=new LinkedList<>();
 				where.add(Activity.ID +"="+SQLHelper.convertToQueryValue(activityId));
-				ret=sqlHelper.update(tableName, names, values, where, SQLHelper.AND);
+				ret=sqlHelper.update(Activity.TABLE, names, values, where, SQLHelper.AND);
 
 			} catch(Exception e){
 				System.out.println("SQLCommander.updateActivity: "+e.getMessage());
@@ -230,7 +214,7 @@ public class SQLCommander {
 		values.add(relation);
 
 		try{
-			int lastId=sqlHelper.insert("UserActivityRelationTable", names, values);
+			int lastId=sqlHelper.insert(UserActivityRelationTable.TABLE, names, values);
 			if(lastId!= INVALID){
 				bRet=true;
 			}
@@ -245,10 +229,8 @@ public class SQLCommander {
 
 		Activity activity=null;
 		do{
-	 		String tableName="Activity";
-
 	 		List<String> names=new LinkedList<String>();
-            names.add(Activity.ID);
+			names.add(Activity.ID);
 			names.add(Activity.TITLE);
 			names.add(Activity.CONTENT);
 			names.add(Activity.CREATED_TIME);
@@ -258,20 +240,20 @@ public class SQLCommander {
 			names.add(Activity.STATUS);
 
 			List<String> where=new LinkedList<String>();
-			where.add(Activity.ID +"="+activityId);
+			where.add(Activity.ID +"="+SQLHelper.convertToQueryValue(activityId));
 
 			SQLHelper sqlHelper=new SQLHelper();
-			List<JSONObject> results=sqlHelper.query(tableName, names, where, SQLHelper.AND);
+			List<JSONObject> results=sqlHelper.query(Activity.TABLE, names, where, SQLHelper.AND);
 			if(results==null || results.size()<=0) break;
 			try{
-	            Iterator<JSONObject> it=results.iterator();
-		        if(it.hasNext()){
-			        JSONObject activityJson=(JSONObject)it.next();
-		      		activity=new Activity(activityJson);
+				Iterator<JSONObject> it=results.iterator();
+				if(it.hasNext()){
+					JSONObject activityJson=(JSONObject)it.next();
+					activity=new Activity(activityJson);
 				}
 			} catch (Exception e) {
-				System.out.println("SQLCommander.queryActivity:"+e.getMessage());
-	        }
+				System.out.println("SQLCommander.queryActivity, "+e.getMessage());
+			}
 		} while(false);
 		return activity;
 	}

@@ -53,286 +53,287 @@ public class UserController extends Controller {
 		}
 	}
 
-    public static Result login(){
-	// define response attributes
-	response().setContentType("text/plain");
+	public static Result login(){
+		// define response attributes
+		response().setContentType("text/plain");
 
-	do{
-		try{
-			Http.RequestBody body = request().body();
-			Map<String, String[]> formData=body.asFormUrlEncoded();
-			String email=formData.get(User.EMAIL)[0];
-			String password=formData.get(User.PASSWORD)[0];
-
-			if( (email==null || General.validateEmail(email)==false) || (password==null || General.validatePassword(password)==false) ) break;
-			
-			String passwordDigest=Converter.md5(password);
-			User user=SQLCommander.queryUserByEmail(email);
-
-			if(user==null || user.getPassword().equals(passwordDigest)==false) break;
-			
-			String token = Converter.generateToken(email, password);
-			Integer userId = user.getUserId();
-
-			session(token, userId.toString());
-
-			int imageId=user.getAvatar();
-			Image image=SQLCommander.queryImageByImageId(imageId);
-
-			ObjectNode result = Json.newObject();
-			result.put(User.ID, user.getUserId());
-			result.put(User.EMAIL, user.getEmail());
-			result.put(User.TOKEN, token);
-			if(image!=null){
-			    result.put(Image.URL, image.getImageURL());
-			}
-			return ok(result);
-		} catch(Exception e){
-		    
-		}        
-        }while(false);
-        return badRequest("User does not exist!");
-    }
-    
-    public static Result register(){
-      	// define response attributes
-  		response().setContentType("text/plain");
-    	do{
-		try{
-			RequestBody body = request().body();
-        		Map<String, String[]> formData=body.asFormUrlEncoded();
-			String name=formData.get(User.NAME)[0];
-        		String email=formData.get(User.EMAIL)[0];
-        		String password=formData.get(User.PASSWORD)[0];
-
-			if(name==null || (email==null || General.validateEmail(email)==false) || (password==null || General.validatePassword(password)==false)) break;
-        		UserGroup.GroupType userGroup=UserGroup.GroupType.visitor;
-        		String passwordDigest=Converter.md5(password);    
-			User user=User.create(email, passwordDigest, name, userGroup);
-			int lastId=SQLCommander.registerUser(user);
-			if(lastId==SQLCommander.INVALID) break;
-
-			String code=generateVerificationCode(user);
-			SQLHelper sqlHelper=new SQLHelper();
-
-			List<String> columnNames=new LinkedList<>();
-			columnNames.add(User.VERIFICATION_CODE);
-
-			List<Object> columnValues=new LinkedList<>();
-			columnValues.add(code);
-
-			List<String> where=new LinkedList<>();
-			where.add(User.ID +"="+SQLHelper.convertToQueryValue(lastId));
-
-			boolean res=sqlHelper.update("User", columnNames, columnValues, where, SQLHelper.AND);
-			if(res==false) break;
-			sendVerificationEmail(user.getName(), user.getEmail(), code);
-			return ok();
-            } catch(Exception e){
-                
-            }
-        }while(false);
-        return badRequest();
-    }
-    
-    public static Result status(String token){
-        // define response attributes
-        response().setContentType("text/plain");
-        do{
-		try{
-			if(token==null) break;
-			Integer userId=DataUtils.getUserIdByToken(token);
-			User user=SQLCommander.queryUser(userId);
-			
-			if(user==null) break;
-			session(token, userId.toString());
-			String emailKey=User.EMAIL;
-			String tokenKey=User.TOKEN;
-
-			int imageId=user.getAvatar();
-			Image image=SQLCommander.queryImageByImageId(imageId);
-
-			ObjectNode result = Json.newObject();
-			result.put(User.ID, user.getUserId());
-			result.put(emailKey, user.getEmail());
-			result.put(tokenKey, token);
-			if(image!=null){
-			    result.put(Image.URL, image.getImageURL());
-			}
-			return ok(result);
-		} catch (Exception e) {
-		}
-        }while(false);
-	return badRequest("User doesn't exist or not logged in");
-    }
-    
-    public static Result uploadAvatar() {
-        // define response attributes
-        response().setContentType("text/plain");
-     	do{
-    		  RequestBody body = request().body();
-    	  
-    		  // get file data from request body stream
-    		  Http.MultipartFormData data = body.asMultipartFormData();
-    		  Http.MultipartFormData.FilePart avatarFile = data.getFile("Avatar");
-
-    		  // get user token from request body stream
-    		  String token=DataUtils.getUserToken(data);
-    		  Integer userId=DataUtils.getUserIdByToken(token);
-    		  if(userId==null) break;
-    		  User user=SQLCommander.queryUser(userId);
-    		  if(user==null) break;
-
-    		  if(avatarFile==null) break;
-    		  int previousAvatarId=user.getAvatar();
-    		  int newAvatarId=ExtraCommander.saveAvatarFile(avatarFile, user);
-    		  if(newAvatarId==ExtraCommander.INVALID) break;
-                
-		   // delete previous avatar record and file
-		   Image previousAvatar=SQLCommander.queryImageByImageId(previousAvatarId);
-		   boolean isPreviousAvatarDeleted=ExtraCommander.deleteImageRecordAndFile(previousAvatar);
-		   if(isPreviousAvatarDeleted==true){
-			System.out.println("Application.saveAvatarFile: previous avatar file and record deleted.");    
-		   }
-         
-    		  return ok("Avatar uploaded");
-    	  
-    	}while(false);
-    	return badRequest("Avatar not uploaded!");
-    }
-    
-    public static Result relation(Integer activityId, String token){
-    	// define response attributes
-        response().setContentType("text/plain");
-        ObjectNode ret=null;
-        do{
-            try{
-    			Integer userId=DataUtils.getUserIdByToken(token);
-    			int relation=SQLCommander.queryUserActivityRelation(userId, activityId);
-    			
-    			if(relation==UserActivityRelationTable.invalid) break;
-    			ret=Json.newObject();
-    			ret.put(UserActivityRelationTable.RELATION, String.valueOf(relation));
-
-        		return ok(ret);
-            } catch(Exception e){
-
-            }
-        }while(false);
-        return badRequest();
-    }
-
-    public static Result logout(){
-      	// define response attributes
-  		response().setContentType("text/plain");
-        do{
-            try{
-                Map<String, String[]> formData=request().body().asFormUrlEncoded();
-                String token=formData.get(User.TOKEN)[0];
-                session().remove(token);
-                return ok();
-            } catch(Exception e){
-                
-            }
-        }while(false);
-        return badRequest();
-    }
-     
-    public static Result nameDuplicate(String username){
-      	// define response attributes
-  		response().setContentType("text/plain");
-        do{
-            try{
-                if(username==null) break;
-                SQLHelper sqlHelper=new SQLHelper();
-                List<String> columnNames=new LinkedList<String>();
-                columnNames.add(User.ID);
-
-                List<String> whereClauses=new LinkedList<String>();
-                whereClauses.add(User.NAME +"="+SQLHelper.convertToQueryValue(username));
-                
-                List<JSONObject> userJsons=sqlHelper.query("User", columnNames, whereClauses, SQLHelper.AND);
-                if(userJsons!=null && userJsons.size()>0) break;
-                return ok();
-            } catch(Exception e){
-                
-            }
-        }while(false);
-        return badRequest();
-    }
-
-    public static Result emailDuplicate(String email){
-      	// define response attributes
-  		response().setContentType("text/plain");
-        do{
-            try{
-                if(email==null || General.validateEmail(email)==false) break;
-                SQLHelper sqlHelper=new SQLHelper();
-                List<String> columnNames=new LinkedList<String>();
-                columnNames.add(User.ID);
-
-                List<String> whereClauses=new LinkedList<String>();
-                whereClauses.add(User.EMAIL +"="+SQLHelper.convertToQueryValue(email));
-                
-                List<JSONObject> userJsons=sqlHelper.query("User", columnNames, whereClauses, SQLHelper.AND);
-                if(userJsons!=null && userJsons.size()>0) break;
-                return ok();
-            } catch(Exception e){
-                
-            }
-        }while(false);
-        return badRequest();
-    }
-
-	public static Result emailVerification(String code){
-        response().setContentType("text/html");
 		do{
 			try{
-                SQLHelper sqlHelper=new SQLHelper();
-                List<String> columnNames=new LinkedList<String>();
-                columnNames.add(User.GROUP_ID);
+				Http.RequestBody body = request().body();
+				Map<String, String[]> formData=body.asFormUrlEncoded();
+				String email=formData.get(User.EMAIL)[0];
+				String password=formData.get(User.PASSWORD)[0];
 
-				List<Object> columnValues=new LinkedList<Object>();
-				columnValues.add(SQLHelper.convertToQueryValue(UserGroup.GroupType.user.ordinal()));
+				if( (email==null || General.validateEmail(email)==false) || (password==null || General.validatePassword(password)==false) ) break;
+				
+				String passwordDigest=Converter.md5(password);
+				User user=SQLCommander.queryUserByEmail(email);
 
-                List<String> whereClauses=new LinkedList<String>();
-                whereClauses.add(User.VERIFICATION_CODE+"="+SQLHelper.convertToQueryValue(code));
+				if(user==null || user.getPassword().equals(passwordDigest)==false) break;
+				
+				String token = Converter.generateToken(email, password);
+				Integer userId = user.getUserId();
 
-				boolean res=sqlHelper.update("User", columnNames, columnValues, whereClauses, SQLHelper.AND);
+				session(token, userId.toString());
 
-				columnNames.clear();
-				columnValues.clear();
+				int imageId=user.getAvatar();
+				Image image=SQLCommander.queryImageByImageId(imageId);
 
-				columnNames.add(User.ID);
-				columnNames.add(User.EMAIL);
-				columnNames.add(User.NAME);
-				columnNames.add(User.PASSWORD);
-				columnNames.add(User.GROUP_ID);
-				columnNames.add(User.AVATAR);
+				ObjectNode result = Json.newObject();
+				result.put(User.ID, user.getUserId());
+				result.put(User.NAME, user.getName());
+				result.put(User.EMAIL, user.getEmail());
+				result.put(User.TOKEN, token);
+				if(image!=null){
+					result.put(Image.URL, image.getImageURL());
+				}
+				return ok(result);
+			} catch(Exception e){
+			    
+			}        
+		}while(false);
+		return badRequest("User does not exist!");
+	}
+    
+	public static Result register(){
+		// define response attributes
+		response().setContentType("text/plain");
+		do{
+			try{
+				RequestBody body = request().body();
+				Map<String, String[]> formData=body.asFormUrlEncoded();
+				String name=formData.get(User.NAME)[0];
+				String email=formData.get(User.EMAIL)[0];
+				String password=formData.get(User.PASSWORD)[0];
 
-				List<JSONObject> userJsons=sqlHelper.query("User", columnNames, whereClauses, SQLHelper.AND); 
+				if(name==null || (email==null || General.validateEmail(email)==false) || (password==null || General.validatePassword(password)==false)) break;
+				String passwordDigest=Converter.md5(password);    
+				User user=new User(email, passwordDigest, name);
+				int lastId=SQLCommander.registerUser(user);
+				if(lastId==SQLCommander.INVALID) break;
+
+				String code=generateVerificationCode(user);
+				SQLHelper sqlHelper=new SQLHelper();
+
+				List<String> columnNames=new LinkedList<>();
+				columnNames.add(User.VERIFICATION_CODE);
+
+				List<Object> columnValues=new LinkedList<>();
+				columnValues.add(code);
+
+				List<String> where=new LinkedList<>();
+				where.add(User.ID +"="+SQLHelper.convertToQueryValue(lastId));
+
+				boolean res=sqlHelper.update(User.TABLE, columnNames, columnValues, where, SQLHelper.AND);
+				if(res==false) break;
+				sendVerificationEmail(user.getName(), user.getEmail(), code);
+				return ok();
+		    } catch(Exception e){
+			
+		    }
+		}while(false);
+		return badRequest();
+	}
+
+	public static Result status(String token){
+		// define response attributes
+		response().setContentType("text/plain");
+		do{
+			try{
+				if(token==null) break;
+				Integer userId=DataUtils.getUserIdByToken(token);
+				User user=SQLCommander.queryUser(userId);
+				
+				if(user==null) break;
+				session(token, userId.toString());
+
+				int imageId=user.getAvatar();
+				Image image=SQLCommander.queryImageByImageId(imageId);
+
+				ObjectNode result = Json.newObject();
+				result.put(User.ID, user.getUserId());
+				result.put(User.NAME, user.getName());
+				result.put(User.EMAIL, user.getEmail());
+				result.put(User.TOKEN, token);
+				if(image!=null){
+				    result.put(Image.URL, image.getImageURL());
+				}
+				return ok(result);
+			} catch (Exception e) {
+			}
+		}while(false);
+		return badRequest("User doesn't exist or not logged in");
+	}
+
+	public static Result uploadAvatar() {
+		// define response attributes
+		response().setContentType("text/plain");
+		do{
+			  RequestBody body = request().body();
+		  
+			  // get file data from request body stream
+			  Http.MultipartFormData data = body.asMultipartFormData();
+			  Http.MultipartFormData.FilePart avatarFile = data.getFile("Avatar");
+
+			  // get user token from request body stream
+			  String token=DataUtils.getUserToken(data);
+			  Integer userId=DataUtils.getUserIdByToken(token);
+			  if(userId==null) break;
+			  User user=SQLCommander.queryUser(userId);
+			  if(user==null) break;
+
+			  if(avatarFile==null) break;
+			  int previousAvatarId=user.getAvatar();
+			  int newAvatarId=ExtraCommander.saveAvatarFile(avatarFile, user);
+			  if(newAvatarId==ExtraCommander.INVALID) break;
+			
+			   // delete previous avatar record and file
+			   Image previousAvatar=SQLCommander.queryImageByImageId(previousAvatarId);
+			   boolean isPreviousAvatarDeleted=ExtraCommander.deleteImageRecordAndFile(previousAvatar);
+			   if(isPreviousAvatarDeleted==true){
+				System.out.println("Application.saveAvatarFile: previous avatar file and record deleted.");    
+			   }
+		 
+			  return ok("Avatar uploaded");
+		  
+		}while(false);
+		return badRequest("Avatar not uploaded!");
+	}
+
+	public static Result relation(Integer activityId, String token){
+		// define response attributes
+		response().setContentType("text/plain");
+		ObjectNode ret=null;
+		do{
+		    try{
+				Integer userId=DataUtils.getUserIdByToken(token);
+				int relation=SQLCommander.queryUserActivityRelation(userId, activityId);
+				
+				if(relation==UserActivityRelationTable.invalid) break;
+				ret=Json.newObject();
+				ret.put(UserActivityRelationTable.RELATION, String.valueOf(relation));
+
+				return ok(ret);
+		    } catch(Exception e){
+
+		    }
+		}while(false);
+		return badRequest();
+	}
+
+	public static Result logout(){
+		// define response attributes
+		response().setContentType("text/plain");
+		do{
+		    try{
+			Map<String, String[]> formData=request().body().asFormUrlEncoded();
+			String token=formData.get(User.TOKEN)[0];
+			session().remove(token);
+			return ok();
+		    } catch(Exception e){
+			
+		    }
+		}while(false);
+		return badRequest();
+	}
+
+	public static Result nameDuplicate(String username){
+		// define response attributes
+		response().setContentType("text/plain");
+		do{
+		    try{
+			if(username==null) break;
+			SQLHelper sqlHelper=new SQLHelper();
+			List<String> columnNames=new LinkedList<String>();
+			columnNames.add(User.ID);
+
+			List<String> whereClauses=new LinkedList<String>();
+			whereClauses.add(User.NAME +"="+SQLHelper.convertToQueryValue(username));
+			
+			List<JSONObject> userJsons=sqlHelper.query("User", columnNames, whereClauses, SQLHelper.AND);
+			if(userJsons!=null && userJsons.size()>0) break;
+			return ok();
+		    } catch(Exception e){
+			
+		    }
+		}while(false);
+		return badRequest();
+	}
+
+	public static Result emailDuplicate(String email){
+		// define response attributes
+		response().setContentType("text/plain");
+		do{
+		    try{
+			if(email==null || General.validateEmail(email)==false) break;
+			SQLHelper sqlHelper=new SQLHelper();
+			List<String> columnNames=new LinkedList<String>();
+			columnNames.add(User.ID);
+
+			List<String> whereClauses=new LinkedList<String>();
+			whereClauses.add(User.EMAIL +"="+SQLHelper.convertToQueryValue(email));
+			
+			List<JSONObject> userJsons=sqlHelper.query("User", columnNames, whereClauses, SQLHelper.AND);
+			if(userJsons!=null && userJsons.size()>0) break;
+			return ok();
+		    } catch(Exception e){
+			
+		    }
+		}while(false);
+		return badRequest();
+	}
+
+	public static Result emailVerification(String code){
+		response().setContentType("text/html");
+		do{
+			try{
+				SQLHelper sqlHelper=new SQLHelper();
+				List<String> names=new LinkedList<String>();
+				names.add(User.GROUP_ID);
+
+				List<Object> values=new LinkedList<Object>();
+				values.add(User.USER);
+
+				List<String> where=new LinkedList<String>();
+				where.add(User.VERIFICATION_CODE+"="+SQLHelper.convertToQueryValue(code));
+
+				boolean res=sqlHelper.update(User.TABLE, names, values, where, SQLHelper.AND);
+
+				names.clear();
+				values.clear();
+
+				names.add(User.ID);
+				names.add(User.EMAIL);
+				names.add(User.NAME);
+				names.add(User.PASSWORD);
+				names.add(User.GROUP_ID);
+				names.add(User.AVATAR);
+
+				List<JSONObject> userJsons=sqlHelper.query(User.TABLE, names, where, SQLHelper.AND); 
 				User user = new User(userJsons.get(0));
 
 				Content html = email_verification.render(res, user.getName(), user.getEmail());
-                return ok(html);
+				return ok(html);
 			} catch(Exception e) {
-				System.out.println("emailVerification: "+e.getMessage());
+				System.out.println("UserController.emailVerification, "+e.getMessage());
 			}
 		}while(false);
 		return badRequest();
 	}
 
-    protected static String generateVerificationCode(User user){
-        String ret=null;
-        do {
-            java.util.Date date = new java.util.Date();
-            Timestamp currentTime = new Timestamp(date.getTime());
-            Long epochTime = currentTime.getTime();
-            String username = user.getName();
-            String tmp=Converter.md5(epochTime.toString()+username);
+	protected static String generateVerificationCode(User user){
+		String ret=null;
+		try{
+			java.util.Date date = new java.util.Date();
+			Timestamp currentTime = new Timestamp(date.getTime());
+			Long epochTime = currentTime.getTime();
+			String username = user.getName();
+			String tmp=Converter.md5(epochTime.toString()+username);
 			int length=tmp.length();
 			ret=tmp.substring(0, length/2);
-        }while (false);
-        return ret;
-    }
+		} catch (Exception e){
+
+		}
+		return ret;
+	}
 }

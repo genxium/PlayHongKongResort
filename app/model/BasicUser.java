@@ -24,11 +24,9 @@ public class BasicUser {
 	public int getAvatar() {return m_avatar;}
 	public void setAvatar(int avatar) {m_avatar=avatar;}
 	
-	public BasicUser(int userId, String email, String name, int avatar){
-		m_userId=userId;
+	public BasicUser(String email, String name){
 		m_email=email;
 		m_name=name;
-		m_avatar=avatar;
 	}
 
 	public BasicUser(JSONObject userJson){
