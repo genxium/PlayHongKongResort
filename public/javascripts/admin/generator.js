@@ -3,7 +3,7 @@ function onBtnAcceptClicked(evt){
 
 	evt.preventDefault();
 	var btnAccept=$(this);
-	var token = $.cookie(g_keyLoginStatus.toString());
+	var token = $.cookie(g_keyToken);
 	var activityId=$(this).data(g_keyActivityId);
 	var params={};
  	params[g_keyActivityId]=activityId.toString();
@@ -36,7 +36,7 @@ function onBtnAcceptClicked(evt){
 function onBtnRejectClicked(evt){
 	evt.preventDefault();
 	var btnReject=$(this);
-	var token = $.cookie(g_keyLoginStatus.toString());
+	var token = $.cookie(g_keyToken);
 	var activityId=$(this).data(g_keyActivityId);
 	var params={};
  	params[g_keyActivityId]=activityId.toString();
@@ -70,7 +70,7 @@ function onBtnRejectClicked(evt){
 function onBtnDeleteClicked(evt){
 	evt.preventDefault();
 	var btnDelete=$(this);
-	var token = $.cookie(g_keyLoginStatus.toString());
+	var token = $.cookie(g_keyToken);
 	var activityId=$(this).data(g_keyActivityId);
 	var params={};
  	params[g_keyActivityId]=activityId.toString();

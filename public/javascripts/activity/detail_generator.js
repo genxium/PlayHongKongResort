@@ -56,7 +56,7 @@ function onParticipantsSelectionFormSubmission(formEvt){
         });
 
 		// append user token and activity id for identity
-		var token = $.cookie(g_keyLoginStatus.toString());
+		var token = $.cookie(g_keyToken.toString());
         if(token==null) break;
 		var activityId = $(this).data(g_keyActivityId);
         if(activityId==null) break;
@@ -201,7 +201,7 @@ function generateActivityDetailViewByJson(activityJson){
             }
         });
 
-        var token=$.cookie(g_keyLoginStatus.toString());
+        var token=$.cookie(g_keyToken.toString());
 	    if(token==null) break;
 
 	    var params={};

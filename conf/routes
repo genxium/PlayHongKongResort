@@ -7,7 +7,6 @@ GET	 /	controllers.Application.index()
 GET	 /show	controllers.Application.show(page: String)
 
 # Home page
-
 POST /user/login controllers.UserController.login()
 POST /user/register controllers.UserController.register()
 GET /user/status controllers.UserController.status(token: String ?=null)
@@ -21,18 +20,19 @@ POST /activity/delete controllers.ActivityController.delete()
 POST /activity/join controllers.ActivityController.join()
 POST /activity/save controllers.ActivityController.save()
 PUT /activity/submit controllers.ActivityController.submit()
-GET /activity/query controllers.ActivityController.query(refIndex: String ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?= null, relation: Integer ?=null, status: Integer ?=null)
+GET /activity/query controllers.ActivityController.query(refIndex: String ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?= null, targetUserId: Integer ?=null, relation: Integer ?=null, status: Integer ?=null)
 GET /activity/detail controllers.ActivityController.detail(activityId: Integer)
 
-# User Profile Editor
+# Profile
+GET /user/profile controllers.Application.profile(target: Integer ?=null)
 POST /user/uploadAvatar controllers.UserController.uploadAvatar()
 
-# Admin Page
+# Admin
 PUT /admin/accept controllers.AdminController.accept()
 PUT /admin/reject controllers.AdminController.reject()
 PUT /admin/delete controllers.AdminController.delete()
 
-# Activity Detail Page
+# Activity Detail
 GET /app/detail controllers.Application.detail(activityId: Integer ?=null)
 POST /updateActivityParticipants controllers.ActivityController.updateActivityParticipants()
 GET /activity/ownership controllers.ActivityController.ownership(token: String ?=null, activityId: Integer ?=null)

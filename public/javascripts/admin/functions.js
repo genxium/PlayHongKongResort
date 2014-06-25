@@ -51,7 +51,7 @@ function onQueryActivitiesSuccess(data, status, xhr){
 
 function queryActivities(refIndex, numItems, direction){
 	do{
-		var token = $.cookie(g_keyLoginStatus.toString());
+		var token = $.cookie(g_keyToken);
 		if(refIndex==null || numItems==null || direction==null || token==null) break;
 
 		var params={};

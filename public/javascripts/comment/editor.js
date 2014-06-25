@@ -31,7 +31,7 @@ function generateReplyEditor(activityId, parentId, predecessorId, toUsername){
 			var activityId=btn.data("ActivityId");
 			var parentId=btn.data("ParentId");
 			var predecessorId=btn.data("PredecessorId");
-			var token=$.cookie(g_keyLoginStatus.toString());
+			var token=$.cookie(g_keyToken);
 
 			if(content==null || content.length<=g_minContentLength) {
 				alert("Please comment with no less than "+g_minContentLength.toString()+" characters!");
@@ -92,7 +92,7 @@ function generateCommentCell(commentJson, activityId){
         }).appendTo(row);        
         
 	do{
-		var token=$.cookie(g_keyLoginStatus.toString());
+		var token=$.cookie(g_keyToken);
 		if(token==null) break; 
 
 		var operations=$('<span>',{
@@ -165,7 +165,7 @@ function generateSubCommentCell(commentJson, activityId){
             style: "text-align: left; margin-left:  25pt; color: blue"
         }).appendTo(row);        
         
-        var token=$.cookie(g_keyLoginStatus.toString());
+        var token=$.cookie(g_keyToken);
         if(token==null) break; 
 
         var operations=$('<span>',{
@@ -218,7 +218,7 @@ function generateCommentEditor(activityId){
 			var editor=$(this).closest('div');
 			var input=editor.children('input');
 			var content=input.val();
-			var token=$.cookie(g_keyLoginStatus.toString());
+			var token=$.cookie(g_keyToken);
 			
 			if(content==null || content.length<=g_minContentLength) {
 				alert("Please comment with no less than "+g_minContentLength.toString()+" characters!");

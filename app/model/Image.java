@@ -12,9 +12,10 @@ import org.apache.commons.io.FilenameUtils;
 public class Image {
 
 	public static String URL_PREFIX="/images/";	
-    public static String FOLDER_PATH="/var/www/html/images/";
-	public static String ID ="ImageId";
-	public static String URL ="ImageURL";
+    	public static String FOLDER_PATH="/var/www/html/images/";
+	public static String TABLE="Image";
+	public static String ID="ImageId";
+	public static String URL="ImageURL";
 	
 	private int m_imageId=0;
 	public int getImageId() {return m_imageId;}
@@ -24,27 +25,27 @@ public class Image {
 	public String getImageURL() {return m_imageURL;}
 	public void setImageURL(String imageURL) {m_imageURL=imageURL;}
 
-    public String getAbsolutePath(){
-        String baseName=FilenameUtils.getBaseName(m_imageURL);
-        String extension=FilenameUtils.getExtension(m_imageURL);
-        return FOLDER_PATH+baseName+"."+extension;
-    }
+	public String getAbsolutePath(){
+		String baseName=FilenameUtils.getBaseName(m_imageURL);
+		String extension=FilenameUtils.getExtension(m_imageURL);
+		return FOLDER_PATH+baseName+"."+extension;
+	}
 
 	public Image(int imageId, String imageURL){
 		m_imageId=imageId;
 		m_imageURL=imageURL;
 	}
     
-    public Image(JSONObject imageJson){
-        try{
-            if(imageJson.containsKey(ID)){
-                m_imageId=(Integer)imageJson.get(Image.ID);
-            }
-            m_imageURL=(String)imageJson.get(Image.URL);
-        } catch(Exception e){
-             
-        }
-    }
+	public Image(JSONObject imageJson){
+		try{
+		    if(imageJson.containsKey(ID)){
+			m_imageId=(Integer)imageJson.get(Image.ID);
+		    }
+		    m_imageURL=(String)imageJson.get(Image.URL);
+		} catch(Exception e){
+		     
+		}
+	}
 
     public ObjectNode toObjectNode(){
         ObjectNode ret= Json.newObject();

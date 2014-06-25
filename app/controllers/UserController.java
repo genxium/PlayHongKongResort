@@ -54,41 +54,42 @@ public class UserController extends Controller {
 	}
 
     public static Result login(){
-      	// define response attributes
-  		response().setContentType("text/plain");
-    	do{
-            try{
-                Http.RequestBody body = request().body();
-                Map<String, String[]> formData=body.asFormUrlEncoded();
-                String email=formData.get(User.EMAIL)[0];
-                String password=formData.get(User.PASSWORD)[0];
+	// define response attributes
+	response().setContentType("text/plain");
 
-                if( (email==null || General.validateEmail(email)==false) || (password==null || General.validatePassword(password)==false) ) break;
-                
-                String passwordDigest=Converter.md5(password);
-                User user=SQLCommander.queryUserByEmail(email);
+	do{
+		try{
+			Http.RequestBody body = request().body();
+			Map<String, String[]> formData=body.asFormUrlEncoded();
+			String email=formData.get(User.EMAIL)[0];
+			String password=formData.get(User.PASSWORD)[0];
 
-                if(user==null || user.getPassword().equals(passwordDigest)==false) break;
-                
-                String token = Converter.generateToken(email, password);
-                Integer userId = user.getUserId();
+			if( (email==null || General.validateEmail(email)==false) || (password==null || General.validatePassword(password)==false) ) break;
+			
+			String passwordDigest=Converter.md5(password);
+			User user=SQLCommander.queryUserByEmail(email);
 
-                session(token, userId.toString());
+			if(user==null || user.getPassword().equals(passwordDigest)==false) break;
+			
+			String token = Converter.generateToken(email, password);
+			Integer userId = user.getUserId();
 
-                int imageId=user.getAvatar();
-                Image image=SQLCommander.queryImageByImageId(imageId);
+			session(token, userId.toString());
 
-                ObjectNode result = Json.newObject();
-                result.put(User.ID, user.getUserId());
-                result.put(User.EMAIL, user.getEmail());
-                result.put(User.TOKEN, token);
-                if(image!=null){
-                    result.put(Image.URL, image.getImageURL());
-                }
-                return ok(result);
-            } catch(Exception e){
-                    
-            }        
+			int imageId=user.getAvatar();
+			Image image=SQLCommander.queryImageByImageId(imageId);
+
+			ObjectNode result = Json.newObject();
+			result.put(User.ID, user.getUserId());
+			result.put(User.EMAIL, user.getEmail());
+			result.put(User.TOKEN, token);
+			if(image!=null){
+			    result.put(Image.URL, image.getImageURL());
+			}
+			return ok(result);
+		} catch(Exception e){
+		    
+		}        
         }while(false);
         return badRequest("User does not exist!");
     }
@@ -97,36 +98,36 @@ public class UserController extends Controller {
       	// define response attributes
   		response().setContentType("text/plain");
     	do{
-            try{
-        		RequestBody body = request().body();
+		try{
+			RequestBody body = request().body();
         		Map<String, String[]> formData=body.asFormUrlEncoded();
-                String name=formData.get(User.NAME)[0];
+			String name=formData.get(User.NAME)[0];
         		String email=formData.get(User.EMAIL)[0];
         		String password=formData.get(User.PASSWORD)[0];
 
-                if(name==null || (email==null || General.validateEmail(email)==false) || (password==null || General.validatePassword(password)==false)) break;
+			if(name==null || (email==null || General.validateEmail(email)==false) || (password==null || General.validatePassword(password)==false)) break;
         		UserGroup.GroupType userGroup=UserGroup.GroupType.visitor;
         		String passwordDigest=Converter.md5(password);    
-                User user=User.create(email, passwordDigest, name, userGroup);
-                int lastId=SQLCommander.registerUser(user);
-                if(lastId==SQLCommander.INVALID) break;
+			User user=User.create(email, passwordDigest, name, userGroup);
+			int lastId=SQLCommander.registerUser(user);
+			if(lastId==SQLCommander.INVALID) break;
 
-                String code=generateVerificationCode(user);
-                SQLHelper sqlHelper=new SQLHelper();
+			String code=generateVerificationCode(user);
+			SQLHelper sqlHelper=new SQLHelper();
 
-                List<String> columnNames=new LinkedList<>();
-                columnNames.add(User.VERIFICATION_CODE);
+			List<String> columnNames=new LinkedList<>();
+			columnNames.add(User.VERIFICATION_CODE);
 
-                List<Object> columnValues=new LinkedList<>();
-                columnValues.add(code);
+			List<Object> columnValues=new LinkedList<>();
+			columnValues.add(code);
 
-                List<String> where=new LinkedList<>();
-                where.add(User.ID +"="+SQLHelper.convertToQueryValue(lastId));
+			List<String> where=new LinkedList<>();
+			where.add(User.ID +"="+SQLHelper.convertToQueryValue(lastId));
 
-                boolean res=sqlHelper.update("User", columnNames, columnValues, where, SQLHelper.AND);
-                if(res==false) break;
-				sendVerificationEmail(user.getName(), user.getEmail(), code);
-                return ok();
+			boolean res=sqlHelper.update("User", columnNames, columnValues, where, SQLHelper.AND);
+			if(res==false) break;
+			sendVerificationEmail(user.getName(), user.getEmail(), code);
+			return ok();
             } catch(Exception e){
                 
             }
@@ -138,30 +139,31 @@ public class UserController extends Controller {
         // define response attributes
         response().setContentType("text/plain");
         do{
-            try{
-                if(token==null) break;
-                Integer userId=DataUtils.getUserIdByToken(token);
-                User user=SQLCommander.queryUser(userId);
-                
-                if(user==null) break;
-                session(token, userId.toString());
-                String emailKey=User.EMAIL;
-                String tokenKey=User.TOKEN;
+		try{
+			if(token==null) break;
+			Integer userId=DataUtils.getUserIdByToken(token);
+			User user=SQLCommander.queryUser(userId);
+			
+			if(user==null) break;
+			session(token, userId.toString());
+			String emailKey=User.EMAIL;
+			String tokenKey=User.TOKEN;
 
-                int imageId=user.getAvatar();
-                Image image=SQLCommander.queryImageByImageId(imageId);
+			int imageId=user.getAvatar();
+			Image image=SQLCommander.queryImageByImageId(imageId);
 
-                ObjectNode result = Json.newObject();
-                result.put(emailKey, user.getEmail());
-                result.put(tokenKey, token);
-                if(image!=null){
-                    result.put(Image.URL, image.getImageURL());
-                }
-                return ok(result);
-            } catch (Exception e) {
-            }
+			ObjectNode result = Json.newObject();
+			result.put(User.ID, user.getUserId());
+			result.put(emailKey, user.getEmail());
+			result.put(tokenKey, token);
+			if(image!=null){
+			    result.put(Image.URL, image.getImageURL());
+			}
+			return ok(result);
+		} catch (Exception e) {
+		}
         }while(false);
-  	    return badRequest("User doesn't exist or not logged in");
+	return badRequest("User doesn't exist or not logged in");
     }
     
     public static Result uploadAvatar() {
@@ -176,8 +178,8 @@ public class UserController extends Controller {
 
     		  // get user token from request body stream
     		  String token=DataUtils.getUserToken(data);
-    		  int userId=DataUtils.getUserIdByToken(token);
-    		  if(userId==DataUtils.invalidId) break;
+    		  Integer userId=DataUtils.getUserIdByToken(token);
+    		  if(userId==null) break;
     		  User user=SQLCommander.queryUser(userId);
     		  if(user==null) break;
 
@@ -186,12 +188,12 @@ public class UserController extends Controller {
     		  int newAvatarId=ExtraCommander.saveAvatarFile(avatarFile, user);
     		  if(newAvatarId==ExtraCommander.INVALID) break;
                 
-           // delete previous avatar record and file
-           Image previousAvatar=SQLCommander.queryImageByImageId(previousAvatarId);
-           boolean isPreviousAvatarDeleted=ExtraCommander.deleteImageRecordAndFile(previousAvatar);
-           if(isPreviousAvatarDeleted==true){
-                System.out.println("Application.saveAvatarFile: previous avatar file and record deleted.");    
-           }
+		   // delete previous avatar record and file
+		   Image previousAvatar=SQLCommander.queryImageByImageId(previousAvatarId);
+		   boolean isPreviousAvatarDeleted=ExtraCommander.deleteImageRecordAndFile(previousAvatar);
+		   if(isPreviousAvatarDeleted==true){
+			System.out.println("Application.saveAvatarFile: previous avatar file and record deleted.");    
+		   }
          
     		  return ok("Avatar uploaded");
     	  
@@ -206,11 +208,11 @@ public class UserController extends Controller {
         do{
             try{
     			Integer userId=DataUtils.getUserIdByToken(token);
-    			int relation=SQLCommander.queryRelationOfUserIdAndActivity(userId, activityId);
+    			int relation=SQLCommander.queryUserActivityRelation(userId, activityId);
     			
     			if(relation==UserActivityRelationTable.invalid) break;
     			ret=Json.newObject();
-    			ret.put(UserActivityRelationTable.RELATION_ID, String.valueOf(relation));
+    			ret.put(UserActivityRelationTable.RELATION, String.valueOf(relation));
 
         		return ok(ret);
             } catch(Exception e){

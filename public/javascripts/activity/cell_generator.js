@@ -37,12 +37,12 @@ function onMouseLeaveDefaultActivityCell(evt){
 function onBtnJoinClicked(evt){
 	evt.preventDefault();
 	var btnJoin=this;
-	var token = $.cookie(g_keyLoginStatus.toString());
+	var token = $.cookie(g_keyToken);
 	var activityId=$(this).data(g_keyActivityId);
 
-    var params={};
-    params[g_keyActivityId]=activityId.toString();
-    params[g_keyUserToken]=token.toString();
+	var params={};
+	params[g_keyActivityId]=activityId.toString();
+	params[g_keyUserToken]=token.toString();
 
 	try{
 		$.ajax({
@@ -72,14 +72,14 @@ function onBtnJoinClicked(evt){
 }
 
 function onBtnDetailClicked(evt){
-    evt.preventDefault();
-    var activityId=$(this).data(g_keyActivityId);
+	evt.preventDefault();
+	var activityId=$(this).data(g_keyActivityId);
     
 	try{
-        var detailPagePath="/app/detail?activityId="+activityId;
-        window.open(detailPagePath);
-    } catch(err){
-        alert(err.toString());
+		var detailPagePath="/app/detail?"+g_keyArg+"="+activityId;
+		window.open(detailPagePath);
+    	} catch(err){
+        	alert(err.toString());
 	}
 }
 

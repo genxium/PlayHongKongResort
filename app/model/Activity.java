@@ -21,6 +21,7 @@ public class Activity {
 	public static String DEADLINE ="ActivityApplicationDeadline";
 	public static String CAPACITY ="ActivityCapacity";
 	public static String STATUS ="ActivityStatus";
+	public static String HOST_ID = "HostId";
 
 	public enum StatusType{
 		created(0),
@@ -80,46 +81,52 @@ public class Activity {
 	public StatusType getStatus() {return m_status;}
 	public void setStatus(StatusType status) {m_status=status;}
 
+	protected int m_hostId=0;
+	public int getHostId() {return m_hostId;}
+	public void setHostId(int hostId) {m_hostId=hostId;}
+
     protected Activity(){
 
     }
 
     public Activity(JSONObject activityJson){
-        do{
-            try{
-                m_id=(Integer)activityJson.get(ID);
-                m_title=(String)activityJson.get(TITLE);
-                m_content=(String)activityJson.get(CONTENT);
-                m_createdTime=(Timestamp)activityJson.get(CREATED_TIME);
-                m_beginTime=(Timestamp)activityJson.get(BEGIN_TIME);
-                m_deadline=(Timestamp)activityJson.get(DEADLINE);
-                m_capacity=(Integer)activityJson.get(CAPACITY);
-                m_status=StatusType.getTypeForValue((Integer)activityJson.get(STATUS));
-            }catch(Exception e){
+	try{
+		m_id=(Integer)activityJson.get(ID);
+		m_title=(String)activityJson.get(TITLE);
+		m_content=(String)activityJson.get(CONTENT);
+		m_createdTime=(Timestamp)activityJson.get(CREATED_TIME);
+		m_beginTime=(Timestamp)activityJson.get(BEGIN_TIME);
+		m_deadline=(Timestamp)activityJson.get(DEADLINE);
+		m_capacity=(Integer)activityJson.get(CAPACITY);
+		m_status=StatusType.getTypeForValue((Integer)activityJson.get(STATUS));
+		m_hostId=(Integer)activityJson.get(HOST_ID);
+	}catch(Exception e){
 
-            }
-        }while(false);
+	}
     }
 
-    public ObjectNode toObjectNode(){
+    public ObjectNode toObjectNode(Integer viewerId){
         ObjectNode ret = Json.newObject();;
-        do{
-            ret.put(Activity.ID, String.valueOf(m_id));
-            ret.put(Activity.TITLE, m_title);
-            ret.put(Activity.CONTENT, m_content);
-            ret.put(Activity.CREATED_TIME, m_createdTime.toString());
-            ret.put(Activity.BEGIN_TIME, m_beginTime.toString());
-            ret.put(Activity.DEADLINE, m_deadline.toString());
-            ret.put(Activity.CAPACITY, String.valueOf(m_capacity));
-        }while(false);
+	ret.put(Activity.ID, String.valueOf(m_id));
+	ret.put(Activity.TITLE, m_title);
+	ret.put(Activity.CONTENT, m_content);
+	ret.put(Activity.CREATED_TIME, m_createdTime.toString());
+	ret.put(Activity.BEGIN_TIME, m_beginTime.toString());
+	ret.put(Activity.DEADLINE, m_deadline.toString());
+	ret.put(Activity.CAPACITY, String.valueOf(m_capacity));
+	ret.put(Activity.HOST_ID, String.valueOf(m_hostId));
+	if(viewerId!=null && viewerId.equals(m_hostId)) { 
+		// only host can view the status of an activity
+		ret.put(Activity.STATUS, String.valueOf(m_status.ordinal()));		
+	}
         return ret;
     }
 
-    public ObjectNode toObjectNodeWithImages(){
-        ObjectNode ret = toObjectNode();
+    public ObjectNode toObjectNodeWithImages(Integer viewerId){
+        ObjectNode ret = toObjectNode(viewerId);
         do{
-            List<Image> images=SQLCommander.queryImagesByActivityId(m_id);
-            if(images==null) break;
+            List<Image> images=SQLCommander.queryImages(m_id);
+            if(images==null || images.size()<=0) break;
             ArrayNode imagesNode=new ArrayNode(JsonNodeFactory.instance);
             for(Image image : images){
                 imagesNode.add(image.toObjectNode());
@@ -129,19 +136,17 @@ public class Activity {
         return ret;
     }
 
-    public ObjectNode toObjectNodeWithImagesAndRelation(int userId){
+    public ObjectNode toObjectNodeWithImagesAndRelation(Integer viewerId){
 	/*
 		Note that when the activity is queried with a valid user token
 		1. status is only shown when the user is the owner of the activity
 		2. relation is only shown when relation is specified
  	*/
-        ObjectNode ret=toObjectNodeWithImages();
+        ObjectNode ret=toObjectNodeWithImages(viewerId);
         do{
-		int relation=SQLCommander.queryRelationOfUserIdAndActivity(userId, m_id);
+		int relation=SQLCommander.queryUserActivityRelation(viewerId, m_id);
 		if(relation==UserActivityRelationTable.invalid) break;
-		ret.put(UserActivityRelationTable.RELATION_ID, relation);
-		if((relation&UserActivityRelationTable.hosted)==0) break;
-		ret.put(Activity.STATUS, String.valueOf(m_status.ordinal()));		
+		ret.put(UserActivityRelationTable.RELATION, relation);
         }while(false);
         return ret;
     }

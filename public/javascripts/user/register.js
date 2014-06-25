@@ -83,73 +83,73 @@ function generateRegisterForm(){
 	}).appendTo(cell31);
 	g_spanCheckPassword=$('<span>').appendTo(cell32);
 
-    g_registerUsername.on("input keyup paste", function(evt){
-        do{
-            evt.preventDefault();
-            g_spanCheckUsername.empty();
-            var username=$(this).val();
-            if(username==null || username.length==0) break;
+	g_registerUsername.on("input keyup paste", function(evt){
+		do{
+		    evt.preventDefault();
+		    g_spanCheckUsername.empty();
+		    var username=$(this).val();
+		    if(username==null || username.length==0) break;
 
-            var params={};
-            params["username"]=username;
-            $.ajax({
-                type: "GET",
-                url: "/user/name/duplicate",
-                data: params,
-                success: function(data, status, xhr){
-                    g_spanCheckUsername.text(" This username can be used :)");        
-                },
-                error: function(xhr, status, err){
-                    g_spanCheckUsername.text(" This username cannot be used :(");        
-                }
-            });
-        }while(false);
-    });	
-    
-    g_registerEmail.on("input keyup paste", function(evt){
-        do{
-            evt.preventDefault();
-            g_spanCheckEmail.empty();
-            var email=$(this).val();
-            if(email==null || email.length==0) break;
-            if(validateEmail(email)==false) {
-				 g_spanCheckEmail.text(" Not valid email format");
-				 break;
+		    var params={};
+		    params["username"]=username;
+		    $.ajax({
+			type: "GET",
+			url: "/user/name/duplicate",
+			data: params,
+			success: function(data, status, xhr){
+			    g_spanCheckUsername.text(" This username can be used :)");        
+			},
+			error: function(xhr, status, err){
+			    g_spanCheckUsername.text(" This username cannot be used :(");        
 			}
-            var params={};
-            params["email"]=email;
-            $.ajax({
-                type: "GET",
-                url: "/user/email/duplicate",
-                data: params,
-                success: function(data, status, xhr){
-                    g_spanCheckEmail.text(" This email can be used :)");        
-                },
-                error: function(xhr, status, err){
-                	g_spanCheckEmail.text(" This email cannot be used :(");        
-                }
-            });
-        }while(false);
-    });	
+		    });
+		}while(false);
+	});	
 
-    g_registerPassword.on("input keyup paste", function(evt){
-        do{
-            evt.preventDefault();
-            g_spanCheckPassword.empty();
-            var password=$(this).val();
-            if(password==null || password.length==0) break;
-            if(validatePassword(password)==false) {
-				g_spanCheckPassword.text(" Password can only contain alphabet letters and numbers");
-				break;
+	g_registerEmail.on("input keyup paste", function(evt){
+		do{
+		    evt.preventDefault();
+		    g_spanCheckEmail.empty();
+		    var email=$(this).val();
+		    if(email==null || email.length==0) break;
+		    if(validateEmail(email)==false) {
+					 g_spanCheckEmail.text(" Not valid email format");
+					 break;
+				}
+		    var params={};
+		    params["email"]=email;
+		    $.ajax({
+			type: "GET",
+			url: "/user/email/duplicate",
+			data: params,
+			success: function(data, status, xhr){
+			    g_spanCheckEmail.text(" This email can be used :)");        
+			},
+			error: function(xhr, status, err){
+				g_spanCheckEmail.text(" This email cannot be used :(");        
 			}
-			g_spanCheckPassword.text("");
-        }while(false);
-    });	
+		    });
+		}while(false);
+	});	
+
+	g_registerPassword.on("input keyup paste", function(evt){
+		do{
+		    evt.preventDefault();
+		    g_spanCheckPassword.empty();
+		    var password=$(this).val();
+		    if(password==null || password.length==0) break;
+		    if(validatePassword(password)==false) {
+					g_spanCheckPassword.text(" Password can only contain alphabet letters and numbers");
+					break;
+				}
+				g_spanCheckPassword.text("");
+		}while(false);
+	});	
 
 	var row4=$('<tr>').appendTo(ret);
 	var cell41=$('<td>').appendTo(row4);
 	var btnRegister=$('<button>', {
-		style: "font-size: 15pt; background-color: blue",
+		style: "font-size: 15pt; background-color: aquamarine",
 		text: "register"	
 	}).appendTo(cell41);
 	btnRegister.on("click", onBtnRegisterClicked);

@@ -30,7 +30,7 @@ public class ExtraCommander extends SQLCommander {
 		        
 		          if(resultRelationDeletion==false) break;
 		        
-		          List<Image> previousImages=queryImagesByActivityId(activityId);
+		          List<Image> previousImages=queryImages(activityId);
 		          if(previousImages!=null && previousImages.size()>0){
 		              // delete previous images
 		              Iterator<Image> itPreviousImage=previousImages.iterator();

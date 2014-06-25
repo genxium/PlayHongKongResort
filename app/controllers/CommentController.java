@@ -20,10 +20,7 @@ public class CommentController extends Controller {
         do{
             try{
                 Integer userId=null;
-                if(token!=null){
-                    userId= DataUtils.getUserIdByToken(token);
-                }
-                if(userId==DataUtils.invalidId) break;
+                if(token!=null)	userId= DataUtils.getUserIdByToken(token);
 
                 List<CommentOnActivity> comments=SQLCommander.queryTopLevelComments(activityId, refIndex, CommentOnActivity.ID, SQLHelper.DESCEND, numItems, direction, CommentOnActivity.TYPE_QA);
 
@@ -54,7 +51,7 @@ public class CommentController extends Controller {
 
                 if(token==null) break;
                 Integer userId=DataUtils.getUserIdByToken(token);
-                if(userId==DataUtils.invalidId) break;
+                if(userId==null) break;
 
                 int lastCommentId= SQLHelper.INVALID_ID;
 

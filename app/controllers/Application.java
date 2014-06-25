@@ -19,25 +19,34 @@ public class Application extends Controller {
     
     public static Result show(String page){
         response().setContentType("text/html");
-		try{
-			String fullPath=Play.application().path()+"/app/views/"+page;
-			File file=new File(fullPath);
-			String content = new Scanner(file).useDelimiter("\\A").next();
-			return ok(content);
-		} catch(IOException e){
+	try{
+		String fullPath=Play.application().path()+"/app/views/"+page;
+		File file=new File(fullPath);
+		String content = new Scanner(file).useDelimiter("\\A").next();
+		return ok(content);
+	} catch(IOException e){
 
-        }
+	}
         return badRequest();
     }
 
-    public static Result detail(Integer activityId){
+    public static Result detail(Integer arg){
         try{
-            Content html = views.html.detail.render(activityId);
-            return ok(html);
+        	Content html = views.html.detail.render(arg);
+        	return ok(html);
         } catch (Exception e){
 
         }
         return badRequest();
     }
     
+    public static Result profile(Integer target){
+	try{
+		Content html = views.html.profile.render(target);	
+		return ok(html);
+	} catch (Exception e){
+		
+	}	
+	return badRequest();
+    }
 }

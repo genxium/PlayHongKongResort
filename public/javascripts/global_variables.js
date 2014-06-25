@@ -14,12 +14,14 @@ var g_modeProfile=1;
 var g_idKeyboardEnter=13;
 
 // cookie keys
-var g_keyLoginStatus="loginStatusToken";
-
-// extra GET request keys 
 var g_keyToken="token";
+var g_keyUid="uid";
+
+// extra request keys 
 var g_keyRelation="relation";
 var g_keyStatus="status";
+var g_keyArg="arg";
+var g_keyTarget="target";
 
 // structured data keys (should be consistent with server-side in a protocol manner)
 var g_keyUserId="UserId";

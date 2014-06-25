@@ -16,19 +16,17 @@ import java.util.*;
 
 public class ActivityController extends Controller {
 
-    public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer relation, Integer status){
+    public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer target, Integer relation, Integer status){
         response().setContentType("text/plain");
 	do{
 		try{
 			Integer userId=null;
-			if(token!=null){
-			    userId=DataUtils.getUserIdByToken(token);
-			}
-			if(userId==DataUtils.invalidId) break;
+			if(token!=null)	userId=DataUtils.getUserIdByToken(token);
+			if(userId==null) break; // invalide token
 			List<Activity> activities=null;
 
-			if(relation!=null){
-				activities=SQLCommander.queryActivities(userId, relation);
+			if(relation!=null && target!=null){
+				activities=SQLCommander.queryActivities(target, relation);
 			} else{
 				Activity.StatusType activityStatus=Activity.StatusType.getTypeForValue(status);
 				activities=SQLCommander.queryActivities(refIndex, Activity.ID, SQLHelper.DESCEND, numItems, direction, activityStatus);
@@ -37,10 +35,10 @@ public class ActivityController extends Controller {
 			ObjectNode result = Json.newObject();
 
 			for(Activity activity : activities){
-			    if(userId!=null){
+			    if(token!=null){
 				result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImagesAndRelation(userId));
-			    } else{
-				result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages());
+			    } else {
+				result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages(userId));
 			    }
 			}
 			return ok(result);
@@ -70,7 +68,7 @@ public class ActivityController extends Controller {
     public static Result ownership(String token, Integer activityId){
         do{
             Integer ownerId=DataUtils.getUserIdByToken(token);
-            if(ownerId==DataUtils.invalidId) break;
+            if(ownerId==null) break;
             if(SQLCommander.validateOwnershipOfActivity(ownerId, activityId)==false) break;
             return ok();
         }while(false);
@@ -96,7 +94,7 @@ public class ActivityController extends Controller {
                 JSONArray selectedParticipantsJson= (JSONArray)JSONValue.parse(selectedParticipantsJsonStr);
 
                 Integer ownerId=DataUtils.getUserIdByToken(token);
-                if(ownerId==DataUtils.invalidId) break;
+                if(ownerId==null) break;
                 if(SQLCommander.validateOwnershipOfActivity(ownerId, activityId)==false) break;
 
                 for(int i=0;i<appliedParticipantsJson.size();i++){
@@ -141,7 +139,7 @@ public class ActivityController extends Controller {
                 String token=formData.get(User.TOKEN)[0];
                 if(token==null) break;
                 Integer userId=DataUtils.getUserIdByToken(token);
-                if(userId==null || userId==DataUtils.invalidId) break;
+                if(userId==null || userId==null) break;
                 User user=SQLCommander.queryUser(userId);
                 if(user==null) break;
 
@@ -180,7 +178,7 @@ public class ActivityController extends Controller {
                 if(res==false) break;
 
                 // save new images
-                List<Image> previousImages=SQLCommander.queryImagesByActivityId(activityId);
+                List<Image> previousImages=SQLCommander.queryImages(activityId);
                 if(imageFiles!=null && imageFiles.size()>0){
                     Iterator<Http.MultipartFormData.FilePart> imageIterator=imageFiles.iterator();
                     while(imageIterator.hasNext()){
@@ -238,8 +236,8 @@ public class ActivityController extends Controller {
                 String token=formData.get(User.TOKEN)[0];
                 Integer activityId=Integer.valueOf(formData.get(Activity.ID)[0]);
 
-                int userId=DataUtils.getUserIdByToken(token);
-                if(userId==DataUtils.invalidId) break;
+                Integer userId=DataUtils.getUserIdByToken(token);
+                if(userId==null) break;
                 User user=SQLCommander.queryUser(userId);
                 if(user==null) break;
 
@@ -249,16 +247,16 @@ public class ActivityController extends Controller {
                 String activityTableName="Activity";
 
                 SQLHelper sqlHelper=new SQLHelper();
-                List<String> columnNames=new LinkedList<String>();
-                columnNames.add(Activity.STATUS);
+                List<String> names=new LinkedList<String>();
+                names.add(Activity.STATUS);
 
-                List<Object> columnValues=new LinkedList<Object>();
-                columnValues.add(Activity.StatusType.pending.ordinal());
+                List<Object> values=new LinkedList<Object>();
+                values.add(Activity.StatusType.pending.ordinal());
 
-                List<String> whereClauses=new LinkedList<String>();
-                whereClauses.add(Activity.ID +"="+activity.getId());
+                List<String> where=new LinkedList<String>();
+                where.add(Activity.ID +"="+activity.getId());
 
-                boolean res=sqlHelper.update(activityTableName, columnNames, columnValues, whereClauses, SQLHelper.AND);
+                boolean res=sqlHelper.update(activityTableName, names, values, where, SQLHelper.AND);
                 if(res==false) break;
 
                 return ok("Activity submitted");
@@ -284,7 +282,7 @@ public class ActivityController extends Controller {
             String token=tokens[0];
 
             Integer userId=DataUtils.getUserIdByToken(token);
-            if(userId==DataUtils.invalidId) break;
+            if(userId==null) break;
 
             Activity activity=SQLCommander.queryActivity(activityId);
             if(SQLCommander.isActivityEditable(userId, activity)==false) break;
@@ -317,19 +315,19 @@ public class ActivityController extends Controller {
                 java.util.Date date= new java.util.Date();
                 Timestamp currentTime=new Timestamp(date.getTime());
 
-                List<String> columnNames=new LinkedList<String>();
-                columnNames.add(UserActivityRelationTable.ACTIVITY_ID);
-                columnNames.add(UserActivityRelationTable.USER_ID);
-                columnNames.add(UserActivityRelationTable.RELATION_ID);
-                columnNames.add(UserActivityRelationTable.GENERATED_TIME);
+                List<String> names=new LinkedList<String>();
+                names.add(UserActivityRelationTable.ACTIVITY_ID);
+                names.add(UserActivityRelationTable.USER_ID);
+                names.add(UserActivityRelationTable.RELATION);
+                names.add(UserActivityRelationTable.GENERATED_TIME);
 
-                List<Object> columnValues=new LinkedList<Object>();
-                columnValues.add(activityId);
-                columnValues.add(userId);
-                columnValues.add(UserActivityRelationTable.applied);
-                columnValues.add(currentTime.toString());
+                List<Object> values=new LinkedList<Object>();
+                values.add(activityId);
+                values.add(userId);
+                values.add(UserActivityRelationTable.applied);
+                values.add(currentTime.toString());
 
-                int lastRelationTableId=sqlHelper.insert("UserActivityRelationTable", columnNames, columnValues);
+                int lastRelationTableId=sqlHelper.insert("UserActivityRelationTable", names, values);
                 if(lastRelationTableId==SQLHelper.INVALID_ID) break;
 
                 return ok("Successfully joined activity");

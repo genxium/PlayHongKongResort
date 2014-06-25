@@ -26,7 +26,7 @@ public class AdminController extends Controller {
 				String token=tokens[0];
 			  
 				Integer userId=DataUtils.getUserIdByToken(token);
-				if(userId==DataUtils.invalidId) break;
+				if(userId==null) break;
 				User user=SQLCommander.queryUser(userId);
 				if(user==null) break;
 				
@@ -56,7 +56,7 @@ public class AdminController extends Controller {
 				String token=tokens[0];
 			  
 				Integer userId=DataUtils.getUserIdByToken(token);
-				if(userId==DataUtils.invalidId) break;
+				if(userId==null) break;
 				User user=SQLCommander.queryUser(userId);
 				if(user==null) break;
 				
@@ -86,7 +86,7 @@ public class AdminController extends Controller {
 				String token=tokens[0];
 			  
 				Integer userId=DataUtils.getUserIdByToken(token);
-				if(userId==DataUtils.invalidId) break;
+				if(userId==null) break;
 				
 				User user=SQLCommander.queryUser(userId);
 				if(user==null) break;

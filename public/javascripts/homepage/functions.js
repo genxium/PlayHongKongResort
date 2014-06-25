@@ -88,7 +88,7 @@ function onQueryActivitiesSuccess(data, status, xhr){
                 g_sectionDefaultActivities.data(g_keyEndingIndex, activityId);
             }
             var cell=null;
-            var token = $.cookie(g_keyLoginStatus.toString());
+            var token = $.cookie(g_keyToken);
             if(token==null){
                 cell=generateActivityCell(activityJson);
             } else{
@@ -109,7 +109,7 @@ function queryActivities(refIndex, numItems, direction){
 		params[g_keyDirection]=direction.toString();
 		params[g_keyStatus]=g_statusAccepted;
 
-		var token = $.cookie(g_keyLoginStatus.toString());
+		var token = $.cookie(g_keyToken);
 		if(token!=null) params[g_keyToken]=token;
 
 		try{

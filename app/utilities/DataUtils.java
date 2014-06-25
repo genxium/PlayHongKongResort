@@ -10,13 +10,11 @@ import play.mvc.Http.MultipartFormData.FilePart;
 
 public class DataUtils{
 
-    public static Integer invalidId=(-1);
-
 	public static String getFileExt(String fileName){
 		int dotPos=fileName.lastIndexOf('.');
 		String ext=fileName.substring(dotPos+1, fileName.length()-1);
 		return ext;
-    }
+    	}
     
     public static boolean isImage(FilePart imageFile){
     		String contentType=imageFile.getContentType();
@@ -52,13 +50,13 @@ public class DataUtils{
     }
     
     public static Integer getUserIdByToken(String token){
-        Integer userId=invalidId;
+        Integer userId=null;
         try{
-        		userId=Integer.parseInt(Controller.session(token));
+		userId=Integer.parseInt(Controller.session(token));
         } catch(Exception e){
-        		System.out.println("DataUtils.getUserIdByToken:"+e.getMessage());
+		System.out.println("DataUtils.getUserIdByToken:"+e.getMessage());
         }
-    		return userId;
+	return userId;
     }
     
     public static String getNameByEmail(String email){

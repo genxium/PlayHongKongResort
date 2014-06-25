@@ -7,7 +7,7 @@ function onUploadAvatarFormSubmission(formEvt){
 		var formData = new FormData(this);
 		
 		// append an user token for identity
-		var token = $.cookie(g_keyLoginStatus.toString());
+		var token = $.cookie(g_keyToken);
 		formData.append(g_keyUserToken, token);
 		
 		$.ajax({

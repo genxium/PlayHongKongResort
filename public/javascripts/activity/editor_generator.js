@@ -103,7 +103,7 @@ function onSave(){
         formData.append(g_indexOldImage, JSON.stringify(selectedOldImages));
 
 		// append user token and activity id for identity
-		var token = $.cookie(g_keyLoginStatus.toString());
+		var token = $.cookie(g_keyToken.toString());
 		formData.append(g_keyUserToken, token);
 		
 		// append activity title and content 
@@ -176,7 +176,7 @@ function onSubmit(){
 		var params={};
 
 		// append user token and activity id for identity
-		var token = $.cookie(g_keyLoginStatus.toString());
+		var token = $.cookie(g_keyToken.toString());
 		params[g_keyUserToken]=token;
 
 		var activityId = g_activityEditor.data(g_keyActivityId);
@@ -256,7 +256,7 @@ function onBtnDeleteClicked(evt){
 	evt.preventDefault();
 	
 	var activityId=$(this).data(g_keyActivityId);
-	var token=$.cookie(g_keyLoginStatus.toString());
+	var token=$.cookie(g_keyToken.toString());
 
     var params={};
     params[g_keyActivityId]=activityId.toString();
