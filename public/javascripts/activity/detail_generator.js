@@ -1,10 +1,12 @@
+var g_activityId=null;
+
 // Assistive Functions
 function refreshOnEnter(){
-
+	queryActivityDetail(g_activityId);
 }
 
 function refreshOnLoggedIn(){
-	
+	queryActivityDetail(g_activityId);
 }
 
 function queryActivityDetail(activityId){
@@ -33,13 +35,14 @@ function queryActivityDetail(activityId){
 }
 
 function displayActivityDetail(activityDetailJson){
-    var activityTitle=activityDetailJson[g_keyActivityTitle];
-    var activityContent=activityDetailJson[g_keyActivityContent];
-    var activityImages=activityDetailJson[g_keyActivityImages];
+	var activityTitle=activityDetailJson[g_keyActivityTitle];
+	var activityContent=activityDetailJson[g_keyActivityContent];
+	var activityImages=activityDetailJson[g_keyActivityImages];
 
-    var wrap=$("#wrap");
-    var detailView=generateActivityDetailViewByJson(activityDetailJson);
-    wrap.append(detailView);
+	var sectionActivity=$("#idSectionActivity");
+	var detailView=generateActivityDetailViewByJson(activityDetailJson);
+	sectionActivity.empty();
+	sectionActivity.append(detailView);
 }
 
 // Assistive Callback Functions
@@ -59,7 +62,7 @@ function onParticipantsSelectionFormSubmission(formEvt){
 		});
 
 		// append user token and activity id for identity
-		var token = $.cookie(g_keyToken.toString());
+		var token = $.cookie(g_keyToken);
 		if(token==null) break;
 		var activityId = $(this).data(g_keyActivityId);
 		if(activityId==null) break;
@@ -209,7 +212,7 @@ function generateActivityDetailViewByJson(activityJson){
 		    }
 		});
 
-		var token=$.cookie(g_keyToken.toString());
+		var token=$.cookie(g_keyToken);
 		if(token==null) break;
 
 		var params={};
@@ -241,12 +244,13 @@ function generateActivityDetailViewByJson(activityJson){
 				}
 				if(labels.length>0){
 					var btnSubmit=$('<button>',{
-						text: 'Submit'
+						text: 'Confirm Selection',
+						style: 'color: white; background-color:black; font-size: 13pt'
 					}).appendTo(selectionForm);
-					btnSubmit.css("font-size", 18);
 					btnSubmit.on("click", onBtnSubmitClicked);
 					selectionForm.data(g_keyActivityId, activityId);
 				}
+				$('<hr>').appendTo(selectionForm);
 			},
 			error: function(xhr, status, errThrown){
 
@@ -262,23 +266,16 @@ function generateActivityDetailViewByJson(activityJson){
 
 // execute on start
 $(document).ready(function(){
-	// initialize local DOMs
+	g_activityId=$('#arg').attr("value");
+	
 	initLoginWidget();
 
-	g_callbackOnLoginSuccess=function(){
-		refreshOnLoggedIn();
-	};
-
+	g_callbackOnLoginSuccess=refreshOnLoggedIn;
 	g_callbackOnLoginError=null;
 
-	g_callbackOnEnter=function(){
-		refreshOnEnter();
-	};
+	g_callbackOnEnter=refreshOnEnter;
 
 	initActivityEditor();
 	
 	checkLoginStatus();
-	
-	var activityId=$('#arg').attr("value");
-	queryActivityDetail(activityId);
 });
