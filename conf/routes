@@ -21,7 +21,7 @@ POST /activity/join controllers.ActivityController.join()
 POST /activity/save controllers.ActivityController.save()
 PUT /activity/submit controllers.ActivityController.submit()
 GET /activity/query controllers.ActivityController.query(refIndex: String ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?= null, target: Integer ?=null, relation: Integer ?=null, status: Integer ?=null)
-GET /activity/detail controllers.ActivityController.detail(activityId: Integer)
+GET /activity/detail controllers.ActivityController.detail(arg: Integer ?=null, token: String ?=null)
 
 # Profile
 GET /user/profile controllers.Application.profile(target: Integer ?=null)
@@ -33,11 +33,11 @@ PUT /admin/reject controllers.AdminController.reject()
 PUT /admin/delete controllers.AdminController.delete()
 
 # Activity Detail
-GET /app/detail controllers.Application.detail(activityId: Integer ?=null)
+GET /app/detail controllers.Application.detail(arg: Integer ?=null)
 POST /updateActivityParticipants controllers.ActivityController.updateActivityParticipants()
-GET /activity/ownership controllers.ActivityController.ownership(token: String ?=null, activityId: Integer ?=null)
+GET /activity/ownership controllers.ActivityController.ownership(token: String ?=null, arg: Integer ?=null)
 POST /comment/submit controllers.CommentController.submit()
-GET /comment/query controllers.CommentController.query(activityId: Integer ?=null, refIndex: String ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?=null)
+GET /comment/query controllers.CommentController.query(arg: Integer ?=null, refIndex: String ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?=null)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

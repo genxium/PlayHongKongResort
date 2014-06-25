@@ -130,49 +130,48 @@ public class SQLCommander {
 		return lastInsertedId;
 	}
 
-    public static Integer createActivity(String title, String content, Integer userId){
-        Integer ret=null;
-        do{
-            int lastActivityId= SQLHelper.INVALID_ID;
+	public static Integer createActivity(String title, String content, Integer userId){
+		Integer ret=null;
+		do{
+			int lastActivityId= SQLHelper.INVALID_ID;
 
-            SQLHelper sqlHelper=new SQLHelper();
-            List<String> names=new LinkedList<String>();
+			SQLHelper sqlHelper=new SQLHelper();
+			List<String> names=new LinkedList<String>();
 
-            names.add(Activity.TITLE);
-            names.add(Activity.CONTENT);
-	    names.add(Activity.HOST_ID);
+			names.add(Activity.TITLE);
+			names.add(Activity.CONTENT);
+			names.add(Activity.HOST_ID);
 
-            List<Object> values=new LinkedList<Object>();
+			List<Object> values=new LinkedList<Object>();
 
-            values.add(title);
-            values.add(content);
-	    values.add(userId);
+			values.add(title);
+			values.add(content);
+			values.add(userId);
 
-            int tmpLastActivityId=sqlHelper.insert("Activity", names, values);
-            if(tmpLastActivityId!=SQLHelper.INVALID_ID){
-                names.clear();
-                values.clear();
+			int tmpLastActivityId=sqlHelper.insert(Activity.TABLE, names, values);
+			if(tmpLastActivityId!=SQLHelper.INVALID_ID){
+				names.clear();
+				values.clear();
 
-                names.add(UserActivityRelationTable.ACTIVITY_ID);
-                names.add(UserActivityRelationTable.USER_ID);
-                names.add(UserActivityRelationTable.RELATION);
+				names.add(UserActivityRelationTable.ACTIVITY_ID);
+				names.add(UserActivityRelationTable.USER_ID);
+				names.add(UserActivityRelationTable.RELATION);
 
-                values.add(tmpLastActivityId);
-                values.add(userId);
-                values.add(UserActivityRelationTable.hosted);
+				values.add(tmpLastActivityId);
+				values.add(userId);
+				values.add(UserActivityRelationTable.hosted);
 
-                int lastRelationTableId=sqlHelper.insert("UserActivityRelationTable", names, values);
-                if(lastRelationTableId==SQLHelper.INVALID_ID) break;
+				int lastRelationTableId=sqlHelper.insert(UserActivityRelationTable.TABLE, names, values);
+				if(lastRelationTableId==SQLHelper.INVALID_ID) break;
 
-                lastActivityId=tmpLastActivityId;
-            }
+				lastActivityId=tmpLastActivityId;
+			}
 
-            if(lastActivityId==SQLHelper.INVALID_ID) break;
-            ret=lastActivityId;
-
-        }while (false);
-        return ret;
-    }
+			if(lastActivityId==SQLHelper.INVALID_ID) break;
+			ret=lastActivityId;
+		}while (false);
+		return ret;
+	}
 
 	public static boolean updateActivity(Activity activity){
 		boolean ret=false;

@@ -103,7 +103,7 @@ function generateActivityCell(activityJson){
 		   }
 		}
 	}
-	var userActivityRelationId=activityJson[g_keyUserActivityRelationId];
+	var relation=activityJson[g_keyUserActivityRelation];
 	var activityStatus=activityJson[g_keyActivityStatus];
 	var statusStr=arrayStatusName[parseInt(activityStatus)];
 
@@ -123,7 +123,7 @@ function generateActivityCell(activityJson){
 		html: activityTitle
 	}).appendTo(ret);
 
-	if(userActivityRelationId==null){
+	if(relation==null){
 		var btnJoin=$('<button>', {
 			class: g_classBtnJoin,
 			text: 'Join'
@@ -136,7 +136,8 @@ function generateActivityCell(activityJson){
 		btnJoin.hide();
 
 		ret.data(g_indexBtnJoin, btnJoin);
-	} else if(activityStatus==null) {
+	} else if(relation==2) {
+		// hard-coded, relation 2 is applied
 		
 		var appliedIndicator=$('<div>', {
 			class: g_classAppliedIndicator,

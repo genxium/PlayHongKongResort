@@ -46,14 +46,16 @@ public class ActivityController extends Controller {
         return badRequest();
     }
 
-    public static Result detail(Integer activityId){
+    public static Result detail(Integer arg, String token){
         response().setContentType("text/plain");
         do{
             ObjectNode result = null;
             try{
-                ActivityDetail activityDetail=SQLCommander.queryActivityDetail(activityId);
+                ActivityDetail activityDetail=SQLCommander.queryActivityDetail(arg);
                 if(activityDetail==null) break;
-                result=activityDetail.toObjectNode();
+		Integer userId=null;
+		if(token!=null)	userId=DataUtils.getUserIdByToken(token);
+                result=activityDetail.toObjectNode(userId);
                 return ok(result);
             } catch(Exception e){
 
@@ -62,11 +64,11 @@ public class ActivityController extends Controller {
         return badRequest();
     }
 
-    public static Result ownership(String token, Integer activityId){
+    public static Result ownership(String token, Integer arg){
         do{
             Integer ownerId=DataUtils.getUserIdByToken(token);
             if(ownerId==null) break;
-            if(SQLCommander.validateOwnershipOfActivity(ownerId, activityId)==false) break;
+            if(SQLCommander.validateOwnershipOfActivity(ownerId, arg)==false) break;
             return ok();
         }while(false);
         return badRequest();

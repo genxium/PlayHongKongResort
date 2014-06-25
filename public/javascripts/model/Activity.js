@@ -9,7 +9,7 @@ var g_keyActivityDeadline="ActivityApplictionDeadline";
 var g_keyActivityImages="ActivityImages";
 var g_keyActivityAppliedParticipants="ActivityAppliedParticipants";
 var g_keyActivitySelectedParticipants="ActivitySelectedParticipants";
-var g_keyUserActivityRelationId="UserActivityRelationId";
+var g_keyUserActivityRelation="Relation";
 
 function Activity(activityJson){
     this.id=activityJson[g_keyActivityId],

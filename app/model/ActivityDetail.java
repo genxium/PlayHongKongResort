@@ -12,24 +12,24 @@ import java.util.List;
 
 public class ActivityDetail extends Activity {
 
-    public static String IMAGES ="ActivityImages";
+	public static String IMAGES ="ActivityImages";
 	public static String APPLIED_PARTICIPANTS ="ActivityAppliedParticipants";
 	public static String SELECTED_PARTICIPANTS ="ActivitySelectedParticipants";
 
-    protected List<Image> m_images=null;
-    public List<Image> getImages() {return m_images;}
-    public void setImages(List<Image> images){
-        if(m_images!=null){
-            m_images.clear();
-        } else{
-            m_images=new ArrayList<Image>();
-        }
-        Iterator<Image> it=images.iterator();
-        while(it.hasNext()){
-            Image image=it.next();
-            m_images.add(image);
-        }
-    }
+	protected List<Image> m_images=null;
+	public List<Image> getImages() {return m_images;}
+	public void setImages(List<Image> images){
+		if(m_images!=null){
+		    m_images.clear();
+		} else{
+		    m_images=new ArrayList<Image>();
+		}
+		Iterator<Image> it=images.iterator();
+		while(it.hasNext()){
+		    Image image=it.next();
+		    m_images.add(image);
+		}
+	}
 	
 	protected List<BasicUser> m_appliedParticipants=null;
 	public List<BasicUser> getAppliedParticipants() {return m_appliedParticipants;}
@@ -61,44 +61,39 @@ public class ActivityDetail extends Activity {
 		}
 	}
 
-    public ActivityDetail(Activity activity, List<Image> images, List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants){
-        m_id=activity.getId();
-        m_title=activity.getTitle();
-        m_content=activity.getContent();
-        m_createdTime=activity.getCreatedTime();
-        m_beginTime=activity.getBeginTime();
-        m_deadline=activity.getDeadline();
-        m_capacity=activity.getCapacity();
-        m_status=activity.getStatus();
-        m_images=images;
-        m_appliedParticipants=appliedParticipants;
-        m_selectedParticipants=selectedParticipants;
-    }
+    	public ActivityDetail(Activity activity, List<Image> images, List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants){
+		m_id=activity.getId();
+		m_title=activity.getTitle();
+		m_content=activity.getContent();
+		m_createdTime=activity.getCreatedTime();
+		m_beginTime=activity.getBeginTime();
+		m_deadline=activity.getDeadline();
+		m_capacity=activity.getCapacity();
+		m_status=activity.getStatus();
+		m_images=images;
+		m_appliedParticipants=appliedParticipants;
+		m_selectedParticipants=selectedParticipants;
+    	}
 
 	public ActivityDetail(JSONObject activityJson, List<Image> images,
-            List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants) {
+		List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants) {
 		super(activityJson);
 		m_images=images;
 		m_appliedParticipants=appliedParticipants;
-        m_selectedParticipants=selectedParticipants;
+		m_selectedParticipants=selectedParticipants;
 	}
 	
-	public ObjectNode toObjectNode(){
+	public ObjectNode toObjectNode(Integer viewerId){
 		ObjectNode ret = null;
-        do{
-        	ret=Json.newObject();
-    		
-        	ret.put(Activity.ID, String.valueOf(m_id));
-        	ret.put(Activity.TITLE, m_title);
-        	ret.put(Activity.CONTENT, m_content);
-        	ret.put(Activity.STATUS, String.valueOf(m_status));
-    			
+        	try{
+			ret=super.toObjectNode(viewerId);
+
 			if(m_images!=null){
-			   ArrayNode imagesNode=new ArrayNode(JsonNodeFactory.instance);
-                for(Image image : m_images){
-		    	  imagesNode.add(image.toObjectNode());
-		       }
-		       ret.put(ActivityDetail.IMAGES, imagesNode);
+				ArrayNode imagesNode=new ArrayNode(JsonNodeFactory.instance);
+				for(Image image : m_images){
+					imagesNode.add(image.toObjectNode());
+				}
+				ret.put(ActivityDetail.IMAGES, imagesNode);
 			}
 			
 			if(m_appliedParticipants!=null && m_appliedParticipants.size()>0){
@@ -107,7 +102,7 @@ public class ActivityDetail extends Activity {
 				while(itParticipant.hasNext()){
 					ObjectNode singleParticipantNode=Json.newObject();
 					BasicUser participant=itParticipant.next();
-                    singleParticipantNode.put(BasicUser.ID, participant.getUserId());
+					singleParticipantNode.put(BasicUser.ID, participant.getUserId());
 					singleParticipantNode.put(BasicUser.EMAIL, participant.getEmail());
 					singleParticipantNode.put(BasicUser.NAME, participant.getName());
 					appliedParticipantsNode.add(singleParticipantNode);
@@ -115,20 +110,22 @@ public class ActivityDetail extends Activity {
 				ret.put(ActivityDetail.APPLIED_PARTICIPANTS, appliedParticipantsNode);
 			}
 			
-            if(m_selectedParticipants!=null && m_selectedParticipants.size()>0){
+			if(m_selectedParticipants!=null && m_selectedParticipants.size()>0){
 				ArrayNode  selectedParticipantsNode=new ArrayNode(JsonNodeFactory.instance);
 				Iterator<BasicUser> itParticipant=m_selectedParticipants.iterator();
 				while(itParticipant.hasNext()){
 					ObjectNode singleParticipantNode=Json.newObject();
 					BasicUser participant=itParticipant.next();
-                    singleParticipantNode.put(BasicUser.ID, participant.getUserId());
+				    	singleParticipantNode.put(BasicUser.ID, participant.getUserId());
 					singleParticipantNode.put(BasicUser.EMAIL, participant.getEmail());
 					singleParticipantNode.put(BasicUser.NAME, participant.getName());
 					selectedParticipantsNode.add(singleParticipantNode);
 				}
 				ret.put(ActivityDetail.SELECTED_PARTICIPANTS, selectedParticipantsNode);
 			}
-        }while(false);
+		} catch (Exception e) {
+			System.out.println("ActivityDetail.toObjectNode, "+e.getMessage());
+		}
 		return ret;
 	}
 }

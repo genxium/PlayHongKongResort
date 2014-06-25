@@ -43,7 +43,7 @@ var g_keyActivityImages="ActivityImages";
 	 
 var g_keyActivityAppliedParticipants="ActivityAppliedParticipants";
 var g_keyActivitySelectedParticipants="ActivitySelectedParticipants";
-var g_keyUserActivityRelationId="UserActivityRelationId";
+var g_keyUserActivityRelation="Relation";
 
 var g_keyImageId="ImageId";
 var g_keyImageURL="ImageURL";

@@ -15,14 +15,14 @@ import java.util.Map;
 
 public class CommentController extends Controller {
 
-    public static Result query(Integer activityId, String refIndex, Integer numItems, Integer direction, String token){
+    public static Result query(Integer arg, String refIndex, Integer numItems, Integer direction, String token){
         response().setContentType("text/plain");
         do{
             try{
                 Integer userId=null;
                 if(token!=null)	userId= DataUtils.getUserIdByToken(token);
 
-                List<CommentOnActivity> comments=SQLCommander.queryTopLevelComments(activityId, refIndex, CommentOnActivity.ID, SQLHelper.DESCEND, numItems, direction, CommentOnActivity.TYPE_QA);
+                List<CommentOnActivity> comments=SQLCommander.queryTopLevelComments(arg, refIndex, CommentOnActivity.ID, SQLHelper.DESCEND, numItems, direction, CommentOnActivity.TYPE_QA);
 
 		ArrayNode result=new ArrayNode(JsonNodeFactory.instance);
                 for(CommentOnActivity comment : comments){

@@ -91,15 +91,24 @@ public class Activity {
 
     public Activity(JSONObject activityJson){
 	try{
-		m_id=(Integer)activityJson.get(ID);
-		m_title=(String)activityJson.get(TITLE);
-		m_content=(String)activityJson.get(CONTENT);
-		m_createdTime=(Timestamp)activityJson.get(CREATED_TIME);
-		m_beginTime=(Timestamp)activityJson.get(BEGIN_TIME);
-		m_deadline=(Timestamp)activityJson.get(DEADLINE);
-		m_capacity=(Integer)activityJson.get(CAPACITY);
-		m_status=StatusType.getTypeForValue((Integer)activityJson.get(STATUS));
-		m_hostId=(Integer)activityJson.get(HOST_ID);
+		if(activityJson.containsKey(ID))
+			m_id=(Integer)activityJson.get(ID);
+		if(activityJson.containsKey(TITLE))
+			m_title=(String)activityJson.get(TITLE);
+		if(activityJson.containsKey(CONTENT))
+			m_content=(String)activityJson.get(CONTENT);
+		if(activityJson.containsKey(CREATED_TIME))
+			m_createdTime=(Timestamp)activityJson.get(CREATED_TIME);
+		if(activityJson.containsKey(BEGIN_TIME))
+			m_beginTime=(Timestamp)activityJson.get(BEGIN_TIME);
+		if(activityJson.containsKey(DEADLINE))
+			m_deadline=(Timestamp)activityJson.get(DEADLINE);
+		if(activityJson.containsKey(CAPACITY))
+			m_capacity=(Integer)activityJson.get(CAPACITY);
+		if(activityJson.containsKey(STATUS))
+			m_status=StatusType.getTypeForValue((Integer)activityJson.get(STATUS));
+		if(activityJson.containsKey(HOST_ID))
+			m_hostId=(Integer)activityJson.get(HOST_ID);
 	}catch(Exception e){
 		System.out.println("Activity, "+e.getMessage());
 	}

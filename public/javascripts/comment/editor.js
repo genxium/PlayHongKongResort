@@ -203,12 +203,12 @@ function generateSubCommentCell(commentJson, activityId){
 function generateCommentEditor(activityId){
     var ret=$('<div>');
     var input=$('<input>', {
-
+	style: "font-size: 15pt"
     }).appendTo(ret);
-    input.css("font-size", 18);
 
     var btnSubmit=$('<button>',{
-        text: "Comment!"
+        text: "Comment!",
+	style: "font-size: 15pt; margin-left: 2pt"
     }).appendTo(ret);
 
     // jQuery.bind() doesn't work here because the DOM element hasn't been created yet
