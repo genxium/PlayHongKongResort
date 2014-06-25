@@ -125,9 +125,10 @@ public class Activity {
 		ret.put(Activity.DEADLINE, m_deadline.toString());
 		ret.put(Activity.CAPACITY, String.valueOf(m_capacity));
 		ret.put(Activity.HOST_ID, String.valueOf(m_hostId));
-		if(viewerId!=null && viewerId.equals(m_hostId)) { 
-			// only host can view the status of an activity
-			ret.put(Activity.STATUS, String.valueOf(m_status.ordinal()));		
+		if(viewerId!=null) { 
+			int relation=SQLCommander.queryUserActivityRelation(viewerId, m_id);
+			if(relation!=UserActivityRelationTable.invalid)	ret.put(UserActivityRelationTable.RELATION, relation);
+			if(viewerId.equals(m_hostId)) ret.put(Activity.STATUS, String.valueOf(m_status.ordinal()));	
 		}
 	} catch (Exception e){
 		System.out.println("Activity.toObjectNode, "+e.getMessage());
@@ -148,25 +149,6 @@ public class Activity {
 			ret.put(ActivityDetail.IMAGES, imagesNode);
 		} catch (Exception e){
 			System.out.println("Activity.toObjectNodeWithImages, "+e.getMessage());	
-		}
-        }while(false);
-        return ret;
-    }
-
-    public ObjectNode toObjectNodeWithImagesAndRelation(Integer viewerId){
-	/*
-		Note that when the activity is queried with a valid user token
-		1. status is only shown when the user is the owner of the activity
-		2. relation is only shown when relation is specified
- 	*/
-        ObjectNode ret=toObjectNodeWithImages(viewerId);
-        do{
-		try{
-			int relation=SQLCommander.queryUserActivityRelation(viewerId, m_id);
-			if(relation==UserActivityRelationTable.invalid) break;
-			ret.put(UserActivityRelationTable.RELATION, relation);
-		} catch (Exception e){
-			System.out.println("Activity.toObjectNodeWithImagesAndRelation, "+e.getMessage());
 		}
         }while(false);
         return ret;

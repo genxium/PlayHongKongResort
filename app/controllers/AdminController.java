@@ -13,11 +13,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class AdminController extends Controller {
 
-    public static Result accept(){
-        // define response attributes
-        response().setContentType("text/plain");
-        do{
-            try{
+	public static Result accept(){
+		// define response attributes
+		response().setContentType("text/plain");
+		do{
+			try{
 				Map<String, String[]> formData=request().body().asFormUrlEncoded();
 				String[] ids=formData.get(Activity.ID);
 				String[] tokens=formData.get(User.TOKEN);
@@ -29,25 +29,26 @@ public class AdminController extends Controller {
 				if(userId==null) break;
 				User user=SQLCommander.queryUser(userId);
 				if(user==null) break;
-				
+				if(validateAdminAccess(user)==false) break;
+
 				Activity activity=SQLCommander.queryActivity(activityId);
 				if(activity==null) break;
-            
-                boolean res=SQLCommander.acceptActivity(user, activity);
-                if(res==false) break;
+			   
+				boolean res=SQLCommander.acceptActivity(user, activity);
+				if(res==false) break;
 				return ok();
-            } catch(Exception e){
-                System.out.println("AdminController.accept: "+e.getMessage());
-            }
-        } while(false);
-        return badRequest("Activity not accepted!");
-    }
-    
-    public static Result reject(){
-        // define response attributes
-        response().setContentType("text/plain");
-        do{
-            try{
+			} catch(Exception e){
+				System.out.println("AdminController.accept: "+e.getMessage());
+			}
+		} while(false);
+		return badRequest("Activity not accepted!");
+	}
+
+	public static Result reject(){
+		// define response attributes
+		response().setContentType("text/plain");
+		do{
+			try{
 				Map<String, String[]> formData=request().body().asFormUrlEncoded();
 				String[] ids=formData.get(Activity.ID);
 				String[] tokens=formData.get(User.TOKEN);
@@ -59,25 +60,26 @@ public class AdminController extends Controller {
 				if(userId==null) break;
 				User user=SQLCommander.queryUser(userId);
 				if(user==null) break;
-				
+				if(validateAdminAccess(user)==false) break;
+					
 				Activity activity=SQLCommander.queryActivity(activityId);
 				if(activity==null) break;
-            
-                boolean res=SQLCommander.rejectActivity(user, activity);
-                if(res==false) break;
+		    
+				boolean res=SQLCommander.rejectActivity(user, activity);
+				if(res==false) break;
 				return ok();
-            } catch(Exception e){
-                System.out.println("AdminController.accept: "+e.getMessage());
-            }
-        } while(false);
-        return badRequest("Activity not accepted!");
-    }
+			} catch(Exception e){
+				System.out.println("AdminController.accept: "+e.getMessage());
+			}
+		} while(false);
+		return badRequest("Activity not accepted!");
+	}
 
-    public static Result delete(){
-    	// define response attributes
-        response().setContentType("text/plain");
-        do{
-            try{
+	public static Result delete(){
+		// define response attributes
+		response().setContentType("text/plain");
+		do{
+			try{
 				Map<String, String[]> formData=request().body().asFormUrlEncoded();
 				String[] ids=formData.get(Activity.ID);
 				String[] tokens=formData.get(User.TOKEN);
@@ -90,16 +92,25 @@ public class AdminController extends Controller {
 				
 				User user=SQLCommander.queryUser(userId);
 				if(user==null) break;
-				
-				if(SQLCommander.validateAdminAccess(user)==false) break;
+				if(validateAdminAccess(user)==false) break;
 
-                boolean res=ExtraCommander.deleteActivity(activityId);
-                if(res==false) break;
+				boolean res=ExtraCommander.deleteActivity(activityId);
+				if(res==false) break;
 				return ok();
-            } catch(Exception e){
-                System.out.println("AdminController.delete: "+e.getMessage());
-            }
-        } while(false);
-        return badRequest("Activity not completely deleted!");
-    }
+			} catch(Exception e){
+				System.out.println("AdminController.delete: "+e.getMessage());
+			}
+		} while(false);
+		return badRequest("Activity not completely deleted!");
+	}
+	
+	public static boolean validateAdminAccess(User user){
+                boolean ret=false;
+		do{
+			if(user==null) break;
+			if(user.getUserGroup()!=UserGroup.GroupType.admin) break;
+			ret=true;
+		}while(false);
+		return ret;
+	}
 }

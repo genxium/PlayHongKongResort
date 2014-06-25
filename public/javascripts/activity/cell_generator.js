@@ -46,25 +46,24 @@ function onBtnJoinClicked(evt){
 
 	try{
 		$.ajax({
-		    type: "POST",
-		    url: "/activity/join",
-		    data: params,
-		    success: function(data, status, xhr){
-                 var cellNode=btnJoin.parentNode; // javascript dom element
-                 var cell=$(cellNode); // convert to jQuery element object
-                 btnJoin.remove();
+			type: "POST",
+			url: "/activity/join",
+			data: params,
+			success: function(data, status, xhr){
+				var cellNode=btnJoin.parentNode; // javascript dom element
+				var cell=$(cellNode); // convert to jQuery element object
+				btnJoin.remove();
 
-                 var appliedIndicator=$('<div>',
-                 {
-                     class: g_classAppliedIndicator,
-                     html: 'Applied'
-                 });
-                 cell.append(appliedIndicator);
-                 cell.data(g_indexStatusIndicator, appliedIndicator);
-            },
-            error: function(xhr, status, errThrown){
+				var appliedIndicator=$('<div>', {
+					class: g_classAppliedIndicator,
+					html: 'Applied'
+				});
+				cell.append(appliedIndicator);
+				cell.data(g_indexStatusIndicator, appliedIndicator);
+			},
+			error: function(xhr, status, errThrown){
 
-            }
+			}
 		});
 	} catch(err){
 

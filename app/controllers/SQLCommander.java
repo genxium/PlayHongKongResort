@@ -576,16 +576,6 @@ public class SQLCommander {
 		return ret;
 	}
 
-	public static boolean validateAdminAccess(User user){
-		boolean ret=false;
-		do{
-			if(user==null) break;
-			if(user.getUserGroup()!=UserGroup.GroupType.admin) break;
-			ret=true;
-		}while(false);
-		return ret;
-	}
-
 	public static boolean isActivityEditable(Integer userId, Integer activityId){
 		boolean ret=false;
 		do{
@@ -627,7 +617,7 @@ public class SQLCommander {
 			if(activity.getStatus()!=Activity.StatusType.accepted) break;
 			int activityId=activity.getId();
 			int relation=queryUserActivityRelation(userId, activityId);
-			if(relation==UserActivityRelationTable.invalid) break;
+			if(relation!=UserActivityRelationTable.invalid) break;
 			ret=true;
 		}while(false);
 		return ret;
@@ -648,7 +638,6 @@ public class SQLCommander {
 		do{
 			if(user==null) break;
 			if(activity==null) break;
-			if(validateAdminAccess(user)==false) break;
 			try{
 				SQLHelper sqlHelper=new SQLHelper();
 				String activityTableName="Activity";
@@ -673,7 +662,6 @@ public class SQLCommander {
 		do{
 			if(user==null) break;
 			if(activity==null) break;
-			if(validateAdminAccess(user)==false) break;
 			try{
 				SQLHelper sqlHelper=new SQLHelper();
 				String activityTableName="Activity";
