@@ -22,9 +22,7 @@ public class ActivityController extends Controller {
 		try{
 			Integer userId=null;
 			if(token!=null)	userId=DataUtils.getUserIdByToken(token);
-			if(userId==null) break; // invalide token
 			List<Activity> activities=null;
-
 			if(relation!=null && target!=null){
 				activities=SQLCommander.queryActivities(target, relation);
 			} else{
@@ -33,7 +31,6 @@ public class ActivityController extends Controller {
 			}
 			if(activities==null) break;
 			ObjectNode result = Json.newObject();
-
 			for(Activity activity : activities){
 			    if(token!=null){
 				result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImagesAndRelation(userId));
@@ -43,7 +40,7 @@ public class ActivityController extends Controller {
 			}
 			return ok(result);
 		} catch(Exception e){
-			System.out.println("query, "+e.getMessage());
+			System.out.println("ActivityController.query, "+e.getCause());
 		}
 	} while(false);
         return badRequest();

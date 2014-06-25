@@ -15,3 +15,6 @@ var g_idFieldAvatar="idFieldAvatar";
 var g_btnUploadAvatar=null;
 var g_btnPreviousPage=null;
 var g_btnNextPage=null;
+
+// others
+var g_target=null;

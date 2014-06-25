@@ -1,5 +1,6 @@
 $(document).ready(function(){
-    	// initialize local DOMs
+	g_target=$('#target').attr("value");
+
 	initLoginWidget();
 	g_callbackOnLoginSuccess=refreshOnLoggedIn;
 	g_callbackOnLoginError=null;

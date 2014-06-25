@@ -20,7 +20,7 @@ POST /activity/delete controllers.ActivityController.delete()
 POST /activity/join controllers.ActivityController.join()
 POST /activity/save controllers.ActivityController.save()
 PUT /activity/submit controllers.ActivityController.submit()
-GET /activity/query controllers.ActivityController.query(refIndex: String ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?= null, targetUserId: Integer ?=null, relation: Integer ?=null, status: Integer ?=null)
+GET /activity/query controllers.ActivityController.query(refIndex: String ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?= null, target: Integer ?=null, relation: Integer ?=null, status: Integer ?=null)
 GET /activity/detail controllers.ActivityController.detail(activityId: Integer)
 
 # Profile

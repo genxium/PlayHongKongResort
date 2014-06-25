@@ -101,37 +101,45 @@ public class Activity {
 		m_status=StatusType.getTypeForValue((Integer)activityJson.get(STATUS));
 		m_hostId=(Integer)activityJson.get(HOST_ID);
 	}catch(Exception e){
-
+		System.out.println("Activity, "+e.getMessage());
 	}
     }
 
     public ObjectNode toObjectNode(Integer viewerId){
         ObjectNode ret = Json.newObject();;
-	ret.put(Activity.ID, String.valueOf(m_id));
-	ret.put(Activity.TITLE, m_title);
-	ret.put(Activity.CONTENT, m_content);
-	ret.put(Activity.CREATED_TIME, m_createdTime.toString());
-	ret.put(Activity.BEGIN_TIME, m_beginTime.toString());
-	ret.put(Activity.DEADLINE, m_deadline.toString());
-	ret.put(Activity.CAPACITY, String.valueOf(m_capacity));
-	ret.put(Activity.HOST_ID, String.valueOf(m_hostId));
-	if(viewerId!=null && viewerId.equals(m_hostId)) { 
-		// only host can view the status of an activity
-		ret.put(Activity.STATUS, String.valueOf(m_status.ordinal()));		
+	try{
+		ret.put(Activity.ID, String.valueOf(m_id));
+		ret.put(Activity.TITLE, m_title);
+		ret.put(Activity.CONTENT, m_content);
+		ret.put(Activity.CREATED_TIME, m_createdTime.toString());
+		ret.put(Activity.BEGIN_TIME, m_beginTime.toString());
+		ret.put(Activity.DEADLINE, m_deadline.toString());
+		ret.put(Activity.CAPACITY, String.valueOf(m_capacity));
+		ret.put(Activity.HOST_ID, String.valueOf(m_hostId));
+		if(viewerId!=null && viewerId.equals(m_hostId)) { 
+			// only host can view the status of an activity
+			ret.put(Activity.STATUS, String.valueOf(m_status.ordinal()));		
+		}
+	} catch (Exception e){
+		System.out.println("Activity.toObjectNode, "+e.getMessage());
 	}
         return ret;
     }
 
     public ObjectNode toObjectNodeWithImages(Integer viewerId){
         ObjectNode ret = toObjectNode(viewerId);
-        do{
-            List<Image> images=SQLCommander.queryImages(m_id);
-            if(images==null || images.size()<=0) break;
-            ArrayNode imagesNode=new ArrayNode(JsonNodeFactory.instance);
-            for(Image image : images){
-                imagesNode.add(image.toObjectNode());
-            }
-            ret.put(ActivityDetail.IMAGES, imagesNode);
+        do{	
+		try{
+			List<Image> images=SQLCommander.queryImages(m_id);
+			if(images==null || images.size()<=0) break;
+			ArrayNode imagesNode=new ArrayNode(JsonNodeFactory.instance);
+			for(Image image : images){
+				imagesNode.add(image.toObjectNode());
+			}
+			ret.put(ActivityDetail.IMAGES, imagesNode);
+		} catch (Exception e){
+			System.out.println("Activity.toObjectNodeWithImages, "+e.getMessage());	
+		}
         }while(false);
         return ret;
     }
@@ -144,9 +152,13 @@ public class Activity {
  	*/
         ObjectNode ret=toObjectNodeWithImages(viewerId);
         do{
-		int relation=SQLCommander.queryUserActivityRelation(viewerId, m_id);
-		if(relation==UserActivityRelationTable.invalid) break;
-		ret.put(UserActivityRelationTable.RELATION, relation);
+		try{
+			int relation=SQLCommander.queryUserActivityRelation(viewerId, m_id);
+			if(relation==UserActivityRelationTable.invalid) break;
+			ret.put(UserActivityRelationTable.RELATION, relation);
+		} catch (Exception e){
+			System.out.println("Activity.toObjectNodeWithImagesAndRelation, "+e.getMessage());
+		}
         }while(false);
         return ret;
     }

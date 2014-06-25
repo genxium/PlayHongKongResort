@@ -294,31 +294,35 @@ public class SQLCommander {
 	public static List<Activity> queryActivities(Integer userId, int relation){
 		List<Activity> ret=new ArrayList<>();
 		do{
-			SQLHelper sqlHelper=new SQLHelper();
+			try{
+				SQLHelper sqlHelper=new SQLHelper();
 
-			// query table Activity
-			List<String> names=new LinkedList<String>();
-			names.add(Activity.ID);
-			names.add(Activity.TITLE);
-			names.add(Activity.CONTENT);
-			names.add(Activity.CREATED_TIME);
-			names.add(Activity.BEGIN_TIME);
-			names.add(Activity.DEADLINE);
-			names.add(Activity.CAPACITY);
-			names.add(Activity.STATUS);
-			names.add(Activity.HOST_ID);
+				// query table Activity
+				List<String> names=new LinkedList<String>();
+				names.add(Activity.ID);
+				names.add(Activity.TITLE);
+				names.add(Activity.CONTENT);
+				names.add(Activity.CREATED_TIME);
+				names.add(Activity.BEGIN_TIME);
+				names.add(Activity.DEADLINE);
+				names.add(Activity.CAPACITY);
+				names.add(Activity.STATUS);
+				names.add(Activity.HOST_ID);
 
-			List<String> where=new LinkedList<>();
-			where.add("EXISTS (SELECT NULL FROM UserActivityRelationTable WHERE "+
-										UserActivityRelationTable.USER_ID+"="+userId+" AND "+
-										UserActivityRelationTable.RELATION+"="+relation+" AND "+
-										UserActivityRelationTable.TABLE+"."+UserActivityRelationTable.ACTIVITY_ID+"="+Activity.TABLE+"."+Activity.ID+
-				")");
+				List<String> where=new LinkedList<>();
+				where.add("EXISTS (SELECT NULL FROM UserActivityRelationTable WHERE "+
+											UserActivityRelationTable.USER_ID+"="+userId+" AND "+
+											UserActivityRelationTable.RELATION+"="+relation+" AND "+
+											UserActivityRelationTable.TABLE+"."+UserActivityRelationTable.ACTIVITY_ID+"="+Activity.TABLE+"."+Activity.ID+
+					")");
 
-			List<JSONObject> activityJsons=sqlHelper.query(Activity.TABLE, names, where, SQLHelper.AND);
-			if(activityJsons==null) break;
-			for(JSONObject activityJson : activityJsons){
-				ret.add(new Activity(activityJson));
+				List<JSONObject> activityJsons=sqlHelper.query(Activity.TABLE, names, where, SQLHelper.AND);
+				if(activityJsons==null) break;
+				for(JSONObject activityJson : activityJsons){
+					ret.add(new Activity(activityJson));
+				}
+			} catch (Exception e){
+				System.out.println("SQLCommander.queryActivities, "+e.getMessage());
 			}
 		}while(false);
 		return ret;
@@ -806,7 +810,7 @@ public class SQLCommander {
 
 			List<String> where=new LinkedList<String>();
 			where.add("EXISTS (SELECT NULL FROM ActivityImageRelationTable WHERE "
-										+Activity.ID+"="+SQLHelper.convertToQueryValue(activityId)
+										+Activity.ID+"="+SQLHelper.convertToQueryValue(activityId)+" AND "
 										+ActivityImageRelationTable.TABLE+"."+ActivityImageRelationTable.IMAGE_ID+"="+Image.TABLE+"."+Image.ID+
 				")");
 			List<JSONObject> imageRecords=sqlHelper.query(Image.TABLE, names, where, SQLHelper.AND);
