@@ -185,10 +185,11 @@ CREATE TABLE `User` (
   `UserLastExitTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `UserCreatedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `Username` varchar(32) DEFAULT NULL,
+  `VerificationCode` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`UserId`),
   UNIQUE KEY `UserEmail` (`UserEmail`),
   UNIQUE KEY `UserName` (`Username`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,7 +198,7 @@ CREATE TABLE `User` (
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
-INSERT INTO `User` VALUES (1,NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',1,0,0,'2014-04-28 17:37:38',1,'2014-04-28 17:37:38','2014-04-28 17:37:38','2014-04-28 17:37:38','genxium'),(4,NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',1,0,0,'2014-04-28 17:59:35',22,'2014-04-28 17:59:35','2014-04-28 17:59:35','2014-04-28 17:59:35','genxium1988'),(5,NULL,'c33367701511b4f6020ec61ded352059','admin@hongkongresort.com',3,0,0,'2014-04-28 18:14:22',0,'2014-04-28 18:14:22','2014-04-28 18:14:22','2014-04-28 18:14:22','admin'),(6,NULL,'e10adc3949ba59abbe56e057f20f883e','ray@gmail.com',1,0,0,'2014-04-29 16:20:56',23,'2014-04-29 16:20:56','2014-04-29 16:20:56','2014-04-29 16:20:56','ray'),(7,NULL,'e10adc3949ba59abbe56e057f20f883e','saichanjiawei@gmail.com',0,0,0,'2014-06-25 14:02:23',0,'2014-06-25 14:02:23','2014-06-25 14:02:23','2014-06-25 14:02:23','rayc');
+INSERT INTO `User` VALUES (1,NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',1,0,0,'2014-04-28 17:37:38',1,'2014-04-28 17:37:38','2014-04-28 17:37:38','2014-04-28 17:37:38','genxium',NULL),(4,NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',1,0,0,'2014-04-28 17:59:35',22,'2014-04-28 17:59:35','2014-04-28 17:59:35','2014-04-28 17:59:35','genxium1988',NULL),(5,NULL,'c33367701511b4f6020ec61ded352059','admin@hongkongresort.com',3,0,0,'2014-04-28 18:14:22',0,'2014-04-28 18:14:22','2014-04-28 18:14:22','2014-04-28 18:14:22','admin',NULL),(6,NULL,'e10adc3949ba59abbe56e057f20f883e','ray@gmail.com',1,0,0,'2014-04-29 16:20:56',23,'2014-04-29 16:20:56','2014-04-29 16:20:56','2014-04-29 16:20:56','ray',NULL),(7,NULL,'e10adc3949ba59abbe56e057f20f883e','saichanjiawei@gmail.com',0,0,0,'2014-06-25 14:02:23',0,'2014-06-25 14:02:23','2014-06-25 14:02:23','2014-06-25 14:02:23','rayc',NULL),(15,NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@yahoo.com',0,0,0,'2014-06-26 08:40:51',0,'2014-06-26 08:40:51','2014-06-26 08:40:51','2014-06-26 08:40:51','genxium2014','0d63d782140e2a37');
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -223,7 +224,7 @@ CREATE TABLE `UserActivityRelationTable` (
   KEY `ActivityId` (`ActivityId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `User` (`UserId`),
   CONSTRAINT `UserActivityRelationTable_ibfk_2` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -232,7 +233,7 @@ CREATE TABLE `UserActivityRelationTable` (
 
 LOCK TABLES `UserActivityRelationTable` WRITE;
 /*!40000 ALTER TABLE `UserActivityRelationTable` DISABLE KEYS */;
-INSERT INTO `UserActivityRelationTable` VALUES (1,1,1,1,'2014-06-25 09:30:45','2014-06-25 09:30:45','2014-06-25 09:30:45','2014-06-25 09:30:45'),(2,5,1,2,'2014-06-25 12:53:29','2014-06-25 12:41:06','2014-06-25 12:41:06','2014-06-25 12:41:06');
+INSERT INTO `UserActivityRelationTable` VALUES (1,1,1,1,'2014-06-25 09:30:45','2014-06-25 09:30:45','2014-06-25 09:30:45','2014-06-25 09:30:45'),(2,5,1,2,'2014-06-25 12:53:29','2014-06-25 12:41:06','2014-06-25 12:41:06','2014-06-25 12:41:06'),(3,15,1,2,'2014-06-26 08:58:32','2014-06-26 08:58:32','2014-06-26 08:58:32','2014-06-26 08:58:32');
 /*!40000 ALTER TABLE `UserActivityRelationTable` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -407,4 +408,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-06-25 18:25:35
+-- Dump completed on 2014-06-26  9:03:38

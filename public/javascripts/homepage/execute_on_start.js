@@ -26,8 +26,8 @@ $(document).ready(function(){
 	initActivityEditor();
 	 
 	// initialize callback functions
-    g_callbackOnActivityEditorRemoved=refreshOnLoggedIn;
-    g_callbackOnQueryActivitiesSuccess=onQueryActivitiesSuccess;
+	g_callbackOnActivityEditorRemoved=refreshOnLoggedIn;
+	g_callbackOnQueryActivitiesSuccess=onQueryActivitiesSuccess;
 
 	// execute on page loaded
 	g_sectionDefaultActivities=$("#idSectionDefaultActivities"); 

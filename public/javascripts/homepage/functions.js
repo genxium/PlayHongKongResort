@@ -21,54 +21,33 @@ function onSectionDefaultActivitiesScrolled(evt){
 	}
 }
 
-function emptyRegisterFields(){
-    if(g_registerUsername){
-        g_registerUsername.empty();
-        g_registerUsername.val("");
-    }
-    if(g_registerEmail){
-        g_registerEmail.empty();
-        g_registerEmail.val("");
-    }
-    if(g_registerPassword){
-        g_registerPassword.empty();
-        g_registerPassword.val("");
-    }
-    if(g_spanCheckUsername){
-        g_spanCheckUsername.empty();
-    }
-    if(g_spanCheckEmail){
-        g_spanCheckEmail.empty();
-    }
-}
-
 function showRegisterSection(){
-   if(g_sectionRegister){
-       g_sectionRegister.show();
-   }
+	if(g_sectionRegister){
+		g_sectionRegister.show();
+	}
 }
 
 function hideRegisterSection(){
-   if(g_sectionRegister){
-       g_sectionRegister.hide();
-   }
+	if(g_sectionRegister){
+		g_sectionRegister.hide();
+	}
 }
 
 function removeRegisterSection(){
-    if(g_sectionRegister){
-        g_sectionRegister.remove();
-        g_sectionRegister=null;
-    }
+	if(g_sectionRegister){
+		g_sectionRegister.remove();
+		g_sectionRegister=null;
+	}
 }
 
 function refreshOnEnter(){
-    showRegisterSection();
-    emptyRegisterFields();
+	showRegisterSection();
+	emptyRegisterFields();
 	g_sectionDefaultActivities.show();
 }
 
 function refreshOnLoggedIn(){
-    hideRegisterSection();
+	hideRegisterSection();
 }
 
 function onQueryActivitiesSuccess(data, status, xhr){

@@ -3,10 +3,12 @@ var g_sectionRegister=null;
 var g_registerUsername=null;
 var g_registerEmail=null;
 var g_registerPassword=null;
+var g_registerPasswordConfirm=null;
 
 var g_spanCheckUsername=null;
 var g_spanCheckEmail=null;
 var g_spanCheckPassword=null;
+var g_spanCheckPasswordConfirm=null;
 
 var g_callbackOnRegisterSuccess=null;
 var g_callbackOnRegisterError=null;
@@ -17,6 +19,36 @@ function initRegisterWidget(){
     	g_sectionRegister.append(registerForm);
 }
 
+function emptyRegisterFields(){
+	if(g_registerUsername){
+		g_registerUsername.empty();
+		g_registerUsername.val("");
+	}
+	if(g_registerEmail){
+		g_registerEmail.empty();
+		g_registerEmail.val("");
+	}
+	if(g_registerPassword){
+		g_registerPassword.empty();
+		g_registerPassword.val("");
+	}
+	if(g_registerPasswordConfirm){
+		g_registerPasswordConfirm.empty();
+		g_registerPasswordConfirm.val("");
+	}
+	if(g_spanCheckUsername){
+		g_spanCheckUsername.empty();
+	}
+	if(g_spanCheckEmail){
+		g_spanCheckEmail.empty();
+	}
+	if(g_spanCheckPassword){
+		g_spanCheckPassword.empty();
+	}
+	if(g_spanCheckPasswordConfirm){
+		g_spanCheckPasswordConfirm.empty();
+	}
+}
 
 function onBtnRegisterClicked(evt){
     do{
@@ -26,7 +58,7 @@ function onBtnRegisterClicked(evt){
 
         if(username==null || username.length==0
             || email==null || email.length==0 || validateEmail(email)==false
-            || password==null || password.length==0 || validatePassword(password)==false) break;
+            || password==null || password.length==0 || validatePassword(password)==false || validatePasswordConfirm()==false) break;
 
         var params={};
         params[g_keyUsername]=username;
@@ -34,19 +66,19 @@ function onBtnRegisterClicked(evt){
         params[g_keyUserPassword]=password;
 
         $.ajax({
-            type: "POST",
-            url: "/user/register",
-            data: params,
-            success: function(data, status, xhr){
-				if(g_callbackOnRegisterSuccess!=null){
-					g_callbackOnRegisterSuccess();
-				}
-            },
-            error: function(xhr, status, err){
-            	if(g_callbackOnRegisterError!=null){
-					g_callbackOnRegisterError();
-				}   
-            }
+		type: "POST",
+		url: "/user/register",
+		data: params,
+		success: function(data, status, xhr){
+			if(g_callbackOnRegisterSuccess!=null){
+				g_callbackOnRegisterSuccess();
+			}
+		},
+		error: function(xhr, status, err){
+			if(g_callbackOnRegisterError!=null){
+				g_callbackOnRegisterError();
+			}   
+		}
         });
     }while(false);
 }
@@ -82,6 +114,16 @@ function generateRegisterForm(){
 		placeHolder: "Password"	
 	}).appendTo(cell31);
 	g_spanCheckPassword=$('<span>').appendTo(cell32);
+
+	var row4=$('<tr>').appendTo(ret);
+	var cell41=$('<td>').appendTo(row4);
+	var cell42=$('<td>').appendTo(row4);
+	g_registerPasswordConfirm=$('<input>', {
+		type: "password",
+		style: "font-size: 15pt",
+		placeHolder: "Confirm Password"	
+	}).appendTo(cell41);
+	g_spanCheckPasswordConfirm=$('<span>').appendTo(cell42);
 
 	g_registerUsername.on("input keyup paste", function(evt){
 		do{
@@ -145,15 +187,37 @@ function generateRegisterForm(){
 				g_spanCheckPassword.text("");
 		}while(false);
 	});	
+ 
+	g_registerPasswordConfirm.on("input keyup paste", function(evt){
+		do{
+			evt.preventDefault();
+			g_spanCheckPasswordConfirm.empty();
+			if(validatePasswordConfirm()==false) {
+				g_spanCheckPasswordConfirm.text(" Doesn't match! ");
+				break;
+			}
+			g_spanCheckPasswordConfirm.text("");
+		}while(false);
+	});	
 
-	var row4=$('<tr>').appendTo(ret);
-	var cell41=$('<td>').appendTo(row4);
+	var row5=$('<tr>').appendTo(ret);
+	var cell51=$('<td>').appendTo(row5);
 	var btnRegister=$('<button>', {
 		style: "font-size: 15pt; background-color: aquamarine",
 		text: "register"	
-	}).appendTo(cell41);
+	}).appendTo(cell51);
 	btnRegister.on("click", onBtnRegisterClicked);
 	return ret;
 }
 
- 
+function validatePasswordConfirm(){
+	var ret=false;
+	do{
+		var password=g_registerPassword.val();		
+		var passwordConfirm=g_registerPasswordConfirm.val();
+		if(password==null || passwordConfirm==null) break;
+		if(password!=passwordConfirm) break;
+		ret=true;	
+	}while(false);
+	return ret;
+} 
