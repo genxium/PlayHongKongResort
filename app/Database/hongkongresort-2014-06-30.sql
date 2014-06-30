@@ -39,6 +39,16 @@ CREATE TABLE `Activity` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `Activity`
+--
+
+LOCK TABLES `Activity` WRITE;
+/*!40000 ALTER TABLE `Activity` DISABLE KEYS */;
+INSERT INTO `Activity` VALUES (1,'Test','lalala','2014-06-25 09:30:45','2014-01-01 00:00:00','2014-01-01 00:00:00',0,3,1),(2,'dulala','djajkdfajlk','2014-06-28 08:26:39','2014-01-01 00:00:00','2014-01-01 00:00:00',0,0,1);
+/*!40000 ALTER TABLE `Activity` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `ActivityImageRelationTable`
 --
 
@@ -57,6 +67,16 @@ CREATE TABLE `ActivityImageRelationTable` (
   CONSTRAINT `ActivityImageRelationTable_ibfk_2` FOREIGN KEY (`ImageId`) REFERENCES `Image` (`ImageId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ActivityImageRelationTable`
+--
+
+LOCK TABLES `ActivityImageRelationTable` WRITE;
+/*!40000 ALTER TABLE `ActivityImageRelationTable` DISABLE KEYS */;
+INSERT INTO `ActivityImageRelationTable` VALUES (1,1,2,'2014-06-25 09:30:45'),(2,2,3,'2014-06-28 08:26:39');
+/*!40000 ALTER TABLE `ActivityImageRelationTable` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `CommentOnActivity`
@@ -83,6 +103,16 @@ CREATE TABLE `CommentOnActivity` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `CommentOnActivity`
+--
+
+LOCK TABLES `CommentOnActivity` WRITE;
+/*!40000 ALTER TABLE `CommentOnActivity` DISABLE KEYS */;
+INSERT INTO `CommentOnActivity` VALUES (1,'dulala',1,1,-1,0,'2014-06-25 11:27:45',-1),(2,'testing',4,1,1,0,'2014-06-25 18:24:23',1);
+/*!40000 ALTER TABLE `CommentOnActivity` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `Image`
 --
 
@@ -96,6 +126,16 @@ CREATE TABLE `Image` (
   UNIQUE KEY `ImageURL` (`ImageURL`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Image`
+--
+
+LOCK TABLES `Image` WRITE;
+/*!40000 ALTER TABLE `Image` DISABLE KEYS */;
+INSERT INTO `Image` VALUES (3,'/images/UID0_1403943999040_35bfd0b9ad8c3abd386950c448baa254.jpg'),(1,'/images/UID1_1403541670715_8cb643c8526bc5fffc7348779412545e.png'),(2,'/images/UID1_1403688645553_e76a27b12f5d3a56663f6b6ac331b1a5.jpeg');
+/*!40000 ALTER TABLE `Image` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `Notification`
@@ -118,6 +158,15 @@ CREATE TABLE `Notification` (
   CONSTRAINT `Notification_ibfk_1` FOREIGN KEY (`FromUserId`) REFERENCES `User` (`UserId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Notification`
+--
+
+LOCK TABLES `Notification` WRITE;
+/*!40000 ALTER TABLE `Notification` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Notification` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `User`
@@ -148,6 +197,16 @@ CREATE TABLE `User` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `User`
+--
+
+LOCK TABLES `User` WRITE;
+/*!40000 ALTER TABLE `User` DISABLE KEYS */;
+INSERT INTO `User` VALUES (1,NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',1,0,0,'2014-04-28 17:37:38',1,'2014-04-28 17:37:38','2014-04-28 17:37:38','2014-04-28 17:37:38','genxium',NULL),(4,NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',1,0,0,'2014-04-28 17:59:35',22,'2014-04-28 17:59:35','2014-04-28 17:59:35','2014-04-28 17:59:35','genxium1988',NULL),(5,NULL,'c33367701511b4f6020ec61ded352059','admin@hongkongresort.com',3,0,0,'2014-04-28 18:14:22',0,'2014-04-28 18:14:22','2014-04-28 18:14:22','2014-04-28 18:14:22','admin',NULL),(6,NULL,'e10adc3949ba59abbe56e057f20f883e','ray@gmail.com',1,0,0,'2014-04-29 16:20:56',23,'2014-04-29 16:20:56','2014-04-29 16:20:56','2014-04-29 16:20:56','ray',NULL),(7,NULL,'e10adc3949ba59abbe56e057f20f883e','saichanjiawei@gmail.com',0,0,0,'2014-06-25 14:02:23',0,'2014-06-25 14:02:23','2014-06-25 14:02:23','2014-06-25 14:02:23','rayc',NULL),(15,NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@yahoo.com',0,0,0,'2014-06-26 08:40:51',0,'2014-06-26 08:40:51','2014-06-26 08:40:51','2014-06-26 08:40:51','genxium2014','0d63d782140e2a37'),(16,NULL,'e10adc3949ba59abbe56e057f20f883e','523027315@qq.com',1,0,0,'2014-06-26 09:06:33',0,'2014-06-26 09:06:33','2014-06-26 09:06:33','2014-06-26 09:06:33','raychen','c340cd3060dafdcf');
+/*!40000 ALTER TABLE `User` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `UserActivityRelationTable`
 --
 
@@ -173,6 +232,16 @@ CREATE TABLE `UserActivityRelationTable` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `UserActivityRelationTable`
+--
+
+LOCK TABLES `UserActivityRelationTable` WRITE;
+/*!40000 ALTER TABLE `UserActivityRelationTable` DISABLE KEYS */;
+INSERT INTO `UserActivityRelationTable` VALUES (1,1,1,1,'2014-06-25 09:30:45','2014-06-25 09:30:45','2014-06-25 09:30:45','2014-06-25 09:30:45'),(2,5,1,2,'2014-06-25 12:53:29','2014-06-25 12:41:06','2014-06-25 12:41:06','2014-06-25 12:41:06'),(3,15,1,2,'2014-06-26 08:58:32','2014-06-26 08:58:32','2014-06-26 08:58:32','2014-06-26 08:58:32'),(4,1,2,1,'2014-06-28 08:26:39','2014-06-28 08:26:39','2014-06-28 08:26:39','2014-06-28 08:26:39');
+/*!40000 ALTER TABLE `UserActivityRelationTable` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `innodb_index_stats`
 --
 
@@ -193,6 +262,15 @@ CREATE TABLE `innodb_index_stats` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `innodb_index_stats`
+--
+
+LOCK TABLES `innodb_index_stats` WRITE;
+/*!40000 ALTER TABLE `innodb_index_stats` DISABLE KEYS */;
+/*!40000 ALTER TABLE `innodb_index_stats` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `innodb_table_stats`
 --
 
@@ -209,6 +287,15 @@ CREATE TABLE `innodb_table_stats` (
   PRIMARY KEY (`database_name`,`table_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin STATS_PERSISTENT=0;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `innodb_table_stats`
+--
+
+LOCK TABLES `innodb_table_stats` WRITE;
+/*!40000 ALTER TABLE `innodb_table_stats` DISABLE KEYS */;
+/*!40000 ALTER TABLE `innodb_table_stats` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `slave_master_info`
@@ -246,6 +333,15 @@ CREATE TABLE `slave_master_info` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `slave_master_info`
+--
+
+LOCK TABLES `slave_master_info` WRITE;
+/*!40000 ALTER TABLE `slave_master_info` DISABLE KEYS */;
+/*!40000 ALTER TABLE `slave_master_info` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `slave_relay_log_info`
 --
 
@@ -264,6 +360,15 @@ CREATE TABLE `slave_relay_log_info` (
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 STATS_PERSISTENT=0 COMMENT='Relay Log Information';
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `slave_relay_log_info`
+--
+
+LOCK TABLES `slave_relay_log_info` WRITE;
+/*!40000 ALTER TABLE `slave_relay_log_info` DISABLE KEYS */;
+/*!40000 ALTER TABLE `slave_relay_log_info` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `slave_worker_info`
@@ -288,6 +393,15 @@ CREATE TABLE `slave_worker_info` (
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 STATS_PERSISTENT=0 COMMENT='Worker Information';
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `slave_worker_info`
+--
+
+LOCK TABLES `slave_worker_info` WRITE;
+/*!40000 ALTER TABLE `slave_worker_info` DISABLE KEYS */;
+/*!40000 ALTER TABLE `slave_worker_info` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -298,4 +412,4 @@ CREATE TABLE `slave_worker_info` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-06-30  3:07:40
+-- Dump completed on 2014-06-30  3:00:18
