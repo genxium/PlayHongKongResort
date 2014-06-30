@@ -17,4 +17,4 @@ var g_btnPreviousPage=null;
 var g_btnNextPage=null;
 
 // others
-var g_target=null;
+var g_userId=null;

@@ -35,7 +35,7 @@ CREATE TABLE `activity` (
   PRIMARY KEY (`id`),
   KEY `activity_ibfk_1` (`host_id`),
   CONSTRAINT `activity_ibfk_1` FOREIGN KEY (`host_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

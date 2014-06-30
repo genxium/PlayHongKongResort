@@ -11,27 +11,27 @@ function refreshOnLoggedIn(){
 
 function queryActivityDetail(activityId){
 
-	var token=$.cookie(g_keyToken);
+	    var token=$.cookie(g_keyToken);
     	var params={};
     	params[g_keyId]=activityId;
-	if(token!=null)	params[g_keyToken]=token;
+        if(token!=null)	params[g_keyToken]=token;
 
-	try{
-		$.ajax({
-		    method: "GET",
-		    url: "/activity/detail",
-		    data: params,
-		    success: function(data, status, xhr){
-			var activityDetailJson=JSON.parse(data);
-			displayActivityDetail(activityDetailJson);
-		    },
-		    error: function(xhr, status, errThrown){
+        try{
+            $.ajax({
+                method: "GET",
+                url: "/activity/detail",
+                data: params,
+                success: function(data, status, xhr){
+                    var activityDetailJson=JSON.parse(data);
+                    displayActivityDetail(activityDetailJson);
+                },
+                error: function(xhr, status, errThrown){
 
-		    }
-		});
-	} catch(err){
+                }
+            });
+        } catch(err){
 
-	}
+        }
 }
 
 function displayActivityDetail(activityDetailJson){
@@ -75,7 +75,7 @@ function onParticipantsSelectionFormSubmission(formEvt){
 
 		$.ajax({
 			type: "POST",
-			url: "/updateActivityParticipants", 
+			url: "/activity/participants/update",
 			data: params,
 			success: function(data, status, xhr){
 			inputs.each(function() {
@@ -137,7 +137,7 @@ function generateActivityDetailViewByJson(activityJson){
 		for(var key in activityImages){
 		   if(activityImages.hasOwnProperty(key)){
 		       var activityImage=activityImages[key];
-		       var imageUrl=activityImage[g_keyURL];
+		       var imageUrl=activityImage[g_keyUrl];
 		       var imageNode=$('<img>',{
 			    src: imageUrl.toString()   
 		       }).appendTo(imagesNode);

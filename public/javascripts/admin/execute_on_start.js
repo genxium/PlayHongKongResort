@@ -18,7 +18,7 @@ $(document).ready(function(){
 
 	g_btnPreviousPage.on("click", onBtnPreviousPageClicked);
 	g_btnNextPage.on("click", onBtnNextPageClicked);
-    	g_selectFilter.on("change", onSelectFilterChanged);
+    g_selectFilter.on("change", onSelectFilterChanged);
 
 	checkLoginStatus();
 });

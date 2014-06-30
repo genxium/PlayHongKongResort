@@ -37,24 +37,24 @@ function onBtnLoginClicked(evt){
             success: function(data, status, xhr){
                 var userJson=JSON.parse(data);
                 g_username=userJson[g_keyName];
-                g_userAvatarURL=userJson[g_keyURL];
+                g_userAvatarURL=userJson[g_keyUrl];
                 // store token in cookie iff query succeeds
                 $.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
-		$.cookie(g_keyUid, userJson[g_keyId], {path: '/'});
-		if(g_sectionLogin!=null){
-			g_sectionLogin.empty();
-			g_sectionLogin.append(generateLoggedInMenu);
-		}
-		if(g_callbackOnLoginSuccess!=null){
-			g_callbackOnLoginSuccess();	
-		}
-            },
-            error: function(xhr, status, err){
-                if(g_callbackOnLoginError!=null){
-			g_callbackOnLoginError();	
-		} 
-            }
-        });
+                $.cookie(g_keyUid, userJson[g_keyId], {path: '/'});
+                if(g_sectionLogin!=null){
+                    g_sectionLogin.empty();
+                    g_sectionLogin.append(generateLoggedInMenu);
+                }
+                if(g_callbackOnLoginSuccess!=null){
+                    g_callbackOnLoginSuccess();
+                }
+                    },
+                    error: function(xhr, status, err){
+                        if(g_callbackOnLoginError!=null){
+                    g_callbackOnLoginError();
+                }
+                    }
+                });
     }while(false);
 }
 
@@ -89,8 +89,8 @@ function onBtnLogoutClicked(evt){
 
 function onBtnProfileClicked(evt){
 	try{
-		var target=$.cookie(g_keyUid);
-		var profilePath="/user/profile?"+g_keyTarget+"="+target;
+		var userId=$.cookie(g_keyUid);
+		var profilePath="/user/profile?"+g_keyUserId+"="+userId;
 		var profilePage=window.open(profilePath);
 	} catch (err){
 
@@ -211,7 +211,7 @@ function checkLoginStatus(){
 			success: function(data, status, xhr){
 				var userJson=JSON.parse(data);
 				g_username=userJson[g_keyName];
-				g_userAvatarURL=userJson[g_keyURL];
+				g_userAvatarURL=userJson[g_keyUrl];
 				$.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
 				$.cookie(g_keyUid, userJson[g_keyId], {path: '/'});
 				if(g_sectionLogin!=null){

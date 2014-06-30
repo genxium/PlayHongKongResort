@@ -11,7 +11,7 @@ import play.libs.Json;
 import java.sql.Timestamp;
 import java.util.List;
 
-public class CommentOnActivity {
+public class Comment {
 
     public static final Integer MIN_CONTENT_LENGTH=5;
     public static final Integer TYPE_QA=0;
@@ -24,7 +24,7 @@ public class CommentOnActivity {
     public static final String ACTIVITY_ID="activity_id";
     public static final String PARENT_ID="parent_id";
     public static final String PREDECESSOR_ID="predecessor_id";
-    public static final String COMMENT_TYPE="type";
+    public static final String TYPE ="type";
     public static final String GENERATED_TIME="generated_time";
 
     public static final String COMMENTER_NAME="commenter_name";
@@ -50,7 +50,7 @@ public class CommentOnActivity {
     public Timestamp getGeneratedTime() {return m_generatedTime;}
 
 
-    public CommentOnActivity(JSONObject commentJson){
+    public Comment(JSONObject commentJson){
         do{
             try{
                 if(commentJson.containsKey(ID)){
@@ -71,8 +71,8 @@ public class CommentOnActivity {
                 if(commentJson.containsKey(PREDECESSOR_ID)){
                     m_predecessorId=(Integer)commentJson.get(PREDECESSOR_ID);
                 }
-                if(commentJson.containsKey(COMMENT_TYPE)){
-                    m_commentType=(Integer)commentJson.get(COMMENT_TYPE);
+                if(commentJson.containsKey(TYPE)){
+                    m_commentType=(Integer)commentJson.get(TYPE);
                 }
                 if(commentJson.containsKey(GENERATED_TIME)){
                     m_generatedTime=(Timestamp)commentJson.get(GENERATED_TIME);
@@ -109,7 +109,7 @@ public class CommentOnActivity {
                 ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
                 ret.put(GENERATED_TIME, m_generatedTime.toString());
 				
-				CommentOnActivity predecessorComment=SQLCommander.queryComment(m_predecessorId);
+				Comment predecessorComment=SQLCommander.queryComment(m_predecessorId);
 				if(predecessorComment==null) break;
 				Integer replyeeId=predecessorComment.getCommenterId();
 				String replyeeName=SQLCommander.queryUser(replyeeId).getName();
@@ -130,10 +130,10 @@ public class CommentOnActivity {
                 ret.put(CONTENT, m_content);
                 ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
                 ret.put(GENERATED_TIME, m_generatedTime.toString());
-                List<CommentOnActivity> subComments=SQLCommander.querySubComments(m_id, SQLCommander.INITIAL_REF_INDEX, ID, SQLHelper.DESCEND, null, SQLCommander.DIRECTION_FORWARD, m_commentType);
+                List<Comment> subComments=SQLCommander.querySubComments(m_id, SQLCommander.INITIAL_REF_INDEX, ID, SQLHelper.DESCEND, null, SQLCommander.DIRECTION_FORWARD, m_commentType);
 
                 ArrayNode subCommentsNode=new ArrayNode(JsonNodeFactory.instance);
-                for(CommentOnActivity subComment : subComments){
+                for(Comment subComment : subComments){
                     subCommentsNode.add(subComment.toSubCommentObjectNode());
                 }
                 ret.put(SUB_COMMENTS, subCommentsNode);

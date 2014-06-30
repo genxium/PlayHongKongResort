@@ -24,8 +24,7 @@ function queryActivities(refIndex, numItems, direction){
 
 	var token=$.cookie(g_keyToken);
 	if(token!=null)	params[g_keyToken]=token;
-
-	if(g_target!=null) params[g_keyTarget]=g_target;
+	if(g_userId!=null) params[g_keyUserId]=g_userId;
 
 	var relation=g_activitiesFilter.val();
 	params[g_keyRelation]=relation;

@@ -110,14 +110,14 @@ function generateActivityCellForAdmin(activityJson){
 	var activityContent=activityJson[g_keyContent];
 	var activityStatus=activityJson[g_keyStatus];
     
-    var coverImageURL=null;
+    var coverImageUrl=null;
     do{
         var activityImages=activityJson[g_keyImages];
         if(activityImages==null) break;
         for(var key in activityImages){
            if(activityImages.hasOwnProperty(key)){
                var activityImage=activityImages[key];
-               coverImageURL=activityImage[g_keyURL];
+               coverImageUrl=activityImage[g_keyUrl];
                break;
            }
         }
@@ -131,10 +131,10 @@ function generateActivityCellForAdmin(activityJson){
 		style: "display: inline-block; margin-left: 5pt"	
 	}).appendTo(ret);
 
-	if(coverImageURL!=null){
+	if(coverImageUrl!=null){
 		var coverImage=$('<img>', {
 			class: g_classActivityCoverImage,
-			src: coverImageURL
+			src: coverImageUrl
 		}).appendTo(infoWrap);
 	}
 

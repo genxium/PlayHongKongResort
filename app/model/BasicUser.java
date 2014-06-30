@@ -8,9 +8,9 @@ public class BasicUser {
 	public static String NAME ="name";
 	public static String AVATAR ="avatar";
 	
-	protected int m_userId=0;
-	public int getUserId() {return m_userId;}
-	public void setUserId(int userId) {m_userId=userId;}
+	protected int m_Id =0;
+	public int getId() {return m_Id;}
+	public void setId(int id) {m_Id =id;}
 	
 	protected String m_email=null;
 	public String getEmail() {return m_email;}
@@ -30,7 +30,7 @@ public class BasicUser {
 	}
 
 	public BasicUser(JSONObject userJson){
-		if(userJson.containsKey(ID)) m_userId=(Integer)userJson.get(ID);	
+		if(userJson.containsKey(ID)) m_Id =(Integer)userJson.get(ID);
 		if(userJson.containsKey(NAME)) m_name=(String)userJson.get(NAME);
 		if(userJson.containsKey(EMAIL)) m_email=(String)userJson.get(EMAIL);
 		if(userJson.containsKey(AVATAR)) m_avatar=(Integer)userJson.get(AVATAR);

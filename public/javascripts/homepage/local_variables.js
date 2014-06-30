@@ -11,9 +11,9 @@ var g_classSectionUserAvatar="classSectionUserAvatar";
 // input-box keys
 var g_classFieldAccount="classFieldAccount";
 
-// button keys
-var g_idBtnPreviousPage="idBtnPreviousPage";
-var g_idBtnNextPage="idBtnNextPage";
+// buttons
+var g_btnNextPage=null;
+var g_btnPreviousPage=null;
 
 // callback functions
 var g_callbackOnQueryActivitiesSuccess=null;

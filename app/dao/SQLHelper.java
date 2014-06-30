@@ -378,8 +378,7 @@ public class SQLHelper {
 		if (item instanceof Integer){
 			Integer value=(Integer)item;
 			res=value.toString();
-		}
-		else if (item instanceof String){
+		} else if (item instanceof String){
 		    String value=(String)item;
 		    StringBuilder valueBuilder=new StringBuilder();
 		    for(int i=0;i<value.length();i++){

@@ -1,6 +1,6 @@
 package model;
 
-public class ActivityImageRelationTable {
+public class ActivityImageRelation {
 	public static int invalid=0;
 
 	public static String TABLE="activity_image_relation";

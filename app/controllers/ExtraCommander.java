@@ -1,20 +1,18 @@
 package controllers;
 
-import java.io.File;
-
+import dao.SQLHelper;
+import model.Activity;
+import model.Image;
+import model.User;
+import model.UserActivityRelation;
+import org.apache.commons.io.FileUtils;
 import play.mvc.Http.MultipartFormData.FilePart;
 import utilities.DataUtils;
-import model.Activity;
-import model.User;
-import model.Image;
 
-import org.apache.commons.io.*;
-
+import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import dao.SQLHelper; 
 
 public class ExtraCommander extends SQLCommander {
  
@@ -23,10 +21,9 @@ public class ExtraCommander extends SQLCommander {
       do{
 	        try{
 		          SQLHelper sqlHelper=new SQLHelper();
-		          String relationTableName="UserActivityRelationTable";
 		          List<String> relationWhereClauses=new LinkedList<String>();
 		          relationWhereClauses.add(Activity.ID +"="+SQLHelper.convertToQueryValue(activityId));
-		          boolean resultRelationDeletion=sqlHelper.delete(relationTableName, relationWhereClauses, SQLHelper.AND);
+		          boolean resultRelationDeletion=sqlHelper.delete(UserActivityRelation.TABLE, relationWhereClauses, SQLHelper.AND);
 		        
 		          if(resultRelationDeletion==false) break;
 		        
@@ -40,11 +37,10 @@ public class ExtraCommander extends SQLCommander {
 		                  if(isDeleted==false) break;
 		              }
 		          }
-		              
-		          String activityTableName="Activity";   
+
 		          List<String> activityWhereClauses=new LinkedList<String>();
 		          activityWhereClauses.add(Activity.ID +"="+SQLHelper.convertToQueryValue(activityId));
-		          ret=sqlHelper.delete(activityTableName, activityWhereClauses, SQLHelper.AND);
+		          ret=sqlHelper.delete(Activity.TABLE, activityWhereClauses, SQLHelper.AND);
 		        
 	        } catch(Exception e){
 	        		System.out.println("ExtraCommander.deleteActivity:"+e.getMessage());
@@ -101,7 +97,7 @@ public class ExtraCommander extends SQLCommander {
         			if(DataUtils.validateImage(imageFile)==false) break;
       	    		if(user==null) break;
 
-      	    		Integer userId=user.getUserId();
+      	    		Integer userId=user.getId();
       	    		String newImageName=DataUtils.generateUploadedImageName(fileName, userId);
                     String imageURL=Image.URL_PREFIX+newImageName;
 
@@ -115,7 +111,6 @@ public class ExtraCommander extends SQLCommander {
       	    			FileUtils.moveFile(file, new File(imageAbsolutePath));
       	    		} catch(Exception err){
       	    			System.out.println("ExtraCommander.saveAvatarFile: "+newImageName+" could not be saved.");
-      	    			// recover table `Image` and `ActivityImageRelationTable`
       	    			boolean isRecovered=SQLCommander.deleteImageRecordById(imageId);
       	    			if(isRecovered==true){
       	    				System.out.println("ExtraCommander.saveAvatarFile: "+newImageName+" has been reverted");
@@ -141,7 +136,7 @@ public class ExtraCommander extends SQLCommander {
             if(user==null) break;
             if(activity==null) break;
                 
-            Integer userId=user.getUserId();
+            Integer userId=user.getId();
 
             String newImageName=DataUtils.generateUploadedImageName(fileName, userId);
             String imageURL=Image.URL_PREFIX+newImageName;
@@ -156,7 +151,6 @@ public class ExtraCommander extends SQLCommander {
                 FileUtils.moveFile(file, new File(imageAbsolutePath));
             } catch(Exception err){
                 System.out.println("ExtraCommander.saveImageOfActivity: "+newImageName+" could not be saved.");
-                // recover table `Image` and `ActivityImageRelationTable`
                 boolean isRecovered=SQLCommander.deleteImageRecordById(imageId);
                 if(isRecovered==true){
                     System.out.println("ExtraCommander.saveImageOfActivity: "+newImageName+" has been reverted");

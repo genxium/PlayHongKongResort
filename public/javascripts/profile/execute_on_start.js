@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	g_target=$('#target').attr("value");
+	g_userId=$('#userId').attr("value");
 
 	initLoginWidget();
 	g_callbackOnLoginSuccess=refreshOnLoggedIn;

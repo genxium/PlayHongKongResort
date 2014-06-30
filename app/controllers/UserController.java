@@ -31,7 +31,7 @@ import java.util.Properties;
 
 public class UserController extends Controller {
 
-	protected static void sendVerificationEmail(String username, String recipient, String code) {
+	protected static void sendVerificationEmail(String name, String recipient, String code) {
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
 		String msgBody = "...";
@@ -39,10 +39,10 @@ public class UserController extends Controller {
 		try {
 			Message msg = new MimeMessage(session);
 			msg.setFrom(new InternetAddress("hongkongresort@126.com", "The HongKongResort Team"));
-			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, username));
+			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, name));
 			msg.setSubject("Welcome to HongKongResort");
             String link="http://107.170.251.163/user/email/verify?code="+code;
-			msg.setText("Dear "+username+", you're our member now! Please click the following link to complete email verification: "+link);
+			msg.setText("Dear "+name+", you're our member now! Please click the following link to complete email verification: "+link);
 			Transport.send(msg);
 		} catch (AddressException e) {
 			System.out.println(e.getMessage());	
@@ -72,15 +72,15 @@ public class UserController extends Controller {
 				if(user==null || user.getPassword().equals(passwordDigest)==false) break;
 				
 				String token = Converter.generateToken(email, password);
-				Integer userId = user.getUserId();
+				Integer userId = user.getId();
 
 				session(token, userId.toString());
 
 				int imageId=user.getAvatar();
-				Image image=SQLCommander.queryImageByImageId(imageId);
+				Image image=SQLCommander.queryImage(imageId);
 
 				ObjectNode result = Json.newObject();
-				result.put(User.ID, user.getUserId());
+				result.put(User.ID, user.getId());
 				result.put(User.NAME, user.getName());
 				result.put(User.EMAIL, user.getEmail());
 				result.put(User.TOKEN, token);
@@ -148,10 +148,10 @@ public class UserController extends Controller {
 				session(token, userId.toString());
 
 				int imageId=user.getAvatar();
-				Image image=SQLCommander.queryImageByImageId(imageId);
+				Image image=SQLCommander.queryImage(imageId);
 
 				ObjectNode result = Json.newObject();
-				result.put(User.ID, user.getUserId());
+				result.put(User.ID, user.getId());
 				result.put(User.NAME, user.getName());
 				result.put(User.EMAIL, user.getEmail());
 				result.put(User.TOKEN, token);
@@ -188,7 +188,7 @@ public class UserController extends Controller {
 			  if(newAvatarId==ExtraCommander.INVALID) break;
 			
 			   // delete previous avatar record and file
-			   Image previousAvatar=SQLCommander.queryImageByImageId(previousAvatarId);
+			   Image previousAvatar=SQLCommander.queryImage(previousAvatarId);
 			   boolean isPreviousAvatarDeleted=ExtraCommander.deleteImageRecordAndFile(previousAvatar);
 			   if(isPreviousAvatarDeleted==true){
 				System.out.println("Application.saveAvatarFile: previous avatar file and record deleted.");    
@@ -209,9 +209,9 @@ public class UserController extends Controller {
 				Integer userId=DataUtils.getUserIdByToken(token);
 				int relation=SQLCommander.queryUserActivityRelation(userId, activityId);
 				
-				if(relation==UserActivityRelationTable.invalid) break;
+				if(relation== UserActivityRelation.invalid) break;
 				ret=Json.newObject();
-				ret.put(UserActivityRelationTable.RELATION, String.valueOf(relation));
+				ret.put(UserActivityRelation.RELATION, String.valueOf(relation));
 
 				return ok(ret);
 		    } catch(Exception e){
@@ -237,20 +237,20 @@ public class UserController extends Controller {
 		return badRequest();
 	}
 
-	public static Result nameDuplicate(String username){
+	public static Result nameDuplicate(String name){
 		// define response attributes
 		response().setContentType("text/plain");
 		do{
 		    try{
-			if(username==null) break;
+			if(name==null) break;
 			SQLHelper sqlHelper=new SQLHelper();
 			List<String> columnNames=new LinkedList<String>();
 			columnNames.add(User.ID);
 
 			List<String> whereClauses=new LinkedList<String>();
-			whereClauses.add(User.NAME +"="+SQLHelper.convertToQueryValue(username));
+			whereClauses.add(User.NAME +"="+SQLHelper.convertToQueryValue(name));
 			
-			List<JSONObject> userJsons=sqlHelper.query("User", columnNames, whereClauses, SQLHelper.AND);
+			List<JSONObject> userJsons=sqlHelper.query(User.TABLE, columnNames, whereClauses, SQLHelper.AND);
 			if(userJsons!=null && userJsons.size()>0) break;
 			return ok();
 		    } catch(Exception e){
@@ -273,7 +273,7 @@ public class UserController extends Controller {
 			List<String> whereClauses=new LinkedList<String>();
 			whereClauses.add(User.EMAIL +"="+SQLHelper.convertToQueryValue(email));
 			
-			List<JSONObject> userJsons=sqlHelper.query("User", columnNames, whereClauses, SQLHelper.AND);
+			List<JSONObject> userJsons=sqlHelper.query(User.TABLE, columnNames, whereClauses, SQLHelper.AND);
 			if(userJsons!=null && userJsons.size()>0) break;
 			return ok();
 		    } catch(Exception e){

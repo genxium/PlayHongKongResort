@@ -129,11 +129,11 @@ function generateRegisterForm(){
 		do{
 		    evt.preventDefault();
 		    g_spanCheckUsername.empty();
-		    var username=$(this).val();
-		    if(username==null || username.length==0) break;
+		    var name=$(this).val();
+		    if(name==null || name.length==0) break;
 
 		    var params={};
-		    params["username"]=username;
+		    params[g_keyName]=name;
 		    $.ajax({
 			type: "GET",
 			url: "/user/name/duplicate",

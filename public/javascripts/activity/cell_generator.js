@@ -91,13 +91,13 @@ function generateActivityCell(activityJson){
 	var activityId=activityJson[g_keyId];
 	var activityTitle=activityJson[g_keyTitle];
    	 
-	var coverImageURL=null;
-	var activityImages=activityJson[g_keys];
+	var coverImageUrl=null;
+	var activityImages=activityJson[g_keyImages];
 	if(activityImages!=null) {
 		for(var key in activityImages){
 		   if(activityImages.hasOwnProperty(key)){
 		       var activityImage=activityImages[key];
-		       coverImageURL=activityImage[g_keyURL];
+		       coverImageUrl=activityImage[g_keyUrl];
 		       break;
 		   }
 		}
@@ -110,10 +110,10 @@ function generateActivityCell(activityJson){
 		class: g_classCellActivityContainer
 	});
 
-	if(coverImageURL!=null){
+	if(coverImageUrl!=null){
 		var coverImage=$('<img>', {
 			class: g_classActivityCoverImage,
-			src: coverImageURL
+			src: coverImageUrl
 		}).appendTo(ret);
 	}
 

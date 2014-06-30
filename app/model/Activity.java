@@ -127,7 +127,7 @@ public class Activity {
 			ret.put(Activity.HOST_ID, String.valueOf(m_hostId));
 			if(viewerId!=null) { 
 				int relation=SQLCommander.queryUserActivityRelation(viewerId, m_id);
-				if(relation!=UserActivityRelationTable.invalid)	ret.put(UserActivityRelationTable.RELATION, relation);
+				if(relation!= UserActivityRelation.invalid)	ret.put(UserActivityRelation.RELATION, relation);
 				User user=SQLCommander.queryUser(viewerId);
 				if(viewerId.equals(m_hostId)) ret.put(Activity.STATUS, String.valueOf(m_status.ordinal()));	
 				if(user!=null && user.getGroupId()==User.ADMIN) ret.put(Activity.STATUS, String.valueOf(m_status.ordinal())); // 3 is temporary hard-coded 

@@ -1,6 +1,6 @@
 package model;
 
-public class UserActivityRelationTable {
+public class UserActivityRelation {
 	public static int invalid=0;
 	public static int hosted=(1<<0);
 	public static int applied=(1<<1);

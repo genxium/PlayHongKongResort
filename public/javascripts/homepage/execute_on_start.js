@@ -34,6 +34,8 @@ $(document).ready(function(){
 	g_sectionDefaultActivities.on("scroll", onSectionDefaultActivitiesScrolled);
 	checkLoginStatus();
 
-	$("#"+g_idBtnPreviousPage).on("click", onBtnPreviousPageClicked);
-	$("#"+g_idBtnNextPage).on("click", onBtnNextPageClicked);
+    g_btnPreviousPage=$("#idBtnPreviousPage");
+    g_btnNextPage=$("#idBtnNextPage");
+	g_btnPreviousPage.on("click", onBtnPreviousPageClicked);
+	g_btnNextPage.on("click", onBtnNextPageClicked);
 });
