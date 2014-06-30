@@ -13,17 +13,17 @@ public class User extends BasicUser {
 	public static int MANAGER=2;
 	public static int ADMIN=3;		
 
-	public static String TABLE="User";
-	public static String PASSWORD="UserPassword";
-	public static String GROUP_ID="UserGroupId";
-	public static String AUTHENTICATION_STATUS="UserAuthenticationStatus";
-	public static String GENDER="UserGender";
-	public static String LAST_LOGGED_IN_TIME="UserLastLoggedInTime";
-	public static String LAST_LOGGED_OUT_TIME="UserLastLoggedOutTime";
-	public static String LAST_EXIT_TIME="UserLastExitTime";
+	public static String TABLE="user";
+	public static String PASSWORD="password";
+	public static String GROUP_ID="group_id";
+	public static String AUTHENTICATION_STATUS="authentication_status";
+	public static String GENDER="gender";
+	public static String LAST_LOGGED_IN_TIME="last_logged_in_time";
+	public static String LAST_LOGGED_OUT_TIME="last_logged_out_time";
+	public static String LAST_EXIT_TIME="last_exit_time";
 	
-	public static String TOKEN="UserToken";
-	public static String VERIFICATION_CODE="VerificationCode"; 
+	public static String TOKEN="token";
+	public static String VERIFICATION_CODE="verification_code"; 
 	
 	protected String m_password=null;
 	public String getPassword() {return m_password;}

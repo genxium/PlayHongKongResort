@@ -13,7 +13,7 @@ function queryActivityDetail(activityId){
 
 	var token=$.cookie(g_keyToken);
     	var params={};
-    	params[g_keyArg]=activityId;
+    	params[g_keyId]=activityId;
 	if(token!=null)	params[g_keyToken]=token;
 
 	try{
@@ -35,9 +35,9 @@ function queryActivityDetail(activityId){
 }
 
 function displayActivityDetail(activityDetailJson){
-	var activityTitle=activityDetailJson[g_keyActivityTitle];
-	var activityContent=activityDetailJson[g_keyActivityContent];
-	var activityImages=activityDetailJson[g_keyActivityImages];
+	var activityTitle=activityDetailJson[g_keyTitle];
+	var activityContent=activityDetailJson[g_keyContent];
+	var activityImages=activityDetailJson[g_keyImages];
 
 	var sectionActivity=$("#idSectionActivity");
 	var detailView=generateActivityDetailViewByJson(activityDetailJson);
@@ -53,47 +53,45 @@ function onParticipantsSelectionFormSubmission(formEvt){
 		var appliedParticipants=new Array();
 		var selectedParticipants=new Array();
 		inputs.each(function() {
-		    var value = $(this).val();
-		    if(this.checked){
-			selectedParticipants.push(value);
-		    } else{
-			appliedParticipants.push(value);
-		    }
+			var value = $(this).val();
+			if(this.checked){
+				selectedParticipants.push(value);
+			} else{
+				appliedParticipants.push(value);
+			}
 		});
 
 		// append user token and activity id for identity
-		var token = $.cookie(g_keyToken);
+		var token = $.cookie(g_keyToken).toString();
 		if(token==null) break;
-		var activityId = $(this).data(g_keyActivityId);
+		var activityId = $(this).data(g_keyId);
 		if(activityId==null) break;
-		try{
-		    $.post("/updateActivityParticipants", 
-			{
-			    ActivityId: activityId.toString(),
-			    UserToken: token.toString(),
-			    ActivityAppliedParticipants: JSON.stringify(appliedParticipants),
-			    ActivitySelectedParticipants: JSON.stringify(selectedParticipants)
-			},
-			function(data, status, xhr){
-			    if(status=="success"){
-				inputs.each(function() {
-				    var label=$(this).data(g_indexParticipantsSelectionLabel);
-				    var value = $(this).val();
-				    if(this.checked){
-					label.css("background-color", "aquamarine");
-				    } else{
-					label.css("background-color", "pink");
-				    }
-				});
-			    }
-			    else{
-				alert("unsuccessful!");
-			    }
+
+		var params={};
+		params[g_keyToken]=token;
+		params[g_keyId]=activityId;
+		params[g_keyAppliedParticipants]=JSON.stringify(appliedParticipants);
+		params[g_keySelectedParticipants]=JSON.stringify(selectedParticipants);
+
+		$.ajax({
+			type: "POST",
+			url: "/updateActivityParticipants", 
+			data: params,
+			success: function(data, status, xhr){
+			inputs.each(function() {
+					var label=$(this).data(g_indexParticipantsSelectionLabel);
+					var value = $(this).val();
+					if(this.checked){
+						label.css("background-color", "aquamarine");
+					} else{
+						label.css("background-color", "pink");
+					}
+				}
 			}
-		    );
-		} catch(err){
-		    alert(err); 
-		}
+			error: function(xhr, status, err) {
+
+			}
+		});
 	}while(false);
 }
 
@@ -111,12 +109,12 @@ function onBtnSubmitClicked(evt){
 
 // Generators
 function generateActivityDetailViewByJson(activityJson){
-	var activityId=activityJson[g_keyActivityId];
-	var activityTitle=activityJson[g_keyActivityTitle];
-	var activityContent=activityJson[g_keyActivityContent];
-	var activityImages=activityJson[g_keyActivityImages];
-	var appliedParticipants=activityJson[g_keyActivityAppliedParticipants];
-	var selectedParticipants=activityJson[g_keyActivitySelectedParticipants]; 
+	var activityId=activityJson[g_keyId];
+	var activityTitle=activityJson[g_keyTitle];
+	var activityContent=activityJson[g_keyContent];
+	var activityImages=activityJson[g_keyImages];
+	var appliedParticipants=activityJson[g_keyAppliedParticipants];
+	var selectedParticipants=activityJson[g_keySelectedParticipants]; 
 
 	var ret=$('<div>');
 
@@ -139,7 +137,7 @@ function generateActivityDetailViewByJson(activityJson){
 		for(var key in activityImages){
 		   if(activityImages.hasOwnProperty(key)){
 		       var activityImage=activityImages[key];
-		       var imageUrl=activityImage[g_keyImageURL];
+		       var imageUrl=activityImage[g_keyURL];
 		       var imageNode=$('<img>',{
 			    src: imageUrl.toString()   
 		       }).appendTo(imagesNode);
@@ -156,14 +154,14 @@ function generateActivityDetailViewByJson(activityJson){
 		for(var key in selectedParticipants){
 		    if(selectedParticipants.hasOwnProperty(key)){
 			selectedParticipant=selectedParticipants[key];
-			var email=selectedParticipant[g_keyUserEmail];
-			var userId=selectedParticipant[g_keyUserId];
+			var email=selectedParticipant[g_keyEmail];
+			var userId=selectedParticipant[g_keyId];
 			var label=$('<label>', {
 			    text: email  
 			}).appendTo(selectionForm);
 			label.css("background-color", "aquamarine ");
 			label.data(g_indexParticipantSelectionStatus, g_statusSelected);
-			label.data(g_keyUserId, userId);
+			label.data(g_keyId, userId);
 			labels.push(label);
 			$('<br>').appendTo(selectionForm);
 			
@@ -173,24 +171,24 @@ function generateActivityDetailViewByJson(activityJson){
 		for(var key in appliedParticipants){
 		    if(appliedParticipants.hasOwnProperty(key)){
 			appliedParticipant=appliedParticipants[key];
-			var email=appliedParticipant[g_keyUserEmail];
-			var userId=appliedParticipant[g_keyUserId];
+			var email=appliedParticipant[g_keyEmail];
+			var userId=appliedParticipant[g_keyId];
 			var label=$('<label>', {
 			    text: email,
 			}).appendTo(selectionForm);
 			label.css("background-color", "pink");
 			label.data(g_indexParticipantSelectionStatus, g_statusApplied);
-			label.data(g_keyUserId, userId);
+			label.data(g_keyId, userId);
 			labels.push(label);
 			$('<br>').appendTo(selectionForm);
 		    }
 		}
 	
 		var params={};
-		params[g_keyArg]=activityId;
-		params["refIndex"]=0;
-		params["numItems"]=20;
-		params["direction"]=1;		
+		params[g_keyId]=activityId;
+		params[g_keyRefIndex]=0;
+		params[g_keyNumItems]=20;
+		params[g_keyDirection]=1;		
 
 		// query comments
 		$.ajax({
@@ -217,7 +215,7 @@ function generateActivityDetailViewByJson(activityJson){
 
 		var params={};
 		params[g_keyToken]=token;
-		params[g_keyArg]=activityId;
+		params[g_keyId]=activityId;
 
 		$.ajax({
 			type: "GET",
@@ -226,7 +224,7 @@ function generateActivityDetailViewByJson(activityJson){
 			success: function(data, status, xhr){
 				for(var i=0;i<labels.length;i++){
 					var label=labels[i];
-					var userId=$(label).data(g_keyUserId);
+					var userId=$(label).data(g_keyId);
 					var selectionStatus=$(label).data(g_indexParticipantSelectionStatus);
 					var checkStatus=true;
 					if(selectionStatus==g_statusSelected){
@@ -248,7 +246,7 @@ function generateActivityDetailViewByJson(activityJson){
 						style: 'color: white; background-color:black; font-size: 13pt'
 					}).appendTo(selectionForm);
 					btnSubmit.on("click", onBtnSubmitClicked);
-					selectionForm.data(g_keyActivityId, activityId);
+					selectionForm.data(g_keyId, activityId);
 				}
 				$('<hr>').appendTo(selectionForm);
 			},
@@ -266,7 +264,7 @@ function generateActivityDetailViewByJson(activityJson){
 
 // execute on start
 $(document).ready(function(){
-	g_activityId=$('#arg').attr("value");
+	g_activityId=$('#activityId').attr("value");
 	
 	initLoginWidget();
 

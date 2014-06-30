@@ -17,9 +17,9 @@ function generateReplyEditor(activityId, parentId, predecessorId, toUsername){
         text: "SUBMIT REPLY",
         style: "color: white; background-color: gray; border: none"
     }).appendTo(ret);
-    btnSubmit.data("ActivityId", activityId);
-    btnSubmit.data("ParentId", parentId);
-    btnSubmit.data("PredecessorId", predecessorId);
+    btnSubmit.data(g_keyActivityId, activityId);
+    btnSubmit.data(g_keyParentId, parentId);
+    btnSubmit.data(g_keyPredecessorId, predecessorId);
 
     btnSubmit.on("click", function(evt){
 		do{
@@ -28,9 +28,9 @@ function generateReplyEditor(activityId, parentId, predecessorId, toUsername){
 			var editor=btn.closest('p');
 			var input=editor.children('input');
 			var content=input.val();
-			var activityId=btn.data("ActivityId");
-			var parentId=btn.data("ParentId");
-			var predecessorId=btn.data("PredecessorId");
+			var activityId=btn.data(g_keyActivityId);
+			var parentId=btn.data(g_keyParentId);
+			var predecessorId=btn.data(g_keyPredecessorId);
 			var token=$.cookie(g_keyToken);
 
 			if(content==null || content.length<=g_minContentLength) {
@@ -39,11 +39,11 @@ function generateReplyEditor(activityId, parentId, predecessorId, toUsername){
 			}
 
 			var params={};
-			params["CommentAContent"]=content;
-			params["ParentId"]=parentId;
-			params["PredecessorId"]=predecessorId;
-			params["ActivityId"]=activityId;
-			params["UserToken"]=token;
+			params[g_keyContent]=content;
+			params[g_keyParentId]=parentId;
+			params[g_keyPredecessorId]=predecessorId;
+			params[g_keyActivityId]=activityId;
+			params[g_keyToken]=token;
 
 			$.ajax({
 				type: "POST",
@@ -77,7 +77,7 @@ function generateCommentCell(commentJson, activityId){
     
         var row=$('<p>').appendTo(ret);
         var content=$('<span>', {
-            text: commentJson[g_keyCommentAContent],
+            text: commentJson[g_keyContent],
             style: "text-align: left; margin-left: 25pt"
         }).appendTo(row);
         
@@ -104,22 +104,22 @@ function generateCommentCell(commentJson, activityId){
 		    style: "color: white; background-color: black; border: none"
 		}).appendTo(operations);
 
-		var parentId=commentJson[g_keyCommentAParentId];
-		var predecessorId=commentJson[g_keyCommentAId];
+		var parentId=commentJson[g_keyParentId];
+		var predecessorId=commentJson[g_keyId];
 		if(parentId==(-1)){
 		    // root comment
 		    parentId=predecessorId;
 		}
-		btnReply.data("ActivityId", activityId);
-		btnReply.data("ParentId", parentId);
-		btnReply.data("PredecessorId", predecessorId);
+		btnReply.data(g_keyActivityId, activityId);
+		btnReply.data(g_keyParentId, parentId);
+		btnReply.data(g_keyPredecessorId, predecessorId);
 			btnReply.data("CommentCell", ret);
 		btnReply.on("click", function(){
 		    removeReplyEditor();
 		    var btn=$(this);
-		    var activityId=btn.data("ActivityId");
-		    var parentId=btn.data("ParentId");
-		    var predecessorId=btn.data("PredecessorId");
+		    var activityId=btn.data(g_keyActivityId);
+		    var parentId=btn.data(g_keyParentId);
+		    var predecessorId=btn.data(g_keyPredecessorId);
 		    g_replyEditor=generateReplyEditor(activityId, parentId, predecessorId, commentJson[g_keyCommenterName]);
 		    var commentCell=btn.data("CommentCell");
 		    commentCell.append(g_replyEditor);
@@ -127,7 +127,7 @@ function generateCommentCell(commentJson, activityId){
 	} while(false);
 
 	// Sub-Comments
-	var subComments=commentJson["SubComments"];
+	var subComments=commentJson[g_keySubComments];
 	for(var key in subComments){
 		var subCommentJson=subComments[key];
 		var subCommentCell=generateSubCommentCell(subCommentJson, activityId);		
@@ -151,7 +151,7 @@ function generateSubCommentCell(commentJson, activityId){
 		}).appendTo(row);
 
         var content=$('<span>', {
-            text: commentJson[g_keyCommentAContent],
+            text: commentJson[g_keyContent],
             style: "text-align: left; margin-left: 25pt"
         }).appendTo(row);
         
@@ -176,22 +176,22 @@ function generateSubCommentCell(commentJson, activityId){
             text: "reply",
             style: "color: white; background-color: black; border: none"
         }).appendTo(operations);
-        var parentId=commentJson[g_keyCommentAParentId];
-        var predecessorId=commentJson[g_keyCommentAId];
+        var parentId=commentJson[g_keyParentId];
+        var predecessorId=commentJson[g_keyId];
         if(parentId==(-1)){
             // root comment
             parentId=predecessorId;
         }
-        btnReply.data("ActivityId", activityId);
-        btnReply.data("ParentId", parentId);
-        btnReply.data("PredecessorId", predecessorId);
+        btnReply.data(g_keyActivityId, activityId);
+        btnReply.data(g_keyParentId, parentId);
+        btnReply.data(g_keyPredecessorId, predecessorId);
 		btnReply.data("CommentCell", ret);
         btnReply.on("click", function(){
             removeReplyEditor();
             var btn=$(this);
-            var activityId=btn.data("ActivityId");
-            var parentId=btn.data("ParentId");
-            var predecessorId=btn.data("PredecessorId");
+            var activityId=btn.data(g_keyActivityId);
+            var parentId=btn.data(g_keyParentId);
+            var predecessorId=btn.data(g_keyPredecessorId);
             g_replyEditor=generateReplyEditor(activityId, parentId, predecessorId, commentJson[g_keyCommenterName]);
             var commentCell=btn.data("CommentCell");
             commentCell.append(g_replyEditor);
@@ -226,9 +226,9 @@ function generateCommentEditor(activityId){
 			}
 
 			var params={};
-			params["CommentAContent"]=content;
-			params["ActivityId"]=activityId;
-			params["UserToken"]=token;
+			params[g_keyContent]=content;
+			params[g_keyActivityId]=activityId;
+			params[g_keyToken]=token;
 
 			$.ajax({
 				type: "POST",

@@ -81,7 +81,7 @@ public class CommentController extends Controller {
                     columnValues.add(SQLHelper.convertToQueryValue(parentId));
                 }
 
-                lastCommentId=sqlHelper.insert("CommentOnActivity", columnNames, columnValues);
+                lastCommentId=sqlHelper.insert(CommentOnActivity.TABLE, columnNames, columnValues);
                 if(lastCommentId==SQLHelper.INVALID_ID) break;
 
                 return ok();

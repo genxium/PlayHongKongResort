@@ -3,10 +3,10 @@ package model;
 import org.json.simple.JSONObject;
 
 public class BasicUser {
-	public static String ID ="UserId";
-	public static String EMAIL ="UserEmail";
-	public static String NAME ="Username";
-	public static String AVATAR ="UserAvatar";
+	public static String ID ="id";
+	public static String EMAIL ="email";
+	public static String NAME ="name";
+	public static String AVATAR ="avatar";
 	
 	protected int m_userId=0;
 	public int getUserId() {return m_userId;}

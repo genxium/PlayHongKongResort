@@ -128,7 +128,7 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `id` int(32) NOT NULL AUTO_INCREMENT,
-  `username` varchar(32) DEFAULT NULL,
+  `name` varchar(32) DEFAULT NULL,
   `display_name` varchar(32) DEFAULT NULL,
   `password` varchar(32) NOT NULL,
   `email` varchar(32) NOT NULL,
@@ -143,7 +143,7 @@ CREATE TABLE `user` (
   `verification_code` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
-  UNIQUE KEY `username` (`username`)
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

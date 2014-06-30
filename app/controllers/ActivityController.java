@@ -16,15 +16,15 @@ import java.util.*;
 
 public class ActivityController extends Controller {
 
-    public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer target, Integer relation, Integer status){
+    public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer userId, Integer relation, Integer status){
         response().setContentType("text/plain");
 	do{
 		try{
-			Integer userId=null;
-			if(token!=null)	userId=DataUtils.getUserIdByToken(token);
+			Integer id=null;
+			if(token!=null)	id=DataUtils.getUserIdByToken(token);
 			List<Activity> activities=null;
-			if(relation!=null && target!=null){
-				activities=SQLCommander.queryActivities(target, relation);
+			if(relation!=null && userId!=null){
+				activities=SQLCommander.queryActivities(userId, relation);
 			} else{
 				Activity.StatusType activityStatus=Activity.StatusType.getTypeForValue(status);
 				activities=SQLCommander.queryActivities(refIndex, Activity.ID, SQLHelper.DESCEND, numItems, direction, activityStatus);
@@ -32,7 +32,7 @@ public class ActivityController extends Controller {
 			if(activities==null) break;
 			ObjectNode result = Json.newObject();
 			for(Activity activity : activities){
-				result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages(userId));
+				result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages(id));
 			}
 			return ok(result);
 		} catch(Exception e){
@@ -42,12 +42,12 @@ public class ActivityController extends Controller {
         return badRequest();
     }
 
-    public static Result detail(Integer arg, String token){
+    public static Result detail(Integer activityId, String token){
         response().setContentType("text/plain");
         do{
 		ObjectNode result = null;
 		try{
-			ActivityDetail activityDetail=SQLCommander.queryActivityDetail(arg);
+			ActivityDetail activityDetail=SQLCommander.queryActivityDetail(activityId);
 			if(activityDetail==null) break;
 			Integer userId=null;
 			if(token!=null)	userId=DataUtils.getUserIdByToken(token);
@@ -60,11 +60,11 @@ public class ActivityController extends Controller {
         return badRequest();
     }
 
-    public static Result ownership(String token, Integer arg){
+    public static Result ownership(String token, Integer activityId){
         do{
 		Integer ownerId=DataUtils.getUserIdByToken(token);
 		if(ownerId==null) break;
-		if(SQLCommander.validateOwnershipOfActivity(ownerId, arg)==false) break;
+		if(SQLCommander.validateOwnershipOfActivity(ownerId, activityId)==false) break;
 		return ok();
         }while(false);
         return badRequest();
@@ -239,8 +239,6 @@ public class ActivityController extends Controller {
                 Activity activity=SQLCommander.queryActivity(activityId);
                 if(SQLCommander.isActivityEditable(userId, activity)==false) break;
 
-                String activityTableName="Activity";
-
                 SQLHelper sqlHelper=new SQLHelper();
                 List<String> names=new LinkedList<String>();
                 names.add(Activity.STATUS);
@@ -251,7 +249,7 @@ public class ActivityController extends Controller {
                 List<String> where=new LinkedList<String>();
                 where.add(Activity.ID +"="+activity.getId());
 
-                boolean res=sqlHelper.update(activityTableName, names, values, where, SQLHelper.AND);
+                boolean res=sqlHelper.update(Activity.TABLE, names, values, where, SQLHelper.AND);
                 if(res==false) break;
 
                 return ok("Activity submitted");

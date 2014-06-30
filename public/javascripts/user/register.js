@@ -61,9 +61,9 @@ function onBtnRegisterClicked(evt){
             || password==null || password.length==0 || validatePassword(password)==false || validatePasswordConfirm()==false) break;
 
         var params={};
-        params[g_keyUsername]=username;
-        params[g_keyUserEmail]=email;
-        params[g_keyUserPassword]=password;
+        params[g_keyName]=username;
+        params[g_keyEmail]=email;
+        params[g_keyPassword]=password;
 
         $.ajax({
 		type: "POST",

@@ -8,7 +8,7 @@ function onUploadAvatarFormSubmission(formEvt){
 		
 		// append an user token for identity
 		var token = $.cookie(g_keyToken);
-		formData.append(g_keyUserToken, token);
+		formData.append(g_keyToken, token);
 		
 		$.ajax({
 			method: "POST",
@@ -18,7 +18,7 @@ function onUploadAvatarFormSubmission(formEvt){
 			contentType: false,
 			processData: false,
 			success: function(data, status, xhr){
-		    	$("#"+g_idSectionResponse).html(data);
+				$("#"+g_idSectionResponse).html(data);
 			},
 			error: function(xhr, status, errorThrown){
 				$("#"+g_idSectionResponse).html("Failed");

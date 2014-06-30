@@ -12,16 +12,16 @@ import java.util.*;
 
 public class Activity {
 
-	public static String TABLE ="Activity";
-	public static String ID ="ActivityId";
-	public static String TITLE="ActivityTitle";
-	public static String CONTENT ="ActivityContent";
-	public static String CREATED_TIME ="ActivityCreatedTime";
-	public static String BEGIN_TIME ="ActivityBeginTime";
-	public static String DEADLINE ="ActivityApplicationDeadline";
-	public static String CAPACITY ="ActivityCapacity";
-	public static String STATUS ="ActivityStatus";
-	public static String HOST_ID = "HostId";
+	public static String TABLE ="activity";
+	public static String ID ="id";
+	public static String TITLE="title";
+	public static String CONTENT ="content";
+	public static String CREATED_TIME ="created_time";
+	public static String BEGIN_TIME ="begin_time";
+	public static String DEADLINE ="application_deadline";
+	public static String CAPACITY ="capacity";
+	public static String STATUS ="status";
+	public static String HOST_ID = "host_id";
 
 	public enum StatusType{
 		created(0),

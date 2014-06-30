@@ -20,7 +20,6 @@ public class SQLCommander {
 
  		User user=null;
  		do{
-	 		String tableName="User";
 	 		List<String> names=new LinkedList<String>();
 	 		List<String> where=new LinkedList<String>();
 
@@ -37,7 +36,7 @@ public class SQLCommander {
 			String logicLink=SQLHelper.AND;
 
 			SQLHelper sqlHelper=new SQLHelper();
-	 		List<JSONObject> results=sqlHelper.query(tableName, names, where, logicLink);
+	 		List<JSONObject> results=sqlHelper.query(User.TABLE, names, where, logicLink);
 			if(results==null || results.size()<=0) break;
 			try{
 				Iterator<JSONObject> it=results.iterator();
@@ -56,8 +55,6 @@ public class SQLCommander {
 
  		User user=null;
  		do{
-	 		String tableName="User";
-
 	 		List<String> names=new LinkedList<String>();
 	 		List<String> where=new LinkedList<String>();
 
@@ -74,7 +71,7 @@ public class SQLCommander {
 			String logicLink=SQLHelper.AND;
 
 			SQLHelper sqlHelper=new SQLHelper();
-	 		List<JSONObject> results=sqlHelper.query(tableName, names, where, logicLink);
+	 		List<JSONObject> results=sqlHelper.query(User.TABLE, names, where, logicLink);
 			if(results==null || results.size()<=0) break;
 			try{
 				Iterator<JSONObject> it=results.iterator();
@@ -313,7 +310,6 @@ public class SQLCommander {
 		List<Activity> ret=null;
 		do{
 		    try{
-			String tableName="Activity";
 			SQLHelper sqlHelper=new SQLHelper();
 
 			// query table Activity
@@ -348,7 +344,7 @@ public class SQLCommander {
 			List<Integer> limits=new ArrayList<Integer>();
 			limits.add(numItems);
 
-			List<JSONObject> activitiesJson=sqlHelper.query(tableName, names, where, SQLHelper.AND, orderClauses, orderDirections, limits);
+			List<JSONObject> activitiesJson=sqlHelper.query(Activity.TABLE, names, where, SQLHelper.AND, orderClauses, orderDirections, limits);
 			if(activitiesJson==null) break;
 
 			ret=new ArrayList<Activity>();
@@ -396,7 +392,6 @@ public class SQLCommander {
         CommentOnActivity ret=null;
         do{
             try{
-                String tableName="CommentOnActivity";
                 SQLHelper sqlHelper=new SQLHelper();
                 
                 // query table CommentOnActivity
@@ -413,7 +408,7 @@ public class SQLCommander {
                 List<String> where=new LinkedList<String>();
                 where.add(CommentOnActivity.ID+"="+commentId);
 			
-                List<JSONObject> commentsJson=sqlHelper.query(tableName, names, where, SQLHelper.AND);
+                List<JSONObject> commentsJson=sqlHelper.query(CommentOnActivity.TABLE, names, where, SQLHelper.AND);
                 if(commentsJson==null || commentsJson.size()<=0) break;
 
 				ret=new CommentOnActivity(commentsJson.get(0));
@@ -429,7 +424,6 @@ public class SQLCommander {
         List<CommentOnActivity> ret=null;
         do{
             try{
-                String tableName="CommentOnActivity";
                 SQLHelper sqlHelper=new SQLHelper();
 				
                 // query table CommentOnActivity
@@ -465,7 +459,7 @@ public class SQLCommander {
                 List<Integer> limits=new ArrayList<Integer>();
                 limits.add(numItems);
 
-                List<JSONObject> commentsJson=sqlHelper.query(tableName, names, where, SQLHelper.AND, orderClauses, orderDirections, limits);
+                List<JSONObject> commentsJson=sqlHelper.query(CommentOnActivity.TABLE, names, where, SQLHelper.AND, orderClauses, orderDirections, limits);
                 if(commentsJson==null) break;
 
                 ret=new ArrayList<CommentOnActivity>();
@@ -484,7 +478,6 @@ public class SQLCommander {
         List<CommentOnActivity> ret=null;
         do{
             try{
-                String tableName="CommentOnActivity";
                 SQLHelper sqlHelper=new SQLHelper();
                 //
                 // query table CommentOnActivity
@@ -522,7 +515,7 @@ public class SQLCommander {
                     limits=new ArrayList<Integer>();
                     limits.add(numItems);
                 }
-                List<JSONObject> commentsJson=sqlHelper.query(tableName, names, where, SQLHelper.AND, orderClauses, orderDirections, limits);
+                List<JSONObject> commentsJson=sqlHelper.query(CommentOnActivity.TABLE, names, where, SQLHelper.AND, orderClauses, orderDirections, limits);
                 if(commentsJson==null) break;
 
                 ret=new ArrayList<CommentOnActivity>();

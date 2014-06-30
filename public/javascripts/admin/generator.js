@@ -4,10 +4,10 @@ function onBtnAcceptClicked(evt){
 	evt.preventDefault();
 	var btnAccept=$(this);
 	var token = $.cookie(g_keyToken);
-	var activityId=$(this).data(g_keyActivityId);
+	var activityId=$(this).data(g_keyId);
 	var params={};
- 	params[g_keyActivityId]=activityId.toString();
-	params[g_keyUserToken]=token.toString();	
+ 	params[g_keyId]=activityId.toString();
+	params[g_keyToken]=token.toString();	
 		
 	try{
 		$.ajax({
@@ -37,10 +37,10 @@ function onBtnRejectClicked(evt){
 	evt.preventDefault();
 	var btnReject=$(this);
 	var token = $.cookie(g_keyToken);
-	var activityId=$(this).data(g_keyActivityId);
+	var activityId=$(this).data(g_keyId);
 	var params={};
- 	params[g_keyActivityId]=activityId.toString();
-	params[g_keyUserToken]=token.toString();	
+ 	params[g_keyId]=activityId.toString();
+	params[g_keyToken]=token.toString();	
 
 	try{
 		$.ajax({
@@ -70,11 +70,11 @@ function onBtnRejectClicked(evt){
 function onBtnDeleteClicked(evt){
 	evt.preventDefault();
 	var btnDelete=$(this);
-	var token = $.cookie(g_keyToken);
-	var activityId=$(this).data(g_keyActivityId);
+	var token = $.cookie(g_keyToken).toString();
+	var activityId=$(this).data(g_keyId);
 	var params={};
- 	params[g_keyActivityId]=activityId.toString();
-	params[g_keyUserToken]=token.toString();	
+ 	params[g_keyId]=activityId;
+	params[g_keyToken]=token;	
 
 	try{
 		$.ajax({
@@ -105,19 +105,19 @@ function onBtnDeleteClicked(evt){
 function generateActivityCellForAdmin(activityJson){
 	var arrayStatusName=['created','pending','rejected','accepted','expired'];
 
-	var activityId=activityJson[g_keyActivityId];
-	var activityTitle=activityJson[g_keyActivityTitle];
-	var activityContent=activityJson[g_keyActivityContent];
-	var activityStatus=activityJson[g_keyActivityStatus];
+	var activityId=activityJson[g_keyId];
+	var activityTitle=activityJson[g_keyTitle];
+	var activityContent=activityJson[g_keyContent];
+	var activityStatus=activityJson[g_keyStatus];
     
     var coverImageURL=null;
     do{
-        var activityImages=activityJson[g_keyActivityImages];
+        var activityImages=activityJson[g_keyImages];
         if(activityImages==null) break;
         for(var key in activityImages){
            if(activityImages.hasOwnProperty(key)){
                var activityImage=activityImages[key];
-               coverImageURL=activityImage[g_keyImageURL];
+               coverImageURL=activityImage[g_keyURL];
                break;
            }
         }
@@ -164,7 +164,7 @@ function generateActivityCellForAdmin(activityJson){
             text: 'Accept'
         }).appendTo(buttonsWrap);
         btnAccept.bind("click", onBtnAcceptClicked);
-        btnAccept.data(g_keyActivityId, activityId);
+        btnAccept.data(g_keyId, activityId);
     }
 
 	if(parseInt(activityStatus)!=2){
@@ -173,7 +173,7 @@ function generateActivityCellForAdmin(activityJson){
             text: 'Reject'
         }).appendTo(buttonsWrap);
         btnReject.bind("click", onBtnRejectClicked);
-        btnReject.data(g_keyActivityId, activityId);
+        btnReject.data(g_keyId, activityId);
     }
 
 	var btnDelete=$('<button>', {
@@ -181,11 +181,11 @@ function generateActivityCellForAdmin(activityJson){
 		text: 'Delete'
 	}).appendTo(buttonsWrap);
 	btnDelete.bind("click", onBtnDeleteClicked);
-	btnDelete.data(g_keyActivityId, activityId);
+	btnDelete.data(g_keyId, activityId);
     
-	ret.data(g_keyActivityId, activityId);
-	ret.data(g_keyActivityTitle, activityTitle);
-	ret.data(g_keyActivityContent, activityContent);
+	ret.data(g_keyId, activityId);
+	ret.data(g_keyTitle, activityTitle);
+	ret.data(g_keyContent, activityContent);
 	
 	var hr=$('<hr>', {
 		style: "height: 1pt; color: black; background-color: black"

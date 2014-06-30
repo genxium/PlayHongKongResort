@@ -18,56 +18,53 @@ var g_keyToken="token";
 var g_keyUid="uid";
 
 // extra request keys 
+var g_keyId="id";
 var g_keyRelation="relation";
-var g_keyStatus="status";
-var g_keyArg="arg";
-var g_keyTarget="target";
 
 // structured data keys (should be consistent with server-side in a protocol manner)
-var g_keyUserId="UserId";
-var g_keyUsername="Username";
-var g_keyUserEmail="UserEmail";
-var g_keyUserPassword="UserPassword";
-var g_keyUserToken="UserToken";
-var g_keyUserAvatar="UserAvatar";
+var g_keyUser="user";
+var g_keyUserId="user_id";
+var g_keyName="name";
+var g_keyEmail="email";
+var g_keyPassword="password";
+var g_keyAvatar="avatar";
 
-var g_keyActivityJson="ActivityJson";
-var g_keyActivityId="ActivityId";
-var g_keyActivityTitle="ActivityTitle";
-var g_keyActivityContent="ActivityContent";
-var g_keyActivityStatus="ActivityStatus";
-var g_keyActivityCreatedTime="ActivityCreatedTime";
-var g_keyActivityBeginTime="ActivityBeginTime";
-var g_keyActivityDeadline="ActivityApplicationDeadline";
-var g_keyActivityImages="ActivityImages";
+var g_keyActivity="activity";
+var g_keyActivityId="activity_id";
+var g_keyTitle="title";
+var g_keyContent="content";
+var g_keyStatus="status";
+var g_keyCreatedTime="created_time";
+var g_keyBeginTime="begin_time";
+var g_keyDeadline="application_deadline";
+var g_keyImages="images";
+var g_keyStatus="status";
 	 
-var g_keyActivityAppliedParticipants="ActivityAppliedParticipants";
-var g_keyActivitySelectedParticipants="ActivitySelectedParticipants";
-var g_keyUserActivityRelation="Relation";
+var g_keyAppliedParticipants="applied_participants";
+var g_keySelectedParticipants="selected_participants";
 
-var g_keyImageId="ImageId";
-var g_keyImageURL="ImageURL";
+var g_keyUrl="url";
 
-var g_keyCommentAId="CommentAId";
-var g_keyCommentAContent="CommentAContent";
-var g_keyCommenterId="CommenterId";
-var g_keyCommentAParentId="ParentId";
-var g_keyPredecessorId="PredecessorId";
-var g_keyCommentType="CommentType";
-var g_keyGeneratedTime="GeneratedTime";
-var g_keyCommenterName="CommenterName";
-var g_keyReplyeeName="ReplyeeName";
+var g_keyComment="comment";
+var g_keyCommenterId="commenter_id";
+var g_keyParentId="parent_id";
+var g_keyPredecessorId="predecessor_id";
+var g_keyCommentType="type";
+var g_keyGeneratedTime="generated_time";
+var g_keyCommenterName="commenter_name";
+var g_keyReplyeeName="replyee_name";
+var g_keySubComments="sub_comments";
 
 // callback function pointers
 var g_callbackOnActivityEditorRemoved=null;
 
 // general keys
-var g_keyPageIndex="pageIndex";
-var g_keyStartingIndex="startingIndex";
-var g_keyEndingIndex="endingIndex";
+var g_keyPageIndex="page_index";
+var g_keyStartingIndex="starting_index";
+var g_keyEndingIndex="ending_index";
 
-var g_keyRefIndex="refIndex";
-var g_keyNumItems="numItems";
+var g_keyRefIndex="ref_index";
+var g_keyNumItems="num_items";
 var g_keyDirection="direction";
 
 // constants

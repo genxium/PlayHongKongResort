@@ -13,22 +13,23 @@ import java.util.List;
 
 public class CommentOnActivity {
 
-	public static final Integer MIN_CONTENT_LENGTH=5;
+    public static final Integer MIN_CONTENT_LENGTH=5;
     public static final Integer TYPE_QA=0;
     public static final Integer TYPE_ASSESSMENT=1;
 
-    public static final String ID="CommentAId";
-    public static final String CONTENT="CommentAContent";
-    public static final String COMMENTER_ID="CommenterId";
-    public static final String ACTIVITY_ID="ActivityId";
-    public static final String PARENT_ID="ParentId";
-    public static final String PREDECESSOR_ID="PredecessorId";
-    public static final String COMMENT_TYPE="CommentType";
-    public static final String GENERATED_TIME="GeneratedTime";
+    public static final String TABLE="comment";
+    public static final String ID="id";
+    public static final String CONTENT="content";
+    public static final String COMMENTER_ID="commenter_id";
+    public static final String ACTIVITY_ID="activity_id";
+    public static final String PARENT_ID="parent_id";
+    public static final String PREDECESSOR_ID="predecessor_id";
+    public static final String COMMENT_TYPE="type";
+    public static final String GENERATED_TIME="generated_time";
 
-    public static final String COMMENTER_NAME="CommenterName";
-	public static final String REPLYEE_NAME="ReplyeeName";
-    public static final String SUB_COMMENTS="SubComments";
+    public static final String COMMENTER_NAME="commenter_name";
+	public static final String REPLYEE_NAME="replyee_name";
+    public static final String SUB_COMMENTS="sub_comments";
 
     protected Integer m_id=null;
     protected String m_content=null;

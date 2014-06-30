@@ -1,6 +1,6 @@
 // Assistant Handlers
 function onBtnEditClicked(evt){
-    var activityJson=$(this).data(g_keyActivityJson);
+    var activityJson=$(this).data(g_keyActivity);
 	g_callbackOnEditorCancelled=function(){
 		g_sectionActivityEditor.modal("hide");
 	};
@@ -37,12 +37,12 @@ function onMouseLeaveDefaultActivityCell(evt){
 function onBtnJoinClicked(evt){
 	evt.preventDefault();
 	var btnJoin=this;
-	var token = $.cookie(g_keyToken);
-	var activityId=$(this).data(g_keyActivityId);
+	var token = $.cookie(g_keyToken).toString();
+	var activityId=$(this).data(g_keyId);
 
 	var params={};
-	params[g_keyActivityId]=activityId.toString();
-	params[g_keyUserToken]=token.toString();
+	params[g_keyId]=activityId;
+	params[g_keyToken]=token;
 
 	try{
 		$.ajax({
@@ -56,7 +56,7 @@ function onBtnJoinClicked(evt){
 
 				var appliedIndicator=$('<div>', {
 					class: g_classAppliedIndicator,
-					html: 'Applied'
+					text: 'Applied'
 				});
 				cell.append(appliedIndicator);
 				cell.data(g_indexStatusIndicator, appliedIndicator);
@@ -72,7 +72,7 @@ function onBtnJoinClicked(evt){
 
 function onBtnDetailClicked(evt){
 	evt.preventDefault();
-	var activityId=$(this).data(g_keyActivityId);
+	var activityId=$(this).data(g_keyId);
     
 	try{
 		var detailPagePath="/app/detail?"+g_keyArg+"="+activityId;
@@ -88,22 +88,22 @@ function generateActivityCell(activityJson){
 
 	var arrayStatusName=['created','pending','rejected','accepted','expired'];
 
-	var activityId=activityJson[g_keyActivityId];
-	var activityTitle=activityJson[g_keyActivityTitle];
+	var activityId=activityJson[g_keyId];
+	var activityTitle=activityJson[g_keyTitle];
    	 
 	var coverImageURL=null;
-	var activityImages=activityJson[g_keyActivityImages];
+	var activityImages=activityJson[g_keys];
 	if(activityImages!=null) {
 		for(var key in activityImages){
 		   if(activityImages.hasOwnProperty(key)){
 		       var activityImage=activityImages[key];
-		       coverImageURL=activityImage[g_keyImageURL];
+		       coverImageURL=activityImage[g_keyURL];
 		       break;
 		   }
 		}
 	}
-	var relation=activityJson[g_keyUserActivityRelation];
-	var activityStatus=activityJson[g_keyActivityStatus];
+	var relation=activityJson[g_keyRelation];
+	var activityStatus=activityJson[g_keyStatus];
 	var statusStr=arrayStatusName[parseInt(activityStatus)];
 
 	var ret=$('<div>', {
@@ -127,7 +127,7 @@ function generateActivityCell(activityJson){
 			class: g_classBtnJoin,
 			text: 'Join'
 		}).appendTo(ret);
-		btnJoin.data(g_keyActivityId, activityId);
+		btnJoin.data(g_keyId, activityId);
 		btnJoin.bind("click", onBtnJoinClicked);
 
 		ret.bind("mouseenter", onMouseEnterDefaultActivityCell);
@@ -160,7 +160,7 @@ function generateActivityCell(activityJson){
 			text: 'Edit'
 		    }).appendTo(ret);
 		    btnEdit.bind("click", onBtnEditClicked);
-		    btnEdit.data(g_keyActivityJson, activityJson); 
+		    btnEdit.data(g_keyActivity, activityJson); 
 		    ret.data(g_indexBtnEdit, btnEdit);
 		}
 	}
@@ -169,13 +169,13 @@ function generateActivityCell(activityJson){
 		class: g_classBtnDetail,
 		text: 'Detail'
 	}).appendTo(ret);
-	btnDetail.data(g_keyActivityId, activityId);
+	btnDetail.data(g_keyId, activityId);
 	btnDetail.bind("click", onBtnDetailClicked);
 
 	ret.data(g_indexBtnDetail, btnDetail);
 
-	ret.data(g_keyActivityId, activityId);
-	ret.data(g_keyActivityTitle, activityTitle);
+	ret.data(g_keyId, activityId);
+	ret.data(g_keyTitle, activityTitle);
 	
 	return ret;
 }

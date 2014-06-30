@@ -59,7 +59,7 @@ function onQueryActivitiesSuccess(data, status, xhr){
         // display contents
         for(var key in jsonResponse){
             var activityJson=jsonResponse[key];
-            var activityId=activityJson[g_keyActivityId];
+            var activityId=activityJson[g_keyId];
             if(idx==0){
                 g_sectionDefaultActivities.data(g_keyStartingIndex, activityId);
             }

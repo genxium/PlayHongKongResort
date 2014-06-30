@@ -45,7 +45,7 @@ function queryActivities(refIndex, numItems, direction){
 						// display contents
 						for(var key in jsonResponse){
 							var activityJson=jsonResponse[key];
-							var activityId=activityJson[g_keyActivityId];
+							var activityId=activityJson[g_keyId];
 							if(idx==0){
 								g_sectionActivities.data(g_keyStartingIndex, activityId);
 							}

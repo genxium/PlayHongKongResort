@@ -96,7 +96,7 @@ function onSave(){
                 // Note that checkbox.checked doesn't work here because of jQuery encapsulation!
                 var isChecked=checkbox.is(':checked');
                 if(isChecked==false) break;
-                var imageId=$(field).data(g_keyImageId);
+                var imageId=$(field).data(g_keyId);
                 selectedOldImages.push(imageId);
             }while(false);     
         }
@@ -104,14 +104,14 @@ function onSave(){
 
 		// append user token and activity id for identity
 		var token = $.cookie(g_keyToken.toString());
-		formData.append(g_keyUserToken, token);
+		formData.append(g_keyToken, token);
 		
 		// append activity title and content 
 		var activityTitle=$("."+g_classFieldActivityTitle).val();
-		formData.append(g_keyActivityTitle, activityTitle);
+		formData.append(g_keyTitle, activityTitle);
 		
 		var activityContent=$("."+g_classFieldActivityContent).val();
-		formData.append(g_keyActivityContent, activityContent);
+		formData.append(g_keyContent, activityContent);
 
 		// append activity begin time and deadline
 		var sectionBeginTime=g_activityEditor.data(g_indexSectionBeginTime);
@@ -122,7 +122,7 @@ function onSave(){
 		var beginTimeHour=formatDigits(beginTimeNodes[3].value, 2);
 		var beginTimeMinute=formatDigits(beginTimeNodes[4].value, 2);
 		var beginTime=beginTimeYear+"-"+beginTimeMonth+"-"+beginTimeDay+" "+beginTimeHour+":"+beginTimeMinute+":00";
-		formData.append(g_keyActivityBeginTime, beginTime);
+		formData.append(g_keyBeginTime, beginTime);
 
 		var sectionDeadline=g_activityEditor.data(g_indexSectionDeadline);
 		var deadlineNodes=sectionDeadline.children();
@@ -132,14 +132,14 @@ function onSave(){
 		var deadlineHour=formatDigits(deadlineNodes[3].value, 2);
 		var deadlineMinute=formatDigits(deadlineNodes[4].value, 2);
 		var deadline=deadlineYear+"-"+deadlineMonth+"-"+deadlineDay+" "+deadlineHour+":"+deadlineMinute+":00";
-		formData.append(g_keyActivityDeadline, deadline);
+		formData.append(g_keyDeadline, deadline);
 
         var isNewActivity=false;
-		var activityId = g_activityEditor.data(g_keyActivityId);
+		var activityId = g_activityEditor.data(g_keyId);
 		if(activityId==null) isNewActivity=true;
 
 		if(isNewActivity==false){
-		    formData.append(g_keyActivityId, activityId.toString());
+		    formData.append(g_keyId, activityId.toString());
         }
 		
 		$.ajax({
@@ -152,8 +152,8 @@ function onSave(){
 			success: function(data, status, xhr){
 			    setSubmittable();
 			    var jsonResponse=JSON.parse(data);
-			    if(jsonResponse.hasOwnProperty(g_keyActivityId)){
-			        g_activityEditor.data(g_keyActivityId, jsonResponse[g_keyActivityId]);
+			    if(jsonResponse.hasOwnProperty(g_keyId)){
+			        g_activityEditor.data(g_keyId, jsonResponse[g_keyId]);
 			    }
                 alert("You can submit the application now!");
 			},
@@ -177,10 +177,10 @@ function onSubmit(){
 
 		// append user token and activity id for identity
 		var token = $.cookie(g_keyToken.toString());
-		params[g_keyUserToken]=token;
+		params[g_keyToken]=token;
 
-		var activityId = g_activityEditor.data(g_keyActivityId);
-		params[g_keyActivityId]=activityId.toString();
+		var activityId = g_activityEditor.data(g_keyId);
+		params[g_keyId]=activityId.toString();
 
 		$.ajax({
 			method: "PUT",
@@ -255,12 +255,12 @@ function onBtnDeleteClicked(evt){
 
 	evt.preventDefault();
 	
-	var activityId=$(this).data(g_keyActivityId);
+	var activityId=$(this).data(g_keyId);
 	var token=$.cookie(g_keyToken.toString());
 
-    var params={};
-    params[g_keyActivityId]=activityId.toString();
-    params[g_keyUserToken]=token.toString();
+	var params={};
+	params[g_keyId]=activityId.toString();
+	params[g_keyToken]=token.toString();
 
 	try{
 	    $.ajax({
@@ -304,161 +304,156 @@ function onBtnCancelClicked(evt){
 
 // Generators
 function generateActivityEditorByJson(activityJson){
-	 setNonSavable();
-     setSubmittable();
-     var isNewActivity=false;
-     if(activityJson==null) isNewActivity=true;
+	setNonSavable();
+	setSubmittable();
+	var isNewActivity=false;
+	if(activityJson==null) isNewActivity=true;
 
-	 var activityId=null;
-	 var activityTitle="";
-	 var activityContent="";
-	 var activityImages=null;
+	var activityId=null;
+	var activityTitle="";
+	var activityContent="";
+	var activityImages=null;
 
-     if(isNewActivity==false){
-        activityId=activityJson[g_keyActivityId];
-        activityTitle=activityJson[g_keyActivityTitle];
-        activityContent=activityJson[g_keyActivityContent];
-        activityImages=activityJson[g_keyActivityImages];
-     }
+	if(isNewActivity==false) {
+		activityId=activityJson[g_keyId];
+		activityTitle=activityJson[g_keyTitle];
+		activityContent=activityJson[g_keyContent];
+		activityImages=activityJson[g_keyImages];
+	}
 
-	 var ret=$('<form>',
-	 			{
-	 				class: g_classActivityEditor	
-	 			});
+	var ret=$('<form>', {
+		class: g_classActivityEditor	
+	});
 
-	 var titleText=$('<p>',
-	 			 {
-	 			 	html: 'Title'
-				 }).appendTo(ret);
+	var titleText=$('<p>', {
+		text: 'Title'
+	}).appendTo(ret);
 
-	 var titleInput=$('<input>',
-	 				{
-		 				class: g_classFieldActivityTitle,
-		 				type: 'text',
-		 				value: activityTitle,
-		 			 	name: g_keyActivityTitle
-	 				}).appendTo(ret);
-    titleInput.on("input paste", function(){
+	var titleInput=$('<input>', {
+		class: g_classFieldActivityTitle,
+		type: 'text',
+		value: activityTitle,
+		name: g_keyTitle
+	}).appendTo(ret);
+
+	titleInput.on("input paste", function(){
 		setSavable();
-        setNonSubmittable();
-    });
+		setNonSubmittable();
+	});
 
-	 var contentText=$('<p>',
-	 			   {
-				   		html: 'Content'
- 				   }).appendTo(ret);
+	var contentText=$('<p>', {
+		text: 'Content'
+	}).appendTo(ret);
 
-	 var contentInput=$('<textarea>',
-	 				  {
-	 				  	class: g_classFieldActivityContent, 
-	 				  	name: g_keyActivityContent
-	 				  }).appendTo(ret);
-	 contentInput.val(activityContent);
-     contentInput.on("input paste", function(){
+	var contentInput=$('<textarea>',
+	{
+	class: g_classFieldActivityContent, 
+		name: g_keyContent
+	}).appendTo(ret);
+	contentInput.val(activityContent);
+	contentInput.on("input paste", function(){
 		setSavable();
-        setNonSubmittable();
-     });
+		setNonSubmittable();
+	});
 
-     do{
-        if(activityImages==null) break;
+	do{
+		if(activityImages==null) break;
 
-        for(var key in activityImages){
-           if(activityImages.hasOwnProperty(key)){
-               var node=$('<p>',{
-                    class: g_classOldImage
-               }).appendTo(ret);
-               var activityImage=activityImages[key];
-               var imageUrl=activityImage[g_keyImageURL];
-               var imageNode=$('<img>',{
-                    src: imageUrl.toString()   
-               }).appendTo(node);
-               var checkbox=$('<input>',{
-                   type: "checkbox",
-                   checked: true
-               }).appendTo(node);
-               checkbox.on("change", function(){
-				   setSavable();
-                   setNonSubmittable();
-               });
-               var imageId=activityImage[g_keyImageId];
-               node.data(g_keyImageId, imageId);
-               node.data(g_indexCheckbox, checkbox);
-           }
-        }
-     }while(false);
+		for(var key in activityImages){
+			if(activityImages.hasOwnProperty(key)){
+				var node=$('<p>',{
+					class: g_classOldImage
+				}).appendTo(ret);
+				var activityImage=activityImages[key];
+				var imageUrl=activityImage[g_keyUrl];
+				var imageNode=$('<img>',{
+					src: imageUrl.toString()   
+				}).appendTo(node);
+				var checkbox=$('<input>',{
+					type: "checkbox",
+					checked: true
+				}).appendTo(node);
+				checkbox.on("change", function(){
+					setSavable();
+					setNonSubmittable();
+				});
+				var imageId=activityImage[g_keyId];
+				node.data(g_keyId, imageId);
+				node.data(g_indexCheckbox, checkbox);
+			}
+		}
+	}while(false);
 
-	 for (var i = 0; i < g_maxNumberOfImagesForSingleActivity; i++) {
-	 	var lineBreak=$('<br>').appendTo(ret);
-	 	var imageField=$('<input>',
-				 		{
-				 			class: g_classNewImage,
-							type: 'file'
-				 		}).appendTo(ret);
+	for (var i = 0; i < g_maxNumberOfImagesForSingleActivity; i++) {
+		var lineBreak=$('<br>').appendTo(ret);
+		var imageField=$('<input>', {
+			class: g_classNewImage,
+			type: 'file'
+		}).appendTo(ret);
 		imageField.on("change", function(){
 			setSavable();
-		    setNonSubmittable();
-            previewImage(this);
-        });
-	 }
+			setNonSubmittable();
+			previewImage(this);
+		});
+	}
 
-	 // Schedules
-	 var deadline=null;
-	 if(activityJson!=null && activityJson.hasOwnProperty(g_keyActivityDeadline)) deadline=activityJson[g_keyActivityDeadline];
-     var sectionDeadline=generateDateSelection("Deadline: ", g_classSelectionDeadline, deadline);
-     ret.append(sectionDeadline);
-     ret.data(g_indexSectionDeadline, sectionDeadline);
+	// Schedules
+	var deadline=null;
+	if(activityJson!=null && activityJson.hasOwnProperty(g_keyDeadline)) deadline=activityJson[g_keyDeadline];
+	var sectionDeadline=generateDateSelection("Deadline: ", g_classSelectionDeadline, deadline);
+	ret.append(sectionDeadline);
+	ret.data(g_indexSectionDeadline, sectionDeadline);
 
-	 var beginTime=null;
-	 if(activityJson!=null && activityJson.hasOwnProperty(g_keyActivityBeginTime)) beginTime=activityJson[g_keyActivityBeginTime];
-     var sectionBeginTime=generateDateSelection("Begin Time: ", g_classSelectionBeginTime, beginTime); 
-     ret.append(sectionBeginTime);
-     ret.data(g_indexSectionBeginTime, sectionBeginTime);
+	var beginTime=null;
+	if(activityJson!=null && activityJson.hasOwnProperty(g_keyBeginTime)) beginTime=activityJson[g_keyBeginTime];
+	var sectionBeginTime=generateDateSelection("Begin Time: ", g_classSelectionBeginTime, beginTime); 
+	ret.append(sectionBeginTime);
+	ret.data(g_indexSectionBeginTime, sectionBeginTime);
 
-	 /* Associated Buttons */
-	 var btnSave=$('<button>',{
-	 					class: g_classBtnSave,
-	 					text: 'Save'
-	 				}).appendTo(ret);
-	 btnSave.bind("click", onbtnSaveClicked);
+	/* Associated Buttons */
+	var btnSave=$('<button>',{
+	class: g_classBtnSave,
+	text: 'Save'
+	}).appendTo(ret);
+	btnSave.bind("click", onbtnSaveClicked);
 
-	 var btnSubmit=$('<button>',{
-	 					class: g_classBtnSubmit,
-	 					text: 'Submit'
-	 				}).appendTo(ret);
+	var btnSubmit=$('<button>',{
+	class: g_classBtnSubmit,
+	text: 'Submit'
+	}).appendTo(ret);
 
-	 btnSubmit.bind("click", onBtnSubmitClicked);
+	btnSubmit.bind("click", onBtnSubmitClicked);
 
-	 var btnCancel=$('<button>',{
-	 					class: g_classBtnCancel,
-	 					text: 'Cancel'
-	 				}).appendTo(ret);
-	 btnCancel.bind("click", onBtnCancelClicked);
+	var btnCancel=$('<button>',{
+	class: g_classBtnCancel,
+	text: 'Cancel'
+	}).appendTo(ret);
+	btnCancel.bind("click", onBtnCancelClicked);
 
-     if(isNewActivity==false){
+	if(isNewActivity==false){
+		var btnDelete=$('<button>',{
+			class: g_classBtnDelete,
+			text: 'Delete'
+		}).appendTo(ret);
 
-         var btnDelete=$('<button>',{
-                            class: g_classBtnDelete,
-                            text: 'Delete'
-                         }).appendTo(ret);
+		btnDelete.bind("click", onBtnDeleteClicked);
 
-         btnDelete.bind("click", onBtnDeleteClicked);
-
-         btnSave.data(g_keyActivityId, activityId);
-         btnDelete.data(g_keyActivityId, activityId);
-         btnSubmit.data(g_keyActivityId, activityId);
-         ret.data(g_keyActivityId, activityId);
-	 }
-	 return ret;
+		btnSave.data(g_keyId, activityId);
+		btnDelete.data(g_keyId, activityId);
+		btnSubmit.data(g_keyId, activityId);
+		ret.data(g_keyId, activityId);
+	}
+	return ret;
 }
 
 function generateDateSelection(sectionName, className, time){
 
-	 var currentTime=null;
-	 var currentYear=null;
-     var currentMonth=null;	
-	 var currentDay=null;
-	 var currentHour=null;
-	 var currentMin=null;
+	var currentTime=null;
+	var currentYear=null;
+	var currentMonth=null;	
+	var currentDay=null;
+	var currentHour=null;
+	var currentMin=null;
 
 	 if(time!=null) {
 		 currentTime=new Date(time);

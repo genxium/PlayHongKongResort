@@ -27,8 +27,8 @@ function onBtnLoginClicked(evt){
             || password==null || password.length==0 || validatePassword(password)==false) break;
 
         var params={};
-        params[g_keyUserEmail]=email;
-        params[g_keyUserPassword]=password;
+        params[g_keyEmail]=email;
+        params[g_keyPassword]=password;
         
         $.ajax({
             type: "POST",
@@ -36,11 +36,11 @@ function onBtnLoginClicked(evt){
             data: params,
             success: function(data, status, xhr){
                 var userJson=JSON.parse(data);
-                g_username=userJson[g_keyUsername];
-                g_userAvatarURL=userJson[g_keyImageURL];
+                g_username=userJson[g_keyName];
+                g_userAvatarURL=userJson[g_keyURL];
                 // store token in cookie iff query succeeds
-                $.cookie(g_keyToken, userJson[g_keyUserToken], {path: '/'});
-		$.cookie(g_keyUid, userJson[g_keyUserId], {path: '/'});
+                $.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
+		$.cookie(g_keyUid, userJson[g_keyId], {path: '/'});
 		if(g_sectionLogin!=null){
 			g_sectionLogin.empty();
 			g_sectionLogin.append(generateLoggedInMenu);
@@ -62,7 +62,7 @@ function onBtnLogoutClicked(evt){
 	try{
 		var token = $.cookie(g_keyToken);
 		var params={};
-		params[g_keyUserToken]=token;
+		params[g_keyToken]=token;
 		$.ajax({
 			type: "POST",
 			url: "/user/logout",
@@ -210,10 +210,10 @@ function checkLoginStatus(){
 			data: params,
 			success: function(data, status, xhr){
 				var userJson=JSON.parse(data);
-				g_username=userJson[g_keyUsername];
-				g_userAvatarURL=userJson[g_keyImageURL];
-				$.cookie(g_keyToken, userJson[g_keyUserToken], {path: '/'});
-				$.cookie(g_keyUid, userJson[g_keyUserId], {path: '/'});
+				g_username=userJson[g_keyName];
+				g_userAvatarURL=userJson[g_keyURL];
+				$.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
+				$.cookie(g_keyUid, userJson[g_keyId], {path: '/'});
 				if(g_sectionLogin!=null){
 					g_sectionLogin.empty();
 					g_sectionLogin.append(generateLoggedInMenu);

@@ -13,9 +13,9 @@ public class Image {
 
 	public static String URL_PREFIX="/images/";	
     	public static String FOLDER_PATH="/var/www/html/images/";
-	public static String TABLE="Image";
-	public static String ID="ImageId";
-	public static String URL="ImageURL";
+	public static String TABLE="image";
+	public static String ID="id";
+	public static String URL="url";
 	
 	private int m_imageId=0;
 	public int getImageId() {return m_imageId;}

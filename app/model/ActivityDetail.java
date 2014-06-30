@@ -12,9 +12,9 @@ import java.util.List;
 
 public class ActivityDetail extends Activity {
 
-	public static String IMAGES ="ActivityImages";
-	public static String APPLIED_PARTICIPANTS ="ActivityAppliedParticipants";
-	public static String SELECTED_PARTICIPANTS ="ActivitySelectedParticipants";
+	public static String IMAGES ="images";
+	public static String APPLIED_PARTICIPANTS ="applied_participants";
+	public static String SELECTED_PARTICIPANTS ="selected_participants";
 
 	protected List<Image> m_images=null;
 	public List<Image> getImages() {return m_images;}
