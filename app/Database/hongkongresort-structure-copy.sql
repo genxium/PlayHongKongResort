@@ -16,160 +16,160 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `activity`
+-- Table structure for table `Activity`
 --
 
-DROP TABLE IF EXISTS `activity`;
+DROP TABLE IF EXISTS `Activity`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `activity` (
-  `id` int(32) NOT NULL AUTO_INCREMENT,
-  `title` varchar(32) NOT NULL,
-  `content` mediumtext,
-  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `begin_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `application_deadline` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `capacity` int(32) NOT NULL DEFAULT '0',
-  `status` int(3) NOT NULL DEFAULT '0',
-  `host_id` int(32) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `activity_ibfk_1` (`host_id`),
-  CONSTRAINT `activity_ibfk_1` FOREIGN KEY (`host_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+CREATE TABLE `Activity` (
+  `ActivityId` int(32) NOT NULL AUTO_INCREMENT,
+  `ActivityTitle` varchar(32) NOT NULL,
+  `ActivityContent` mediumtext,
+  `ActivityCreatedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ActivityBeginTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ActivityApplicationDeadline` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ActivityCapacity` int(32) NOT NULL DEFAULT '0',
+  `ActivityStatus` int(3) NOT NULL DEFAULT '0',
+  `HostId` int(32) NOT NULL,
+  PRIMARY KEY (`ActivityId`),
+  KEY `Activity_ibfk_1` (`HostId`),
+  CONSTRAINT `Activity_ibfk_1` FOREIGN KEY (`HostId`) REFERENCES `User` (`UserId`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `activity_image_relation`
+-- Table structure for table `ActivityImageRelationTable`
 --
 
-DROP TABLE IF EXISTS `activity_image_relation`;
+DROP TABLE IF EXISTS `ActivityImageRelationTable`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `activity_image_relation` (
-  `id` int(32) NOT NULL AUTO_INCREMENT,
-  `activity_id` int(32) NOT NULL,
-  `image_id` int(32) NOT NULL,
-  `generated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `activity_image_relation_ibfk_1` (`activity_id`),
-  KEY `activity_image_relation_ibfk_2` (`image_id`),
-  CONSTRAINT `activity_image_relation_ibfk_1` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`),
-  CONSTRAINT `activity_image_relation_ibfk_2` FOREIGN KEY (`image_id`) REFERENCES `image` (`id`)
+CREATE TABLE `ActivityImageRelationTable` (
+  `ActivityImageRelationTableId` int(32) NOT NULL AUTO_INCREMENT,
+  `ActivityId` int(32) NOT NULL,
+  `ImageId` int(32) NOT NULL,
+  `GeneratedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ActivityImageRelationTableId`),
+  KEY `FK_ActivityId` (`ActivityId`),
+  KEY `FK_ImageId` (`ImageId`),
+  CONSTRAINT `ActivityImageRelationTable_ibfk_1` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`),
+  CONSTRAINT `ActivityImageRelationTable_ibfk_2` FOREIGN KEY (`ImageId`) REFERENCES `Image` (`ImageId`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `CommentOnActivity`
+--
+
+DROP TABLE IF EXISTS `CommentOnActivity`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `CommentOnActivity` (
+  `CommentAId` int(32) NOT NULL AUTO_INCREMENT,
+  `CommentAContent` varchar(1024) NOT NULL,
+  `CommenterId` int(32) NOT NULL,
+  `ActivityId` int(32) NOT NULL,
+  `PredecessorId` int(32) NOT NULL DEFAULT '-1',
+  `CommentType` int(3) NOT NULL DEFAULT '0',
+  `GeneratedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ParentID` int(32) NOT NULL DEFAULT '-1',
+  PRIMARY KEY (`CommentAId`),
+  KEY `FK_CommenterId` (`CommenterId`),
+  KEY `FK_ActivityId` (`ActivityId`),
+  CONSTRAINT `CommentOnActivity_ibfk_1` FOREIGN KEY (`CommenterId`) REFERENCES `User` (`UserId`),
+  CONSTRAINT `CommentOnActivity_ibfk_2` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Image`
+--
+
+DROP TABLE IF EXISTS `Image`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Image` (
+  `ImageId` int(32) NOT NULL AUTO_INCREMENT,
+  `ImageURL` varchar(64) NOT NULL,
+  PRIMARY KEY (`ImageId`),
+  UNIQUE KEY `ImageURL` (`ImageURL`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Notification`
+--
+
+DROP TABLE IF EXISTS `Notification`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Notification` (
+  `Id` int(32) NOT NULL AUTO_INCREMENT,
+  `IsRead` int(2) DEFAULT '0',
+  `FromUserId` int(32) NOT NULL,
+  `Content` varchar(128) NOT NULL,
+  `ToUserId` int(32) NOT NULL,
+  `ActivityId` int(32) NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `Notification_ibfk_1` (`FromUserId`),
+  KEY `Notification_ibfk_2` (`ToUserId`),
+  CONSTRAINT `Notification_ibfk_2` FOREIGN KEY (`ToUserId`) REFERENCES `User` (`UserId`),
+  CONSTRAINT `Notification_ibfk_1` FOREIGN KEY (`FromUserId`) REFERENCES `User` (`UserId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `comment`
+-- Table structure for table `User`
 --
 
-DROP TABLE IF EXISTS `comment`;
+DROP TABLE IF EXISTS `User`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `comment` (
-  `id` int(32) NOT NULL AUTO_INCREMENT,
-  `content` varchar(1024) NOT NULL,
-  `commenter_id` int(32) NOT NULL,
-  `activity_id` int(32) NOT NULL,
-  `predecessor_id` int(32) NOT NULL DEFAULT '-1',
-  `type` int(3) NOT NULL DEFAULT '0',
-  `generated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `parent_id` int(32) NOT NULL DEFAULT '-1',
-  PRIMARY KEY (`id`),
-  KEY `comment_ibfk_1` (`commenter_id`),
-  KEY `comment_ibfk_2` (`activity_id`),
-  CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`commenter_id`) REFERENCES `user` (`id`),
-  CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `User` (
+  `UserId` int(32) NOT NULL AUTO_INCREMENT,
+  `DisplayName` varchar(32) DEFAULT NULL,
+  `UserPassword` varchar(32) NOT NULL,
+  `UserEmail` varchar(32) NOT NULL,
+  `UserGroupId` int(2) NOT NULL DEFAULT '0',
+  `UserAuthenticationStatus` int(2) NOT NULL DEFAULT '0',
+  `UserGender` int(1) NOT NULL DEFAULT '0',
+  `UserLastLoggedInTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `UserAvatar` int(32) NOT NULL DEFAULT '0',
+  `UserLastLoggedOutTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `UserLastExitTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `UserCreatedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `Username` varchar(32) DEFAULT NULL,
+  `VerificationCode` varchar(32) DEFAULT NULL,
+  PRIMARY KEY (`UserId`),
+  UNIQUE KEY `UserEmail` (`UserEmail`),
+  UNIQUE KEY `UserName` (`Username`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `image`
+-- Table structure for table `UserActivityRelationTable`
 --
 
-DROP TABLE IF EXISTS `image`;
+DROP TABLE IF EXISTS `UserActivityRelationTable`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `image` (
-  `id` int(32) NOT NULL AUTO_INCREMENT,
-  `url` varchar(64) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `url` (`url`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `notification`
---
-
-DROP TABLE IF EXISTS `notification`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `notification` (
-  `id` int(32) NOT NULL AUTO_INCREMENT,
-  `is_read` int(2) DEFAULT '0',
-  `from` int(32) NOT NULL,
-  `to` int(32) NOT NULL,
-  `content` varchar(128) NOT NULL,
-  `activity_id` int(32) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `notification_ibfk_1` (`from`),
-  KEY `notification_ibfk_2` (`to`),
-  CONSTRAINT `notification_ibfk_1` FOREIGN KEY (`from`) REFERENCES `user` (`id`),
-  CONSTRAINT `notification_ibfk_2` FOREIGN KEY (`to`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `user`
---
-
-DROP TABLE IF EXISTS `user`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user` (
-  `id` int(32) NOT NULL AUTO_INCREMENT,
-  `username` varchar(32) DEFAULT NULL,
-  `display_name` varchar(32) DEFAULT NULL,
-  `password` varchar(32) NOT NULL,
-  `email` varchar(32) NOT NULL,
-  `group_id` int(2) NOT NULL DEFAULT '0',
-  `authentication_status` int(2) NOT NULL DEFAULT '0',
-  `gender` int(1) NOT NULL DEFAULT '0',
-  `avatar` int(32) NOT NULL DEFAULT '0',
-  `last_logged_in_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_logged_out_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_exit_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `verification_code` varchar(32) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`),
-  UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `user_activity_relation`
---
-
-DROP TABLE IF EXISTS `user_activity_relation`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_activity_relation` (
-  `id` int(32) NOT NULL AUTO_INCREMENT,
-  `user_id` int(32) NOT NULL,
-  `activity_id` int(32) NOT NULL,
-  `relation` int(3) NOT NULL,
-  `generated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_applying_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_accepted_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_rejected_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `UA_UNI_ID` (`user_id`,`activity_id`),
-  KEY `user_activity_relation_ibfk_1` (`user_id`),
-  KEY `user_activity_relation_ibfk_2` (`activity_id`),
-  CONSTRAINT `user_activity_relation_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
-  CONSTRAINT `user_activity_relation_ibfk_2` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `UserActivityRelationTable` (
+  `UserActivityRelationTableId` int(32) NOT NULL AUTO_INCREMENT,
+  `UserId` int(32) NOT NULL,
+  `ActivityId` int(32) NOT NULL,
+  `Relation` int(3) NOT NULL,
+  `GeneratedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastApplyingTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastAcceptedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastRejectedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`UserActivityRelationTableId`),
+  UNIQUE KEY `UA_UNI_ID` (`UserId`,`ActivityId`),
+  KEY `UserId` (`UserId`),
+  KEY `ActivityId` (`ActivityId`),
+  CONSTRAINT `UserActivityRelationTable_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `User` (`UserId`),
+  CONSTRAINT `UserActivityRelationTable_ibfk_2` FOREIGN KEY (`ActivityId`) REFERENCES `Activity` (`ActivityId`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -222,8 +222,8 @@ CREATE TABLE `slave_master_info` (
   `Master_log_name` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'The name of the master binary log currently being read from the master.',
   `Master_log_pos` bigint(20) unsigned NOT NULL COMMENT 'The master log position of the last read event.',
   `Host` char(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT 'The host name of the master.',
-  `user_name` text CHARACTER SET utf8 COLLATE utf8_bin COMMENT 'The user name used to connect to the master.',
-  `user_password` text CHARACTER SET utf8 COLLATE utf8_bin COMMENT 'The password used to connect to the master.',
+  `User_name` text CHARACTER SET utf8 COLLATE utf8_bin COMMENT 'The user name used to connect to the master.',
+  `User_password` text CHARACTER SET utf8 COLLATE utf8_bin COMMENT 'The password used to connect to the master.',
   `Port` int(10) unsigned NOT NULL COMMENT 'The network port used to connect to the master.',
   `Connect_retry` int(10) unsigned NOT NULL COMMENT 'The period (in seconds) that the slave will wait before trying to reconnect to the master.',
   `Enabled_ssl` tinyint(1) NOT NULL COMMENT 'Indicates whether the server supports SSL connections.',
