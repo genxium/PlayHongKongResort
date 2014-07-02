@@ -21,7 +21,7 @@ public class SQLCommander {
 	 		List<String> names=new LinkedList<String>();
 	 		List<String> where=new LinkedList<String>();
 
-            names.add(User.ID);
+			names.add(User.ID);
 	 		names.add(User.EMAIL);
 	 		names.add(User.PASSWORD);
 	 		names.add(User.NAME);
@@ -268,7 +268,7 @@ public class SQLCommander {
 		}while(false);
 		return activityDetail;
 	}
-
+	
 	public static List<Activity> queryActivities(Integer userId, int relation){
 		List<Activity> ret=new ArrayList<>();
 		do{
