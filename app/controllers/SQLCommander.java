@@ -1,11 +1,15 @@
 package controllers;
-
-import dao.SQLHelper;
-import model.*;
 import org.json.simple.JSONObject;
-
+import java.sql.Connection;
 import java.sql.Timestamp;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.*;
+
+import dao.PreparedStatementBuilder;
+import dao.SQLHelper;
+import dao.ResultSetUtil;
+import model.*;
 
 public class SQLCommander {
 
@@ -18,26 +22,56 @@ public class SQLCommander {
 
  		User user=null;
  		do{
-	 		List<String> names=new LinkedList<String>();
-	 		List<String> where=new LinkedList<String>();
-
-			names.add(User.ID);
-	 		names.add(User.EMAIL);
-	 		names.add(User.PASSWORD);
-	 		names.add(User.NAME);
-	 		names.add(User.GROUP_ID);
-			names.add(User.AUTHENTICATION_STATUS);
-			names.add(User.GENDER);
-			names.add(User.LAST_LOGGED_IN_TIME);
-			names.add(User.AVATAR);
-
-			where.add(User.ID +"="+SQLHelper.convertToQueryValue(userId));
-			String logicLink=SQLHelper.AND;
-
-			SQLHelper sqlHelper=new SQLHelper();
-	 		List<JSONObject> results=sqlHelper.query(User.TABLE, names, where, logicLink);
-			if(results==null || results.size()<=0) break;
 			try{
+				/*
+				List<String> names=new LinkedList<String>();
+				List<String> where=new LinkedList<String>();
+
+				names.add(User.ID);
+				names.add(User.EMAIL);
+				names.add(User.PASSWORD);
+				names.add(User.NAME);
+				names.add(User.GROUP_ID);
+				names.add(User.AUTHENTICATION_STATUS);
+				names.add(User.GENDER);
+				names.add(User.LAST_LOGGED_IN_TIME);
+				names.add(User.AVATAR);
+
+				where.add(User.ID +"="+SQLHelper.convertToQueryValue(userId));
+				String logicLink=SQLHelper.AND;
+
+				SQLHelper sqlHelper=new SQLHelper();
+				List<JSONObject> results=sqlHelper.query(User.TABLE, names, where, logicLink);
+				if(results==null || results.size()<=0) break;
+				Iterator<JSONObject> it=results.iterator();
+				if(it.hasNext()){
+					JSONObject userJson=(JSONObject)it.next();
+					user=new User(userJson);
+				}
+				*/
+				PreparedStatementBuilder builder=new PreparedStatementBuilder();
+				List<String> names=new LinkedList<String>();
+				names.add(User.ID);
+				names.add(User.EMAIL);
+				names.add(User.PASSWORD);
+				names.add(User.NAME);
+				names.add(User.GROUP_ID);
+				names.add(User.AUTHENTICATION_STATUS);
+				names.add(User.GENDER);
+				names.add(User.LAST_LOGGED_IN_TIME);
+				names.add(User.AVATAR);
+				builder.select(names).from(User.TABLE).where(User.ID, "=", userId);	
+				Connection connection = SQLHelper.getConnection();
+				PreparedStatement statement=builder.toSelect(connection);	  
+				ResultSet rs=statement.executeQuery();
+				List<JSONObject> results=null;
+				if(rs!=null){
+					results=ResultSetUtil.convertToJSON(rs);
+					rs.close();
+				}
+				statement.close();
+				SQLHelper.closeConnection(connection);
+				if(results==null || results.size()<=0) break;
 				Iterator<JSONObject> it=results.iterator();
 				if(it.hasNext()){
 					JSONObject userJson=(JSONObject)it.next();

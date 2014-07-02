@@ -151,7 +151,6 @@ public class SQLHelper {
 			}
 			statement.close();
 			closeConnection(connection);
-			query=null;
 		} catch (Exception e){
 			System.out.println("SQLHelper.executeSelect: "+e.getMessage());
 		}
@@ -172,7 +171,6 @@ public class SQLHelper {
 			}
 			statement.close();
 			closeConnection(connection);
-			query=null;
 		} catch (Exception e){
 			// return the invalid value for exceptions
 			System.out.println("SQLHelper.executeInsert: "+e.getMessage());
@@ -189,7 +187,6 @@ public class SQLHelper {
 			statement.executeUpdate();
 			statement.close();
 			closeConnection(connection);
-			query=null;
 			bRet=true;
 		} catch (Exception e){
 			System.out.println("SQLHelper.executeUpdate: "+e.getMessage()+", while query is "+query);
