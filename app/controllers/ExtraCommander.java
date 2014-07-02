@@ -1,5 +1,6 @@
 package controllers;
 
+import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import model.Activity;
 import model.Image;
@@ -11,7 +12,6 @@ import utilities.DataUtils;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 public class ExtraCommander extends SQLCommander {
@@ -20,27 +20,26 @@ public class ExtraCommander extends SQLCommander {
       boolean ret=false;
       do{
 	        try{
-		          SQLHelper sqlHelper=new SQLHelper();
-		          List<String> relationWhereClauses=new LinkedList<String>();
-		          relationWhereClauses.add(Activity.ID +"="+SQLHelper.convertToQueryValue(activityId));
-		          boolean resultRelationDeletion=sqlHelper.delete(UserActivityRelation.TABLE, relationWhereClauses, SQLHelper.AND);
+                EasyPreparedStatementBuilder builderRelation=new EasyPreparedStatementBuilder();
+                builderRelation.from(UserActivityRelation.TABLE).where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
+		        boolean resultRelationDeletion=SQLHelper.delete(builderRelation);
 		        
-		          if(resultRelationDeletion==false) break;
+                if(resultRelationDeletion==false) break;
 		        
-		          List<Image> previousImages=queryImages(activityId);
-		          if(previousImages!=null && previousImages.size()>0){
-		              // delete previous images
-		              Iterator<Image> itPreviousImage=previousImages.iterator();
-		              while(itPreviousImage.hasNext()){
-		                  Image previousImage=itPreviousImage.next();
-		                  boolean isDeleted=deleteImageRecordAndFileOfActivity(previousImage, activityId);
-		                  if(isDeleted==false) break;
-		              }
-		          }
+                List<Image> previousImages=queryImages(activityId);
+                if(previousImages!=null && previousImages.size()>0){
+                    // delete previous images
+                    Iterator<Image> itPreviousImage=previousImages.iterator();
+                    while(itPreviousImage.hasNext()){
+                      Image previousImage=itPreviousImage.next();
+                      boolean isDeleted= deleteImageRecordAndFile(previousImage, activityId);
+                      if(isDeleted==false) break;
+                    }
+                }
 
-		          List<String> activityWhereClauses=new LinkedList<String>();
-		          activityWhereClauses.add(Activity.ID +"="+SQLHelper.convertToQueryValue(activityId));
-		          ret=sqlHelper.delete(Activity.TABLE, activityWhereClauses, SQLHelper.AND);
+                EasyPreparedStatementBuilder builderActivity=new EasyPreparedStatementBuilder();
+                builderActivity.from(Activity.TABLE).where(Activity.ID, "=", activityId);
+                ret=SQLHelper.delete(builderActivity);
 		        
 	        } catch(Exception e){
 	        		System.out.println("ExtraCommander.deleteActivity:"+e.getMessage());
@@ -59,7 +58,7 @@ public class ExtraCommander extends SQLCommander {
             String imageAbsolutePath=image.getAbsolutePath();
             File imageFile=new File(imageAbsolutePath);
             boolean isFileDeleted=imageFile.delete();
-            boolean isRecordDeleted=deleteImageRecordById(imageId);
+            boolean isRecordDeleted= deleteImageRecord(imageId);
             if(isFileDeleted==false || isRecordDeleted==false) break;
             ret=true;
         } catch (Exception e){
@@ -69,7 +68,7 @@ public class ExtraCommander extends SQLCommander {
       return ret;
   }
 
-  public static boolean deleteImageRecordAndFileOfActivity(Image image, int activityId){
+  public static boolean deleteImageRecordAndFile(Image image, int activityId){
       boolean ret=false;
       do{
         try{
@@ -78,11 +77,11 @@ public class ExtraCommander extends SQLCommander {
             String imageAbsolutePath=image.getAbsolutePath();
             File imageFile=new File(imageAbsolutePath);
             boolean isFileDeleted=imageFile.delete();
-            boolean isRecordDeleted=deleteImageRecordOfActivityById(imageId, activityId);
+            boolean isRecordDeleted= deleteImageRecord(imageId, activityId);
             if(isFileDeleted==false || isRecordDeleted==false) break;
             ret=true;
         } catch (Exception e){
-            System.out.println("ExtraCommander.deleteImageRecordAndFileOfActivity: "+e.getMessage());
+            System.out.println("ExtraCommander.deleteImageRecordAndFile: "+e.getMessage());
         }
       }while(false);
       return ret;
@@ -99,9 +98,9 @@ public class ExtraCommander extends SQLCommander {
 
       	    		Integer userId=user.getId();
       	    		String newImageName=DataUtils.generateUploadedImageName(fileName, userId);
-                    String imageURL=Image.URL_PREFIX+newImageName;
+                    String imageURL=Image.getUrlPrefix() +newImageName;
 
-                    String imageAbsolutePath=Image.FOLDER_PATH+newImageName;
+                    String imageAbsolutePath=Image.getFolderPath() +newImageName;
 
       	    		int imageId=SQLCommander.uploadUserAvatar(user, imageURL);
       	    		if(imageId==SQLCommander.INVALID) break;
@@ -111,7 +110,7 @@ public class ExtraCommander extends SQLCommander {
       	    			FileUtils.moveFile(file, new File(imageAbsolutePath));
       	    		} catch(Exception err){
       	    			System.out.println("ExtraCommander.saveAvatarFile: "+newImageName+" could not be saved.");
-      	    			boolean isRecovered=SQLCommander.deleteImageRecordById(imageId);
+      	    			boolean isRecovered=SQLCommander.deleteImageRecord(imageId);
       	    			if(isRecovered==true){
       	    				System.out.println("ExtraCommander.saveAvatarFile: "+newImageName+" has been reverted");
       	    			}
@@ -139,11 +138,11 @@ public class ExtraCommander extends SQLCommander {
             Integer userId=user.getId();
 
             String newImageName=DataUtils.generateUploadedImageName(fileName, userId);
-            String imageURL=Image.URL_PREFIX+newImageName;
+            String imageURL=Image.getUrlPrefix() +newImageName;
 
-            String imageAbsolutePath=Image.FOLDER_PATH+newImageName;
+            String imageAbsolutePath=Image.getFolderPath() +newImageName;
 
-            int imageId=SQLCommander.uploadImageOfActivity(user, activity, imageURL);
+            int imageId=SQLCommander.uploadImage(user, activity, imageURL);
             if(imageId==SQLCommander.INVALID) break;
                 
             try{
@@ -151,7 +150,7 @@ public class ExtraCommander extends SQLCommander {
                 FileUtils.moveFile(file, new File(imageAbsolutePath));
             } catch(Exception err){
                 System.out.println("ExtraCommander.saveImageOfActivity: "+newImageName+" could not be saved.");
-                boolean isRecovered=SQLCommander.deleteImageRecordById(imageId);
+                boolean isRecovered=SQLCommander.deleteImageRecord(imageId);
                 if(isRecovered==true){
                     System.out.println("ExtraCommander.saveImageOfActivity: "+newImageName+" has been reverted");
                 }

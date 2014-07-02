@@ -12,6 +12,12 @@ import java.util.*;
 
 public class Activity {
 
+    public static int CREATED=0;
+    public static int PENDING=1;
+    public static int REJECTED=2;
+    public static int ACCEPTED=3;
+    public static int EXPIRED=4;
+
 	public static String TABLE ="activity";
 	public static String ID ="id";
 	public static String TITLE="title";
@@ -22,32 +28,6 @@ public class Activity {
 	public static String CAPACITY ="capacity";
 	public static String STATUS ="status";
 	public static String HOST_ID = "host_id";
-
-	public enum StatusType{
-		created(0),
-		pending(1),
-		rejected(2),
-		accepted(3),
-		expired(4);
-
-		private static final Map<Integer, StatusType> statusLookUpMap = new HashMap<Integer, StatusType>();
-
-	    static {
-	        for (StatusType type : StatusType.values()) {
-	            statusLookUpMap.put(type.value, type);
-	        }
-	    }
-
-	    private final int value;
-
-	    private StatusType(int value) {
-	        this.value = value;
-	    }
-
-	    public static StatusType getTypeForValue(int value) {
-	        return statusLookUpMap.get(value);
-	    }
-	};
 
 	protected int m_id=0;
 	public int getId() {return m_id;}
@@ -77,9 +57,9 @@ public class Activity {
 	public int getCapacity() {return m_capacity;}
 	public void setCapacity(int capacity) {m_capacity=capacity;}
 
-	protected StatusType m_status=StatusType.created;
-	public StatusType getStatus() {return m_status;}
-	public void setStatus(StatusType status) {m_status=status;}
+	protected int m_status=CREATED;
+	public int getStatus() {return m_status;}
+	public void setStatus(int status) {m_status=status;}
 
 	protected int m_hostId=0;
 	public int getHostId() {return m_hostId;}
@@ -106,7 +86,7 @@ public class Activity {
 			if(activityJson.containsKey(CAPACITY))
 				m_capacity=(Integer)activityJson.get(CAPACITY);
 			if(activityJson.containsKey(STATUS))
-				m_status=StatusType.getTypeForValue((Integer)activityJson.get(STATUS));
+				m_status=(Integer)activityJson.get(STATUS);
 			if(activityJson.containsKey(HOST_ID))
 				m_hostId=(Integer)activityJson.get(HOST_ID);
 		}catch(Exception e){
@@ -129,8 +109,8 @@ public class Activity {
 				int relation=SQLCommander.queryUserActivityRelation(viewerId, m_id);
 				if(relation!= UserActivityRelation.invalid)	ret.put(UserActivityRelation.RELATION, relation);
 				User user=SQLCommander.queryUser(viewerId);
-				if(viewerId.equals(m_hostId)) ret.put(Activity.STATUS, String.valueOf(m_status.ordinal()));	
-				if(user!=null && user.getGroupId()==User.ADMIN) ret.put(Activity.STATUS, String.valueOf(m_status.ordinal())); // 3 is temporary hard-coded 
+				if(viewerId.equals(m_hostId)) ret.put(Activity.STATUS, String.valueOf(m_status));
+				if(user!=null && user.getGroupId()==User.ADMIN) ret.put(Activity.STATUS, String.valueOf(m_status));
 			}
 		} catch (Exception e){
 			System.out.println("Activity.toObjectNode, "+e.getMessage());

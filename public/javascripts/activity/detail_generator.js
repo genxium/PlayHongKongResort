@@ -78,16 +78,16 @@ function onParticipantsSelectionFormSubmission(formEvt){
 			url: "/activity/participants/update",
 			data: params,
 			success: function(data, status, xhr){
-			inputs.each(function() {
-					var label=$(this).data(g_indexParticipantsSelectionLabel);
-					var value = $(this).val();
-					if(this.checked){
-						label.css("background-color", "aquamarine");
-					} else{
-						label.css("background-color", "pink");
-					}
-				}
-			}
+                    inputs.each(function() {
+                        var label=$(this).data(g_indexParticipantsSelectionLabel);
+                        var value = $(this).val();
+                        if(this.checked){
+                            label.css("background-color", "aquamarine");
+                        } else{
+                            label.css("background-color", "pink");
+                        }
+                    });
+			},
 			error: function(xhr, status, err) {
 
 			}

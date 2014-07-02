@@ -91,7 +91,7 @@ DROP TABLE IF EXISTS `image`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `image` (
   `id` int(32) NOT NULL AUTO_INCREMENT,
-  `url` varchar(64) NOT NULL,
+  `url` varchar(128) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `url` (`url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

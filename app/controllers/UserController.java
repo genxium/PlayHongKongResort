@@ -89,10 +89,10 @@ public class UserController extends Controller {
 				}
 				return ok(result);
 			} catch(Exception e){
-			    
+                System.out.println("UserController, "+e.getMessage());
 			}        
 		}while(false);
-		return badRequest("User does not exist!");
+		return badRequest();
 	}
     
 	public static Result register(){
@@ -115,13 +115,13 @@ public class UserController extends Controller {
 				String code=generateVerificationCode(user);
 				SQLHelper sqlHelper=new SQLHelper();
 
-				List<String> columnNames=new LinkedList<>();
+				List<String> columnNames=new LinkedList<String>();
 				columnNames.add(User.VERIFICATION_CODE);
 
-				List<Object> columnValues=new LinkedList<>();
+				List<Object> columnValues=new LinkedList<Object>();
 				columnValues.add(code);
 
-				List<String> where=new LinkedList<>();
+				List<String> where=new LinkedList<String>();
 				where.add(User.ID +"="+SQLHelper.convertToQueryValue(lastId));
 
 				boolean res=sqlHelper.update(User.TABLE, columnNames, columnValues, where, SQLHelper.AND);

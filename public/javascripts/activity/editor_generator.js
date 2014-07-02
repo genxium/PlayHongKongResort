@@ -265,7 +265,7 @@ function onBtnDeleteClicked(evt){
 	try{
 	    $.ajax({
 	        type: "POST",
-	        url: "activity/delete",
+	        url: "/activity/delete",
 	        data: params,
 	        success: function(data, status, xhr){
                  g_activityEditor.remove();

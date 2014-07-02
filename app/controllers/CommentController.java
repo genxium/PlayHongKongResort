@@ -53,7 +53,7 @@ public class CommentController extends Controller {
                 Integer userId=DataUtils.getUserIdByToken(token);
                 if(userId==null) break;
 
-                int lastCommentId= SQLHelper.INVALID_ID;
+                int lastCommentId= SQLHelper.INVALID;
 
                 SQLHelper sqlHelper=new SQLHelper();
                 List<String> columnNames=new LinkedList<String>();
@@ -82,7 +82,7 @@ public class CommentController extends Controller {
                 }
 
                 lastCommentId=sqlHelper.insert(Comment.TABLE, columnNames, columnValues);
-                if(lastCommentId==SQLHelper.INVALID_ID) break;
+                if(lastCommentId==SQLHelper.INVALID) break;
 
                 return ok();
 

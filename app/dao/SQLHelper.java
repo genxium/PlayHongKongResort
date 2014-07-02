@@ -4,11 +4,9 @@ import play.Play;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
-import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
@@ -36,7 +34,7 @@ public class SQLHelper {
 	public static String CHARSET_ENCODING ="CharsetEncoding";
 	public static String USE_UNICODE ="UseUnicode";
 
-	public static Integer INVALID_ID =(-1);
+	public static Integer INVALID =(-1);
 	public static String AND ="AND";
 	public static String OR ="OR";
 
@@ -102,9 +100,9 @@ public class SQLHelper {
 		try{
 			ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI, s_user, s_password);
 			PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
-			ObjectPool<PoolableConnection> connectionPool = new GenericObjectPool<>(poolableConnectionFactory);
+			ObjectPool<PoolableConnection> connectionPool = new GenericObjectPool<PoolableConnection>(poolableConnectionFactory);
 			poolableConnectionFactory.setPool(connectionPool);
-			ret = new PoolingDataSource<>(connectionPool);
+			ret = new PoolingDataSource<PoolableConnection>(connectionPool);
 		} catch(Exception e){
 			System.out.println("SQLHelper.setupDataSource: "+e.getMessage());
 			ret=null;	
@@ -158,7 +156,7 @@ public class SQLHelper {
 	}
 
 	public Integer executeInsert(String query){
-		Integer lastId= INVALID_ID;
+		Integer lastId= INVALID;
 		try{
 			Connection connection=getConnection();
 			PreparedStatement statement= connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS); 
@@ -193,9 +191,144 @@ public class SQLHelper {
 		}
 		return bRet;
 	}
-	
+
+    public static List<JSONObject> select(EasyPreparedStatementBuilder builder){
+        List<JSONObject> ret=null;
+        try{
+            Connection connection=getConnection();
+            PreparedStatement statement=builder.toSelect(connection);
+            ResultSet rs=statement.executeQuery();
+            if(rs!=null){
+                ret=ResultSetUtil.convertToJSON(rs);
+                rs.close();
+            }
+            statement.close();
+            closeConnection(connection);
+        } catch (Exception e){
+            System.out.println("SQLHelper.select: "+e.getMessage());
+        }
+        return ret;
+    }
+
+    public static Integer insert(EasyPreparedStatementBuilder builder){
+        Integer lastId=INVALID;
+        try{
+            Connection connection=getConnection();
+            PreparedStatement statement= builder.toInsert(connection);
+            // the following command returns the last inserted row id for the auto incremented key
+            statement.executeUpdate();
+            ResultSet rs = statement.getGeneratedKeys();
+            if (rs != null && rs.next()) {
+                lastId = (int) rs.getLong(1);
+                rs.close();
+            }
+            statement.close();
+            closeConnection(connection);
+        } catch (Exception e){
+            // return the invalid value for exceptions
+            System.out.println("SQLHelper.insert: "+e.getMessage());
+        }
+        return lastId;
+    }
+
+    public static boolean update(EasyPreparedStatementBuilder builder){
+        boolean bRet=false;
+        try{
+            Connection connection=getConnection();
+            PreparedStatement statement=builder.toUpdate(connection);
+            // the following command returns the last inserted row id for the auto incremented key
+            statement.executeUpdate();
+            statement.close();
+            closeConnection(connection);
+            bRet=true;
+        } catch (Exception e){
+            System.out.println("SQLHelper.update: "+e.getMessage());
+        }
+        return bRet;
+    }
+
+    public static boolean delete(EasyPreparedStatementBuilder builder){
+        boolean bRet=false;
+        try{
+            Connection connection=getConnection();
+            PreparedStatement statement=builder.toDelete(connection);
+            // the following command returns the last inserted row id for the auto incremented key
+            statement.executeUpdate();
+            statement.close();
+            closeConnection(connection);
+            bRet=true;
+        } catch (Exception e){
+            System.out.println("SQLHelper.update: "+e.getMessage());
+        }
+        return bRet;
+    }
+
+    public static List<JSONObject> select(PreparedStatement statement){
+        List<JSONObject> ret=null;
+        try{
+            ResultSet rs=statement.executeQuery();
+            if(rs!=null){
+                ret=ResultSetUtil.convertToJSON(rs);
+                rs.close();
+            }
+            Connection connection=statement.getConnection();
+            statement.close();
+            closeConnection(connection);
+        } catch (Exception e){
+            System.out.println("SQLHelper.select: "+e.getMessage());
+        }
+        return ret;
+    }
+
+    public static Integer insert(PreparedStatement statement){
+        Integer lastId=INVALID;
+        try{
+            statement.executeUpdate();
+            ResultSet rs = statement.getGeneratedKeys();
+            if (rs != null && rs.next()) {
+                lastId = (int) rs.getLong(1);
+                rs.close();
+            }
+            Connection connection=statement.getConnection();
+            statement.close();
+            closeConnection(connection);
+        } catch (Exception e){
+            // return the invalid value for exceptions
+            System.out.println("SQLHelper.insert: "+e.getMessage());
+        }
+        return lastId;
+    }
+
+    public static boolean update(PreparedStatement statement){
+        boolean bRet=false;
+        try{
+            statement.executeUpdate();
+            Connection connection=statement.getConnection();
+            statement.close();
+            closeConnection(connection);
+            bRet=true;
+        } catch (Exception e){
+            System.out.println("SQLHelper.update: "+e.getMessage());
+        }
+        return bRet;
+    }
+
+    public static boolean delete(PreparedStatement statement){
+        boolean bRet=false;
+        try{
+            statement.executeUpdate();
+            Connection connection=statement.getConnection();
+            statement.close();
+            closeConnection(connection);
+            bRet=true;
+        } catch (Exception e){
+            System.out.println("SQLHelper.update: "+e.getMessage());
+        }
+        return bRet;
+    }
+
 	public Integer insert(String tableName, List<String> columnNames, List<Object> columnValues){
-		Integer lastId= INVALID_ID;
+		Integer lastId= INVALID;
 		do{
 			if(columnNames.size()!=columnValues.size()) break;
 			

@@ -26,8 +26,7 @@ public class ActivityController extends Controller {
                 if(relation!=null && userId!=null){
                     activities=SQLCommander.queryActivities(userId, relation);
                 } else{
-                    Activity.StatusType activityStatus=Activity.StatusType.getTypeForValue(status);
-                    activities=SQLCommander.queryActivities(refIndex, Activity.ID, SQLHelper.DESCEND, numItems, direction, activityStatus);
+                    activities=SQLCommander.queryActivities(refIndex, Activity.ID, SQLHelper.DESCEND, numItems, direction, status);
                 }
                 if(activities==null) break;
                 ObjectNode result = Json.newObject();
@@ -156,7 +155,7 @@ public class ActivityController extends Controller {
                 if(isNewActivity==true){
                     // create activity
                     activityId=SQLCommander.createActivity(activityTitle, activityContent, userId);
-                    if(activityId==null || activityId.equals(SQLHelper.INVALID_ID)) break;
+                    if(activityId==null || activityId.equals(SQLHelper.INVALID)) break;
                 }
 
                 // update activity
@@ -200,7 +199,7 @@ public class ActivityController extends Controller {
                     while(itPreviousImage.hasNext()){
                         Image previousImage=itPreviousImage.next();
                         if(selectedOldImagesSet.contains(previousImage.getImageId())==false){
-                            boolean isDeleted=ExtraCommander.deleteImageRecordAndFileOfActivity(previousImage, activityId);
+                            boolean isDeleted=ExtraCommander.deleteImageRecordAndFile(previousImage, activityId);
                             if(isDeleted==false) break;
                         }
                     }
@@ -244,7 +243,7 @@ public class ActivityController extends Controller {
                 names.add(Activity.STATUS);
 
                 List<Object> values=new LinkedList<Object>();
-                values.add(Activity.StatusType.pending.ordinal());
+                values.add(Activity.PENDING);
 
                 List<String> where=new LinkedList<String>();
                 where.add(Activity.ID +"="+activity.getId());
@@ -267,20 +266,20 @@ public class ActivityController extends Controller {
         // define response attributes
         response().setContentType("text/plain");
         do{
-            Map<String, String[]> formData=request().body().asFormUrlEncoded();
-            String[] ids=formData.get(Activity.ID);
-            String[] tokens=formData.get(User.TOKEN);
-
-            Integer activityId=Integer.parseInt(ids[0]);
-            String token=tokens[0];
-
-            Integer userId=DataUtils.getUserIdByToken(token);
-            if(userId==null) break;
-
-            Activity activity=SQLCommander.queryActivity(activityId);
-            if(SQLCommander.isActivityEditable(userId, activity)==false) break;
-
             try{
+                Map<String, String[]> formData=request().body().asFormUrlEncoded();
+                String[] ids=formData.get(Activity.ID);
+                String[] tokens=formData.get(User.TOKEN);
+
+                Integer activityId=Integer.parseInt(ids[0]);
+                String token=tokens[0];
+
+                Integer userId=DataUtils.getUserIdByToken(token);
+                if(userId==null) break;
+
+                Activity activity=SQLCommander.queryActivity(activityId);
+                if(SQLCommander.isActivityEditable(userId, activity)==false) break;
+
                 boolean res=ExtraCommander.deleteActivity(activityId);
                 if(res==false) break;
             } catch(Exception e){
@@ -325,7 +324,7 @@ public class ActivityController extends Controller {
 			values.add(currentTime.toString());
 
 			int lastRelationTableId=sqlHelper.insert(UserActivityRelation.TABLE, names, values);
-			if(lastRelationTableId==SQLHelper.INVALID_ID) break;
+			if(lastRelationTableId==SQLHelper.INVALID) break;
 
 			return ok();
 		} catch(Exception e){
