@@ -3,6 +3,7 @@
  * */
 
 package model;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.json.simple.JSONObject;
 
@@ -47,5 +48,10 @@ public class User extends BasicUser {
 		super(userJson);
 		if(userJson.containsKey(PASSWORD)) m_password=(String)userJson.get(PASSWORD);
 		if(userJson.containsKey(GROUP_ID)) m_groupId=(Integer)userJson.get(GROUP_ID);
+	}
+
+	public ObjectNode toObjectNode(Integer viewerId){
+		ObjectNode ret = super.toObjectNode(viewerId);
+		return ret;
 	}
 }

@@ -12,11 +12,11 @@ import java.util.*;
 
 public class Activity {
 
-    public static int CREATED=0;
-    public static int PENDING=1;
-    public static int REJECTED=2;
-    public static int ACCEPTED=3;
-    public static int EXPIRED=4;
+	public static int CREATED=0;
+	public static int PENDING=1;
+	public static int REJECTED=2;
+	public static int ACCEPTED=3;
+	public static int EXPIRED=4;
 
 	public static String TABLE ="activity";
 	public static String ID ="id";
