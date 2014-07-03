@@ -75,21 +75,11 @@ public class UserController extends Controller {
 				Integer userId = user.getId();
 
 				session(token, userId.toString());
-
-				int imageId=user.getAvatar();
-				Image image=SQLCommander.queryImage(imageId);
-
-				ObjectNode result = Json.newObject();
-				result.put(User.ID, user.getId());
-				result.put(User.NAME, user.getName());
-				result.put(User.EMAIL, user.getEmail());
+				ObjectNode result=user.toObjectNode(userId);
 				result.put(User.TOKEN, token);
-				if(image!=null){
-					result.put(Image.URL, image.getImageURL());
-				}
 				return ok(result);
 			} catch(Exception e){
-                System.out.println("UserController, "+e.getMessage());
+				System.out.println("UserController, "+e.getMessage());
 			}        
 		}while(false);
 		return badRequest();
@@ -147,17 +137,7 @@ public class UserController extends Controller {
 				if(user==null) break;
 				session(token, userId.toString());
 
-				int imageId=user.getAvatar();
-				Image image=SQLCommander.queryImage(imageId);
-
-				ObjectNode result = Json.newObject();
-				result.put(User.ID, user.getId());
-				result.put(User.NAME, user.getName());
-				result.put(User.EMAIL, user.getEmail());
-				result.put(User.TOKEN, token);
-				if(image!=null){
-				    result.put(Image.URL, image.getImageURL());
-				}
+				ObjectNode result=user.toObjectNode(userId);
 				return ok(result);
 			} catch (Exception e) {
 			}
@@ -191,7 +171,7 @@ public class UserController extends Controller {
 			   Image previousAvatar=SQLCommander.queryImage(previousAvatarId);
 			   boolean isPreviousAvatarDeleted=ExtraCommander.deleteImageRecordAndFile(previousAvatar);
 			   if(isPreviousAvatarDeleted==true){
-				System.out.println("Application.saveAvatarFile: previous avatar file and record deleted.");    
+				System.out.println("UserController.uploadAvatar: previous avatar file and record deleted.");    
 			   }
 		 
 			  return ok("Avatar uploaded");

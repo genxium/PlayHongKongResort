@@ -11,9 +11,9 @@ function refreshOnLoggedIn(){
 
 function queryActivityDetail(activityId){
 
-	    var token=$.cookie(g_keyToken);
+	var token=$.cookie(g_keyToken);
     	var params={};
-    	params[g_keyId]=activityId;
+    	params[g_keyActivityId]=activityId;
         if(token!=null)	params[g_keyToken]=token;
 
         try{
@@ -215,7 +215,7 @@ function generateActivityDetailViewByJson(activityJson){
 
 		var params={};
 		params[g_keyToken]=token;
-		params[g_keyId]=activityId;
+		params[g_keyActivityId]=activityId;
 
 		$.ajax({
 			type: "GET",
