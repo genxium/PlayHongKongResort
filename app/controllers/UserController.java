@@ -76,6 +76,7 @@ public class UserController extends Controller {
 
 				session(token, userId.toString());
 				ObjectNode result=user.toObjectNode(userId);
+				result.put(User.TOKEN, token);
 				return ok(result);
 			} catch(Exception e){
 				System.out.println("UserController, "+e.getMessage());
