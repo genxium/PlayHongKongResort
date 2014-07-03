@@ -192,21 +192,21 @@ public class SQLCommander {
 
 		Activity activity=null;
 		do{
-	 		List<String> names=new LinkedList<String>();
-			names.add(Activity.ID);
-			names.add(Activity.TITLE);
-			names.add(Activity.CONTENT);
-			names.add(Activity.CREATED_TIME);
-			names.add(Activity.BEGIN_TIME);
-			names.add(Activity.DEADLINE);
-			names.add(Activity.CAPACITY);
-			names.add(Activity.STATUS);
-
-            EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
-            builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId);
-			List<JSONObject> results=SQLHelper.select(builder);
-			if(results==null || results.size()<=0) break;
 			try{
+				List<String> names=new LinkedList<String>();
+				names.add(Activity.ID);
+				names.add(Activity.TITLE);
+				names.add(Activity.CONTENT);
+				names.add(Activity.CREATED_TIME);
+				names.add(Activity.BEGIN_TIME);
+				names.add(Activity.DEADLINE);
+				names.add(Activity.CAPACITY);
+				names.add(Activity.STATUS);
+
+				EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
+				builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId);
+				List<JSONObject> results=SQLHelper.select(builder);
+				if(results==null) break;
 				Iterator<JSONObject> it=results.iterator();
 				if(it.hasNext()){
 					JSONObject activityJson=it.next();
@@ -221,15 +221,16 @@ public class SQLCommander {
 
 	public static ActivityDetail queryActivityDetail(int activityId){
 		ActivityDetail activityDetail=null;
-		do{
+		try{
 			Activity activity= queryActivity(activityId);
 			List<Image> images=queryImages(activityId);
 			List<BasicUser> appliedParticipants=SQLCommander.queryUsers(activityId, UserActivityRelation.applied);
 			List<BasicUser> selectedParticipants=SQLCommander.queryUsers(activityId, UserActivityRelation.selected);
 
 			activityDetail=new ActivityDetail(activity, images, appliedParticipants, selectedParticipants);
-
-		}while(false);
+		} catch (Exception e){
+			System.out.println("SQLCommander.queryActivityDetail, "+e.getMessage());
+		}
 		return activityDetail;
 	}
 	
@@ -726,11 +727,11 @@ public class SQLCommander {
 	public static List<Image> queryImages(int activityId){
 		List<Image> images=new LinkedList<Image>();;
 		try{
-            String query="SELECT "+Image.ID+", "+Image.URL+" FROM "+Image.TABLE+" WHERE EXISTS (SELECT NULL FROM "+ActivityImageRelation.TABLE+" WHERE "
-                    +ActivityImageRelation.ACTIVITY_ID+"=? AND "+ActivityImageRelation.TABLE+"."+ ActivityImageRelation.IMAGE_ID+"="+Image.TABLE+"."+Image.ID+
-                    ")";
-            PreparedStatement statement = SQLHelper.getConnection().prepareStatement(query);
-            statement.setInt(1, activityId);
+			String query="SELECT "+Image.ID+", "+Image.URL+" FROM "+Image.TABLE+" WHERE EXISTS (SELECT NULL FROM "+ActivityImageRelation.TABLE+" WHERE "
+			    +ActivityImageRelation.ACTIVITY_ID+"=? AND "+ActivityImageRelation.TABLE+"."+ ActivityImageRelation.IMAGE_ID+"="+Image.TABLE+"."+Image.ID+
+			    ")";
+			PreparedStatement statement = SQLHelper.getConnection().prepareStatement(query);
+			    statement.setInt(1, activityId);
 			List<JSONObject> imageRecords=SQLHelper.select(statement);
 			for(JSONObject imageRecord : imageRecords){
 				Image image=new Image(imageRecord);
@@ -738,8 +739,8 @@ public class SQLCommander {
 			}
 
 		} catch (Exception e){
-
-        }
+			System.out.println("SQLCommander.queryImages, "+e.getMessage());
+		}
 		return images;
 	}
 

@@ -46,26 +46,32 @@ public class ActivityController extends Controller {
         do{
 		ObjectNode result = null;
 		try{
+			if(activityId!=null) System.out.println("ActivityController.detail, activityId="+activityId.toString());
 			ActivityDetail activityDetail=SQLCommander.queryActivityDetail(activityId);
 			if(activityDetail==null) break;
 			Integer userId=null;
 			if(token!=null)	userId=DataUtils.getUserIdByToken(token);
+			if(userId!=null) System.out.println("ActivityController.detail, userId="+userId.toString());
 			result=activityDetail.toObjectNode(userId);
 			return ok(result);
 		} catch(Exception e){
-
+			System.out.println("ActivityController.detail, "+e.getMessage());
 		}
         }while(false);
         return badRequest();
     }
 
     public static Result ownership(String token, Integer activityId){
-        do{
-		Integer ownerId=DataUtils.getUserIdByToken(token);
-		if(ownerId==null) break;
-		if(SQLCommander.validateOwnershipOfActivity(ownerId, activityId)==false) break;
-		return ok();
-        }while(false);
+	do{
+		try{
+			Integer ownerId=DataUtils.getUserIdByToken(token);
+			if(ownerId==null) break;
+			if(SQLCommander.validateOwnershipOfActivity(ownerId, activityId)==false) break;
+			return ok();
+		} catch(Exception e){
+			System.out.println("ActivityController.ownership, "+e.getMessage());
+		}
+	}while(false);
         return badRequest();
     }
 
