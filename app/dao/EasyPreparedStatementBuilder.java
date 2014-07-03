@@ -48,10 +48,17 @@ public class EasyPreparedStatementBuilder {
 
 	public EasyPreparedStatementBuilder select(List<String> cols){
 		for(String col : cols){
-			this.select(col);
+			select(col);
 		}
 		return this;
 	}
+
+    public EasyPreparedStatementBuilder select(String[] cols){
+        for(String col : cols){
+            select(col);
+        }
+        return this;
+    }
 
 	public EasyPreparedStatementBuilder insert(String col, Object val){
 		if(m_insertCols==null) m_insertCols=new LinkedList<String>();
@@ -62,14 +69,26 @@ public class EasyPreparedStatementBuilder {
 	} 
 
 	public EasyPreparedStatementBuilder insert(List<String> cols, List<Object> vals){
+        if(cols==null || vals==null) return this;
+        if(cols.size()!=vals.size()) return this;
 		int n=cols.size();
 		for(int i=0;i<n;i++){
 			String col=cols.get(i);
 			Object val=vals.get(i);
-			this.insert(col, val);
+			insert(col, val);
 		}
 		return this;
 	}
+
+    public EasyPreparedStatementBuilder insert(String[] cols, Object[] vals){
+        if(cols==null || vals==null) return this;
+        if(cols.length!=vals.length) return this;
+        int n=cols.length;
+        for(int i=0;i<n;i++){
+            insert(cols[i], vals[i]);
+        }
+        return this;
+    }
 
 	public EasyPreparedStatementBuilder set(String col, Object val){
 		if(m_updateCols==null) m_updateCols=new LinkedList<String>();
@@ -80,6 +99,8 @@ public class EasyPreparedStatementBuilder {
 	}
 
 	public EasyPreparedStatementBuilder set(List<String> cols, List<Object> vals){
+        if(cols==null || vals==null) return this;
+        if(cols.size()!=vals.size()) return this;
 		int n=cols.size();
 		for(int i=0;i<n;i++){
 			String col=cols.get(i);
@@ -88,6 +109,17 @@ public class EasyPreparedStatementBuilder {
 		}
 		return this;
 	}
+
+    public EasyPreparedStatementBuilder set(String[] cols, Object[] vals){
+        if(cols==null || vals==null) return this;
+        if(cols.length!=vals.length) return this;
+        int n=cols.length;
+        for(int i=0;i<n;i++){
+            set(cols[i], vals[i]);
+        }
+        return this;
+    }
+
 	public EasyPreparedStatementBuilder where(String col, String op, Object val){
 		if(m_whereCols==null) m_whereCols=new LinkedList<String>();
 		if(m_whereOps==null) m_whereOps=new LinkedList<String>();
@@ -106,10 +138,20 @@ public class EasyPreparedStatementBuilder {
 			String col=cols.get(i);
 			String op=ops.get(i);
 			Object val=vals.get(i);
-			this.where(col, op, val);
+			where(col, op, val);
 		}
 		return this;
 	}
+
+    public EasyPreparedStatementBuilder where(String[] cols, String[] ops, Object[] vals){
+        if(cols==null || ops==null || vals==null) return this;
+        if(cols.length!=ops.length || cols.length!=vals.length) return this;
+        int n=cols.length;
+        for(int i=0;i<n;i++){
+            where(cols[i], ops[i], vals[i]);
+        }
+        return this;
+    }
 
 	public EasyPreparedStatementBuilder where(String whereLink){
 		m_whereLink=whereLink;
@@ -127,27 +169,45 @@ public class EasyPreparedStatementBuilder {
 	}
 		
 	public EasyPreparedStatementBuilder order(String col){
-		this.order(col, null);
+		order(col, null);
 		return this;
 	}
 
 	public EasyPreparedStatementBuilder order(List<String> cols, List<String> orientations){
+        if(cols==null) return this;
 		int n=cols.size();
 		for(int i=0;i<n;i++){
 			String col=cols.get(i);
 			String orientation=null;
-			if(orientations!=null){
+			if(orientations!=null && orientations.size()>i){
 				orientation=orientations.get(i);
 			}
-			this.order(col, orientation);
+			order(col, orientation);
 		}
 		return this;
 	}
+
+    public EasyPreparedStatementBuilder order(String[] cols, String[] orientations){
+        if(cols==null) return this;
+        int n=cols.length;
+        for(int i=0;i<n;i++){
+            String col=cols[i];
+            String orientation=null;
+            if(orientations!=null && orientations.length>i){
+                orientation=orientations[i];
+            }
+            order(col, orientation);
+        }
+        return this;
+    }
 	
 	public EasyPreparedStatementBuilder order(List<String> cols){
-		this.order(cols, null);
-		return this;
+		return order(cols, null);
 	}
+
+    public EasyPreparedStatementBuilder order(String[] cols){
+        return order(cols, null);
+    }
 
 	public EasyPreparedStatementBuilder limit(int st, int ed){
 		if(m_limits==null) m_limits=new LinkedList<Integer>();

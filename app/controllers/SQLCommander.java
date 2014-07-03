@@ -14,7 +14,7 @@ import java.util.List;
 
 public class SQLCommander {
 
-	public static Integer INVALID =(-1);
+	public static Integer INVALID = (-1);
 	public static String INITIAL_REF_INDEX = "0";
 	public static Integer DIRECTION_FORWARD = (+1);
 	public static Integer DIRECTION_BACKWARD = (-1);
@@ -24,17 +24,7 @@ public class SQLCommander {
  		User user=null;
  		do{
 			try{
-				List<String> names=new LinkedList<String>(){{
-                    add(User.ID);
-                    add(User.EMAIL);
-                    add(User.PASSWORD);
-                    add(User.NAME);
-                    add(User.GROUP_ID);
-                    add(User.AUTHENTICATION_STATUS);
-                    add(User.GENDER);
-                    add(User.LAST_LOGGED_IN_TIME);
-                    add(User.AVATAR);
-                }};
+				String[] names={User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
                 EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
                 builder.select(names).from(User.TABLE).where(User.ID, "=", userId);
 				List<JSONObject> results=SQLHelper.select(builder);
@@ -52,30 +42,19 @@ public class SQLCommander {
 	}
 
  	public static User queryUserByEmail(String email){
-
  		User user=null;
  		do{
-            List<String> names=new LinkedList<String>(){{
-                add(User.ID);
-                add(User.EMAIL);
-                add(User.PASSWORD);
-                add(User.NAME);
-                add(User.GROUP_ID);
-                add(User.AUTHENTICATION_STATUS);
-                add(User.GENDER);
-                add(User.LAST_LOGGED_IN_TIME);
-                add(User.AVATAR);
-            }};
-            EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
-            builder.select(names).from(User.TABLE).where(User.EMAIL, "=", email);
-			List<JSONObject> results=SQLHelper.select(builder);
-			if(results==null || results.size()<=0) break;
-			try{
+            try{
+                String[] names={User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
+                EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
+                builder.select(names).from(User.TABLE).where(User.EMAIL, "=", email);
+                List<JSONObject> results=SQLHelper.select(builder);
+                if(results==null || results.size()<=0) break;
 				Iterator<JSONObject> it=results.iterator();
 				if(it.hasNext()){
-				JSONObject userJson=it.next();
-				user=new User(userJson);
-			}
+                    JSONObject userJson=it.next();
+                    user=new User(userJson);
+			    }
 			} catch (Exception e) {
 
 			}
@@ -87,23 +66,14 @@ public class SQLCommander {
 		int ret=INVALID;
 
         try{
-            List<String> names=new LinkedList<String>();
-            names.add(User.EMAIL);
-            names.add(User.PASSWORD);
-            names.add(User.NAME);
-            names.add(User.GROUP_ID);
-
-            List<Object> values=new LinkedList<Object>();
-            values.add(user.getEmail());
-            values.add(user.getPassword());
-            values.add(user.getName());
-            values.add(user.getGroupId());
+            String[] cols={User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID};
+            Object[] values={user.getEmail(), user.getPassword(), user.getName(), user.getGroupId()};
 
             EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
-            builder.insert(names, values).into(User.TABLE);
+            builder.insert(cols, values).into(User.TABLE);
 			ret=SQLHelper.insert(builder);
 		} catch (Exception e){
-			System.out.println("SQLCommander.registerUser, "+e.getMessage());
+			System.out.println(SQLCommander.class.getName()+".registerUser, "+e.getMessage());
 		}
 		return ret;
 	}
@@ -145,7 +115,7 @@ public class SQLCommander {
                 builderDelete.from(Activity.TABLE).where(Activity.ID, "=", lastActivityId);
                 boolean isDeleted=SQLHelper.delete(builderDelete);
                 if(isDeleted==true){
-                    System.out.println("SQLCommander.createActivity, successfully reverted");
+                    System.out.println(SQLCommander.class.getName()+".createActivity, successfully reverted");
                 }
                 lastActivityId=SQLHelper.INVALID;
                 break;
@@ -160,28 +130,14 @@ public class SQLCommander {
 			int activityId=activity.getId();
 
 			try{
-				List<String> names=new LinkedList<String>();
-				names.add(Activity.TITLE);
-				names.add(Activity.CONTENT);
-				names.add(Activity.CREATED_TIME);
-				names.add(Activity.BEGIN_TIME);
-				names.add(Activity.DEADLINE);
-				names.add(Activity.CAPACITY);
-
-				List<Object> values=new LinkedList<Object>();
-				values.add(activity.getTitle());
-				values.add(activity.getContent());
-				values.add(activity.getCreatedTime().toString());
-				values.add(activity.getBeginTime().toString());
-				values.add(activity.getDeadline().toString());
-				values.add(activity.getCapacity());
-
+				String[] cols={Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
+				Object[] values={activity.getTitle(), activity.getContent(), activity.getCreatedTime().toString(), activity.getBeginTime().toString(), activity.getDeadline().toString(), activity.getCapacity()};
 				EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
-                builder.update(Activity.TABLE).set(names, values).where(Activity.ID, "=", activityId);
+                builder.update(Activity.TABLE).set(cols, values).where(Activity.ID, "=", activityId);
 			    ret=SQLHelper.update(builder);
 
 			} catch(Exception e){
-				System.out.println("SQLCommander.updateActivity: "+e.getMessage());
+				System.out.println(SQLCommander.class.getName()+".updateActivity: "+e.getMessage());
 			}
 		}while(false);
 		return ret;
@@ -192,16 +148,7 @@ public class SQLCommander {
 
 		Activity activity=null;
 		do{
-	 		List<String> names=new LinkedList<String>();
-			names.add(Activity.ID);
-			names.add(Activity.TITLE);
-			names.add(Activity.CONTENT);
-			names.add(Activity.CREATED_TIME);
-			names.add(Activity.BEGIN_TIME);
-			names.add(Activity.DEADLINE);
-			names.add(Activity.CAPACITY);
-			names.add(Activity.STATUS);
-
+	 		String[] names= {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS};
             EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
             builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId);
 			List<JSONObject> results=SQLHelper.select(builder);
@@ -213,7 +160,7 @@ public class SQLCommander {
 					activity=new Activity(activityJson);
 				}
 			} catch (Exception e) {
-				System.out.println("SQLCommander.queryActivity, "+e.getMessage());
+				System.out.println(SQLCommander.class.getName()+".queryActivity, "+e.getMessage());
 			}
 		} while(false);
 		return activity;
@@ -239,20 +186,10 @@ public class SQLCommander {
 			try{
                 String query="SELECT ";
 
-				List<String> names=new LinkedList<String>();
-				names.add(Activity.ID);
-				names.add(Activity.TITLE);
-				names.add(Activity.CONTENT);
-				names.add(Activity.CREATED_TIME);
-				names.add(Activity.BEGIN_TIME);
-				names.add(Activity.DEADLINE);
-				names.add(Activity.CAPACITY);
-				names.add(Activity.STATUS);
-				names.add(Activity.HOST_ID);
-
-                for(int i=0;i<names.size();i++){
-                    query+=names.get(i);
-                    if(i<names.size()-1) query+=", ";
+                String[] names= {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+                for(int i=0;i<names.length;i++){
+                    query+=names[i];
+                    if(i<names.length-1) query+=", ";
                 }
 
 				query+=" FROM "+Activity.TABLE+" WHERE EXISTS (SELECT NULL FROM "+UserActivityRelation.TABLE+" WHERE "
@@ -269,7 +206,7 @@ public class SQLCommander {
 					ret.add(new Activity(activityJson));
 				}
 			} catch (Exception e){
-				System.out.println("SQLCommander.queryActivities, "+e.getMessage());
+				System.out.println(SQLCommander.class.getName()+".queryActivities, "+e.getMessage());
 			}
 		}while(false);
 		return ret;
@@ -280,18 +217,7 @@ public class SQLCommander {
 		do{
 		    try{
                 EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
-
-                List<String> names=new LinkedList<String>();
-                names.add(Activity.ID);
-                names.add(Activity.TITLE);
-                names.add(Activity.CONTENT);
-                names.add(Activity.CREATED_TIME);
-                names.add(Activity.BEGIN_TIME);
-                names.add(Activity.DEADLINE);
-                names.add(Activity.CAPACITY);
-                names.add(Activity.STATUS);
-                names.add(Activity.HOST_ID);
-
+                String[] names= {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
                 builder.select(names).from(Activity.TABLE).where(Activity.STATUS, "=", status).order(orderKey, orientation);
 
                 if(refIndex.equals(INITIAL_REF_INDEX)){
@@ -313,7 +239,7 @@ public class SQLCommander {
                 }
 
 		    } catch(Exception e){
-			    System.out.println("SQLCommander.queryActivities: "+e.getMessage());
+			    System.out.println(SQLCommander.class.getName()+".queryActivities: "+e.getMessage());
 		    }
 		}while(false);
 		return ret;
@@ -350,23 +276,10 @@ public class SQLCommander {
         Comment ret=null;
         do{
             try{
-                SQLHelper sqlHelper=new SQLHelper();
-                
-                // query table Comment
-                List<String> names=new LinkedList<String>();
-                names.add(Comment.ID);
-                names.add(Comment.CONTENT);
-                names.add(Comment.COMMENTER_ID);
-                names.add(Comment.PARENT_ID);
-                names.add(Comment.PREDECESSOR_ID);
-                names.add(Comment.ACTIVITY_ID);
-                names.add(Comment.TYPE);
-                names.add(Comment.GENERATED_TIME);
-
-                List<String> where=new LinkedList<String>();
-                where.add(Comment.ID+"="+commentId);
-			
-                List<JSONObject> commentsJson=sqlHelper.query(Comment.TABLE, names, where, SQLHelper.AND);
+                EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
+                String[] names={Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.TYPE, Comment.GENERATED_TIME};
+                builder.select(names).from(Comment.TABLE).where(Comment.ID, "=", commentId);
+                List<JSONObject> commentsJson=SQLHelper.select(builder);
                 if(commentsJson==null || commentsJson.size()<=0) break;
 
 				ret=new Comment(commentsJson.get(0));
@@ -382,42 +295,27 @@ public class SQLCommander {
         List<Comment> ret=null;
         do{
             try{
-                SQLHelper sqlHelper=new SQLHelper();
+                EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
 				
                 // query table Comment
-                List<String> names=new LinkedList<String>();
-                names.add(Comment.ID);
-                names.add(Comment.CONTENT);
-                names.add(Comment.COMMENTER_ID);
-                names.add(Comment.PARENT_ID);
-                names.add(Comment.PREDECESSOR_ID);
-                names.add(Comment.ACTIVITY_ID);
-                names.add(Comment.TYPE);
-                names.add(Comment.GENERATED_TIME);
+                String[] names={Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.TYPE, Comment.GENERATED_TIME};
+                String[] whereCols={Comment.ACTIVITY_ID, Comment.TYPE, Comment.PARENT_ID};
+                String[] whereOps={"=", "=", "="};
+                Object[] whereVals={activityId, commentType, INVALID};
 
-                List<String> where=new LinkedList<String>();
-                where.add(Comment.ACTIVITY_ID+"="+activityId);
-                where.add(Comment.TYPE +"="+commentType);
-                where.add(Comment.PARENT_ID+"="+INVALID.toString());
-
-                List<String> orderClauses=new LinkedList<String>();
-                orderClauses.add(orderKey);
-
-                List<String> orderDirections=new LinkedList<String>();
-                orderDirections.add(orderDirection);
+                builder.select(names).where(whereCols, whereOps, whereVals).order(orderKey, orderDirection);
 
                 if(refIndex.equals(INITIAL_REF_INDEX)){
-                    where.add(orderKey+">="+SQLHelper.convertToQueryValue(INITIAL_REF_INDEX));
+                    builder.where(orderKey, ">=", INITIAL_REF_INDEX);
                 } else if(direction== DIRECTION_FORWARD){
-                    where.add(orderKey+">"+SQLHelper.convertToQueryValue(refIndex));
+                    builder.where(orderKey, ">", refIndex);
                 } else{
-                    where.add(orderKey+"<"+SQLHelper.convertToQueryValue(refIndex));
+                    builder.where(orderKey, "<", refIndex);
                 }
 
-                List<Integer> limits=new ArrayList<Integer>();
-                limits.add(numItems);
+                builder.limit(numItems);
 
-                List<JSONObject> commentsJson=sqlHelper.query(Comment.TABLE, names, where, SQLHelper.AND, orderClauses, orderDirections, limits);
+                List<JSONObject> commentsJson=SQLHelper.select(builder);
                 if(commentsJson==null) break;
 
                 ret=new ArrayList<Comment>();
@@ -426,7 +324,7 @@ public class SQLCommander {
                 }
 
             } catch(Exception e){
-
+                System.out.println(SQLCommander.class.getName()+".queryTopLevelComments, "+e.getMessage());
             }
         }while(false);
         return ret;
@@ -436,53 +334,35 @@ public class SQLCommander {
         List<Comment> ret=null;
         do{
             try{
-                SQLHelper sqlHelper=new SQLHelper();
-                //
+                EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
+
                 // query table Comment
-                List<String> names=new LinkedList<String>();
-                names.add(Comment.ID);
-                names.add(Comment.CONTENT);
-                names.add(Comment.COMMENTER_ID);
-                names.add(Comment.PARENT_ID);
-                names.add(Comment.PREDECESSOR_ID);
-                names.add(Comment.ACTIVITY_ID);
-                names.add(Comment.TYPE);
-                names.add(Comment.GENERATED_TIME);
+                String[] names={Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.TYPE, Comment.GENERATED_TIME};
+                String[] whereCols={Comment.TYPE, Comment.PARENT_ID};
+                String[] whereOps={"=", "="};
+                Object[] whereVals={commentType, parentId};
 
-                List<String> where=new LinkedList<String>();
-                where.add(Comment.PARENT_ID+"="+parentId);
-                where.add(Comment.TYPE +"="+commentType);
-
-                List<String> orderClauses=new LinkedList<String>();
-                orderClauses.add(orderKey);
-
-                List<String> orderDirections=new LinkedList<String>();
-                orderDirections.add(orderDirection);
+                builder.select(names).where(whereCols, whereOps, whereVals).order(orderKey, orderDirection);
 
                 if(refIndex.equals(INITIAL_REF_INDEX)){
-                    where.add(orderKey+">="+SQLHelper.convertToQueryValue(INITIAL_REF_INDEX));
-
+                    builder.where(orderKey, ">=", INITIAL_REF_INDEX);
                 } else if(direction== DIRECTION_FORWARD){
-                    where.add(orderKey+">"+SQLHelper.convertToQueryValue(refIndex));
+                    builder.where(orderKey, ">", refIndex);
                 } else{
-                    where.add(orderKey+"<"+SQLHelper.convertToQueryValue(refIndex));
+                    builder.where(orderKey, "<", refIndex);
                 }
 
-                List<Integer> limits=null;
-                if(numItems!=null){
-                    limits=new ArrayList<Integer>();
-                    limits.add(numItems);
-                }
-                List<JSONObject> commentsJson=sqlHelper.query(Comment.TABLE, names, where, SQLHelper.AND, orderClauses, orderDirections, limits);
+                builder.limit(numItems);
+
+                List<JSONObject> commentsJson=SQLHelper.select(builder);
                 if(commentsJson==null) break;
-
                 ret=new ArrayList<Comment>();
                 for(JSONObject commentJson : commentsJson){
                     ret.add(new Comment(commentJson));
                 }
 
             } catch(Exception e){
-
+                System.out.println(SQLCommander.class.getName()+".querySubComments, "+e.getMessage());
             }
         }while(false);
         return ret;
@@ -493,7 +373,7 @@ public class SQLCommander {
 		do{
 			// validate host relation
 			int relation=SQLCommander.queryUserActivityRelation(userId, activityId);
-			if(relation== UserActivityRelation.invalid || relation!= UserActivityRelation.hosted) break;
+			if(relation==UserActivityRelation.invalid || relation!= UserActivityRelation.hosted) break;
 			ret=true;
 		}while(false);
 		return ret;
@@ -572,16 +452,9 @@ public class SQLCommander {
 			if(user==null) break;
 			if(activity==null) break;
 			try{
-				SQLHelper sqlHelper=new SQLHelper();
-
-				List<String> names=new LinkedList<String>();
-				names.add(Activity.STATUS);
-				List<Object> values=new LinkedList<Object>();
-				values.add(Activity.ACCEPTED);
-				List<String> where=new LinkedList<String>();
-				where.add(Activity.ID +"="+SQLHelper.convertToQueryValue(activity.getId()));
-
-				ret=sqlHelper.update(Activity.TABLE, names, values, where, SQLHelper.AND);
+                EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
+                builder.update(Activity.TABLE).set(Activity.STATUS, Activity.ACCEPTED).where(Activity.ID, "=", activity.getId());
+                ret=SQLHelper.update(builder);
 			} catch(Exception e){
 
 			}
@@ -595,16 +468,9 @@ public class SQLCommander {
 			if(user==null) break;
 			if(activity==null) break;
 			try{
-				SQLHelper sqlHelper=new SQLHelper();
-
-				List<String> names=new LinkedList<String>();
-				names.add(Activity.STATUS);
-				List<Object> values=new LinkedList<Object>();
-				values.add(Activity.REJECTED);
-				List<String> where=new LinkedList<String>();
-				where.add(Activity.ID +"="+SQLHelper.convertToQueryValue(activity.getId()));
-
-				ret=sqlHelper.update(Activity.TABLE, names, values, where, SQLHelper.AND);
+				EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
+                builder.update(Activity.TABLE).set(Activity.STATUS, Activity.REJECTED).where(Activity.ID, "=", activity.getId());
+				ret=SQLHelper.update(builder);
 			} catch(Exception e){
 
 			}
@@ -613,29 +479,17 @@ public class SQLCommander {
 	}
 
 	public static int uploadUserAvatar(User user, String imageURL){
-		int lastImageId= INVALID;
+		int lastImageId=INVALID;
 		do{
-			SQLHelper sqlHelper=new SQLHelper();
+            EasyPreparedStatementBuilder builderImage=new EasyPreparedStatementBuilder();
 
-			List<String> names=new LinkedList<String>();
-			names.add(Image.URL);
-
-			List<Object> imageColumnValues=new LinkedList<Object>();
-			imageColumnValues.add(imageURL);
-
-			lastImageId=sqlHelper.insert(Image.TABLE, names, imageColumnValues);
+			builderImage.insert(Image.URL, imageURL).into(Image.TABLE);
+			lastImageId=SQLHelper.insert(builderImage);
 			if(lastImageId==SQLHelper.INVALID) break;
 
-			List<String> userColumnNames=new LinkedList<String>();
-			userColumnNames.add(User.AVATAR);
-
-			List<Object> userColumnValues=new LinkedList<Object>();
-			userColumnValues.add(lastImageId);
-
-			List<String> userWhereClauses=new LinkedList<String>();
-			userWhereClauses.add(User.ID +"="+user.getId());
-
-			boolean updateResult=sqlHelper.update(User.TABLE, userColumnNames, userColumnValues, userWhereClauses, SQLHelper.AND);
+            EasyPreparedStatementBuilder builderUser=new EasyPreparedStatementBuilder();
+            builderUser.update(User.TABLE).set(User.AVATAR, lastImageId).where(User.ID, "=", user.getId());
+			boolean updateResult=SQLHelper.update(builderUser);
 			if(updateResult==false){
 				boolean isRecovered= deleteImageRecord(lastImageId);
 				if(isRecovered==true){
@@ -653,15 +507,8 @@ public class SQLCommander {
 		do{
 			try{
                 EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
-
-                List<String> names=new LinkedList<String>();
-                names.add(Image.ID);
-				names.add(Image.URL);
-
+                String[] names={Image.ID, Image.URL};
                 builder.select(names).from(Image.TABLE).where(Image.ID, "=", imageId);
-				List<String> where=new LinkedList<String>();
-				where.add(Image.ID +"="+SQLHelper.convertToQueryValue(imageId));
-
 				List<JSONObject> images=SQLHelper.select(builder);
 				if(images==null) break;
 				Iterator<JSONObject> itImage=images.iterator();
@@ -694,17 +541,9 @@ public class SQLCommander {
 		boolean ret=false;
 		do{
 			try{
-				List<String> whereCols=new LinkedList<String>();
-				whereCols.add(ActivityImageRelation.ACTIVITY_ID);
-                whereCols.add(ActivityImageRelation.IMAGE_ID);
-
-                List<String> whereOps=new LinkedList<String>();
-                whereOps.add("=");
-                whereOps.add("=");
-
-                List<Object> whereVals=new LinkedList<Object>();
-                whereVals.add(activityId);
-                whereVals.add(imageId);
+				String[] whereCols={ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID};
+                String[] whereOps={"=", "="};
+                Object[] whereVals={activityId, imageId};
 
                 EasyPreparedStatementBuilder builderRelation=new EasyPreparedStatementBuilder();
                 builderRelation.from(ActivityImageRelation.TABLE).where(whereCols, whereOps, whereVals);
@@ -753,22 +592,17 @@ public class SQLCommander {
 			lastImageId=SQLHelper.insert(builderImage);
 			if(lastImageId==INVALID) break;
 
-          	List<String> names=new LinkedList<String>();
-            names.add(ActivityImageRelation.ACTIVITY_ID);
-            names.add(ActivityImageRelation.IMAGE_ID);
-
-			List<Object> vals=new LinkedList<Object>();
-            vals.add(activity.getId());
-            vals.add(lastImageId);
+          	String[] cols={ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID};
+            Object[] vals={activity.getId(), lastImageId};
             EasyPreparedStatementBuilder builderRelation=new EasyPreparedStatementBuilder();
-            builderRelation.insert(names, vals).into(ActivityImageRelation.TABLE);
+            builderRelation.insert(cols, vals).into(ActivityImageRelation.TABLE);
 
             int lastRecordId=SQLHelper.insert(builderRelation);
 			if(lastRecordId==SQLHelper.INVALID){
 				boolean isRecovered= deleteImageRecord(lastImageId);
 				if(isRecovered==true){
                     lastImageId=INVALID;
-					System.out.println("SQLCommander.uploadImage: image "+lastImageId+ " reverted");
+					System.out.println(SQLCommander.class.getName()+".uploadImage: image "+lastImageId+ " reverted");
 				}
 				break;
 			}
@@ -781,21 +615,11 @@ public class SQLCommander {
 		List<BasicUser> users=new ArrayList<BasicUser>();
 		do{
 			try{
-                List<String> names=new LinkedList<String>(){{
-                    add(User.ID);
-                    add(User.EMAIL);
-                    add(User.PASSWORD);
-                    add(User.NAME);
-                    add(User.GROUP_ID);
-                    add(User.AUTHENTICATION_STATUS);
-                    add(User.GENDER);
-                    add(User.LAST_LOGGED_IN_TIME);
-                    add(User.AVATAR);
-                }};
+                String[] names={User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
                 String query="SELECT ";
-                for(int i=0;i<names.size();i++){
-                    query+=names.get(i);
-                    if(i<names.size()-1) query+=", ";
+                for(int i=0;i<names.length;i++){
+                    query+=names[i];
+                    if(i<names.length-1) query+=", ";
                 }
                 query+=" FROM "+User.TABLE+" WHERE EXISTS (SELECT NULL FROM "+UserActivityRelation.TABLE+" WHERE "
                         +UserActivityRelation.ACTIVITY_ID+"=? AND "
@@ -814,7 +638,7 @@ public class SQLCommander {
 				}
 
 			} catch(Exception e){
-				System.out.println("SQLCommander.queryUsers: "+e.getMessage());
+				System.out.println(SQLCommander.class.getName()+".queryUsers: "+e.getMessage());
 			}
 		}while(false);
 		return users;
@@ -828,28 +652,15 @@ public class SQLCommander {
                 Timestamp currentTime=new Timestamp(date.getTime());
                 String timeStr=currentTime.toString();
 
-                List<String> names=new LinkedList<String>();
-                names.add(UserActivityRelation.RELATION);
-                names.add(UserActivityRelation.GENERATED_TIME);
+                String[] cols={UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME};
+                Object[] vals={relation, timeStr};
 
-                List<Object> vals=new LinkedList<Object>();
-                vals.add(relation);
-                vals.add(timeStr);
-
-                List<String> whereCols=new LinkedList<String>();
-                whereCols.add(UserActivityRelation.ACTIVITY_ID);
-                whereCols.add(UserActivityRelation.USER_ID);
-
-                List<String> whereOps=new LinkedList<String>();
-                whereOps.add("=");
-                whereOps.add("=");
-
-                List<Object> whereVals=new LinkedList<Object>();
-                whereVals.add(activityId);
-                whereVals.add(userId);
+                String[] whereCols={UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID};
+                String[] whereOps={"=", "="};
+                Object[] whereVals={activityId, userId};
 
                 EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
-                builder.update(UserActivityRelation.TABLE).set(names, vals).where(whereCols, whereOps, whereVals);
+                builder.update(UserActivityRelation.TABLE).set(cols, vals).where(whereCols, whereOps, whereVals);
                 boolean result=SQLHelper.update(builder);
                 if(result==false) break;
                 ret=true;
