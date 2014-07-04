@@ -1,7 +1,7 @@
 $(document).ready(function(){
 
     	// initialize local DOMs
-        initLoginWidget();
+    	initTopbar();
 	initRegisterWidget();
 
 	g_callbackOnLoginSuccess=function(){

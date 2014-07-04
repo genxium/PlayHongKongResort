@@ -1,7 +1,7 @@
 $(document).ready(function(){
 	g_userId=$('#userId').attr("value");
 
-	initLoginWidget();
+	initTopbar();
 	g_callbackOnLoginSuccess=refreshOnLoggedIn;
 	g_callbackOnLoginError=null;
 	g_callbackOnEnter=refreshOnEnter

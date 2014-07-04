@@ -5,14 +5,14 @@
 	max-width: 98%;
 }
 
-#header
+#topbar
 {
 	position: relative;
 	background: #1d2124;
 	height: 68px;
 }
 
-#idSectionTitle
+#topbar_title
 {
 	display: table-row;
  	position: relative;

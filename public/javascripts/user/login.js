@@ -13,9 +13,10 @@ var g_callbackOnLoginError=null;
 var g_callbackOnEnter=null;
 
 function initLoginWidget(){
-	g_sectionLogin=$("#idSectionLogin");
-	var loginForm=generateLoginForm();
-	g_sectionLogin.append(loginForm);
+	if(g_sectionLogin!=null){
+		var loginForm=generateLoginForm();
+		g_sectionLogin.append(loginForm);
+	}
 }
 
 function onBtnLoginClicked(evt){

@@ -265,8 +265,8 @@ function generateActivityDetailViewByJson(activityJson){
 // execute on start
 $(document).ready(function(){
 	g_activityId=$('#activityId').attr("value");
-	
-	initLoginWidget();
+
+	initTopbar();
 
 	g_callbackOnLoginSuccess=refreshOnLoggedIn;
 	g_callbackOnLoginError=null;

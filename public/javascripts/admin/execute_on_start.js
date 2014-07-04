@@ -1,6 +1,7 @@
 $(document).ready(function(){
     	// initialize local DOMs
-	initLoginWidget();
+	initTopbar();
+
 	g_callbackOnLoginSuccess=null;
 	g_callbackOnLoginError=null;
 	g_callbackOnEnter=null;
@@ -18,7 +19,7 @@ $(document).ready(function(){
 
 	g_btnPreviousPage.on("click", onBtnPreviousPageClicked);
 	g_btnNextPage.on("click", onBtnNextPageClicked);
-    g_selectFilter.on("change", onSelectFilterChanged);
+	g_selectFilter.on("change", onSelectFilterChanged);
 
 	checkLoginStatus();
 });
