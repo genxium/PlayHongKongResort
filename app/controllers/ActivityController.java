@@ -46,12 +46,10 @@ public class ActivityController extends Controller {
         do{
 		ObjectNode result = null;
 		try{
-			if(activityId!=null) System.out.println("ActivityController.detail, activityId="+activityId.toString());
 			ActivityDetail activityDetail=SQLCommander.queryActivityDetail(activityId);
 			if(activityDetail==null) break;
 			Integer userId=null;
 			if(token!=null)	userId=DataUtils.getUserIdByToken(token);
-			if(userId!=null) System.out.println("ActivityController.detail, userId="+userId.toString());
 			result=activityDetail.toObjectNode(userId);
 			return ok(result);
 		} catch(Exception e){
