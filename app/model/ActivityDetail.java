@@ -10,11 +10,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import controllers.SQLCommander;
+
 public class ActivityDetail extends Activity {
 
 	public static String IMAGES ="images";
-	public static String APPLIED_PARTICIPANTS ="applied_participants";
-	public static String SELECTED_PARTICIPANTS ="selected_participants";
+	public static String APPLIED_PARTICIPANTS="applied_participants";
+	public static String SELECTED_PARTICIPANTS="selected_participants";
+	public static String HOST_NAME="host_name";
 
 	protected List<Image> m_images=null;
 	public List<Image> getImages() {return m_images;}
@@ -70,6 +73,7 @@ public class ActivityDetail extends Activity {
 		m_deadline=activity.getDeadline();
 		m_capacity=activity.getCapacity();
 		m_status=activity.getStatus();
+		m_hostId=activity.getHostId();	
 		m_images=images;
 		m_appliedParticipants=appliedParticipants;
 		m_selectedParticipants=selectedParticipants;
@@ -122,6 +126,12 @@ public class ActivityDetail extends Activity {
 					selectedParticipantsNode.add(singleParticipantNode);
 				}
 				ret.put(ActivityDetail.SELECTED_PARTICIPANTS, selectedParticipantsNode);
+			}
+
+			User user=SQLCommander.queryUser(m_hostId);
+			if(user!=null){
+				ret.put(HOST_ID, String.valueOf(m_hostId));
+				ret.put(HOST_NAME, user.getName());
 			}
 		} catch (Exception e) {
 			System.out.println("ActivityDetail.toObjectNode, "+e.getMessage());

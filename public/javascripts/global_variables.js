@@ -40,6 +40,7 @@ var g_keyDeadline="application_deadline";
 var g_keyImages="images";
 var g_keyStatus="status";
 var g_keyHostId="host_id";
+var g_keyHostName="host_name";
 	 
 var g_keyAppliedParticipants="applied_participants";
 var g_keySelectedParticipants="selected_participants";

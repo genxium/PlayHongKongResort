@@ -149,7 +149,7 @@ public class SQLCommander {
 		Activity activity=null;
 		do{
 			try{
-				String[] names= {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS};
+				String[] names= {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
 				EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
 				builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId);
 				List<JSONObject> results=SQLHelper.select(builder);

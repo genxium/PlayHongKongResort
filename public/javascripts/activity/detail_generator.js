@@ -115,6 +115,8 @@ function generateActivityDetailViewByJson(activityJson){
 	var activityImages=activityJson[g_keyImages];
 	var appliedParticipants=activityJson[g_keyAppliedParticipants];
 	var selectedParticipants=activityJson[g_keySelectedParticipants]; 
+	var hostId=activityJson[g_keyHostId];
+	var hostName=activityJson[g_keyHostName];
 
 	var ret=$('<div>');
 
@@ -122,6 +124,23 @@ function generateActivityDetailViewByJson(activityJson){
 		text: activityTitle.toString(),
 		style: "font-size: 18pt; color: blue"
 	}).appendTo(ret);
+
+	if(hostId!=null && hostName!=null){
+		var d=$('<div>', {
+			style: "margin-bottom: 5pt"
+		}).appendTo(ret);
+		var sp1=$('<span>', {
+			text: "--by",
+			style: "margin-left: 20%"
+		}).appendTo(d);
+		var sp2=$('<span>', {
+			style: "margin-left: 5pt"	
+		}).appendTo(d);
+		var host=$('<a>', {
+			href: '/user/profile?'+g_keyUserId+"="+hostId.toString(),
+			text: hostName
+		}).appendTo(sp2);
+	}	
 
 	var content=$('<div>',{
 		text: activityContent.toString(),
