@@ -304,7 +304,7 @@ public class SQLCommander {
                 String[] whereOps={"=", "=", "="};
                 Object[] whereVals={activityId, commentType, INVALID};
 
-                builder.select(names).where(whereCols, whereOps, whereVals).order(orderKey, orderDirection);
+                builder.select(names).from(Comment.TABLE).where(whereCols, whereOps, whereVals).order(orderKey, orderDirection);
 
                 if(refIndex.equals(INITIAL_REF_INDEX)){
                     builder.where(orderKey, ">=", INITIAL_REF_INDEX);
@@ -343,7 +343,7 @@ public class SQLCommander {
                 String[] whereOps={"=", "="};
                 Object[] whereVals={commentType, parentId};
 
-                builder.select(names).where(whereCols, whereOps, whereVals).order(orderKey, orderDirection);
+                builder.select(names).from(Comment.TABLE).where(whereCols, whereOps, whereVals).order(orderKey, orderDirection);
 
                 if(refIndex.equals(INITIAL_REF_INDEX)){
                     builder.where(orderKey, ">=", INITIAL_REF_INDEX);
