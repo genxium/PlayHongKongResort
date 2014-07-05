@@ -1,8 +1,9 @@
 package controllers;
 
+import model.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.SQLHelper;
-import model.*;
+import dao.EasyPreparedStatementBuilder;
 import org.json.simple.JSONObject;
 import play.libs.Json;
 import play.mvc.Content;
@@ -223,14 +224,9 @@ public class UserController extends Controller {
 		do{
 		    try{
 			if(name==null) break;
-			SQLHelper sqlHelper=new SQLHelper();
-			List<String> columnNames=new LinkedList<String>();
-			columnNames.add(User.ID);
-
-			List<String> whereClauses=new LinkedList<String>();
-			whereClauses.add(User.NAME +"="+SQLHelper.convertToQueryValue(name));
-			
-			List<JSONObject> userJsons=sqlHelper.query(User.TABLE, columnNames, whereClauses, SQLHelper.AND);
+			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			builder.select(User.ID).from(User.TABLE).where(User.NAME, "=", name);
+			List<JSONObject> userJsons=SQLHelper.select(builder);
 			if(userJsons!=null && userJsons.size()>0) break;
 			return ok();
 		    } catch(Exception e){
@@ -244,21 +240,16 @@ public class UserController extends Controller {
 		// define response attributes
 		response().setContentType("text/plain");
 		do{
-		    try{
-			if(email==null || General.validateEmail(email)==false) break;
-			SQLHelper sqlHelper=new SQLHelper();
-			List<String> columnNames=new LinkedList<String>();
-			columnNames.add(User.ID);
-
-			List<String> whereClauses=new LinkedList<String>();
-			whereClauses.add(User.EMAIL +"="+SQLHelper.convertToQueryValue(email));
-			
-			List<JSONObject> userJsons=sqlHelper.query(User.TABLE, columnNames, whereClauses, SQLHelper.AND);
-			if(userJsons!=null && userJsons.size()>0) break;
-			return ok();
-		    } catch(Exception e){
-			
-		    }
+			try{
+				if(email==null || General.validateEmail(email)==false) break;
+				EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+				builder.select(User.ID).from(User.TABLE).where(User.EMAIL, "=", email);	
+				List<JSONObject> userJsons=SQLHelper.select(builder);
+				if(userJsons!=null && userJsons.size()>0) break;
+				return ok();
+			} catch(Exception e){
+				System.out.println(UserController.class.getName()+".emailDuplicate, "+e.getMessage());
+			}
 		}while(false);
 		return badRequest();
 	}
@@ -267,31 +258,16 @@ public class UserController extends Controller {
 		response().setContentType("text/html");
 		do{
 			try{
-				SQLHelper sqlHelper=new SQLHelper();
-				List<String> names=new LinkedList<String>();
-				names.add(User.GROUP_ID);
+				EasyPreparedStatementBuilder builderUpdate = new EasyPreparedStatementBuilder();
+				builderUpdate.update(User.TABLE).set(User.GROUP_ID, User.USER).where(User.VERIFICATION_CODE, "=", code);
+				boolean res=SQLHelper.update(builderUpdate);
+				if(res==false) break;
 
-				List<Object> values=new LinkedList<Object>();
-				values.add(User.USER);
-
-				List<String> where=new LinkedList<String>();
-				where.add(User.VERIFICATION_CODE+"="+SQLHelper.convertToQueryValue(code));
-
-				boolean res=sqlHelper.update(User.TABLE, names, values, where, SQLHelper.AND);
-
-				names.clear();
-				values.clear();
-
-				names.add(User.ID);
-				names.add(User.EMAIL);
-				names.add(User.NAME);
-				names.add(User.PASSWORD);
-				names.add(User.GROUP_ID);
-				names.add(User.AVATAR);
-
-				List<JSONObject> userJsons=sqlHelper.query(User.TABLE, names, where, SQLHelper.AND); 
+				String[] names={User.ID, User.EMAIL, User.NAME, User.PASSWORD, User.GROUP_ID, User.AVATAR};
+				EasyPreparedStatementBuilder builderSelect = new EasyPreparedStatementBuilder();
+				builderSelect.select(names).from(User.TABLE).where(User.VERIFICATION_CODE, "=", code);
+				List<JSONObject> userJsons=SQLHelper.select(builderSelect); 
 				User user = new User(userJsons.get(0));
-
 				Content html = email_verification.render(res, user.getName(), user.getEmail());
 				return ok(html);
 			} catch(Exception e) {
