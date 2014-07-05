@@ -12,8 +12,19 @@ function removeActivityEditor(){
 }
 
 function initActivityEditor(){
-	g_sectionActivityEditor=$("#idSectionActivityEditor");
-	g_modalActivityEditor=$("#idModalActivityEditor");
+	var wrap=$("#wrap");
+	/*
+		Note: ALL attributes, especially the `class` attribute MUST be written INSIDE the div tag, bootstrap is NOT totally compatible with jQuery!!!
+	*/
+	g_sectionActivityEditor=$("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='Create an activity!' aria-hidden='true'>", {
+		style: "height: 80%; position: absolute"
+	}).appendTo(wrap);
+	var dialog=$("<div>", {
+		class: "modal-dialog modal-lg"
+	}).appendTo(g_sectionActivityEditor);
+	g_modalActivityEditor=$("<div>", {
+		class: "modal-content"
+	}).appendTo(dialog);
 	removeActivityEditor();
 }
 
@@ -322,7 +333,7 @@ function generateActivityEditorByJson(activityJson){
 	}
 
 	var ret=$('<form>', {
-		class: g_classActivityEditor	
+		style: "display: block; padding: 5pt"
 	});
 
 	var titleText=$('<p>', {

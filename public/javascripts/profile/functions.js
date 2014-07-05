@@ -1,10 +1,100 @@
+// Assistant Callback Functions
+function onUploadAvatarFormSubmission(formEvt){
+
+		formEvt.preventDefault(); // prevent default action.
+
+		var formObj = $(this);
+		var formData = new FormData(this);
+		
+		// append an user token for identity
+		var token = $.cookie(g_keyToken);
+		formData.append(g_keyToken, token);
+		
+		$.ajax({
+			method: "POST",
+			url: "/user/avatar/upload", 
+			data: formData,
+			mimeType: "mutltipart/form-data",
+			contentType: false,
+			processData: false,
+			success: function(data, status, xhr){
+				g_sectionResponse.html("Uploaded");
+			},
+			error: function(xhr, status, err){
+				g_sectionResponse.html("Failed");
+			}
+		});
+
+}
+
+// Event Handlers
+function onBtnUploadAvatarClicked(evt){
+
+	var file = document.getElementById(g_keyAvatar);
+	if(validateImage(file)==false){
+		return;
+	}
+
+	// set callback function of form submission
+	g_formAvatar.submit(onUploadAvatarFormSubmission);
+	// invoke submission
+	g_formAvatar.submit();
+}
+
+function onBtnPreviousPageClicked(evt){
+	
+	var pageIndex=g_sectionActivities.data(g_keyPageIndex);
+    var startingIndex=g_sectionActivities.data(g_keyStartingIndex);
+
+	queryActivities(startingIndex, g_numItemsPerPage, g_directionBackward);
+}
+
+function onBtnNextPageClicked(evt){
+	var pageIndex=g_sectionActivities.data(g_keyPageIndex);
+    var endingIndex=g_sectionActivities.data(g_keyEndingIndex);
+
+	queryActivities(endingIndex, g_numItemsPerPage, g_directionForward);
+}
+
+function onSectionActivitiesScrolled(evt){
+	if( $(this).scrollTop() + $(this).height() >= $(document).height() ){
+		evt.preventDefault();
+	}
+}
+
 function refreshOnEnter(){
-	g_sectionUploadAvatar.hide();
+	g_formAvatar.hide();
+	queryUserDetail();
 }
 
 function refreshOnLoggedIn(){
-	g_sectionUploadAvatar.show();
+	g_formAvatar.show();
+	queryUserDetail();
 }
+
+function queryUserDetail(){
+	var params={};
+	params[g_keyUserId]=g_userId;
+	var token=$.cookie(g_keyToken);
+	if(token!=null) params[g_keyToken]=token;
+	$.ajax({
+		type: "GET",
+		url: "/user/detail",
+		data: params,
+		success: function(data, status, xhr){
+			var userJson=JSON.parse(data);
+			var username=userJson[g_keyName];
+			var prefix=$("<span>", {
+				text: "You are viewing the profile of ",
+				style: "color: black"
+			}).appendTo(g_sectionUser);
+			var sectionUser=$("<span>", {
+				text: username,
+				style: "color: blue"
+			}).appendTo(g_sectionUser);	
+		}
+	});
+} 
 
 function validateImage(file){
 	var fileName = file.value;

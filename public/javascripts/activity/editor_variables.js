@@ -17,7 +17,6 @@ var g_classBtnSave="classBtnSave";
 var g_classBtnCancel="classBtnCancel";
 
 // classes
-var g_classActivityEditor="classActivityEditor";
 var g_classSelectionBeginTime="classSelectionBeginTime";
 var g_classSelectionDeadline="classSelectionDeadline";
 

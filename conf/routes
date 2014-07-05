@@ -25,7 +25,8 @@ GET /activity/detail controllers.ActivityController.detail(activity_id: Integer 
 
 # Profile
 GET /user/profile controllers.Application.profile(user_id: Integer ?=null)
-POST /user/uploadAvatar controllers.UserController.uploadAvatar()
+GET /user/detail controllers.UserController.detail(user_id: Integer ?=null, token : String ?=null)
+POST /user/avatar/upload controllers.UserController.uploadAvatar()
 
 # Admin
 PUT /admin/accept controllers.AdminController.accept()

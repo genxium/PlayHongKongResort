@@ -1,6 +1,14 @@
-#idBtnPreviousPage
+#widget_paging
 {
-	display: table-column;
+	display: block;
+	width: 100%;
+	height: 70pt;
+	clear: both;
+}
+
+#btn_previous_page
+{
+	display: inline;
 	position: relative;
 	width: 100pt;
 	height: 70pt;
@@ -8,9 +16,9 @@
 	font-size: 12pt;
 }
 
-#idBtnNextPage
+#btn_next_page
 {
-	display: table-column;
+	display: inline;
 	position: relative;
 	width: 100pt;
 	height: 70pt;

@@ -154,7 +154,7 @@ public class UserController extends Controller {
 		  
 			  // get file data from request body stream
 			  Http.MultipartFormData data = body.asMultipartFormData();
-			  Http.MultipartFormData.FilePart avatarFile = data.getFile("Avatar");
+			  Http.MultipartFormData.FilePart avatarFile = data.getFile(User.AVATAR);
 
 			  // get user token from request body stream
 			  String token=DataUtils.getUserToken(data);
@@ -271,9 +271,24 @@ public class UserController extends Controller {
 				Content html = email_verification.render(res, user.getName(), user.getEmail());
 				return ok(html);
 			} catch(Exception e) {
-				System.out.println("UserController.emailVerification, "+e.getMessage());
+				System.out.println(UserController.class.getName()+".emailVerification, "+e.getMessage());
 			}
 		}while(false);
+		return badRequest();
+	}
+
+	public static Result detail(Integer userId, String token){
+		try{
+			response().setContentType("text/plain");
+			Integer viewerId=null;
+			if(token!=null){
+				viewerId=DataUtils.getUserIdByToken(token);
+			}
+			User user = SQLCommander.queryUser(userId);
+			return ok(user.toObjectNode(viewerId));
+		} catch(Exception e){
+			System.out.println(UserController.class.getName()+".detail, "+e.getMessage());
+		}
 		return badRequest();
 	}
 
@@ -292,4 +307,5 @@ public class UserController extends Controller {
 		}
 		return ret;
 	}
+
 }

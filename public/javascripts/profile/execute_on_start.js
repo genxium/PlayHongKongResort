@@ -1,13 +1,14 @@
 $(document).ready(function(){
-	g_userId=$('#userId').attr("value");
-
+	g_userId=$('#'+g_keyUserId).attr("value");
+	
 	initTopbar();
 	g_callbackOnLoginSuccess=refreshOnLoggedIn;
 	g_callbackOnLoginError=null;
 	g_callbackOnEnter=refreshOnEnter
 	initActivityEditor();
 
-	g_sectionUploadAvatar=$("#idSectionUploadAvatar");
+	g_formAvatar=$("#form_avatar");
+	g_sectionResponse=$("#section_response");
 
 	g_activitiesFilter=$("#activitiesFilter");
 	g_activitiesFilter.on("change", function(){
@@ -22,16 +23,11 @@ $(document).ready(function(){
 
 	g_sectionUser=$("#section_user");
 
-	g_btnUploadAvatar=$("#idBtnUploadAvatar");
+	g_btnUploadAvatar=$("#btn_upload_avatar");
 	g_btnUploadAvatar.on("click", onBtnUploadAvatarClicked);
  	g_callbackOnActivityEditorRemoved=queryActivities;
  	queryActivities(0, g_numItemsPerPage, g_directionForward);
 
-	g_btnPreviousPage=$("#idBtnPreviousPage");
- 	g_btnPreviousPage.on("click", onBtnPreviousPageClicked);
-
-	g_btnNextPage=$("idBtnNextPage");
-	g_btnNextPage.on("click", onBtnNextPageClicked);
-
+	initWidgets(onBtnPreviousPageClicked, onBtnNextPageClicked);
 	checkLoginStatus();
 });

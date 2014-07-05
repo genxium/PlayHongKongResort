@@ -32,10 +32,8 @@ $(document).ready(function(){
 	// execute on page loaded
 	g_sectionDefaultActivities=$("#idSectionDefaultActivities"); 
 	g_sectionDefaultActivities.on("scroll", onSectionDefaultActivitiesScrolled);
-	checkLoginStatus();
 
-    g_btnPreviousPage=$("#idBtnPreviousPage");
-    g_btnNextPage=$("#idBtnNextPage");
-	g_btnPreviousPage.on("click", onBtnPreviousPageClicked);
-	g_btnNextPage.on("click", onBtnNextPageClicked);
+	initWidgets(onBtnPreviousPageClicked, onBtnNextPageClicked);
+	checkLoginStatus();
+	
 });

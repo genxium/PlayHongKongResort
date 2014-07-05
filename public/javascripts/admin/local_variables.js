@@ -15,8 +15,6 @@ var g_callbackOnActivityDeleted=null;
 
 // buttons
 var g_selectFilter=null;
-var g_btnPreviousPage=null;
-var g_btnNextPage=null;
 var g_classFilterOption="classFilterOption";
 
 var g_statusToQuery=g_statusPending;
