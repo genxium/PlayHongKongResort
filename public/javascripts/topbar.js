@@ -7,6 +7,10 @@ function initTopbar(){
 		style: "float: left",
 		text: "Hong Kong Resort"
 	}).appendTo(g_topbar);
+	topbarTitle.on("click", function(){
+		var homepagePath="/";
+		window.open(homepagePath);
+	});	
 	g_sectionLogin=$("<span>", {
 		style: "float: right; margin-right: 10pt"
 	}).appendTo(g_topbar);

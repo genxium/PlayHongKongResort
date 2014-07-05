@@ -1,6 +1,7 @@
 // general DOM elements
 var g_sectionUploadAvatar=null;
 var g_sectionActivities=null;
+var g_sectionUser=null;
 var g_activitiesFilter=null;
 var g_activitiesSorter=null;
 

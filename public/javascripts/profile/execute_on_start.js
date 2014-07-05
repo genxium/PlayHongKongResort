@@ -16,9 +16,11 @@ $(document).ready(function(){
 
 	g_activitiesSorter=$("#activitiesSorter");
 
-	g_sectionActivities=$("#idSectionActivities"); 
+	g_sectionActivities=$("#section_activities"); 
 	g_sectionActivities.bind("scroll", onSectionActivitiesScrolled);
 	g_sectionActivities.data(g_keyPageIndex, 0);
+
+	g_sectionUser=$("#section_user");
 
 	g_btnUploadAvatar=$("#idBtnUploadAvatar");
 	g_btnUploadAvatar.on("click", onBtnUploadAvatarClicked);
