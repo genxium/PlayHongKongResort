@@ -139,7 +139,7 @@ function onSave(){
 		if(activityId==null) isNewActivity=true;
 
 		if(isNewActivity==false){
-		    formData.append(g_keyId, activityId.toString());
+		    formData.append(g_keyActivityId, activityId.toString());
         }
 		
 		$.ajax({

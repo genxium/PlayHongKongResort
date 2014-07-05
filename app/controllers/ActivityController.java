@@ -81,7 +81,7 @@ public class ActivityController extends Controller {
             try{
                 Map<String, String[]> formData=request().body().asFormUrlEncoded();
                 String token=formData.get(User.TOKEN)[0];
-                Integer activityId=Integer.valueOf(formData.get(Activity.ID)[0]);
+                Integer activityId=Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
                 String[] appliedParticipantsJsonStrs= formData.get(ActivityDetail.APPLIED_PARTICIPANTS);
                 String[] selectedParticipantsJsonStrs= formData.get(ActivityDetail.SELECTED_PARTICIPANTS);
 
@@ -150,8 +150,8 @@ public class ActivityController extends Controller {
 
                 boolean isNewActivity=true;
                 Integer activityId=null;
-                if(formData.containsKey(Activity.ID)==true){
-                    activityId=Integer.valueOf(formData.get(Activity.ID)[0]);
+                if(formData.containsKey(UserActivityRelation.ACTIVITY_ID)==true){
+                    activityId=Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
                     isNewActivity=false;
                 }
                 Activity activity=null;

@@ -25,7 +25,7 @@ function queryActivityDetail(activityId){
                     var activityDetailJson=JSON.parse(data);
                     displayActivityDetail(activityDetailJson);
                 },
-                error: function(xhr, status, errThrown){
+                error: function(xhr, status, err){
 
                 }
             });
@@ -64,12 +64,12 @@ function onParticipantsSelectionFormSubmission(formEvt){
 		// append user token and activity id for identity
 		var token = $.cookie(g_keyToken).toString();
 		if(token==null) break;
-		var activityId = $(this).data(g_keyId);
+		var activityId = $(this).data(g_keyActivityId);
 		if(activityId==null) break;
 
 		var params={};
 		params[g_keyToken]=token;
-		params[g_keyId]=activityId;
+		params[g_keyActivityId]=activityId;
 		params[g_keyAppliedParticipants]=JSON.stringify(appliedParticipants);
 		params[g_keySelectedParticipants]=JSON.stringify(selectedParticipants);
 
@@ -204,7 +204,7 @@ function generateActivityDetailViewByJson(activityJson){
 		}
 	
 		var params={};
-		params[g_keyId]=activityId;
+		params[g_keyActivityId]=activityId;
 		params[g_keyRefIndex]=0;
 		params[g_keyNumItems]=20;
 		params[g_keyDirection]=1;		
@@ -215,14 +215,14 @@ function generateActivityDetailViewByJson(activityJson){
 		    url: "/comment/query",
 		    data: params,
 		    success: function(data, status, xhr){
-			var jsonResponse=JSON.parse(data);
-			if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
-			    for(var key in jsonResponse){
-				var commentJson=jsonResponse[key];
-				var row=generateCommentCell(commentJson, activityId).appendTo(ret);
-				$('<br>').appendTo(ret);
-			    }
-			}
+				var jsonResponse=JSON.parse(data);
+				if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
+				    for(var key in jsonResponse){
+						var commentJson=jsonResponse[key];
+						var row=generateCommentCell(commentJson, activityId).appendTo(ret);
+						$('<br>').appendTo(ret);
+				    }
+				}
 		    },
 		    error: function(xhr, status, err){
 
@@ -265,7 +265,7 @@ function generateActivityDetailViewByJson(activityJson){
 						style: 'color: white; background-color:black; font-size: 13pt'
 					}).appendTo(selectionForm);
 					btnSubmit.on("click", onBtnSubmitClicked);
-					selectionForm.data(g_keyId, activityId);
+					selectionForm.data(g_keyActivityId, activityId);
 				}
 				$('<hr>').appendTo(selectionForm);
 			},
@@ -283,7 +283,7 @@ function generateActivityDetailViewByJson(activityJson){
 
 // execute on start
 $(document).ready(function(){
-	g_activityId=$('#activityId').attr("value");
+	g_activityId=$('#'+g_keyActivityId).attr("value");
 
 	initTopbar();
 

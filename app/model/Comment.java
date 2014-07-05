@@ -19,6 +19,7 @@ public class Comment {
 
     public static final String TABLE="comment";
     public static final String ID="id";
+    public static final String COMMENT_ID="comment_id";
     public static final String CONTENT="content";
     public static final String COMMENTER_ID="commenter_id";
     public static final String ACTIVITY_ID="activity_id";
@@ -48,7 +49,6 @@ public class Comment {
     public Integer getPredecessorId() {return m_predecessorId;}
     public Integer getCommentType() {return m_commentType;}
     public Timestamp getGeneratedTime() {return m_generatedTime;}
-
 
     public Comment(JSONObject commentJson){
         do{

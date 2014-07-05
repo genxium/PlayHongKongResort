@@ -2,9 +2,13 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+
+import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
+
 import model.Comment;
 import model.User;
+
 import play.mvc.Controller;
 import play.mvc.Result;
 import utilities.DataUtils;
@@ -12,26 +16,27 @@ import utilities.DataUtils;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
 
 public class CommentController extends Controller {
 
     public static Result query(Integer activityId, String refIndex, Integer numItems, Integer direction, String token){
         response().setContentType("text/plain");
         do{
-            try{
-                Integer userId=null;
-                if(token!=null)	userId= DataUtils.getUserIdByToken(token);
+    		try{
+    			Integer userId=null;
+    			if(token!=null)	userId= DataUtils.getUserIdByToken(token);
 
-                List<Comment> comments=SQLCommander.queryTopLevelComments(activityId, refIndex, Comment.ID, SQLHelper.DESCEND, numItems, direction, Comment.TYPE_QA);
+    			List<Comment> comments=SQLCommander.queryTopLevelComments(activityId, refIndex, Comment.ID, SQLHelper.DESCEND, numItems, direction, Comment.TYPE_QA);
 
-		        ArrayNode result=new ArrayNode(JsonNodeFactory.instance);
-                for(Comment comment : comments){
-                    result.add(comment.toObjectNodeWithSubComments());
-                }
-                return ok(result);
-            } catch(Exception e){
-
-            }
+    			ArrayNode result=new ArrayNode(JsonNodeFactory.instance);
+    			for(Comment comment : comments){
+    			    result.add(comment.toObjectNodeWithSubComments());
+    			}
+    			return ok(result);
+    		} catch(Exception e){
+    			System.out.println(CommentController.class.getName()+".query, "+e.getMessage());
+    		}
         }while(false);
         return badRequest();
     }
@@ -39,7 +44,6 @@ public class CommentController extends Controller {
     public static Result submit(){
         // define response attributes
         response().setContentType("text/plain");
-
         do{
             try{
                 Map<String, String[]> formData=request().body().asFormUrlEncoded();
@@ -53,41 +57,34 @@ public class CommentController extends Controller {
                 Integer userId=DataUtils.getUserIdByToken(token);
                 if(userId==null) break;
 
-                int lastCommentId= SQLHelper.INVALID;
+                int lastCommentId=SQLHelper.INVALID;
 
-                SQLHelper sqlHelper=new SQLHelper();
-                List<String> columnNames=new LinkedList<String>();
+                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-                columnNames.add(Comment.CONTENT);
-                columnNames.add(Comment.ACTIVITY_ID);
-                columnNames.add(Comment.TYPE);
-                columnNames.add(Comment.COMMENTER_ID);
+                String[] columnNames={Comment.CONTENT, Comment.ACTIVITY_ID, Comment.TYPE, Comment.COMMENTER_ID};
+                List<String> cols=new LinkedList<String>(Arrays.asList(columnNames));
 
-                List<Object> columnValues=new LinkedList<Object>();
-
-                columnValues.add(content);
-                columnValues.add(SQLHelper.convertToQueryValue(activityId));
-                columnValues.add(SQLHelper.convertToQueryValue(Comment.TYPE_QA));
-                columnValues.add(SQLHelper.convertToQueryValue(userId));
+                Object[] columnValues={content, activityId, Comment.TYPE_QA, userId};
+                List<Object> vals=new LinkedList<Object>(Arrays.asList(columnValues));
 
                 if(formData.containsKey(Comment.PREDECESSOR_ID)){
                     Integer predecessorId=Integer.valueOf(formData.get(Comment.PREDECESSOR_ID)[0]);
-                    columnNames.add(Comment.PREDECESSOR_ID);
-                    columnValues.add(SQLHelper.convertToQueryValue(predecessorId));
+                    cols.add(Comment.PREDECESSOR_ID);
+                    vals.add(predecessorId);
                 }
                 if(formData.containsKey(Comment.PARENT_ID)){
                     Integer parentId=Integer.valueOf(formData.get(Comment.PARENT_ID)[0]);
-                    columnNames.add(Comment.PARENT_ID);
-                    columnValues.add(SQLHelper.convertToQueryValue(parentId));
+                    cols.add(Comment.PARENT_ID);
+                    vals.add(parentId);
                 }
-
-                lastCommentId=sqlHelper.insert(Comment.TABLE, columnNames, columnValues);
+                builder.insert(cols, vals).into(Comment.TABLE);
+                lastCommentId=SQLHelper.insert(builder);
                 if(lastCommentId==SQLHelper.INVALID) break;
 
                 return ok();
 
             } catch(Exception e){
-
+                System.out.println(CommentController.class.getName()+".submit, "+e.getMessage());
             }
 
         }while(false);
