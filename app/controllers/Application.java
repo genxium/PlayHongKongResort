@@ -11,22 +11,23 @@ import java.util.Scanner;
 
 public class Application extends Controller {
 
-    public static String HOMEPAGE ="homepage.html";
-
     public static Result index() {
-        return show(HOMEPAGE);
+        try{
+        	Content html = views.html.homepage.render();
+        	return ok(html);
+        } catch (Exception e){
+
+        }
+        return badRequest();
     }
     
-    public static Result show(String page){
-        response().setContentType("text/html");
-	try{
-		String fullPath=Play.application().path()+"/app/views/"+page;
-		File file=new File(fullPath);
-		String content = new Scanner(file).useDelimiter("\\A").next();
-		return ok(content);
-	} catch(IOException e){
+    public static Result admin(){
+        try{
+        	Content html = views.html.admin.render();
+        	return ok(html);
+        } catch (Exception e){
 
-	}
+        }
         return badRequest();
     }
 

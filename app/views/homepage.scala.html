@@ -1,15 +1,12 @@
-@(userId: Integer)
-
 <html>
 	<head>
-		<p id="user_id" style="visibility:hidden" value=@userId></p>
-		<title>Profile</title>
+		<title>Hong Kong Resort</title>
 
 		<!-- style sheets -->
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/topbar.css")" type="text/css">
 		<link rel-"stylesheet" media="screen" href="@routes.Assets.at("stylesheets/widgets.css")" type="text/css">
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/activity.css")" type="text/css">
-		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/profile.css")" type="text/css">
+		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/homepage.css")" type="text/css">
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")" type="text/css">
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap-datetimepicker.min.css")" type="text/css">"
 
@@ -36,49 +33,26 @@
 		<script src="@routes.Assets.at("javascripts/user/register.js")" type="text/javascript"></script>
 		<script src="@routes.Assets.at("javascripts/user/login.js")" type="text/javascript"></script>
 		<script src="@routes.Assets.at("javascripts/topbar.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/widgets.js")" type="text/javascript"></script>
+		<script src="@routes.Assets.at("javascripts/widgets.js")" type="text/javascript"></script>		
 
-		<script src="@routes.Assets.at("javascripts/profile/local_variables.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/profile/functions.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/profile/execute_on_start.js")" type="text/javascript"></script>
+		<script src="@routes.Assets.at("javascripts/homepage/local_variables.js")" type="text/javascript"></script>
+		<script src="@routes.Assets.at("javascripts/homepage/functions.js")" type="text/javascript"></script>
+		<script src="@routes.Assets.at("javascripts/homepage/execute_on_start.js")" type="text/javascript"></script>
 
-		<!-- meta -->
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	</head>
 	<body>
 		<div id="wrap">
 			<p id="topbar" />
-			<form id="form_avatar"> 
-					<p style="display: block; color: red">Avatar Upload</p>
-	        		<input id="avatar" type="file" name="avatar" style="display: inline">
-					<button id="btn_upload_avatar" style="display: inline">upload</button>
-			</form>
-			<div id="section_response" style="display: block"></div>	
-			<hr>
-			<div id="section_user"></div>
-			<hr>
-			<div>
-				<span>
-					<select	id="activitiesFilter">
-						<option value=1>發起的活動</option>
-						<option value=2>參加了的活動</option> <!-- -->
-					</select>
-				</span>
-				<span>&gt;&gt;</span>
-				<span>
-					<select id="activitiesSorter">
-						<option value=0>時間倒序</option>
-						<option value=1>時間順序</option>
-					</select> 
-				</span>
-			</div>
-			
-			<div id="section_activities"></div>
-			
+
+			<div id="idSectionRegister" style="clear: both"></div>
+
+			<div id="idSectionDefaultActivities" style="clear: both"></div>
 			<p id="widget_paging">
 				<button id="btn_previous_page">Previous Page</button>
 				<button id="btn_next_page">Next Page</button>
 			</p>
 		</div>
+
 	</body>
+
 </html>

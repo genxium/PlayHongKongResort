@@ -4,7 +4,7 @@
 
 # Global
 GET	 /	controllers.Application.index()
-GET	 /show	controllers.Application.show(page: String)
+GET	 /admin	controllers.Application.admin()
 
 # Home page
 POST /user/login controllers.UserController.login()

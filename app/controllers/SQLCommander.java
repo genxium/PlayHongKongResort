@@ -280,7 +280,7 @@ public class SQLCommander {
         do{
             try{
                 EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
-                String[] names={Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.TYPE, Comment.GENERATED_TIME};
+                String[] names={Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
                 builder.select(names).from(Comment.TABLE).where(Comment.ID, "=", commentId);
                 List<JSONObject> commentsJson=SQLHelper.select(builder);
                 if(commentsJson==null || commentsJson.size()<=0) break;
@@ -293,7 +293,7 @@ public class SQLCommander {
 		return ret;
 	}
 
-    public static List<Comment> queryTopLevelComments(Integer activityId, String refIndex, String orderKey, String orderDirection, Integer numItems, Integer direction, Integer commentType){
+    public static List<Comment> queryTopLevelComments(Integer activityId, String refIndex, String orderKey, String orderDirection, Integer numItems, Integer direction){
          
         List<Comment> ret=null;
         do{
@@ -301,10 +301,10 @@ public class SQLCommander {
                 EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
 				
                 // query table Comment
-                String[] names={Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.TYPE, Comment.GENERATED_TIME};
-                String[] whereCols={Comment.ACTIVITY_ID, Comment.TYPE, Comment.PARENT_ID};
-                String[] whereOps={"=", "=", "="};
-                Object[] whereVals={activityId, commentType, INVALID};
+                String[] names={Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
+                String[] whereCols={Comment.ACTIVITY_ID, Comment.PARENT_ID};
+                String[] whereOps={"=", "="};
+                Object[] whereVals={activityId, INVALID};
 
                 builder.select(names).from(Comment.TABLE).where(whereCols, whereOps, whereVals).order(orderKey, orderDirection);
 
@@ -335,19 +335,15 @@ public class SQLCommander {
         return ret;
     }
 
-    public static List<Comment> querySubComments(Integer parentId, String refIndex, String orderKey, String orderDirection, Integer numItems, Integer direction, Integer commentType){
+    public static List<Comment> querySubComments(Integer parentId, String refIndex, String orderKey, String orderDirection, Integer numItems, Integer direction){
         List<Comment> ret=null;
         do{
             try{
                 EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
 
                 // query table Comment
-                String[] names={Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.TYPE, Comment.GENERATED_TIME};
-                String[] whereCols={Comment.TYPE, Comment.PARENT_ID};
-                String[] whereOps={"=", "="};
-                Object[] whereVals={commentType, parentId};
-
-                builder.select(names).from(Comment.TABLE).where(whereCols, whereOps, whereVals).order(orderKey, orderDirection);
+                String[] names={Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};     
+                builder.select(names).from(Comment.TABLE).where(Comment.PARENT_ID, "=", parentId).order(orderKey, orderDirection);
 
                 if(refIndex.equals(INITIAL_REF_INDEX)){
                     builder.where(orderKey, ">=", INITIAL_REF_INDEX);

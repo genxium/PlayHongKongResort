@@ -18,6 +18,7 @@
 	max-height: 50pt;
 	max-width:	400pt;
 	font-size: 15pt;
+	margin-top: 5pt;
 	margin-bottom: 2pt;
 }
 
@@ -31,15 +32,16 @@
 	max-height: 400pt;
 	max-width:	400pt;
 	font-size: 15pt;
+	margin-top: 5pt;
 	margin-bottom: 2pt;
 }
 
 .classBtnEdit
 {
 	position: relative;
-    	width:	50pt;
+    width:	50pt;
 	margin-left:	5pt;
-    	font-size:	12pt;
+   	font-size:	12pt;
 	background-color:	#cccc00;
 	color:	#0000ff;
 }

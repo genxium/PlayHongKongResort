@@ -107,4 +107,54 @@ function validatePassword(password) {
 	return regex.test(password);	
 }
 
+function generateDataPicker(time) {
+    
+	var ret=$('<div>', {
+		class: 'col-sm-6'    
+	});
+
+	var formGroup=$('<div>', {
+		class: 'form-group'    
+	}).appendTo(ret);
+
+	var inputGroup=$("<div>", {
+		class: 'input-group date'    
+	}).appendTo(formGroup);
+
+	var input=$('<input>', {
+		type: 'text',
+		value: time,
+		class: 'form-control'    
+	}).appendTo(inputGroup);
+
+	var inputGroupAddon=$('<span>', {
+		class: 'input-group-addon'    
+	}).appendTo(inputGroup);
+
+	var glyphiconCalendar=$('<span>', {
+		class: 'glyphicon glyphicon-calendar'   
+	}).appendTo(inputGroupAddon);
+
+	inputGroup.datetimepicker({
+		format: 'YYYY-MM-DD HH:mm',
+		pickSeconds: false,
+		pick12HourFormat: false  
+	});
+	return ret;
+}
+
+function getDateTime(picker){
+    var ret = null;
+    do{
+        var formGroup = $(picker.children(".form-group")[0]);
+        var inputGroup = $(formGroup.children(".input-group.date")[0]);
+        var input = $(inputGroup.children(".form-control")[0]); 
+        var dateStr = input.val();
+
+        if (dateStr==null || dateStr=="" || dateStr.length==0) break;
+
+        ret = dateStr+":00";
+    } while(false);
+    return ret;
+}
 

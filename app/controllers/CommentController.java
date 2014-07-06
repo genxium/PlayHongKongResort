@@ -27,7 +27,7 @@ public class CommentController extends Controller {
     			Integer userId=null;
     			if(token!=null)	userId= DataUtils.getUserIdByToken(token);
 
-    			List<Comment> comments=SQLCommander.queryTopLevelComments(activityId, refIndex, Comment.ID, SQLHelper.DESCEND, numItems, direction, Comment.TYPE_QA);
+    			List<Comment> comments=SQLCommander.queryTopLevelComments(activityId, refIndex, Comment.ID, SQLHelper.DESCEND, numItems, direction);
 
     			ArrayNode result=new ArrayNode(JsonNodeFactory.instance);
     			for(Comment comment : comments){
@@ -61,10 +61,10 @@ public class CommentController extends Controller {
 
                 EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-                String[] columnNames={Comment.CONTENT, Comment.ACTIVITY_ID, Comment.TYPE, Comment.COMMENTER_ID};
+                String[] columnNames={Comment.CONTENT, Comment.ACTIVITY_ID, Comment.COMMENTER_ID};
                 List<String> cols=new LinkedList<String>(Arrays.asList(columnNames));
 
-                Object[] columnValues={content, activityId, Comment.TYPE_QA, userId};
+                Object[] columnValues={content, activityId, userId};
                 List<Object> vals=new LinkedList<Object>(Arrays.asList(columnValues));
 
                 if(formData.containsKey(Comment.PREDECESSOR_ID)){

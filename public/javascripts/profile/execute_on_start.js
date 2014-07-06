@@ -4,7 +4,7 @@ $(document).ready(function(){
 	initTopbar();
 	g_callbackOnLoginSuccess=refreshOnLoggedIn;
 	g_callbackOnLoginError=null;
-	g_callbackOnEnter=refreshOnEnter
+	g_callbackOnEnter=refreshOnEnter;
 	initActivityEditor();
 
 	g_formAvatar=$("#form_avatar");

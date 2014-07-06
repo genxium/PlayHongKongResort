@@ -16,16 +16,12 @@ var g_classBtnDelete="classBtnDelete";
 var g_classBtnSave="classBtnSave";
 var g_classBtnCancel="classBtnCancel";
 
-// classes
-var g_classSelectionBeginTime="classSelectionBeginTime";
-var g_classSelectionDeadline="classSelectionDeadline";
-
 // DOM indexes for cascaded DOM element search
 var g_indexBtnEdit="indexBtnEdit";
 var g_indexStatusIndicator="indexStatusIndicator";
 var g_indexImageOfActivityPrefix="indexImageOfActivityPrefix";
-var g_indexSectionBeginTime="indexSectionBeginTime";
-var g_indexSectionDeadline="indexSectionDeadline";
+var g_indexBeginTimePicker="beginTimePicker";
+var g_indexDeadlinePicker="deadlinePicker";
 var g_indexAssociatedImage="indexAssociatedImage";
 
 var g_indexOldImage="indexOldImage";

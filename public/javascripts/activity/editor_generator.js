@@ -1,4 +1,29 @@
 // Assistive functions
+function formatDigits(value, numberOfDigits){
+       var valueStr=value.toString();
+       while(valueStr.length<numberOfDigits) valueStr="0"+valueStr;
+       return valueStr;
+}
+
+function formatDate(time){
+	var date=new Date(Date.parse(time));	
+	var year=date.getFullYear();
+	var month=date.getMonth()+1;
+	var day=date.getDate();
+	var hour=date.getHours();
+	var min=date.getMinutes();
+	return year+"-"+formatDigits(month, 2)+"-"+formatDigits(day, 2)+" "+formatDigits(hour, 2)+":"+formatDigits(min, 2);	
+}
+
+function reformatDate(date){
+	var year=date.getFullYear();
+	var month=date.getMonth()+1;
+	var day=date.getDate();
+	var hour=date.getHours();
+	var min=date.getMinutes();
+	return year+"-"+formatDigits(month, 2)+"-"+formatDigits(day, 2)+" "+formatDigits(hour, 2)+":"+formatDigits(min, 2);	
+}
+
 function removeActivityEditor(){
 	do{	
 		if(g_sectionActivityEditor==null) break;
@@ -40,12 +65,6 @@ function isFileValid(file){
 		ret=true;
 	}while(false);
  	return ret;
-}
-
-function formatDigits(value, numberOfDigits){
-	var valueStr=value.toString();
-	while(valueStr.length<numberOfDigits) valueStr="0"+valueStr;
-	return valueStr;
 }
 
 function setNonSavable(){
@@ -125,28 +144,16 @@ function onSave(){
 		formData.append(g_keyContent, activityContent);
 
 		// append activity begin time and deadline
-		var sectionBeginTime=g_activityEditor.data(g_indexSectionBeginTime);
-		var beginTimeNodes=sectionBeginTime.children();
-		var beginTimeYear=formatDigits(beginTimeNodes[0].value, 4);
-		var beginTimeMonth=formatDigits(beginTimeNodes[1].value, 2);
-		var beginTimeDay=formatDigits(beginTimeNodes[2].value, 2);
-		var beginTimeHour=formatDigits(beginTimeNodes[3].value, 2);
-		var beginTimeMinute=formatDigits(beginTimeNodes[4].value, 2);
-		var beginTime=beginTimeYear+"-"+beginTimeMonth+"-"+beginTimeDay+" "+beginTimeHour+":"+beginTimeMinute+":00";
+		var beginTimePicker=g_activityEditor.data(g_indexBeginTimePicker);
+		var beginTime=getDateTime(beginTimePicker);
 		formData.append(g_keyBeginTime, beginTime);
 
-		var sectionDeadline=g_activityEditor.data(g_indexSectionDeadline);
-		var deadlineNodes=sectionDeadline.children();
-		var deadlineYear=formatDigits(deadlineNodes[0].value, 4);
-		var deadlineMonth=formatDigits(deadlineNodes[1].value, 2);
-		var deadlineDay=formatDigits(deadlineNodes[2].value, 2);
-		var deadlineHour=formatDigits(deadlineNodes[3].value, 2);
-		var deadlineMinute=formatDigits(deadlineNodes[4].value, 2);
-		var deadline=deadlineYear+"-"+deadlineMonth+"-"+deadlineDay+" "+deadlineHour+":"+deadlineMinute+":00";
+		var deadlinePicker=g_activityEditor.data(g_indexDeadlinePicker);
+		var deadline=getDateTime(deadlinePicker);
 		formData.append(g_keyDeadline, deadline);
 
         var isNewActivity=false;
-		var activityId = g_activityEditor.data(g_keyId);
+		var activityId = g_activityEditor.data(g_keyActivityId);
 		if(activityId==null) isNewActivity=true;
 
 		if(isNewActivity==false){
@@ -164,7 +171,7 @@ function onSave(){
 			    setSubmittable();
 			    var jsonResponse=JSON.parse(data);
 			    if(jsonResponse.hasOwnProperty(g_keyId)){
-			        g_activityEditor.data(g_keyId, jsonResponse[g_keyId]);
+			        g_activityEditor.data(g_keyActivityId, jsonResponse[g_keyId]);
 			    }
                 alert("You can submit the application now!");
 			},
@@ -337,7 +344,8 @@ function generateActivityEditorByJson(activityJson){
 	});
 
 	var titleText=$('<p>', {
-		text: 'Title'
+		text: "Title",
+		style: "margin-top: 5pt"	
 	}).appendTo(ret);
 
 	var titleInput=$('<input>', {
@@ -347,22 +355,23 @@ function generateActivityEditorByJson(activityJson){
 		name: g_keyTitle
 	}).appendTo(ret);
 
-	titleInput.on("input paste", function(){
+	titleInput.on("input paste keyup", function(){
 		setSavable();
 		setNonSubmittable();
 	});
 
 	var contentText=$('<p>', {
-		text: 'Content'
+		text: "Content",
+		style: "margin-top: 5pt"
 	}).appendTo(ret);
 
 	var contentInput=$('<textarea>',
 	{
-	class: g_classFieldActivityContent, 
+		class: g_classFieldActivityContent, 
 		name: g_keyContent
 	}).appendTo(ret);
 	contentInput.val(activityContent);
-	contentInput.on("input paste", function(){
+	contentInput.on("input paste keyup", function(){
 		setSavable();
 		setNonSubmittable();
 	});
@@ -409,144 +418,79 @@ function generateActivityEditorByJson(activityJson){
 	}
 
 	// Schedules
-	var deadline=null;
+	var deadline=reformatDate(new Date());
 	if(activityJson!=null && activityJson.hasOwnProperty(g_keyDeadline)) deadline=activityJson[g_keyDeadline];
-	var sectionDeadline=generateDateSelection("Deadline: ", g_classSelectionDeadline, deadline);
-	ret.append(sectionDeadline);
-	ret.data(g_indexSectionDeadline, sectionDeadline);
+	var deadlinePicker=generateDateSelection(formatDate(deadline));
+	ret.data(g_indexDeadlinePicker, deadlinePicker);
 
-	var beginTime=null;
+	var beginTime=reformatDate(new Date());
 	if(activityJson!=null && activityJson.hasOwnProperty(g_keyBeginTime)) beginTime=activityJson[g_keyBeginTime];
-	var sectionBeginTime=generateDateSelection("Begin Time: ", g_classSelectionBeginTime, beginTime); 
-	ret.append(sectionBeginTime);
-	ret.data(g_indexSectionBeginTime, sectionBeginTime);
+	var beginTimePicker=generateDateSelection(formatDate(beginTime)); 
+	ret.data(g_indexBeginTimePicker, beginTimePicker);
+
+	var tableSchedule=$("<table>", {
+		style: "display: block; margin-top: 15pt; margin-bottom: 5pt"
+	}).appendTo(ret);
+	var scheduleRow1=$("<tr>").appendTo(tableSchedule);
+	var scheduleCell11=$("<td>", {
+		text: "Deadline: ",
+		style: "white-space: nowrap; vertical-align: text-top"
+	}).appendTo(scheduleRow1);
+	var scheduleCell12=$("<td>", {
+
+	}).appendTo(scheduleRow1);
+	scheduleCell12.append(deadlinePicker);
+
+	var scheduleRow2=$("<tr>").appendTo(tableSchedule);
+	var scheduleCell21=$("<td>", {
+		text: "Begin Time: ",
+		style: "white-space: nowrap; vertical-align: text-top"
+	}).appendTo(scheduleRow2);
+	var scheduleCell22=$("<td>", {
+
+	}).appendTo(scheduleRow2);
+	scheduleCell22.append(beginTimePicker);	
+
+	var buttons=$("<p>", {
+		style: "display: block; clear: both; margin-top: 5pt"
+	}).appendTo(ret);
 
 	/* Associated Buttons */
 	var btnSave=$('<button>',{
-	class: g_classBtnSave,
-	text: 'Save'
-	}).appendTo(ret);
-	btnSave.bind("click", onbtnSaveClicked);
+		class: g_classBtnSave,
+		text: 'Save'
+	}).appendTo(buttons);
+	btnSave.on("click", onbtnSaveClicked);
 
 	var btnSubmit=$('<button>',{
-	class: g_classBtnSubmit,
-	text: 'Submit'
-	}).appendTo(ret);
-
-	btnSubmit.bind("click", onBtnSubmitClicked);
+		class: g_classBtnSubmit,
+		text: 'Submit'
+	}).appendTo(buttons);
+	btnSubmit.on("click", onBtnSubmitClicked);
 
 	var btnCancel=$('<button>',{
-	class: g_classBtnCancel,
-	text: 'Cancel'
-	}).appendTo(ret);
-	btnCancel.bind("click", onBtnCancelClicked);
+		class: g_classBtnCancel,
+		text: 'Cancel'
+	}).appendTo(buttons);
+	btnCancel.on("click", onBtnCancelClicked);
 
 	if(isNewActivity==false){
 		var btnDelete=$('<button>',{
 			class: g_classBtnDelete,
 			text: 'Delete'
-		}).appendTo(ret);
+		}).appendTo(buttons);
 
-		btnDelete.bind("click", onBtnDeleteClicked);
-
-		btnSave.data(g_keyId, activityId);
-		btnDelete.data(g_keyId, activityId);
-		btnSubmit.data(g_keyId, activityId);
-		ret.data(g_keyId, activityId);
+		btnDelete.on("click", onBtnDeleteClicked);
 	}
+	ret.data(g_keyActivityId, activityId);			
 	return ret;
 }
 
-function generateDateSelection(sectionName, className, time){
-
-	var currentTime=null;
-	var currentYear=null;
-	var currentMonth=null;	
-	var currentDay=null;
-	var currentHour=null;
-	var currentMin=null;
-
-	 if(time!=null) {
-		 currentTime=new Date(time);
-		 currentYear=currentTime.getFullYear();
-		 currentMonth=currentTime.getMonth()+1;	
-		 currentDay=currentTime.getDate();
-		 currentHour=currentTime.getHours();
-		 currentMin=currentTime.getMinutes();
-	 }
-	 else {
-		 currentTime=new Date();
-		 currentYear=currentTime.getFullYear();
-	 }
-	 
-	 var numberOfYears=2;
-	 var numberOfMonths=12;
-	 var numberOfDays=31;
-	 var numberOfHours=24;
-	 var interval=15; // in minutes
-	 var numberOfIntervals=4;
-
-	 var years=[];
-	 for(var i=0;i<numberOfYears;i++){
-	 	years.push(i+currentYear);
-	 }
-	 var months=[];
-	 for(var i=0;i<numberOfMonths;i++){
-	 	months.push(i+1);
-	 }
-	 var days=[];
-	 for(var i=0;i<numberOfDays;i++){
-	 	days.push(i+1);
-	 }
-	 var hours=[];
-	 for(var i=0;i<numberOfHours;i++){
-	 	hours.push(i);
-	 }
-	 var intervals=[];
-	 for(var i=0;i<numberOfIntervals;i++){
-	 	intervals.push(i*interval);
-	 }
-
-	 var ret=$('<p>', {
-		html: sectionName.toString()
-	 });
-
-	 var selectionYear=generateSelectionWidget(years, className, currentYear);
-     ret.append(selectionYear);
-
-	 var selectionMonth=generateSelectionWidget(months, className, currentMonth);
-     ret.append(selectionMonth);
-
-	 var selectionDay=generateSelectionWidget(days, className, currentDay);
-     ret.append(selectionDay);
-
-	 ret.append('/');
-
-     var selectionHour=generateSelectionWidget(hours, className, currentHour);
-     ret.append(selectionHour);
-
-	 ret.append(':');
-
-	 var selectionInterval=generateSelectionWidget(intervals, className, currentMin);
-     ret.append(selectionInterval);
-
-     return ret;
-}
-
-function generateSelectionWidget(arr, className, value){
-    var ret=$('<select>',{
-                class: className
-            });
-    for(var i=0;i<arr.length;i++){
-        var element=arr[i];
-	 	var option=$('<option>').appendTo(ret);
-	 	option.text(element.toString());
-	 	option.val(element);
-    }
-	if(value!=null) ret.val(value);
-	ret.on("change", function(){
-		setSavable();
-		setNonSubmittable();	
-	});
-    return ret;
+function generateDateSelection(time){
+		var ret=generateDataPicker(time);
+		ret.on("input change keyup", function(){
+			setSavable();
+			setNonSubmittable();
+		});
+     	return ret;
 }
