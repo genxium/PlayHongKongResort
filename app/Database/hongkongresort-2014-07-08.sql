@@ -130,7 +130,7 @@ CREATE TABLE `comment` (
   KEY `comment_ibfk_2` (`activity_id`),
   CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`commenter_id`) REFERENCES `user` (`id`),
   CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -139,7 +139,7 @@ CREATE TABLE `comment` (
 
 LOCK TABLES `comment` WRITE;
 /*!40000 ALTER TABLE `comment` DISABLE KEYS */;
-INSERT INTO `comment` VALUES (1,'Wah!!!',2,1,-1,'2014-07-04 18:38:54',-1),(2,'Funny ah',2,1,-1,'2014-07-04 18:39:44',-1),(3,'Wawawawah',3,1,-1,'2014-07-04 18:45:44',-1),(4,'i wanna comment first',3,1,-1,'2014-07-05 16:59:41',-1),(5,'i wanna comment first',3,1,-1,'2014-07-05 17:00:07',-1),(6,'顶楼上，32个赞',3,1,5,'2014-07-05 17:04:01',5),(7,'明明就是个傻逼',3,1,6,'2014-07-05 17:12:05',5);
+INSERT INTO `comment` VALUES (1,'Wah!!!',2,1,-1,'2014-07-04 18:38:54',-1),(2,'Funny ah',2,1,-1,'2014-07-04 18:39:44',-1),(3,'Wawawawah',3,1,-1,'2014-07-04 18:45:44',-1),(4,'i wanna comment first',3,1,-1,'2014-07-05 16:59:41',-1),(5,'i wanna comment first',3,1,-1,'2014-07-05 17:00:07',-1),(6,'顶楼上，32个赞',3,1,5,'2014-07-05 17:04:01',5),(7,'明明就是个傻逼',3,1,6,'2014-07-05 17:12:05',5),(8,'痴線233333',1,1,6,'2014-07-07 17:07:40',5);
 /*!40000 ALTER TABLE `comment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -244,9 +244,13 @@ CREATE TABLE `notification` (
   KEY `notification_ibfk_1` (`from`),
   KEY `notification_ibfk_2` (`to`),
   KEY `notification_ibfk_3` (`activity_id`),
-  CONSTRAINT `notification_ibfk_3` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`),
+  KEY `notification_ibfk_4` (`comment_id`),
+  KEY `notification_ibfk_5` (`assessment_id`),
+  CONSTRAINT `notification_ibfk_5` FOREIGN KEY (`assessment_id`) REFERENCES `assessment` (`id`),
   CONSTRAINT `notification_ibfk_1` FOREIGN KEY (`from`) REFERENCES `user` (`id`),
-  CONSTRAINT `notification_ibfk_2` FOREIGN KEY (`to`) REFERENCES `user` (`id`)
+  CONSTRAINT `notification_ibfk_2` FOREIGN KEY (`to`) REFERENCES `user` (`id`),
+  CONSTRAINT `notification_ibfk_3` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`),
+  CONSTRAINT `notification_ibfk_4` FOREIGN KEY (`comment_id`) REFERENCES `comment` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -447,4 +451,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-07-07 17:06:20
+-- Dump completed on 2014-07-07 17:15:39

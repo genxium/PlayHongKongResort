@@ -101,7 +101,7 @@ CREATE TABLE `comment` (
   KEY `comment_ibfk_2` (`activity_id`),
   CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`commenter_id`) REFERENCES `user` (`id`),
   CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -177,9 +177,13 @@ CREATE TABLE `notification` (
   KEY `notification_ibfk_1` (`from`),
   KEY `notification_ibfk_2` (`to`),
   KEY `notification_ibfk_3` (`activity_id`),
-  CONSTRAINT `notification_ibfk_3` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`),
+  KEY `notification_ibfk_4` (`comment_id`),
+  KEY `notification_ibfk_5` (`assessment_id`),
+  CONSTRAINT `notification_ibfk_5` FOREIGN KEY (`assessment_id`) REFERENCES `assessment` (`id`),
   CONSTRAINT `notification_ibfk_1` FOREIGN KEY (`from`) REFERENCES `user` (`id`),
-  CONSTRAINT `notification_ibfk_2` FOREIGN KEY (`to`) REFERENCES `user` (`id`)
+  CONSTRAINT `notification_ibfk_2` FOREIGN KEY (`to`) REFERENCES `user` (`id`),
+  CONSTRAINT `notification_ibfk_3` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`),
+  CONSTRAINT `notification_ibfk_4` FOREIGN KEY (`comment_id`) REFERENCES `comment` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -324,4 +328,4 @@ CREATE TABLE `user_activity_relation` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-07-07 17:04:41
+-- Dump completed on 2014-07-07 17:15:22
