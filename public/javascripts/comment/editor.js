@@ -71,9 +71,7 @@ function generateReplyEditor(activityId, parentId, predecessorId, toUsername){
 }
 
 function generateCommentCell(commentJson, activityId){
-	var ret=$('<div>', {
-		style: "border-left: thick solid #000000" 
-	});
+	var ret=$('<div>');
     
         var row=$('<p>').appendTo(ret);
         var content=$('<span>', {

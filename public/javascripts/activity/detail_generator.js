@@ -1,4 +1,5 @@
 var g_activityId=null;
+var g_url=null;
 
 // Assistive Functions
 function refreshOnEnter(){
@@ -39,7 +40,7 @@ function displayActivityDetail(activityDetailJson){
 	var activityContent=activityDetailJson[g_keyContent];
 	var activityImages=activityDetailJson[g_keyImages];
 
-	var sectionActivity=$("#idSectionActivity");
+	var sectionActivity=$("#section_activity");
 	var detailView=generateActivityDetailViewByJson(activityDetailJson);
 	sectionActivity.empty();
 	sectionActivity.append(detailView);
@@ -163,11 +164,11 @@ function generateActivityDetailViewByJson(activityJson){
 		   }
 		}
 
-		$("<hr>").appendTo(ret);
-
+		var sectionParticipant=$("#section_participant");
+		sectionParticipant.empty();
 		var selectionForm=$('<form>',{
 		    id: g_idParticipantsSelectionForm
-		}).appendTo(ret);
+		}).appendTo(sectionParticipant);
 
 		var labels=new Array();
 		for(var key in selectedParticipants){
@@ -215,12 +216,14 @@ function generateActivityDetailViewByJson(activityJson){
 		    url: "/comment/query",
 		    data: params,
 		    success: function(data, status, xhr){
+				var sectionComment=$("#section_comment");
+				sectionComment.empty();
 				var jsonResponse=JSON.parse(data);
 				if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
 				    for(var key in jsonResponse){
 						var commentJson=jsonResponse[key];
-						var row=generateCommentCell(commentJson, activityId).appendTo(ret);
-						$('<br>').appendTo(ret);
+						var row=generateCommentCell(commentJson, activityId).appendTo(sectionComment);
+						$('<br>').appendTo(sectionComment);
 				    }
 				}
 		    },
@@ -283,6 +286,7 @@ function generateActivityDetailViewByJson(activityJson){
 
 // execute on start
 $(document).ready(function(){
+	g_url=window.location.href;
 	g_activityId=$('#'+g_keyActivityId).attr("value");
 
 	initTopbar();
