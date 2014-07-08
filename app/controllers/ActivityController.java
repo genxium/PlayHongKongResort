@@ -232,7 +232,7 @@ public class ActivityController extends Controller {
                 Map<String, String[]> formData= body.asFormUrlEncoded();
 
                 String token=formData.get(User.TOKEN)[0];
-                Integer activityId=Integer.valueOf(formData.get(Activity.ID)[0]);
+                Integer activityId=Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 
                 Integer userId=DataUtils.getUserIdByToken(token);
                 if(userId==null) break;

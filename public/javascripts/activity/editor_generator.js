@@ -197,8 +197,8 @@ function onSubmit(){
 		var token = $.cookie(g_keyToken.toString());
 		params[g_keyToken]=token;
 
-		var activityId = g_activityEditor.data(g_keyId);
-		params[g_keyId]=activityId.toString();
+		var activityId = g_activityEditor.data(g_keyActivityId);
+		params[g_keyActivityId]=activityId.toString();
 
 		$.ajax({
 			method: "PUT",
