@@ -272,7 +272,7 @@ public class ActivityController extends Controller {
         do{
             try{
                 Map<String, String[]> formData=request().body().asFormUrlEncoded();
-                String[] ids=formData.get(Activity.ID);
+                String[] ids=formData.get(UserActivityRelation.ACTIVITY_ID);
                 String[] tokens=formData.get(User.TOKEN);
 
                 Integer activityId=Integer.parseInt(ids[0]);
