@@ -39,7 +39,7 @@
 .classBtnEdit
 {
 	position: relative;
-    width:	50pt;
+	width:	auto;
 	margin-left:	5pt;
    	font-size:	12pt;
 	background-color:	#cccc00;
@@ -51,7 +51,7 @@
 	display: inline;
 	position: relative;
 	padding-top: 3pt;
-	width: 64pt;
+	width: auto;
 	height: 36pt;
 	font-size: 15pt;
 	margin-top: 10pt;
@@ -64,7 +64,7 @@
 	display: table-cell;
 	position: relative;
 	padding-top: 3pt;
-	width: 64pt;
+	width: auto;
 	height: 36pt;
 	font-size: 16pt;
 	color: #cccccc;
@@ -77,7 +77,7 @@
 	display: table-cell;
 	position: relative;
 	padding-top: 3pt;
-	width: 64pt;
+	width: auto;
 	height: 36pt;
 	font-size: 16pt;
 	color: #cccccc;
@@ -90,7 +90,7 @@
 	display: table-cell;
 	position: relative;
 	padding-top: 3pt;
-	width: 64pt;
+	width: auto;
 	height: 36pt;
 	font-size: 15pt;
 	margin-top: 10pt;

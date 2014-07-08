@@ -155,36 +155,38 @@ function generateLoginForm(){
 
 function generateLoggedInMenu(){
 
-	var ret=$('<div>');
+	var ret=$('<div>', {
+		style: "height: auto"
+	});
 	
 	var avatar=$('<img>',{
 		src: g_userAvatarURL,
-		style: "width: 50pt; height 50pt; float: left"	
+		style: "width: 50pt; height: auto; float: left"	
 	}).appendTo(ret);
 
 	var rightHalf=$('<div>',{
-		style: "width: 200pt; height 50pt; margin-left: 10pt; float: left"	
+		style: "width: auto; height: auto; margin-left: 10pt; float: left"	
 	}).appendTo(ret);
 
 	var greeting=$('<p>',{
-		style: "font-size: 15pt; color: white",
+		style: "font-size: 13pt; color: white",
 		text: "Hello, "+g_username	
 	}).appendTo(rightHalf);
 
 	g_btnLogout=$('<button>', {
-		style: "clear: both; font-size: 15pt; color: white; background-color: crimson",
+		style: "clear: both; font-size: 13pt; color: white; background-color: crimson",
 		text: 'Logout'
 	}).appendTo(rightHalf);
 	g_btnLogout.on("click", onBtnLogoutClicked);
 
 	g_btnProfile=$('<button>', {
-		style: "font-size: 15pt; color: white; background-color: cornflowerblue",
+		style: "font-size: 13pt; color: white; background-color: cornflowerblue",
 		text: 'Profile'
 	}).appendTo(rightHalf);
 	g_btnProfile.on("click", onBtnProfileClicked);
 
 	g_btnCreate=$('<button>', {
-		style: "font-size: 15pt; margin-left: 10pt; background-color: chartreuse",
+		style: "font-size: 13pt; margin-left: 10pt; background-color: chartreuse",
 		text: "Create"	
 	}).appendTo(rightHalf);
 	g_btnCreate.on("click", onBtnCreateClicked);
