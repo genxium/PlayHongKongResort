@@ -37,7 +37,7 @@ PUT /admin/delete controllers.AdminController.delete()
 GET /activity/detail/show controllers.ActivityController.showDetail()
 POST /activity/participants/update controllers.ActivityController.updateParticipants()
 GET /activity/ownership controllers.ActivityController.ownership(token: String ?=null, activity_id: Integer ?=null)
-POST /comment/submit controllers.CommentController.submit()
+PUT /comment/submit controllers.CommentController.submit()
 GET /comment/query controllers.CommentController.query(activity_id: Integer ?=null, ref_index: String ?=null, num_items: Integer ?=null, direction: Integer ?=null, token: String ?=null)
 
 # Map static resources from the /public folder to the /assets URL path

@@ -6,6 +6,7 @@ function formatDigits(value, numberOfDigits){
 }
 
 function formatDate(time){
+	time=time.replace(/-/g,"/");
 	var date=new Date(Date.parse(time));	
 	var year=date.getFullYear();
 	var month=date.getMonth()+1;
@@ -197,8 +198,8 @@ function onSubmit(){
 		var token = $.cookie(g_keyToken.toString());
 		params[g_keyToken]=token;
 
-		var activityId = g_activityEditor.data(g_keyId);
-		params[g_keyId]=activityId.toString();
+		var activityId = g_activityEditor.data(g_keyActivityId);
+		params[g_keyActivityId]=activityId.toString();
 
 		$.ajax({
 			method: "PUT",
@@ -273,12 +274,12 @@ function onBtnDeleteClicked(evt){
 
 	evt.preventDefault();
 	
-	var activityId=$(this).data(g_keyId);
-	var token=$.cookie(g_keyToken.toString());
+	var activityId=$(this).data(g_keyActivityId);
+	var token=$.cookie(g_keyToken).toString();
 
 	var params={};
-	params[g_keyId]=activityId.toString();
-	params[g_keyToken]=token.toString();
+	params[g_keyActivityId]=activityId;
+	params[g_keyToken]=token;
 
 	try{
 	    $.ajax({

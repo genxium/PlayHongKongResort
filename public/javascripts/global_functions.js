@@ -124,7 +124,8 @@ function generateDataPicker(time) {
 	var input=$('<input>', {
 		type: 'text',
 		value: time,
-		class: 'form-control'    
+		class: 'form-control',
+		style: 'width: auto'    
 	}).appendTo(inputGroup);
 
 	var inputGroupAddon=$('<span>', {

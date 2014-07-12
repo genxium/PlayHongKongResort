@@ -12,7 +12,7 @@ function initTopbar(){
 		window.open(homepagePath);
 	});	
 	g_sectionLogin=$("<span>", {
-		style: "float: right; margin-right: 10pt"
+		style: "height: 95%; float: right; margin-right: 10pt"
 	}).appendTo(g_topbar);
         initLoginWidget();
 }

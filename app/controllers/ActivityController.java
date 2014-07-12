@@ -243,7 +243,7 @@ public class ActivityController extends Controller {
                 Map<String, String[]> formData= body.asFormUrlEncoded();
 
                 String token=formData.get(User.TOKEN)[0];
-                Integer activityId=Integer.valueOf(formData.get(Activity.ID)[0]);
+                Integer activityId=Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 
                 Integer userId=DataUtils.getUserIdByToken(token);
                 if(userId==null) break;
@@ -283,7 +283,7 @@ public class ActivityController extends Controller {
         do{
             try{
                 Map<String, String[]> formData=request().body().asFormUrlEncoded();
-                String[] ids=formData.get(Activity.ID);
+                String[] ids=formData.get(UserActivityRelation.ACTIVITY_ID);
                 String[] tokens=formData.get(User.TOKEN);
 
                 Integer activityId=Integer.parseInt(ids[0]);

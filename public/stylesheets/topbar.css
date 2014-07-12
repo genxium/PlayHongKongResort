@@ -2,14 +2,16 @@
 #wrap
 {
 	margin: 0 auto;
+	width: 98%;
 	max-width: 98%;
+	height: auto;
 }
 
 #topbar
 {
 	position: relative;
 	background: #1d2124;
-	height: 68px;
+	height: 64pt;
 }
 
 #topbar_title
