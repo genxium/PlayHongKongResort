@@ -75,7 +75,7 @@ function onBtnDetailClicked(evt){
 	var activityId=$(this).data(g_keyId);
     
 	try{
-		var detailPagePath="/app/detail?"+g_keyActivityId+"="+activityId;
+		var detailPagePath="/activity/detail/show?"+g_keyActivityId+"="+activityId;
 		window.open(detailPagePath);
     	} catch(err){
         	alert(err.toString());

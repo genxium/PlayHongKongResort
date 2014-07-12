@@ -1,5 +1,13 @@
 $(document).ready(function(){
-	g_userId=$('#'+g_keyUserId).attr("value");
+	var params=extractParams(window.location.href);
+	for(var i=0;i<params.length;i++){
+		var param=params[i];
+		var pair=param.split("=");
+		if(pair[0]==g_keyUserId){
+			g_userId=pair[1];
+			break;
+		}
+	}
 	
 	initTopbar();
 	g_callbackOnLoginSuccess=refreshOnLoggedIn;

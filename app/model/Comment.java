@@ -26,7 +26,8 @@ public class Comment {
     public static final String GENERATED_TIME="generated_time";
 
     public static final String COMMENTER_NAME="commenter_name";
-	public static final String REPLYEE_NAME="replyee_name";
+    public static final String REPLYEE_ID="replyee_id";
+    public static final String REPLYEE_NAME="replyee_name";
     public static final String SUB_COMMENTS="sub_comments";
 
     protected Integer m_id=null;
@@ -98,14 +99,16 @@ public class Comment {
                 ret.put(ID, m_id);
                 ret.put(PARENT_ID, m_parentId);
                 ret.put(CONTENT, m_content);
+		ret.put(COMMENTER_ID, m_commenterId);
                 ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
                 ret.put(GENERATED_TIME, m_generatedTime.toString());
 				
-				Comment predecessorComment=SQLCommander.queryComment(m_predecessorId);
-				if(predecessorComment==null) break;
-				Integer replyeeId=predecessorComment.getCommenterId();
-				String replyeeName=SQLCommander.queryUser(replyeeId).getName();
-				ret.put(REPLYEE_NAME, replyeeName);
+		Comment predecessorComment=SQLCommander.queryComment(m_predecessorId);
+		if(predecessorComment==null) break;
+		Integer replyeeId=predecessorComment.getCommenterId();
+		String replyeeName=SQLCommander.queryUser(replyeeId).getName();
+		ret.put(REPLYEE_ID, replyeeId);
+		ret.put(REPLYEE_NAME, replyeeName);
             } catch (Exception e){
 
             }
@@ -120,6 +123,7 @@ public class Comment {
                 ret.put(ID, m_id);
                 ret.put(PARENT_ID, m_parentId);
                 ret.put(CONTENT, m_content);
+		ret.put(COMMENTER_ID, m_commenterId);
                 ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
                 ret.put(GENERATED_TIME, m_generatedTime.toString());
                 List<Comment> subComments=SQLCommander.querySubComments(m_id, SQLCommander.INITIAL_REF_INDEX, ID, SQLHelper.DESCEND, null, SQLCommander.DIRECTION_FORWARD);

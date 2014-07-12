@@ -1,5 +1,4 @@
 var g_activityId=null;
-var g_url=null;
 
 // Assistive Functions
 function refreshOnEnter(){
@@ -286,9 +285,15 @@ function generateActivityDetailViewByJson(activityJson){
 
 // execute on start
 $(document).ready(function(){
-	g_url=window.location.href;
-	g_activityId=$('#'+g_keyActivityId).attr("value");
-
+	var params=extractParams(window.location.href);
+	for(var i=0;i<params.length;i++){
+		var param=params[i];
+		var pair=param.split("=");
+		if(pair[0]==g_keyActivityId){
+			g_activityId=pair[1];
+			break;
+		}
+	}
 	initTopbar();
 
 	g_callbackOnLoginSuccess=refreshOnLoggedIn;

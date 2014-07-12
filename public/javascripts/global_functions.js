@@ -144,17 +144,19 @@ function generateDataPicker(time) {
 }
 
 function getDateTime(picker){
-    var ret = null;
-    do{
-        var formGroup = $(picker.children(".form-group")[0]);
-        var inputGroup = $(formGroup.children(".input-group.date")[0]);
-        var input = $(inputGroup.children(".form-control")[0]); 
-        var dateStr = input.val();
-
-        if (dateStr==null || dateStr=="" || dateStr.length==0) break;
-
-        ret = dateStr+":00";
-    } while(false);
-    return ret;
+	var ret = null;
+	do{
+		var formGroup = $(picker.children(".form-group")[0]);
+		var inputGroup = $(formGroup.children(".input-group.date")[0]);
+		var input = $(inputGroup.children(".form-control")[0]); 
+		var dateStr = input.val();
+		if (dateStr==null || dateStr=="" || dateStr.length==0) break;
+		ret = dateStr+":00";
+	} while(false);
+	return ret;
 }
 
+function extractParams(url){
+	var params=url.split("?")[1].split("&");	
+	return params;
+}

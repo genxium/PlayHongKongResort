@@ -6,6 +6,7 @@ import model.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import play.libs.Json;
+import play.mvc.Content;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -15,6 +16,16 @@ import java.sql.Timestamp;
 import java.util.*;
 
 public class ActivityController extends Controller {
+
+    public static Result showDetail(){
+        try{
+        	Content html = views.html.detail.render();
+        	return ok(html);
+        } catch (Exception e){
+
+        }
+        return badRequest();
+    }
 
     public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer userId, Integer relation, Integer status){
         response().setContentType("text/plain");

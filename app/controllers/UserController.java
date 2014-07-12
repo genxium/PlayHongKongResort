@@ -32,6 +32,16 @@ import java.util.Properties;
 
 public class UserController extends Controller {
 
+	public static Result showProfile(){
+		try{
+			Content html = views.html.profile.render();	
+			return ok(html);
+		} catch (Exception e){
+			
+		}	
+		return badRequest();
+	}
+
 	protected static void sendVerificationEmail(String name, String recipient, String code) {
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);

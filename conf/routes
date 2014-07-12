@@ -24,7 +24,7 @@ GET /activity/query controllers.ActivityController.query(ref_index: String ?=nul
 GET /activity/detail controllers.ActivityController.detail(activity_id: Integer ?=null, token: String ?=null)
 
 # Profile
-GET /user/profile controllers.Application.profile(user_id: Integer ?=null)
+GET /user/profile/show controllers.UserController.showProfile()
 GET /user/detail controllers.UserController.detail(user_id: Integer ?=null, token : String ?=null)
 POST /user/avatar/upload controllers.UserController.uploadAvatar()
 
@@ -34,7 +34,7 @@ PUT /admin/reject controllers.AdminController.reject()
 PUT /admin/delete controllers.AdminController.delete()
 
 # Activity Detail
-GET /app/detail controllers.Application.detail(activity_id: Integer ?=null)
+GET /activity/detail/show controllers.ActivityController.showDetail()
 POST /activity/participants/update controllers.ActivityController.updateParticipants()
 GET /activity/ownership controllers.ActivityController.ownership(token: String ?=null, activity_id: Integer ?=null)
 POST /comment/submit controllers.CommentController.submit()

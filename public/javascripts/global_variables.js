@@ -49,11 +49,12 @@ var g_keyUrl="url";
 
 var g_keyComment="comment";
 var g_keyCommenterId="commenter_id";
+var g_keyCommenterName="commenter_name";
 var g_keyParentId="parent_id";
 var g_keyPredecessorId="predecessor_id";
 var g_keyCommentType="type";
 var g_keyGeneratedTime="generated_time";
-var g_keyCommenterName="commenter_name";
+var g_keyReplyeeId="replyee_id";
 var g_keyReplyeeName="replyee_name";
 var g_keySubComments="sub_comments";
 

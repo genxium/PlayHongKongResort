@@ -31,23 +31,5 @@ public class Application extends Controller {
         return badRequest();
     }
 
-    public static Result detail(Integer activityId){
-        try{
-        	Content html = views.html.detail.render(activityId);
-        	return ok(html);
-        } catch (Exception e){
-
-        }
-        return badRequest();
-    }
     
-    public static Result profile(Integer userId){
-	try{
-		Content html = views.html.profile.render(userId);	
-		return ok(html);
-	} catch (Exception e){
-		
-	}	
-	return badRequest();
-    }
 }

@@ -91,7 +91,7 @@ function onBtnLogoutClicked(evt){
 function onBtnProfileClicked(evt){
 	try{
 		var userId=$.cookie(g_keyUid);
-		var profilePath="/user/profile?"+g_keyUserId+"="+userId;
+		var profilePath="/user/profile/show?"+g_keyUserId+"="+userId;
 		var profilePage=window.open(profilePath);
 	} catch (err){
 
