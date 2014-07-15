@@ -184,67 +184,62 @@ public class SQLCommander {
 	
 	public static List<Activity> queryActivities(Integer userId, int relation){
 		List<Activity> ret=new ArrayList<Activity>();
-		do{
-			try{
-                String query="SELECT ";
+		try{
+			String query="SELECT ";
 
-                String[] names= {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
-                for(int i=0;i<names.length;i++){
-                    query+=names[i];
-                    if(i<names.length-1) query+=", ";
-                }
+			String[] names= {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+			for(int i=0;i<names.length;i++){
+			    query+=names[i];
+			    if(i<names.length-1) query+=", ";
+			}
 
-				query+=" FROM "+Activity.TABLE+" WHERE EXISTS (SELECT NULL FROM "+UserActivityRelation.TABLE+" WHERE "
-                       +UserActivityRelation.USER_ID+"=? AND "
-                       +UserActivityRelation.RELATION+"=? AND "
-                       +UserActivityRelation.TABLE+"."+ UserActivityRelation.ACTIVITY_ID+"="+Activity.TABLE+"."+Activity.ID+")";
-                Connection connection=SQLHelper.getConnection();
-                PreparedStatement statement=connection.prepareStatement(query);
-                statement.setInt(1, userId);
-                statement.setInt(2, relation);
-				List<JSONObject> activityJsons=SQLHelper.select(statement);
-				if(activityJsons==null) break;
+			query+=" FROM "+Activity.TABLE+" WHERE EXISTS (SELECT NULL FROM "+UserActivityRelation.TABLE+" WHERE "
+	       +UserActivityRelation.USER_ID+"=? AND "
+	       +UserActivityRelation.RELATION+"=? AND "
+	       +UserActivityRelation.TABLE+"."+ UserActivityRelation.ACTIVITY_ID+"="+Activity.TABLE+"."+Activity.ID+")";
+			Connection connection=SQLHelper.getConnection();
+			PreparedStatement statement=connection.prepareStatement(query);
+			statement.setInt(1, userId);
+			statement.setInt(2, relation);
+			List<JSONObject> activityJsons=SQLHelper.select(statement);
+			if(activityJsons!=null){
 				for(JSONObject activityJson : activityJsons){
 					ret.add(new Activity(activityJson));
 				}
-			} catch (Exception e){
-				System.out.println(SQLCommander.class.getName()+".queryActivities, "+e.getMessage());
 			}
-		}while(false);
+		} catch (Exception e){
+			System.out.println(SQLCommander.class.getName()+".queryActivities, "+e.getMessage());
+		}
 		return ret;
 	}
 
 	public static List<Activity> queryActivities(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, int status){
-		List<Activity> ret=null;
-		do{
-			try{
-				EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
-				String[] names= {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
-				builder.select(names).from(Activity.TABLE).where(Activity.STATUS, "=", status).order(orderKey, orientation);
+		List<Activity> ret=new ArrayList<Activity>();
+		try{
+			EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
+			String[] names= {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+			builder.select(names).from(Activity.TABLE).where(Activity.STATUS, "=", status).order(orderKey, orientation);
 
-				if(refIndex.equals(INITIAL_REF_INDEX)){
-				    builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
-				} else if(direction.equals(DIRECTION_FORWARD)){
-				    builder.where(orderKey, ">", refIndex);
-				} else{
-				    builder.where(orderKey, "<", refIndex);
-				}
-				if (numItems!=null) {
-                	builder.limit(numItems);	
-                }
+			if(refIndex.equals(INITIAL_REF_INDEX)){
+				builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
+			} else if(direction.equals(DIRECTION_FORWARD)){
+				builder.where(orderKey, ">", refIndex);
+			} else{
+				builder.where(orderKey, "<", refIndex);
+			}
+			if (numItems!=null) {
+				builder.limit(numItems);	
+			}
 
-				List<JSONObject> activityJsons=SQLHelper.select(builder);
-				if(activityJsons==null) break;
-
-				ret=new ArrayList<Activity>();
+			List<JSONObject> activityJsons=SQLHelper.select(builder);
+			if(activityJsons!=null) {
 				for(JSONObject activityJson : activityJsons){
 				    ret.add(new Activity(activityJson));
 				}
-
-			} catch(Exception e){
-			    System.out.println(SQLCommander.class.getName()+".queryActivities: "+e.getMessage());
 			}
-		}while(false);
+		} catch(Exception e){
+			System.out.println(SQLCommander.class.getName()+".queryActivities: "+e.getMessage());
+		}
 		return ret;
 	}
 

@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.17, for Linux (i686)
+-- MySQL dump 10.13  Distrib 5.6.19, for osx10.7 (x86_64)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
--- Server version	5.6.17
+-- Server version	5.6.19
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -71,13 +71,14 @@ CREATE TABLE `assessment` (
   `to` int(32) NOT NULL,
   `content` varchar(128) NOT NULL,
   `activity_id` int(32) NOT NULL,
+  `generated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `assessment_ibfk_1` (`from`),
   KEY `assessment_ibfk_2` (`to`),
   KEY `assessment_ibfk_3` (`activity_id`),
-  CONSTRAINT `assessment_ibfk_3` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`),
   CONSTRAINT `assessment_ibfk_1` FOREIGN KEY (`from`) REFERENCES `user` (`id`),
-  CONSTRAINT `assessment_ibfk_2` FOREIGN KEY (`to`) REFERENCES `user` (`id`)
+  CONSTRAINT `assessment_ibfk_2` FOREIGN KEY (`to`) REFERENCES `user` (`id`),
+  CONSTRAINT `assessment_ibfk_3` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -328,4 +329,4 @@ CREATE TABLE `user_activity_relation` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-07-07 17:15:22
+-- Dump completed on 2014-07-15  8:20:28

@@ -47,96 +47,90 @@ public class Comment {
     public Timestamp getGeneratedTime() {return m_generatedTime;}
 
     public Comment(JSONObject commentJson){
-        do{
-            try{
-                if(commentJson.containsKey(ID)){
-                    m_id=(Integer)commentJson.get(ID);
-                }
-                if(commentJson.containsKey(CONTENT)){
-                    m_content=(String)commentJson.get(CONTENT);
-                }
-                if(commentJson.containsKey(COMMENTER_ID)){
-                    m_commenterId=(Integer)commentJson.get(COMMENTER_ID);
-                }
-                if(commentJson.containsKey(ACTIVITY_ID)){
-                    m_activityId=(Integer)commentJson.get(ACTIVITY_ID);
-                }
-                if(commentJson.containsKey(PARENT_ID)){
-                    m_parentId=(Integer)commentJson.get(PARENT_ID);
-                }
-                if(commentJson.containsKey(PREDECESSOR_ID)){
-                    m_predecessorId=(Integer)commentJson.get(PREDECESSOR_ID);
-                }
-                if(commentJson.containsKey(GENERATED_TIME)){
-                    m_generatedTime=(Timestamp)commentJson.get(GENERATED_TIME);
-                }
-            }catch(Exception e){
+	    try{
+		if(commentJson.containsKey(ID)){
+		    m_id=(Integer)commentJson.get(ID);
+		}
+		if(commentJson.containsKey(CONTENT)){
+		    m_content=(String)commentJson.get(CONTENT);
+		}
+		if(commentJson.containsKey(COMMENTER_ID)){
+		    m_commenterId=(Integer)commentJson.get(COMMENTER_ID);
+		}
+		if(commentJson.containsKey(ACTIVITY_ID)){
+		    m_activityId=(Integer)commentJson.get(ACTIVITY_ID);
+		}
+		if(commentJson.containsKey(PARENT_ID)){
+		    m_parentId=(Integer)commentJson.get(PARENT_ID);
+		}
+		if(commentJson.containsKey(PREDECESSOR_ID)){
+		    m_predecessorId=(Integer)commentJson.get(PREDECESSOR_ID);
+		}
+		if(commentJson.containsKey(GENERATED_TIME)){
+		    m_generatedTime=(Timestamp)commentJson.get(GENERATED_TIME);
+		}
+	    }catch(Exception e){
 
-            }
-        }while(false);
+	    }
     }
 
     public ObjectNode toObjectNode(){
         ObjectNode ret = Json.newObject();;
-        do{
-            try{
-                ret.put(ID, m_id);
-                ret.put(PARENT_ID, m_parentId);
-                ret.put(CONTENT, m_content);
-                ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
-                ret.put(GENERATED_TIME, m_generatedTime.toString());
-            } catch (Exception e){
+	try{
+		ret.put(ID, m_id);
+		ret.put(PARENT_ID, m_parentId);
+		ret.put(CONTENT, m_content);
+		ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
+		ret.put(GENERATED_TIME, m_generatedTime.toString());
+	} catch (Exception e){
 
-            }
-        }while(false);
+	}
         return ret;
     }
 
     public ObjectNode toSubCommentObjectNode(){
         ObjectNode ret = Json.newObject();;
-        do{
-            try{
-                ret.put(ID, m_id);
-                ret.put(PARENT_ID, m_parentId);
-                ret.put(CONTENT, m_content);
-		ret.put(COMMENTER_ID, m_commenterId);
-                ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
-                ret.put(GENERATED_TIME, m_generatedTime.toString());
-				
-		Comment predecessorComment=SQLCommander.queryComment(m_predecessorId);
-		if(predecessorComment==null) break;
-		Integer replyeeId=predecessorComment.getCommenterId();
-		String replyeeName=SQLCommander.queryUser(replyeeId).getName();
-		ret.put(REPLYEE_ID, replyeeId);
-		ret.put(REPLYEE_NAME, replyeeName);
-            } catch (Exception e){
+	do{
+		try{
+			ret.put(ID, m_id);
+			ret.put(PARENT_ID, m_parentId);
+			ret.put(CONTENT, m_content);
+			ret.put(COMMENTER_ID, m_commenterId);
+			ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
+			ret.put(GENERATED_TIME, m_generatedTime.toString());
+					
+			Comment predecessorComment=SQLCommander.queryComment(m_predecessorId);
+			if(predecessorComment==null) break;
+			Integer replyeeId=predecessorComment.getCommenterId();
+			String replyeeName=SQLCommander.queryUser(replyeeId).getName();
+			ret.put(REPLYEE_ID, replyeeId);
+			ret.put(REPLYEE_NAME, replyeeName);
+		} catch (Exception e){
 
-            }
-        }while(false);
+		}
+	}while(false);
         return ret;
     }
 
     public ObjectNode toObjectNodeWithSubComments(){
         ObjectNode ret = Json.newObject();
-        do{
-            try{
-                ret.put(ID, m_id);
-                ret.put(PARENT_ID, m_parentId);
-                ret.put(CONTENT, m_content);
+	try{
+		ret.put(ID, m_id);
+		ret.put(PARENT_ID, m_parentId);
+		ret.put(CONTENT, m_content);
 		ret.put(COMMENTER_ID, m_commenterId);
-                ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
-                ret.put(GENERATED_TIME, m_generatedTime.toString());
-                List<Comment> subComments=SQLCommander.querySubComments(m_id, SQLCommander.INITIAL_REF_INDEX, ID, SQLHelper.DESCEND, null, SQLCommander.DIRECTION_FORWARD);
+		ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
+		ret.put(GENERATED_TIME, m_generatedTime.toString());
+		List<Comment> subComments=SQLCommander.querySubComments(m_id, SQLCommander.INITIAL_REF_INDEX, ID, SQLHelper.DESCEND, null, SQLCommander.DIRECTION_FORWARD);
 
-                ArrayNode subCommentsNode=new ArrayNode(JsonNodeFactory.instance);
-                for(Comment subComment : subComments){
-                    subCommentsNode.add(subComment.toSubCommentObjectNode());
-                }
-                ret.put(SUB_COMMENTS, subCommentsNode);
-            }catch(Exception e){
-            
-            }
-        }while(false);
+		ArrayNode subCommentsNode=new ArrayNode(JsonNodeFactory.instance);
+		for(Comment subComment : subComments){
+		    subCommentsNode.add(subComment.toSubCommentObjectNode());
+		}
+		ret.put(SUB_COMMENTS, subCommentsNode);
+	}catch(Exception e){
+
+	}
         return ret;
     }
 }
