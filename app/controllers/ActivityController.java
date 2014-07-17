@@ -46,7 +46,7 @@ public class ActivityController extends Controller {
                 }
                 return ok(result);
             } catch(Exception e){
-                System.out.println("ActivityController.query, "+e.getCause());
+                System.out.println(ActivityController.class.getName()+".query, "+e.getCause());
             }
         } while(false);
         return badRequest();
@@ -64,7 +64,7 @@ public class ActivityController extends Controller {
 			result=activityDetail.toObjectNode(userId);
 			return ok(result);
 		} catch(Exception e){
-			System.out.println("ActivityController.detail, "+e.getMessage());
+			System.out.println(ActivityController.class.getName()+".detail, "+e.getMessage());
 		}
         }while(false);
         return badRequest();
@@ -78,7 +78,7 @@ public class ActivityController extends Controller {
 			if(SQLCommander.validateOwnershipOfActivity(ownerId, activityId)==false) break;
 			return ok();
 		} catch(Exception e){
-			System.out.println("ActivityController.ownership, "+e.getMessage());
+			System.out.println(ActivityController.class.getName()+".ownership, "+e.getMessage());
 		}
 	}while(false);
         return badRequest();
@@ -89,42 +89,42 @@ public class ActivityController extends Controller {
 	response().setContentType("text/plain");
         
         do{
-            try{
-                Map<String, String[]> formData=request().body().asFormUrlEncoded();
-                String token=formData.get(User.TOKEN)[0];
-                Integer activityId=Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-                String[] appliedParticipantsJsonStrs= formData.get(ActivityDetail.APPLIED_PARTICIPANTS);
-                String[] selectedParticipantsJsonStrs= formData.get(ActivityDetail.SELECTED_PARTICIPANTS);
+		try{
+			Map<String, String[]> formData=request().body().asFormUrlEncoded();
+			String token=formData.get(User.TOKEN)[0];
+			Integer activityId=Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+			String[] appliedParticipantsJsonStrs= formData.get(ActivityDetail.APPLIED_PARTICIPANTS);
+			String[] selectedParticipantsJsonStrs= formData.get(ActivityDetail.SELECTED_PARTICIPANTS);
 
-                String appliedParticipantsJsonStr=appliedParticipantsJsonStrs.length>0?appliedParticipantsJsonStrs[0]:"[]";
-                String selectedParticipantsJsonStr=selectedParticipantsJsonStrs.length>0?selectedParticipantsJsonStrs[0]:"[]";
+			String appliedParticipantsJsonStr=appliedParticipantsJsonStrs.length>0?appliedParticipantsJsonStrs[0]:"[]";
+			String selectedParticipantsJsonStr=selectedParticipantsJsonStrs.length>0?selectedParticipantsJsonStrs[0]:"[]";
 
-                JSONArray appliedParticipantsJson= (JSONArray)JSONValue.parse(appliedParticipantsJsonStr);
-                JSONArray selectedParticipantsJson= (JSONArray)JSONValue.parse(selectedParticipantsJsonStr);
+			JSONArray appliedParticipantsJson= (JSONArray)JSONValue.parse(appliedParticipantsJsonStr);
+			JSONArray selectedParticipantsJson= (JSONArray)JSONValue.parse(selectedParticipantsJsonStr);
 
-                Integer ownerId=DataUtils.getUserIdByToken(token);
-                if(ownerId==null) break;
-                if(SQLCommander.validateOwnershipOfActivity(ownerId, activityId)==false) break;
+			Integer ownerId=DataUtils.getUserIdByToken(token);
+			if(ownerId==null) break;
+			if(SQLCommander.validateOwnershipOfActivity(ownerId, activityId)==false) break;
 
-                for(int i=0;i<appliedParticipantsJson.size();i++){
-                    Integer userId=Integer.valueOf((String)appliedParticipantsJson.get(i));
-                    boolean result=SQLCommander.updateUserActivityRelation(ownerId, userId, activityId, UserActivityRelation.applied);
-                    if(result==false){
-                        System.out.println("uid: "+userId+" activityid: "+activityId+" to relation: 0 failed");
-                    }
-                }
+			for(int i=0;i<appliedParticipantsJson.size();i++){
+			    Integer userId=Integer.valueOf((String)appliedParticipantsJson.get(i));
+			    boolean result=SQLCommander.updateUserActivityRelation(ownerId, userId, activityId, UserActivityRelation.applied);
+			    if(result==false){
+				System.out.println("uid: "+userId+" activityid: "+activityId+" to relation: 0 failed");
+			    }
+			}
 
-                for(int i=0;i<selectedParticipantsJson.size();i++){
-                    Integer userId=Integer.valueOf((String)selectedParticipantsJson.get(i));
-                    boolean result=SQLCommander.updateUserActivityRelation(ownerId, userId, activityId, UserActivityRelation.selected);
-                    if(result==false){
-                        System.out.println("uid: "+userId+" activityid: "+activityId+" to relation: 1 failed");
-                    }
-                }
-                return ok();
-      	  	} catch(Exception e){
-			    System.out.println("ActivityController.updateParticipants: "+e.getMessage());
-      	  	}
+			for(int i=0;i<selectedParticipantsJson.size();i++){
+			    Integer userId=Integer.valueOf((String)selectedParticipantsJson.get(i));
+			    boolean result=SQLCommander.updateUserActivityRelation(ownerId, userId, activityId, UserActivityRelation.selected);
+			    if(result==false){
+				System.out.println("uid: "+userId+" activityid: "+activityId+" to relation: 1 failed");
+			    }
+			}
+			return ok();
+		} catch(Exception e){
+			System.out.println(ActivityController.class.getName()+".updateParticipants: "+e.getMessage());
+		}
 
         }while(false);
 
@@ -343,7 +343,7 @@ public class ActivityController extends Controller {
 
 			return ok();
 		} catch(Exception e){
-			System.out.println("ActivityController.join, "+e.getMessage());
+			System.out.println(ActivityController.class.getName()+".join, "+e.getMessage());
 		}
         }while(false);
         return badRequest();
