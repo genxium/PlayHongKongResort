@@ -2,14 +2,23 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.SQLHelper;
-import model.Assessment;
+import model.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import play.libs.Json;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
+import utilities.DataUtils;
 
-import java.util.List;
+import java.sql.Timestamp;
+import java.util.*;
 
 public class AssessmentController extends Controller {
+
+    public static final String BUNDLE="bundle";
+
     public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer userId, Integer activityId){
         response().setContentType("text/plain");
         try{
@@ -25,7 +34,40 @@ public class AssessmentController extends Controller {
         return badRequest();
     }
 
-    public static Result submit(Integer activityId, String token, String bundle){
-        return ok();
+    public static Result submit(){
+        // define response attributes
+        response().setContentType("text/plain");
+
+        do{
+            try{
+                Http.RequestBody body = request().body();
+
+                // get file data from request body stream
+                Map<String, String[]> formData = body.asFormUrlEncoded();
+
+                String token=formData.get(User.TOKEN)[0];
+                if(token==null) break;
+                Integer userId=DataUtils.getUserIdByToken(token);
+                if(userId==null || userId==null) break;
+                User user=SQLCommander.queryUser(userId);
+                if(user==null) break;
+                Integer activityId=Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+                if(activityId==null) break;
+
+                Integer relation=SQLCommander.queryUserActivityRelation(userId, activityId);
+                if(relation==null || relation.equals(UserActivityRelation.present)==false) break;
+
+                String bundle=formData.get(BUNDLE)[0];
+                JSONArray assessmentJsons=(JSONArray)JSONValue.parse(bundle);
+                for(int i=0;i<assessmentJsons.size();i++){
+                    JSONObject assessmentJson=(JSONObject)assessmentJsons.get(i);
+
+                }
+                return ok();
+            } catch(Exception e){
+
+            }
+        }while(false);
+        return badRequest();
     }
 }

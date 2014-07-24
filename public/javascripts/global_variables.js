@@ -20,6 +20,7 @@ var g_keyUid="uid";
 // extra request keys 
 var g_keyId="id";
 var g_keyRelation="relation";
+var g_keyBundle="bundle";
 
 // structured data keys (should be consistent with server-side in a protocol manner)
 var g_keyUser="user";

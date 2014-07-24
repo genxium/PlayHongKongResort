@@ -4,6 +4,7 @@ import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import model.*;
 import org.json.simple.JSONObject;
+import scala.util.parsing.json.JSON;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,7 +33,7 @@ public class SQLCommander {
 				if(results==null || results.size()<=0) break;
 				Iterator<JSONObject> it=results.iterator();
 				if(it.hasNext()){
-					JSONObject userJson=(JSONObject)it.next();
+					JSONObject userJson=it.next();
 					user=new User(userJson);
 				}
 			} catch (Exception e) {
@@ -355,6 +356,25 @@ public class SQLCommander {
 		return ret;
 	}
 
+    public static Assessment queryAssessment(Integer activityId, Integer assessorId, Integer assesseeId){
+        Assessment ret=null;
+        try{
+            EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
+            String[] names={Assessment.ID, Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO, Assessment.CONTENT, Assessment.GENERATED_TIME};
+            String[] whereCols={Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO};
+            String[] whereOps={"=", "=", "="};
+            Object[] whereVals={activityId, assessorId, assesseeId};
+            builder.select(names).where(whereCols, whereOps, whereVals).from(Assessment.TABLE);
+            List<JSONObject> assessmentJsons=SQLHelper.select(builder);
+            if(assessmentJsons!=null && assessmentJsons.size()==1){
+                ret = new Assessment(assessmentJsons.get(0));
+            }
+        } catch (Exception e){
+
+        }
+        return ret;
+    }
+
 	public static List<Assessment> queryAssessments(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, Integer activityId){
 		List<Assessment> ret=new ArrayList<Assessment>();
 		try{
@@ -384,6 +404,35 @@ public class SQLCommander {
 		}
 		return ret;
 	}
+
+    public static boolean updateAssessment(Integer activityId, Integer assessorId, Integer assesseeId, String content){
+        boolean ret=false;
+        try{
+            EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
+            String[] whereCols={Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO};
+            String[] whereOps={"=", "=", "="};
+            Object[] whereVals={activityId, assessorId, assesseeId};
+            builder.update(Assessment.TABLE).set(Assessment.CONTENT, content).where(whereCols, whereOps, whereVals);
+            ret=SQLHelper.update(builder);
+        } catch (Exception e){
+
+        }
+        return ret;
+    }
+
+    public static int createAssessment(Integer activityId, Integer assessorId, Integer assesseeId, String content){
+        int ret=SQLHelper.INVALID;
+        try{
+            EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
+            String[] cols={Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO, Assessment.CONTENT};
+            Object[] vals={activityId, assessorId, assesseeId, content};
+            builder.insert(cols, vals).into(Assessment.TABLE);
+            ret=SQLHelper.insert(builder);
+        } catch (Exception e){
+
+        }
+        return ret;
+    }
 
 	public static boolean validateOwnershipOfActivity(int userId, int activityId){
 		boolean ret=false;

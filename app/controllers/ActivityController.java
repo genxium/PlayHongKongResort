@@ -55,32 +55,32 @@ public class ActivityController extends Controller {
     public static Result detail(Integer activityId, String token){
         response().setContentType("text/plain");
         do{
-		ObjectNode result = null;
-		try{
-			ActivityDetail activityDetail=SQLCommander.queryActivityDetail(activityId);
-			if(activityDetail==null) break;
-			Integer userId=null;
-			if(token!=null)	userId=DataUtils.getUserIdByToken(token);
-			result=activityDetail.toObjectNode(userId);
-			return ok(result);
-		} catch(Exception e){
-			System.out.println(ActivityController.class.getName()+".detail, "+e.getMessage());
-		}
+            ObjectNode result = null;
+            try{
+                ActivityDetail activityDetail=SQLCommander.queryActivityDetail(activityId);
+                if(activityDetail==null) break;
+                Integer userId=null;
+                if(token!=null)	userId=DataUtils.getUserIdByToken(token);
+                result=activityDetail.toObjectNode(userId);
+                return ok(result);
+            } catch(Exception e){
+                System.out.println(ActivityController.class.getName()+".detail, "+e.getMessage());
+            }
         }while(false);
         return badRequest();
     }
 
     public static Result ownership(String token, Integer activityId){
-	do{
-		try{
-			Integer ownerId=DataUtils.getUserIdByToken(token);
-			if(ownerId==null) break;
-			if(SQLCommander.validateOwnershipOfActivity(ownerId, activityId)==false) break;
-			return ok();
-		} catch(Exception e){
-			System.out.println(ActivityController.class.getName()+".ownership, "+e.getMessage());
-		}
-	}while(false);
+        do{
+            try{
+                Integer ownerId=DataUtils.getUserIdByToken(token);
+                if(ownerId==null) break;
+                if(SQLCommander.validateOwnershipOfActivity(ownerId, activityId)==false) break;
+                return ok();
+            } catch(Exception e){
+                System.out.println(ActivityController.class.getName()+".ownership, "+e.getMessage());
+            }
+        }while(false);
         return badRequest();
     }
 
