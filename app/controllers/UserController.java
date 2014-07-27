@@ -182,7 +182,7 @@ public class UserController extends Controller {
 			   Image previousAvatar=SQLCommander.queryImage(previousAvatarId);
 			   boolean isPreviousAvatarDeleted=ExtraCommander.deleteImageRecordAndFile(previousAvatar);
 			   if(isPreviousAvatarDeleted==true){
-				System.out.println("UserController.uploadAvatar: previous avatar file and record deleted.");    
+                System.out.println("UserController.uploadAvatar: previous avatar file and record deleted.");
 			   }
 		 
 			  return ok("Avatar uploaded");

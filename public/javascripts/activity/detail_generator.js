@@ -115,6 +115,7 @@ function generateActivityDetailViewByJson(activityJson){
 	var activityImages=activityJson[g_keyImages];
 	var appliedParticipants=activityJson[g_keyAppliedParticipants];
 	var selectedParticipants=activityJson[g_keySelectedParticipants]; 
+	var presentParticipants=activityJson[g_keyAppliedParticipants]; // hardcoded for testing only
 	var hostId=activityJson[g_keyHostId];
 	var hostName=activityJson[g_keyHostName];
 
@@ -230,6 +231,17 @@ function generateActivityDetailViewByJson(activityJson){
 
 		    }
 		});
+
+		var sectionAssessment=$("#section_assessment");
+		for(var key in presentParticipants){
+		    if(presentParticipants.hasOwnProperty(key)){
+			var userJson=presentParticipants[key];
+			var user=new User(userJson);
+			$("<div>", {
+				text: user.name
+			}).appendTo(sectionAssessment);	
+		    }
+		}
 
 		var token=$.cookie(g_keyToken);
 		if(token==null) break;

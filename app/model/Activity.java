@@ -43,9 +43,8 @@ public class Activity {
 
 	protected Timestamp m_createdTime=null;
 	public Timestamp getCreatedTime() {return m_createdTime;}
-	public void setCreatedTime(Timestamp createdTime) {m_createdTime=createdTime;}
 
-	protected Timestamp m_beginTime=null;
+    protected Timestamp m_beginTime=null;
 	public Timestamp getBeginTime() {return m_beginTime;}
 	public void setBeginTime(Timestamp beginTime) {m_beginTime=beginTime;}
 
@@ -55,17 +54,25 @@ public class Activity {
 
 	protected int m_capacity=0;
 	public int getCapacity() {return m_capacity;}
-	public void setCapacity(int capacity) {m_capacity=capacity;}
 
-	protected int m_status=CREATED;
+    protected int m_status=CREATED;
 	public int getStatus() {return m_status;}
 	public void setStatus(int status) {m_status=status;}
 
 	protected int m_hostId=0;
 	public int getHostId() {return m_hostId;}
-	public void setHostId(int hostId) {m_hostId=hostId;}
 
-	protected Activity(){
+    public boolean hasBegun(){
+        java.util.Date date= new java.util.Date();
+        return date.getTime()>m_beginTime.getTime();
+    }
+
+    public boolean isDeadlineExpired(){
+        java.util.Date date= new java.util.Date();
+        return date.getTime()>m_deadline.getTime();
+    }
+
+    protected Activity(){
 
 	}
 
