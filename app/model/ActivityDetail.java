@@ -17,6 +17,7 @@ public class ActivityDetail extends Activity {
 	public static String IMAGES ="images";
 	public static String APPLIED_PARTICIPANTS="applied_participants";
 	public static String SELECTED_PARTICIPANTS="selected_participants";
+	public static String PRESENT_PARTICIPANTS="present_participants";
 	public static String HOST_NAME="host_name";
 
 	protected List<Image> m_images=null;
@@ -27,9 +28,7 @@ public class ActivityDetail extends Activity {
 		} else{
 		    m_images=new ArrayList<Image>();
 		}
-		Iterator<Image> it=images.iterator();
-		while(it.hasNext()){
-		    Image image=it.next();
+		for(Image image : images){
 		    m_images.add(image);
 		}
 	}
@@ -42,9 +41,7 @@ public class ActivityDetail extends Activity {
 		} else{
 			m_appliedParticipants=new ArrayList<BasicUser>();
 		}
-		Iterator<BasicUser> it=appliedParticipants.iterator();
-		while(it.hasNext()){
-			BasicUser participant=it.next();
+		for(BasicUser participant : appliedParticipants){
 			m_appliedParticipants.add(participant);
 		}
 	}
@@ -57,14 +54,25 @@ public class ActivityDetail extends Activity {
 		} else{
 			m_selectedParticipants=new ArrayList<BasicUser>();
 		}
-		Iterator<BasicUser> it=selectedParticipants.iterator();
-		while(it.hasNext()){
-			BasicUser participant=it.next();
+		for(BasicUser participant : selectedParticipants){
 			m_selectedParticipants.add(participant);
 		}
 	}
 
-    	public ActivityDetail(Activity activity, List<Image> images, List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants){
+	protected List<BasicUser> m_presentParticipants=null;
+	public List<BasicUser> getPresentParticipants() {return m_presentParticipants;}
+	public void setPresentParticipants(List<BasicUser> presentParticipants){
+		if(m_presentParticipants!=null){
+			m_presentParticipants.clear();		
+		} else{
+			m_presentParticipants=new ArrayList<BasicUser>();
+		}
+		for(BasicUser participant : presentParticipants){
+			m_presentParticipants.add(participant);
+		}
+	}
+
+    	public ActivityDetail(Activity activity, List<Image> images, List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants, List<BasicUser> presentParticipants){
 		m_id=activity.getId();
 		m_title=activity.getTitle();
 		m_content=activity.getContent();
@@ -77,14 +85,16 @@ public class ActivityDetail extends Activity {
 		m_images=images;
 		m_appliedParticipants=appliedParticipants;
 		m_selectedParticipants=selectedParticipants;
+		m_presentParticipants=presentParticipants;
     	}
 
 	public ActivityDetail(JSONObject activityJson, List<Image> images,
-		List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants) {
+		List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants, List<BasicUser> presentParticipants) {
 		super(activityJson);
 		m_images=images;
 		m_appliedParticipants=appliedParticipants;
 		m_selectedParticipants=selectedParticipants;
+		m_presentParticipants=presentParticipants;
 	}
 	
 	public ObjectNode toObjectNode(Integer viewerId){
@@ -102,30 +112,26 @@ public class ActivityDetail extends Activity {
 			
 			if(m_appliedParticipants!=null && m_appliedParticipants.size()>0){
 				ArrayNode appliedParticipantsNode=new ArrayNode(JsonNodeFactory.instance);
-				Iterator<BasicUser> itParticipant=m_appliedParticipants.iterator();
-				while(itParticipant.hasNext()){
-					ObjectNode singleParticipantNode=Json.newObject();
-					BasicUser participant=itParticipant.next();
-					singleParticipantNode.put(BasicUser.ID, participant.getId());
-					singleParticipantNode.put(BasicUser.EMAIL, participant.getEmail());
-					singleParticipantNode.put(BasicUser.NAME, participant.getName());
-					appliedParticipantsNode.add(singleParticipantNode);
+				for(BasicUser participant : m_appliedParticipants){
+					appliedParticipantsNode.add(participant.toObjectNode(viewerId));
 				}
 				ret.put(ActivityDetail.APPLIED_PARTICIPANTS, appliedParticipantsNode);
 			}
 			
 			if(m_selectedParticipants!=null && m_selectedParticipants.size()>0){
 				ArrayNode  selectedParticipantsNode=new ArrayNode(JsonNodeFactory.instance);
-				Iterator<BasicUser> itParticipant=m_selectedParticipants.iterator();
-				while(itParticipant.hasNext()){
-					ObjectNode singleParticipantNode=Json.newObject();
-					BasicUser participant=itParticipant.next();
-				    	singleParticipantNode.put(BasicUser.ID, participant.getId());
-					singleParticipantNode.put(BasicUser.EMAIL, participant.getEmail());
-					singleParticipantNode.put(BasicUser.NAME, participant.getName());
-					selectedParticipantsNode.add(singleParticipantNode);
+				for(BasicUser participant : m_selectedParticipants){
+					selectedParticipantsNode.add(participant.toObjectNode(viewerId));
 				}
 				ret.put(ActivityDetail.SELECTED_PARTICIPANTS, selectedParticipantsNode);
+			}
+		
+			if(m_presentParticipants!=null && m_presentParticipants.size()>0){
+				ArrayNode presentParticipantsNode=new ArrayNode(JsonNodeFactory.instance);
+				for(BasicUser participant : m_presentParticipants){
+					presentParticipantsNode.add(participant.toObjectNode(viewerId));
+				}
+				ret.put(ActivityDetail.PRESENT_PARTICIPANTS, presentParticipantsNode);
 			}
 
 			User user=SQLCommander.queryUser(m_hostId);

@@ -173,8 +173,9 @@ public class SQLCommander {
 			List<Image> images=queryImages(activityId);
 			List<BasicUser> appliedParticipants=SQLCommander.queryUsers(activityId, UserActivityRelation.applied);
 			List<BasicUser> selectedParticipants=SQLCommander.queryUsers(activityId, UserActivityRelation.selected);
+			List<BasicUser> presentParticipants=SQLCommander.queryUsers(activityId, UserActivityRelation.present);
 
-			activityDetail=new ActivityDetail(activity, images, appliedParticipants, selectedParticipants);
+			activityDetail=new ActivityDetail(activity, images, appliedParticipants, selectedParticipants, presentParticipants);
 		} catch (Exception e){
 			System.out.println(SQLCommander.class.getName()+".queryActivityDetail, "+e.getMessage());
 		}

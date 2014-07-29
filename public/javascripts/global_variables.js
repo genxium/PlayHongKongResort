@@ -45,6 +45,7 @@ var g_keyHostName="host_name";
 	 
 var g_keyAppliedParticipants="applied_participants";
 var g_keySelectedParticipants="selected_participants";
+var g_keyPresentParticipants="present_participants";
 
 var g_keyUrl="url";
 

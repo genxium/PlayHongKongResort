@@ -115,7 +115,7 @@ function generateActivityDetailViewByJson(activityJson){
 	var activityImages=activityJson[g_keyImages];
 	var appliedParticipants=activityJson[g_keyAppliedParticipants];
 	var selectedParticipants=activityJson[g_keySelectedParticipants]; 
-	var presentParticipants=activityJson[g_keyAppliedParticipants]; // hardcoded for testing only
+	var presentParticipants=activityJson[g_keyPresentParticipants]; 
 	var hostId=activityJson[g_keyHostId];
 	var hostName=activityJson[g_keyHostName];
 
