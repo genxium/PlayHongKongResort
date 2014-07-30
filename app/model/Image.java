@@ -13,10 +13,11 @@ import org.apache.commons.io.FilenameUtils;
 public class Image {
 
 	public static String PROD_URL_PREFIX="/images/";
-    public static String DEV_URL_PREFIX="/assets/images/";
-    public static String PROD_FOLDER_PATH="/var/www/html/images/";
-    public static String DEV_FOLDER_PATH=Play.application().path().getAbsolutePath()+"/public/images/";
-    public static String TABLE="image";
+	public static String DEV_URL_PREFIX="/assets/images/";
+	public static String PROD_FOLDER_PATH="/var/www/html/images/";
+	public static String DEV_FOLDER_PATH=Play.application().path().getAbsolutePath()+"/public/images/";
+
+	public static String TABLE="image";
 	public static String ID="id";
 	public static String URL="url";
 	
@@ -28,43 +29,41 @@ public class Image {
 	public String getImageURL() {return m_imageURL;}
 	public void setImageURL(String imageURL) {m_imageURL=imageURL;}
 
-    public static String getUrlPrefix(){
-        if(Play.application().isProd()) return PROD_URL_PREFIX;
-        else return DEV_URL_PREFIX;
-    }
+	public static String getUrlPrefix(){
+		if(Play.application().isProd()) return PROD_URL_PREFIX;
+		else return DEV_URL_PREFIX;
+	}
 
-    public static String getFolderPath(){
-        if(Play.application().isProd()) return PROD_FOLDER_PATH;
-        else return DEV_FOLDER_PATH;
-    }
+	public static String getFolderPath(){
+		if(Play.application().isProd()) return PROD_FOLDER_PATH;
+		else return DEV_FOLDER_PATH;
+	}
 
 	public String getAbsolutePath(){
 		String baseName=FilenameUtils.getBaseName(m_imageURL);
 		String extension=FilenameUtils.getExtension(m_imageURL);
-        return getFolderPath()+baseName+"."+extension;
+		return getFolderPath()+baseName+"."+extension;
 	}
     
 	public Image(JSONObject imageJson){
 		try{
-		    if(imageJson.containsKey(ID)){
-			    m_imageId=(Integer)imageJson.get(Image.ID);
-		    }
-		    m_imageURL=(String)imageJson.get(Image.URL);
+			if(imageJson.containsKey(ID)){
+				m_imageId=(Integer)imageJson.get(Image.ID);
+			}
+			m_imageURL=(String)imageJson.get(Image.URL);
 		} catch(Exception e){
 		     
 		}
 	}
 
-    public ObjectNode toObjectNode(){
-        ObjectNode ret= Json.newObject();
-        do {
-            try{
-                ret.put(ID, m_imageId);
-                ret.put(URL, m_imageURL);
-            } catch (Exception e){
+	public ObjectNode toObjectNode(){
+		ObjectNode ret= Json.newObject();
+		try{
+			ret.put(ID, m_imageId);
+			ret.put(URL, m_imageURL);
+		} catch (Exception e){
 
-            }
-        }while(false);
-        return ret;
-    }
+		}
+		return ret;
+	}
 }

@@ -2,6 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.SQLHelper;
+import dao.EasyPreparedStatementBuilder;
 import model.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -60,8 +61,10 @@ public class AssessmentController extends Controller {
                 String bundle=formData.get(BUNDLE)[0];
                 JSONArray assessmentJsons=(JSONArray)JSONValue.parse(bundle);
                 for(int i=0;i<assessmentJsons.size();i++){
-                    JSONObject assessmentJson=(JSONObject)assessmentJsons.get(i);
-
+			JSONObject assessmentJson=(JSONObject)assessmentJsons.get(i);
+			Assessment assessment=new Assessment(assessmentJson);
+			if(!SQLCommander.isUserAssessable(assessment.getFrom(), assessment.getTo(), assessment.getActivityId())) continue;
+			EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();	
                 }
                 return ok();
             } catch(Exception e){

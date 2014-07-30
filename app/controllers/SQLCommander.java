@@ -513,6 +513,59 @@ public class SQLCommander {
 		return ret;
 	}
 
+	public static boolean isActivityCommentable(Integer from, Integer to, Integer activityId){
+		boolean ret=false;
+		do {
+			if(from==null) break;
+			if(to==null) break;
+			if(activityId==null) break;
+			Activity activity=queryActivity(activityId);	
+			if(activity==null) break;
+			ret=isActivityCommentable(from, to, activity);					
+		} while(false); 		
+		return ret;
+	}
+
+	public static boolean isActivityCommentable(Integer from, Integer to, Activity activity){
+		boolean ret=false;
+		do {
+			if(from==null) break;
+			if(to==null) break;
+			if(activity==null) break;
+			if(activity.hasBegun()) break;		
+			ret=true;
+		} while(false); 		
+		return ret;
+	}
+
+	public static boolean isUserAssessable(Integer from, Integer to, Integer activityId){
+		boolean ret=false;
+		do{
+			if(from==null) break;
+			if(to==null) break;
+			if(activityId==null) break;
+			Activity activity=queryActivity(activityId);
+			if(activity==null) break;
+			ret=isUserAssessable(from, to, activity);		
+		}while(false);	
+		return ret;
+	}
+
+	public static boolean isUserAssessable(Integer from, Integer to, Activity activity){
+		boolean ret=false;
+		do{
+			if(from==null) break;
+			if(to==null) break;
+			if(activity==null) break;
+			if(!activity.hasBegun()) break;
+			int relation1=queryUserActivityRelation(from, activity.getId()); 
+			int relation2=queryUserActivityRelation(to, activity.getId());
+			if(relation1!=UserActivityRelation.present || relation2!=UserActivityRelation.present) break;
+			ret=true;
+		}while(false);
+		return ret;
+	}
+
 	public static boolean acceptActivity(User user, Activity activity){
 		boolean ret=false;
 		do{

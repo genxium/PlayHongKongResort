@@ -36,7 +36,7 @@ public class Assessment {
 
     public Integer getId() {return m_id;}
     public String getContent() {return m_content;}
-    public Integer getCommenterId() {return m_from;}
+    public Integer getFrom() {return m_from;}
     public Integer getActivityId() {return m_activityId;}
     public Integer getTo() {return m_to;}
     public Timestamp getGeneratedTime() {return m_generatedTime;}
