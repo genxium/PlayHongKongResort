@@ -63,8 +63,10 @@ public class AssessmentController extends Controller {
                 for(int i=0;i<assessmentJsons.size();i++){
 			JSONObject assessmentJson=(JSONObject)assessmentJsons.get(i);
 			Assessment assessment=new Assessment(assessmentJson);
+			Assessment existingAssessment=SQLCommander.queryAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo());
+			if(existingAssessment!=null) continue;
 			if(!SQLCommander.isUserAssessable(assessment.getFrom(), assessment.getTo(), assessment.getActivityId())) continue;
-			EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();	
+			int res=SQLCommander.createAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo(), assessment.getContent());	
                 }
                 return ok();
             } catch(Exception e){
