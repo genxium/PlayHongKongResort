@@ -41,7 +41,7 @@ function onBtnJoinClicked(evt){
 	var activityId=$(this).data(g_keyId);
 
 	var params={};
-	params[g_keyId]=activityId;
+	params[g_keyActivityId]=activityId;
 	params[g_keyToken]=token;
 
 	try{

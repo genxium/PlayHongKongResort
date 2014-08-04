@@ -566,6 +566,31 @@ public class SQLCommander {
 		return ret;
 	}
 
+	public static boolean isActivityMarkable(Integer userId, Integer activityId){
+		boolean ret=false;
+		do{
+			if(userId==null) break;
+			if(activityId==null) break;
+			Activity activity=queryActivity(activityId);
+			if(activity==null) break;
+			ret=isActivityMarkable(userId, activity);
+		}while(false);
+		return ret;
+	}
+
+	public static boolean isActivityMarkable(Integer userId, Activity activity){
+		boolean ret=false;
+		do{
+			if(userId==null) break;
+			if(activity==null) break;
+			if(!activity.hasBegun()) break;
+			int relation=queryUserActivityRelation(userId, activity.getId());
+			if(relation!=UserActivityRelation.selected) break;
+			ret=true;
+		}while(false);
+		return ret;
+	}
+
 	public static boolean acceptActivity(User user, Activity activity){
 		boolean ret=false;
 		do{

@@ -1,43 +1,50 @@
-var g_assessmentEditor=null;
-
 /*
-	generateAssessmentEditor(participants: User[])
+	Trying out new style of info gathering for DOMs
 */
-function generateAssessmentEditor(participants){
-	var ret=$("<div>");
-	for(var i=0;i<participants.length;i++){
-		var participant=participants[i];
-		var row=generateSingleAssessmentEditor(participant);	
-		ret.append(row);
-	}	
-	return ret;
+function SingleAssessmentEditor(){
+	this.name = "";
+	this.content = "";
+	this.lock = false;
 }
 
 /*
-	generateSingleAssessmentEditor(participant: User)
+	generateAssessmentEditor(par: DOM, participant: User)
 */
-function generateSingleAssessmentEditor(participant){
-	var ret=$('<p>');
+function generateAssessmentEditor(par, participant){
+	var singleEditor = new SingleAssessmentEditor();
+	var row=$('<p>').appendTo(par);
 	var name=$('<plaintext>', {
 		text: participant.name
-		class: 'name'
-	}).appendTo(ret);	
+	}).appendTo(ret);
+	singleEditor.name = participant.name; // name is a static part
 	var content=$('<input>', {
 		type: 'text'
-		class: 'content'	
-	}).appendTo(ret); 
-	var lock=$('<checkbox>', {
-		style: 'color: red',	
-		class: 'lock'
-	}).appendTo(ret);
-	return ret;	
+	}).appendTo(row); 
+	content.on("input paste keyup", {editor: singleEditor}, function(evt){
+		var data = evt.data;
+		var editor = data.editor;
+		editor.content = $(this).val();	
+	});	
+	var lock=$('<checkbox>').appendTo(row);
+	lock.on("change", {editor: singleEditor}, function(){
+		var data = evt.data;
+		var editor = data.editor;
+		editor.lock=$(this).is(':checked');
+	});
+	return singleEditor;	
 }
 
 /*
+	generateAssessmentEditors(par: DOM, participants: User[])
 */
-function getAssessment(singleEditor){
-	var name=$(singleEditor.children('.name')[0]).attr('text');	
-	var content=$(singleEditor.children('.content')[0]).val();
-	var lock=$(singleEditor.children('.lock')[0]).is(':checked');
+function generateAssessmentEditors(par, participants){
+	var editors=new Array();
+	var section=$('<div>').appendTo(par);		
+	for(var i=0;i<participants.length;i++){
+		var participant = participants[i];
+		var editor = generateAssessmentEditor(section, participant);	
+		editors.push(editor);
+	}	
+	return editors;
 }
 

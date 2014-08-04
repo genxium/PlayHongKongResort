@@ -233,15 +233,15 @@ function generateActivityDetailViewByJson(activityJson){
 		});
 
 		var sectionAssessment=$("#section_assessment");
+		var uses=new Array();
 		for(var key in presentParticipants){
 		    if(presentParticipants.hasOwnProperty(key)){
 			var userJson=presentParticipants[key];
 			var user=new User(userJson);
-			$("<div>", {
-				text: user.name
-			}).appendTo(sectionAssessment);	
+			users.push(user);
 		    }
 		}
+		var assessmentEditors=generateAssessmentEditors(sectionAssessment, users);	
 
 		var token=$.cookie(g_keyToken);
 		if(token==null) break;

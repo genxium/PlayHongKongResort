@@ -22,6 +22,7 @@ POST /activity/save controllers.ActivityController.save()
 PUT /activity/submit controllers.ActivityController.submit()
 GET /activity/query controllers.ActivityController.query(ref_index: String ?=null, num_items: Integer ?=null, direction: Integer ?=null, token: String ?= null, user_id: Integer ?=null, relation: Integer ?=null, status: Integer ?=null)
 GET /activity/detail controllers.ActivityController.detail(activity_id: Integer ?=null, token: String ?=null)
+PUT /activity/mark controllers.ActivityController.mark()
 
 # Profile
 GET /user/profile/show controllers.UserController.showProfile()
