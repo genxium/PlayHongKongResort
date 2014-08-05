@@ -209,31 +209,24 @@ function generateActivityDetailViewByJson(activityJson){
 		params[g_keyRefIndex]=0;
 		params[g_keyNumItems]=20;
 		params[g_keyDirection]=1;		
-
-		// query comments
-		$.ajax({
-		    type: "GET",
-		    url: "/comment/query",
-		    data: params,
-		    success: function(data, status, xhr){
-				var sectionComment=$("#section_comment");
-				sectionComment.empty();
-				var jsonResponse=JSON.parse(data);
-				if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
-				    for(var key in jsonResponse){
-						var commentJson=jsonResponse[key];
-						var row=generateCommentCell(commentJson, activityId).appendTo(sectionComment);
-						$('<br>').appendTo(sectionComment);
-				    }
-				}
-		    },
-		    error: function(xhr, status, err){
-
-		    }
-		});
+		
+		var onSuccess=function(data, status, xhr){
+			var sectionComment=$("#section_comment");
+			sectionComment.empty();
+			var jsonResponse=JSON.parse(data);
+			if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
+			    for(var key in jsonResponse){
+					var commentJson=jsonResponse[key];
+					var row=generateCommentCell(commentJson, activityId).appendTo(sectionComment);
+					$('<br>').appendTo(sectionComment);
+			    }
+			}
+		};
+		var onError=function(xhr, status, err){};
+		queryComments(onSuccess, onError);			
 
 		var sectionAssessment=$("#section_assessment");
-		var uses=new Array();
+		var users=new Array();
 		for(var key in presentParticipants){
 		    if(presentParticipants.hasOwnProperty(key)){
 			var userJson=presentParticipants[key];
@@ -241,7 +234,8 @@ function generateActivityDetailViewByJson(activityJson){
 			users.push(user);
 		    }
 		}
-		var assessmentEditors=generateAssessmentEditors(sectionAssessment, users);	
+
+		var batchAssessmentEditor=generateBatchAssessmentEditor(sectionAssessment, users);	
 
 		var token=$.cookie(g_keyToken);
 		if(token==null) break;

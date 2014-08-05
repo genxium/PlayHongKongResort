@@ -1,6 +1,16 @@
 var g_minContentLength=5;
 var g_replyEditor=null;
 
+function queryComments(onSuccess, onError){
+	$.ajax({
+	    type: "GET",
+	    url: "/comment/query",
+	    data: params,
+	    success: onSuccess,
+	    error: onError 
+	});
+}
+
 function removeReplyEditor(){
     if(g_replyEditor){
         g_replyEditor.remove();
@@ -17,20 +27,12 @@ function generateReplyEditor(activityId, parentId, predecessorId, toUsername){
         text: "SUBMIT REPLY",
         style: "color: white; background-color: gray; border: none"
     }).appendTo(ret);
-    btnSubmit.data(g_keyActivityId, activityId);
-    btnSubmit.data(g_keyParentId, parentId);
-    btnSubmit.data(g_keyPredecessorId, predecessorId);
 
-    btnSubmit.on("click", function(evt){
+    btnSubmit.on("click", {activityId: activityId, parentId: parentId, predecessorId: predecessorId, input: input}, function(evt){
 		do{
 			evt.preventDefault();
-			var btn=$(this);
-			var editor=btn.closest('p');
-			var input=editor.children('input');
-			var content=input.val();
-			var activityId=btn.data(g_keyActivityId);
-			var parentId=btn.data(g_keyParentId);
-			var predecessorId=btn.data(g_keyPredecessorId);
+			var data=evt.data;
+			var content=data.input.val();
 			var token=$.cookie(g_keyToken);
 
 			if(content==null || content.length<=g_minContentLength) {
@@ -40,9 +42,9 @@ function generateReplyEditor(activityId, parentId, predecessorId, toUsername){
 
 			var params={};
 			params[g_keyContent]=content;
-			params[g_keyParentId]=parentId;
-			params[g_keyPredecessorId]=predecessorId;
-			params[g_keyActivityId]=activityId;
+			params[g_keyParentId]=data.parentId;
+			params[g_keyPredecessorId]=data.predecessorId;
+			params[g_keyActivityId]=data.activityId;
 			params[g_keyToken]=token;
 
 			$.ajax({
@@ -112,19 +114,12 @@ function generateCommentCell(commentJson, activityId){
 		    // root comment
 		    parentId=predecessorId;
 		}
-		btnReply.data(g_keyActivityId, activityId);
-		btnReply.data(g_keyParentId, parentId);
-		btnReply.data(g_keyPredecessorId, predecessorId);
-			btnReply.data("CommentCell", ret);
-		btnReply.on("click", function(){
-		    removeReplyEditor();
-		    var btn=$(this);
-		    var activityId=btn.data(g_keyActivityId);
-		    var parentId=btn.data(g_keyParentId);
-		    var predecessorId=btn.data(g_keyPredecessorId);
-		    g_replyEditor=generateReplyEditor(activityId, parentId, predecessorId, commentJson[g_keyCommenterName]);
-		    var commentCell=btn.data("CommentCell");
-		    commentCell.append(g_replyEditor);
+		btnReply.on("click", {activityId: activityId, parentId: parentId, predecessorId: predecessorId, cell: ret}, function(evt){
+			evt.preventDefault();
+			var data=evt.data;
+			removeReplyEditor();
+			g_replyEditor=generateReplyEditor(data.activityId, data.parentId, data.predecessorId, commentJson[g_keyCommenterName]);
+			data.cell.append(g_replyEditor);
 		});
 	} while(false);
 
@@ -190,19 +185,12 @@ function generateSubCommentCell(commentJson, activityId){
             // root comment
             parentId=predecessorId;
         }
-        btnReply.data(g_keyActivityId, activityId);
-        btnReply.data(g_keyParentId, parentId);
-        btnReply.data(g_keyPredecessorId, predecessorId);
-		btnReply.data("CommentCell", ret);
-        btnReply.on("click", function(){
-            removeReplyEditor();
-            var btn=$(this);
-            var activityId=btn.data(g_keyActivityId);
-            var parentId=btn.data(g_keyParentId);
-            var predecessorId=btn.data(g_keyPredecessorId);
-            g_replyEditor=generateReplyEditor(activityId, parentId, predecessorId, commentJson[g_keyCommenterName]);
-            var commentCell=btn.data("CommentCell");
-            commentCell.append(g_replyEditor);
+        btnReply.on("click", {activityId: activityId, parentId: parentId, predecessorId: predecessorId, cell: ret}, function(evt){
+		evt.preventDefault();
+		var data=evt.data;
+		removeReplyEditor();
+		g_replyEditor=generateReplyEditor(data.activityId, data.parentId, data.predecessorId, commentJson[g_keyCommenterName]);
+		data.cell.append(g_replyEditor);
         });
     }while(false);
     return ret;
@@ -243,7 +231,7 @@ function generateCommentEditor(activityId){
 				url: "/comment/submit",
 				data: params,
 				success: function(data, status, xhr){
-					location.reload();
+					location.reload();	
 				},
 				error: function(xhr, status, err){
 					alert("Comment not submitted...");

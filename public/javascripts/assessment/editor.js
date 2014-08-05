@@ -7,6 +7,12 @@ function SingleAssessmentEditor(){
 	this.lock = false;
 }
 
+function BatchAssessmentEditor(){
+	this.switchAttendency=null;
+	this.selectAll=null;
+	this.editors=null;	
+}
+
 /*
 	generateAssessmentEditor(par: DOM, participant: User)
 */
@@ -25,7 +31,9 @@ function generateAssessmentEditor(par, participant){
 		var editor = data.editor;
 		editor.content = $(this).val();	
 	});	
-	var lock=$('<checkbox>').appendTo(row);
+	var lock=$('<input>', {
+		type:"checkbox"
+	}).appendTo(row);
 	lock.on("change", {editor: singleEditor}, function(){
 		var data = evt.data;
 		var editor = data.editor;
@@ -34,17 +42,53 @@ function generateAssessmentEditor(par, participant){
 	return singleEditor;	
 }
 
-/*
-	generateAssessmentEditors(par: DOM, participants: User[])
-*/
-function generateAssessmentEditors(par, participants){
+function generateBatchAssessmentEditor(par, participants){
+	var batchEditor=new BatchAssessmentEditor();
 	var editors=new Array();
 	var section=$('<div>').appendTo(par);		
-	for(var i=0;i<participants.length;i++){
-		var participant = participants[i];
-		var editor = generateAssessmentEditor(section, participant);	
-		editors.push(editor);
-	}	
-	return editors;
+	var switchAttendencyContainer=$("<div class='onoffswitch'>").appendTo(section);
+	var switchAttendency=$("<input type='checkbox' class='onoffswitch-checkbox' id='switch_attendency' checked>").appendTo(switchAttendencyContainer);	
+	var label=$("<label class='onoffswitch-label' for='switch_attendency'>").appendTo(switchAttendencyContainer);
+	$("<span class='onoffswitch-inner'>").appendTo(label);
+	$("<span class='onoffswitch-switch'>").appendTo(label);	
+
+	var onSuccess=function(data, status, xhr){
+		for(var i=0;i<participants.length;i++){
+			var participant = participants[i];
+			var editor = generateAssessmentEditor(section, participant);	
+			editors.push(editor);
+		}	
+		batchEditor.editors=editors;
+	};
+
+	var onError=function(xhr, status, err){};
+		
+	switchAttendency.on("change", function(evt){
+		var attendency=$(this).is(":checked");
+		if(attendency==true){
+			updateAttendency(activityId, attendency, onSuccess, onError);	
+		} else {
+			
+		}
+	});
+		
+	return batchEditor;
 }
 
+function updateAttendency(activityId, attendency, onSuccess, onError){
+	do{
+		var token=$.cookie(g_keyToken);
+		if(token==null) break; 
+		var params={};
+		params[g_keyRelation]=attendency;
+		params[g_keyToken]=token;
+		params[g_keyActivityId]=activityId;
+		$.ajax({
+			type: "PUT",
+			url: "/activity/mark",
+			data: params,
+			success: onSuccess,
+			error: onError
+		});
+	}while(false);
+}
