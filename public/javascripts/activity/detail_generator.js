@@ -109,24 +109,15 @@ function onBtnSubmitClicked(evt){
 
 // Generators
 function generateActivityDetailViewByJson(activityJson){
-	var activityId=activityJson[g_keyId];
-	var activityTitle=activityJson[g_keyTitle];
-	var activityContent=activityJson[g_keyContent];
-	var activityImages=activityJson[g_keyImages];
-	var appliedParticipants=activityJson[g_keyAppliedParticipants];
-	var selectedParticipants=activityJson[g_keySelectedParticipants]; 
-	var presentParticipants=activityJson[g_keyPresentParticipants]; 
-	var hostId=activityJson[g_keyHostId];
-	var hostName=activityJson[g_keyHostName];
-
+    var activity=new Activity(activityJson);
 	var ret=$('<div>');
 
 	var title=$('<p>',{
-		text: activityTitle.toString(),
+		text: activity.title.toString(),
 		style: "font-size: 18pt; color: blue"
 	}).appendTo(ret);
 
-	if(hostId!=null && hostName!=null){
+	if(activity.host.id=null && activity.host.name!=null){
 		var d=$('<div>', {
 			style: "margin-bottom: 5pt"
 		}).appendTo(ret);
@@ -138,30 +129,26 @@ function generateActivityDetailViewByJson(activityJson){
 			style: "margin-left: 5pt"	
 		}).appendTo(d);
 		var host=$('<a>', {
-			href: '/user/profile?'+g_keyUserId+"="+hostId.toString(),
-			text: hostName
+			href: '/user/profile?'+g_keyUserId+"="+activity.host.id.toString(),
+			text: activity.host.name
 		}).appendTo(sp2);
 	}	
 
 	var content=$('<div>',{
-		text: activityContent.toString(),
+		text: activity.content.toString(),
 		style: "font-size: 15pt"
 	}).appendTo(ret); 	
 
 	do{
-		if(activityImages==null) break;
+		if(activity.images==null) break;
 		var imagesNode=$('<p>',{
 		    
 		}).appendTo(ret);
 
-		for(var key in activityImages){
-		   if(activityImages.hasOwnProperty(key)){
-		       var activityImage=activityImages[key];
-		       var imageUrl=activityImage[g_keyUrl];
-		       var imageNode=$('<img>',{
-			    src: imageUrl.toString()   
-		       }).appendTo(imagesNode);
-		   }
+		for(var i=0;i<activity.images.length;++i){
+           var imageNode=$('<img>',{
+                src: activity.images[i].url.toString()
+           }).appendTo(imagesNode);
 		}
 
 		var sectionParticipant=$("#section_participant");
@@ -171,9 +158,8 @@ function generateActivityDetailViewByJson(activityJson){
 		}).appendTo(sectionParticipant);
 
 		var labels=new Array();
-		for(var key in selectedParticipants){
-		    if(selectedParticipants.hasOwnProperty(key)){
-			selectedParticipant=selectedParticipants[key];
+		for(var i=0;i<activity.selectedParticipants.length;++i){
+		    var selectedParticipant=activity.selectedParticipants[i];
 			var email=selectedParticipant[g_keyEmail];
 			var userId=selectedParticipant[g_keyId];
 			var label=$('<label>', {
@@ -184,28 +170,24 @@ function generateActivityDetailViewByJson(activityJson){
 			label.data(g_keyId, userId);
 			labels.push(label);
 			$('<br>').appendTo(selectionForm);
-			
-		    }
 		}
 
-		for(var key in appliedParticipants){
-		    if(appliedParticipants.hasOwnProperty(key)){
-			appliedParticipant=appliedParticipants[key];
-			var email=appliedParticipant[g_keyEmail];
-			var userId=appliedParticipant[g_keyId];
-			var label=$('<label>', {
-			    text: email,
-			}).appendTo(selectionForm);
-			label.css("background-color", "pink");
-			label.data(g_indexParticipantSelectionStatus, g_statusApplied);
-			label.data(g_keyId, userId);
-			labels.push(label);
-			$('<br>').appendTo(selectionForm);
-		    }
+		for(var i=0;i<activity.appliedParticipants.length;++i){
+		    var appliedParticipant=activity.appliedParticipants[i];
+            var email=appliedParticipant[g_keyEmail];
+            var userId=appliedParticipant[g_keyId];
+            var label=$('<label>', {
+                text: email,
+            }).appendTo(selectionForm);
+            label.css("background-color", "pink");
+            label.data(g_indexParticipantSelectionStatus, g_statusApplied);
+            label.data(g_keyId, userId);
+            labels.push(label);
+            $('<br>').appendTo(selectionForm);
 		}
 	
 		var params={};
-		params[g_keyActivityId]=activityId;
+		params[g_keyActivityId]=activity.id;
 		params[g_keyRefIndex]=0;
 		params[g_keyNumItems]=20;
 		params[g_keyDirection]=1;		
@@ -217,32 +199,23 @@ function generateActivityDetailViewByJson(activityJson){
 			if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
 			    for(var key in jsonResponse){
 					var commentJson=jsonResponse[key];
-					var row=generateCommentCell(commentJson, activityId).appendTo(sectionComment);
+					var row=generateCommentCell(commentJson, activity.id).appendTo(sectionComment);
 					$('<br>').appendTo(sectionComment);
 			    }
 			}
 		};
 		var onError=function(xhr, status, err){};
-		queryComments(onSuccess, onError);			
+		queryComments(params, onSuccess, onError);			
 
 		var sectionAssessment=$("#section_assessment");
-		var users=new Array();
-		for(var key in presentParticipants){
-		    if(presentParticipants.hasOwnProperty(key)){
-			var userJson=presentParticipants[key];
-			var user=new User(userJson);
-			users.push(user);
-		    }
-		}
-
-		var batchAssessmentEditor=generateBatchAssessmentEditor(sectionAssessment, users);	
+		var batchAssessmentEditor=generateBatchAssessmentEditor(sectionAssessment, activity.presentParticipants);
 
 		var token=$.cookie(g_keyToken);
 		if(token==null) break;
 
 		var params={};
 		params[g_keyToken]=token;
-		params[g_keyActivityId]=activityId;
+		params[g_keyActivityId]=activity.id;
 
 		$.ajax({
 			type: "GET",
@@ -273,7 +246,7 @@ function generateActivityDetailViewByJson(activityJson){
 						style: 'color: white; background-color:black; font-size: 13pt'
 					}).appendTo(selectionForm);
 					btnSubmit.on("click", onBtnSubmitClicked);
-					selectionForm.data(g_keyActivityId, activityId);
+					selectionForm.data(g_keyActivityId, activity.id);
 				}
 				$('<hr>').appendTo(selectionForm);
 			},
@@ -282,7 +255,7 @@ function generateActivityDetailViewByJson(activityJson){
 			}
 		});
 
-		var commentEditor=generateCommentEditor(activityId);
+		var commentEditor=generateCommentEditor(activity.id);
 		ret.append(commentEditor);
 
 	}while(false);

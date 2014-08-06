@@ -18,19 +18,21 @@ public class Activity {
 	public static int ACCEPTED=3;
 	public static int EXPIRED=4;
 
-	public static String TABLE ="activity";
-	public static String ID ="id";
+	public static String TABLE="activity";
+	public static String ID="id";
 	public static String TITLE="title";
-	public static String CONTENT ="content";
-	public static String CREATED_TIME ="created_time";
-	public static String BEGIN_TIME ="begin_time";
-	public static String DEADLINE ="application_deadline";
-	public static String CAPACITY ="capacity";
-	public static String STATUS ="status";
-	public static String HOST_ID = "host_id";
+	public static String CONTENT="content";
+	public static String CREATED_TIME="created_time";
+	public static String BEGIN_TIME="begin_time";
+	public static String DEADLINE="application_deadline";
+	public static String CAPACITY="capacity";
+	public static String STATUS="status";
+    public static String HOST_ID="host_id";
+	public static String HOST="host";
+    public static String VIEWER="viewer";
 
-	protected int m_id=0;
-	public int getId() {return m_id;}
+    protected int m_id=0;
+    public int getId(){return m_id;}
 	public void setId(int id) {m_id=id;}
 
 	protected String m_title=null;
@@ -59,8 +61,9 @@ public class Activity {
 	public int getStatus() {return m_status;}
 	public void setStatus(int status) {m_status=status;}
 
-	protected int m_hostId=0;
-	public int getHostId() {return m_hostId;}
+    protected User m_host=null;
+    public User getHost() {return m_host;}
+    public void setHost(User host) {m_host=host;}
 
 	public boolean isDeadlineExpired(){
 		java.util.Date date= new java.util.Date();
@@ -76,7 +79,7 @@ public class Activity {
 
 	}
 
-	public Activity(JSONObject activityJson){
+	public Activity(JSONObject activityJson, User host){
 		try{
 			if(activityJson.containsKey(ID))
 				m_id=(Integer)activityJson.get(ID);
@@ -94,8 +97,8 @@ public class Activity {
 				m_capacity=(Integer)activityJson.get(CAPACITY);
 			if(activityJson.containsKey(STATUS))
 				m_status=(Integer)activityJson.get(STATUS);
-			if(activityJson.containsKey(HOST_ID))
-				m_hostId=(Integer)activityJson.get(HOST_ID);
+            if(host!=null)
+                m_host=host;
 		}catch(Exception e){
 			System.out.println("Activity, "+e.getMessage());
 		}
@@ -111,13 +114,13 @@ public class Activity {
 			ret.put(Activity.BEGIN_TIME, m_beginTime.toString());
 			ret.put(Activity.DEADLINE, m_deadline.toString());
 			ret.put(Activity.CAPACITY, String.valueOf(m_capacity));
-			ret.put(Activity.HOST_ID, String.valueOf(m_hostId));
-			if(viewerId!=null) { 
+            ret.put(Activity.HOST, m_host.toObjectNode(viewerId));
+			if(viewerId!=null) {
 				int relation=SQLCommander.queryUserActivityRelation(viewerId, m_id);
 				if(relation!= UserActivityRelation.invalid)	ret.put(UserActivityRelation.RELATION, relation);
-				User user=SQLCommander.queryUser(viewerId);
-				if(viewerId.equals(m_hostId)) ret.put(Activity.STATUS, String.valueOf(m_status));
-				if(user!=null && user.getGroupId()==User.ADMIN) ret.put(Activity.STATUS, String.valueOf(m_status));
+				User viewer=SQLCommander.queryUser(viewerId);
+				if(viewerId.equals(m_host.getId())) ret.put(Activity.STATUS, String.valueOf(m_status));
+				if(viewer!=null && viewer.getGroupId()==User.ADMIN) ret.put(Activity.STATUS, String.valueOf(m_status));
 			}
 		} catch (Exception e){
 			System.out.println("Activity.toObjectNode, "+e.getMessage());

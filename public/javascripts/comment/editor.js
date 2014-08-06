@@ -1,13 +1,18 @@
 var g_minContentLength=5;
 var g_replyEditor=null;
 
-function queryComments(onSuccess, onError){
+var m_onAssessmentQuerySuccess=null;
+var m_onAssessmentQueryError=null;
+
+function queryComments(params, onSuccess, onError){
+    if(onSuccess!=null) m_onAssessmentQuerySuccess=onSuccess;
+    if(onError!=null) m_onAssessmentQueryError=onError;
 	$.ajax({
 	    type: "GET",
 	    url: "/comment/query",
 	    data: params,
-	    success: onSuccess,
-	    error: onError 
+	    success: m_onAssessmentQuerySuccess,
+	    error: m_onAssessmentQueryError
 	});
 }
 
@@ -231,7 +236,12 @@ function generateCommentEditor(activityId){
 				url: "/comment/submit",
 				data: params,
 				success: function(data, status, xhr){
-					location.reload();	
+				    var params={};
+                    params[g_keyActivityId]=activityId;
+                    params[g_keyRefIndex]=0;
+                    params[g_keyNumItems]=20;
+                    params[g_keyDirection]=1;
+					queryComments(params, null, null);
 				},
 				error: function(xhr, status, err){
 					alert("Comment not submitted...");

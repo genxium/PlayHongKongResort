@@ -157,7 +157,8 @@ public class SQLCommander {
 				Iterator<JSONObject> it=results.iterator();
 				if(it.hasNext()){
 					JSONObject activityJson=it.next();
-					activity=new Activity(activityJson);
+                    User host=queryUser((Integer)(activityJson.get(Activity.HOST_ID)));
+					activity=new Activity(activityJson, host);
 				}
 			} catch (Exception e) {
 				System.out.println(SQLCommander.class.getName()+".queryActivity, "+e.getMessage());
@@ -204,7 +205,8 @@ public class SQLCommander {
 			List<JSONObject> activityJsons=SQLHelper.select(statement);
 			if(activityJsons!=null){
 				for(JSONObject activityJson : activityJsons){
-					ret.add(new Activity(activityJson));
+                    User host=queryUser((Integer)(activityJson.get(Activity.HOST_ID)));
+					ret.add(new Activity(activityJson, host));
 				}
 			}
 		} catch (Exception e){
@@ -234,7 +236,8 @@ public class SQLCommander {
 			List<JSONObject> activityJsons=SQLHelper.select(builder);
 			if(activityJsons!=null) {
 				for(JSONObject activityJson : activityJsons){
-				    ret.add(new Activity(activityJson));
+                    User host=queryUser((Integer)(activityJson.get(Activity.HOST_ID)));
+                    ret.add(new Activity(activityJson, host));
 				}
 			}
 		} catch(Exception e){

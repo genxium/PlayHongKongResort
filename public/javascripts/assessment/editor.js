@@ -43,14 +43,15 @@ function generateAssessmentEditor(par, participant){
 }
 
 function generateBatchAssessmentEditor(par, participants){
+    par.empty();
 	var batchEditor=new BatchAssessmentEditor();
 	var editors=new Array();
 	var section=$('<div>').appendTo(par);		
 	var switchAttendencyContainer=$("<div class='onoffswitch'>").appendTo(section);
-	var switchAttendency=$("<input type='checkbox' class='onoffswitch-checkbox' id='switch_attendency' checked>").appendTo(switchAttendencyContainer);	
+	var switchAttendency=$("<input type='checkbox' class='onoffswitch-checkbox' id='switch_attendency'>").appendTo(switchAttendencyContainer);	
 	var label=$("<label class='onoffswitch-label' for='switch_attendency'>").appendTo(switchAttendencyContainer);
-	$("<span class='onoffswitch-inner'>").appendTo(label);
-	$("<span class='onoffswitch-switch'>").appendTo(label);	
+	var labelInner=$("<span class='onoffswitch-inner'>").appendTo(label); labelInner.attr('content', "Absent");
+	var labelSwitch=$("<span class='onoffswitch-switch'>").appendTo(label);	
 
 	var onSuccess=function(data, status, xhr){
 		for(var i=0;i<participants.length;i++){
@@ -66,9 +67,10 @@ function generateBatchAssessmentEditor(par, participants){
 	switchAttendency.on("change", function(evt){
 		var attendency=$(this).is(":checked");
 		if(attendency==true){
+			labelInner.attr('content', "Present");
 			updateAttendency(activityId, attendency, onSuccess, onError);	
 		} else {
-			
+			labelInner.attr('content', "Absent");
 		}
 	});
 		
