@@ -117,6 +117,30 @@ function generateActivityDetailViewByJson(activityJson){
 		style: "font-size: 18pt; color: blue"
 	}).appendTo(ret);
 
+	// deadline and begin time
+	var times=$("<table border='1'>", {
+		style: "margin-bottom: 5pt"
+	}).appendTo(ret);
+	var deadlineRow=$('<tr>').appendTo(times);
+	var deadlineTitle=$('<td>', {
+		text: "Application Deadline",
+		style: "padding-left: 5pt; padding-right: 5pt"
+	}).appendTo(deadlineRow);		
+	var deadline=$('<td>', {
+		text: activity.applicationDeadline.toString(),
+		style: "color: red; padding-left: 8pt; padding-right: 5pt"
+	}).appendTo(deadlineRow);
+
+	var beginTimeRow=$('<tr>').appendTo(times);
+	var beginTimeTitle=$('<td>', {
+		text: "Begin Time",
+		style: "padding-left: 5pt; padding-right: 5pt"
+	}).appendTo(beginTimeRow);		
+	var beginTime=$('<td>', {
+		text: activity.beginTime.toString(),
+		style: "color: blue; padding-left: 8pt; padding-right: 5pt"
+	}).appendTo(beginTimeRow);
+
 	if(activity.host.id=null && activity.host.name!=null){
 		var d=$('<div>', {
 			style: "margin-bottom: 5pt"
@@ -146,9 +170,9 @@ function generateActivityDetailViewByJson(activityJson){
 		}).appendTo(ret);
 
 		for(var i=0;i<activity.images.length;++i){
-           var imageNode=$('<img>',{
-                src: activity.images[i].url.toString()
-           }).appendTo(imagesNode);
+			var imageNode=$('<img>',{
+				src: activity.images[i].url.toString()
+			}).appendTo(imagesNode);
 		}
 
 		var sectionParticipant=$("#section_participant");
@@ -208,7 +232,9 @@ function generateActivityDetailViewByJson(activityJson){
 		queryComments(params, onSuccess, onError);			
 
 		var sectionAssessment=$("#section_assessment");
-		var batchAssessmentEditor=generateBatchAssessmentEditor(sectionAssessment, activity.presentParticipants);
+		var viewer=null;
+		if(activity.hasOwnProperty("viewer")) viewer=activity.viewer;
+		var batchAssessmentEditor=generateBatchAssessmentEditor(sectionAssessment, activity, activity.presentParticipants);
 
 		var token=$.cookie(g_keyToken);
 		if(token==null) break;

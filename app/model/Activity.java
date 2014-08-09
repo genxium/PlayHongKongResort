@@ -65,6 +65,8 @@ public class Activity {
     public User getHost() {return m_host;}
     public void setHost(User host) {m_host=host;}
 
+    protected User m_viewer=null;
+
 	public boolean isDeadlineExpired(){
 		java.util.Date date= new java.util.Date();
 		return date.getTime()>m_deadline.getTime();
@@ -118,9 +120,9 @@ public class Activity {
 			if(viewerId!=null) {
 				int relation=SQLCommander.queryUserActivityRelation(viewerId, m_id);
 				if(relation!= UserActivityRelation.invalid)	ret.put(UserActivityRelation.RELATION, relation);
-				User viewer=SQLCommander.queryUser(viewerId);
+                m_viewer=SQLCommander.queryUser(viewerId);
 				if(viewerId.equals(m_host.getId())) ret.put(Activity.STATUS, String.valueOf(m_status));
-				if(viewer!=null && viewer.getGroupId()==User.ADMIN) ret.put(Activity.STATUS, String.valueOf(m_status));
+				if(m_viewer!=null && m_viewer.getGroupId()==User.ADMIN) ret.put(Activity.STATUS, String.valueOf(m_status));
 			}
 		} catch (Exception e){
 			System.out.println("Activity.toObjectNode, "+e.getMessage());

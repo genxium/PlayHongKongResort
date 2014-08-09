@@ -42,38 +42,58 @@ function generateAssessmentEditor(par, participant){
 	return singleEditor;	
 }
 
-function generateBatchAssessmentEditor(par, participants){
-    par.empty();
+function generateBatchAssessmentEditor(par, activity, participants){
+	par.empty();
 	var batchEditor=new BatchAssessmentEditor();
-	var editors=new Array();
-	var section=$('<div>').appendTo(par);		
-	var switchAttendencyContainer=$("<div class='onoffswitch'>").appendTo(section);
-	var switchAttendency=$("<input type='checkbox' class='onoffswitch-checkbox' id='switch_attendency'>").appendTo(switchAttendencyContainer);	
-	var label=$("<label class='onoffswitch-label' for='switch_attendency'>").appendTo(switchAttendencyContainer);
-	var labelInner=$("<span class='onoffswitch-inner'>").appendTo(label); labelInner.attr('content', "Absent");
-	var labelSwitch=$("<span class='onoffswitch-switch'>").appendTo(label);	
+	do{
+	    if(activity==null) break;
+        var editors=new Array();
+        var section=$('<div>').appendTo(par);
+        var switchAttendencyContainer=$("<div class='onoffswitch'>").appendTo(section);
+        var switchAttendency=$("<input type='checkbox' class='onoffswitch-checkbox' id='switch_attendency'>").appendTo(switchAttendencyContainer);
+        var label=$("<label class='onoffswitch-label' for='switch_attendency'>").appendTo(switchAttendencyContainer);
+        var labelInner=$("<span class='onoffswitch-inner'>").appendTo(label);
 
-	var onSuccess=function(data, status, xhr){
-		for(var i=0;i<participants.length;i++){
-			var participant = participants[i];
-			var editor = generateAssessmentEditor(section, participant);	
-			editors.push(editor);
-		}	
-		batchEditor.editors=editors;
-	};
+        switch (activity.relation){
+            case hosted:
+            case present:
+                labelInner.attr('content', "Present");
+                switchAttendency.prop('checked', true);
+                break;
+            case applied:
+            case absent:
+                labelInner.attr('content', "Absent");
+                switchAttendency.prop('checked', false);
+                break;
+            default:
+                labelInner.attr('content', "N/A");
+                switchAttendency.prop('disabled', true);
+                break;
+        }
 
-	var onError=function(xhr, status, err){};
-		
-	switchAttendency.on("change", function(evt){
-		var attendency=$(this).is(":checked");
-		if(attendency==true){
-			labelInner.attr('content', "Present");
-			updateAttendency(activityId, attendency, onSuccess, onError);	
-		} else {
-			labelInner.attr('content', "Absent");
-		}
-	});
-		
+        var labelSwitch=$("<span class='onoffswitch-switch'>").appendTo(label);
+
+        var onSuccess=function(data, status, xhr){
+            for(var i=0;i<participants.length;i++){
+                var participant = participants[i];
+                var editor = generateAssessmentEditor(section, participant);
+                editors.push(editor);
+            }
+            batchEditor.editors=editors;
+        };
+
+        var onError=function(xhr, status, err){};
+
+        switchAttendency.on("change", function(evt){
+            var attendency=$(this).is(":checked");
+            if(attendency==true){
+                labelInner.attr('content', "Present");
+                updateAttendency(activityId, attendency, onSuccess, onError);
+            } else {
+                labelInner.attr('content', "Absent");
+            }
+        });
+	}while(false);
 	return batchEditor;
 }
 

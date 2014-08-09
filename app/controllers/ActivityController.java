@@ -347,14 +347,13 @@ public class ActivityController extends Controller {
 				String token=formData.get(User.TOKEN)[0];
 				if(token==null) break;
 				Integer relation=Integer.parseInt(formData.get(UserActivityRelation.RELATION)[0]);
-				if(relation==null) break;
-				Integer userId=DataUtils.getUserIdByToken(token);
+                Integer userId=DataUtils.getUserIdByToken(token);
 				if(userId==null) break;
 
 				Activity activity=SQLCommander.queryActivity(activityId);
 				if(activity==null) break;
-				boolean markable=SQLCommander.isActivityMarkable(userId, activity);
-				if(markable==false) break;
+				boolean markable=SQLCommander.isActivityMarkable(userId, activity, relation);
+				if(!markable) break;
 
 				String[] names={UserActivityRelation.RELATION};
 				Object[] values={relation};
@@ -366,7 +365,7 @@ public class ActivityController extends Controller {
 				builder.update(UserActivityRelation.TABLE).set(names, values).where(whereCols, whereOps, whereVals);
 				
 				boolean res=SQLHelper.update(builder);
-				if(res==false) break;
+				if(!res) break;
 
 				return ok();
 			} catch(Exception e){

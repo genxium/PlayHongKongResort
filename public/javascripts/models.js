@@ -1,3 +1,10 @@
+var invalid=0;
+var hosted=(1<<0);
+var applied=(1<<1);
+var selected=(1<<2);
+var present=(1<<3);
+var absent=(1<<4);
+
 function User(userJson){
 	this.id=userJson["id"];
 	this.email=userJson["email"];
@@ -64,5 +71,10 @@ function Activity(activityJson){
         var hostJson=activityJson["host"];
         var host=new User(hostJson);
         this.host=host;
+    }
+    if(activityJson.hasOwnProperty("viewer")){
+        var viewerJson=activityJson["viewer"];
+        var viewer=new User(viewerJson);
+        this.viewer=viewer;
     }
 }

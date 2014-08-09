@@ -569,27 +569,30 @@ public class SQLCommander {
 		return ret;
 	}
 
-	public static boolean isActivityMarkable(Integer userId, Integer activityId){
+	public static boolean isActivityMarkable(Integer userId, Integer activityId, int relation){
 		boolean ret=false;
 		do{
 			if(userId==null) break;
 			if(activityId==null) break;
 			Activity activity=queryActivity(activityId);
 			if(activity==null) break;
-			ret=isActivityMarkable(userId, activity);
+			ret=isActivityMarkable(userId, activity, relation);
 		}while(false);
 		return ret;
 	}
 
-	public static boolean isActivityMarkable(Integer userId, Activity activity){
+	public static boolean isActivityMarkable(Integer userId, Activity activity, int relation){
 		boolean ret=false;
 		do{
 			if(userId==null) break;
 			if(activity==null) break;
 			if(!activity.hasBegun()) break;
-			int relation=queryUserActivityRelation(userId, activity.getId());
-			if(relation!=UserActivityRelation.selected) break;
-			ret=true;
+			int originalRelation=queryUserActivityRelation(userId, activity.getId());
+			if(originalRelation==UserActivityRelation.invalid) break;
+            if(originalRelation==UserActivityRelation.applied) break;
+            if(originalRelation==UserActivityRelation.hosted) break;
+            if(originalRelation==relation) break;
+            ret=true;
 		}while(false);
 		return ret;
 	}
