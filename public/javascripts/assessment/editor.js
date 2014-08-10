@@ -54,16 +54,15 @@ function generateBatchAssessmentEditor(par, activity, participants){
         var label=$("<label class='onoffswitch-label' for='switch_attendency'>").appendTo(switchAttendencyContainer);
         var labelInner=$("<span class='onoffswitch-inner'>").appendTo(label);
 
+	// Determine attendency switch initial state based on viewer-activity-relation
         switch (activity.relation){
             case hosted:
             case present:
-                labelInner.attr('content', "Present");
-                switchAttendency.prop('checked', true);
+                switchAttendency.prop('checked', true).change();
                 break;
             case applied:
             case absent:
-                labelInner.attr('content', "Absent");
-                switchAttendency.prop('checked', false);
+                switchAttendency.prop('checked', false).change();
                 break;
             default:
                 labelInner.attr('content', "N/A");
@@ -73,25 +72,34 @@ function generateBatchAssessmentEditor(par, activity, participants){
 
         var labelSwitch=$("<span class='onoffswitch-switch'>").appendTo(label);
 
-        var onSuccess=function(data, status, xhr){
-            for(var i=0;i<participants.length;i++){
-                var participant = participants[i];
-                var editor = generateAssessmentEditor(section, participant);
-                editors.push(editor);
-            }
-            batchEditor.editors=editors;
+	var container=createModal(par, "Updating attency, please wait...");
+	
+        var onSuccess=function(data, status, xhr){	    
+		switchAttendency.prop("checked", true).change();
+		for(var i=0;i<participants.length;i++){
+			var participant = participants[i];
+			var editor = generateAssessmentEditor(section, participant);
+			editors.push(editor);
+		}
+		batchEditor.editors=editors;
+		hideModal(container);
         };
 
-        var onError=function(xhr, status, err){};
+        var onError=function(xhr, status, err){
+		switchAttendency.prop("checked", false).change();
+		hideModal(container);
+	};
 
         switchAttendency.on("change", function(evt){
-            var attendency=$(this).is(":checked");
-            if(attendency==true){
-                labelInner.attr('content', "Present");
-                updateAttendency(activityId, attendency, onSuccess, onError);
-            } else {
-                labelInner.attr('content', "Absent");
-            }
+		evt.preventDefault();
+		showModal(container);
+		var attendency=$(this).is(":checked");
+		if(attendency==true){
+			labelInner.attr('content', "Present");
+			updateAttendency(activityId, attendency, onSuccess, onError);
+		} else {
+			labelInner.attr('content', "Absent");
+		}
         });
 	}while(false);
 	return batchEditor;
