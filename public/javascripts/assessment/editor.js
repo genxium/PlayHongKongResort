@@ -49,58 +49,51 @@ function generateBatchAssessmentEditor(par, activity, participants){
 		if(activity==null) break;
 		var editors=new Array();
 		var section=$('<div>').appendTo(par);
-		var switchAttendencyContainer=$("<div class='onoffswitch'>").appendTo(section);
-		var switchAttendency=$("<input type='checkbox' class='onoffswitch-checkbox' id='switch_attendency'>").appendTo(switchAttendencyContainer);
-		var label=$("<label class='onoffswitch-label' for='switch_attendency'>").appendTo(switchAttendencyContainer);
-		var labelInner=$("<span class='onoffswitch-inner'>").appendTo(label);
-		var labelSwitch=$("<span class='onoffswitch-switch'>").appendTo(label);
 
-		var container=createModal(par, "Updating attency, please wait...");
+		var initVal = true;
+		var disabled = false;
+		var disabledText = "N/A";
 
-		var onSuccess=function(data, status, xhr){	    
+		// Determine attendency switch initial state based on viewer-activity-relation
+		switch (activity.relation){
+		    case hosted:
+		    case present:
+			initVal = true;
+			break;
+		    case applied:
+		    case absent:
+			initVal = false;
+			break;
+		    default:
+			disabled = true;
+			break;
+		}
+		var attendencySwitch = createBinarySwitch(section, disabled, initVal, disabledText, "Present", "Absent", "switch-attendency", onClick);	
+
+		var onSuccess = function(data, status, xhr){	    
 			for(var i=0;i<participants.length;i++){
 				var participant = participants[i];
 				var editor = generateAssessmentEditor(section, participant);
 				editors.push(editor);
 			}
 			batchEditor.editors=editors;
-			hideModal(container);
 		};
 
-		var onError=function(xhr, status, err){
-			hideModal(container);
+		var onError = function(xhr, status, err){
 		};
 
-		switchAttendency.on("change", function(evt){
-			evt.preventDefault();
-			var isChecked=$(this).is(":checked");
-			var attendency=invalid;
-			if(isChecked==true){
-				labelInner.attr('content', "Present");
-			} else {
-				labelInner.attr('content', "Absent");
-			}
-			if(activity.relation==invalid || activity.relation==applied || activity.relation==hosted || activity.relation==attendency) return;
-			showModal(container);
+		var onClick = function(evt){
+			if(activity.relation==invalid) return;
+			var value = getBinarySwitchState(attendencySwitch);
+			var newVal = (value == "true"?"false":"true");
+			setBinarySwitch(attendencySwitch, newVal);	
+			attendency = activity.relation;
+			if(value) attendency = present;
+			else attendency = absent;
 			updateAttendency(activity.id, attendency, onSuccess, onError);
-		});
-
-		// Determine attendency switch initial state based on viewer-activity-relation
-		switch (activity.relation){
-		    case hosted:
-		    case present:
-			switchAttendency.prop('checked', true).change();
-			break;
-		    case applied:
-		    case absent:
-			switchAttendency.prop('checked', false).change();
-			break;
-		    default:
-			labelInner.attr('content', "N/A");
-			switchAttendency.prop('disabled', true);
-			break;
-		}
-
+		};
+		
+		setBinarySwitchOnClick(attendencySwitch, onClick);
 	}while(false);
 	return batchEditor;
 }

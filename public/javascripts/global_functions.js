@@ -161,3 +161,7 @@ function extractParams(url){
 	var params=url.split("?")[1].split("&");	
 	return params;
 }
+
+function firstChild(obj, selector){
+	return $(obj.children(selector)[0]);
+}
