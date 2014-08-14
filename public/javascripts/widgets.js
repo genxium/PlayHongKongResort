@@ -51,7 +51,7 @@ function createBinarySwitch(par, disabled, initVal, disabledText, positiveText, 
 	if(disabled == false) {
 		setBinarySwitch(container, initVal);
 	} else {
-		container.attr("right-text", disabledText);
+		inner.attr("right-text", disabledText);
 		disableBinarySwitch(container);
 	}
 	return container;
@@ -63,6 +63,8 @@ function setBinarySwitch(container, value){
 }
 
 function setBinarySwitchOnClick(container, func){
+	var input = firstChild(container, "input.onoffswitch-checkbox");			
+	if(input.is(":disabled")) return;
 	container.off("click").on("click", func);	
 }
 
@@ -72,6 +74,7 @@ function getBinarySwitchState(container){
 }
 
 function disableBinarySwitch(container){
+	container.off("click");
 	var input = firstChild(container, "input.onoffswitch-checkbox");			
 	input.prop("checked", false);
 	input.prop("disabled", true);

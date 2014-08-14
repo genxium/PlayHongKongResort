@@ -112,29 +112,31 @@ function onBtnCreateClicked(evt){
 }
 
 function generateLoginForm(){
-	var ret=$('<p>', {
-		class: "margin-top: 2pt; margin-bottom: 2pt"
+	var ret = $('<table>', {
+		style: "border-collapse:separate; border-spacing:5pt; margin: auto"
 	});
-	var span1=$('<span>').appendTo(ret);
-	g_loginUserHandle=$('<input>', {
+	var row1 = $('<tr>').appendTo(ret);
+	var cell11 = $('<td>').appendTo(row1);
+	g_loginUserHandle = $('<input>', {
 		placeHolder: "Email",
 		type: "text",	
-		style: "font-size: 14pt; margin-right: 2pt"
-	}).appendTo(span1);
+		style: "font-size: 14pt; margin-left: 2pt"
+	}).appendTo(cell11);
 
 	g_loginUserHandle.keypress(function (evt) {
   		if (evt.which == 13) {
   			evt.preventDefault();
-    		g_btnLogin.click();
+			g_btnLogin.click();
   		}
 	});
 
-	var span2=$('<span>').appendTo(ret);
-	g_loginPassword=$('<input>', {
+	var row2 = $('<tr>').appendTo(ret);
+	var cell21 = $('<td>').appendTo(row2);
+	g_loginPassword = $('<input>', {
 		placeHolder: "Password",
 		type: "password",
-		style: "font-size: 14pt; margin-left: 2pt"
-	}).appendTo(span2);
+		style: "font-family: Serif; font-size: 14pt; margin-left: 2pt"
+	}).appendTo(cell21);
 
 	g_loginPassword.keypress(function (evt) {
   		if (evt.which == 13) {
@@ -143,11 +145,11 @@ function generateLoginForm(){
   		}
 	});
 
-	var span3=$('<span>').appendTo(ret);
+	var cell22=$('<td>').appendTo(row2);
 	g_btnLogin=$('<button>', {
-		style: "font-size: 14pt; margin-left: 2pt; background-color: yellow",	
-		text: "login"
-	}).appendTo(span3);
+		style: "font-size: 14pt; margin-left: 2pt; background-color: IndianRed; color: white",	
+		text: "Login"
+	}).appendTo(cell22);
 	g_btnLogin.on("click", onBtnLoginClicked);
 
 	return ret;	

@@ -84,7 +84,10 @@ function onBtnRegisterClicked(evt){
 }
 
 function generateRegisterForm(){
-	var ret=$('<table>');
+	var ret=$('<table>', {
+		style: "border-collapse:separate; border-spacing:5pt; margin-bottom: 2pt"
+	});
+
 	var row1=$('<tr>').appendTo(ret);
 	var cell11=$('<td>').appendTo(row1);
 	g_registerUsername=$('<input>', {
@@ -203,8 +206,8 @@ function generateRegisterForm(){
 	var row5=$('<tr>').appendTo(ret);
 	var cell51=$('<td>').appendTo(row5);
 	var btnRegister=$('<button>', {
-		style: "font-size: 15pt; background-color: aquamarine",
-		text: "register"	
+		style: "font-family: Serif; font-size: 15pt; background-color: Teal; color: white",
+		text: "Register"	
 	}).appendTo(cell51);
 	btnRegister.on("click", onBtnRegisterClicked);
 	return ret;

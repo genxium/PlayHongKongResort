@@ -52,11 +52,13 @@ function generateBatchAssessmentEditor(par, activity, participants){
 
 		var initVal = true;
 		var disabled = false;
-		var disabledText = "N/A";
 
 		// Determine attendency switch initial state based on viewer-activity-relation
 		switch (activity.relation){
 		    case hosted:
+			initVal = true;
+			disabled = true;
+			break;
 		    case present:
 			initVal = true;
 			break;
@@ -68,7 +70,7 @@ function generateBatchAssessmentEditor(par, activity, participants){
 			disabled = true;
 			break;
 		}
-		var attendencySwitch = createBinarySwitch(section, disabled, initVal, disabledText, "Present", "Absent", "switch-attendency", onClick);	
+		var attendencySwitch = createBinarySwitch(section, disabled, initVal, "N/A", "Present", "Absent", "switch-attendency");	
 
 		var onSuccess = function(data, status, xhr){	    
 			for(var i=0;i<participants.length;i++){
