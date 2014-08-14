@@ -45,13 +45,13 @@ function createBinarySwitch(par, disabled, initVal, disabledText, positiveText, 
 	var inner=$("<span class='onoffswitch-inner'>").appendTo(label);
 	var sw=$("<span class='onoffswitch-switch'>").appendTo(label);
 
-	container.data("positive", positiveText);
-	container.data("negative", negativeText);
-	container.data("disabled", disabledText);
+	inner.attr("left-text", positiveText);
+	inner.attr("right-text", negativeText);
 	
 	if(disabled == false) {
 		setBinarySwitch(container, initVal);
 	} else {
+		container.attr("right-text", disabledText);
 		disableBinarySwitch(container);
 	}
 	return container;
@@ -59,13 +59,7 @@ function createBinarySwitch(par, disabled, initVal, disabledText, positiveText, 
 
 function setBinarySwitch(container, value){
 	var input = firstChild(container, "input.onoffswitch-checkbox");			
-	input.val(value);
-	var label = firstChild(container, "label.onoffswitch-label");	
-	var inner = firstChild(label, "span.onoffswitch-inner");
-	var content =  "";
-	if(value == true) content = container.data("positive"); 
-	else content = container.data("negative");
-	inner.attr("content", content);
+	input.prop("checked", value);
 }
 
 function setBinarySwitchOnClick(container, func){
@@ -74,13 +68,11 @@ function setBinarySwitchOnClick(container, func){
 
 function getBinarySwitchState(container){
 	var input = firstChild(container, "input.onoffswitch-checkbox");			
-	return input.val();
+	return input.is(":checked");
 }
 
 function disableBinarySwitch(container){
 	var input = firstChild(container, "input.onoffswitch-checkbox");			
+	input.prop("checked", false);
 	input.prop("disabled", true);
-	var label = firstChild(container, "label.onoffswitch-label");	
-	var inner = firstChild(label, "span.onoffswitch-inner");
-	inner.attr("content", container.data("disabled"));	
 }

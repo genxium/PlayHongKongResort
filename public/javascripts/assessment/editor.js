@@ -85,7 +85,7 @@ function generateBatchAssessmentEditor(par, activity, participants){
 		var onClick = function(evt){
 			if(activity.relation==invalid) return;
 			var value = getBinarySwitchState(attendencySwitch);
-			var newVal = (value == "true"?"false":"true");
+			var newVal = !value;
 			setBinarySwitch(attendencySwitch, newVal);	
 			attendency = activity.relation;
 			if(value) attendency = present;
