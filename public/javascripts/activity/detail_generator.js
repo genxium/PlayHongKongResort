@@ -121,47 +121,47 @@ function generateActivityDetailViewByJson(activityJson){
 	var times=$("<table border='1'>", {
 		style: "margin-bottom: 5pt"
 	}).appendTo(ret);
-	var deadlineRow=$('<tr>').appendTo(times);
-	var deadlineTitle=$('<td>', {
+	var deadlineRow = $('<tr>').appendTo(times);
+	var deadlineTitle = $('<td>', {
 		text: "Application Deadline",
 		style: "padding-left: 5pt; padding-right: 5pt"
 	}).appendTo(deadlineRow);		
-	var deadline=$('<td>', {
+	var deadline = $('<td>', {
 		text: activity.applicationDeadline.toString(),
 		style: "color: red; padding-left: 8pt; padding-right: 5pt"
 	}).appendTo(deadlineRow);
 
-	var beginTimeRow=$('<tr>').appendTo(times);
-	var beginTimeTitle=$('<td>', {
+	var beginTimeRow = $('<tr>').appendTo(times);
+	var beginTimeTitle = $('<td>', {
 		text: "Begin Time",
 		style: "padding-left: 5pt; padding-right: 5pt"
 	}).appendTo(beginTimeRow);		
-	var beginTime=$('<td>', {
+	var beginTime = $('<td>', {
 		text: activity.beginTime.toString(),
 		style: "color: blue; padding-left: 8pt; padding-right: 5pt"
 	}).appendTo(beginTimeRow);
 
-	if(activity.host.id=null && activity.host.name!=null){
-		var d=$('<div>', {
+	if(activity.host.id != null && activity.host.name != null){
+		var d = $('<div>', {
 			style: "margin-bottom: 5pt"
 		}).appendTo(ret);
-		var sp1=$('<span>', {
+		var sp1 = $('<span>', {
 			text: "--by",
 			style: "margin-left: 20%"
 		}).appendTo(d);
-		var sp2=$('<span>', {
+		var sp2 = $('<span>', {
 			style: "margin-left: 5pt"	
 		}).appendTo(d);
-		var host=$('<a>', {
+		var host = $('<a>', {
 			href: '/user/profile?'+g_keyUserId+"="+activity.host.id.toString(),
 			text: activity.host.name
 		}).appendTo(sp2);
-	}	
+	}
 
 	var content=$('<div>',{
 		text: activity.content.toString(),
 		style: "font-size: 15pt"
-	}).appendTo(ret); 	
+	}).appendTo(ret);
 
 	do{
 		if(activity.images==null) break;
@@ -234,7 +234,7 @@ function generateActivityDetailViewByJson(activityJson){
 		var sectionAssessment=$("#section_assessment");
 		var viewer=null;
 		if(activity.hasOwnProperty("viewer")) viewer=activity.viewer;
-		var batchAssessmentEditor=generateBatchAssessmentEditor(sectionAssessment, activity, activity.presentParticipants);
+		var batchAssessmentEditor=generateBatchAssessmentEditor(sectionAssessment, activity, activity.presentParticipants, queryActivityDetail);
 
 		var token=$.cookie(g_keyToken);
 		if(token==null) break;

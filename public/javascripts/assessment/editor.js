@@ -1,3 +1,6 @@
+var g_updatingAttendance = false;
+var g_refreshCallback = null;
+
 /*
 	Trying out new style of info gathering for DOMs
 */
@@ -8,7 +11,7 @@ function SingleAssessmentEditor(){
 }
 
 function BatchAssessmentEditor(){
-	this.switchAttendency=null;
+	this.switchAttendance=null;
 	this.selectAll=null;
 	this.editors=null;	
 }
@@ -20,11 +23,13 @@ function generateAssessmentEditor(par, participant){
 	var singleEditor = new SingleAssessmentEditor();
 	var row=$('<p>').appendTo(par);
 	var name=$('<plaintext>', {
-		text: participant.name
-	}).appendTo(ret);
+		text: participant.name,
+		style: "margin-left: 5pt; display: inline"
+	}).appendTo(row);
 	singleEditor.name = participant.name; // name is a static part
 	var content=$('<input>', {
-		type: 'text'
+		type: 'text',
+		style: "margin-left: 10pt; display: inline"
 	}).appendTo(row); 
 	content.on("input paste keyup", {editor: singleEditor}, function(evt){
 		var data = evt.data;
@@ -32,7 +37,8 @@ function generateAssessmentEditor(par, participant){
 		editor.content = $(this).val();	
 	});	
 	var lock=$('<input>', {
-		type:"checkbox"
+		type: "checkbox",
+		style: "margin-left: 10pt; display: inline"
 	}).appendTo(row);
 	lock.on("change", {editor: singleEditor}, function(){
 		var data = evt.data;
@@ -42,18 +48,29 @@ function generateAssessmentEditor(par, participant){
 	return singleEditor;	
 }
 
-function generateBatchAssessmentEditor(par, activity, participants){
+function generateAssessmentEditors(par, participants) {
 	par.empty();
+	var editors = new Array();
+	for(var i = 0; i < participants.length; i++){
+		var editor = generateAssessmentEditor(par, participants[i]);
+		editors.push(editor);
+	}				
+	return editors;
+}
+
+function generateBatchAssessmentEditor(par, activity, participants, refreshCallback){
+	par.empty();
+	g_refreshCallback = refreshCallback;
 	var batchEditor=new BatchAssessmentEditor();
 	do{
 		if(activity==null) break;
 		var editors=new Array();
-		var section=$('<div>').appendTo(par);
-
+		var sectionAll=$('<div>').appendTo(par);
+		
 		var initVal = true;
 		var disabled = false;
 
-		// Determine attendency switch initial state based on viewer-activity-relation
+		// Determine attendance switch initial state based on viewer-activity-relation
 		switch (activity.relation){
 		    case hosted:
 			initVal = true;
@@ -62,7 +79,7 @@ function generateBatchAssessmentEditor(par, activity, participants){
 		    case present:
 			initVal = true;
 			break;
-		    case applied:
+		    case selected:
 		    case absent:
 			initVal = false;
 			break;
@@ -70,50 +87,69 @@ function generateBatchAssessmentEditor(par, activity, participants){
 			disabled = true;
 			break;
 		}
-		var attendencySwitch = createBinarySwitch(section, disabled, initVal, "N/A", "Present", "Absent", "switch-attendency");	
+		var attendanceSwitch = createBinarySwitch(sectionAll, disabled, initVal, "N/A", "Present", "Absent", "switch-attendance");	
+		var sectionEditors = $('<div>', {
+			style: "margin-top: 5pt"
+		}).appendTo(sectionAll); 
+		if(activity.relation == present) {
+			var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants);
+			batchEditor.editors = editors;			
+		}
 
 		var onSuccess = function(data, status, xhr){	    
-			for(var i=0;i<participants.length;i++){
-				var participant = participants[i];
-				var editor = generateAssessmentEditor(section, participant);
-				editors.push(editor);
+			g_updatingAttendance = false;
+			var value = getBinarySwitchState(attendanceSwitch);
+			if(value)   activity.relation = present;
+			else    activity.relation = absent;
+			
+			if(!value) {
+				sectionEditors.empty();
+				return;
 			}
-			batchEditor.editors=editors;
+			var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants);
+			batchEditor.editors = editors;			
 		};
 
 		var onError = function(xhr, status, err){
+			g_updatingAttendance = false;
+			// reset switch status if updating attendance fails
+			var value = getBinarySwitchState(attendanceSwitch);
+			var resetVal = !value;
+			setBinarySwitch(attendanceSwitch, resetVal);
 		};
 
 		var onClick = function(evt){
-			if(activity.relation==invalid) return;
-			var value = getBinarySwitchState(attendencySwitch);
+			evt.preventDefault();
+			if(activity.relation == invalid) return;
+			var value = getBinarySwitchState(attendanceSwitch);
 			var newVal = !value;
-			setBinarySwitch(attendencySwitch, newVal);	
-			attendency = activity.relation;
-			if(value) attendency = present;
-			else attendency = absent;
-			updateAttendency(activity.id, attendency, onSuccess, onError);
+			setBinarySwitch(attendanceSwitch, newVal);	
+			attendance = activity.relation;
+			if(newVal) attendance = present;
+			else attendance = absent;
+			updateAttendance(activity.id, attendance, onSuccess, onError);
 		};
 		
-		setBinarySwitchOnClick(attendencySwitch, onClick);
+		setBinarySwitchOnClick(attendanceSwitch, onClick);
 	}while(false);
 	return batchEditor;
 }
 
-function updateAttendency(activityId, attendency, onSuccess, onError){
-	do{
-		var token=$.cookie(g_keyToken);
-		if(token==null) break; 
-		var params={};
-		params[g_keyRelation]=attendency;
-		params[g_keyToken]=token;
-		params[g_keyActivityId]=activityId;
-		$.ajax({
-			type: "PUT",
-			url: "/activity/mark",
-			data: params,
-			success: onSuccess,
-			error: onError
-		});
-	}while(false);
+
+function updateAttendance(activityId, attendance, onSuccess, onError){
+	if(g_updatingAttendance) return;
+	var token = $.cookie(g_keyToken);
+	if(token == null) return; 
+	var params={};
+	params[g_keyRelation] = attendance;
+	params[g_keyToken] = token;
+	params[g_keyActivityId] = activityId;
+	g_updatingAttendance = true;
+	$.ajax({
+		type: "PUT",
+		url: "/activity/mark",
+		data: params,
+		success: onSuccess,
+		error: onError
+	});
 }
