@@ -1,15 +1,12 @@
 package controllers;
 
-import play.mvc.*;
-import model.*;
-
-import java.util.List;
-import java.util.*;
-
-import play.libs.Json;
+import model.Activity;
+import model.User;
+import play.mvc.Controller;
+import play.mvc.Result;
 import utilities.DataUtils;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.Map;
 
 public class AdminController extends Controller {
 
@@ -18,12 +15,9 @@ public class AdminController extends Controller {
 		response().setContentType("text/plain");
 		do{
 			try{
-				Map<String, String[]> formData=request().body().asFormUrlEncoded();
-				String[] ids=formData.get(Activity.ID);
-				String[] tokens=formData.get(User.TOKEN);
-				
-				Integer activityId=Integer.parseInt(ids[0]);
-				String token=tokens[0];
+				Map<String, String[]> formData = request().body().asFormUrlEncoded();
+				Integer activityId = Integer.valueOf(formData.get(Activity.ID)[0]);
+				String token = formData.get(User.TOKEN)[0];
 			  
 				Integer userId=DataUtils.getUserIdByToken(token);
 				if(userId==null) break;

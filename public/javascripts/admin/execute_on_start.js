@@ -9,13 +9,10 @@ $(document).ready(function(){
 
 	g_sectionActivityMonitor=$("#idSectionActivityMonitor");
 	g_selectFilter=$("#idSelectFilter");
-	
-	g_onActivityAccepted=queryActivities;
-	g_onActivityRejected=queryActivities;
-	g_onActivityDeleted=queryActivities;
-	queryActivities(0, g_numItemsPerPage, g_directionForward);
-
 	g_selectFilter.on("change", onSelectFilterChanged);
+
+	var status = g_selectFilter.val();
+	queryActivities(0, g_numItemsPerPage, g_orderDescend, g_directionForward, null, null, status, onQueryActivitiesSuccess, onQueryActivitiesError);
 
 	initWidgets(onBtnPreviousPageClicked, onBtnNextPageClicked);
 	checkLoginStatus();

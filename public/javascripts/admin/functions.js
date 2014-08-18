@@ -2,7 +2,6 @@
  * variables
  */
 
-// general dom elements
 var g_classAcceptedIndicator="classAcceptedIndicator";
 var g_classDeletedIndicator="classDeletedIndicator";
 
@@ -12,92 +11,57 @@ var g_classBtnDelete="classBtnDelete";
 
 var g_sectionActivityMonitor=null;
 
-// callback function pointers
-var g_onActivityAccepted=null;
-var g_onActivityRejected=null;
-var g_onActivityDeleted=null;
-
-// buttons
 var g_selectFilter=null;
 var g_classFilterOption="classFilterOption";
-
-var g_statusToQuery=g_statusPending;
 
 function onBtnPreviousPageClicked(evt){
 
 	var pageIndex=g_sectionActivityMonitor.data(g_keyPageIndex);
-    var startingIndex=g_sectionActivityMonitor.data(g_keyStartingIndex);
-    var endingIndex=g_sectionActivityMonitor.data(g_keyEndingIndex);
+	var startingIndex=g_sectionActivityMonitor.data(g_keyStartingIndex);
+	var endingIndex=g_sectionActivityMonitor.data(g_keyEndingIndex);
 
-    queryActivities(startingIndex, g_numItemsPerPage, g_directionBackward);
+	var status = g_selectFilter.val();
+	queryActivities(startingIndex, g_numItemsPerPage, g_orderDescend, g_directionBackward, null, null, status, onQueryActivitiesSuccess, onQueryActivitiesError);
 }
 
 function onBtnNextPageClicked(evt){
 
-    var pageIndex=g_sectionActivityMonitor.data(g_keyPageIndex);
-    var startingIndex=g_sectionActivityMonitor.data(g_keyStartingIndex);
-    var endingIndex=g_sectionActivityMonitor.data(g_keyEndingIndex);
+	var pageIndex=g_sectionActivityMonitor.data(g_keyPageIndex);
+	var startingIndex=g_sectionActivityMonitor.data(g_keyStartingIndex);
+	var endingIndex=g_sectionActivityMonitor.data(g_keyEndingIndex);
 
-    queryActivities(endingIndex, g_numItemsPerPage, g_directionForward);
+	var status = g_selectFilter.val();
+	queryActivities(endingIndex, g_numItemsPerPage, g_orderDescend, g_directionForward, null, null, status, onQueryActivitiesSuccess, onQueryActivitiesError);
 }
 
 function onSelectFilterChanged(evt){
-    evt.preventDefault();
-    var selector=$(this);
-    g_statusToQuery=parseInt(selector.val());
-    queryActivities(0, g_numItemsPerPage, g_directionForward);
+	evt.preventDefault();
+	var status = g_selectFilter.val();
+	queryActivities(0, g_numItemsPerPage, g_orderDescend, g_directionForward, null, null, status, onQueryActivitiesSuccess, onQueryActivitiesError);
 }
 
 function onQueryActivitiesSuccess(data, status, xhr){
 
-    // clean target section
+	// clean target section
 	g_sectionActivityMonitor.empty();
 
-    var jsonResponse=JSON.parse(data);
-    if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
-        var idx=0;
-        var count=Object.keys(jsonResponse).length;
-        // display contents
-        for(var key in jsonResponse){
-            var activityJson=jsonResponse[key];
-            var activityId=activityJson[g_keyId];
-            if(idx==0){
-                g_sectionActivityMonitor.data(g_keyStartingIndex, activityId);
-            }
-            if(idx==count-1){
-                g_sectionActivityMonitor.data(g_keyEndingIndex, activityId);
-            }
-            var cell=generateActivityCellForAdmin(activityJson);
-            g_sectionActivityMonitor.append(cell);
-            ++idx;
-        }
-    }
+	var jsonResponse=JSON.parse(data);
+	if(jsonResponse == null || Object.keys(jsonResponse).length <= 0) return;
+	var idx=0;
+	var count=Object.keys(jsonResponse).length;
+
+	// display contents
+	for(var key in jsonResponse){
+	    var activityJson=jsonResponse[key];
+	    var activityId=activityJson[g_keyId];
+	    if(idx == 0)	g_sectionActivityMonitor.data(g_keyStartingIndex, activityId);
+	    if(idx == count-1)	g_sectionActivityMonitor.data(g_keyEndingIndex, activityId);
+	    var cell=generateActivityCellForAdmin(activityJson);
+	    g_sectionActivityMonitor.append(cell);
+	    ++idx;
+	}
 } 
 
-function queryActivities(refIndex, numItems, direction){
-	do{
-		var token = $.cookie(g_keyToken);
-		if(refIndex==null || numItems==null || direction==null || token==null) break;
+function onQueryActivitiesError(xhr, status, err){
 
-		var params={};
-        params[g_keyRefIndex]=refIndex.toString();
-        params[g_keyNumItems]=numItems.toString();
-        params[g_keyDirection]=direction.toString();
-        params[g_keyToken]=token;
-		params[g_keyStatus]=g_statusToQuery;
-
-		try{
-		    $.ajax({
-		        method: "GET",
-		        url: "/activity/query",
-		        data: params,
-		        success: onQueryActivitiesSuccess,
-                error: function(data, status, xhr){
-
-                }
-		    });
-		} catch(err){
-
-		}
-	}while(false);
 }

@@ -17,8 +17,7 @@ function onBtnAcceptClicked(evt){
 			success: function(data, status, xhr){
 				var cell=btnAccept.parent(); 
 				btnAccept.remove();
-				var indicator=$('<div>',
-				{
+				var indicator=$('<div>', {
 					class: g_classAcceptedIndicator,
 					html: 'Accepted'
 				}).appendTo(cell);
@@ -51,8 +50,7 @@ function onBtnRejectClicked(evt){
 				var cell=btnReject.parent(); 
 				btnReject.remove();
 
-				var indicator=$('<div>',
-				{
+				var indicator=$('<div>', {
 					class: g_classAcceptedIndicator,
 					html: 'Rejected'
 				}).appendTo(cell);

@@ -48,7 +48,7 @@ public class ActivityController extends Controller {
 				ObjectNode result = Json.newObject();
 				for(Activity activity : activities){
 					// non-host viewers can only see accepted activities 
-					if(activity.getStatus() != Activity.ACCEPTED && !userId.equals(viewerId)) continue;
+					if(activity.getStatus() != Activity.ACCEPTED && userId != null && !userId.equals(viewerId)) continue;
 					result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages(viewerId));
 				}
 				return ok(result);
