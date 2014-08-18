@@ -4,7 +4,6 @@ import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import model.*;
 import org.json.simple.JSONObject;
-import scala.util.parsing.json.JSON;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -176,10 +175,13 @@ public class SQLCommander {
 		try{
 			Activity activity= queryActivity(activityId);
 			List<Image> images=queryImages(activityId);
-			List<BasicUser> appliedParticipants=SQLCommander.queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied));
-			List<BasicUser> selectedParticipants=SQLCommander.queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected));
-			List<BasicUser> presentParticipants=SQLCommander.queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.present));
-			activityDetail=new ActivityDetail(activity, images, appliedParticipants, selectedParticipants, presentParticipants);
+			List<BasicUser> appliedParticipants = SQLCommander.queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied));
+			List<BasicUser> selectedParticipants = SQLCommander.queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected));
+			List<BasicUser> presentParticipants = SQLCommander.queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.present));
+			List<BasicUser> absentParticipants = SQLCommander.queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.absent));
+            selectedParticipants.addAll(presentParticipants);
+            selectedParticipants.addAll(absentParticipants);
+            activityDetail=new ActivityDetail(activity, images, appliedParticipants, selectedParticipants, presentParticipants);
 		} catch (Exception e){
 			System.out.println(SQLCommander.class.getName()+".queryActivityDetail, "+e.getMessage());
 		}
@@ -762,7 +764,7 @@ public class SQLCommander {
 		return lastImageId;
 	}
 
-	public static List<BasicUser> queryUsers(int activityId, int relation){
+	public static List<BasicUser> queryUsers(int activityId, int maskedRelation){
 		List<BasicUser> users=new ArrayList<BasicUser>();
 		do{
 			try{
@@ -779,7 +781,7 @@ public class SQLCommander {
 				Connection connection=SQLHelper.getConnection();
 				PreparedStatement statement=connection.prepareStatement(query);
 				statement.setInt(1, activityId);
-				statement.setInt(2, relation);
+				statement.setInt(2, maskedRelation);
 				List<JSONObject> records=SQLHelper.select(statement);
 				if(records==null) break;
 

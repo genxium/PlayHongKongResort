@@ -22,9 +22,10 @@ function BatchAssessmentEditor(){
 function generateAssessmentEditor(par, participant){
 	var singleEditor = new SingleAssessmentEditor();
 	var row=$('<p>').appendTo(par);
-	var name=$('<plaintext>', {
-		text: participant.name,
-		style: "margin-left: 5pt; display: inline"
+	var name=$('<a>', {
+	    href: "/user/profile/show?"+g_keyUserId+"="+participant.id,
+		text: "@"+participant.name,
+		style: "margin-left: 5pt; display: inline; cursor: pointer; color: BlueViolet"
 	}).appendTo(row);
 	singleEditor.name = participant.name; // name is a static part
 	var content=$('<input>', {
@@ -71,27 +72,21 @@ function generateBatchAssessmentEditor(par, activity, participants, refreshCallb
 		var disabled = false;
 
 		// Determine attendance switch initial state based on viewer-activity-relation
-		switch (activity.relation){
-		    case hosted:
+		if (activity.relation == hosted) {
 			initVal = true;
 			disabled = true;
-			break;
-		    case present:
-			initVal = true;
-			break;
-		    case selected:
-		    case absent:
+		} else if((activity.relation & present) > 0) {
+		    initVal = true;
+		} else if((activity.relation & selected) > 0 || (activity.relation & absent) > 0) {
 			initVal = false;
-			break;
-		    default:
-			disabled = true;
-			break;
+		} else {
+		    disabled = true;
 		}
 		var attendanceSwitch = createBinarySwitch(sectionAll, disabled, initVal, "N/A", "Present", "Absent", "switch-attendance");	
 		var sectionEditors = $('<div>', {
 			style: "margin-top: 5pt"
 		}).appendTo(sectionAll); 
-		if(activity.relation == present) {
+		if((activity.relation & present) > 0) {
 			var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants);
 			batchEditor.editors = editors;			
 		}
