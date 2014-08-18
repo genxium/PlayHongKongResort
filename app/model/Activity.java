@@ -12,11 +12,11 @@ import java.util.*;
 
 public class Activity {
 
-	public static int CREATED=0;
-	public static int PENDING=1;
-	public static int REJECTED=2;
-	public static int ACCEPTED=3;
-	public static int EXPIRED=4;
+	public static final int CREATED=0;
+	public static final int PENDING=1;
+	public static final int REJECTED=2;
+	public static final int ACCEPTED=3;
+	public static final int EXPIRED=4;
 
 	public static String TABLE="activity";
 	public static String ID="id";
@@ -27,12 +27,12 @@ public class Activity {
 	public static String DEADLINE="application_deadline";
 	public static String CAPACITY="capacity";
 	public static String STATUS="status";
-    public static String HOST_ID="host_id";
+	public static String HOST_ID="host_id";
 	public static String HOST="host";
-    public static String VIEWER="viewer";
+	public static String VIEWER="viewer";
 
-    protected int m_id=0;
-    public int getId(){return m_id;}
+	protected int m_id=0;
+	public int getId(){return m_id;}
 	public void setId(int id) {m_id=id;}
 
 	protected String m_title=null;

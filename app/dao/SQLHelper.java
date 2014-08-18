@@ -537,4 +537,12 @@ public class SQLHelper {
 		}
 		return res;
 	}
+
+	public static String convertOrder(int order){
+		String ret = null;
+		if(order == (+1)) ret = ASCEND;
+		else if(order == (-1)) ret = DESCEND; 
+		else;
+		return ret;
+	}
 };

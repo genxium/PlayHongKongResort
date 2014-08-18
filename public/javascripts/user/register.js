@@ -10,8 +10,8 @@ var g_spanCheckEmail=null;
 var g_spanCheckPassword=null;
 var g_spanCheckPasswordConfirm=null;
 
-var g_callbackOnRegisterSuccess=null;
-var g_callbackOnRegisterError=null;
+var g_onRegisterSuccess=null;
+var g_onRegisterError=null;
 
 function initRegisterWidget(){	
 	g_sectionRegister=$("#idSectionRegister");
@@ -70,14 +70,12 @@ function onBtnRegisterClicked(evt){
 		url: "/user/register",
 		data: params,
 		success: function(data, status, xhr){
-			if(g_callbackOnRegisterSuccess!=null){
-				g_callbackOnRegisterSuccess();
-			}
+			if(g_onRegisterSuccess == null) return;
+			g_onRegisterSuccess();
 		},
 		error: function(xhr, status, err){
-			if(g_callbackOnRegisterError!=null){
-				g_callbackOnRegisterError();
-			}   
+			if(g_onRegisterError == null)
+			g_onRegisterError();
 		}
         });
     }while(false);

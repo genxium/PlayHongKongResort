@@ -1,12 +1,19 @@
 // constants
-var g_numItemsPerPage=6;
-var g_baseTwo=2;
-var g_baseTen=10;
+var g_numItemsPerPage = 6;
+var g_baseTwo = 2;
+var g_baseTen = 10;
 var g_rootElement = $(":root");
-var g_username=null;
-var g_userAvatarURL;
-var g_directionForward=(+1);
-var g_directionBackward=(-1);
+var g_username = null;
+var g_userAvatarURL = "";
+
+// order is used in sorting (e.g. ascend/descend)
+var g_orderAscend = (+1);
+var g_orderDescend = (-1);
+
+// direction is used in paging (e.g. scroll up/down)
+var g_directionForward = (+1);
+var g_directionBackward = (-1);
+
 var g_modeHomepage=0;
 var g_modeProfile=1;
 
@@ -60,20 +67,18 @@ var g_keyReplyeeId="replyee_id";
 var g_keyReplyeeName="replyee_name";
 var g_keySubComments="sub_comments";
 
-// callback function pointers
-var g_callbackOnActivityEditorRemoved=null;
-
 // general keys
-var g_keyPageIndex="page_index";
-var g_keyStartingIndex="starting_index";
-var g_keyEndingIndex="ending_index";
+var g_keyPageIndex = "page_index";
+var g_keyStartingIndex = "starting_index";
+var g_keyEndingIndex = "ending_index";
 
-var g_keyRefIndex="ref_index";
-var g_keyNumItems="num_items";
-var g_keyDirection="direction";
+var g_keyRefIndex = "ref_index";
+var g_keyNumItems = "num_items";
+var g_keyOrder = "order";
+var g_keyDirection = "direction";
 
 // constants
-var g_statusCreated=0;
-var g_statusPending=1;
-var g_statusRejected=2;
-var g_statusAccepted=3;
+var g_statusCreated = 0;
+var g_statusPending = 1;
+var g_statusRejected = 2;
+var g_statusAccepted = 3;

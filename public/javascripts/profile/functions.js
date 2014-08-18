@@ -1,29 +1,73 @@
+/*
+ * variables
+ */
+
+// general DOM elements
+var g_formAvatar=null;
+var g_sectionActivities=null;
+var g_sectionUser=null;
+var g_sectionResponse=null;
+var g_activitiesFilter=null;
+var g_activitiesSorter=null;
+
+// input-field keys
+var g_idFieldAvatar="idFieldAvatar";
+
+// buttons
+var g_btnUploadAvatar=null;
+
+// others
+var g_userId=null;
+
 // Assistant Callback Functions
 function onUploadAvatarFormSubmission(formEvt){
 
-		formEvt.preventDefault(); // prevent default action.
+	formEvt.preventDefault(); // prevent default action.
 
-		var formObj = $(this);
-		var formData = new FormData(this);
-		
-		// append an user token for identity
-		var token = $.cookie(g_keyToken);
-		formData.append(g_keyToken, token);
-		
-		$.ajax({
-			method: "POST",
-			url: "/user/avatar/upload", 
-			data: formData,
-			mimeType: "mutltipart/form-data",
-			contentType: false,
-			processData: false,
-			success: function(data, status, xhr){
-				g_sectionResponse.html("Uploaded");
-			},
-			error: function(xhr, status, err){
-				g_sectionResponse.html("Failed");
-			}
-		});
+	var formObj = $(this);
+	var formData = new FormData(this);
+	
+	// append an user token for identity
+	var token = $.cookie(g_keyToken);
+	formData.append(g_keyToken, token);
+	
+	$.ajax({
+		method: "POST",
+		url: "/user/avatar/upload", 
+		data: formData,
+		mimeType: "mutltipart/form-data",
+		contentType: false,
+		processData: false,
+		success: function(data, status, xhr){
+			g_sectionResponse.html("Uploaded");
+		},
+		error: function(xhr, status, err){
+			g_sectionResponse.html("Failed");
+		}
+	});
+
+}
+
+function onQueryActivitiesSuccess(data, status, xhr){
+	var jsonResponse = JSON.parse(data);
+	if(jsonResponse == null) return;
+	var count=Object.keys(jsonResponse).length;
+	// clean target section
+	g_sectionActivities.empty();
+	var idx=0;
+	// display contents
+	for(var key in jsonResponse){
+		var activityJson = jsonResponse[key];
+		var activityId = activityJson[g_keyId];
+		if(idx == 0)	g_sectionActivities.data(g_keyStartingIndex, activityId);
+		if(idx == count-1)	g_sectionActivities.data(g_keyEndingIndex, activityId);
+		var cell = generateActivityCell(activityJson);
+		g_sectionActivities.append(cell);
+		++idx;
+	}
+}
+
+function onQueryActivitiesError(xhr, status, err) {
 
 }
 
@@ -44,16 +88,20 @@ function onBtnUploadAvatarClicked(evt){
 function onBtnPreviousPageClicked(evt){
 	
 	var pageIndex=g_sectionActivities.data(g_keyPageIndex);
-    var startingIndex=g_sectionActivities.data(g_keyStartingIndex);
+	var startingIndex=g_sectionActivities.data(g_keyStartingIndex);
 
-	queryActivities(startingIndex, g_numItemsPerPage, g_directionBackward);
+	var relation = g_activitiesFilter.val();
+	var order = g_activitiesSorter.val();
+	queryActivities(startingIndex, g_numItemsPerPage, order, g_directionBackward, g_userId, relation, null, onQueryActivitiesSuccess, onQueryActivitiesError);
+
 }
 
 function onBtnNextPageClicked(evt){
 	var pageIndex=g_sectionActivities.data(g_keyPageIndex);
-    var endingIndex=g_sectionActivities.data(g_keyEndingIndex);
-
-	queryActivities(endingIndex, g_numItemsPerPage, g_directionForward);
+	var endingIndex=g_sectionActivities.data(g_keyEndingIndex);
+	var relation = g_activitiesFilter.val();
+	var order = g_activitiesSorter.val();
+	queryActivities(endingIndex, g_numItemsPerPage, order, g_directionForward, g_userId, relation, null, onQueryActivitiesSuccess, onQueryActivitiesError);
 }
 
 function onSectionActivitiesScrolled(evt){
@@ -104,53 +152,4 @@ function validateImage(file){
 	    return false;
 	}
 	return true;
-}
-
-function queryActivities(refIndex, numItems, direction){
-	var params={};
-	params[g_keyRefIndex]=refIndex.toString();
-	params[g_keyNumItems]=numItems.toString();
-	params[g_keyDirection]=direction.toString();
-
-	var token=$.cookie(g_keyToken);
-	if(token!=null)	params[g_keyToken]=token;
-	if(g_userId!=null) params[g_keyUserId]=g_userId;
-
-	var relation=g_activitiesFilter.val();
-	params[g_keyRelation]=relation;
-
-	try{
-		$.ajax({
-			type: "GET",
-			url: "/activity/query",
-			data: params,
-			success: function(data, status, xhr){
-					var jsonResponse=JSON.parse(data);
-					var count=Object.keys(jsonResponse).length;
-					if(jsonResponse!=null){
-						// clean target section
-						g_sectionActivities.empty();
-						var idx=0;
-						// display contents
-						for(var key in jsonResponse){
-							var activityJson=jsonResponse[key];
-							var activityId=activityJson[g_keyId];
-							if(idx==0){
-								g_sectionActivities.data(g_keyStartingIndex, activityId);
-							}
-							if(idx==count-1){
-							    g_sectionActivities.data(g_keyEndingIndex, activityId);
-							}
-							var cell=generateActivityCell(activityJson);
-								g_sectionActivities.append(cell);
-								++idx;
-						}
-					}
-			},
-			error: function(xhr, status, err){
-			}
-		});
-	} catch(err){
-
-	}
 }

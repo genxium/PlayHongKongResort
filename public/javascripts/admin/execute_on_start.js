@@ -2,17 +2,17 @@ $(document).ready(function(){
     	// initialize local DOMs
 	initTopbar();
 
-	g_callbackOnLoginSuccess=null;
-	g_callbackOnLoginError=null;
-	g_callbackOnEnter=null;
+	g_onLoginSuccess=null;
+	g_onLoginError=null;
+	g_onEnter=null;
 	initActivityEditor();
 
 	g_sectionActivityMonitor=$("#idSectionActivityMonitor");
 	g_selectFilter=$("#idSelectFilter");
 	
-	g_callbackOnActivityAccepted=queryActivities;
-	g_callbackOnActivityRejected=queryActivities;
-	g_callbackOnActivityDeleted=queryActivities;
+	g_onActivityAccepted=queryActivities;
+	g_onActivityRejected=queryActivities;
+	g_onActivityDeleted=queryActivities;
 	queryActivities(0, g_numItemsPerPage, g_directionForward);
 
 	g_selectFilter.on("change", onSelectFilterChanged);

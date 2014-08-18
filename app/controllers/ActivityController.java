@@ -27,27 +27,34 @@ public class ActivityController extends Controller {
 		}
 	}
 
-	public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer userId, Integer relation, Integer status){
+	public static Result query(String refIndex, Integer numItems, Integer order, Integer direction, String token, Integer userId, Integer relation, Integer status){
 		response().setContentType("text/plain");
 		do{
-		    try{
-			Integer id=null;
-			if(token!=null)	id=DataUtils.getUserIdByToken(token);
-			List<Activity> activities=null;
-			if(relation!=null && userId!=null){
-			    activities=SQLCommander.queryActivities(userId, relation);
-			} else{
-			    activities=SQLCommander.queryActivities(refIndex, Activity.ID, SQLHelper.DESCEND, numItems, direction, status);
+			try{
+				if(direction == null) break;
+				if(!direction.equals(SQLCommander.DIRECTION_FORWARD) && !direction.equals(SQLCommander.DIRECTION_BACKWARD)) break; // anti-cracking by param direction	
+				if(order == null) break;
+				String orderStr = SQLHelper.convertOrder(order);
+				if(orderStr == null) break; // anti-cracking by param order
+				Integer viewerId = null;
+				if(token != null)	viewerId = DataUtils.getUserIdByToken(token);
+				List<Activity> activities = null;
+				if(relation != null && userId != null){
+					activities = SQLCommander.queryActivities(userId, UserActivityRelation.maskRelation(relation));
+				} else{
+					activities = SQLCommander.queryActivities(refIndex, Activity.ID, orderStr, numItems, direction, status);
+				}
+				if(activities == null) break;
+				ObjectNode result = Json.newObject();
+				for(Activity activity : activities){
+					// non-host viewers can only see accepted activities 
+					if(activity.getStatus() != Activity.ACCEPTED && !userId.equals(viewerId)) continue;
+					result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages(viewerId));
+				}
+				return ok(result);
+			} catch(Exception e){
+				System.out.println(ActivityController.class.getName()+".query, "+e.getCause());
 			}
-			if(activities==null) break;
-			ObjectNode result = Json.newObject();
-			for(Activity activity : activities){
-			    result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages(id));
-			}
-			return ok(result);
-		    } catch(Exception e){
-			System.out.println(ActivityController.class.getName()+".query, "+e.getCause());
-		    }
 		} while(false);
 		return badRequest();
 	}
@@ -89,36 +96,30 @@ public class ActivityController extends Controller {
 		response().setContentType("text/plain");
 		do{
 			try{
-				Map<String, String[]> formData=request().body().asFormUrlEncoded();
-				String token=formData.get(User.TOKEN)[0];
-				Integer activityId=Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-				String[] appliedParticipantsJsonStrs= formData.get(ActivityDetail.APPLIED_PARTICIPANTS);
-				String[] selectedParticipantsJsonStrs= formData.get(ActivityDetail.SELECTED_PARTICIPANTS);
+				Map<String, String[]> formData = request().body().asFormUrlEncoded();
+				String token = formData.get(User.TOKEN)[0];
+				Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 
-				String appliedParticipantsJsonStr=appliedParticipantsJsonStrs.length>0?appliedParticipantsJsonStrs[0]:"[]";
-				String selectedParticipantsJsonStr=selectedParticipantsJsonStrs.length>0?selectedParticipantsJsonStrs[0]:"[]";
+				String[] appliedParticipantsJsonStrs = formData.get(ActivityDetail.APPLIED_PARTICIPANTS);
+				String[] selectedParticipantsJsonStrs = formData.get(ActivityDetail.SELECTED_PARTICIPANTS);
+				String appliedParticipantsJsonStr = (appliedParticipantsJsonStrs.length > 0)?appliedParticipantsJsonStrs[0]:"[]";
+				String selectedParticipantsJsonStr = (selectedParticipantsJsonStrs.length > 0)?selectedParticipantsJsonStrs[0]:"[]";
 
 				JSONArray appliedParticipantsJson= (JSONArray)JSONValue.parse(appliedParticipantsJsonStr);
 				JSONArray selectedParticipantsJson= (JSONArray)JSONValue.parse(selectedParticipantsJsonStr);
 
-				Integer ownerId=DataUtils.getUserIdByToken(token);
-				if(ownerId==null) break;
-				if(SQLCommander.validateOwnershipOfActivity(ownerId, activityId)==false) break;
+				Integer ownerId = DataUtils.getUserIdByToken(token);
+				if(ownerId == null) break;
+				if(!SQLCommander.validateOwnershipOfActivity(ownerId, activityId)) break;
 
 				for(int i=0;i<appliedParticipantsJson.size();i++){
 				    Integer userId=Integer.valueOf((String)appliedParticipantsJson.get(i));
-				    boolean result=SQLCommander.updateUserActivityRelation(ownerId, userId, activityId, UserActivityRelation.applied);
-				    if(result==false){
-					System.out.println("uid: "+userId+" activityid: "+activityId+" to relation: 0 failed");
-				    }
+				    SQLCommander.updateUserActivityRelation(ownerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied));
 				}
 
 				for(int i=0;i<selectedParticipantsJson.size();i++){
 				    Integer userId=Integer.valueOf((String)selectedParticipantsJson.get(i));
-				    boolean result=SQLCommander.updateUserActivityRelation(ownerId, userId, activityId, UserActivityRelation.selected);
-				    if(result==false){
-					System.out.println("uid: "+userId+" activityid: "+activityId+" to relation: 1 failed");
-				    }
+				    SQLCommander.updateUserActivityRelation(ownerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected));
 				}
 				return ok();
 			} catch(Exception e){
@@ -309,25 +310,25 @@ public class ActivityController extends Controller {
 		response().setContentType("text/plain");
 		do{
 			try{
-				Map<String, String[]> formData=request().body().asFormUrlEncoded();
-				Integer activityId=Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-				String token=formData.get(User.TOKEN)[0];
-				if(token==null) break;
-				Integer userId=DataUtils.getUserIdByToken(token);
-				if(userId==null) break;
+				Map<String, String[]> formData = request().body().asFormUrlEncoded();
+				Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+				String token = formData.get(User.TOKEN)[0];
+				if(token == null) break;
+				Integer userId = DataUtils.getUserIdByToken(token);
+				if(userId == null) break;
 
-				Activity activity=SQLCommander.queryActivity(activityId);
-				if(activity==null) break;
-				boolean joinable=SQLCommander.isActivityJoinable(userId, activity);
-				if(joinable==false) break;
+				Activity activity = SQLCommander.queryActivity(activityId);
+				if(activity == null) break;
+				boolean joinable = SQLCommander.isActivityJoinable(userId, activity);
+				if(!joinable) break;
 
-				String[] names={UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION};
-				Object[] values={activityId, userId, UserActivityRelation.applied};
-				EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
+				String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION};
+				Object[] values = {activityId, userId, UserActivityRelation.applied};
+				EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 				builder.insert(names, values).into(UserActivityRelation.TABLE);
 				
-				int lastRelationTableId=SQLHelper.insert(builder);
-				if(lastRelationTableId==SQLHelper.INVALID) break;
+				int lastRelationTableId = SQLHelper.insert(builder);
+				if(lastRelationTableId == SQLHelper.INVALID) break;
 
 				return ok();
 			} catch(Exception e){
@@ -342,19 +343,27 @@ public class ActivityController extends Controller {
 		response().setContentType("text/plain");
 		do{
 			try{
-				Map<String, String[]> formData=request().body().asFormUrlEncoded();
-				Integer activityId=Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-				String token=formData.get(User.TOKEN)[0];
-				if(token==null) break;
+				Map<String, String[]> formData = request().body().asFormUrlEncoded();
+				Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+				String token = formData.get(User.TOKEN)[0];
+				if(token == null) break;
 				Integer relation=Integer.parseInt(formData.get(UserActivityRelation.RELATION)[0]);
                 Integer userId=DataUtils.getUserIdByToken(token);
-				if(userId==null) break;
+				if(userId == null) break;
 
 				Activity activity=SQLCommander.queryActivity(activityId);
-				if(activity==null) break;
-				boolean markable=SQLCommander.isActivityMarkable(userId, activity, relation);
-				if(!markable) break;
+				if(activity == null) break;
+				int originalRelation = SQLCommander.isActivityMarkable(userId, activity, relation);
+				if(originalRelation == UserActivityRelation.invalid) break;
 
+				if(relation == UserActivityRelation.present) {
+					int mask = UserActivityRelation.fullmask ^ UserActivityRelation.absent;
+					relation = (originalRelation & mask | relation); 
+				} else if(relation == UserActivityRelation.absent) {
+					int mask = UserActivityRelation.fullmask ^ UserActivityRelation.present;
+					relation = (originalRelation & mask | relation);
+				} else;
+	
 				String[] names={UserActivityRelation.RELATION};
 				Object[] values={relation};
 				EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();

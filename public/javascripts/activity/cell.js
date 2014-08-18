@@ -1,7 +1,29 @@
+/*
+ * variables
+ */
+
+// general dom elements
+var g_classCellActivityContainer="classCellActivityContainer";
+var g_classCellActivityTitle="classCellActivityTitle";
+var g_classCellActivityContent="classCellActivityContent";
+
+var g_classActivityCoverImage="classActivityCoverImage";
+
+var g_classActivityStatusIndicator="classActivityStatusIndicator";
+var g_classAppliedIndicator="classAppliedIndicator";
+
+// button keys
+var g_classBtnJoin="classBtnJoin";
+var g_classBtnDetail="classBtnDetail";
+
+// button indexes for cascaded DOM element search
+var g_indexBtnJoin="indexBtnJoin";
+var g_indexBtnDetail="indexBtnDetail";
+
 // Assistant Handlers
 function onBtnEditClicked(evt){
     var activityJson=$(this).data(g_keyActivity);
-	g_callbackOnEditorCancelled=function(){
+	g_onEditorCancelled=function(){
 		g_sectionActivityEditor.modal("hide");
 	};
 	g_activityEditor=generateActivityEditorByJson(activityJson);	
@@ -122,21 +144,16 @@ function generateActivityCell(activityJson){
 		html: activityTitle
 	}).appendTo(ret);
 
-	if(relation==null){
-		var btnJoin=$('<button>', {
+	if(relation == null){
+		var btnJoin = $('<button>', {
 			class: g_classBtnJoin,
 			text: 'Join'
 		}).appendTo(ret);
 		btnJoin.data(g_keyId, activityId);
 		btnJoin.bind("click", onBtnJoinClicked);
 
-		ret.bind("mouseenter", onMouseEnterDefaultActivityCell);
-		ret.bind("mouseleave", onMouseLeaveDefaultActivityCell);
-		btnJoin.hide();
-
 		ret.data(g_indexBtnJoin, btnJoin);
-	} else if(relation==2) {
-		// hard-coded, relation 2 is applied
+	} else if((relation & applied) > 0) {
 		
 		var appliedIndicator=$('<div>', {
 			class: g_classAppliedIndicator,

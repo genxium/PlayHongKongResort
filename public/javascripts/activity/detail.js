@@ -1,3 +1,19 @@
+// general dom elements
+var g_idSectionActivityDetail="idSectionActivityDetail";
+var g_idSectionActivityImages="idSectionActivityImages";
+var g_idSectionParticipants="idSectionParticipants";
+
+var g_idParticipantsSelectionForm="idParticipantsSelectionForm";
+var g_classParticipantsSelection="classParticipantsSelection";
+
+// indexes
+var g_indexParticipantsSelectionLabel="indexParticipantsSelectionLabel";
+var g_indexParticipantSelectionStatus="indexParticipantSelectionStatus";
+
+// status
+var g_statusApplied=0;
+var g_statusSelected=1;
+
 var g_activityId=null;
 
 // Assistive Functions
@@ -301,10 +317,10 @@ $(document).ready(function(){
 	}
 	initTopbar();
 
-	g_callbackOnLoginSuccess=refreshOnLoggedIn;
-	g_callbackOnLoginError=null;
+	g_onLoginSuccess=refreshOnLoggedIn;
+	g_onLoginError=null;
 
-	g_callbackOnEnter=refreshOnEnter;
+	g_onEnter=refreshOnEnter;
 
 	initActivityEditor();
 	

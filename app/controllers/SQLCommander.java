@@ -14,6 +14,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+/*
+ * Note that the relation (a.k.a UserActivityRelation.RELATION) in this class is always referring to masked relation
+ * */
+
 public class SQLCommander {
 
 	public static Integer INVALID = (-1);
@@ -172,10 +176,9 @@ public class SQLCommander {
 		try{
 			Activity activity= queryActivity(activityId);
 			List<Image> images=queryImages(activityId);
-			List<BasicUser> appliedParticipants=SQLCommander.queryUsers(activityId, UserActivityRelation.applied);
-			List<BasicUser> selectedParticipants=SQLCommander.queryUsers(activityId, UserActivityRelation.selected);
-			List<BasicUser> presentParticipants=SQLCommander.queryUsers(activityId, UserActivityRelation.present);
-
+			List<BasicUser> appliedParticipants=SQLCommander.queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied));
+			List<BasicUser> selectedParticipants=SQLCommander.queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected));
+			List<BasicUser> presentParticipants=SQLCommander.queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.present));
 			activityDetail=new ActivityDetail(activity, images, appliedParticipants, selectedParticipants, presentParticipants);
 		} catch (Exception e){
 			System.out.println(SQLCommander.class.getName()+".queryActivityDetail, "+e.getMessage());
@@ -249,23 +252,20 @@ public class SQLCommander {
 	public static int queryUserActivityRelation(Integer userId, Integer activityId){
 		int ret= UserActivityRelation.invalid;
 		do{
-			if(userId==null) break;
-			if(activityId==null) break;
+			if(userId == null) break;
+			if(activityId == null) break;
 			try{
-				EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
+				EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-                builder.select(UserActivityRelation.RELATION).from(UserActivityRelation.TABLE);
+				builder.select(UserActivityRelation.RELATION).from(UserActivityRelation.TABLE);
 				builder.where(UserActivityRelation.USER_ID, "=", userId);
 				builder.where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
 
-				List<JSONObject> records=SQLHelper.select(builder);
+				List<JSONObject> records = SQLHelper.select(builder);
 				if(records==null) break;
-
-				for(JSONObject record : records){
-					Integer relation=(Integer)record.get(UserActivityRelation.RELATION);
-					ret=relation;
-					break;
-				}
+				if(records.size() != 1) break;
+				JSONObject record = records.get(0);
+				ret = (Integer)record.get(UserActivityRelation.RELATION);	
 			} catch(Exception e){
 
 			}
@@ -471,22 +471,32 @@ public class SQLCommander {
 	}
 
 	public static boolean isActivityEditable(Integer userId, Activity activity){
-		boolean ret=false;
+		boolean ret = false;
 		do{
-			if(userId==null) break;
-			if(activity==null) break;
-			if(validateOwnershipOfActivity(userId, activity)==false) break;
-	  	  	if(activity.getStatus()!=Activity.CREATED) break;
+			if(userId == null) break;
+			if(activity == null) break;
+			if(validateOwnershipOfActivity(userId, activity) == false) break;
+	  	  	if(activity.getStatus() != Activity.CREATED) break;
 	  	  	ret=true;
 		}while(false);
 		return ret;
 	}
 
-	public static boolean isActivityJoinable(User user, Activity activity){
-		boolean ret=false;
+	public static boolean isActivityJoinable(Integer userId, int activityId){
+		boolean ret = false;
 		do{
-			if(user==null) break;
-			int userId=user.getId();
+			if(userId == null) break;
+			Activity activity = queryActivity(activityId);
+			ret = isActivityJoinable(userId, activity);
+		}while(false);
+		return ret;
+	}
+
+	public static boolean isActivityJoinable(User user, Activity activity){
+		boolean ret = false;
+		do{
+			if(user == null) break;
+			int userId = user.getId();
 			ret=isActivityJoinable(userId, activity);
 		}while(false);
 		return ret;
@@ -495,104 +505,96 @@ public class SQLCommander {
 	public static boolean isActivityJoinable(Integer userId, Activity activity){
 		boolean ret=false;
 		do{
-			if(userId==null) break;
-			if(activity==null) break;
-			if(activity.getStatus()!=Activity.ACCEPTED) break;
-			int activityId=activity.getId();
-			int relation=queryUserActivityRelation(userId, activityId);
-			if(relation!= UserActivityRelation.invalid) break;
-			ret=true;
-		}while(false);
-		return ret;
-	}
-
-	public static boolean isActivityJoinable(Integer userId, int activityId){
-		boolean ret=false;
-		do{
-			if(userId==null) break;
-			Activity activity= queryActivity(activityId);
-			ret=isActivityJoinable(userId, activity);
+			if(userId == null) break;
+			if(activity == null) break;
+			if(activity.getStatus() != Activity.ACCEPTED) break;
+			int activityId = activity.getId();
+			int relation = queryUserActivityRelation(userId, activityId);
+			if(relation != UserActivityRelation.invalid) break;
+			ret = true;
 		}while(false);
 		return ret;
 	}
 
 	public static boolean isActivityCommentable(Integer from, Integer to, Integer activityId){
-		boolean ret=false;
+		boolean ret = false;
 		do {
-			if(from==null) break;
-			if(to==null) break;
-			if(activityId==null) break;
-			Activity activity=queryActivity(activityId);	
-			if(activity==null) break;
-			ret=isActivityCommentable(from, to, activity);					
+			if(from == null) break;
+			if(to == null) break;
+			if(activityId == null) break;
+			Activity activity = queryActivity(activityId);	
+			if(activity == null) break;
+			ret = isActivityCommentable(from, to, activity);					
 		} while(false); 		
 		return ret;
 	}
 
 	public static boolean isActivityCommentable(Integer from, Integer to, Activity activity){
-		boolean ret=false;
+		boolean ret = false;
 		do {
-			if(from==null) break;
-			if(to==null) break;
-			if(activity==null) break;
+			if(from == null) break;
+			if(to == null) break;
+			if(activity == null) break;
 			if(activity.hasBegun()) break;		
-			ret=true;
+			ret = true;
 		} while(false); 		
 		return ret;
 	}
 
 	public static boolean isUserAssessable(Integer from, Integer to, Integer activityId){
-		boolean ret=false;
+		boolean ret = false;
 		do{
-			if(from==null) break;
-			if(to==null) break;
-			if(activityId==null) break;
-			Activity activity=queryActivity(activityId);
-			if(activity==null) break;
-			ret=isUserAssessable(from, to, activity);		
+			if(from == null) break;
+			if(to == null) break;
+			if(activityId == null) break;
+			Activity activity = queryActivity(activityId);
+			if(activity == null) break;
+			ret = isUserAssessable(from, to, activity);		
 		}while(false);	
 		return ret;
 	}
 
 	public static boolean isUserAssessable(Integer from, Integer to, Activity activity){
-		boolean ret=false;
+		boolean ret = false;
 		do{
-			if(from==null) break;
-			if(to==null) break;
-			if(activity==null) break;
+			if(from == null) break;
+			if(to == null) break;
+			if(activity == null) break;
 			if(!activity.hasBegun()) break;
-			int relation1=queryUserActivityRelation(from, activity.getId()); 
-			int relation2=queryUserActivityRelation(to, activity.getId());
-			if(relation1!=UserActivityRelation.present || relation2!=UserActivityRelation.present) break;
+			int relation1 = queryUserActivityRelation(from, activity.getId()); 
+			int relation2 = queryUserActivityRelation(to, activity.getId());
+			if((relation1 & UserActivityRelation.present) == 0 || (relation2 & UserActivityRelation.present) == 0) break;
 			ret=true;
 		}while(false);
 		return ret;
 	}
 
-	public static boolean isActivityMarkable(Integer userId, Integer activityId, int relation){
-		boolean ret=false;
+	/*
+ 		Method isActivityMarkable(...) returns UserActivityRelation.invalid if the activity is not markable by
+		specified user, or the original relation otherwise.
+	*/
+	public static int isActivityMarkable(Integer userId, Integer activityId, int relation){
+		int ret = UserActivityRelation.invalid;
 		do{
-			if(userId==null) break;
-			if(activityId==null) break;
-			Activity activity=queryActivity(activityId);
-			if(activity==null) break;
+			if(userId == null) break;
+			if(activityId == null) break;
+			Activity activity = queryActivity(activityId);
+			if(activity == null) break;
 			ret=isActivityMarkable(userId, activity, relation);
 		}while(false);
 		return ret;
 	}
 
-	public static boolean isActivityMarkable(Integer userId, Activity activity, int relation){
-		boolean ret=false;
+	public static int isActivityMarkable(Integer userId, Activity activity, int relation){
+		int ret = UserActivityRelation.invalid;
 		do{
-			if(userId==null) break;
-			if(activity==null) break;
+			if(userId == null) break;
+			if(activity == null) break;
 			if(!activity.hasBegun()) break;
-			int originalRelation=queryUserActivityRelation(userId, activity.getId());
-			if(originalRelation==UserActivityRelation.invalid) break;
-            if(originalRelation==UserActivityRelation.applied) break;
-            if(originalRelation==UserActivityRelation.hosted) break;
-            if(originalRelation==relation) break;
-            ret=true;
+			int originalRelation = queryUserActivityRelation(userId, activity.getId());
+			if((originalRelation & UserActivityRelation.selected) ==0) break;
+			if((originalRelation & relation) > 0) break;
+			ret = originalRelation;
 		}while(false);
 		return ret;
 	}
@@ -797,22 +799,28 @@ public class SQLCommander {
         boolean ret=false;
         do{
             try{
-                java.util.Date date= new java.util.Date();
-                Timestamp currentTime=new Timestamp(date.getTime());
-                String timeStr=currentTime.toString();
+                java.util.Date date = new java.util.Date();
+                Timestamp currentTime = new Timestamp(date.getTime());
+                String timeStr = currentTime.toString();
+		
+		String timestampFieldName = null;
+		if((relation & UserActivityRelation.selected)>0) {
+			timestampFieldName = UserActivityRelation.LAST_ACCEPTED_TIME;
+		} else {
+			timestampFieldName = UserActivityRelation.LAST_REJECTED_TIME;	
+		}	
+                String[] cols = {UserActivityRelation.RELATION, timestampFieldName};
+                Object[] vals = {relation, timeStr};
 
-                String[] cols={UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME};
-                Object[] vals={relation, timeStr};
+                String[] whereCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID};
+                String[] whereOps = {"=", "="};
+                Object[] whereVals = {activityId, userId};
 
-                String[] whereCols={UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID};
-                String[] whereOps={"=", "="};
-                Object[] whereVals={activityId, userId};
-
-                EasyPreparedStatementBuilder builder=new EasyPreparedStatementBuilder();
+                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
                 builder.update(UserActivityRelation.TABLE).set(cols, vals).where(whereCols, whereOps, whereVals);
-                boolean result=SQLHelper.update(builder);
-                if(result==false) break;
-                ret=true;
+                boolean result = SQLHelper.update(builder);
+                if(result == false) break;
+                ret = true;
             } catch(Exception e){
 
             }

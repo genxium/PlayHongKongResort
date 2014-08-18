@@ -4,30 +4,30 @@ $(document).ready(function(){
     	initTopbar();
 	initRegisterWidget();
 
-	g_callbackOnLoginSuccess=function(){
+	g_onLoginSuccess=function(){
 		refreshOnLoggedIn();
-		queryActivities(0, g_numItemsPerPage, g_directionForward);
+		queryActivities(0, g_numItemsPerPage, g_orderDescend, g_directionForward, null, null, g_statusAccepted, onQueryActivitiesSuccess, onQueryActivitiesError);
 	};
 
-	g_callbackOnLoginError=null;
+	g_onLoginError=null;
 
-	g_callbackOnEnter=function(){
+	g_onEnter=function(){
 		refreshOnEnter();
-		queryActivities(0, g_numItemsPerPage, g_directionForward);
+		queryActivities(0, g_numItemsPerPage, g_orderDescend, g_directionForward, null, null, g_statusAccepted, onQueryActivitiesSuccess, onQueryActivitiesError);
 	};
 
-	g_callbackOnRegisterSuccess=function(){
+	g_onRegisterSuccess=function(){
 		refreshOnEnter();
-		queryActivities(0, g_numItemsPerPage, g_directionForward);
+		queryActivities(0, g_numItemsPerPage, g_orderDescend, g_directionForward, null, null, g_statusAccepted, onQueryActivitiesSuccess, onQueryActivitiesError);
 	}
 
-	g_callbackOnRegisterError=null;
+	g_onRegisterError=null;
 
 	initActivityEditor();
 	 
 	// initialize callback functions
-	g_callbackOnActivityEditorRemoved=refreshOnLoggedIn;
-	g_callbackOnQueryActivitiesSuccess=onQueryActivitiesSuccess;
+	g_onEditorRemoved=refreshOnLoggedIn;
+	g_onQueryActivitiesSuccess=onQueryActivitiesSuccess;
 
 	// execute on page loaded
 	g_sectionDefaultActivities=$("#idSectionDefaultActivities"); 

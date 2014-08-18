@@ -10,20 +10,32 @@ $(document).ready(function(){
 	}
 	
 	initTopbar();
-	g_callbackOnLoginSuccess=refreshOnLoggedIn;
-	g_callbackOnLoginError=null;
-	g_callbackOnEnter=refreshOnEnter;
+	g_onLoginSuccess = function(){
+		refreshOnLoggedIn();
+		var relation = g_activitiesFilter.val();
+		var order = g_activitiesSorter.val();
+		queryActivities(0, g_numItemsPerPage, order, g_directionForward, g_userId, relation, null, onQueryActivitiesSuccess, onQueryActivitiesError);
+	};
+	g_onLoginError = null;
+	g_onEnter = refreshOnEnter;
 	initActivityEditor();
 
-	g_formAvatar=$("#form_avatar");
+	g_formAvatar = $("#form_avatar");
 	g_sectionResponse=$("#section_response");
 
-	g_activitiesFilter=$("#activitiesFilter");
+	g_activitiesFilter = $("#activities-filter");
 	g_activitiesFilter.on("change", function(){
-		queryActivities(0, g_numItemsPerPage, g_directionForward);
+		var relation = g_activitiesFilter.val();
+		var order = g_activitiesSorter.val();
+		queryActivities(0, g_numItemsPerPage, order, g_directionForward, g_userId, relation, null, onQueryActivitiesSuccess, onQueryActivitiesError);
 	});
 
-	g_activitiesSorter=$("#activitiesSorter");
+	g_activitiesSorter = $("#activities-sorter");
+	g_activitiesSorter.on("change", function(){
+		var relation = g_activitiesFilter.val();
+		var order = g_activitiesSorter.val();
+		queryActivities(0, g_numItemsPerPage, order, g_directionForward, g_userId, relation, null, onQueryActivitiesSuccess, onQueryActivitiesError);
+	});
 
 	g_sectionActivities=$("#section_activities"); 
 	g_sectionActivities.bind("scroll", onSectionActivitiesScrolled);
@@ -33,8 +45,11 @@ $(document).ready(function(){
 
 	g_btnUploadAvatar=$("#btn_upload_avatar");
 	g_btnUploadAvatar.on("click", onBtnUploadAvatarClicked);
- 	g_callbackOnActivityEditorRemoved=queryActivities;
- 	queryActivities(0, g_numItemsPerPage, g_directionForward);
+ 	g_onEditorRemoved=queryActivities;
+
+	var relation = g_activitiesFilter.val();
+	var order = g_activitiesSorter.val();
+	queryActivities(0, g_numItemsPerPage, order, g_directionForward, g_userId, relation, null, onQueryActivitiesSuccess, onQueryActivitiesError);
 
 	initWidgets(onBtnPreviousPageClicked, onBtnNextPageClicked);
 	checkLoginStatus();

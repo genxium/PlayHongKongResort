@@ -8,9 +8,9 @@ var g_btnLogout=null;
 var g_btnProfile=null;
 var g_btnCreate=null;
 
-var g_callbackOnLoginSuccess=null;
-var g_callbackOnLoginError=null;
-var g_callbackOnEnter=null;
+var g_onLoginSuccess=null;
+var g_onLoginError=null;
+var g_onEnter=null;
 
 function initLoginWidget(){
 	if(g_sectionLogin!=null){
@@ -20,43 +20,41 @@ function initLoginWidget(){
 }
 
 function onBtnLoginClicked(evt){
-    do{
-        var email=g_loginUserHandle.val();
-        var password=g_loginPassword.val();
+        var email = g_loginUserHandle.val();
+        var password = g_loginPassword.val();
 
-        if( (email==null || email.length==0 || validateEmail(email)==false)
-            || password==null || password.length==0 || validatePassword(password)==false) break;
+        if( (email == null || email.length == 0 || !validateEmail(email))
+            || password == null || password.length == 0 || !validatePassword(password)) return;
 
         var params={};
-        params[g_keyEmail]=email;
-        params[g_keyPassword]=password;
+        params[g_keyEmail] = email;
+        params[g_keyPassword] = password;
         
         $.ajax({
             type: "POST",
             url: "/user/login",
             data: params,
             success: function(data, status, xhr){
-                var userJson=JSON.parse(data);
-                g_username=userJson[g_keyName];
-                g_userAvatarURL=userJson[g_keyUrl];
+                var userJson = JSON.parse(data);
+                g_username = userJson[g_keyName];
+                g_userAvatarURL = userJson[g_keyUrl];
                 // store token in cookie iff query succeeds
                 $.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
                 $.cookie(g_keyUid, userJson[g_keyId], {path: '/'});
-                if(g_sectionLogin!=null){
+                if(g_sectionLogin != null){
                     g_sectionLogin.empty();
                     g_sectionLogin.append(generateLoggedInMenu);
                 }
-                if(g_callbackOnLoginSuccess!=null){
-                    g_callbackOnLoginSuccess();
+                if(g_onLoginSuccess != null){
+                    g_onLoginSuccess();
                 }
-                    },
-                    error: function(xhr, status, err){
-                        if(g_callbackOnLoginError!=null){
-                    g_callbackOnLoginError();
-                }
-                    }
-                });
-    }while(false);
+	    },
+	    error: function(xhr, status, err){
+		if(g_onLoginError != null){
+		    g_onLoginError();
+		}
+	    }
+	});
 }
 
 function onBtnLogoutClicked(evt){
@@ -75,8 +73,8 @@ function onBtnLogoutClicked(evt){
 					g_sectionLogin.empty();
 					g_sectionLogin.append(generateLoginForm);
 				}
-				if(g_callbackOnEnter!=null){
-					g_callbackOnEnter();	
+				if(g_onEnter!=null){
+					g_onEnter();	
 				}
 			},
 			error: function(xhr, status, err){
@@ -100,7 +98,7 @@ function onBtnProfileClicked(evt){
 
 function onBtnCreateClicked(evt){
 	evt.preventDefault();
-	g_callbackOnEditorCancelled=function(){
+	g_onEditorCancelled=function(){
 		g_sectionActivityEditor.modal("hide");
 	};
 	g_activityEditor=generateActivityEditorByJson(null);	
@@ -200,8 +198,8 @@ function checkLoginStatus(){
 	do{
 		var token = $.cookie(g_keyToken);
 		if(token==null) {
-			if(g_callbackOnEnter!=null){
-				g_callbackOnEnter();
+			if(g_onEnter!=null){
+				g_onEnter();
 			}
 			break;
 		}
@@ -221,16 +219,16 @@ function checkLoginStatus(){
 					g_sectionLogin.empty();
 					g_sectionLogin.append(generateLoggedInMenu);
 				}
-				if(g_callbackOnLoginSuccess!=null){
-					g_callbackOnLoginSuccess();	
+				if(g_onLoginSuccess!=null){
+					g_onLoginSuccess();	
 				}
             		},
 			error: function(xhr, status, errorThrown){
 				// refresh screen
 				$.removeCookie(g_keyToken, {path: '/'});
 				$.removeCookie(g_keyUid, {path: '/'});
-				if(g_callbackOnEnter!=null){
-					g_callbackOnEnter();		
+				if(g_onEnter!=null){
+					g_onEnter();		
 				}
 			}
 		});

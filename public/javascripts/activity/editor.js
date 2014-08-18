@@ -1,3 +1,46 @@
+/* 
+ * variables
+ */
+
+// general DOM elements
+var g_activityEditor=null;
+var g_modalActivityEditor=null;
+var g_sectionActivityEditor=null;
+
+// input-box keys
+var g_classFieldActivityTitle="classFieldActivityTitle";
+var g_classFieldActivityContent="classFieldActivityContent";
+var g_classOldImage="classOldImage";
+var g_classNewImage="classNewImage";
+
+// button keys
+var g_classBtnEdit="classBtnEdit";
+var g_classBtnSubmit="classBtnSubmit";
+var g_classBtnDelete="classBtnDelete";
+var g_classBtnSave="classBtnSave";
+var g_classBtnCancel="classBtnCancel";
+
+// DOM indexes for cascaded DOM element search
+var g_indexBtnEdit="indexBtnEdit";
+var g_indexStatusIndicator="indexStatusIndicator";
+var g_indexImageOfActivityPrefix="indexImageOfActivityPrefix";
+var g_indexBeginTimePicker="beginTimePicker";
+var g_indexDeadlinePicker="deadlinePicker";
+var g_indexAssociatedImage="indexAssociatedImage";
+
+var g_indexOldImage="indexOldImage";
+var g_indexNewImage="indexNewImage";
+var g_indexCheckbox="indexCheckbox";
+
+// general variables
+var g_maxNumberOfImagesForSingleActivity=3;
+var g_savable=false;
+var g_submittable=true;
+
+// callback functions
+var g_onEditorRemoved=null;
+var g_onEditorCancelled=null;
+
 // Assistive functions
 function formatDigits(value, numberOfDigits){
        var valueStr=value.toString();
@@ -207,8 +250,8 @@ function onSubmit(){
 			data: params,
 			success: function(data, status, xhr){
 				removeActivityEditor();
-				if(g_callbackOnActivityEditorRemoved!=null){
-					g_callbackOnActivityEditorRemoved(0, g_numItemsPerPage, g_directionForward);
+				if(g_OnEditorRemoved!=null){
+					g_onEditorRemoved(0, g_numItemsPerPage, g_directionForward);
 				}
 			},
 			error: function(xhr, status, err){
@@ -288,8 +331,8 @@ function onBtnDeleteClicked(evt){
 	        data: params,
 	        success: function(data, status, xhr){
                  g_activityEditor.remove();
-                 if(g_callbackOnActivityEditorRemoved!=null){
-                     g_callbackOnActivityEditorRemoved(0);
+                 if(g_onEditorRemoved!=null){
+                     g_onEditorRemoved(0);
                  }
 				 location.reload();
             },
@@ -316,8 +359,8 @@ function onBtnSubmitClicked(evt){
 function onBtnCancelClicked(evt){
 	evt.preventDefault();
 	removeActivityEditor();
-	if(g_callbackOnEditorCancelled!=null){
-		g_callbackOnEditorCancelled();	
+	if(g_onEditorCancelled!=null){
+		g_onEditorCancelled();	
 	}
 }
 

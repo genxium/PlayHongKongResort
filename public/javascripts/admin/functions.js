@@ -1,3 +1,28 @@
+/*
+ * variables
+ */
+
+// general dom elements
+var g_classAcceptedIndicator="classAcceptedIndicator";
+var g_classDeletedIndicator="classDeletedIndicator";
+
+var g_classBtnAccept="classBtnAccept";
+var g_classBtnReject="classBtnReject";
+var g_classBtnDelete="classBtnDelete";
+
+var g_sectionActivityMonitor=null;
+
+// callback function pointers
+var g_onActivityAccepted=null;
+var g_onActivityRejected=null;
+var g_onActivityDeleted=null;
+
+// buttons
+var g_selectFilter=null;
+var g_classFilterOption="classFilterOption";
+
+var g_statusToQuery=g_statusPending;
+
 function onBtnPreviousPageClicked(evt){
 
 	var pageIndex=g_sectionActivityMonitor.data(g_keyPageIndex);
