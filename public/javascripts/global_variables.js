@@ -3,8 +3,6 @@ var g_numItemsPerPage = 6;
 var g_baseTwo = 2;
 var g_baseTen = 10;
 var g_rootElement = $(":root");
-var g_username = null;
-var g_userAvatarURL = "";
 
 // order is used in sorting (e.g. ascend/descend)
 var g_orderAscend = (+1);
@@ -22,7 +20,6 @@ var g_idKeyboardEnter=13;
 
 // cookie keys
 var g_keyToken="token";
-var g_keyUid="uid";
 
 // extra request keys 
 var g_keyId="id";

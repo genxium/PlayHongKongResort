@@ -1,5 +1,7 @@
 var g_updatingAttendance = false;
 var g_refreshCallback = null;
+var g_lockedCount = 0;
+var g_btnSubmit = null;
 
 /*
 	Trying out new style of info gathering for DOMs
@@ -7,7 +9,7 @@ var g_refreshCallback = null;
 function SingleAssessmentEditor(){
 	this.name = "";
 	this.content = "";
-	this.lock = false;
+	this.lock = null;
 }
 
 function BatchAssessmentEditor(){
@@ -19,7 +21,7 @@ function BatchAssessmentEditor(){
 /*
 	generateAssessmentEditor(par: DOM, participant: User)
 */
-function generateAssessmentEditor(par, participant){
+function generateAssessmentEditor(par, participant, batchEditor){
 	var singleEditor = new SingleAssessmentEditor();
 	var row=$('<p>').appendTo(par);
 	var name=$('<a>', {
@@ -41,26 +43,72 @@ function generateAssessmentEditor(par, participant){
 		type: "checkbox",
 		style: "margin-left: 10pt; display: inline"
 	}).appendTo(row);
-	lock.on("change", {editor: singleEditor}, function(){
-		var data = evt.data;
-		var editor = data.editor;
-		editor.lock=$(this).is(':checked');
+	lock.on("change", function(evt){
+	    evt.preventDefault();
+	    var checked = $(this).is(":checked");
+	    if(!checked) {
+	        content.prop("disabled", false);
+	        --g_lockedCount;
+	        if(g_btnSubmit != null) g_btnSubmit.prop("disabled", true);
+	    }
+	    else {
+	        content.prop("disabled", true);
+	        ++g_lockedCount;
+	        if(g_lockedCount == batchEditor.editors.length && g_btnSubmit != null) g_btnSubmit.prop("disabled", false);
+	    }
 	});
-	return singleEditor;	
+	singleEditor.lock = lock;
+	return singleEditor;
 }
 
-function generateAssessmentEditors(par, participants) {
+function generateAssessmentEditors(par, participants, batchEditor) {
 	par.empty();
 	var editors = new Array();
 	for(var i = 0; i < participants.length; i++){
-		var editor = generateAssessmentEditor(par, participants[i]);
+		var editor = generateAssessmentEditor(par, participants[i], batchEditor);
 		editors.push(editor);
 	}				
 	return editors;
 }
 
+function generateAssessmentButtons(par, batchEditor){
+    if(batchEditor.editors == null || batchEditor.editors.length <= 0) return;
+	var row = $('<p>').appendTo(par);
+	var btnCheckAll = $('<button>', {
+		text: "Check All",
+		style: "display: inline"
+	}).appendTo(row);   
+	btnCheckAll.on("click", function(evt){
+		evt.preventDefault();
+		for(var i = 0; i < batchEditor.editors.length; i++) {
+			var editor = batchEditor.editors[i];
+			editor.lock.prop("checked", true).change();
+		}
+	});
+	var btnUncheckAll = $('<button>', {
+	    text: "Uncheck All",
+	    style: "display: inline; margin-left: 5pt"
+	}).appendTo(row);
+	btnUncheckAll.on("click", function(evt){
+        evt.preventDefault();
+        for(var i = 0; i < batchEditor.editors.length; i++) {
+            var editor = batchEditor.editors[i];
+            editor.lock.prop("checked", false).change();
+        }
+    });
+	g_btnSubmit = $('<button>', {
+		text: "Submit",
+		style: "display: inline; margin-left: 5pt"
+	}).appendTo(row);
+	g_btnSubmit.on("click", function(evt){
+		evt.preventDefault();
+	}).appendTo(row);
+	g_btnSubmit.prop("disabled", true);
+}
+
 function generateBatchAssessmentEditor(par, activity, participants, refreshCallback){
 	par.empty();
+	g_lockedCount = 0; // clear lock count on batch editor generated
 	g_refreshCallback = refreshCallback;
 	var batchEditor=new BatchAssessmentEditor();
 	do{
@@ -85,10 +133,16 @@ function generateBatchAssessmentEditor(par, activity, participants, refreshCallb
 		var attendanceSwitch = createBinarySwitch(sectionAll, disabled, initVal, "N/A", "Present", "Absent", "switch-attendance");	
 		var sectionEditors = $('<div>', {
 			style: "margin-top: 5pt"
-		}).appendTo(sectionAll); 
+		}).appendTo(sectionAll);
+
+		var sectionButtons = $('<div>', {
+            style: "margin-top: 5pt"
+        }).appendTo(sectionAll);
+
 		if((activity.relation & present) > 0) {
-			var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants);
-			batchEditor.editors = editors;			
+			var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, batchEditor);
+			batchEditor.editors = editors;
+            generateAssessmentButtons(sectionButtons, batchEditor);
 		}
 
 		var onSuccess = function(data, status, xhr){	    
@@ -97,12 +151,14 @@ function generateBatchAssessmentEditor(par, activity, participants, refreshCallb
 			if(value)   activity.relation = present;
 			else    activity.relation = absent;
 			
-			if(!value) {
-				sectionEditors.empty();
-				return;
-			}
-			var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants);
-			batchEditor.editors = editors;			
+			sectionEditors.empty();
+            sectionButtons.empty();
+
+			if(!value) return;
+
+			var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, batchEditor);
+			batchEditor.editors = editors;
+            generateAssessmentButtons(sectionButtons, batchEditor);
 		};
 
 		var onError = function(xhr, status, err){
@@ -129,7 +185,6 @@ function generateBatchAssessmentEditor(par, activity, participants, refreshCallb
 	}while(false);
 	return batchEditor;
 }
-
 
 function updateAttendance(activityId, attendance, onSuccess, onError){
 	if(g_updatingAttendance) return;

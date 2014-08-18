@@ -169,7 +169,7 @@ function generateActivityDetailViewByJson(activityJson){
 			style: "margin-left: 5pt"	
 		}).appendTo(d);
 		var host = $('<a>', {
-			href: '/user/profile?'+g_keyUserId+"="+activity.host.id.toString(),
+			href: '/user/profile/show?'+g_keyUserId+"="+activity.host.id.toString(),
 			text: activity.host.name
 		}).appendTo(sp2);
 	}

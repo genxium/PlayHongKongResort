@@ -18,61 +18,62 @@ import java.util.*;
 
 public class AssessmentController extends Controller {
 
-    public static final String BUNDLE="bundle";
+    public static final String BUNDLE = "bundle";
 
-    public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer userId, Integer activityId){
+    public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer userId, Integer activityId) {
         response().setContentType("text/plain");
-        try{
-            List<Assessment> assessments=SQLCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, activityId);
+        try {
+            List<Assessment> assessments = SQLCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, activityId);
             ObjectNode result = Json.newObject();
-            for(Assessment assessment : assessments){
+            for (Assessment assessment : assessments) {
                 result.put(String.valueOf(assessment.getId()), assessment.toObjectNode());
             }
             return ok(result);
-        } catch(Exception e){
-            System.out.println(AssessmentController.class.getName()+".query, "+e.getCause());
+        } catch (Exception e) {
+            System.out.println(AssessmentController.class.getName() + ".query, " + e.getCause());
         }
         return badRequest();
     }
 
-    public static Result submit(){
+    public static Result submit() {
         // define response attributes
         response().setContentType("text/plain");
 
-        do{
-            try{
+        do {
+            try {
                 Http.RequestBody body = request().body();
 
                 // get file data from request body stream
                 Map<String, String[]> formData = body.asFormUrlEncoded();
 
-                String token=formData.get(User.TOKEN)[0];
-                if(token==null) break;
-                Integer userId=DataUtils.getUserIdByToken(token);
-                if(userId==null || userId==null) break;
-                User user=SQLCommander.queryUser(userId);
-                if(user==null) break;
-                Integer activityId=Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-                if(activityId==null) break;
+                String token = formData.get(User.TOKEN)[0];
+                if (token == null) break;
+                Integer userId = DataUtils.getUserIdByToken(token);
+                if (userId == null || userId == null) break;
+                User user = SQLCommander.queryUser(userId);
+                if (user == null) break;
+                Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+                if (activityId == null) break;
 
-                Integer relation=SQLCommander.queryUserActivityRelation(userId, activityId);
-                if(relation==null || relation.equals(UserActivityRelation.present)==false) break;
+                Integer relation = SQLCommander.queryUserActivityRelation(userId, activityId);
+                if (relation == null || relation.equals(UserActivityRelation.present) == false) break;
 
-                String bundle=formData.get(BUNDLE)[0];
-                JSONArray assessmentJsons=(JSONArray)JSONValue.parse(bundle);
-                for(int i=0;i<assessmentJsons.size();i++){
-			JSONObject assessmentJson=(JSONObject)assessmentJsons.get(i);
-			Assessment assessment=new Assessment(assessmentJson);
-			Assessment existingAssessment=SQLCommander.queryAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo());
-			if(existingAssessment!=null) continue;
-			if(!SQLCommander.isUserAssessable(assessment.getFrom(), assessment.getTo(), assessment.getActivityId())) continue;
-			int res=SQLCommander.createAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo(), assessment.getContent());	
+                String bundle = formData.get(BUNDLE)[0];
+                JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
+                for (int i = 0; i < assessmentJsons.size(); i++) {
+                    JSONObject assessmentJson = (JSONObject) assessmentJsons.get(i);
+                    Assessment assessment = new Assessment(assessmentJson);
+                    Assessment existingAssessment = SQLCommander.queryAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo());
+                    if (existingAssessment != null) continue;
+                    if (!SQLCommander.isUserAssessable(assessment.getFrom(), assessment.getTo(), assessment.getActivityId()))
+                        continue;
+                    int res = SQLCommander.createAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo(), assessment.getContent());
                 }
                 return ok();
-            } catch(Exception e){
+            } catch (Exception e) {
 
             }
-        }while(false);
+        } while (false);
         return badRequest();
     }
 }

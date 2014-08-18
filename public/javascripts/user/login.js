@@ -1,22 +1,23 @@
-var g_sectionLogin=null;
+var g_sectionLogin = null;
 
-var g_loginUserHandle=null;
-var g_loginPassword=null;
+var g_loginUserHandle = null;
+var g_loginPassword = null;
 
-var g_btnLogin=null;
-var g_btnLogout=null;
-var g_btnProfile=null;
-var g_btnCreate=null;
+var g_btnLogin = null;
+var g_btnLogout = null;
+var g_btnProfile = null;
+var g_btnCreate = null;
 
-var g_onLoginSuccess=null;
-var g_onLoginError=null;
-var g_onEnter=null;
+var g_onLoginSuccess = null;
+var g_onLoginError = null;
+var g_onEnter = null;
+
+var g_loggedInUser = null;
 
 function initLoginWidget(){
-	if(g_sectionLogin!=null){
-		var loginForm=generateLoginForm();
-		g_sectionLogin.append(loginForm);
-	}
+	if(g_sectionLogin == null) return;
+	var loginForm=generateLoginForm();
+	g_sectionLogin.append(loginForm);
 }
 
 function onBtnLoginClicked(evt){
@@ -36,11 +37,9 @@ function onBtnLoginClicked(evt){
             data: params,
             success: function(data, status, xhr){
                 var userJson = JSON.parse(data);
-                g_username = userJson[g_keyName];
-                g_userAvatarURL = userJson[g_keyUrl];
+                g_loggedInUser = new User(userJson);
                 // store token in cookie iff query succeeds
                 $.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
-                $.cookie(g_keyUid, userJson[g_keyId], {path: '/'});
                 if(g_sectionLogin != null){
                     g_sectionLogin.empty();
                     g_sectionLogin.append(generateLoggedInMenu);
@@ -68,7 +67,6 @@ function onBtnLogoutClicked(evt){
 			data: params,
 			success: function(data, status, xhr){
 				$.removeCookie(g_keyToken, {path: '/'});
-				$.removeCookie(g_keyUid, {path: '/'});
 				if(g_sectionLogin!=null){
 					g_sectionLogin.empty();
 					g_sectionLogin.append(generateLoginForm);
@@ -88,8 +86,7 @@ function onBtnLogoutClicked(evt){
 
 function onBtnProfileClicked(evt){
 	try{
-		var userId=$.cookie(g_keyUid);
-		var profilePath="/user/profile/show?"+g_keyUserId+"="+userId;
+		var profilePath="/user/profile/show?"+g_keyUserId+"="+g_loggedInUser.id;
 		var profilePage=window.open(profilePath);
 	} catch (err){
 
@@ -160,7 +157,7 @@ function generateLoggedInMenu(){
 	});
 	
 	var avatar=$('<img>',{
-		src: g_userAvatarURL,
+		src: g_loggedInUser.avatar,
 		style: "width: 50pt; height: auto; float: left"	
 	}).appendTo(ret);
 
@@ -168,9 +165,10 @@ function generateLoggedInMenu(){
 		style: "width: auto; height: auto; margin-left: 10pt; float: left"	
 	}).appendTo(ret);
 
+	var greetingText = "Hello, "+g_loggedInUser.name;
 	var greeting=$('<p>',{
 		style: "font-size: 13pt; color: white",
-		text: "Hello, "+g_username	
+		text: greetingText	
 	}).appendTo(rightHalf);
 
 	g_btnLogout=$('<button>', {
@@ -210,23 +208,20 @@ function checkLoginStatus(){
 			url: "/user/status",
 			data: params,
 			success: function(data, status, xhr){
-				var userJson=JSON.parse(data);
-				g_username=userJson[g_keyName];
-				g_userAvatarURL=userJson[g_keyUrl];
+				var userJson = JSON.parse(data);
+				g_loggedInUser = new User(userJson);
 				$.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
-				$.cookie(g_keyUid, userJson[g_keyId], {path: '/'});
-				if(g_sectionLogin!=null){
+				if(g_sectionLogin != null){
 					g_sectionLogin.empty();
 					g_sectionLogin.append(generateLoggedInMenu);
 				}
-				if(g_onLoginSuccess!=null){
+				if(g_onLoginSuccess != null){
 					g_onLoginSuccess();	
 				}
             		},
 			error: function(xhr, status, errorThrown){
 				// refresh screen
 				$.removeCookie(g_keyToken, {path: '/'});
-				$.removeCookie(g_keyUid, {path: '/'});
 				if(g_onEnter!=null){
 					g_onEnter();		
 				}
