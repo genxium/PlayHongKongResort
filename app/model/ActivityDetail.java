@@ -49,7 +49,7 @@ public class ActivityDetail extends Activity {
 	
         public ObjectNode toObjectNode(Integer viewerId){
             ObjectNode ret = null;
-                try{
+            try{
                 ret=super.toObjectNode(viewerId);
 
                 if(m_images!=null){
@@ -74,7 +74,7 @@ public class ActivityDetail extends Activity {
 
                 ArrayNode presentParticipantsNode=new ArrayNode(JsonNodeFactory.instance);
                 for(BasicUser participant : m_presentParticipants){
-		            if(viewerId.equals(participant.getId())) continue; // viewer cannot assess himself/herself
+		            if(viewerId != null && viewerId.equals(participant.getId())) continue; // viewer cannot assess himself/herself
                     presentParticipantsNode.add(participant.toObjectNode(viewerId));
                 }
                 ret.put(PRESENT_PARTICIPANTS, presentParticipantsNode);
