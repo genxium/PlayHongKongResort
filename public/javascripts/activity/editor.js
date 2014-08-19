@@ -3,81 +3,79 @@
  */
 
 // general DOM elements
-var g_activityEditor=null;
-var g_modalActivityEditor=null;
-var g_sectionActivityEditor=null;
+var g_activityEditor = null;
+var g_modalActivityEditor = null;
+var g_sectionActivityEditor = null;
 
 // input-box keys
-var g_classFieldActivityTitle="classFieldActivityTitle";
-var g_classFieldActivityContent="classFieldActivityContent";
-var g_classOldImage="classOldImage";
-var g_classNewImage="classNewImage";
+var g_classFieldActivityTitle = "classFieldActivityTitle";
+var g_classFieldActivityContent = "classFieldActivityContent";
 
 // button keys
-var g_classBtnEdit="classBtnEdit";
-var g_classBtnSubmit="classBtnSubmit";
-var g_classBtnDelete="classBtnDelete";
-var g_classBtnSave="classBtnSave";
-var g_classBtnCancel="classBtnCancel";
+var g_classBtnEdit = "classBtnEdit";
+var g_classBtnSubmit = "classBtnSubmit";
+var g_classBtnDelete = "classBtnDelete";
+var g_classBtnSave = "classBtnSave";
+var g_classBtnCancel = "classBtnCancel";
 
 // DOM indexes for cascaded DOM element search
-var g_indexBtnEdit="indexBtnEdit";
-var g_indexStatusIndicator="indexStatusIndicator";
-var g_indexImageOfActivityPrefix="indexImageOfActivityPrefix";
-var g_indexBeginTimePicker="beginTimePicker";
-var g_indexDeadlinePicker="deadlinePicker";
-var g_indexAssociatedImage="indexAssociatedImage";
+var g_indexImageOfActivityPrefix = "indexImageOfActivityPrefix";
+var g_indexDeadlinePicker = "deadlinePicker"
+var g_indexBeginTimePicker = "beginTimePicker";
+var g_indexAssociatedImage = "indexAssociatedImage";
 
-var g_indexOldImage="indexOldImage";
-var g_indexNewImage="indexNewImage";
-var g_indexCheckbox="indexCheckbox";
+var g_indexOldImages = "indexOldImages";
+var g_indexNewImages = "indexNewImages";
+
+var g_indexOldImage = "indexOldImage";
+var g_indexNewImage = "indexNewImage";
+
+var g_indexCheckbox = "indexCheckbox";
 
 // general variables
 var g_maxNumberOfImagesForSingleActivity=3;
-var g_savable=false;
-var g_submittable=true;
+var g_savable = false;
+var g_submittable = true;
 
 // callback functions
-var g_onEditorRemoved=null;
-var g_onEditorCancelled=null;
+var g_onEditorRemoved = null;
+var g_onEditorCancelled = null;
 
 // Assistive functions
 function formatDigits(value, numberOfDigits){
-       var valueStr=value.toString();
+       var valueStr = value.toString();
        while(valueStr.length<numberOfDigits) valueStr="0"+valueStr;
        return valueStr;
 }
 
 function formatDate(time){
 	time=time.replace(/-/g,"/");
-	var date=new Date(Date.parse(time));	
-	var year=date.getFullYear();
-	var month=date.getMonth()+1;
-	var day=date.getDate();
-	var hour=date.getHours();
-	var min=date.getMinutes();
+	var date = new Date(Date.parse(time));
+	var year = date.getFullYear();
+	var month = date.getMonth()+1;
+	var day = date.getDate();
+	var hour = date.getHours();
+	var min = date.getMinutes();
 	return year+"-"+formatDigits(month, 2)+"-"+formatDigits(day, 2)+" "+formatDigits(hour, 2)+":"+formatDigits(min, 2);	
 }
 
 function reformatDate(date){
-	var year=date.getFullYear();
-	var month=date.getMonth()+1;
-	var day=date.getDate();
-	var hour=date.getHours();
-	var min=date.getMinutes();
+	var year = date.getFullYear();
+	var month = date.getMonth()+1;
+	var day = date.getDate();
+	var hour = date.getHours();
+	var min = date.getMinutes();
 	return year+"-"+formatDigits(month, 2)+"-"+formatDigits(day, 2)+" "+formatDigits(hour, 2)+":"+formatDigits(min, 2);	
 }
 
 function removeActivityEditor(){
-	do{	
-		if(g_sectionActivityEditor==null) break;
-		g_sectionActivityEditor.hide();
-		g_sectionActivityEditor.modal("hide");
-		if(g_modalActivityEditor==null) break;
-		g_modalActivityEditor.empty();
-		if(g_activityEditor==null) break;
-		g_activityEditor.remove();
-	}while(false);
+        if(g_sectionActivityEditor == null) return;
+        g_sectionActivityEditor.hide();
+        g_sectionActivityEditor.modal("hide");
+        if(g_modalActivityEditor == null) return;
+        g_modalActivityEditor.empty();
+        if(g_activityEditor == null) return;
+        g_activityEditor.remove();
 }
 
 function initActivityEditor(){
@@ -85,13 +83,13 @@ function initActivityEditor(){
 	/*
 		Note: ALL attributes, especially the `class` attribute MUST be written INSIDE the div tag, bootstrap is NOT totally compatible with jQuery!!!
 	*/
-	g_sectionActivityEditor=$("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='Create an activity!' aria-hidden='true'>", {
+	g_sectionActivityEditor = $("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='Create an activity!' aria-hidden='true'>", {
 		style: "height: 80%; position: absolute"
 	}).appendTo(wrap);
-	var dialog=$("<div>", {
+	var dialog = $("<div>", {
 		class: "modal-dialog modal-lg"
 	}).appendTo(g_sectionActivityEditor);
-	g_modalActivityEditor=$("<div>", {
+	g_modalActivityEditor = $("<div>", {
 		class: "modal-content"
 	}).appendTo(dialog);
 	removeActivityEditor();
@@ -102,175 +100,164 @@ function countSelectedImages(){
 }
 
 function isFileValid(file){
-	var ret=false;
-	do{
-		var fileSizeLimit= (1<<20)// 2 mega bytes
-		if(file.size>fileSizeLimit) break;
-		ret=true;
-	}while(false);
- 	return ret;
+    var ret=false;
+    var fileSizeLimit= (1<<20)// 2 mega bytes
+    if(file.size > fileSizeLimit) return false;
+    return true;
 }
 
 function setNonSavable(){
-    g_savable=false;
+    g_savable = false;
 }
 
 function setSavable(){
-    g_savable=true;
+    g_savable = true;
 }
 
 function setNonSubmittable(){
-    g_submittable=false;
+    g_submittable = false;
 }
 
 function setSubmittable(){
-    g_submittable=true;
+    g_submittable = true;
 }
 
 // Assistive Callback Functions
-function onSave(){
-	do{
-	    if(g_savable==false){
-	        alert("You haven't made any changes!");
-	        break;
-	    }
-		setNonSavable();
-		setNonSubmittable();
+function onSave(evt){
 
-		var formData = new FormData();
+        if(!g_savable){
+            alert("You haven't made any changes!");
+            return;
+        }
 
-		// check files
-		var newImages=g_activityEditor.children("."+g_classNewImage);
-		var newImagesCount=newImages.length;
-		for(var i=0;i<newImagesCount;i++){
-		    do{
-                var field=newImages[i];
-                var checkbox=$(field).data(g_indexCheckbox);
-                if(checkbox==null) break;
-                // Note that checkbox.checked doesn't work here because of jQuery encapsulation!
-                var isChecked=checkbox.is(':checked');
-                if(isChecked==false) break;
-                var files=field.files;
-                var count=files.length;
-                if(count==1) {
-                    var file=files[0];
-                    formData.append(g_indexNewImage+"-"+i.toString(), file);
-                }
-            }while(false);
-		}
+        var data = evt.data;
 
-        var oldImages=g_activityEditor.children("."+g_classOldImage);
-        var oldImagesCount=oldImages.length;
-        var selectedOldImages=new Array();
-        for(var i=0;i<oldImagesCount;i++){
-            do{
-                var field=oldImages[i];
-                var checkbox=$(field).data(g_indexCheckbox);
-                if(checkbox==null) break;
-                // Note that checkbox.checked doesn't work here because of jQuery encapsulation!
-                var isChecked=checkbox.is(':checked');
-                if(isChecked==false) break;
-                var imageId=$(field).data(g_keyId);
-                selectedOldImages.push(imageId);
-            }while(false);     
+        setNonSavable();
+        setNonSubmittable();
+
+        var formData = new FormData();
+
+        // check files
+        var newImages = data[g_indexNewImages];
+        var newImagesCount = newImages.length;
+        for(var i = 0; i < newImagesCount; i++){
+            var field = newImages[i][0]; // pull DOM element
+            var checkbox = $(field).data(g_indexCheckbox);
+            if(checkbox == null) continue;
+            // Note that checkbox.checked doesn't work here because of jQuery encapsulation!
+            if(!checkbox.is(':checked')) continue;
+            var files = field.files;
+            var count = files.length;
+            if(count != 1) continue;
+            var file = files[0];
+            formData.append(g_indexNewImage+"-"+i.toString(), file);
+        }
+
+        var oldImages = data[g_indexOldImages]
+        var oldImagesCount = oldImages.length;
+        var selectedOldImages = new Array();
+        for(var i = 0; i < oldImagesCount; i++){
+            var field = oldImages[i][0]; // pull DOM element
+            var checkbox = $(field).data(g_indexCheckbox);
+            if(checkbox == null) continue;
+            // Note that checkbox.checked doesn't work because of jQuery encapsulation!
+            if(!checkbox.is(':checked')) continue;
+            var imageId = $(field).data(g_keyImageId);
+            selectedOldImages.push(imageId);
         }
         formData.append(g_indexOldImage, JSON.stringify(selectedOldImages));
 
-		// append user token and activity id for identity
-		var token = $.cookie(g_keyToken.toString());
-		formData.append(g_keyToken, token);
-		
-		// append activity title and content 
-		var activityTitle=$("."+g_classFieldActivityTitle).val();
-		formData.append(g_keyTitle, activityTitle);
-		
-		var activityContent=$("."+g_classFieldActivityContent).val();
-		formData.append(g_keyContent, activityContent);
+        // append user token and activity id for identity
+        var token = $.cookie(g_keyToken.toString());
+        formData.append(g_keyToken, token);
 
-		// append activity begin time and deadline
-		var beginTimePicker=g_activityEditor.data(g_indexBeginTimePicker);
-		var beginTime=getDateTime(beginTimePicker);
-		formData.append(g_keyBeginTime, beginTime);
+        // append activity title and content
+        formData.append(g_keyTitle, data[g_keyTitle].val());
+        formData.append(g_keyContent, data[g_keyContent].val());
 
-		var deadlinePicker=g_activityEditor.data(g_indexDeadlinePicker);
-		var deadline=getDateTime(deadlinePicker);
-		formData.append(g_keyDeadline, deadline);
+        // append activity begin time and deadline
+        var beginTimePicker = data[g_indexBeginTimePicker];
+        var beginTime = getDateTime(beginTimePicker);
+        formData.append(g_keyBeginTime, beginTime);
 
-        var isNewActivity=false;
-		var activityId = g_activityEditor.data(g_keyActivityId);
-		if(activityId==null) isNewActivity=true;
+        var deadlinePicker = data[g_indexDeadlinePicker];
+        var deadline = getDateTime(deadlinePicker);
+        formData.append(g_keyDeadline, deadline);
 
-		if(isNewActivity==false){
-		    formData.append(g_keyActivityId, activityId.toString());
+        var isNewActivity = false;
+        var activityId = g_activityEditor.data(g_keyActivityId);
+        if(activityId == null) isNewActivity = true;
+
+        if(!isNewActivity){
+            formData.append(g_keyActivityId, activityId.toString());
         }
-		
-		$.ajax({
-			method: "POST",
-			url: "/activity/save",
-			data: formData,
-			mimeType: "mutltipart/form-data",
-			contentType: false, // tell jQuery not to set contentType
-			processData: false, // tell jQuery not to process the data
-			success: function(data, status, xhr){
-			    setSubmittable();
-			    var jsonResponse=JSON.parse(data);
-			    if(jsonResponse.hasOwnProperty(g_keyId)){
-			        g_activityEditor.data(g_keyActivityId, jsonResponse[g_keyId]);
-			    }
-                alert("You can submit the application now!");
-			},
-			error: function(xhr, status, err){
-				setSavable();
-			}
-		});
-	}while(false);
+
+        $.ajax({
+                method: "POST",
+                url: "/activity/save",
+                data: formData,
+                mimeType: "mutltipart/form-data",
+                contentType: false, // tell jQuery not to set contentType
+                processData: false, // tell jQuery not to process the data
+                success: function(data, status, xhr){
+                    setSubmittable();
+                    var jsonResponse = JSON.parse(data);
+                    if(jsonResponse.hasOwnProperty(g_keyActivityId)) {
+                        alert("Activity created!");
+                    } else {
+                        alert("Changes saved.");
+                    }
+                },
+                error: function(xhr, status, err){
+                        setSavable();
+                }
+        });
 }
 
-function onSubmit(){
-	do{
-        if(g_submittable==false) {
+function onSubmit(evt){
+
+        if(!g_submittable) {
             alert("You have to save your changes before submission!");
-            break;
+            return;
         }
-		setNonSavable();
-		setNonSubmittable();
 
-		var params={};
+        var data = evt.data;
 
-		// append user token and activity id for identity
-		var token = $.cookie(g_keyToken.toString());
-		params[g_keyToken]=token;
+        setNonSavable();
+        setNonSubmittable();
 
-		var activityId = g_activityEditor.data(g_keyActivityId);
-		params[g_keyActivityId]=activityId.toString();
+        var params = {};
 
-		$.ajax({
-			method: "PUT",
-			url: "/activity/submit",
-			data: params,
-			success: function(data, status, xhr){
-				removeActivityEditor();
-				if(g_OnEditorRemoved!=null){
-					g_onEditorRemoved(0, g_numItemsPerPage, g_directionForward);
-				}
-			},
-			error: function(xhr, status, err){
-				setSubmittable();
-			}
-		});
-	}while(false);
+        // append user token and activity id for identity
+        var token = $.cookie(g_keyToken);
+        params[g_keyToken] = token;
+
+        params[g_keyActivityId] = data[g_keyActivityId];
+
+        $.ajax({
+                method: "PUT",
+                url: "/activity/submit",
+                data: params,
+                success: function(data, status, xhr){
+                        removeActivityEditor();
+                        if(g_OnEditorRemoved == null) return;
+                        g_onEditorRemoved(0, g_numItemsPerPage, g_directionForward);
+                },
+                error: function(xhr, status, err){
+                        setSubmittable();
+                }
+        });
 }
 
 function previewImage(input) {
-    do{
         var images=input.files;
-        if (images==null) break;
-        var image=images[0];
-        if(image==null) break;
-        var count=images.length;
-        if(count==0 || count>1){
+        if (images == null) return;
+        var image = images[0];
+        if(image == null) return;
+        var count = images.length;
+        if(count == 0 || count > 1){
             alert("Choose only 1 image at a time!!!");
-            break;
+            return;
         }
         var reader = new FileReader();
 
@@ -289,8 +276,10 @@ function previewImage(input) {
                    type: "checkbox",
                    checked: true
             }).appendTo(node);
-            checkbox.on("change", function(){
-				setSavable();
+
+            checkbox.on("change", function(evt){
+                evt.preventDefault();
+                setSavable();
                 setNonSubmittable();
             });
             $(input).after(node);
@@ -299,30 +288,22 @@ function previewImage(input) {
         }
 
         reader.readAsDataURL(image);
-    }while(false);
 }
 
-function onbtnSaveClicked(evt){
-
+function onBtnSaveClicked(evt){
 	evt.preventDefault();
-
-	try{
-	    onSave();
-	} catch(err){
-
-	}
+        onSave(evt);
 }
 
 function onBtnDeleteClicked(evt){
 
 	evt.preventDefault();
-	
-	var activityId=$(this).data(g_keyActivityId);
+	var data = evt.data;
 	var token=$.cookie(g_keyToken).toString();
 
 	var params={};
-	params[g_keyActivityId]=activityId;
-	params[g_keyToken]=token;
+	params[g_keyActivityId] = data[g_keyActivityId];
+	params[g_keyToken] = token;
 
 	try{
 	    $.ajax({
@@ -330,12 +311,10 @@ function onBtnDeleteClicked(evt){
 	        url: "/activity/delete",
 	        data: params,
 	        success: function(data, status, xhr){
-                 g_activityEditor.remove();
-                 if(g_onEditorRemoved!=null){
-                     g_onEditorRemoved(0);
-                 }
-				 location.reload();
-            },
+                    g_activityEditor.remove();
+                    if(g_onEditorRemoved != null)   g_onEditorRemoved(0);
+                    location.reload();
+                },
 	        error: function(xhr, status, err){
 
 	        }
@@ -346,41 +325,34 @@ function onBtnDeleteClicked(evt){
 }
 
 function onBtnSubmitClicked(evt){
-
 	evt.preventDefault();
-
-	try{
-        onSubmit();
-	} catch(err){
-		
-	}
+        onSubmit(evt);
 }
 
 function onBtnCancelClicked(evt){
 	evt.preventDefault();
 	removeActivityEditor();
-	if(g_onEditorCancelled!=null){
-		g_onEditorCancelled();	
-	}
+	if(g_onEditorCancelled == null) return;
+        g_onEditorCancelled();
 }
 
 // Generators
-function generateActivityEditorByJson(activityJson){
+function generateActivityEditor(activity){
 	setNonSavable();
 	setSubmittable();
-	var isNewActivity=false;
-	if(activityJson==null) isNewActivity=true;
+	var isNewActivity = false;
+	if(activity == null || activity.id == null) isNewActivity = true;
 
-	var activityId=null;
-	var activityTitle="";
-	var activityContent="";
-	var activityImages=null;
+	var activityId = null;
+	var activityTitle = "";
+	var activityContent = "";
+	var activityImages = null;
 
-	if(isNewActivity==false) {
-		activityId=activityJson[g_keyId];
-		activityTitle=activityJson[g_keyTitle];
-		activityContent=activityJson[g_keyContent];
-		activityImages=activityJson[g_keyImages];
+	if(!isNewActivity) {
+		activityId = activity.id;
+		activityTitle = activity.title;
+		activityContent = activity.content;
+		activityImages = activity.images;
 	}
 
 	var ret=$('<form>', {
@@ -395,146 +367,165 @@ function generateActivityEditorByJson(activityJson){
 	var titleInput=$('<input>', {
 		class: g_classFieldActivityTitle,
 		type: 'text',
-		value: activityTitle,
-		name: g_keyTitle
+		value: activityTitle
 	}).appendTo(ret);
 
-	titleInput.on("input paste keyup", function(){
+	titleInput.on("input paste keyup", function(evt){
+	        evt.preventDefault();
 		setSavable();
 		setNonSubmittable();
+		activityTitle = $(this).val();
 	});
 
-	var contentText=$('<p>', {
+	var contentText = $('<p>', {
 		text: "Content",
 		style: "margin-top: 5pt"
 	}).appendTo(ret);
 
-	var contentInput=$('<textarea>',
+	var contentInput = $('<textarea>',
 	{
-		class: g_classFieldActivityContent, 
-		name: g_keyContent
+		class: g_classFieldActivityContent
 	}).appendTo(ret);
 	contentInput.val(activityContent);
-	contentInput.on("input paste keyup", function(){
+	contentInput.on("input paste keyup", function(evt){
+	        evt.preventDefault();
 		setSavable();
 		setNonSubmittable();
+		activityContent = $(this).val();
 	});
 
-	do{
-		if(activityImages==null) break;
+        var oldImages = new Array();
+	if(activityImages != null) {
 
 		for(var key in activityImages){
-			if(activityImages.hasOwnProperty(key)){
-				var node=$('<p>',{
-					class: g_classOldImage
-				}).appendTo(ret);
-				var activityImage=activityImages[key];
-				var imageUrl=activityImage[g_keyUrl];
-				var imageNode=$('<img>',{
-					src: imageUrl.toString()   
-				}).appendTo(node);
-				var checkbox=$('<input>',{
-					type: "checkbox",
-					checked: true
-				}).appendTo(node);
-				checkbox.on("change", function(){
-					setSavable();
-					setNonSubmittable();
-				});
-				var imageId=activityImage[g_keyId];
-				node.data(g_keyId, imageId);
-				node.data(g_indexCheckbox, checkbox);
-			}
+                        var node=$('<p>').appendTo(ret);
+                        var img = activityImages[key];
+                        var imageNode = $('<img>',{
+                                src: img.url
+                        }).appendTo(node);
+                        var checkbox = $('<input>',{
+                                type: "checkbox",
+                                checked: true
+                        }).appendTo(node);
+                        checkbox.on("change", function(){
+                                setSavable();
+                                setNonSubmittable();
+                        });
+                        node.data(g_keyImageId, img.id);
+                        node.data(g_indexCheckbox, checkbox);
+                        oldImages.push(node);
 		}
-	}while(false);
+	}
 
+        var newImages = new Array();
 	for (var i = 0; i < g_maxNumberOfImagesForSingleActivity; i++) {
-		var lineBreak=$('<br>').appendTo(ret);
-		var imageField=$('<input>', {
-			class: g_classNewImage,
+		$('<br>').appendTo(ret);
+		var imageField = $('<input>', {
 			type: 'file'
 		}).appendTo(ret);
-		imageField.on("change", function(){
+		imageField.on("change", function(evt){
+		        evt.preventDefault();
 			setSavable();
 			setNonSubmittable();
 			previewImage(this);
 		});
+		newImages.push(imageField);
 	}
 
 	// Schedules
-	var deadline=reformatDate(new Date());
-	if(activityJson!=null && activityJson.hasOwnProperty(g_keyDeadline)) deadline=activityJson[g_keyDeadline];
-	var deadlinePicker=generateDateSelection(formatDate(deadline));
-	ret.data(g_indexDeadlinePicker, deadlinePicker);
+	var deadline = reformatDate(new Date());
+	if(activity != null && activity.applicationDeadline != null) deadline = activity.applicationDeadline;
+	var deadlinePicker = generateDateSelection(formatDate(deadline));
+        deadlinePicker.on("input keyup change", function(evt){
+            evt.preventDefault();
+            setSavable();
+            setNonSubmittable();
+        });
 
-	var beginTime=reformatDate(new Date());
-	if(activityJson!=null && activityJson.hasOwnProperty(g_keyBeginTime)) beginTime=activityJson[g_keyBeginTime];
-	var beginTimePicker=generateDateSelection(formatDate(beginTime)); 
-	ret.data(g_indexBeginTimePicker, beginTimePicker);
+	var beginTime = reformatDate(new Date());
+	if(activity != null && activity.beginTime != null) beginTime = activity.beginTime;
+	var beginTimePicker = generateDateSelection(formatDate(beginTime));
+        beginTimePicker.on("input keyup change", function(evt){
+            evt.preventDefault();
+            setSavable();
+            setNonSubmittable();
+        });
 
-	var tableSchedule=$("<table>", {
+	var tableSchedule = $("<table>", {
 		style: "display: block; margin-top: 15pt; margin-bottom: 5pt"
 	}).appendTo(ret);
-	var scheduleRow1=$("<tr>").appendTo(tableSchedule);
-	var scheduleCell11=$("<td>", {
+	var scheduleRow1 = $("<tr>").appendTo(tableSchedule);
+	var scheduleCell11 = $("<td>", {
 		text: "Deadline: ",
 		style: "white-space: nowrap; vertical-align: text-top"
 	}).appendTo(scheduleRow1);
-	var scheduleCell12=$("<td>", {
+	var scheduleCell12 = $("<td>", {
 
 	}).appendTo(scheduleRow1);
 	scheduleCell12.append(deadlinePicker);
 
-	var scheduleRow2=$("<tr>").appendTo(tableSchedule);
-	var scheduleCell21=$("<td>", {
+	var scheduleRow2 = $("<tr>").appendTo(tableSchedule);
+	var scheduleCell21 = $("<td>", {
 		text: "Begin Time: ",
 		style: "white-space: nowrap; vertical-align: text-top"
 	}).appendTo(scheduleRow2);
-	var scheduleCell22=$("<td>", {
+	var scheduleCell22 = $("<td>", {
 
 	}).appendTo(scheduleRow2);
 	scheduleCell22.append(beginTimePicker);	
 
-	var buttons=$("<p>", {
+	var buttons = $("<p>", {
 		style: "display: block; clear: both; margin-top: 5pt"
 	}).appendTo(ret);
 
 	/* Associated Buttons */
-	var btnSave=$('<button>',{
+	var btnSave = $('<button>',{
 		class: g_classBtnSave,
 		text: 'Save'
 	}).appendTo(buttons);
-	btnSave.on("click", onbtnSaveClicked);
+	var dSave = {};
+	dSave[g_keyActivityId] = activityId;
+        dSave[g_keyTitle] = titleInput;
+        dSave[g_keyContent] = contentInput;
+        dSave[g_indexDeadlinePicker] = deadlinePicker;
+        dSave[g_indexBeginTimePicker] = beginTimePicker;
+        dSave[g_indexOldImages] = oldImages;
+        dSave[g_indexNewImages] = newImages;
+	btnSave.on("click", dSave, onBtnSaveClicked);
 
-	var btnSubmit=$('<button>',{
+	var btnSubmit = $('<button>',{
 		class: g_classBtnSubmit,
 		text: 'Submit'
 	}).appendTo(buttons);
+	var dSubmit = {};
+	dSubmit[g_keyActivityId] = activityId;
 	btnSubmit.on("click", onBtnSubmitClicked);
 
-	var btnCancel=$('<button>',{
+	var btnCancel = $('<button>',{
 		class: g_classBtnCancel,
 		text: 'Cancel'
 	}).appendTo(buttons);
 	btnCancel.on("click", onBtnCancelClicked);
 
-	if(isNewActivity==false){
-		var btnDelete=$('<button>',{
+	if(!isNewActivity){
+		var btnDelete = $('<button>',{
 			class: g_classBtnDelete,
 			text: 'Delete'
 		}).appendTo(buttons);
-
-		btnDelete.on("click", onBtnDeleteClicked);
+                var dDelete = {};
+                dDelete[g_keyActivityId] = activityId;
+		btnDelete.on("click", dDelete, onBtnDeleteClicked);
 	}
 	ret.data(g_keyActivityId, activityId);			
 	return ret;
 }
 
 function generateDateSelection(time){
-		var ret=generateDataPicker(time);
-		ret.on("input change keyup", function(){
-			setSavable();
-			setNonSubmittable();
-		});
+        var ret=generateDataPicker(time);
+        ret.on("input change keyup", function(evt){
+                evt.preventDefault();
+                setSavable();
+                setNonSubmittable();
+        });
      	return ret;
 }

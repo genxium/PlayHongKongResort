@@ -31,17 +31,23 @@ public class ActivityController extends Controller {
         response().setContentType("text/plain");
         do {
             try {
+                // anti-cracking by param direction
                 if (direction == null) break;
-                if (!direction.equals(SQLCommander.DIRECTION_FORWARD) && !direction.equals(SQLCommander.DIRECTION_BACKWARD))
-                    break; // anti-cracking by param direction
-                if (order == null) break;
+                if (!direction.equals(SQLCommander.DIRECTION_FORWARD) && !direction.equals(SQLCommander.DIRECTION_BACKWARD))    break;
+
+                // anti-cracking by param order
+                if (order == null)  break;
                 String orderStr = SQLHelper.convertOrder(order);
-                if (orderStr == null) break; // anti-cracking by param order
+                if (orderStr == null)   break;
+
+                // anti=cracking by param token
                 Integer viewerId = null;
                 if (token != null) viewerId = DataUtils.getUserIdByToken(token);
                 List<Activity> activities = null;
-                if (relation != null && userId != null) {
+                if (relation != null && relation != UserActivityRelation.hosted && userId != null) {
                     activities = SQLCommander.queryActivities(userId, UserActivityRelation.maskRelation(relation));
+                } else if (relation != null && relation == UserActivityRelation.hosted && userId != null && viewerId != null) {
+                    activities = SQLCommander.queryHostedActivities(userId, viewerId, refIndex, Activity.ID, orderStr, numItems, direction);
                 } else {
                     activities = SQLCommander.queryActivities(refIndex, Activity.ID, orderStr, numItems, direction, status);
                 }
@@ -84,7 +90,7 @@ public class ActivityController extends Controller {
             try {
                 Integer ownerId = DataUtils.getUserIdByToken(token);
                 if (ownerId == null) break;
-                if (SQLCommander.validateOwnershipOfActivity(ownerId, activityId) == false) break;
+                if (!SQLCommander.validateOwnership(ownerId, activityId)) break;
                 return ok();
             } catch (Exception e) {
                 System.out.println(ActivityController.class.getName() + ".ownership, " + e.getMessage());
@@ -110,18 +116,20 @@ public class ActivityController extends Controller {
                 JSONArray appliedParticipantsJson = (JSONArray) JSONValue.parse(appliedParticipantsJsonStr);
                 JSONArray selectedParticipantsJson = (JSONArray) JSONValue.parse(selectedParticipantsJsonStr);
 
-                Integer ownerId = DataUtils.getUserIdByToken(token);
-                if (ownerId == null) break;
-                if (!SQLCommander.validateOwnershipOfActivity(ownerId, activityId)) break;
+                Integer viewerId = DataUtils.getUserIdByToken(token);
+                if (viewerId == null) break;
+                if (!SQLCommander.validateOwnership(viewerId, activityId)) break;
 
-                for (int i = 0; i < appliedParticipantsJson.size(); i++) {
-                    Integer userId = Integer.valueOf((String) appliedParticipantsJson.get(i));
-                    SQLCommander.updateUserActivityRelation(ownerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied));
+                for (Object appliedParticipantJson : appliedParticipantsJson) {
+                    Integer userId = Integer.valueOf((String) appliedParticipantJson);
+                    if (userId.equals(viewerId)) continue; // anti-cracking by unselecting the host of an activity
+                    SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied));
                 }
 
-                for (int i = 0; i < selectedParticipantsJson.size(); i++) {
-                    Integer userId = Integer.valueOf((String) selectedParticipantsJson.get(i));
-                    SQLCommander.updateUserActivityRelation(ownerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected));
+                for (Object selectedParticipantJson : selectedParticipantsJson) {
+                    Integer userId = Integer.valueOf((String) selectedParticipantJson);
+                    if (userId.equals(viewerId)) continue; // anti-cracking by selecting the host of an activity
+                    SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected));
                 }
                 return ok();
             } catch (Exception e) {
@@ -203,7 +211,7 @@ public class ActivityController extends Controller {
                 // selected old images
                 Set<Integer> selectedOldImagesSet = new HashSet<Integer>();
 
-                if (formData.containsKey("indexOldImage") == true) {
+                if (formData.containsKey("indexOldImage")) {
                     JSONArray selectedOldImagesJson = (JSONArray) JSONValue.parse(formData.get("indexOldImage")[0]);
                     for (int i = 0; i < selectedOldImagesJson.size(); i++) {
                         Integer imageId = ((Long) selectedOldImagesJson.get(i)).intValue();
@@ -216,20 +224,20 @@ public class ActivityController extends Controller {
                     Iterator<Image> itPreviousImage = previousImages.iterator();
                     while (itPreviousImage.hasNext()) {
                         Image previousImage = itPreviousImage.next();
-                        if (selectedOldImagesSet.contains(previousImage.getImageId()) == false) {
+                        if (!selectedOldImagesSet.contains(previousImage.getImageId())) {
                             boolean isDeleted = ExtraCommander.deleteImageRecordAndFile(previousImage, activityId);
-                            if (isDeleted == false) break;
+                            if (!isDeleted) break;
                         }
                     }
                 }
 
                 ObjectNode ret = Json.newObject();
-                if (isNewActivity == true) {
-                    ret.put(Activity.ID, activityId.toString());
+                if (isNewActivity) {
+                    ret.put(UserActivityRelation.ACTIVITY_ID, activityId.toString());
                 }
                 return ok(ret);
             } catch (Exception e) {
-
+                System.out.println(ActivityController.class.getName()+", "+e.getMessage());
             }
         } while (false);
         return badRequest();
@@ -254,7 +262,7 @@ public class ActivityController extends Controller {
                 if (user == null) break;
 
                 Activity activity = SQLCommander.queryActivity(activityId);
-                if (SQLCommander.isActivityEditable(userId, activity) == false) break;
+                if (!SQLCommander.isActivityEditable(userId, activity)) break;
 
                 SQLHelper sqlHelper = new SQLHelper();
                 List<String> names = new LinkedList<String>();
@@ -266,13 +274,12 @@ public class ActivityController extends Controller {
                 List<String> where = new LinkedList<String>();
                 where.add(Activity.ID + "=" + activity.getId());
 
-                boolean res = sqlHelper.update(Activity.TABLE, names, values, where, SQLHelper.AND);
-                if (res == false) break;
+                if(!sqlHelper.update(Activity.TABLE, names, values, where, SQLHelper.AND)) break;
 
                 return ok();
 
             } catch (Exception e) {
-
+                System.out.println(ActivityController.class.getName()+", "+e.getMessage());
             }
 
         } while (false);
@@ -368,8 +375,7 @@ public class ActivityController extends Controller {
                 Object[] whereVals = {activityId, userId};
                 builder.update(UserActivityRelation.TABLE).set(names, values).where(whereCols, whereOps, whereVals);
 
-                boolean res = SQLHelper.update(builder);
-                if (!res) break;
+                if(!SQLHelper.update(builder)) break;
 
                 return ok();
             } catch (Exception e) {

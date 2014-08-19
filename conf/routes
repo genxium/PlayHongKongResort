@@ -41,5 +41,9 @@ GET /activity/ownership controllers.ActivityController.ownership(token: String ?
 POST /comment/submit controllers.CommentController.submit()
 GET /comment/query controllers.CommentController.query(activity_id: Integer ?=null, ref_index: String ?=null, num_items: Integer ?=null, direction: Integer ?=null, token: String ?=null)
 
+# Assessment
+POST /assessment/submit controllers.AssessmentController.submit
+GET /assessment/query controllers.AssessmentController.query(refIndex: String ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?=null, userId: Integer ?=null, activityId: Integer ?=null)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

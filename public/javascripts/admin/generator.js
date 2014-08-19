@@ -1,14 +1,17 @@
+var g_keyStatusIndicator = "status-indicator";
+
 // Assistant Handlers
 function onBtnAcceptClicked(evt){
 
+	var btnAccept = $(this);
+
 	evt.preventDefault();
-	var btnAccept=$(this);
+	var data = evt.data;
 	var token = $.cookie(g_keyToken);
-	var activityId=$(this).data(g_keyId);
-	var params={};
- 	params[g_keyId]=activityId.toString();
-	params[g_keyToken]=token.toString();	
-		
+	var params = {};
+ 	params[g_keyActivityId] = data[g_keyActivityId];
+	params[g_keyToken] = token;
+
 	try{
 		$.ajax({
 			type: "PUT",
@@ -17,11 +20,8 @@ function onBtnAcceptClicked(evt){
 			success: function(data, status, xhr){
 				var cell=btnAccept.parent(); 
 				btnAccept.remove();
-				var indicator=$('<div>', {
-					class: g_classAcceptedIndicator,
-					html: 'Accepted'
-				}).appendTo(cell);
-				cell.data(g_indexStatusIndicator, indicator);
+				var indicator = cell.data(g_keyStatusIndicator);
+				indicator.text("Accepted");
 			},
 			error: function(xhr, status, err){
 				
@@ -33,13 +33,14 @@ function onBtnAcceptClicked(evt){
 }
 
 function onBtnRejectClicked(evt){
+	var btnReject = $(this);
+
 	evt.preventDefault();
-	var btnReject=$(this);
+	var data = evt.data;
 	var token = $.cookie(g_keyToken);
-	var activityId=$(this).data(g_keyId);
-	var params={};
- 	params[g_keyId]=activityId.toString();
-	params[g_keyToken]=token.toString();	
+	var params = {};
+ 	params[g_keyActivityId] = data[g_keyActivityId];
+	params[g_keyToken] = token;
 
 	try{
 		$.ajax({
@@ -49,13 +50,9 @@ function onBtnRejectClicked(evt){
 			success: function(data, status, xhr){
 				var cell=btnReject.parent(); 
 				btnReject.remove();
-
-				var indicator=$('<div>', {
-					class: g_classAcceptedIndicator,
-					html: 'Rejected'
-				}).appendTo(cell);
-				cell.data(g_indexStatusIndicator, indicator);
-			}, 
+				var indicator = cell.data(g_keyStatusIndicator);
+				indicator.text("Rejected");
+			},
 			error: function(xhr, status, err){
 				
 			}			
@@ -66,13 +63,15 @@ function onBtnRejectClicked(evt){
 }
 
 function onBtnDeleteClicked(evt){
-	evt.preventDefault();
-	var btnDelete=$(this);
-	var token = $.cookie(g_keyToken).toString();
-	var activityId=$(this).data(g_keyId);
-	var params={};
- 	params[g_keyId]=activityId;
-	params[g_keyToken]=token;	
+
+        var btnDelete = $(this);
+
+        evt.preventDefault();
+        var data = evt.data;
+        var token = $.cookie(g_keyToken);
+        var params = {};
+        params[g_keyActivityId] = data[g_keyActivityId];
+        params[g_keyToken] = token;
 
 	try{
 		$.ajax({
@@ -82,13 +81,8 @@ function onBtnDeleteClicked(evt){
 			success: function(data, status, xhr){
 				var cell=btnDelete.parent(); // javascript dom element
 				btnDelete.remove();
-
-				var indicator=$('<div>',
-				{
-					class: g_classDeletedIndicator,
-					html: 'Deleted'
-				}).appendTo(cell);
-				cell.data(g_indexStatusIndicator, indicator);
+				var indicator = cell.data(g_keyStatusIndicator);
+				indicator.text("Deleted");
 			},
 			error: function(xhr, status, err){
 				
@@ -101,25 +95,19 @@ function onBtnDeleteClicked(evt){
 
 // Generators
 function generateActivityCellForAdmin(activityJson){
-	var arrayStatusName=['created','pending','rejected','accepted','expired'];
 
-	var activityId=activityJson[g_keyId];
-	var activityTitle=activityJson[g_keyTitle];
-	var activityContent=activityJson[g_keyContent];
-	var activityStatus=activityJson[g_keyStatus];
-    
-    var coverImageUrl=null;
-    do{
-        var activityImages=activityJson[g_keyImages];
-        if(activityImages==null) break;
-        for(var key in activityImages){
-           if(activityImages.hasOwnProperty(key)){
-               var activityImage=activityImages[key];
-               coverImageUrl=activityImage[g_keyUrl];
+	var arrayStatusName = ['created','pending','rejected','accepted','expired'];
+        var activity = new Activity(activityJson);
+
+        var coverImageUrl=null;
+
+        if(activity.images !=null) {
+            for(var key in activity.images){
+               var image = activity.images[key];
+               coverImageUrl = image.url;
                break;
-           }
+            }
         }
-    }while(false);
 
 	var ret=$('<div>', {
 		style: "width: 100%; height: 200pt; overflow: auto;"	
@@ -129,61 +117,62 @@ function generateActivityCellForAdmin(activityJson){
 		style: "display: inline-block; margin-left: 5pt"	
 	}).appendTo(ret);
 
-	if(coverImageUrl!=null){
+	if(coverImageUrl != null){
 		var coverImage=$('<img>', {
 			class: g_classActivityCoverImage,
 			src: coverImageUrl
 		}).appendTo(infoWrap);
 	}
 
-	var cellActivityTitle=$('<plaintext>', {	
+	var cellActivityTitle = $('<plaintext>', {
 		style: "color: black: font-size: 15pt",
-		text: activityTitle
+		text: activity.title
 	}).appendTo(infoWrap);
 
 	var cellActivityContent=$('<plaintext>', {
 		style: "color: black; font-size: 15pt",
-		text: activityContent
+		text: activity.content
 	}).appendTo(infoWrap);
 
 	var statusIndicator=$('<span>', {
 		style: "color: red; font-size: 15pt; margin-left: 5pt",
-		text: arrayStatusName[parseInt(activityStatus)] 
+		text: arrayStatusName[parseInt(activity.status)]
 	}).appendTo(ret);
+
+	ret.data(g_keyStatusIndicator, statusIndicator);
 	
 	var buttonsWrap=$('<span>', {
 		style: "margin-left: 5pt"
 	}).appendTo(ret); 
 
 	// this condition is temporarily hard-coded
-	if(parseInt(activityStatus)!=3){
-        var btnAccept=$('<button>', {
-            class: g_classBtnAccept,
-            text: 'Accept'
-        }).appendTo(buttonsWrap);
-        btnAccept.bind("click", onBtnAcceptClicked);
-        btnAccept.data(g_keyId, activityId);
-    }
+	if(parseInt(activityStatus) != g_statusAccepted){
+            var btnAccept=$('<button>', {
+                class: g_classBtnAccept,
+                text: 'Accept'
+            }).appendTo(buttonsWrap);
+            var dAccept = {};
+            dAccept[g_keyActivityId] = activity.id;
+            btnAccept.on("click", dAccept, onBtnAcceptClicked);
+        }
 
-	if(parseInt(activityStatus)!=2){
-        var btnReject=$('<button>', {
-			class: g_classBtnReject,
-            text: 'Reject'
-        }).appendTo(buttonsWrap);
-        btnReject.bind("click", onBtnRejectClicked);
-        btnReject.data(g_keyId, activityId);
-    }
+	if(parseInt(activity.status) != g_statusRejected){
+            var btnReject=$('<button>', {
+                            class: g_classBtnReject,
+                text: 'Reject'
+            }).appendTo(buttonsWrap);
+            var dReject = {};
+            dReject[g_keyActivityId] = activity.id;
+            btnReject.bind("click", dReject, onBtnRejectClicked);
+        }
 
 	var btnDelete=$('<button>', {
 		class: g_classBtnDelete,
 		text: 'Delete'
 	}).appendTo(buttonsWrap);
-	btnDelete.bind("click", onBtnDeleteClicked);
-	btnDelete.data(g_keyId, activityId);
-    
-	ret.data(g_keyId, activityId);
-	ret.data(g_keyTitle, activityTitle);
-	ret.data(g_keyContent, activityContent);
+	var dDelete = {};
+	dDelete[g_keyActivityId] = activity.id;
+	btnDelete.bind("click", dDelete, onBtnDeleteClicked);
 	
 	var hr=$('<hr>', {
 		style: "height: 1pt; color: black; background-color: black"

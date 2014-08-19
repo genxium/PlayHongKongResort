@@ -22,47 +22,48 @@ var g_idKeyboardEnter=13;
 var g_keyToken="token";
 
 // extra request keys 
-var g_keyId="id";
-var g_keyRelation="relation";
-var g_keyBundle="bundle";
+var g_keyId = "id";
+var g_keyRelation = "relation";
+var g_keyBundle = "bundle";
 
 // structured data keys (should be consistent with server-side in a protocol manner)
-var g_keyUser="user";
-var g_keyUserId="user_id";
-var g_keyName="name";
-var g_keyEmail="email";
-var g_keyPassword="password";
-var g_keyAvatar="avatar";
+var g_keyUser = "user";
+var g_keyUserId = "user_id";
+var g_keyName = "name";
+var g_keyEmail = "email";
+var g_keyPassword = "password";
+var g_keyAvatar = "avatar";
 
-var g_keyActivity="activity";
-var g_keyActivityId="activity_id";
-var g_keyTitle="title";
-var g_keyContent="content";
-var g_keyStatus="status";
-var g_keyCreatedTime="created_time";
-var g_keyBeginTime="begin_time";
-var g_keyDeadline="application_deadline";
-var g_keyImages="images";
-var g_keyStatus="status";
-var g_keyHostId="host_id";
-var g_keyHostName="host_name";
+var g_keyActivity = "activity";
+var g_keyActivityId = "activity_id";
+var g_keyTitle = "title";
+var g_keyContent = "content";
+var g_keyStatus = "status";
+var g_keyCreatedTime = "created_time";
+var g_keyBeginTime = "begin_time";
+var g_keyDeadline = "application_deadline";
+var g_keyImages = "images";
+var g_keyStatus = "status";
+var g_keyHostId = "host_id";
+var g_keyHostName = "host_name";
 	 
-var g_keyAppliedParticipants="applied_participants";
-var g_keySelectedParticipants="selected_participants";
-var g_keyPresentParticipants="present_participants";
+var g_keyAppliedParticipants = "applied_participants";
+var g_keySelectedParticipants = "selected_participants";
+var g_keyPresentParticipants = "present_participants";
 
-var g_keyUrl="url";
+var g_keyImageId = "image_id"
+var g_keyUrl = "url";
 
-var g_keyComment="comment";
-var g_keyCommenterId="commenter_id";
-var g_keyCommenterName="commenter_name";
-var g_keyParentId="parent_id";
-var g_keyPredecessorId="predecessor_id";
-var g_keyCommentType="type";
-var g_keyGeneratedTime="generated_time";
-var g_keyReplyeeId="replyee_id";
-var g_keyReplyeeName="replyee_name";
-var g_keySubComments="sub_comments";
+var g_keyComment = "comment";
+var g_keyCommenterId = "commenter_id";
+var g_keyCommenterName = "commenter_name";
+var g_keyParentId = "parent_id";
+var g_keyPredecessorId = "predecessor_id";
+var g_keyCommentType = "type";
+var g_keyGeneratedTime = "generated_time";
+var g_keyReplyeeId = "replyee_id";
+var g_keyReplyeeName = "replyee_name";
+var g_keySubComments = "sub_comments";
 
 // general keys
 var g_keyPageIndex = "page_index";

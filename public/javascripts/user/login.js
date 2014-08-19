@@ -98,7 +98,7 @@ function onBtnCreateClicked(evt){
 	g_onEditorCancelled=function(){
 		g_sectionActivityEditor.modal("hide");
 	};
-	g_activityEditor=generateActivityEditorByJson(null);	
+	g_activityEditor=generateActivityEditor(null);
 	g_modalActivityEditor.empty();
 	g_modalActivityEditor.append(g_activityEditor);
 	g_sectionActivityEditor.modal({

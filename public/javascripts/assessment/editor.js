@@ -71,7 +71,7 @@ function generateAssessmentEditors(par, participants, batchEditor) {
 	return editors;
 }
 
-function generateAssessmentButtons(par, batchEditor){
+function generateAssessmentButtons(par, activity, batchEditor){
     if(batchEditor.editors == null || batchEditor.editors.length <= 0) return;
 	var row = $('<p>').appendTo(par);
 	var btnCheckAll = $('<button>', {
@@ -90,18 +90,44 @@ function generateAssessmentButtons(par, batchEditor){
 	    style: "display: inline; margin-left: 5pt"
 	}).appendTo(row);
 	btnUncheckAll.on("click", function(evt){
-        evt.preventDefault();
-        for(var i = 0; i < batchEditor.editors.length; i++) {
-            var editor = batchEditor.editors[i];
-            editor.lock.prop("checked", false).change();
-        }
-    });
+		evt.preventDefault();
+		for(var i = 0; i < batchEditor.editors.length; i++) {
+			var editor = batchEditor.editors[i];
+			editor.lock.prop("checked", false).change();
+		}
+	});
 	g_btnSubmit = $('<button>', {
 		text: "Submit",
 		style: "display: inline; margin-left: 5pt"
 	}).appendTo(row);
 	g_btnSubmit.on("click", function(evt){
 		evt.preventDefault();
+		var assessments = new Array();
+		for(var i = 0; i < batchEditor.editors[i]; i++) {
+			var editor = batchEditor.editors[i];
+			var content = editor.content;
+			var to = editor.name;
+			var assessment = new Assessment(content, to); 
+			assessments.push(assessment);	
+		}
+		var params = {};
+		var token = $.cookie(g_keyToken);
+		params[g_keyToken] = token;
+		params[g_keyActivityId] = activity.id; 
+		params[g_keyBundle] = JSON.stringify(assessments);
+			
+		$.ajax({
+			type: "POST", 
+			url: "/assessment/submit",
+			data: params,
+			success: function(data, status, xhr){
+				alert("Assessment submitted!");
+				row.remove();
+			},
+			error: function(xhr, status, err){
+
+			}
+		});
 	}).appendTo(row);
 	g_btnSubmit.prop("disabled", true);
 }
@@ -116,7 +142,7 @@ function generateBatchAssessmentEditor(par, activity, participants, refreshCallb
 		var editors=new Array();
 		var sectionAll=$('<div>').appendTo(par);
 		
-		var initVal = true;
+		var initVal = false;
 		var disabled = false;
 
 		// Determine attendance switch initial state based on viewer-activity-relation
@@ -124,11 +150,11 @@ function generateBatchAssessmentEditor(par, activity, participants, refreshCallb
 			initVal = true;
 			disabled = true;
 		} else if((activity.relation & present) > 0) {
-		    initVal = true;
+			initVal = true;
 		} else if((activity.relation & selected) > 0 || (activity.relation & absent) > 0) {
 			initVal = false;
 		} else {
-		    disabled = true;
+			disabled = true;
 		}
 		var attendanceSwitch = createBinarySwitch(sectionAll, disabled, initVal, "N/A", "Present", "Absent", "switch-attendance");	
 		var sectionEditors = $('<div>', {
@@ -136,13 +162,13 @@ function generateBatchAssessmentEditor(par, activity, participants, refreshCallb
 		}).appendTo(sectionAll);
 
 		var sectionButtons = $('<div>', {
-            style: "margin-top: 5pt"
-        }).appendTo(sectionAll);
+			style: "margin-top: 5pt"
+		}).appendTo(sectionAll);
 
-		if((activity.relation & present) > 0) {
+		if((activity.relation & present) > 0 || (activity.relation == hosted)) {
 			var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, batchEditor);
 			batchEditor.editors = editors;
-            generateAssessmentButtons(sectionButtons, batchEditor);
+			generateAssessmentButtons(sectionButtons, activity, batchEditor);
 		}
 
 		var onSuccess = function(data, status, xhr){	    
@@ -152,13 +178,13 @@ function generateBatchAssessmentEditor(par, activity, participants, refreshCallb
 			else    activity.relation = absent;
 			
 			sectionEditors.empty();
-            sectionButtons.empty();
+			sectionButtons.empty();
 
 			if(!value) return;
 
 			var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, batchEditor);
 			batchEditor.editors = editors;
-            generateAssessmentButtons(sectionButtons, batchEditor);
+			generateAssessmentButtons(sectionButtons, activity, batchEditor);
 		};
 
 		var onError = function(xhr, status, err){

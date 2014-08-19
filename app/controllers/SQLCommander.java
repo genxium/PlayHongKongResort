@@ -108,7 +108,7 @@ public class SQLCommander {
 
             values.add(lastActivityId);
             values.add(userId);
-            values.add(UserActivityRelation.hosted);
+            values.add(UserActivityRelation.maskRelation(UserActivityRelation.selected));
 
             EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
             builderRelation.insert(names, values).into(UserActivityRelation.TABLE);
@@ -116,8 +116,7 @@ public class SQLCommander {
             if (lastRelationId == SQLHelper.INVALID) {
                 EasyPreparedStatementBuilder builderDelete = new EasyPreparedStatementBuilder();
                 builderDelete.from(Activity.TABLE).where(Activity.ID, "=", lastActivityId);
-                boolean isDeleted = SQLHelper.delete(builderDelete);
-                if (isDeleted == true) {
+                if (SQLHelper.delete(builderDelete)) {
                     System.out.println(SQLCommander.class.getName() + ".createActivity, successfully reverted");
                 }
                 lastActivityId = SQLHelper.INVALID;
@@ -234,6 +233,42 @@ public class SQLCommander {
             } else {
                 builder.where(orderKey, "<", refIndex);
             }
+            if (numItems != null) {
+                builder.limit(numItems);
+            }
+
+            List<JSONObject> activityJsons = SQLHelper.select(builder);
+            if (activityJsons != null) {
+                for (JSONObject activityJson : activityJsons) {
+                    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+                    ret.add(new Activity(activityJson, host));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(SQLCommander.class.getName() + ".queryActivities: " + e.getMessage());
+        }
+        return ret;
+    }
+
+    public static List<Activity> queryHostedActivities(Integer hostId, Integer viewerId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction){
+        List<Activity> ret = new ArrayList<Activity>();
+        try {
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+            builder.select(names).from(Activity.TABLE).order(orderKey, orientation);
+
+            if (refIndex.equals(INITIAL_REF_INDEX)) {
+                builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
+            } else if (direction.equals(DIRECTION_FORWARD)) {
+                builder.where(orderKey, ">", refIndex);
+            } else {
+                builder.where(orderKey, "<", refIndex);
+            }
+
+            // extra where criterion
+            builder.where(Activity.HOST_ID, "=", hostId);
+            if(!hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
+
             if (numItems != null) {
                 builder.limit(numItems);
             }
@@ -440,25 +475,14 @@ public class SQLCommander {
         return ret;
     }
 
-    public static boolean validateOwnershipOfActivity(int userId, int activityId) {
-        boolean ret = false;
-        do {
-            // validate host relation
-            int relation = SQLCommander.queryUserActivityRelation(userId, activityId);
-            if (relation == UserActivityRelation.invalid || relation != UserActivityRelation.hosted) break;
-            ret = true;
-        } while (false);
-        return ret;
+    public static boolean validateOwnership(int userId, int activityId) {
+        Activity activity = queryActivity(activityId);
+        if(activity == null) return false;
+        return validateOwnership(userId, activity);
     }
 
-    public static boolean validateOwnershipOfActivity(int userId, Activity activity) {
-        boolean ret = false;
-        do {
-            if (activity == null) break;
-            int activityId = activity.getId();
-            ret = validateOwnershipOfActivity(userId, activityId);
-        } while (false);
-        return ret;
+    public static boolean validateOwnership(int userId, Activity activity) {
+        return (activity != null && activity.getHost().getId() == userId);
     }
 
     public static boolean isActivityEditable(Integer userId, Integer activityId) {
@@ -477,7 +501,7 @@ public class SQLCommander {
         do {
             if (userId == null) break;
             if (activity == null) break;
-            if (validateOwnershipOfActivity(userId, activity) == false) break;
+            if (!validateOwnership(userId, activity)) break;
             if (activity.getStatus() != Activity.CREATED) break;
             ret = true;
         } while (false);

@@ -3,11 +3,12 @@ package model;
 public class UserActivityRelation {
 	public static final int fullmask = ((1<<16)-1);
 	public static final int invalid = 0;
-	public static final int hosted = (1<<0);
-	public static final int applied = (1<<1);
-	public static final int selected = (1<<2);
-	public static final int present = (1<<3);
-	public static final int absent = (1<<4);
+	public static final int applied = (1<<0);
+	public static final int selected = (1<<1);
+	public static final int present = (1<<2);
+	public static final int absent = (1<<3);
+    public static final int assessed = (1<<4);
+    public static final int hosted = (1<<5);
 
 	public static String TABLE = "user_activity_relation";
 	public static String ID = "id";
@@ -31,6 +32,8 @@ public class UserActivityRelation {
 			case absent:
 				ret = (applied | selected | absent);
 				break;
+            case assessed:
+                ret = (applied | selected | present | assessed);
 			default: 
 				break;
 		}

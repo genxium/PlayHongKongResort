@@ -18,53 +18,40 @@ var g_classBtnDetail="classBtnDetail";
 
 // button indexes for cascaded DOM element search
 var g_indexBtnJoin="indexBtnJoin";
-var g_indexBtnDetail="indexBtnDetail";
 
 // Assistant Handlers
 function onBtnEditClicked(evt){
-    var activityJson=$(this).data(g_keyActivity);
-	g_onEditorCancelled=function(){
-		g_sectionActivityEditor.modal("hide");
-	};
-	g_activityEditor=generateActivityEditorByJson(activityJson);	
-	g_modalActivityEditor.empty();
-	g_modalActivityEditor.append(g_activityEditor);
+    	evt.preventDefault();
+    	var data = evt.data;
+        var activity = data[g_keyActivity];
 
-	g_sectionActivityEditor.css("position", "absolute");
-	g_sectionActivityEditor.css("height", "90%");
-	g_sectionActivityEditor.css("padding", "5pt");
-	g_sectionActivityEditor.modal({
-		show: true
-	});
-}
+        g_onEditorCancelled=function(){
+                g_sectionActivityEditor.modal("hide");
+        };
 
-function onMouseEnterOwnedActivityCell(evt){
-	
-}
+        g_activityEditor=generateActivityEditor(activity);
+        g_modalActivityEditor.empty();
+        g_modalActivityEditor.append(g_activityEditor);
 
-function onMouseLeaveOwnedActivityCell(evt){
-
-}
-
-function onMouseEnterDefaultActivityCell(evt){
-	var btnJoin=$(this).data(g_indexBtnJoin);
-	btnJoin.show();
-}
-
-function onMouseLeaveDefaultActivityCell(evt){
-	var btnJoin=$(this).data(g_indexBtnJoin);
-	btnJoin.hide();
+        g_sectionActivityEditor.css("position", "absolute");
+        g_sectionActivityEditor.css("height", "90%");
+        g_sectionActivityEditor.css("padding", "5pt");
+        g_sectionActivityEditor.modal({
+                show: true
+        });
 }
 
 function onBtnJoinClicked(evt){
+
+	var btnJoin=$(this);
+
 	evt.preventDefault();
-	var btnJoin=this;
+	var data = evt.data;
 	var token = $.cookie(g_keyToken).toString();
-	var activityId=$(this).data(g_keyId);
 
 	var params={};
-	params[g_keyActivityId]=activityId;
-	params[g_keyToken]=token;
+	params[g_keyActivityId] = data[g_keyActivityId];
+	params[g_keyToken] = token;
 
 	try{
 		$.ajax({
@@ -81,7 +68,6 @@ function onBtnJoinClicked(evt){
 					text: 'Applied'
 				});
 				cell.append(appliedIndicator);
-				cell.data(g_indexStatusIndicator, appliedIndicator);
 			},
 			error: function(xhr, status, errThrown){
 
@@ -93,9 +79,10 @@ function onBtnJoinClicked(evt){
 }
 
 function onBtnDetailClicked(evt){
-	evt.preventDefault();
-	var activityId=$(this).data(g_keyId);
-    
+        evt.preventDefault();
+        var data = evt.data;
+        var activityId = data[g_keyActivityId];
+
 	try{
 		var detailPagePath="/activity/detail/show?"+g_keyActivityId+"="+activityId;
 		window.open(detailPagePath);
@@ -108,25 +95,19 @@ function onBtnDetailClicked(evt){
 
 function generateActivityCell(activityJson){
 
-	var arrayStatusName=['created','pending','rejected','accepted','expired'];
+	var arrayStatusName = ['created','pending','rejected','accepted','expired'];
+        var activity = new Activity(activityJson);
 
-	var activityId=activityJson[g_keyId];
-	var activityTitle=activityJson[g_keyTitle];
-   	 
-	var coverImageUrl=null;
-	var activityImages=activityJson[g_keyImages];
-	if(activityImages!=null) {
-		for(var key in activityImages){
-		   if(activityImages.hasOwnProperty(key)){
-		       var activityImage=activityImages[key];
-		       coverImageUrl=activityImage[g_keyUrl];
-		       break;
-		   }
-		}
+	var coverImageUrl = null;
+	if(activity.images != null) {
+            for(var key in activity.images){
+               var img = activity.images[key];
+               coverImageUrl = img.url;
+               break;
+            }
 	}
-	var relation=activityJson[g_keyRelation];
-	var activityStatus=activityJson[g_keyStatus];
-	var statusStr=arrayStatusName[parseInt(activityStatus)];
+
+	var statusStr = arrayStatusName[parseInt(activity.status)];
 
 	var ret=$('<div>', {
 		class: g_classCellActivityContainer
@@ -141,44 +122,46 @@ function generateActivityCell(activityJson){
 
 	var cellActivityTitle=$('<div>', {	
 		class: g_classCellActivityTitle,
-		html: activityTitle
+		html: activity.title
 	}).appendTo(ret);
 
-	if(relation == null){
+	if(activity.relation == null){
 		var btnJoin = $('<button>', {
 			class: g_classBtnJoin,
 			text: 'Join'
 		}).appendTo(ret);
-		btnJoin.data(g_keyId, activityId);
-		btnJoin.bind("click", onBtnJoinClicked);
+		var dJoin = {};
+		dJoin[g_keyActivityId] = activity.id;
+		btnJoin.on("click", dJoin, onBtnJoinClicked);
 
 		ret.data(g_indexBtnJoin, btnJoin);
-	} else if((relation & applied) > 0) {
+	} else if((activity.relation & applied) > 0
+	            && (g_loggedInUser != null && g_loggedInUser.id != activity.host.id)) {
 		
 		var appliedIndicator=$('<div>', {
 			class: g_classAppliedIndicator,
-			html: 'Applied'
+			text: 'Applied'
 		}).appendTo(ret);
 
 		ret.data(g_indexStatusIndicator, appliedIndicator);
 	} else;
 
-	if(activityStatus!=null){
+	if(activity.status != null){
 
-		var statusIndicator=$('<div>',{
+		var statusIndicator = $('<div>',{
 		    class: g_classActivityStatusIndicator,
-		    html: statusStr 
+		    text: statusStr
 		}).appendTo(ret);
 
-		if(parseInt(activityStatus)==0){ 
+		if(parseInt(activity.status) == g_statusCreated){
 		    // this condition is temporarily hard-coded
-		    var btnEdit=$('<button>', {
+		    var btnEdit = $('<button>', {
 			class: g_classBtnEdit,
 			text: 'Edit'
 		    }).appendTo(ret);
-		    btnEdit.bind("click", onBtnEditClicked);
-		    btnEdit.data(g_keyActivity, activityJson); 
-		    ret.data(g_indexBtnEdit, btnEdit);
+		    var dEdit = {};
+		    dEdit[g_keyActivity] = activity;
+		    btnEdit.on("click", dEdit, onBtnEditClicked);
 		}
 	}
 
@@ -186,13 +169,9 @@ function generateActivityCell(activityJson){
 		class: g_classBtnDetail,
 		text: 'Detail'
 	}).appendTo(ret);
-	btnDetail.data(g_keyId, activityId);
-	btnDetail.bind("click", onBtnDetailClicked);
-
-	ret.data(g_indexBtnDetail, btnDetail);
-
-	ret.data(g_keyId, activityId);
-	ret.data(g_keyTitle, activityTitle);
+	var dDetail = {};
+	dDetail[g_keyActivityId] = activity.id;
+	btnDetail.on("click", dDetail, onBtnDetailClicked);
 	
 	return ret;
 }

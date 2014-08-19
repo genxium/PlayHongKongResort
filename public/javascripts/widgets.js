@@ -48,12 +48,14 @@ function createBinarySwitch(par, disabled, initVal, disabledText, positiveText, 
 	inner.attr("left-text", positiveText);
 	inner.attr("right-text", negativeText);
 	
-	if(disabled == false) {
-		setBinarySwitch(container, initVal);
-	} else {
-		inner.attr("right-text", disabledText);
+	if(disabled) {
 		disableBinarySwitch(container);
-	}
+		inner.attr("right-text", disabledText);
+		sw.hide();
+	} else {
+		sw.show();			
+	}	
+	setBinarySwitch(container, initVal);
 	return container;
 } 
 

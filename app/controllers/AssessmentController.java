@@ -49,20 +49,21 @@ public class AssessmentController extends Controller {
                 String token = formData.get(User.TOKEN)[0];
                 if (token == null) break;
                 Integer userId = DataUtils.getUserIdByToken(token);
-                if (userId == null || userId == null) break;
+                if (userId == null) break;
                 User user = SQLCommander.queryUser(userId);
                 if (user == null) break;
                 Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
                 if (activityId == null) break;
 
                 Integer relation = SQLCommander.queryUserActivityRelation(userId, activityId);
-                if (relation == null || relation.equals(UserActivityRelation.present) == false) break;
+                if ((relation & UserActivityRelation.present) == 0) break;
 
                 String bundle = formData.get(BUNDLE)[0];
                 JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
-                for (int i = 0; i < assessmentJsons.size(); i++) {
-                    JSONObject assessmentJson = (JSONObject) assessmentJsons.get(i);
-                    Assessment assessment = new Assessment(assessmentJson);
+                for (Object obj : assessmentJsons) {
+                    Assessment assessment = new Assessment((JSONObject)obj);
+                    assessment.setActivityId(activityId);
+                    assessment.setFrom(userId);
                     Assessment existingAssessment = SQLCommander.queryAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo());
                     if (existingAssessment != null) continue;
                     if (!SQLCommander.isUserAssessable(assessment.getFrom(), assessment.getTo(), assessment.getActivityId()))
