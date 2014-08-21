@@ -108,7 +108,7 @@ public class UserController extends Controller {
                 String email = formData.get(User.EMAIL)[0];
                 String password = formData.get(User.PASSWORD)[0];
 
-                if (name == null || (email == null || General.validateEmail(email) == false) || (password == null || General.validatePassword(password) == false))
+                if (name == null || (email == null || !General.validateEmail(email)) || (password == null || !General.validatePassword(password)))
                     break;
                 String passwordDigest = Converter.md5(password);
                 User user = new User(email, passwordDigest, name);
@@ -116,23 +116,18 @@ public class UserController extends Controller {
                 if (lastId == SQLCommander.INVALID) break;
 
                 String code = generateVerificationCode(user);
-                SQLHelper sqlHelper = new SQLHelper();
 
-                List<String> columnNames = new LinkedList<String>();
-                columnNames.add(User.VERIFICATION_CODE);
+                String[] columnNames = {User.VERIFICATION_CODE};
+                Object[] columnValues = {code};
 
-                List<Object> columnValues = new LinkedList<Object>();
-                columnValues.add(code);
+                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                builder.update(User.TABLE).set(columnNames, columnValues).where(User.ID, "=", lastId);
 
-                List<String> where = new LinkedList<String>();
-                where.add(User.ID + "=" + SQLHelper.convertToQueryValue(lastId));
-
-                boolean res = sqlHelper.update(User.TABLE, columnNames, columnValues, where, SQLHelper.AND);
-                if (res == false) break;
+                if(!SQLHelper.update(builder)) throw new Exception();
                 sendVerificationEmail(user.getName(), user.getEmail(), code);
                 return ok();
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
         } while (false);
         return badRequest();

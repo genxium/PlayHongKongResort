@@ -45,7 +45,7 @@ public class ActivityController extends Controller {
                 if (token != null) viewerId = DataUtils.getUserIdByToken(token);
                 List<Activity> activities = null;
                 if (relation != null && relation != UserActivityRelation.hosted && userId != null) {
-                    activities = SQLCommander.queryActivities(userId, UserActivityRelation.maskRelation(relation));
+                    activities = SQLCommander.queryActivities(userId, UserActivityRelation.maskRelation(relation, null));
                 } else if (relation != null && relation == UserActivityRelation.hosted && userId != null && viewerId != null) {
                     activities = SQLCommander.queryHostedActivities(userId, viewerId, refIndex, Activity.ID, orderStr, numItems, direction);
                 } else {
@@ -123,13 +123,13 @@ public class ActivityController extends Controller {
                 for (Object appliedParticipantJson : appliedParticipantsJson) {
                     Integer userId = Integer.valueOf((String) appliedParticipantJson);
                     if (userId.equals(viewerId)) continue; // anti-cracking by unselecting the host of an activity
-                    SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied));
+                    SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied, null));
                 }
 
                 for (Object selectedParticipantJson : selectedParticipantsJson) {
                     Integer userId = Integer.valueOf((String) selectedParticipantJson);
                     if (userId.equals(viewerId)) continue; // anti-cracking by selecting the host of an activity
-                    SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected));
+                    SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected, null));
                 }
                 return ok();
             } catch (Exception e) {
@@ -246,43 +246,38 @@ public class ActivityController extends Controller {
     public static Result submit() {
         // define response attributes
         response().setContentType("text/plain");
-        do {
-            try {
-                Http.RequestBody body = request().body();
 
-                // get user token and activity id from request body stream
-                Map<String, String[]> formData = body.asFormUrlEncoded();
+        try {
+            Http.RequestBody body = request().body();
 
-                String token = formData.get(User.TOKEN)[0];
-                Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+            // get user token and activity id from request body stream
+            Map<String, String[]> formData = body.asFormUrlEncoded();
 
-                Integer userId = DataUtils.getUserIdByToken(token);
-                if (userId == null) break;
-                User user = SQLCommander.queryUser(userId);
-                if (user == null) break;
+            String token = formData.get(User.TOKEN)[0];
+            Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 
-                Activity activity = SQLCommander.queryActivity(activityId);
-                if (!SQLCommander.isActivityEditable(userId, activity)) break;
+            Integer userId = DataUtils.getUserIdByToken(token);
+            if (userId == null) throw new Exception();
+            User user = SQLCommander.queryUser(userId);
+            if (user == null) throw new Exception();
 
-                SQLHelper sqlHelper = new SQLHelper();
-                List<String> names = new LinkedList<String>();
-                names.add(Activity.STATUS);
+            Activity activity = SQLCommander.queryActivity(activityId);
+            if (!SQLCommander.isActivityEditable(userId, activity)) throw new Exception();
 
-                List<Object> values = new LinkedList<Object>();
-                values.add(Activity.PENDING);
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-                List<String> where = new LinkedList<String>();
-                where.add(Activity.ID + "=" + activity.getId());
+            String[] names = {Activity.STATUS};
+            Object[] values = {Activity.PENDING};
 
-                if(!sqlHelper.update(Activity.TABLE, names, values, where, SQLHelper.AND)) break;
+            builder.update(Activity.TABLE).set(names, values).where(Activity.ID, "=", activity.getId());
+            if(!SQLHelper.update(builder)) throw new Exception();
 
-                return ok();
+            return ok();
 
-            } catch (Exception e) {
-                System.out.println(ActivityController.class.getName()+", "+e.getMessage());
-            }
+        } catch (Exception e) {
+            System.out.println(ActivityController.class.getName()+", "+e.getMessage());
+        }
 
-        } while (false);
         return badRequest();
     }
 
@@ -318,70 +313,67 @@ public class ActivityController extends Controller {
     public static Result join() {
         // define response attributes
         response().setContentType("text/plain");
-        do {
-            try {
-                Map<String, String[]> formData = request().body().asFormUrlEncoded();
-                Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-                String token = formData.get(User.TOKEN)[0];
-                if (token == null) break;
-                Integer userId = DataUtils.getUserIdByToken(token);
-                if (userId == null) break;
 
-                Activity activity = SQLCommander.queryActivity(activityId);
-                if (activity == null) break;
-                boolean joinable = SQLCommander.isActivityJoinable(userId, activity);
-                if (!joinable) break;
+        try {
+            Map<String, String[]> formData = request().body().asFormUrlEncoded();
+            Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+            String token = formData.get(User.TOKEN)[0];
+            if (token == null) throw new Exception();
+            Integer userId = DataUtils.getUserIdByToken(token);
+            if (userId == null) throw new Exception();
 
-                String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION};
-                Object[] values = {activityId, userId, UserActivityRelation.maskRelation(UserActivityRelation.applied)};
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-                builder.insert(names, values).into(UserActivityRelation.TABLE);
+            Activity activity = SQLCommander.queryActivity(activityId);
+            if (activity == null) throw new Exception();
+            boolean joinable = SQLCommander.isActivityJoinable(userId, activity);
+            if (!joinable) throw new Exception();
 
-                int lastRelationTableId = SQLHelper.insert(builder);
-                if (lastRelationTableId == SQLHelper.INVALID) break;
+            String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION};
+            Object[] values = {activityId, userId, UserActivityRelation.maskRelation(UserActivityRelation.applied, null)};
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            builder.insert(names, values).into(UserActivityRelation.TABLE);
 
-                return ok();
-            } catch (Exception e) {
-                System.out.println(ActivityController.class.getName() + ".join, " + e.getMessage());
-            }
-        } while (false);
-        return badRequest();
+            int lastRelationTableId = SQLHelper.insert(builder);
+            if (lastRelationTableId == SQLHelper.INVALID) throw new Exception();
+
+            return ok();
+        } catch (Exception e) {
+            System.out.println(ActivityController.class.getName() + ".join, " + e.getMessage());
+            return badRequest();
+        }
     }
 
     public static Result mark() {
         // define response attributes
         response().setContentType("text/plain");
-        do {
-            try {
-                Map<String, String[]> formData = request().body().asFormUrlEncoded();
-                Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-                String token = formData.get(User.TOKEN)[0];
-                if (token == null) break;
-                Integer relation = Integer.parseInt(formData.get(UserActivityRelation.RELATION)[0]);
-                Integer userId = DataUtils.getUserIdByToken(token);
-                if (userId == null) break;
+        try {
+            Map<String, String[]> formData = request().body().asFormUrlEncoded();
+            Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+            String token = formData.get(User.TOKEN)[0];
+            if (token == null) throw new Exception();
+            Integer relation = Integer.parseInt(formData.get(UserActivityRelation.RELATION)[0]);
+            Integer userId = DataUtils.getUserIdByToken(token);
+            if (userId == null) throw new Exception();
 
-                Activity activity = SQLCommander.queryActivity(activityId);
-                if (activity == null) break;
-                int originalRelation = SQLCommander.isActivityMarkable(userId, activity, relation);
-                if (originalRelation == UserActivityRelation.invalid) break;
+            Activity activity = SQLCommander.queryActivity(activityId);
+            if (activity == null) throw new Exception();
+            int originalRelation = SQLCommander.isActivityMarkable(userId, activity, relation);
+            if (originalRelation == UserActivityRelation.invalid) throw new Exception();
 
-                String[] names = {UserActivityRelation.RELATION};
-                Object[] values = {UserActivityRelation.maskRelation(relation)};
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            String[] names = {UserActivityRelation.RELATION};
+            Object[] values = {UserActivityRelation.maskRelation(relation, originalRelation)};
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-                String[] whereCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID};
-                String[] whereOps = {"=", "="};
-                Object[] whereVals = {activityId, userId};
-                builder.update(UserActivityRelation.TABLE).set(names, values).where(whereCols, whereOps, whereVals);
+            String[] whereCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID};
+            String[] whereOps = {"=", "="};
+            Object[] whereVals = {activityId, userId};
+            builder.update(UserActivityRelation.TABLE).set(names, values).where(whereCols, whereOps, whereVals);
 
-                if(!SQLHelper.update(builder)) break;
+            if(!SQLHelper.update(builder)) throw new Exception();
 
-                return ok();
-            } catch (Exception e) {
-                System.out.println(ActivityController.class.getName() + ".mark, " + e.getMessage());
-            }
-        } while (false);
-        return badRequest();
+            return ok();
+        } catch (Exception e) {
+            System.out.println(ActivityController.class.getName() + ".mark, " + e.getMessage());
+            return badRequest();
+        }
     }
 }

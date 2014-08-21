@@ -5,6 +5,7 @@ import dao.SQLHelper;
 import model.*;
 import org.json.simple.JSONObject;
 
+import javax.persistence.Basic;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
@@ -108,7 +109,7 @@ public class SQLCommander {
 
             values.add(lastActivityId);
             values.add(userId);
-            values.add(UserActivityRelation.maskRelation(UserActivityRelation.selected));
+            values.add(UserActivityRelation.maskRelation(UserActivityRelation.selected, null));
 
             EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
             builderRelation.insert(names, values).into(UserActivityRelation.TABLE);
@@ -174,12 +175,9 @@ public class SQLCommander {
         try {
             Activity activity = queryActivity(activityId);
             List<Image> images = queryImages(activityId);
-            List<BasicUser> appliedParticipants = SQLCommander.queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied));
-            List<BasicUser> selectedParticipants = SQLCommander.queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected));
-            List<BasicUser> presentParticipants = SQLCommander.queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.present));
-            List<BasicUser> absentParticipants = SQLCommander.queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.absent));
-            selectedParticipants.addAll(presentParticipants);
-            selectedParticipants.addAll(absentParticipants);
+            List<BasicUser> appliedParticipants = queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied, null));
+            List<BasicUser> selectedParticipants = querySelectedParticipants(activityId);
+            List<BasicUser> presentParticipants = queryPresentParticipants(activityId);
             activityDetail = new ActivityDetail(activity, images, appliedParticipants, selectedParticipants, presentParticipants);
         } catch (Exception e) {
             System.out.println(SQLCommander.class.getName() + ".queryActivityDetail, " + e.getMessage());
@@ -659,25 +657,24 @@ public class SQLCommander {
     }
 
     public static int uploadUserAvatar(User user, String imageURL) {
-        int lastImageId = INVALID;
-        do {
+        try {
             EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
             builderImage.insert(Image.URL, imageURL).into(Image.TABLE);
-            lastImageId = SQLHelper.insert(builderImage);
-            if (lastImageId == SQLHelper.INVALID) break;
+            int lastImageId = SQLHelper.insert(builderImage);
+            if (lastImageId == SQLHelper.INVALID) throw new Exception();
 
             EasyPreparedStatementBuilder builderUser = new EasyPreparedStatementBuilder();
             builderUser.update(User.TABLE).set(User.AVATAR, lastImageId).where(User.ID, "=", user.getId());
-            boolean updateResult = SQLHelper.update(builderUser);
-            if (updateResult == false) {
-                boolean isRecovered = deleteImageRecord(lastImageId);
-                if (isRecovered == true) {
-
+            if (!SQLHelper.update(builderUser)) {
+                if (deleteImageRecord(lastImageId)) {
+                    System.out.println(SQLCommander.class.getName()+".uploadUserAvatar");
                 }
-                break;
+                throw new Exception();
             }
-        } while (false);
-        return lastImageId;
+            return lastImageId;
+        } catch (Exception e){
+            return INVALID;
+        }
     }
 
     public static Image queryImage(int imageId) {
@@ -725,9 +722,8 @@ public class SQLCommander {
 
                 EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
                 builderRelation.from(ActivityImageRelation.TABLE).where(whereCols, whereOps, whereVals);
-                boolean resultRelationDeletion = SQLHelper.delete(builderRelation);
 
-                if (resultRelationDeletion == false) break;
+                if (!SQLHelper.delete(builderRelation)) break;
 
                 EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
                 builderImage.from(Image.TABLE).where(Image.ID, "=", imageId);
@@ -742,7 +738,6 @@ public class SQLCommander {
 
     public static List<Image> queryImages(int activityId) {
         List<Image> images = new LinkedList<Image>();
-        ;
         try {
             String query = "SELECT " + Image.ID + ", " + Image.URL + " FROM " + Image.TABLE + " WHERE EXISTS (SELECT NULL FROM " + ActivityImageRelation.TABLE + " WHERE "
                     + ActivityImageRelation.ACTIVITY_ID + "=? AND " + ActivityImageRelation.TABLE + "." + ActivityImageRelation.IMAGE_ID + "=" + Image.TABLE + "." + Image.ID +
@@ -756,7 +751,7 @@ public class SQLCommander {
             }
 
         } catch (Exception e) {
-            System.out.println("SQLCommander.queryImages, " + e.getMessage());
+            System.out.println(SQLCommander.class.getName()+".queryImages, " + e.getMessage());
         }
         return images;
     }
@@ -778,8 +773,7 @@ public class SQLCommander {
 
             int lastRecordId = SQLHelper.insert(builderRelation);
             if (lastRecordId == SQLHelper.INVALID) {
-                boolean isRecovered = deleteImageRecord(lastImageId);
-                if (isRecovered == true) {
+                if (deleteImageRecord(lastImageId)) {
                     lastImageId = INVALID;
                     System.out.println(SQLCommander.class.getName() + ".uploadImage: image " + lastImageId + " reverted");
                 }
@@ -824,35 +818,96 @@ public class SQLCommander {
     }
 
     public static boolean updateUserActivityRelation(Integer ownerId, Integer userId, Integer activityId, int relation) {
-        boolean ret = false;
-        do {
-            try {
-                java.util.Date date = new java.util.Date();
-                Timestamp currentTime = new Timestamp(date.getTime());
-                String timeStr = currentTime.toString();
+        try {
+            java.util.Date date = new java.util.Date();
+            Timestamp currentTime = new Timestamp(date.getTime());
+            String timeStr = currentTime.toString();
 
-                String timestampFieldName = null;
-                if ((relation & UserActivityRelation.selected) > 0) {
-                    timestampFieldName = UserActivityRelation.LAST_ACCEPTED_TIME;
-                } else {
-                    timestampFieldName = UserActivityRelation.LAST_REJECTED_TIME;
-                }
-                String[] cols = {UserActivityRelation.RELATION, timestampFieldName};
-                Object[] vals = {relation, timeStr};
-
-                String[] whereCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID};
-                String[] whereOps = {"=", "="};
-                Object[] whereVals = {activityId, userId};
-
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-                builder.update(UserActivityRelation.TABLE).set(cols, vals).where(whereCols, whereOps, whereVals);
-                boolean result = SQLHelper.update(builder);
-                if (result == false) break;
-                ret = true;
-            } catch (Exception e) {
-
+            String timestampFieldName = null;
+            if ((relation & UserActivityRelation.selected) > 0) {
+                timestampFieldName = UserActivityRelation.LAST_ACCEPTED_TIME;
+            } else {
+                timestampFieldName = UserActivityRelation.LAST_REJECTED_TIME;
             }
-        } while (false);
+            String[] cols = {UserActivityRelation.RELATION, timestampFieldName};
+            Object[] vals = {relation, timeStr};
+
+            String[] whereCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID};
+            String[] whereOps = {"=", "="};
+            Object[] whereVals = {activityId, userId};
+
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            builder.update(UserActivityRelation.TABLE).set(cols, vals).where(whereCols, whereOps, whereVals);
+            if(!SQLHelper.update(builder)) throw new Exception();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static List<BasicUser> querySelectedParticipants(int activityId) {
+        List<BasicUser> ret = new LinkedList<BasicUser>();
+
+        int possibleRelation1 = UserActivityRelation.applied | UserActivityRelation.selected;
+        List<BasicUser> lst1 = queryUsers(activityId, possibleRelation1);
+
+        int possibleRelation11 = possibleRelation1 | UserActivityRelation.present;
+        List<BasicUser> lst11 = queryUsers(activityId, possibleRelation11);
+
+        int possibleRelation12 = possibleRelation1 | UserActivityRelation.absent;
+        List<BasicUser> lst12 = queryUsers(activityId, possibleRelation12);
+
+        int possibleRelation111 = possibleRelation11 | UserActivityRelation.assessed;
+        List<BasicUser> lst111 = queryUsers(activityId, possibleRelation111);
+
+        int possibleRelation121 = possibleRelation12 | UserActivityRelation.assessed;
+        List<BasicUser> lst121 = queryUsers(activityId, possibleRelation121);
+
+        ret.addAll(lst1);
+        ret.addAll(lst11);
+        ret.addAll(lst12);
+        ret.addAll(lst111);
+        ret.addAll(lst121);
+
+        return ret;
+    }
+
+    public static List<BasicUser> queryPresentParticipants(int activityId) {
+        List<BasicUser> ret = new LinkedList<BasicUser>();
+
+        int baseRelation1 = UserActivityRelation.applied | UserActivityRelation.selected;
+        int possibleRelation11 = baseRelation1 | UserActivityRelation.present;
+
+        List<BasicUser> lst11 = queryUsers(activityId, possibleRelation11);
+
+        int possibleRelation111 = possibleRelation11 | UserActivityRelation.assessed;
+
+        List<BasicUser> lst111 = queryUsers(activityId, possibleRelation111);
+
+        ret.addAll(lst11);
+        ret.addAll(lst111);
+
+        return ret;
+    }
+
+    public static List<BasicUser> queryAssessedParticipants(int activityId) {
+        List<BasicUser> ret = new LinkedList<BasicUser>();
+
+        int baseRelation1 = UserActivityRelation.applied | UserActivityRelation.selected;
+
+        int baseRelation11 = baseRelation1 | UserActivityRelation.present;
+
+        int baseRelation12 = baseRelation1 | UserActivityRelation.absent;
+
+        int possibleRelation111 = baseRelation11 | UserActivityRelation.assessed;
+        List<BasicUser> lst111 = queryUsers(activityId, possibleRelation111);
+
+        int possibleRelation121 = baseRelation12 | UserActivityRelation.assessed;
+        List<BasicUser> lst121 = queryUsers(activityId, possibleRelation121);
+
+        ret.addAll(lst111);
+        ret.addAll(lst121);
+
         return ret;
     }
 };

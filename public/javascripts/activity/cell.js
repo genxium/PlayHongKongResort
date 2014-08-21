@@ -59,15 +59,13 @@ function onBtnJoinClicked(evt){
 			url: "/activity/join",
 			data: params,
 			success: function(data, status, xhr){
-				var cellNode=btnJoin.parentNode; // javascript dom element
-				var cell=$(cellNode); // convert to jQuery element object
+				var cell=btnJoin.parent();
 				btnJoin.remove();
 
 				var appliedIndicator=$('<div>', {
 					class: g_classAppliedIndicator,
 					text: 'Applied'
-				});
-				cell.append(appliedIndicator);
+				}).appendTo(cell);
 			},
 			error: function(xhr, status, errThrown){
 

@@ -39,42 +39,53 @@ public class AssessmentController extends Controller {
         // define response attributes
         response().setContentType("text/plain");
 
-        do {
-            try {
-                Http.RequestBody body = request().body();
+        try {
+            Http.RequestBody body = request().body();
 
-                // get file data from request body stream
-                Map<String, String[]> formData = body.asFormUrlEncoded();
+            // get file data from request body stream
+            Map<String, String[]> formData = body.asFormUrlEncoded();
 
-                String token = formData.get(User.TOKEN)[0];
-                if (token == null) break;
-                Integer userId = DataUtils.getUserIdByToken(token);
-                if (userId == null) break;
-                User user = SQLCommander.queryUser(userId);
-                if (user == null) break;
-                Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-                if (activityId == null) break;
+            String token = formData.get(User.TOKEN)[0];
+            if (token == null) throw new Exception();
+            Integer userId = DataUtils.getUserIdByToken(token);
+            if (userId == null) throw new Exception();
+            User user = SQLCommander.queryUser(userId);
+            if (user == null) throw new Exception();
+            Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+            if (activityId == null) throw new Exception();
 
-                Integer relation = SQLCommander.queryUserActivityRelation(userId, activityId);
-                if ((relation & UserActivityRelation.present) == 0) break;
+            Integer relation = SQLCommander.queryUserActivityRelation(userId, activityId);
+            if ((relation & UserActivityRelation.present) == 0) throw new Exception();
 
-                String bundle = formData.get(BUNDLE)[0];
-                JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
-                for (Object obj : assessmentJsons) {
-                    Assessment assessment = new Assessment((JSONObject)obj);
-                    assessment.setActivityId(activityId);
-                    assessment.setFrom(userId);
-                    Assessment existingAssessment = SQLCommander.queryAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo());
-                    if (existingAssessment != null) continue;
-                    if (!SQLCommander.isUserAssessable(assessment.getFrom(), assessment.getTo(), assessment.getActivityId()))
-                        continue;
-                    int res = SQLCommander.createAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo(), assessment.getContent());
-                }
-                return ok();
-            } catch (Exception e) {
-
+            String bundle = formData.get(BUNDLE)[0];
+            JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
+            for (Object obj : assessmentJsons) {
+                Assessment assessment = new Assessment((JSONObject) obj);
+                assessment.setActivityId(activityId);
+                assessment.setFrom(userId);
+                Assessment existingAssessment = SQLCommander.queryAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo());
+                if (existingAssessment != null) continue;
+                if (!SQLCommander.isUserAssessable(assessment.getFrom(), assessment.getTo(), assessment.getActivityId()))   continue;
+                SQLCommander.createAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo(), assessment.getContent());
             }
-        } while (false);
-        return badRequest();
+
+            int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
+            if(originalRelation == UserActivityRelation.invalid) throw new Exception();
+
+            int newRelation = UserActivityRelation.maskRelation(UserActivityRelation.assessed, originalRelation);
+
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            builder.update(UserActivityRelation.TABLE).set(UserActivityRelation.RELATION, newRelation);
+            builder.where(UserActivityRelation.USER_ID, "=", userId);
+            builder.where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
+            if(!SQLHelper.update(builder)) throw new Exception();
+
+            ObjectNode ret = Json.newObject();
+            ret.put(UserActivityRelation.RELATION, newRelation);
+            return ok(ret);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return badRequest();
+        }
     }
 }

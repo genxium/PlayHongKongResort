@@ -26,4 +26,10 @@ public class Converter{
 		String base=username+dateStr+password;
 		return md5(base);
 	}
-};
+
+    public static Integer toInteger(Object obj) {
+        if(obj instanceof Integer) return (Integer)obj;
+        else if(obj instanceof String) return Integer.valueOf((String)obj);
+        else return null;
+    }
+}

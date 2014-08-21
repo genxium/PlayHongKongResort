@@ -13,136 +13,186 @@ import java.util.*;
 
 public class Activity {
 
-	public static final int CREATED=0;
-	public static final int PENDING=1;
-	public static final int REJECTED=2;
-	public static final int ACCEPTED=3;
-	public static final int EXPIRED=4;
+    public static final int CREATED = 0;
+    public static final int PENDING = 1;
+    public static final int REJECTED = 2;
+    public static final int ACCEPTED = 3;
+    public static final int EXPIRED = 4;
 
-	public static String TABLE="activity";
-	public static String ID="id";
-	public static String TITLE="title";
-	public static String CONTENT="content";
-	public static String CREATED_TIME="created_time";
-	public static String BEGIN_TIME="begin_time";
-	public static String DEADLINE="application_deadline";
-	public static String CAPACITY="capacity";
-	public static String STATUS="status";
-	public static String HOST_ID="host_id";
-	public static String HOST="host";
-	public static String VIEWER="viewer";
+    public static String TABLE = "activity";
+    public static String ID = "id";
+    public static String TITLE = "title";
+    public static String CONTENT = "content";
+    public static String CREATED_TIME = "created_time";
+    public static String BEGIN_TIME = "begin_time";
+    public static String DEADLINE = "application_deadline";
+    public static String CAPACITY = "capacity";
+    public static String STATUS = "status";
+    public static String HOST_ID = "host_id";
+    public static String HOST = "host";
+    public static String VIEWER = "viewer";
 
-	protected int m_id=0;
-	public int getId(){return m_id;}
-	public void setId(int id) {m_id=id;}
+    protected int m_id = 0;
 
-	protected String m_title=null;
-	public String getTitle() {return m_title;}
-	public void setTitle(String title) {m_title=title;}
+    public int getId() {
+        return m_id;
+    }
 
-	protected String m_content=null;
-	public String getContent() {return m_content;}
-	public void setContent(String content) {m_content=content;}
+    public void setId(int id) {
+        m_id = id;
+    }
 
-	protected Timestamp m_createdTime=null;
-	public Timestamp getCreatedTime() {return m_createdTime;}
+    protected String m_title = null;
 
-	protected Timestamp m_beginTime=null;
-	public Timestamp getBeginTime() {return m_beginTime;}
-	public void setBeginTime(Timestamp beginTime) {m_beginTime=beginTime;}
+    public String getTitle() {
+        return m_title;
+    }
 
-	protected Timestamp m_deadline=null;
-	public Timestamp getDeadline() {return m_deadline;}
-	public void setDeadline(Timestamp deadline) {m_deadline=deadline;}
+    public void setTitle(String title) {
+        m_title = title;
+    }
 
-	protected int m_capacity=0;
-	public int getCapacity() {return m_capacity;}
+    protected String m_content = null;
 
-	protected int m_status=CREATED;
-	public int getStatus() {return m_status;}
-	public void setStatus(int status) {m_status=status;}
+    public String getContent() {
+        return m_content;
+    }
 
-    protected User m_host=null;
-    public User getHost() {return m_host;}
-    public void setHost(User host) {m_host=host;}
+    public void setContent(String content) {
+        m_content = content;
+    }
 
-    protected User m_viewer=null;
+    protected Timestamp m_createdTime = null;
 
-	public boolean isDeadlineExpired(){
-		java.util.Date date= new java.util.Date();
-		return date.getTime()>m_deadline.getTime();
-	}
+    public Timestamp getCreatedTime() {
+        return m_createdTime;
+    }
 
-	public boolean hasBegun(){
-		java.util.Date date= new java.util.Date();
-		return date.getTime()>m_beginTime.getTime();
-	}
+    protected Timestamp m_beginTime = null;
 
-	protected Activity(){
+    public Timestamp getBeginTime() {
+        return m_beginTime;
+    }
 
-	}
+    public void setBeginTime(Timestamp beginTime) {
+        m_beginTime = beginTime;
+    }
 
-	public Activity(JSONObject activityJson, User host){
-		if(activityJson.containsKey(ID))
-			m_id=(Integer)activityJson.get(ID);
-		if(activityJson.containsKey(TITLE))
-			m_title=(String)activityJson.get(TITLE);
-		if(activityJson.containsKey(CONTENT))
-			m_content=(String)activityJson.get(CONTENT);
-		if(activityJson.containsKey(CREATED_TIME))
-			m_createdTime=(Timestamp)activityJson.get(CREATED_TIME);
-		if(activityJson.containsKey(BEGIN_TIME))
-			m_beginTime=(Timestamp)activityJson.get(BEGIN_TIME);
-		if(activityJson.containsKey(DEADLINE))
-			m_deadline=(Timestamp)activityJson.get(DEADLINE);
-		if(activityJson.containsKey(CAPACITY))
-			m_capacity=(Integer)activityJson.get(CAPACITY);
-		if(activityJson.containsKey(STATUS))
-			m_status=(Integer)activityJson.get(STATUS);
-		if(host!=null)
-			m_host=host;
-	}
+    protected Timestamp m_deadline = null;
 
-	public ObjectNode toObjectNode(Integer viewerId){
-		ObjectNode ret = Json.newObject();;
-		try{
-			ret.put(Activity.ID, String.valueOf(m_id));
-			ret.put(Activity.TITLE, m_title);
-			ret.put(Activity.CONTENT, m_content);
-			SimpleDateFormat splfmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
-			ret.put(Activity.CREATED_TIME, splfmt.format(m_createdTime));
-			ret.put(Activity.BEGIN_TIME, splfmt.format(m_beginTime));
-			ret.put(Activity.DEADLINE, splfmt.format(m_deadline));
-			ret.put(Activity.CAPACITY, String.valueOf(m_capacity));
-			ret.put(Activity.HOST, m_host.toObjectNode(viewerId));
-			if(viewerId!=null) {
-				int relation=SQLCommander.queryUserActivityRelation(viewerId, m_id);
-				if(relation!= UserActivityRelation.invalid)	ret.put(UserActivityRelation.RELATION, relation);
-				m_viewer=SQLCommander.queryUser(viewerId);
-				if(viewerId.equals(m_host.getId())) ret.put(Activity.STATUS, String.valueOf(m_status));
-				if(m_viewer!=null && m_viewer.getGroupId()==User.ADMIN) ret.put(Activity.STATUS, String.valueOf(m_status));
-			}
-		} catch (Exception e){
-			System.out.println("Activity.toObjectNode, "+e.getMessage());
-		}
-		return ret;
-	}
+    public Timestamp getDeadline() {
+        return m_deadline;
+    }
 
-	public ObjectNode toObjectNodeWithImages(Integer viewerId){
-		ObjectNode ret = toObjectNode(viewerId);
-		do{	
-			try{
-				List<Image> images=SQLCommander.queryImages(m_id);
-				if(images==null || images.size()<=0) break;
-				ArrayNode imagesNode=new ArrayNode(JsonNodeFactory.instance);
-				for(Image image : images){
-					imagesNode.add(image.toObjectNode());
-				}
-				ret.put(ActivityDetail.IMAGES, imagesNode);
-			} catch (Exception e){
-				System.out.println("Activity.toObjectNodeWithImages, "+e.getMessage());	
-			}
-		}while(false);
-		return ret;
-	}
+    public void setDeadline(Timestamp deadline) {
+        m_deadline = deadline;
+    }
+
+    protected int m_capacity = 0;
+
+    public int getCapacity() {
+        return m_capacity;
+    }
+
+    protected int m_status = CREATED;
+
+    public int getStatus() {
+        return m_status;
+    }
+
+    public void setStatus(int status) {
+        m_status = status;
+    }
+
+    protected User m_host = null;
+
+    public User getHost() {
+        return m_host;
+    }
+
+    public void setHost(User host) {
+        m_host = host;
+    }
+
+    protected User m_viewer = null;
+
+    public boolean isDeadlineExpired() {
+        java.util.Date date = new java.util.Date();
+        return date.getTime() > m_deadline.getTime();
+    }
+
+    public boolean hasBegun() {
+        java.util.Date date = new java.util.Date();
+        return date.getTime() > m_beginTime.getTime();
+    }
+
+    protected Activity() {
+
+    }
+
+    public Activity(JSONObject activityJson, User host) {
+        if (activityJson.containsKey(ID))
+            m_id = (Integer) activityJson.get(ID);
+        if (activityJson.containsKey(TITLE))
+            m_title = (String) activityJson.get(TITLE);
+        if (activityJson.containsKey(CONTENT))
+            m_content = (String) activityJson.get(CONTENT);
+        if (activityJson.containsKey(CREATED_TIME))
+            m_createdTime = (Timestamp) activityJson.get(CREATED_TIME);
+        if (activityJson.containsKey(BEGIN_TIME))
+            m_beginTime = (Timestamp) activityJson.get(BEGIN_TIME);
+        if (activityJson.containsKey(DEADLINE))
+            m_deadline = (Timestamp) activityJson.get(DEADLINE);
+        if (activityJson.containsKey(CAPACITY))
+            m_capacity = (Integer) activityJson.get(CAPACITY);
+        if (activityJson.containsKey(STATUS))
+            m_status = (Integer) activityJson.get(STATUS);
+        if (host != null)
+            m_host = host;
+    }
+
+    public ObjectNode toObjectNode(Integer viewerId) {
+        ObjectNode ret = Json.newObject();
+        ;
+        try {
+            ret.put(Activity.ID, String.valueOf(m_id));
+            ret.put(Activity.TITLE, m_title);
+            ret.put(Activity.CONTENT, m_content);
+            SimpleDateFormat splfmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            ret.put(Activity.CREATED_TIME, splfmt.format(m_createdTime));
+            ret.put(Activity.BEGIN_TIME, splfmt.format(m_beginTime));
+            ret.put(Activity.DEADLINE, splfmt.format(m_deadline));
+            ret.put(Activity.CAPACITY, String.valueOf(m_capacity));
+            ret.put(Activity.HOST, m_host.toObjectNode(viewerId));
+            if (viewerId != null) {
+                int relation = SQLCommander.queryUserActivityRelation(viewerId, m_id);
+                if (relation != UserActivityRelation.invalid) ret.put(UserActivityRelation.RELATION, relation);
+                m_viewer = SQLCommander.queryUser(viewerId);
+                if (viewerId.equals(m_host.getId())) ret.put(Activity.STATUS, String.valueOf(m_status));
+                if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)
+                    ret.put(Activity.STATUS, String.valueOf(m_status));
+            }
+        } catch (Exception e) {
+            System.out.println("Activity.toObjectNode, " + e.getMessage());
+        }
+        return ret;
+    }
+
+    public ObjectNode toObjectNodeWithImages(Integer viewerId) {
+        ObjectNode ret = toObjectNode(viewerId);
+        do {
+            try {
+                List<Image> images = SQLCommander.queryImages(m_id);
+                if (images == null || images.size() <= 0) break;
+                ArrayNode imagesNode = new ArrayNode(JsonNodeFactory.instance);
+                for (Image image : images) {
+                    imagesNode.add(image.toObjectNode());
+                }
+                ret.put(ActivityDetail.IMAGES, imagesNode);
+            } catch (Exception e) {
+                System.out.println("Activity.toObjectNodeWithImages, " + e.getMessage());
+            }
+        } while (false);
+        return ret;
+    }
 };

@@ -7,6 +7,7 @@ var g_btnSubmit = null;
 	Trying out new style of info gathering for DOMs
 */
 function SingleAssessmentEditor(){
+        this.participantId = 0;
 	this.name = "";
 	this.content = "";
 	this.lock = null;
@@ -29,7 +30,8 @@ function generateAssessmentEditor(par, participant, batchEditor){
 		text: "@"+participant.name,
 		style: "margin-left: 5pt; display: inline; cursor: pointer; color: BlueViolet"
 	}).appendTo(row);
-	singleEditor.name = participant.name; // name is a static part
+	singleEditor.participantId = participant.id;
+	singleEditor.name = participant.name;
 	var content=$('<input>', {
 		type: 'text',
 		style: "margin-left: 10pt; display: inline"
@@ -103,10 +105,10 @@ function generateAssessmentButtons(par, activity, batchEditor){
 	g_btnSubmit.on("click", function(evt){
 		evt.preventDefault();
 		var assessments = new Array();
-		for(var i = 0; i < batchEditor.editors[i]; i++) {
+		for(var i = 0; i < batchEditor.editors.length; i++) {
 			var editor = batchEditor.editors[i];
 			var content = editor.content;
-			var to = editor.name;
+			var to = editor.participantId;
 			var assessment = new Assessment(content, to); 
 			assessments.push(assessment);	
 		}
@@ -147,11 +149,14 @@ function generateBatchAssessmentEditor(par, activity, participants, refreshCallb
 
 		// Determine attendance switch initial state based on viewer-activity-relation
 		if (activity.relation == hosted) {
+		        // host cannot choose
 			initVal = true;
 			disabled = true;
 		} else if((activity.relation & present) > 0) {
+			// present participants but not
 			initVal = true;
 		} else if((activity.relation & selected) > 0 || (activity.relation & absent) > 0) {
+		        // selected but not present
 			initVal = false;
 		} else {
 			disabled = true;
@@ -165,7 +170,9 @@ function generateBatchAssessmentEditor(par, activity, participants, refreshCallb
 			style: "margin-top: 5pt"
 		}).appendTo(sectionAll);
 
-		if((activity.relation & present) > 0 || (activity.relation == hosted)) {
+		if( ((activity.relation & present) > 0 || (activity.relation == hosted))
+		     && (activity.relation & assessed) == 0) {
+		     // present but not yet assessed participants
 			var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, batchEditor);
 			batchEditor.editors = editors;
 			generateAssessmentButtons(sectionButtons, activity, batchEditor);
@@ -173,14 +180,17 @@ function generateBatchAssessmentEditor(par, activity, participants, refreshCallb
 
 		var onSuccess = function(data, status, xhr){	    
 			g_updatingAttendance = false;
-			var value = getBinarySwitchState(attendanceSwitch);
-			if(value)   activity.relation = present;
-			else    activity.relation = absent;
-			
+
+                        // update activity.relation by returned value
+			var relationJson = JSON.parse(data);
+                        activity.relation = parseInt(relationJson[g_keyRelation]);
+
 			sectionEditors.empty();
 			sectionButtons.empty();
 
-			if(!value) return;
+                        var value = getBinarySwitchState(attendanceSwitch);
+			if(!value || (activity.relation & assessed) > 0) return;
+                        // assessed participants cannot edit or re-submit assessments
 
 			var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, batchEditor);
 			batchEditor.editors = editors;
