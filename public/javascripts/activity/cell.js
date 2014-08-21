@@ -142,8 +142,6 @@ function generateActivityCell(activityJson){
 			class: g_classAppliedIndicator,
 			text: 'Applied'
 		}).appendTo(ret);
-
-		ret.data(g_indexStatusIndicator, appliedIndicator);
 	} else;
 
 	if(activity.status != null){

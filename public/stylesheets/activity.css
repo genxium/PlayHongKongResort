@@ -154,7 +154,7 @@
 	width:	33%;
 	background-color:	#ccccff;
 	font-size:	12pt;
-	color:	#0000ff;
+	color:	blue;
 }
 
 .classBtnDetail{
@@ -164,7 +164,7 @@
 	width:	33%;
 	font-size:	12pt;
 	background-color:	#ccccff;
-	color:	#0000ff;
+	color:	blue;
 }
 
 .classActivityStatusIndicator
@@ -173,17 +173,17 @@
 	position: relative;
 	float: left;
 	margin-left: 2pt;
-	font-size:	16pt;
-	color:	#ff0000;
+	font-size: 16pt;
+	color: red;
 }
 
 .classAppliedIndicator
 {
 	display: inline;
 	position: relative;
-	margin-right: 5pt
+	margin-right: 5pt;
 	float: right;
 	vertical-align: bottom;
 	font-size:	13pt;
-	color:	#ff0000;
+	color:	red;
 }

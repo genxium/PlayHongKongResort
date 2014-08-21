@@ -499,7 +499,7 @@ function generateActivityEditor(activity){
 	}).appendTo(buttons);
 	var dSubmit = {};
 	dSubmit[g_keyActivityId] = activityId;
-	btnSubmit.on("click", onBtnSubmitClicked);
+	btnSubmit.on("click", dSubmit, onBtnSubmitClicked);
 
 	var btnCancel = $('<button>',{
 		class: g_classBtnCancel,

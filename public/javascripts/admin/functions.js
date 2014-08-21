@@ -4,11 +4,6 @@
 
 var g_classAcceptedIndicator="classAcceptedIndicator";
 var g_classDeletedIndicator="classDeletedIndicator";
-
-var g_classBtnAccept="classBtnAccept";
-var g_classBtnReject="classBtnReject";
-var g_classBtnDelete="classBtnDelete";
-
 var g_sectionActivityMonitor=null;
 
 var g_selectFilter=null;

@@ -109,12 +109,12 @@ function generateActivityCellForAdmin(activityJson){
             }
         }
 
-	var ret=$('<div>', {
-		style: "width: 100%; height: 200pt; overflow: auto;"	
+	var ret=$('<p>', {
+		style: "display: block"	
 	});
 
 	var infoWrap=$('<span>', {
-		style: "display: inline-block; margin-left: 5pt"	
+		style: "margin-left: 5pt; display: inline-block;"	
 	}).appendTo(ret);
 
 	if(coverImageUrl != null){
@@ -135,20 +135,20 @@ function generateActivityCellForAdmin(activityJson){
 	}).appendTo(infoWrap);
 
 	var statusIndicator=$('<span>', {
-		style: "color: red; font-size: 15pt; margin-left: 5pt",
+		style: "color: red; font-size: 15pt; margin-left: 5pt; display: inline-block",
 		text: arrayStatusName[parseInt(activity.status)]
 	}).appendTo(ret);
 
 	ret.data(g_keyStatusIndicator, statusIndicator);
 	
 	var buttonsWrap=$('<span>', {
-		style: "margin-left: 5pt"
+		style: "margin-left: 5pt; display: inline-block"
 	}).appendTo(ret); 
 
 	// this condition is temporarily hard-coded
-	if(parseInt(activityStatus) != g_statusAccepted){
+	if(parseInt(activity.status) != g_statusAccepted){
             var btnAccept=$('<button>', {
-                class: g_classBtnAccept,
+		style: " width: 64pt; height: 36pt; font-size: 16pt; color: DarkSlateBlue; margin-left: 5pt; background-color: #aaaaaa;",
                 text: 'Accept'
             }).appendTo(buttonsWrap);
             var dAccept = {};
@@ -158,7 +158,7 @@ function generateActivityCellForAdmin(activityJson){
 
 	if(parseInt(activity.status) != g_statusRejected){
             var btnReject=$('<button>', {
-                            class: g_classBtnReject,
+		style: " width: 64pt; height: 36pt; font-size: 16pt; color: purple; margin-left: 5pt; background-color: #aaaaaa;",
                 text: 'Reject'
             }).appendTo(buttonsWrap);
             var dReject = {};
@@ -167,7 +167,7 @@ function generateActivityCellForAdmin(activityJson){
         }
 
 	var btnDelete=$('<button>', {
-		class: g_classBtnDelete,
+		style: " width: 64pt; height: 36pt; font-size: 16pt; color: IndianRed; margin-left: 5pt; background-color: #aaaaaa;",
 		text: 'Delete'
 	}).appendTo(buttonsWrap);
 	var dDelete = {};

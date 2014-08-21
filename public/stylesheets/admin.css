@@ -1,33 +1,5 @@
-.classBtnAccept
-{
-	width: 64pt;
-	height: 36pt;
-	font-size: 16pt;
-	color: #0000aa;
-	background-color: #aaaaaa;
-}
-
-.classBtnReject
-{
-	width: 64pt;
-	height: 36pt;
-	font-size: 16pt;
-	color: purple;
-	background-color: #aaaaaa;
-}
-
-.classBtnDelete
-{
-	width: 64pt;
-	height: 36pt;
-	font-size: 16pt;
-	color: #aa0000;
-	background-color: #aaaaaa;
-}
-
 #idSectionActivityMonitor
 {
-	display: block;
 	margin-top: 5pt;
 	width: 80%;
 	height: 70%;

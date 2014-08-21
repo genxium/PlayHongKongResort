@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 import play.libs.Json;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Activity {
@@ -82,28 +83,24 @@ public class Activity {
 	}
 
 	public Activity(JSONObject activityJson, User host){
-		try{
-			if(activityJson.containsKey(ID))
-				m_id=(Integer)activityJson.get(ID);
-			if(activityJson.containsKey(TITLE))
-				m_title=(String)activityJson.get(TITLE);
-			if(activityJson.containsKey(CONTENT))
-				m_content=(String)activityJson.get(CONTENT);
-			if(activityJson.containsKey(CREATED_TIME))
-				m_createdTime=(Timestamp)activityJson.get(CREATED_TIME);
-			if(activityJson.containsKey(BEGIN_TIME))
-				m_beginTime=(Timestamp)activityJson.get(BEGIN_TIME);
-			if(activityJson.containsKey(DEADLINE))
-				m_deadline=(Timestamp)activityJson.get(DEADLINE);
-			if(activityJson.containsKey(CAPACITY))
-				m_capacity=(Integer)activityJson.get(CAPACITY);
-			if(activityJson.containsKey(STATUS))
-				m_status=(Integer)activityJson.get(STATUS);
-            if(host!=null)
-                m_host=host;
-		}catch(Exception e){
-			System.out.println("Activity, "+e.getMessage());
-		}
+		if(activityJson.containsKey(ID))
+			m_id=(Integer)activityJson.get(ID);
+		if(activityJson.containsKey(TITLE))
+			m_title=(String)activityJson.get(TITLE);
+		if(activityJson.containsKey(CONTENT))
+			m_content=(String)activityJson.get(CONTENT);
+		if(activityJson.containsKey(CREATED_TIME))
+			m_createdTime=(Timestamp)activityJson.get(CREATED_TIME);
+		if(activityJson.containsKey(BEGIN_TIME))
+			m_beginTime=(Timestamp)activityJson.get(BEGIN_TIME);
+		if(activityJson.containsKey(DEADLINE))
+			m_deadline=(Timestamp)activityJson.get(DEADLINE);
+		if(activityJson.containsKey(CAPACITY))
+			m_capacity=(Integer)activityJson.get(CAPACITY);
+		if(activityJson.containsKey(STATUS))
+			m_status=(Integer)activityJson.get(STATUS);
+		if(host!=null)
+			m_host=host;
 	}
 
 	public ObjectNode toObjectNode(Integer viewerId){
@@ -112,15 +109,16 @@ public class Activity {
 			ret.put(Activity.ID, String.valueOf(m_id));
 			ret.put(Activity.TITLE, m_title);
 			ret.put(Activity.CONTENT, m_content);
-			ret.put(Activity.CREATED_TIME, m_createdTime.toString());
-			ret.put(Activity.BEGIN_TIME, m_beginTime.toString());
-			ret.put(Activity.DEADLINE, m_deadline.toString());
+			SimpleDateFormat splfmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+			ret.put(Activity.CREATED_TIME, splfmt.format(m_createdTime));
+			ret.put(Activity.BEGIN_TIME, splfmt.format(m_beginTime));
+			ret.put(Activity.DEADLINE, splfmt.format(m_deadline));
 			ret.put(Activity.CAPACITY, String.valueOf(m_capacity));
-            ret.put(Activity.HOST, m_host.toObjectNode(viewerId));
+			ret.put(Activity.HOST, m_host.toObjectNode(viewerId));
 			if(viewerId!=null) {
 				int relation=SQLCommander.queryUserActivityRelation(viewerId, m_id);
 				if(relation!= UserActivityRelation.invalid)	ret.put(UserActivityRelation.RELATION, relation);
-                m_viewer=SQLCommander.queryUser(viewerId);
+				m_viewer=SQLCommander.queryUser(viewerId);
 				if(viewerId.equals(m_host.getId())) ret.put(Activity.STATUS, String.valueOf(m_status));
 				if(m_viewer!=null && m_viewer.getGroupId()==User.ADMIN) ret.put(Activity.STATUS, String.valueOf(m_status));
 			}
