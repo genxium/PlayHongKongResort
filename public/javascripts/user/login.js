@@ -76,7 +76,8 @@ function onBtnLogoutClicked(evt){
 				}
 			},
 			error: function(xhr, status, err){
-				
+				// reload the whole page if exception occurs
+				location.reload();	
 			}	
 		});
 	} catch(err){
