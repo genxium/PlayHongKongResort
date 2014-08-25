@@ -84,7 +84,7 @@ public class AssessmentController extends Controller {
             ret.put(UserActivityRelation.RELATION, newRelation);
             return ok(ret);
         } catch (Exception e) {
-            e.printStackTrace();
+	    System.out.println(AssessmentController.class.getName()+".submit, " + e.getMessage());
             return badRequest();
         }
     }

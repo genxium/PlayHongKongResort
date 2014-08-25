@@ -785,36 +785,34 @@ public class SQLCommander {
     }
 
     public static List<BasicUser> queryUsers(int activityId, int maskedRelation) {
-        List<BasicUser> users = new ArrayList<BasicUser>();
-        do {
-            try {
-                String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
-                String query = "SELECT ";
-                for (int i = 0; i < names.length; i++) {
-                    query += names[i];
-                    if (i < names.length - 1) query += ", ";
-                }
-                query += " FROM " + User.TABLE + " WHERE EXISTS (SELECT NULL FROM " + UserActivityRelation.TABLE + " WHERE "
-                        + UserActivityRelation.ACTIVITY_ID + "=? AND "
-                        + UserActivityRelation.RELATION + "=? AND "
-                        + UserActivityRelation.TABLE + "." + UserActivityRelation.USER_ID + "=" + User.TABLE + "." + User.ID + ")";
-                Connection connection = SQLHelper.getConnection();
-                PreparedStatement statement = connection.prepareStatement(query);
-                statement.setInt(1, activityId);
-                statement.setInt(2, maskedRelation);
-                List<JSONObject> records = SQLHelper.select(statement);
-                if (records == null) break;
+	    List<BasicUser> users = new ArrayList<BasicUser>();
+	    try {
+		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
+		    String query = "SELECT ";
+		    for (int i = 0; i < names.length; i++) {
+			    query += ("`" + names[i] + "`");
+			    if (i < names.length - 1) query += ", ";
+		    }
+		    query += " FROM " + User.TABLE + " WHERE EXISTS (SELECT NULL FROM " + UserActivityRelation.TABLE + " WHERE "
+			    + ("`" + UserActivityRelation.ACTIVITY_ID + "`") + "=? AND "
+			    + ("`" + UserActivityRelation.RELATION + "`") + "=? AND "
+			    + (UserActivityRelation.TABLE + "." + "`" + UserActivityRelation.USER_ID + "`") + "=" + (User.TABLE + "." + "`" + User.ID + "`") + ")";
+		    Connection connection = SQLHelper.getConnection();
+		    PreparedStatement statement = connection.prepareStatement(query);
+		    statement.setInt(1, activityId);
+		    statement.setInt(2, maskedRelation);
+		    List<JSONObject> records = SQLHelper.select(statement);
+		    if (records == null) throw new NullPointerException();
 
-                for (JSONObject userJson : records) {
-                    BasicUser user = new BasicUser(userJson);
-                    users.add(user);
-                }
+		    for (JSONObject userJson : records) {
+			    BasicUser user = new BasicUser(userJson);
+			    users.add(user);
+		    }
 
-            } catch (Exception e) {
-                System.out.println(SQLCommander.class.getName() + ".queryUsers: " + e.getMessage());
-            }
-        } while (false);
-        return users;
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".queryUsers: " + e.getMessage());
+	    }
+	    return users;
     }
 
     public static boolean updateUserActivityRelation(Integer ownerId, Integer userId, Integer activityId, int relation) {
@@ -880,7 +878,7 @@ public class SQLCommander {
 
         List<BasicUser> lst11 = queryUsers(activityId, possibleRelation11);
 
-        int possibleRelation111 = possibleRelation11 | UserActivityRelation.assessed;
+        int possibleRelation111 = (possibleRelation11 | UserActivityRelation.assessed);
 
         List<BasicUser> lst111 = queryUsers(activityId, possibleRelation111);
 

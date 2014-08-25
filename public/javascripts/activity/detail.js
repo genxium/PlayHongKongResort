@@ -119,7 +119,7 @@ function displayActivityDetail(par){
 			}
 		}	
 		g_tabParticipants.empty();
-		var selectionForm=$('<form>').appendTo(g_tabParticipants);
+		var selectionForm = $('<form>').appendTo(g_tabParticipants);
 
 		var labels = new Array();
 		var participantsId = new Array();
@@ -214,8 +214,7 @@ function displayActivityDetail(par){
 			}
 		});
 
-		var commentEditor=generateCommentEditor(g_activity.id);
-		ret.append(commentEditor);
+		generateCommentEditor(ret, g_activity.id);
 
 	return ret;
 }

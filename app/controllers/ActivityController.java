@@ -361,8 +361,10 @@ public class ActivityController extends Controller {
             int originalRelation = SQLCommander.isActivityMarkable(userId, activity, relation);
             if (originalRelation == UserActivityRelation.invalid) throw new Exception();
 
+	        int newRelation = UserActivityRelation.maskRelation(relation, originalRelation);
+
             String[] names = {UserActivityRelation.RELATION};
-            Object[] values = {UserActivityRelation.maskRelation(relation, originalRelation)};
+            Object[] values = {newRelation};
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
             String[] whereCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID};
@@ -372,7 +374,9 @@ public class ActivityController extends Controller {
 
             if(!SQLHelper.update(builder)) throw new Exception();
 
-            return ok();
+            ObjectNode ret = Json.newObject();
+            ret.put(UserActivityRelation.RELATION, newRelation);
+            return ok(ret);
         } catch (Exception e) {
             System.out.println(ActivityController.class.getName() + ".mark, " + e.getMessage());
             return badRequest();
