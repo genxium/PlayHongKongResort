@@ -123,13 +123,15 @@ public class ActivityController extends Controller {
                 for (Object appliedParticipantJson : appliedParticipantsJson) {
                     Integer userId = Integer.valueOf((String) appliedParticipantJson);
                     if (userId.equals(viewerId)) continue; // anti-cracking by unselecting the host of an activity
-                    SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied, null));
+                    int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
+                    SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied, originalRelation));
                 }
 
                 for (Object selectedParticipantJson : selectedParticipantsJson) {
                     Integer userId = Integer.valueOf((String) selectedParticipantJson);
                     if (userId.equals(viewerId)) continue; // anti-cracking by selecting the host of an activity
-                    SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected, null));
+                    int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
+                    SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected, originalRelation));
                 }
                 return ok();
             } catch (Exception e) {

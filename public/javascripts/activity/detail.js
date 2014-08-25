@@ -1,20 +1,26 @@
 // general dom elements
-var g_idSectionActivityDetail="idSectionActivityDetail";
-var g_idSectionActivityImages="idSectionActivityImages";
-var g_idSectionParticipants="idSectionParticipants";
+var g_sectionActivity = null;
+var g_tabParticipants = null;
+var g_tabComments = null;
+var g_tabAssessments = null;
 
-var g_idParticipantsSelectionForm="idParticipantsSelectionForm";
-var g_classParticipantsSelection="classParticipantsSelection";
+// local variables
+var g_activityId = null;
+var g_activity = null;
+var g_participantsForm = null;
 
-// indexes
-var g_indexParticipantsSelectionLabel="indexParticipantsSelectionLabel";
-var g_indexParticipantSelectionStatus="indexParticipantSelectionStatus";
+var g_aliasApplied = 0;
+var g_aliasSelected = 1;
 
-// status
-var g_statusApplied=0;
-var g_statusSelected=1;
-
-var g_activityId=null;
+function ParticipantsForm(labels, participantsId, participantsStatus){
+	this.boxes = null;
+	this.participantsId = participantsId;
+	this.labels = labels;
+	this.participantsStatus = participantsStatus;
+	this.setBoxes = function(boxes){
+		this.boxes = boxes;
+	}
+}
 
 // Assistive Functions
 function refreshOnEnter(){
@@ -27,198 +33,179 @@ function refreshOnLoggedIn(){
 
 function queryActivityDetail(activityId){
 
-	var token=$.cookie(g_keyToken);
-    	var params={};
-    	params[g_keyActivityId]=activityId;
-        if(token!=null)	params[g_keyToken]=token;
+		var token = $.cookie(g_keyToken);
+    	var params = {};
+    	params[g_keyActivityId] = activityId;
+        if(token != null)	params[g_keyToken] = token;
 
-        try{
-            $.ajax({
-                method: "GET",
-                url: "/activity/detail",
-                data: params,
-                success: function(data, status, xhr){
-                    var activityDetailJson = JSON.parse(data);
-                    var sectionActivity = $("#section_activity");
-                    displayActivityDetail(sectionActivity, activityDetailJson);
-                },
-                error: function(xhr, status, err){
+        $.ajax({
+            method: "GET",
+            url: "/activity/detail",
+            data: params,
+            success: function(data, status, xhr){
+                var activityJson = JSON.parse(data);
+    			g_activity = new Activity(activityJson);
+                displayActivityDetail(g_sectionActivity);
+            },
+            error: function(xhr, status, err){
 
-                }
-            });
-        } catch(err){
-
-        }
+            }
+        });
 }
 
-function displayActivityDetail(par, activityJson){
-    par.empty();
-    var activity=new Activity(activityJson);
-	var ret=$('<div>').appendTo(par);
+function displayActivityDetail(par){
+	    par.empty();
+		var ret=$('<div>').appendTo(par);
 
-	var title=$('<p>',{
-		text: activity.title.toString(),
-		style: "font-size: 18pt; color: blue"
-	}).appendTo(ret);
+		var title=$('<p>',{
+			text: g_activity.title.toString(),
+			style: "font-size: 18pt; color: blue"
+		}).appendTo(ret);
 
-	// deadline and begin time
-	var times=$("<table border='1'>", {
-		style: "margin-bottom: 5pt"
-	}).appendTo(ret);
-	var deadlineRow = $('<tr>').appendTo(times);
-	var deadlineTitle = $('<td>', {
-		text: "Application Deadline",
-		style: "padding-left: 5pt; padding-right: 5pt"
-	}).appendTo(deadlineRow);
-	var deadline = $('<td>', {
-		text: activity.applicationDeadline.toString(),
-		style: "color: red; padding-left: 8pt; padding-right: 5pt"
-	}).appendTo(deadlineRow);
-
-	var beginTimeRow = $('<tr>').appendTo(times);
-	var beginTimeTitle = $('<td>', {
-		text: "Begin Time",
-		style: "padding-left: 5pt; padding-right: 5pt"
-	}).appendTo(beginTimeRow);
-	var beginTime = $('<td>', {
-		text: activity.beginTime.toString(),
-		style: "color: blue; padding-left: 8pt; padding-right: 5pt"
-	}).appendTo(beginTimeRow);
-
-	if(activity.host.id != null && activity.host.name != null){
-		var d = $('<div>', {
+		// deadline and begin time
+		var times=$("<table border='1'>", {
 			style: "margin-bottom: 5pt"
 		}).appendTo(ret);
-		var sp1 = $('<span>', {
-			text: "--by",
-			style: "margin-left: 20%; font-size : 14pt"
-		}).appendTo(d);
-		var sp2 = $('<span>', {
-			style: "margin-left: 5pt"
-		}).appendTo(d);
-		var host = $('<a>', {
-			href: '/user/profile/show?'+g_keyUserId+"="+activity.host.id.toString(),
-			text: "@"+activity.host.name,
-			style: "font-size: 14pt; font-weight: bold;"
-		}).appendTo(sp2);
-	}
+		var deadlineRow = $('<tr>').appendTo(times);
+		var deadlineTitle = $('<td>', {
+			text: "Application Deadline",
+			style: "padding-left: 5pt; padding-right: 5pt"
+		}).appendTo(deadlineRow);
+		var deadline = $('<td>', {
+			text: g_activity.applicationDeadline.toString(),
+			style: "color: red; padding-left: 8pt; padding-right: 5pt"
+		}).appendTo(deadlineRow);
 
-	var content=$('<div>',{
-		text: activity.content.toString(),
-		style: "font-size: 15pt"
-	}).appendTo(ret);
+		var beginTimeRow = $('<tr>').appendTo(times);
+		var beginTimeTitle = $('<td>', {
+			text: "Begin Time",
+			style: "padding-left: 5pt; padding-right: 5pt"
+		}).appendTo(beginTimeRow);
+		var beginTime = $('<td>', {
+			text: g_activity.beginTime.toString(),
+			style: "color: blue; padding-left: 8pt; padding-right: 5pt"
+		}).appendTo(beginTimeRow);
 
-	do{
-		if(activity.images==null) break;
-		var imagesNode=$('<p>',{
-
-		}).appendTo(ret);
-
-		for(var i=0;i<activity.images.length;++i){
-			var imageNode=$('<img>',{
-				src: activity.images[i].url.toString()
-			}).appendTo(imagesNode);
+		if(g_activity.host.id != null && g_activity.host.name != null){
+			var d = $('<div>', {
+				style: "margin-bottom: 5pt"
+			}).appendTo(ret);
+			var sp1 = $('<span>', {
+				text: "--by",
+				style: "margin-left: 20%; font-size : 14pt"
+			}).appendTo(d);
+			var sp2 = $('<span>', {
+				style: "margin-left: 5pt"
+			}).appendTo(d);
+			var host = $('<a>', {
+				href: '/user/profile/show?'+g_keyUserId+"="+g_activity.host.id.toString(),
+				text: "@"+g_activity.host.name,
+				style: "font-size: 14pt; font-weight: bold;"
+			}).appendTo(sp2);
 		}
 
-		var sectionParticipant=$("#section_participant");
-		sectionParticipant.empty();
-		var selectionForm=$('<form>',{
-		    id: g_idParticipantsSelectionForm
-		}).appendTo(sectionParticipant);
+		var content=$('<div>',{
+			text: g_activity.content.toString(),
+			style: "font-size: 15pt"
+		}).appendTo(ret);
 
-		var labels=new Array();
-		for(var i=0;i<activity.selectedParticipants.length;++i){
-		    var selectedParticipant=activity.selectedParticipants[i];
-			var email=selectedParticipant[g_keyEmail];
-			var userId=selectedParticipant[g_keyId];
-			var label=$('<label>', {
-			    text: email
+		if(g_activity.images != null) {
+			var imagesNode=$('<p>').appendTo(ret);
+
+			for(var i=0;i<g_activity.images.length;++i){
+				var imageNode=$('<img>',{
+					src: g_activity.images[i].url
+				}).appendTo(imagesNode);
+			}
+		}	
+		g_tabParticipants.empty();
+		var selectionForm=$('<form>').appendTo(g_tabParticipants);
+
+		var labels = new Array();
+		var participantsId = new Array();
+		var participantsStatus = new Array();
+		for(var i = 0; i < g_activity.selectedParticipants.length; ++i){
+		    var participant = g_activity.selectedParticipants[i];
+			participantsId.push(participant.id);
+			participantsStatus.push(g_aliasSelected);
+			var label = $('<label>', {
+			    text: participant.email
 			}).appendTo(selectionForm);
 			label.css("background-color", "aquamarine ");
-			label.data(g_indexParticipantSelectionStatus, g_statusSelected);
-			label.data(g_keyId, userId);
 			labels.push(label);
 			$('<br>').appendTo(selectionForm);
 		}
 
-		for(var i=0;i<activity.appliedParticipants.length;++i){
-		    var appliedParticipant=activity.appliedParticipants[i];
-                    var email=appliedParticipant[g_keyEmail];
-                    var userId=appliedParticipant[g_keyId];
-                    var label=$('<label>', {
-                        text: email,
-                    }).appendTo(selectionForm);
-                    label.css("background-color", "pink");
-                    label.data(g_indexParticipantSelectionStatus, g_statusApplied);
-                    label.data(g_keyId, userId);
-                    labels.push(label);
-                    $('<br>').appendTo(selectionForm);
+		for(var i = 0; i < g_activity.appliedParticipants.length; ++i){
+		    var participant = g_activity.appliedParticipants[i];
+            participantsId.push(participant.id);
+            participantsStatus.push(g_aliasApplied);
+            var label=$('<label>', {
+                text: participantsStatus.email,
+            }).appendTo(selectionForm);
+            label.css("background-color", "pink");
+            labels.push(label);
+            $('<br>').appendTo(selectionForm);
 		}
 
+		g_participantsForm = new ParticipantsForm(labels, participantsId, participantsStatus);
+
 		var params={};
-		params[g_keyActivityId]=activity.id;
-		params[g_keyRefIndex]=0;
-		params[g_keyNumItems]=20;
-		params[g_keyDirection]=1;
+		params[g_keyActivityId] = g_activity.id;
+		params[g_keyRefIndex] = 0;
+		params[g_keyNumItems] = 20;
+		params[g_keyDirection] = 1;
 
 		var onSuccess=function(data, status, xhr){
-			var sectionComment=$("#section_comment");
-			sectionComment.empty();
+			g_tabComments.empty();
 			var jsonResponse=JSON.parse(data);
-			if(jsonResponse!=null && Object.keys(jsonResponse).length>0){
-			    for(var key in jsonResponse){
-					var commentJson=jsonResponse[key];
-					var row=generateCommentCell(commentJson, activity.id).appendTo(sectionComment);
-					$('<br>').appendTo(sectionComment);
-			    }
-			}
+			if(jsonResponse != null || Object.keys(jsonResponse).length ==0) return;
+		    for(var key in jsonResponse){
+				var commentJson = jsonResponse[key];
+				var row = generateCommentCell(commentJson, g_activity.id).appendTo(g_tabComments);
+				$('<br>').appendTo(g_tabComments);
+		    }
 		};
-		var onError=function(xhr, status, err){};
+		var onError = function(xhr, status, err){};
 		queryComments(params, onSuccess, onError);
 
-		var sectionAssessment=$("#section_assessment");
-		var viewer=null;
-		if(activity.hasOwnProperty("viewer")) viewer=activity.viewer;
-		var batchAssessmentEditor=generateBatchAssessmentEditor(sectionAssessment, activity, activity.presentParticipants, queryActivityDetail);
+		var viewer = null;
+		if(g_activity.hasOwnProperty("viewer")) viewer = g_activity.viewer;
+		var batchAssessmentEditor = generateBatchAssessmentEditor(g_tabAssessments, g_activity, g_activity.presentParticipants, queryActivityDetail);
 
-		var token=$.cookie(g_keyToken);
-		if(token==null) break;
+		var token = $.cookie(g_keyToken);
+		if(token == null) return;
 
-		var params={};
-		params[g_keyToken]=token;
-		params[g_keyActivityId]=activity.id;
+		var params = {};
+		params[g_keyToken] = token;
+		params[g_keyActivityId]=g_activity.id;
 
 		$.ajax({
 			type: "GET",
 			url: "/activity/ownership",
 			data: params,
 			success: function(data, status, xhr){
-				for(var i=0;i<labels.length;i++){
-					var label=labels[i];
-					var userId=$(label).data(g_keyId);
-					if(userId == activity.host.id) continue;
-					var selectionStatus=$(label).data(g_indexParticipantSelectionStatus);
-					var checkStatus=true;
-					if(selectionStatus==g_statusSelected){
-						checkStatus=true;
-					} else{
-						checkStatus=false;
-					}
+				var boxes = new Array();
+				for(var i = 0; i < g_participantsForm.labels.length; i++){
+					var label = g_participantsForm.labels[i];
+					var participantId = g_participantsForm.participantsId[i];
+					if(participantId == g_activity.host.id) continue;
+					var checkStatus = null;
+					if(g_participantsForm.participantsStatus[i] == g_aliasSelected)	checkStatus=true;
+					else	checkStatus=false;
 					var checkbox=$('<input>',{
 						type: "checkbox",
-						class: g_classParticipantsSelection,
-						value: userId,
 						checked: checkStatus
 					}).appendTo(label);
-					checkbox.data(g_indexParticipantsSelectionLabel, label);
+					boxes.push(checkbox);
 				}
-				if(labels.length>0){
+				g_participantsForm.setBoxes(boxes);
+				if(boxes.length > 0){
 					var btnSubmit=$('<button>',{
 						text: 'Confirm Selection',
 						style: 'color: white; background-color:black; font-size: 13pt'
 					}).appendTo(selectionForm);
 					btnSubmit.on("click", onBtnSubmitClicked);
-					selectionForm.data(g_keyActivityId, activity.id);
 				}
 				$('<hr>').appendTo(selectionForm);
 			},
@@ -227,90 +214,80 @@ function displayActivityDetail(par, activityJson){
 			}
 		});
 
-		var commentEditor=generateCommentEditor(activity.id);
+		var commentEditor=generateCommentEditor(g_activity.id);
 		ret.append(commentEditor);
 
-	}while(false);
 	return ret;
 }
 
 // Callback Functions
 function onParticipantsSelectionFormSubmission(formEvt){
-	do{
-		formEvt.preventDefault(); // prevent default action.
-		var inputs = $("."+g_classParticipantsSelection);
-		var appliedParticipants=new Array();
-		var selectedParticipants=new Array();
-		inputs.each(function() {
-			var value = $(this).val();
-			if(this.checked){
-				selectedParticipants.push(value);
-			} else{
-				appliedParticipants.push(value);
-			}
-		});
+	
+	formEvt.preventDefault(); // prevent default action.
+	var appliedParticipants = new Array();
+	var selectedParticipants = new Array();
+	for(var i = 0; i < g_participantsForm.labels.length; i++) {
+		var box = g_participantsForm.boxes[i];
+		if(box.is(":checked"))	selectedParticipants.push(g_participantsForm.participantsId[i]);
+		else	appliedParticipants.push(g_participantsForm.participantsId[i]);
+	}
+	// append user token and activity id for identity
+	var token = $.cookie(g_keyToken);
+	if(token == null) return;
 
-		// append user token and activity id for identity
-		var token = $.cookie(g_keyToken).toString();
-		if(token==null) break;
-		var activityId = $(this).data(g_keyActivityId);
-		if(activityId==null) break;
+	var params={};
+	params[g_keyToken] = token;
+	params[g_keyActivityId] = g_activityId;
+	params[g_keyAppliedParticipants] = JSON.stringify(appliedParticipants);
+	params[g_keySelectedParticipants] = JSON.stringify(selectedParticipants);
 
-		var params={};
-		params[g_keyToken]=token;
-		params[g_keyActivityId]=activityId;
-		params[g_keyAppliedParticipants]=JSON.stringify(appliedParticipants);
-		params[g_keySelectedParticipants]=JSON.stringify(selectedParticipants);
+	$.ajax({
+		type: "POST",
+		url: "/activity/participants/update",
+		data: params,
+		success: function(data, status, xhr){
+                for(var i = 0; i < g_participantsForm.labels.length; ++i){
+                    var label = g_participantsForm.labels[i];
+                    var box = g_participantsForm.boxes[i];
+                    if(box.is(":checked"))	label.css("background-color", "aquamarine");
+                    else	label.css("background-color", "pink");
+                };
+		},
+		error: function(xhr, status, err) {
 
-		$.ajax({
-			type: "POST",
-			url: "/activity/participants/update",
-			data: params,
-			success: function(data, status, xhr){
-                    inputs.each(function() {
-                        var label=$(this).data(g_indexParticipantsSelectionLabel);
-                        var value = $(this).val();
-                        if(this.checked){
-                            label.css("background-color", "aquamarine");
-                        } else{
-                            label.css("background-color", "pink");
-                        }
-                    });
-			},
-			error: function(xhr, status, err) {
-
-			}
-		});
-	}while(false);
+		}
+	});
 }
 
 // Assistive Event Handlers
 function onBtnSubmitClicked(evt){
 	evt.preventDefault();
-	var selectionForm=$(this).parent();
-	try{
-		selectionForm.submit(onParticipantsSelectionFormSubmission);
-		selectionForm.submit();
-	} catch(err){
-
-	}
+	var selectionForm=$(this).parent();	
+	selectionForm.submit(onParticipantsSelectionFormSubmission);
+	selectionForm.submit();
 }
 
 // execute on start
 $(document).ready(function(){
-	var params=extractParams(window.location.href);
-	for(var i=0;i<params.length;i++){
-		var param=params[i];
-		var pair=param.split("=");
-		if(pair[0]==g_keyActivityId){
-			g_activityId=pair[1];
+
+	g_sectionActivity = $("#section-activity");
+	g_tabComments = $("#tab-comments");
+	g_tabParticipants = $("#tab-participants");
+	g_tabAssessments = $("#tab-assessments");
+
+	var params = extractParams(window.location.href);
+	for(var i = 0; i < params.length; i++){
+		var param = params[i];
+		var pair = param.split("=");
+		if(pair[0] == g_keyActivityId){
+			g_activityId = pair[1];
 			break;
 		}
 	}
 	initTopbar();
 
-	g_onLoginSuccess=refreshOnLoggedIn;
-	g_onLoginError=null;
+	g_onLoginSuccess = refreshOnLoggedIn;
+	g_onLoginError = null;
 
 	g_onEnter = refreshOnEnter;
 

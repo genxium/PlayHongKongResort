@@ -848,7 +848,7 @@ public class SQLCommander {
     public static List<BasicUser> querySelectedParticipants(int activityId) {
         List<BasicUser> ret = new LinkedList<BasicUser>();
 
-        int possibleRelation1 = UserActivityRelation.applied | UserActivityRelation.selected;
+        int possibleRelation1 = UserActivityRelation.selected;
         List<BasicUser> lst1 = queryUsers(activityId, possibleRelation1);
 
         int possibleRelation11 = possibleRelation1 | UserActivityRelation.present;
@@ -875,7 +875,7 @@ public class SQLCommander {
     public static List<BasicUser> queryPresentParticipants(int activityId) {
         List<BasicUser> ret = new LinkedList<BasicUser>();
 
-        int baseRelation1 = UserActivityRelation.applied | UserActivityRelation.selected;
+        int baseRelation1 = UserActivityRelation.selected;
         int possibleRelation11 = baseRelation1 | UserActivityRelation.present;
 
         List<BasicUser> lst11 = queryUsers(activityId, possibleRelation11);
@@ -893,7 +893,7 @@ public class SQLCommander {
     public static List<BasicUser> queryAssessedParticipants(int activityId) {
         List<BasicUser> ret = new LinkedList<BasicUser>();
 
-        int baseRelation1 = UserActivityRelation.applied | UserActivityRelation.selected;
+        int baseRelation1 = UserActivityRelation.selected;
 
         int baseRelation11 = baseRelation1 | UserActivityRelation.present;
 

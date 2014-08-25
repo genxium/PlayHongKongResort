@@ -24,11 +24,13 @@ public class UserActivityRelation {
         int ret = invalid;
         if(originalRelation != null) ret = originalRelation;
         switch (relation) {
-            case applied:
-                ret = applied;
-                break;
             case selected:
-                ret = (applied | selected);
+                if((ret & applied) > 0) ret &= (fullmask ^ applied);
+                ret |= selected;
+                break;
+            case applied:
+                if((ret & selected) > 0) ret &= (fullmask ^ selected);
+                ret |= applied;
                 break;
             case present:
                 if((ret & absent) > 0) ret &= (fullmask ^ absent);
