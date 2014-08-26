@@ -77,8 +77,8 @@ function generateReplyEditor(activityId, parentId, predecessorId, toUsername){
     return ret;
 }
 
-function generateCommentCell(commentJson, activityId){
-	var ret=$('<div>');
+function generateCommentCell(par, commentJson, activityId){
+	var ret=$('<div>').appendTo(par);
     
         var row=$('<p>').appendTo(ret);
         var content=$('<span>', {
