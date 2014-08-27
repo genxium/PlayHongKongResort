@@ -1,25 +1,25 @@
-var g_minContentLength=5;
-var g_replyEditor=null;
+var g_minContentLength = 5;
+var g_replyEditor = null;
 
-var m_onAssessmentQuerySuccess=null;
-var m_onAssessmentQueryError=null;
+var g_onCommentsQuerySuccess = null;
+var g_onCommentsQueryError = null;
 
 function queryComments(params, onSuccess, onError){
-    if(onSuccess!=null) m_onAssessmentQuerySuccess=onSuccess;
-    if(onError!=null) m_onAssessmentQueryError=onError;
+    if(onSuccess != null) g_onCommentsQuerySuccess = onSuccess;
+    if(onError != null) g_onCommentsQueryError = onError;
 	$.ajax({
 	    type: "GET",
 	    url: "/comment/query",
 	    data: params,
-	    success: m_onAssessmentQuerySuccess,
-	    error: m_onAssessmentQueryError
+	    success: g_onCommentsQuerySuccess,
+	    error: g_onCommentsQueryError
 	});
 }
 
 function removeReplyEditor(){
     if(g_replyEditor){
         g_replyEditor.remove();
-        g_replyEditor=null;    
+        g_replyEditor = null;    
     }    
 }
 
@@ -214,40 +214,39 @@ function generateCommentEditor(par, activityId){
 
     // jQuery.bind() doesn't work here because the DOM element hasn't been created yet
     btnSubmit.on("click", function(evt){
-        do{
-			evt.preventDefault();
-			var editor=$(this).closest('div');
-			var input=editor.children('input');
-			var content=input.val();
-			var token=$.cookie(g_keyToken);
-			
-			if(content==null || content.length<=g_minContentLength) {
-				alert("Please comment with no less than "+g_minContentLength.toString()+" characters!");
-				break;	
+
+		evt.preventDefault();
+		var editor = $(this).closest('div');
+		var input = editor.children('input');
+		var content = input.val();
+		var token = $.cookie(g_keyToken);
+		
+		if(content == null || content.length <= g_minContentLength) {
+			alert("Please comment with no less than " + g_minContentLength.toString() + " characters!");
+			return;	
+		}
+
+		var params={};
+		params[g_keyContent] = content;
+		params[g_keyActivityId] = activityId;
+		params[g_keyToken] = token;
+
+		$.ajax({
+			type: "POST",
+			url: "/comment/submit",
+			data: params,
+			success: function(data, status, xhr){
+				var params = {};
+				params[g_keyActivityId] = activityId;
+				params[g_keyRefIndex] = 0;
+				params[g_keyNumItems] = 20;
+				params[g_keyDirection] = 1;
+				queryComments(params, null, null);
+			},
+			error: function(xhr, status, err){
+				alert("Comment not submitted...");
 			}
-
-			var params={};
-			params[g_keyContent]=content;
-			params[g_keyActivityId]=activityId;
-			params[g_keyToken]=token;
-
-			$.ajax({
-				type: "POST",
-				url: "/comment/submit",
-				data: params,
-				success: function(data, status, xhr){
-				    var params={};
-                    params[g_keyActivityId]=activityId;
-                    params[g_keyRefIndex]=0;
-                    params[g_keyNumItems]=20;
-                    params[g_keyDirection]=1;
-					queryComments(params, null, null);
-				},
-				error: function(xhr, status, err){
-					alert("Comment not submitted...");
-				}
-			});
-		}while(false);
+		});
     });
     return ret;
 }

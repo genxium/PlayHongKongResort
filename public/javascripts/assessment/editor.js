@@ -14,9 +14,9 @@ function SingleAssessmentEditor(){
 }
 
 function BatchAssessmentEditor(){
-	this.switchAttendance=null;
-	this.selectAll=null;
-	this.editors=null;	
+	this.switchAttendance = null;
+	this.selectAll = null;
+	this.editors = null;	
 }
 
 /*
@@ -24,10 +24,10 @@ function BatchAssessmentEditor(){
 */
 function generateAssessmentEditor(par, participant, batchEditor){
 	var singleEditor = new SingleAssessmentEditor();
-	var row=$('<p>').appendTo(par);
-	var name=$('<a>', {
-	    href: "/user/profile/show?"+g_keyUserId+"="+participant.id,
-		text: "@"+participant.name,
+	var row = $('<p>').appendTo(par);
+	var name = $('<a>', {
+		href: "/user/profile/show?" + g_keyUserId + "=" + participant.id,
+		text: "@" + participant.name,
 		style: "margin-left: 5pt; display: inline; cursor: pointer; color: BlueViolet"
 	}).appendTo(row);
 	singleEditor.participantId = participant.id;
@@ -46,18 +46,17 @@ function generateAssessmentEditor(par, participant, batchEditor){
 		style: "margin-left: 10pt; display: inline"
 	}).appendTo(row);
 	lock.on("change", function(evt){
-	    evt.preventDefault();
-	    var checked = $(this).is(":checked");
-	    if(!checked) {
-	        content.prop("disabled", false);
-	        --g_lockedCount;
-	        if(g_btnSubmit != null) g_btnSubmit.prop("disabled", true);
-	    }
-	    else {
-	        content.prop("disabled", true);
-	        ++g_lockedCount;
-	        if(g_lockedCount == batchEditor.editors.length && g_btnSubmit != null) g_btnSubmit.prop("disabled", false);
-	    }
+		evt.preventDefault();
+		var checked = $(this).is(":checked");
+		if(!checked) {
+			content.prop("disabled", false);
+			--g_lockedCount;
+			if(g_btnSubmit != null) g_btnSubmit.prop("disabled", true);
+		} else {
+			content.prop("disabled", true);
+			++g_lockedCount;
+			if(g_lockedCount == batchEditor.editors.length && g_btnSubmit != null) g_btnSubmit.prop("disabled", false);
+		}
 	});
 	singleEditor.lock = lock;
 	return singleEditor;
@@ -138,87 +137,86 @@ function generateBatchAssessmentEditor(par, activity, participants, refreshCallb
 	par.empty();
 	g_lockedCount = 0; // clear lock count on batch editor generated
 	g_refreshCallback = refreshCallback;
-	var batchEditor=new BatchAssessmentEditor();
-	do{
-		if(activity==null) break;
-		var editors=new Array();
-		var sectionAll=$('<div>').appendTo(par);
-		
-		var initVal = false;
-		var disabled = false;
+	var batchEditor = new BatchAssessmentEditor();
 
-		// Determine attendance switch initial state based on viewer-activity-relation
-		if (activity.relation == hosted) {
-		        // host cannot choose
-			initVal = true;
-			disabled = true;
-		} else if((activity.relation & present) > 0) {
-			// present participants but not
-			initVal = true;
-		} else if((activity.relation & selected) > 0 || (activity.relation & absent) > 0) {
-		        // selected but not present
-			initVal = false;
-		} else {
-			disabled = true;
-		}
-		var attendanceSwitch = createBinarySwitch(sectionAll, disabled, initVal, "N/A", "Present", "Absent", "switch-attendance");	
-		var sectionEditors = $('<div>', {
-			style: "margin-top: 5pt"
-		}).appendTo(sectionAll);
+	if(activity == null) return batchEditor;
+	var editors = new Array();
+	var sectionAll = $('<div>').appendTo(par);
+	
+	var initVal = false;
+	var disabled = false;
 
-		var sectionButtons = $('<div>', {
-			style: "margin-top: 5pt"
-		}).appendTo(sectionAll);
+	// Determine attendance switch initial state based on viewer-activity-relation
+	if (activity.relation == hosted) {
+		// host cannot choose
+		initVal = true;
+		disabled = true;
+	} else if((activity.relation & present) > 0) {
+		// present participants but not
+		initVal = true;
+	} else if((activity.relation & selected) > 0 || (activity.relation & absent) > 0) {
+		// selected but not present
+		initVal = false;
+	} else {
+		disabled = true;
+	}
+	var attendanceSwitch = createBinarySwitch(sectionAll, disabled, initVal, "N/A", "Present", "Absent", "switch-attendance");	
+	var sectionEditors = $('<div>', {
+		style: "margin-top: 5pt"
+	}).appendTo(sectionAll);
 
-		if( ((activity.relation & present) > 0 || (activity.relation == hosted))
-		     && (activity.relation & assessed) == 0) {
-		     // present but not yet assessed participants
-			var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, batchEditor);
-			batchEditor.editors = editors;
-			generateAssessmentButtons(sectionButtons, activity, batchEditor);
-		}
+	var sectionButtons = $('<div>', {
+		style: "margin-top: 5pt"
+	}).appendTo(sectionAll);
 
-		var onSuccess = function(data, status, xhr){	    
-			g_updatingAttendance = false;
+	if( ((activity.relation & present) > 0 || (activity.relation == hosted))
+	     && (activity.relation & assessed) == 0) {
+	     // present but not yet assessed participants
+		var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, batchEditor);
+		batchEditor.editors = editors;
+		generateAssessmentButtons(sectionButtons, activity, batchEditor);
+	}
 
-                        // update activity.relation by returned value
-			var relationJson = JSON.parse(data);
-                        activity.relation = parseInt(relationJson[g_keyRelation]);
+	var onSuccess = function(data, status, xhr){	    
+		g_updatingAttendance = false;
 
-			sectionEditors.empty();
-			sectionButtons.empty();
+		// update activity.relation by returned value
+		var relationJson = JSON.parse(data);
+		activity.relation = parseInt(relationJson[g_keyRelation]);
 
-                        var value = getBinarySwitchState(attendanceSwitch);
-			if(!value || (activity.relation & assessed) > 0) return;
-                        // assessed participants cannot edit or re-submit assessments
+		sectionEditors.empty();
+		sectionButtons.empty();
 
-			var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, batchEditor);
-			batchEditor.editors = editors;
-			generateAssessmentButtons(sectionButtons, activity, batchEditor);
-		};
+		var value = getBinarySwitchState(attendanceSwitch);
+		if(!value || (activity.relation & assessed) > 0) return;
+		// assessed participants cannot edit or re-submit assessments
 
-		var onError = function(xhr, status, err){
-			g_updatingAttendance = false;
-			// reset switch status if updating attendance fails
-			var value = getBinarySwitchState(attendanceSwitch);
-			var resetVal = !value;
-			setBinarySwitch(attendanceSwitch, resetVal);
-		};
+		var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, batchEditor);
+		batchEditor.editors = editors;
+		generateAssessmentButtons(sectionButtons, activity, batchEditor);
+	};
 
-		var onClick = function(evt){
-			evt.preventDefault();
-			if(activity.relation == invalid) return;
-			var value = getBinarySwitchState(attendanceSwitch);
-			var newVal = !value;
-			setBinarySwitch(attendanceSwitch, newVal);	
-			attendance = activity.relation;
-			if(newVal) attendance = present;
-			else attendance = absent;
-			updateAttendance(activity.id, attendance, onSuccess, onError);
-		};
-		
-		setBinarySwitchOnClick(attendanceSwitch, onClick);
-	}while(false);
+	var onError = function(xhr, status, err){
+		g_updatingAttendance = false;
+		// reset switch status if updating attendance fails
+		var value = getBinarySwitchState(attendanceSwitch);
+		var resetVal = !value;
+		setBinarySwitch(attendanceSwitch, resetVal);
+	};
+
+	var onClick = function(evt){
+		evt.preventDefault();
+		if(activity.relation == invalid) return;
+		var value = getBinarySwitchState(attendanceSwitch);
+		var newVal = !value;
+		setBinarySwitch(attendanceSwitch, newVal);	
+		attendance = activity.relation;
+		if(newVal) attendance = present;
+		else attendance = absent;
+		updateAttendance(activity.id, attendance, onSuccess, onError);
+	};
+	
+	setBinarySwitchOnClick(attendanceSwitch, onClick);
 	return batchEditor;
 }
 
@@ -234,6 +232,26 @@ function updateAttendance(activityId, attendance, onSuccess, onError){
 	$.ajax({
 		type: "PUT",
 		url: "/activity/mark",
+		data: params,
+		success: onSuccess,
+		error: onError
+	});
+}
+
+function queryAssessments(userId, activityId, onSuccess, onError) {
+	var params = {};	
+	params[g_keyUserId] = userId; 
+	params[g_keyActivityId] = activityId;
+	
+	params[g_keyRefIndex] = 0;
+	params[g_keyNumItems] = 20;
+	params[g_keyDirection] = 1;
+	var token = $.cookie(g_keyToken);
+	params[g_keyToken] = token;
+
+	$.ajax({
+		type: "GET",
+		url: "/assessment/query",
 		data: params,
 		success: onSuccess,
 		error: onError
