@@ -2,13 +2,15 @@ $(document).ready(function(){
     	// initialize local DOMs
 	initTopbar();
 
-	g_onLoginSuccess=null;
-	g_onLoginError=null;
-	g_onEnter=null;
+	g_onLoginSuccess = null;
+	g_onLoginError = null;
+	g_onEnter = null;
 	initActivityEditor();
 
-	g_sectionActivityMonitor=$("#idSectionActivityMonitor");
-	g_selectFilter=$("#idSelectFilter");
+	g_sectionActivities = $("#section-activities");
+	g_sectionActivities.data(g_keyPageIndex, 0);
+
+	g_selectFilter = $("#select-filter");
 	g_selectFilter.on("change", onSelectFilterChanged);
 
 	var status = g_selectFilter.val();

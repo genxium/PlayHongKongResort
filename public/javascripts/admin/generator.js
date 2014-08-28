@@ -18,7 +18,8 @@ function onBtnAcceptClicked(evt){
 			url: "/admin/accept",
 			data: params,
 			success: function(data, status, xhr){
-				var cell=btnAccept.parent(); 
+				var buttonsWrap = btnAccept.parent();
+				var cell = buttonsWrap.parent(); 
 				btnAccept.remove();
 				var indicator = cell.data(g_keyStatusIndicator);
 				indicator.text("Accepted");
@@ -48,7 +49,8 @@ function onBtnRejectClicked(evt){
 			url: "/admin/reject", 
 			data: params,
 			success: function(data, status, xhr){
-				var cell=btnReject.parent(); 
+				var buttonsWrap = btnReject.parent(); 
+				var cell = buttonsWrap.parent();
 				btnReject.remove();
 				var indicator = cell.data(g_keyStatusIndicator);
 				indicator.text("Rejected");
@@ -79,7 +81,8 @@ function onBtnDeleteClicked(evt){
 			url: "/admin/delete", 
 			data: params,
 			success: function(data, status, xhr){
-				var cell=btnDelete.parent(); // javascript dom element
+				var buttonsWrap = btnDelete.parent(); 
+				var cell = buttonsWrap.parent();
 				btnDelete.remove();
 				var indicator = cell.data(g_keyStatusIndicator);
 				indicator.text("Deleted");

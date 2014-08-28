@@ -49,6 +49,7 @@ function onUploadAvatarFormSubmission(formEvt){
 }
 
 function onQueryActivitiesSuccess(data, status, xhr){
+
 	var jsonResponse = JSON.parse(data);
 	if(jsonResponse == null) return;
 	var count = Object.keys(jsonResponse).length;
@@ -80,6 +81,7 @@ function onQueryActivitiesSuccess(data, status, xhr){
 	if(order == -1 && newStartingIndex < oldEndingIndex) ++pageIndex;
 	if(order == -1 && newEndingIndex > oldStartingIndex) --pageIndex; 
 	g_sectionActivities.data(g_keyPageIndex, pageIndex);
+
 }
 
 function onQueryActivitiesError(xhr, status, err) {
