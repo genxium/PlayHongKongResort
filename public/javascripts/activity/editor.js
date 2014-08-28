@@ -24,13 +24,13 @@ var g_indexDeadlinePicker = "deadlinePicker"
 var g_indexBeginTimePicker = "beginTimePicker";
 var g_indexAssociatedImage = "indexAssociatedImage";
 
-var g_indexOldImages = "indexOldImages";
-var g_indexNewImages = "indexNewImages";
+var g_indexOldImages = "old_images";
+var g_indexNewImages = "new_images";
 
-var g_indexOldImage = "indexOldImage";
-var g_indexNewImage = "indexNewImage";
+var g_indexOldImage = "old_image";
+var g_indexNewImage = "new_image";
 
-var g_indexCheckbox = "indexCheckbox";
+var g_indexCheckbox = "checkbox";
 
 // general variables
 var g_maxNumberOfImagesForSingleActivity=3;
@@ -185,7 +185,7 @@ function onSave(evt){
         formData.append(g_keyDeadline, deadline);
 
         var isNewActivity = false;
-        var activityId = g_activityEditor.data(g_keyActivityId);
+	var activityId = (data.hasOwnProperty(g_keyActivityId) && data[g_keyActivityId] != null) ? data[g_keyActivityId] : g_activityEditor.data(g_keyActivityId);
         if(activityId == null) isNewActivity = true;
 
         if(!isNewActivity)	formData.append(g_keyActivityId, activityId.toString());

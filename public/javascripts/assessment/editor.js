@@ -3,6 +3,10 @@ var g_refreshCallback = null;
 var g_lockedCount = 0;
 var g_btnSubmit = null;
 
+var g_sectionAssessmentsViewer = null;
+var g_modalAssessmentsViewer = null;
+var g_assessmentsViewer = null;
+
 /*
 	Trying out new style of info gathering for DOMs
 */
@@ -256,4 +260,31 @@ function queryAssessments(userId, activityId, onSuccess, onError) {
 		success: onSuccess,
 		error: onError
 	});
+}
+
+function removeAssessmentsViewer(){
+        if(g_sectionAssessmentsViewer == null) return;
+        g_sectionAssessmentsViewer.hide();
+        g_sectionAssessmentsViewer.modal("hide");
+        if(g_modalAssessmentsViewer == null) return;
+        g_modalAssessmentsViewer.empty();
+        if(g_assessmentsViewer == null) return;
+        g_assessmentsViewer.remove();
+}
+
+function initAssessmentsViewer(){
+	var wrap=$("#wrap");
+	/*
+		Note: ALL attributes, especially the `class` attribute MUST be written INSIDE the div tag, bootstrap is NOT totally compatible with jQuery!!!
+	*/
+	g_sectionAssessmentsViewer = $("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='Create an activity!' aria-hidden='true'>", {
+		style: "height: 80%; position: absolute"
+	}).appendTo(wrap);
+	var dialog = $("<div>", {
+		class: "modal-dialog modal-lg"
+	}).appendTo(g_sectionAssessmentsViewer);
+	g_modalAssessmentsViewer = $("<div>", {
+		class: "modal-content"
+	}).appendTo(dialog);
+	removeAssessmentsViewer();
 }

@@ -18,368 +18,350 @@ import java.util.*;
 
 public class ActivityController extends Controller {
 
-    public static Result showDetail() {
-        try {
-            Content html = views.html.detail.render();
-            return ok(html);
-        } catch (Exception e) {
-            return badRequest();
-        }
-    }
+	public static final String OLD_IMAGE = "old_image";
 
-    public static Result query(String refIndex, Integer numItems, Integer order, Integer direction, String token, Integer userId, Integer relation, Integer status) {
-        response().setContentType("text/plain");
-        do {
-            try {
-                // anti-cracking by param direction
-                if (direction == null) break;
-                if (!direction.equals(SQLCommander.DIRECTION_FORWARD) && !direction.equals(SQLCommander.DIRECTION_BACKWARD))    break;
+	public static Result showDetail() {
+		try {
+		    Content html = views.html.detail.render();
+		    return ok(html);
+		} catch (Exception e) {
+		    return badRequest();
+		}
+	}
 
-                // anti-cracking by param order
-                if (order == null)  break;
-                String orderStr = SQLHelper.convertOrder(order);
-                if (orderStr == null)   break;
+	public static Result query(String refIndex, Integer numItems, Integer order, Integer direction, String token, Integer userId, Integer relation, Integer status) {
+		response().setContentType("text/plain");
+		try {
+			// anti-cracking by param direction
+			if (direction == null) throw new NullPointerException();
+			if (!direction.equals(SQLCommander.DIRECTION_FORWARD) && !direction.equals(SQLCommander.DIRECTION_BACKWARD))    throw new NullPointerException();
 
-                // anti=cracking by param token
-                Integer viewerId = null;
-                if (token != null) viewerId = DataUtils.getUserIdByToken(token);
-                List<Activity> activities = null;
-                if (relation != null && relation != UserActivityRelation.hosted && userId != null) {
-                    activities = SQLCommander.queryActivities(userId, UserActivityRelation.maskRelation(relation, null));
-                } else if (relation != null && relation == UserActivityRelation.hosted && userId != null && viewerId != null) {
-                    activities = SQLCommander.queryHostedActivities(userId, viewerId, refIndex, Activity.ID, orderStr, numItems, direction);
-                } else {
-                    activities = SQLCommander.queryActivities(refIndex, Activity.ID, orderStr, numItems, direction, status);
-                }
-                if (activities == null) break;
-                ObjectNode result = Json.newObject();
-                for (Activity activity : activities) {
-                    // non-host viewers can only see accepted activities
-                    if (activity.getStatus() != Activity.ACCEPTED && userId != null && !userId.equals(viewerId))
-                        continue;
-                    result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages(viewerId));
-                }
-                return ok(result);
-            } catch (Exception e) {
-                System.out.println(ActivityController.class.getName() + ".query, " + e.getCause());
-            }
-        } while (false);
-        return badRequest();
-    }
+			// anti-cracking by param order
+			if (order == null)  throw new NullPointerException();
+			String orderStr = SQLHelper.convertOrder(order);
+			if (orderStr == null)   throw new NullPointerException();
 
-    public static Result detail(Integer activityId, String token) {
-        response().setContentType("text/plain");
-        do {
-            ObjectNode result = null;
-            try {
-                ActivityDetail activityDetail = SQLCommander.queryActivityDetail(activityId);
-                if (activityDetail == null) break;
-                Integer userId = null;
-                if (token != null) userId = DataUtils.getUserIdByToken(token);
-                result = activityDetail.toObjectNode(userId);
-                return ok(result);
-            } catch (Exception e) {
-                System.out.println(ActivityController.class.getName() + ".detail, " + e.getMessage());
-            }
-        } while (false);
-        return badRequest();
-    }
+			// anti=cracking by param token
+			Integer viewerId = null;
+			if (token != null) viewerId = DataUtils.getUserIdByToken(token);
+			List<Activity> activities = null;
+			if (relation != null && relation != UserActivityRelation.hosted && userId != null) {
+				activities = SQLCommander.queryActivities(userId, UserActivityRelation.maskRelation(relation, null));
+			} else if (relation != null && relation == UserActivityRelation.hosted && userId != null && viewerId != null) {
+				activities = SQLCommander.queryHostedActivities(userId, viewerId, refIndex, Activity.ID, orderStr, numItems, direction);
+			} else {
+				activities = SQLCommander.queryActivities(refIndex, Activity.ID, orderStr, numItems, direction, status);
+			}
+			if (activities == null) throw new NullPointerException();
+			ObjectNode result = Json.newObject();
+			for (Activity activity : activities) {
+				// non-host viewers can only see accepted activities
+				if (activity.getStatus() != Activity.ACCEPTED && userId != null && !userId.equals(viewerId))
+					continue;
+				result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages(viewerId));
+			}
+			return ok(result);
+		} catch (Exception e) {
+			System.out.println(ActivityController.class.getName() + ".query, " + e.getMessage());
+		}
+		return badRequest();
+	}
 
-    public static Result ownership(String token, Integer activityId) {
-        do {
-            try {
-                Integer ownerId = DataUtils.getUserIdByToken(token);
-                if (ownerId == null) break;
-                if (!SQLCommander.validateOwnership(ownerId, activityId)) break;
-                return ok();
-            } catch (Exception e) {
-                System.out.println(ActivityController.class.getName() + ".ownership, " + e.getMessage());
-            }
-        } while (false);
-        return badRequest();
-    }
+	public static Result detail(Integer activityId, String token) {
+		response().setContentType("text/plain");
+		ObjectNode result = null;
+		try {
+			ActivityDetail activityDetail = SQLCommander.queryActivityDetail(activityId);
+			if (activityDetail == null) throw new NullPointerException();
+			Integer userId = null;
+			if (token != null) userId = DataUtils.getUserIdByToken(token);
+			result = activityDetail.toObjectNode(userId);
+			return ok(result);
+		} catch (Exception e) {
+			System.out.println(ActivityController.class.getName() + ".detail, " + e.getMessage());
+		}
+		return badRequest();
+	}
 
-    public static Result updateParticipants() {
-        // define response attributes
-        response().setContentType("text/plain");
-        do {
-            try {
-                Map<String, String[]> formData = request().body().asFormUrlEncoded();
-                String token = formData.get(User.TOKEN)[0];
-                Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+	public static Result ownership(String token, Integer activityId) {
+		try {
+			Integer ownerId = DataUtils.getUserIdByToken(token);
+			if (ownerId == null) throw new NullPointerException();
+			if (!SQLCommander.validateOwnership(ownerId, activityId)) throw new NullPointerException();
+			return ok();
+		} catch (Exception e) {
+			System.out.println(ActivityController.class.getName() + ".ownership, " + e.getMessage());
+		}
+		return badRequest();
+	}
 
-                String[] appliedParticipantsJsonStrs = formData.get(ActivityDetail.APPLIED_PARTICIPANTS);
-                String[] selectedParticipantsJsonStrs = formData.get(ActivityDetail.SELECTED_PARTICIPANTS);
-                String appliedParticipantsJsonStr = (appliedParticipantsJsonStrs.length > 0) ? appliedParticipantsJsonStrs[0] : "[]";
-                String selectedParticipantsJsonStr = (selectedParticipantsJsonStrs.length > 0) ? selectedParticipantsJsonStrs[0] : "[]";
+	public static Result updateParticipants() {
+		// define response attributes
+		response().setContentType("text/plain");
+		try {
+			Map<String, String[]> formData = request().body().asFormUrlEncoded();
+			String token = formData.get(User.TOKEN)[0];
+			Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 
-                JSONArray appliedParticipantsJson = (JSONArray) JSONValue.parse(appliedParticipantsJsonStr);
-                JSONArray selectedParticipantsJson = (JSONArray) JSONValue.parse(selectedParticipantsJsonStr);
+			String[] appliedParticipantsJsonStrs = formData.get(ActivityDetail.APPLIED_PARTICIPANTS);
+			String[] selectedParticipantsJsonStrs = formData.get(ActivityDetail.SELECTED_PARTICIPANTS);
+			String appliedParticipantsJsonStr = (appliedParticipantsJsonStrs.length > 0) ? appliedParticipantsJsonStrs[0] : "[]";
+			String selectedParticipantsJsonStr = (selectedParticipantsJsonStrs.length > 0) ? selectedParticipantsJsonStrs[0] : "[]";
 
-                Integer viewerId = DataUtils.getUserIdByToken(token);
-                if (viewerId == null) break;
-                if (!SQLCommander.validateOwnership(viewerId, activityId)) break;
+			JSONArray appliedParticipantsJson = (JSONArray) JSONValue.parse(appliedParticipantsJsonStr);
+			JSONArray selectedParticipantsJson = (JSONArray) JSONValue.parse(selectedParticipantsJsonStr);
 
-                for (Object appliedParticipantJson : appliedParticipantsJson) {
-                    Integer userId = Integer.valueOf((String) appliedParticipantJson);
-                    if (userId.equals(viewerId)) continue; // anti-cracking by unselecting the host of an activity
-                    int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
-                    SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied, originalRelation));
-                }
+			Integer viewerId = DataUtils.getUserIdByToken(token);
+			if (viewerId == null) throw new NullPointerException();
+			if (!SQLCommander.validateOwnership(viewerId, activityId)) throw new NullPointerException();
 
-                for (Object selectedParticipantJson : selectedParticipantsJson) {
-                    Integer userId = Integer.valueOf((String) selectedParticipantJson);
-                    if (userId.equals(viewerId)) continue; // anti-cracking by selecting the host of an activity
-                    int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
-                    SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected, originalRelation));
-                }
-                return ok();
-            } catch (Exception e) {
-                System.out.println(ActivityController.class.getName() + ".updateParticipants: " + e.getMessage());
-            }
+			for (Object appliedParticipantJson : appliedParticipantsJson) {
+				Integer userId = Integer.valueOf((String) appliedParticipantJson);
+				if (userId.equals(viewerId)) continue; // anti-cracking by unselecting the host of an activity
+				int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
+				SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied, originalRelation));
+			}
 
-        } while (false);
+			for (Object selectedParticipantJson : selectedParticipantsJson) {
+				Integer userId = Integer.valueOf((String) selectedParticipantJson);
+				if (userId.equals(viewerId)) continue; // anti-cracking by selecting the host of an activity
+				int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
+				SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected, originalRelation));
+			}
+			return ok();
+		} catch (Exception e) {
+			System.out.println(ActivityController.class.getName() + ".updateParticipants: " + e.getMessage());
+		}
 
-        return badRequest();
-    }
+		return badRequest();
+	}
 
-    public static Result save() {
-        // define response attributes
-        response().setContentType("text/plain");
+	public static Result save() {
+		// define response attributes
+		response().setContentType("text/plain");
+		try {
+			Http.RequestBody body = request().body();
 
-        do {
-            try {
-                Http.RequestBody body = request().body();
+			// get file data from request body stream
+			Http.MultipartFormData data = body.asMultipartFormData();
+			List<Http.MultipartFormData.FilePart> imageFiles = data.getFiles();
 
-                // get file data from request body stream
-                Http.MultipartFormData data = body.asMultipartFormData();
-                List<Http.MultipartFormData.FilePart> imageFiles = data.getFiles();
+			Map<String, String[]> formData = data.asFormUrlEncoded();
 
-                Map<String, String[]> formData = data.asFormUrlEncoded();
+			String token = formData.get(User.TOKEN)[0];
+			if (token == null) throw new NullPointerException();
+			Integer userId = DataUtils.getUserIdByToken(token);
+			if (userId == null || userId == null) throw new NullPointerException();
+			User user = SQLCommander.queryUser(userId);
+			if (user == null) throw new NullPointerException();
 
-                String token = formData.get(User.TOKEN)[0];
-                if (token == null) break;
-                Integer userId = DataUtils.getUserIdByToken(token);
-                if (userId == null || userId == null) break;
-                User user = SQLCommander.queryUser(userId);
-                if (user == null) break;
+			String activityTitle = formData.get(Activity.TITLE)[0];
+			String activityContent = formData.get(Activity.CONTENT)[0];
+			String activityBeginTime = formData.get(Activity.BEGIN_TIME)[0];
+			String activityDeadline = formData.get(Activity.DEADLINE)[0];
 
-                String activityTitle = formData.get(Activity.TITLE)[0];
-                String activityContent = formData.get(Activity.CONTENT)[0];
-                String activityBeginTime = formData.get(Activity.BEGIN_TIME)[0];
-                String activityDeadline = formData.get(Activity.DEADLINE)[0];
+			if (DataUtils.validateTitle(activityTitle) == false || DataUtils.validateContent(activityContent) == false) throw new NullPointerException();
+			boolean isNewActivity = true;
+			Integer activityId = null;
+			if (formData.containsKey(UserActivityRelation.ACTIVITY_ID) == true) {
+				activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+				isNewActivity = false;
+			}
+			Activity activity = null;
 
-                if (DataUtils.validateTitle(activityTitle) == false || DataUtils.validateContent(activityContent) == false)
-                    break;
+			if (isNewActivity == true) {
+				// create activity
+				activityId = SQLCommander.createActivity(activityTitle, activityContent, userId);
+				if (activityId == null || activityId.equals(SQLHelper.INVALID)) throw new NullPointerException();
+			}
 
-                boolean isNewActivity = true;
-                Integer activityId = null;
-                if (formData.containsKey(UserActivityRelation.ACTIVITY_ID) == true) {
-                    activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-                    isNewActivity = false;
-                }
-                Activity activity = null;
+			// update activity
+			activity = SQLCommander.queryActivity(activityId);
+			if (SQLCommander.isActivityEditable(userId, activity) == false) throw new NullPointerException();
 
-                if (isNewActivity == true) {
-                    // create activity
-                    activityId = SQLCommander.createActivity(activityTitle, activityContent, userId);
-                    if (activityId == null || activityId.equals(SQLHelper.INVALID)) break;
-                }
+			activity.setTitle(activityTitle);
+			activity.setContent(activityContent);
+			activity.setBeginTime(Timestamp.valueOf(activityBeginTime));
+			activity.setDeadline(Timestamp.valueOf(activityDeadline));
 
-                // update activity
-                activity = SQLCommander.queryActivity(activityId);
-                if (SQLCommander.isActivityEditable(userId, activity) == false) break;
+			boolean res = SQLCommander.updateActivity(activity);
 
-                activity.setTitle(activityTitle);
-                activity.setContent(activityContent);
-                activity.setBeginTime(Timestamp.valueOf(activityBeginTime));
-                activity.setDeadline(Timestamp.valueOf(activityDeadline));
+			if (res == false) throw new NullPointerException();
 
-                boolean res = SQLCommander.updateActivity(activity);
+			// save new images
+			List<Image> previousImages = SQLCommander.queryImages(activityId);
+			if (imageFiles != null && imageFiles.size() > 0) {
+				Iterator<Http.MultipartFormData.FilePart> imageIterator = imageFiles.iterator();
+				while (imageIterator.hasNext()) {
+					Http.MultipartFormData.FilePart imageFile = imageIterator.next();
+					int newImageId = ExtraCommander.saveImageOfActivity(imageFile, user, activity);
+					if (newImageId == ExtraCommander.INVALID) break;
+				}
+			}
 
-                if (res == false) break;
+			// selected old images
+			Set<Integer> selectedOldImagesSet = new HashSet<Integer>();
 
-                // save new images
-                List<Image> previousImages = SQLCommander.queryImages(activityId);
-                if (imageFiles != null && imageFiles.size() > 0) {
-                    Iterator<Http.MultipartFormData.FilePart> imageIterator = imageFiles.iterator();
-                    while (imageIterator.hasNext()) {
-                        Http.MultipartFormData.FilePart imageFile = imageIterator.next();
-                        int newImageId = ExtraCommander.saveImageOfActivity(imageFile, user, activity);
-                        if (newImageId == ExtraCommander.INVALID) break;
-                    }
-                }
+			if (formData.containsKey(OLD_IMAGE)) {
+				JSONArray selectedOldImagesJson = (JSONArray) JSONValue.parse(formData.get(OLD_IMAGE)[0]);
+				for (int i = 0; i < selectedOldImagesJson.size(); i++) {
+					Integer imageId = ((Long) selectedOldImagesJson.get(i)).intValue();
+					selectedOldImagesSet.add(imageId);
+				}
+			}
 
-                // selected old images
-                Set<Integer> selectedOldImagesSet = new HashSet<Integer>();
+			// delete previous images
+			if (previousImages != null && previousImages.size() > 0) {
+				Iterator<Image> itPreviousImage = previousImages.iterator();
+				while (itPreviousImage.hasNext()) {
+					Image previousImage = itPreviousImage.next();
+					if (selectedOldImagesSet.contains(previousImage.getImageId())) continue;
+					boolean isDeleted = ExtraCommander.deleteImageRecordAndFile(previousImage, activityId);
+					if (!isDeleted) break;
+				}
+			}
 
-                if (formData.containsKey("indexOldImage")) {
-                    JSONArray selectedOldImagesJson = (JSONArray) JSONValue.parse(formData.get("indexOldImage")[0]);
-                    for (int i = 0; i < selectedOldImagesJson.size(); i++) {
-                        Integer imageId = ((Long) selectedOldImagesJson.get(i)).intValue();
-                        selectedOldImagesSet.add(imageId);
-                    }
-                }
+			ObjectNode ret = Json.newObject();
+			if (isNewActivity)	ret.put(UserActivityRelation.ACTIVITY_ID, activityId.toString());
+			return ok(ret);
+		} catch (Exception e) {
+			System.out.println(ActivityController.class.getName()+".save, "+e.getMessage());
+		}
+		return badRequest();
+	}
 
-                // delete previous images
-                if (previousImages != null && previousImages.size() > 0) {
-                    Iterator<Image> itPreviousImage = previousImages.iterator();
-                    while (itPreviousImage.hasNext()) {
-                        Image previousImage = itPreviousImage.next();
-                        if (!selectedOldImagesSet.contains(previousImage.getImageId())) {
-                            boolean isDeleted = ExtraCommander.deleteImageRecordAndFile(previousImage, activityId);
-                            if (!isDeleted) break;
-                        }
-                    }
-                }
+	public static Result submit() {
+		// define response attributes
+		response().setContentType("text/plain");
 
-                ObjectNode ret = Json.newObject();
-                if (isNewActivity) {
-                    ret.put(UserActivityRelation.ACTIVITY_ID, activityId.toString());
-                }
-                return ok(ret);
-            } catch (Exception e) {
-                System.out.println(ActivityController.class.getName()+", "+e.getMessage());
-            }
-        } while (false);
-        return badRequest();
-    }
+		try {
+			Http.RequestBody body = request().body();
 
-    public static Result submit() {
-        // define response attributes
-        response().setContentType("text/plain");
+			// get user token and activity id from request body stream
+			Map<String, String[]> formData = body.asFormUrlEncoded();
 
-        try {
-            Http.RequestBody body = request().body();
+			String token = formData.get(User.TOKEN)[0];
+			Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 
-            // get user token and activity id from request body stream
-            Map<String, String[]> formData = body.asFormUrlEncoded();
+			Integer userId = DataUtils.getUserIdByToken(token);
+			if (userId == null) throw new Exception();
+			User user = SQLCommander.queryUser(userId);
+			if (user == null) throw new Exception();
 
-            String token = formData.get(User.TOKEN)[0];
-            Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+			Activity activity = SQLCommander.queryActivity(activityId);
+			if (!SQLCommander.isActivityEditable(userId, activity)) throw new Exception();
 
-            Integer userId = DataUtils.getUserIdByToken(token);
-            if (userId == null) throw new Exception();
-            User user = SQLCommander.queryUser(userId);
-            if (user == null) throw new Exception();
+			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-            Activity activity = SQLCommander.queryActivity(activityId);
-            if (!SQLCommander.isActivityEditable(userId, activity)) throw new Exception();
+			String[] names = {Activity.STATUS};
+			Object[] values = {Activity.PENDING};
 
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			builder.update(Activity.TABLE).set(names, values).where(Activity.ID, "=", activity.getId());
+			if(!SQLHelper.update(builder)) throw new Exception();
 
-            String[] names = {Activity.STATUS};
-            Object[] values = {Activity.PENDING};
+			return ok();
 
-            builder.update(Activity.TABLE).set(names, values).where(Activity.ID, "=", activity.getId());
-            if(!SQLHelper.update(builder)) throw new Exception();
+		} catch (Exception e) {
+			System.out.println(ActivityController.class.getName()+", "+e.getMessage());
+		}
 
-            return ok();
-
-        } catch (Exception e) {
-            System.out.println(ActivityController.class.getName()+", "+e.getMessage());
-        }
-
-        return badRequest();
-    }
+		return badRequest();
+	}
 
 
-    public static Result delete() {
-        // define response attributes
-        response().setContentType("text/plain");
-        do {
-            try {
-                Map<String, String[]> formData = request().body().asFormUrlEncoded();
-                String[] ids = formData.get(UserActivityRelation.ACTIVITY_ID);
-                String[] tokens = formData.get(User.TOKEN);
+	public static Result delete() {
+		// define response attributes
+		response().setContentType("text/plain");
+		try {
+			Map<String, String[]> formData = request().body().asFormUrlEncoded();
+			String[] ids = formData.get(UserActivityRelation.ACTIVITY_ID);
+			String[] tokens = formData.get(User.TOKEN);
 
-                Integer activityId = Integer.parseInt(ids[0]);
-                String token = tokens[0];
+			Integer activityId = Integer.parseInt(ids[0]);
+			String token = tokens[0];
 
-                Integer userId = DataUtils.getUserIdByToken(token);
-                if (userId == null) break;
+			Integer userId = DataUtils.getUserIdByToken(token);
+			if (userId == null) throw new NullPointerException();
 
-                Activity activity = SQLCommander.queryActivity(activityId);
-                if (SQLCommander.isActivityEditable(userId, activity) == false) break;
+			Activity activity = SQLCommander.queryActivity(activityId);
+			if (!SQLCommander.isActivityEditable(userId, activity)) throw new NullPointerException();
 
-                boolean res = ExtraCommander.deleteActivity(activityId);
-                if (res == false) break;
-            } catch (Exception e) {
+			if(!ExtraCommander.deleteActivity(activityId)) throw new NullPointerException();
+			return ok();
+		} catch (Exception e) {
+			System.out.println(ActivityController.class.getName()+".delete, " + e.getMessage());
+		}
+		return badRequest();
+	}
 
-            }
-            return ok();
-        } while (false);
-        return badRequest();
-    }
+	public static Result join() {
+		// define response attributes
+		response().setContentType("text/plain");
 
-    public static Result join() {
-        // define response attributes
-        response().setContentType("text/plain");
+		try {
+			Map<String, String[]> formData = request().body().asFormUrlEncoded();
+			Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+			String token = formData.get(User.TOKEN)[0];
+			if (token == null) throw new Exception();
+			Integer userId = DataUtils.getUserIdByToken(token);
+			if (userId == null) throw new Exception();
 
-        try {
-            Map<String, String[]> formData = request().body().asFormUrlEncoded();
-            Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-            String token = formData.get(User.TOKEN)[0];
-            if (token == null) throw new Exception();
-            Integer userId = DataUtils.getUserIdByToken(token);
-            if (userId == null) throw new Exception();
+			Activity activity = SQLCommander.queryActivity(activityId);
+			if (activity == null) throw new Exception();
+			boolean joinable = SQLCommander.isActivityJoinable(userId, activity);
+			if (!joinable) throw new Exception();
 
-            Activity activity = SQLCommander.queryActivity(activityId);
-            if (activity == null) throw new Exception();
-            boolean joinable = SQLCommander.isActivityJoinable(userId, activity);
-            if (!joinable) throw new Exception();
+			String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION};
+			Object[] values = {activityId, userId, UserActivityRelation.maskRelation(UserActivityRelation.applied, null)};
+			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			builder.insert(names, values).into(UserActivityRelation.TABLE);
 
-            String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION};
-            Object[] values = {activityId, userId, UserActivityRelation.maskRelation(UserActivityRelation.applied, null)};
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            builder.insert(names, values).into(UserActivityRelation.TABLE);
+			int lastRelationTableId = SQLHelper.insert(builder);
+			if (lastRelationTableId == SQLHelper.INVALID) throw new Exception();
 
-            int lastRelationTableId = SQLHelper.insert(builder);
-            if (lastRelationTableId == SQLHelper.INVALID) throw new Exception();
+			return ok();
+		} catch (Exception e) {
+			System.out.println(ActivityController.class.getName() + ".join, " + e.getMessage());
+			return badRequest();
+		}
+	}
 
-            return ok();
-        } catch (Exception e) {
-            System.out.println(ActivityController.class.getName() + ".join, " + e.getMessage());
-            return badRequest();
-        }
-    }
+	public static Result mark() {
+		// define response attributes
+		response().setContentType("text/plain");
+		try {
+			Map<String, String[]> formData = request().body().asFormUrlEncoded();
+			Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+			String token = formData.get(User.TOKEN)[0];
+			if (token == null) throw new Exception();
+			Integer relation = Integer.parseInt(formData.get(UserActivityRelation.RELATION)[0]);
+			Integer userId = DataUtils.getUserIdByToken(token);
+			if (userId == null) throw new Exception();
 
-    public static Result mark() {
-        // define response attributes
-        response().setContentType("text/plain");
-        try {
-            Map<String, String[]> formData = request().body().asFormUrlEncoded();
-            Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-            String token = formData.get(User.TOKEN)[0];
-            if (token == null) throw new Exception();
-            Integer relation = Integer.parseInt(formData.get(UserActivityRelation.RELATION)[0]);
-            Integer userId = DataUtils.getUserIdByToken(token);
-            if (userId == null) throw new Exception();
+			Activity activity = SQLCommander.queryActivity(activityId);
+			if (activity == null) throw new Exception();
+			int originalRelation = SQLCommander.isActivityMarkable(userId, activity, relation);
+			if (originalRelation == UserActivityRelation.invalid) throw new Exception();
 
-            Activity activity = SQLCommander.queryActivity(activityId);
-            if (activity == null) throw new Exception();
-            int originalRelation = SQLCommander.isActivityMarkable(userId, activity, relation);
-            if (originalRelation == UserActivityRelation.invalid) throw new Exception();
+			int newRelation = UserActivityRelation.maskRelation(relation, originalRelation);
 
-	        int newRelation = UserActivityRelation.maskRelation(relation, originalRelation);
+			String[] names = {UserActivityRelation.RELATION};
+			Object[] values = {newRelation};
+			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-            String[] names = {UserActivityRelation.RELATION};
-            Object[] values = {newRelation};
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			String[] whereCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID};
+			String[] whereOps = {"=", "="};
+			Object[] whereVals = {activityId, userId};
+			builder.update(UserActivityRelation.TABLE).set(names, values).where(whereCols, whereOps, whereVals);
 
-            String[] whereCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID};
-            String[] whereOps = {"=", "="};
-            Object[] whereVals = {activityId, userId};
-            builder.update(UserActivityRelation.TABLE).set(names, values).where(whereCols, whereOps, whereVals);
+			if(!SQLHelper.update(builder)) throw new Exception();
 
-            if(!SQLHelper.update(builder)) throw new Exception();
-
-            ObjectNode ret = Json.newObject();
-            ret.put(UserActivityRelation.RELATION, newRelation);
-            return ok(ret);
-        } catch (Exception e) {
-            System.out.println(ActivityController.class.getName() + ".mark, " + e.getMessage());
-            return badRequest();
-        }
-    }
+			ObjectNode ret = Json.newObject();
+			ret.put(UserActivityRelation.RELATION, newRelation);
+			return ok(ret);
+		} catch (Exception e) {
+			System.out.println(ActivityController.class.getName() + ".mark, " + e.getMessage());
+			return badRequest();
+		}
+	}
 }
