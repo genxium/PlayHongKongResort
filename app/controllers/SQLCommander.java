@@ -28,43 +28,38 @@ public class SQLCommander {
     public static User queryUser(Integer userId) {
 
         User user = null;
-        do {
-            try {
-                String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-                builder.select(names).from(User.TABLE).where(User.ID, "=", userId);
-                List<JSONObject> results = SQLHelper.select(builder);
-                if (results == null || results.size() <= 0) break;
-                Iterator<JSONObject> it = results.iterator();
-                if (it.hasNext()) {
-                    JSONObject userJson = it.next();
-                    user = new User(userJson);
-                }
-            } catch (Exception e) {
+	try {
+		String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
+		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		builder.select(names).from(User.TABLE).where(User.ID, "=", userId);
+		List<JSONObject> results = SQLHelper.select(builder);
+		if (results == null || results.size() <= 0) return null;
+		Iterator<JSONObject> it = results.iterator();
+		if (!it.hasNext()) return null;
+		JSONObject userJson = it.next();
+		user = new User(userJson);
+	} catch (Exception e) {
 
-            }
-        } while (false);
+	}
         return user;
     }
 
     public static User queryUserByEmail(String email) {
         User user = null;
-        do {
-            try {
-                String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-                builder.select(names).from(User.TABLE).where(User.EMAIL, "=", email);
-                List<JSONObject> results = SQLHelper.select(builder);
-                if (results == null || results.size() <= 0) break;
-                Iterator<JSONObject> it = results.iterator();
-                if (it.hasNext()) {
-                    JSONObject userJson = it.next();
-                    user = new User(userJson);
-                }
-            } catch (Exception e) {
+	try {
+		String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
+		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		builder.select(names).from(User.TABLE).where(User.EMAIL, "=", email);
+		List<JSONObject> results = SQLHelper.select(builder);
+		if (results == null || results.size() <= 0) return null;
+		Iterator<JSONObject> it = results.iterator();
+		if (!it.hasNext()) return null;
+		JSONObject userJson = it.next();
+		user = new User(userJson);
+	} catch (Exception e) {
+		System.out.println(SQLCommander.class.getName() + ".queryUserByEmail, " + e.getMessage());
 
-            }
-        } while (false);
+	}
         return user;
     }
 
@@ -84,65 +79,58 @@ public class SQLCommander {
     }
 
     public static Integer createActivity(String title, String content, Integer userId) {
-        int lastActivityId = SQLHelper.INVALID;
-        do {
-            List<String> names = new LinkedList<String>();
-            names.add(Activity.TITLE);
-            names.add(Activity.CONTENT);
-            names.add(Activity.HOST_ID);
+	    int lastActivityId = SQLHelper.INVALID;
 
-            List<Object> values = new LinkedList<Object>();
-            values.add(title);
-            values.add(content);
-            values.add(userId);
+	    List<String> names = new LinkedList<String>();
+	    names.add(Activity.TITLE);
+	    names.add(Activity.CONTENT);
+	    names.add(Activity.HOST_ID);
 
-            EasyPreparedStatementBuilder builderActivity = new EasyPreparedStatementBuilder();
-            builderActivity.insert(names, values).into(Activity.TABLE);
-            lastActivityId = SQLHelper.insert(builderActivity);
-            if (lastActivityId == SQLHelper.INVALID) break;
-            names.clear();
-            values.clear();
+	    List<Object> values = new LinkedList<Object>();
+	    values.add(title);
+	    values.add(content);
+	    values.add(userId);
 
-            names.add(UserActivityRelation.ACTIVITY_ID);
-            names.add(UserActivityRelation.USER_ID);
-            names.add(UserActivityRelation.RELATION);
+	    EasyPreparedStatementBuilder builderActivity = new EasyPreparedStatementBuilder();
+	    builderActivity.insert(names, values).into(Activity.TABLE);
+	    lastActivityId = SQLHelper.insert(builderActivity);
+	    if (lastActivityId == SQLHelper.INVALID) return SQLHelper.INVALID;
+	    names.clear();
+	    values.clear();
 
-            values.add(lastActivityId);
-            values.add(userId);
-            values.add(UserActivityRelation.maskRelation(UserActivityRelation.selected, null));
+	    names.add(UserActivityRelation.ACTIVITY_ID);
+	    names.add(UserActivityRelation.USER_ID);
+	    names.add(UserActivityRelation.RELATION);
 
-            EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
-            builderRelation.insert(names, values).into(UserActivityRelation.TABLE);
-            int lastRelationId = SQLHelper.insert(builderRelation);
-            if (lastRelationId == SQLHelper.INVALID) {
-                EasyPreparedStatementBuilder builderDelete = new EasyPreparedStatementBuilder();
-                builderDelete.from(Activity.TABLE).where(Activity.ID, "=", lastActivityId);
-                if (SQLHelper.delete(builderDelete)) {
-                    System.out.println(SQLCommander.class.getName() + ".createActivity, successfully reverted");
-                }
-                lastActivityId = SQLHelper.INVALID;
-                break;
-            }
-        } while (false);
-        return lastActivityId;
+	    values.add(lastActivityId);
+	    values.add(userId);
+	    values.add(UserActivityRelation.maskRelation(UserActivityRelation.selected, null));
+
+	    EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
+	    builderRelation.insert(names, values).into(UserActivityRelation.TABLE);
+	    int lastRelationId = SQLHelper.insert(builderRelation);
+	    if (lastRelationId != SQLHelper.INVALID) return lastActivityId;
+
+	    EasyPreparedStatementBuilder builderDelete = new EasyPreparedStatementBuilder();
+	    builderDelete.from(Activity.TABLE).where(Activity.ID, "=", lastActivityId);
+	    if (SQLHelper.delete(builderDelete))	System.out.println(SQLCommander.class.getName() + ".createActivity, successfully reverted");
+
+	    return SQLHelper.INVALID;;
     }
 
     public static boolean updateActivity(Activity activity) {
         boolean ret = false;
-        do {
-            int activityId = activity.getId();
+	int activityId = activity.getId();
+	try {
+		String[] cols = {Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
+		Object[] values = {activity.getTitle(), activity.getContent(), activity.getCreatedTime().toString(), activity.getBeginTime().toString(), activity.getDeadline().toString(), activity.getCapacity()};
+		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		builder.update(Activity.TABLE).set(cols, values).where(Activity.ID, "=", activityId);
+		ret = SQLHelper.update(builder);
 
-            try {
-                String[] cols = {Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
-                Object[] values = {activity.getTitle(), activity.getContent(), activity.getCreatedTime().toString(), activity.getBeginTime().toString(), activity.getDeadline().toString(), activity.getCapacity()};
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-                builder.update(Activity.TABLE).set(cols, values).where(Activity.ID, "=", activityId);
-                ret = SQLHelper.update(builder);
-
-            } catch (Exception e) {
-                System.out.println(SQLCommander.class.getName() + ".updateActivity: " + e.getMessage());
-            }
-        } while (false);
+	} catch (Exception e) {
+		System.out.println(SQLCommander.class.getName() + ".updateActivity: " + e.getMessage());
+	}
         return ret;
     }
 
@@ -150,24 +138,23 @@ public class SQLCommander {
     public static Activity queryActivity(int activityId) {
 
         Activity activity = null;
-        do {
-            try {
-                String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-                builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId);
-                List<JSONObject> results = SQLHelper.select(builder);
-                if (results == null || results.size() <= 0) break;
-                Iterator<JSONObject> it = results.iterator();
-                if (it.hasNext()) {
-                    JSONObject activityJson = it.next();
-                    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
-                    activity = new Activity(activityJson, host);
-                }
-            } catch (Exception e) {
-                System.out.println(SQLCommander.class.getName() + ".queryActivity, " + e.getMessage());
-            }
-        } while (false);
+	try {
+		String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId);
+		List<JSONObject> results = SQLHelper.select(builder);
+		if (results == null || results.size() <= 0) return null;
+		Iterator<JSONObject> it = results.iterator();
+		if (it.hasNext()) {
+			JSONObject activityJson = it.next();
+			User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+			activity = new Activity(activityJson, host);
+		}
+	} catch (Exception e) {
+		System.out.println(SQLCommander.class.getName() + ".queryActivity, " + e.getMessage());
+	}
         return activity;
+
     }
 
     public static ActivityDetail queryActivityDetail(int activityId) {
@@ -205,12 +192,11 @@ public class SQLCommander {
             statement.setInt(1, userId);
             statement.setInt(2, relation);
             List<JSONObject> activityJsons = SQLHelper.select(statement);
-            if (activityJsons != null) {
-                for (JSONObject activityJson : activityJsons) {
-                    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
-                    ret.add(new Activity(activityJson, host));
-                }
-            }
+            if (activityJsons == null) return null;
+	    for (JSONObject activityJson : activityJsons) {
+		    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+		    ret.add(new Activity(activityJson, host));
+	    }
         } catch (Exception e) {
             System.out.println(SQLCommander.class.getName() + ".queryActivities, " + e.getMessage());
         }
