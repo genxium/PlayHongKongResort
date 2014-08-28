@@ -114,8 +114,7 @@ public class SQLCommander {
 	    EasyPreparedStatementBuilder builderDelete = new EasyPreparedStatementBuilder();
 	    builderDelete.from(Activity.TABLE).where(Activity.ID, "=", lastActivityId);
 	    if (SQLHelper.delete(builderDelete))	System.out.println(SQLCommander.class.getName() + ".createActivity, successfully reverted");
-
-	    return SQLHelper.INVALID;;
+	    return SQLHelper.INVALID;
     }
 
     public static boolean updateActivity(Activity activity) {

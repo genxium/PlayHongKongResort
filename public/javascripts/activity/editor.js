@@ -188,9 +188,7 @@ function onSave(evt){
         var activityId = g_activityEditor.data(g_keyActivityId);
         if(activityId == null) isNewActivity = true;
 
-        if(!isNewActivity){
-            formData.append(g_keyActivityId, activityId.toString());
-        }
+        if(!isNewActivity)	formData.append(g_keyActivityId, activityId.toString());
 
         $.ajax({
                 method: "POST",
@@ -204,6 +202,7 @@ function onSave(evt){
                     var jsonResponse = JSON.parse(data);
                     if(jsonResponse.hasOwnProperty(g_keyActivityId)) {
                         alert("Activity created!");
+			g_activityEditor.data(g_keyActivityId, parseInt(jsonResponse[g_keyActivityId]));
                     } else {
                         alert("Changes saved.");
                     }
@@ -231,8 +230,9 @@ function onSubmit(evt){
         // append user token and activity id for identity
         var token = $.cookie(g_keyToken);
         params[g_keyToken] = token;
-
-        params[g_keyActivityId] = data[g_keyActivityId];
+	
+	var activityId = (data.hasOwnProperty(g_keyActivityId) && data[g_keyActivityId] != null) ? data[g_keyActivityId] : g_activityEditor.data(g_keyActivityId);
+        params[g_keyActivityId] = activityId;
 
         $.ajax({
                 method: "PUT",
