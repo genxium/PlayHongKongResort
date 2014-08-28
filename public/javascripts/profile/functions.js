@@ -51,7 +51,12 @@ function onUploadAvatarFormSubmission(formEvt){
 function onQueryActivitiesSuccess(data, status, xhr){
 	var jsonResponse = JSON.parse(data);
 	if(jsonResponse == null) return;
-	var count=Object.keys(jsonResponse).length;
+	var count = Object.keys(jsonResponse).length;
+	if(count <= 0) return;
+
+	var oldStartingIndex = g_sectionActivities.data(g_keyStartingIndex);
+	var oldEndingIndex = g_sectionActivities.data(g_keyEndingIndex);
+
 	// clean target section
 	g_sectionActivities.empty();
 	var idx=0;
@@ -65,6 +70,16 @@ function onQueryActivitiesSuccess(data, status, xhr){
 		g_sectionActivities.append(cell);
 		++idx;
 	}
+
+	var pageIndex = g_sectionActivities.data(g_keyPageIndex);
+	var order = g_activitiesSorter.val();
+	var newStartingIndex = g_sectionActivities.data(g_keyStartingIndex);
+	var newEndingIndex = g_sectionActivities.data(g_keyEndingIndex);
+	if(order == +1 && newStartingIndex > oldEndingIndex) ++pageIndex;
+	if(order == +1 && newEndingIndex < oldStartingIndex) --pageIndex;
+	if(order == -1 && newStartingIndex < oldEndingIndex) ++pageIndex;
+	if(order == -1 && newEndingIndex > oldStartingIndex) --pageIndex; 
+	g_sectionActivities.data(g_keyPageIndex, pageIndex);
 }
 
 function onQueryActivitiesError(xhr, status, err) {

@@ -16,9 +16,6 @@ var g_classAppliedIndicator="classAppliedIndicator";
 var g_classBtnJoin="classBtnJoin";
 var g_classBtnDetail="classBtnDetail";
 
-// button indexes for cascaded DOM element search
-var g_indexBtnJoin="indexBtnJoin";
-
 // Assistant Handlers
 function onBtnEditClicked(evt){
     	evt.preventDefault();
@@ -132,7 +129,6 @@ function generateActivityCell(activityJson){
 		dJoin[g_keyActivityId] = activity.id;
 		btnJoin.on("click", dJoin, onBtnJoinClicked);
 
-		ret.data(g_indexBtnJoin, btnJoin);
 	} else if((activity.relation & applied) > 0
 	            && (g_loggedInUser != null && g_loggedInUser.id != activity.host.id)) {
 		

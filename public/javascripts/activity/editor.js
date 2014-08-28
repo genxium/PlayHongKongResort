@@ -41,6 +41,9 @@ var g_submittable = true;
 var g_onEditorRemoved = null;
 var g_onEditorCancelled = null;
 
+var g_onQueryActivitiesSuccess = null;
+var g_onQueryActivitiesError = null;
+
 // Assistive functions
 function formatDigits(value, numberOfDigits){
        var valueStr = value.toString();
@@ -241,7 +244,10 @@ function onSubmit(evt){
                 success: function(data, status, xhr){
                         removeActivityEditor();
                         if(g_OnEditorRemoved == null) return;
-                        g_onEditorRemoved(0, g_numItemsPerPage, g_directionForward);
+            			var refIndex = 0; // temporarily hardcoded
+            			var relation = g_activitiesFilter.val();
+            			var order = g_activitiesSorter.val();
+                        g_onEditorRemoved(refIndex, g_numItemsPerPage, order, g_directionForward, g_userId, relation, null, g_onQueryActivitiesSuccess, g_onQueryActivitiesError);
                 },
                 error: function(xhr, status, err){
                         setSubmittable();
@@ -299,7 +305,7 @@ function onBtnDeleteClicked(evt){
 
 	evt.preventDefault();
 	var data = evt.data;
-	var token=$.cookie(g_keyToken).toString();
+	var token = $.cookie(g_keyToken);
 
 	var params={};
 	params[g_keyActivityId] = data[g_keyActivityId];
@@ -312,8 +318,11 @@ function onBtnDeleteClicked(evt){
 	        data: params,
 	        success: function(data, status, xhr){
                     g_activityEditor.remove();
-                    if(g_onEditorRemoved != null)   g_onEditorRemoved(0);
-                    location.reload();
+                    if(g_onEditorRemoved == null)   return;
+                    var refIndex = 0; // temporarily hardcoded
+                    var relation = g_activitiesFilter.val();
+                    var order = g_activitiesSorter.val();
+                    g_onEditorRemoved(refIndex, g_numItemsPerPage, order, g_directionForward, g_userId, relation, null, g_onQueryActivitiesSuccess, g_onQueryActivitiesError);
                 },
 	        error: function(xhr, status, err){
 

@@ -10,6 +10,10 @@ $(document).ready(function(){
 	}
 	
 	initTopbar();
+
+	g_onQueryActivitiesSuccess = onQueryActivitiesSuccess;
+	g_onQueryActivitiesError = onQueryActivitiesError;
+
 	g_onLoginSuccess = function(){
 		refreshOnLoggedIn();
 		var relation = g_activitiesFilter.val();
@@ -37,7 +41,7 @@ $(document).ready(function(){
 		queryActivities(0, g_numItemsPerPage, order, g_directionForward, g_userId, relation, null, onQueryActivitiesSuccess, onQueryActivitiesError);
 	});
 
-	g_sectionActivities=$("#section_activities"); 
+	g_sectionActivities = $("#section-activities"); 
 	g_sectionActivities.bind("scroll", onSectionActivitiesScrolled);
 	g_sectionActivities.data(g_keyPageIndex, 0);
 
@@ -45,7 +49,7 @@ $(document).ready(function(){
 
 	g_btnUploadAvatar=$("#btn_upload_avatar");
 	g_btnUploadAvatar.on("click", onBtnUploadAvatarClicked);
- 	g_onEditorRemoved=queryActivities;
+ 	g_onEditorRemoved = queryActivities;
 
 	var relation = g_activitiesFilter.val();
 	var order = g_activitiesSorter.val();

@@ -1,3 +1,12 @@
+/*
+	Pager Widget
+*/
+function Pager(container, onPageChange) {
+	this.container = container;
+	this.onPageChange = onPageChange; // prototype: queryActivities in global_functions.js
+
+}
+
 var g_btnPreviousPage=null;
 var g_btnNextPage=null;
 
