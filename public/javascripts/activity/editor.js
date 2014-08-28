@@ -243,7 +243,7 @@ function onSubmit(evt){
                 data: params,
                 success: function(data, status, xhr){
                         removeActivityEditor();
-                        if(g_OnEditorRemoved == null) return;
+                        if(g_onEditorRemoved == null) return;
             			var refIndex = 0; // temporarily hardcoded
             			var relation = g_activitiesFilter.val();
             			var order = g_activitiesSorter.val();

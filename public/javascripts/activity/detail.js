@@ -227,8 +227,10 @@ function onParticipantsSelectionFormSubmission(formEvt){
 	var selectedParticipants = new Array();
 	for(var i = 0; i < g_participantsForm.labels.length; i++) {
 		var box = g_participantsForm.boxes[i];
-		if(box.is(":checked"))	selectedParticipants.push(g_participantsForm.participantsId[i]);
-		else	appliedParticipants.push(g_participantsForm.participantsId[i]);
+		var participantId = g_participantsForm.participantsId[i];
+		if(participantId == g_activity.host.id) continue;
+		if(box.is(":checked"))	selectedParticipants.push(participantId);
+		else	appliedParticipants.push(participantId);
 	}
 	// append user token and activity id for identity
 	var token = $.cookie(g_keyToken);
