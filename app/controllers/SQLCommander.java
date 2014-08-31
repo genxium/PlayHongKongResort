@@ -3,6 +3,7 @@ package controllers;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import model.*;
+import exception.*;
 import org.json.simple.JSONObject;
 
 import javax.persistence.Basic;
@@ -271,25 +272,23 @@ public class SQLCommander {
 
     public static int queryUserActivityRelation(Integer userId, Integer activityId) {
         int ret = UserActivityRelation.invalid;
-        do {
-            if (userId == null) break;
-            if (activityId == null) break;
-            try {
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+	try {
+		if (userId == null) throw new UserNotFoundException();
+		if (activityId == null) throw new ActivityNotFoundException();
+		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-                builder.select(UserActivityRelation.RELATION).from(UserActivityRelation.TABLE);
-                builder.where(UserActivityRelation.USER_ID, "=", userId);
-                builder.where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
+		builder.select(UserActivityRelation.RELATION).from(UserActivityRelation.TABLE);
+		builder.where(UserActivityRelation.USER_ID, "=", userId);
+		builder.where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
 
-                List<JSONObject> records = SQLHelper.select(builder);
-                if (records == null) break;
-                if (records.size() != 1) break;
-                JSONObject record = records.get(0);
-                ret = (Integer) record.get(UserActivityRelation.RELATION);
-            } catch (Exception e) {
-
-            }
-        } while (false);
+		List<JSONObject> records = SQLHelper.select(builder);
+		if (records == null) throw new UserActivityRelationNotFoundException();
+		if (records.size() != 1) throw new UserActivityRelationNotFoundException();
+		JSONObject record = records.get(0);
+		ret = (Integer) record.get(UserActivityRelation.RELATION);
+	} catch (Exception e) {
+		System.out.println(SQLCommander.class.getName() + ".queryUserActivityRelation, " + e.getMessage());
+	}
         return ret;
     }
 
@@ -565,17 +564,18 @@ public class SQLCommander {
 
     public static boolean isUserAssessable(Integer from, Integer to, Activity activity) {
         boolean ret = false;
-        do {
-            if (from == null) break;
-            if (to == null) break;
-            if (activity == null) break;
-            if (!activity.hasBegun()) break;
-            int relation1 = queryUserActivityRelation(from, activity.getId());
-            int relation2 = queryUserActivityRelation(to, activity.getId());
-            if ((relation1 & UserActivityRelation.present) == 0 || (relation2 & UserActivityRelation.present) == 0)
-                break;
-            ret = true;
-        } while (false);
+	try {
+		if (from == null) throw new UserNotFoundException();
+		if (to == null) throw new UserNotFoundException();
+		if (activity == null) throw new ActivityNotFoundException();
+		if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
+		int relation1 = queryUserActivityRelation(from, activity.getId());
+		int relation2 = queryUserActivityRelation(to, activity.getId());
+		if ((relation1 & UserActivityRelation.present) == 0 || (relation2 & UserActivityRelation.present) == 0)	throw new UnexpectedUserActivityRelationException();
+		ret = true;
+	} catch (Exception e) {
+		System.out.println(SQLCommander.class.getName() + ".isUserAssessable, " + e.getMessage());
+	}
         return ret;
     }
 
@@ -585,60 +585,59 @@ public class SQLCommander {
     */
     public static int isActivityMarkable(Integer userId, Integer activityId, int relation) {
         int ret = UserActivityRelation.invalid;
-        do {
-            if (userId == null) break;
-            if (activityId == null) break;
-            Activity activity = queryActivity(activityId);
-            if (activity == null) break;
-            ret = isActivityMarkable(userId, activity, relation);
-        } while (false);
+        try {
+		if (userId == null) throw new UserNotFoundException();
+		if (activityId == null) throw new ActivityNotFoundException();
+		Activity activity = queryActivity(activityId);
+		if (activity == null) throw new ActivityNotFoundException();
+		ret = isActivityMarkable(userId, activity, relation);
+	} catch (Exception e) {
+		System.out.println(SQLCommander.class.getName() + ".isActivityMarkable, " + e.getMessage());
+	}
         return ret;
     }
 
     public static int isActivityMarkable(Integer userId, Activity activity, int relation) {
         int ret = UserActivityRelation.invalid;
-        do {
-            if (userId == null) break;
-            if (activity == null) break;
-            if (!activity.hasBegun()) break;
-            int originalRelation = queryUserActivityRelation(userId, activity.getId());
-            if ((originalRelation & UserActivityRelation.selected) == 0) break;
-            if ((originalRelation & relation) > 0) break;
-            ret = originalRelation;
-        } while (false);
+	try {
+		if (userId == null) throw new UserNotFoundException();
+		if (activity == null) throw new ActivityNotFoundException();
+		if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
+		int originalRelation = queryUserActivityRelation(userId, activity.getId());
+		if (originalRelation == UserActivityRelation.invalid) throw new UnexpectedUserActivityRelationException();
+		if ((originalRelation & UserActivityRelation.selected) == 0) throw new UnexpectedUserActivityRelationException();
+		if ((originalRelation & relation) > 0) throw new UnexpectedUserActivityRelationException();
+		ret = originalRelation;
+	} catch (Exception e) {
+		System.out.println(SQLCommander.class.getName() + ".isActivityMarkable, " + e.getMessage());
+	}
         return ret;
     }
 
     public static boolean acceptActivity(User user, Activity activity) {
-        boolean ret = false;
-        do {
-            if (user == null) break;
-            if (activity == null) break;
-            try {
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-                builder.update(Activity.TABLE).set(Activity.STATUS, Activity.ACCEPTED).where(Activity.ID, "=", activity.getId());
-                ret = SQLHelper.update(builder);
-            } catch (Exception e) {
-
-            }
-        } while (false);
-        return ret;
+	    if (user == null) return false;
+	    if (activity == null) return false;
+	    try {
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    builder.update(Activity.TABLE).set(Activity.STATUS, Activity.ACCEPTED).where(Activity.ID, "=", activity.getId());
+		    return SQLHelper.update(builder);
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".acceptActivity, " + e.getMessage());
+	    }
+	    return false;
     }
 
     public static boolean rejectActivity(User user, Activity activity) {
-        boolean ret = false;
-        do {
-            if (user == null) break;
-            if (activity == null) break;
-            try {
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-                builder.update(Activity.TABLE).set(Activity.STATUS, Activity.REJECTED).where(Activity.ID, "=", activity.getId());
-                ret = SQLHelper.update(builder);
-            } catch (Exception e) {
-
-            }
-        } while (false);
-        return ret;
+	    if (user == null) return false;
+	    if (activity == null) return false;
+	    try {
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    builder.update(Activity.TABLE).set(Activity.STATUS, Activity.REJECTED).where(Activity.ID, "=", activity.getId());
+		    return SQLHelper.update(builder);
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".rejectActivity, " + e.getMessage());
+	    }
+	    return false;
     }
 
     public static int uploadUserAvatar(User user, String imageURL) {

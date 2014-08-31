@@ -3,6 +3,7 @@ package controllers;
 import model.Activity;
 import model.User;
 import model.UserActivityRelation;
+import exception.*;
 import play.mvc.Controller;
 import play.mvc.Result;
 import utilities.DataUtils;
@@ -12,93 +13,83 @@ import java.util.Map;
 public class AdminController extends Controller {
 
     public static Result accept() {
-        // define response attributes
-        response().setContentType("text/plain");
-        do {
-            try {
-                Map<String, String[]> formData = request().body().asFormUrlEncoded();
-                Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-                String token = formData.get(User.TOKEN)[0];
+	    // define response attributes
+	    response().setContentType("text/plain");
+	    try {
+		    Map<String, String[]> formData = request().body().asFormUrlEncoded();
+		    Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+		    String token = formData.get(User.TOKEN)[0];
 
-                Integer userId = DataUtils.getUserIdByToken(token);
-                if (userId == null) break;
-                User user = SQLCommander.queryUser(userId);
-                if (user == null) break;
-                if (!validateAdminAccess(user)) break;
+		    Integer userId = DataUtils.getUserIdByToken(token);
+		    if (userId == null) throw new UserNotFoundException();
+		    User user = SQLCommander.queryUser(userId);
+		    if (user == null) throw new UserNotFoundException();
+		    if (!validateAdminAccess(user)) throw new AccessDeniedException();
 
-                Activity activity = SQLCommander.queryActivity(activityId);
-                if (activity == null) break;
+		    Activity activity = SQLCommander.queryActivity(activityId);
+		    if (activity == null) throw new ActivityNotFoundException();
 
-                if(!SQLCommander.acceptActivity(user, activity)) break;
+		    if(!SQLCommander.acceptActivity(user, activity)) throw new NullPointerException();
 
-                return ok();
-            } catch (Exception e) {
-                System.out.println("AdminController.accept: " + e.getMessage());
-            }
-        } while (false);
-        return badRequest("Activity not accepted!");
+		    return ok();
+	    } catch (Exception e) {
+		    System.out.println("AdminController.accept: " + e.getMessage());
+	    }
+	    return badRequest("Activity not accepted!");
     }
 
     public static Result reject() {
-        // define response attributes
-        response().setContentType("text/plain");
-        do {
+	    // define response attributes
+	    response().setContentType("text/plain");
             try {
                 Map<String, String[]> formData = request().body().asFormUrlEncoded();
                 Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
                 String token = formData.get(User.TOKEN)[0];
 
                 Integer userId = DataUtils.getUserIdByToken(token);
-                if (userId == null) break;
+                if (userId == null) throw new UserNotFoundException();
                 User user = SQLCommander.queryUser(userId);
-                if (user == null) break;
-                if (!validateAdminAccess(user)) break;
+                if (user == null) throw new UserNotFoundException();
+                if (!validateAdminAccess(user)) throw new AccessDeniedException();
 
                 Activity activity = SQLCommander.queryActivity(activityId);
-                if (activity == null) break;
+                if (activity == null) throw new ActivityNotFoundException();
 
-                if(!SQLCommander.rejectActivity(user, activity)) break;
+                if(!SQLCommander.rejectActivity(user, activity)) throw new NullPointerException();
                 return ok();
             } catch (Exception e) {
                 System.out.println("AdminController.accept: " + e.getMessage());
             }
-        } while (false);
-        return badRequest("Activity not accepted!");
+	    return badRequest("Activity not accepted!");
     }
 
     public static Result delete() {
-        // define response attributes
-        response().setContentType("text/plain");
-        do {
-            try {
-                Map<String, String[]> formData = request().body().asFormUrlEncoded();
-                Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-                String token = formData.get(User.TOKEN)[0];
+	    // define response attributes
+	    response().setContentType("text/plain");
+	    try {
+		    Map<String, String[]> formData = request().body().asFormUrlEncoded();
+		    Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+		    String token = formData.get(User.TOKEN)[0];
 
-                Integer userId = DataUtils.getUserIdByToken(token);
-                if (userId == null) break;
+		    Integer userId = DataUtils.getUserIdByToken(token);
+		    if (userId == null) throw new UserNotFoundException();
 
-                User user = SQLCommander.queryUser(userId);
-                if (user == null) break;
-                if (!validateAdminAccess(user)) break;
+		    User user = SQLCommander.queryUser(userId);
+		    if (user == null) throw new UserNotFoundException();
+		    if (!validateAdminAccess(user)) throw new AccessDeniedException();
 
-                if(!ExtraCommander.deleteActivity(activityId)) break;
+		    if(!ExtraCommander.deleteActivity(activityId)) throw new NullPointerException();
 
-                return ok();
-            } catch (Exception e) {
-                System.out.println(AdminController.class.getName()+ "," + e.getMessage());
-            }
-        } while (false);
-        return badRequest("Activity not completely deleted!");
+		    return ok();
+	    } catch (Exception e) {
+		    System.out.println(AdminController.class.getName()+ ".delete, " + e.getMessage());
+	    }
+	    return badRequest("Activity not completely deleted!");
     }
 
     public static boolean validateAdminAccess(User user) {
-        boolean ret = false;
-        do {
-            if (user == null) break;
-            if (user.getGroupId() != User.ADMIN) break;
-            ret = true;
-        } while (false);
-        return ret;
+	    if (user == null) return false;
+	    if (user.getGroupId() != User.ADMIN) return false;
+	    return true;
     }
 }

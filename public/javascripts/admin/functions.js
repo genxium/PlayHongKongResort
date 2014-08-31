@@ -63,7 +63,7 @@ function onQueryActivitiesSuccess(data, status, xhr){
 	}
 
 	var pageIndex = g_sectionActivities.data(g_keyPageIndex);
-	var order = g_activitiesSorter.val();
+	var order = (+1);
 	var newStartingIndex = g_sectionActivities.data(g_keyStartingIndex);
 	var newEndingIndex = g_sectionActivities.data(g_keyEndingIndex);
 	if(order == +1 && newStartingIndex > oldEndingIndex) ++pageIndex;

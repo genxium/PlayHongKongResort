@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.SQLHelper;
 import dao.EasyPreparedStatementBuilder;
 import model.*;
+import exception.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import play.libs.Json;
@@ -333,15 +334,15 @@ public class ActivityController extends Controller {
 			Map<String, String[]> formData = request().body().asFormUrlEncoded();
 			Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 			String token = formData.get(User.TOKEN)[0];
-			if (token == null) throw new Exception();
+			if (token == null) throw new NullPointerException();
 			Integer relation = Integer.parseInt(formData.get(UserActivityRelation.RELATION)[0]);
 			Integer userId = DataUtils.getUserIdByToken(token);
-			if (userId == null) throw new Exception();
+			if (userId == null) throw new UserNotFoundException();
 
 			Activity activity = SQLCommander.queryActivity(activityId);
-			if (activity == null) throw new Exception();
+			if (activity == null) throw new ActivityNotFoundException();
 			int originalRelation = SQLCommander.isActivityMarkable(userId, activity, relation);
-			if (originalRelation == UserActivityRelation.invalid) throw new Exception();
+			if (originalRelation == UserActivityRelation.invalid) throw new UnexpectedUserActivityRelationException("Relation is invalid for marking!");
 
 			int newRelation = UserActivityRelation.maskRelation(relation, originalRelation);
 
@@ -354,7 +355,7 @@ public class ActivityController extends Controller {
 			Object[] whereVals = {activityId, userId};
 			builder.update(UserActivityRelation.TABLE).set(names, values).where(whereCols, whereOps, whereVals);
 
-			if(!SQLHelper.update(builder)) throw new Exception();
+			if(!SQLHelper.update(builder)) throw new NullPointerException();
 
 			ObjectNode ret = Json.newObject();
 			ret.put(UserActivityRelation.RELATION, newRelation);
