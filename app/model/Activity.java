@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import java.util.List;
 
 import exception.*;
@@ -121,14 +122,13 @@ public class Activity {
     protected User m_viewer = null;
 
     public boolean isDeadlineExpired() {
-	    Calendar calendar = new GregorianCalendar();
+	    Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+8")); // should match mysql setting `/etc/my.cnf`
 	    return calendar.getTimeInMillis() > m_deadline.getTime();
     }
 
     public boolean hasBegun() {
-		return true;
-		// Calendar calendar = new GregorianCalendar();
-		// return calendar.getTimeInMillis() > m_beginTime.getTime();
+	    Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+8")); // should match mysql setting `/etc/my.cnf`
+	    return calendar.getTimeInMillis() + calendar.getTimeZone().getRawOffset() > m_beginTime.getTime();
     }
 
     protected Activity() {
