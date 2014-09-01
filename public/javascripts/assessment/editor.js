@@ -63,10 +63,34 @@ function generateAssessmentEditor(par, participant, activity, batchEditor){
 		});
 		singleEditor.lock = lock;
 	} else {
-		var more = $('<span>', {
-			text: "More>>",
+		var btnView = $('<span>', {
+			text: "View assessments on " + participant.email +" >>",
 			style: "display: inline; color: blue; margin-left: 5pt; cursor: pointer"
 		}).appendTo(row);					
+		var dBtnView = {};
+		dBtnView[g_keyUserId] = participant.id;
+		dBtnView[g_keyActivityId] = activity.id; 
+		btnView.on("click", dBtnView, function(evt){
+			evt.preventDefault();
+			var data = evt.data;
+			var onSuccess = function(data, status, xhr) {
+				var jsonResponse = JSON.parse(data);
+				if(jsonResponse == null || Object.keys(jsonResponse).length == 0) return;
+				var assessments = new Array();
+				for(var key in jsonResponse) {
+					var assessmentJson = jsonResponse[key];
+					var assessment = new Assessment(assessmentJson);
+					assessments.push(assessment);
+				}
+				
+				showAssessmentsViewer(assessments);				
+				
+			};
+			var onError = function(xhr, status, err) {
+
+			};
+			queryAssessments(data[g_keyUserId], data[g_keyActivityId], onSuccess, onError);	
+		});
 	}
 	if(g_loggedInUser != null && g_loggedInUser.id == participant.id) row.hide(); 
 	return singleEditor;
@@ -146,6 +170,9 @@ function generateAssessmentButtons(par, activity, batchEditor){
 
 function generateBatchAssessmentEditor(par, activity, refreshCallback){
 	par.empty();
+
+	initAssessmentsViewer();
+
 	g_lockedCount = 0; // clear lock count on batch editor generated
 	g_refreshCallback = refreshCallback;
 	var batchEditor = new BatchAssessmentEditor();
@@ -198,7 +225,7 @@ function generateBatchAssessmentEditor(par, activity, refreshCallback){
 		sectionButtons.empty();
 
 		var value = getBinarySwitchState(attendanceSwitch);
-		if(!value || (activity.relation & assessed) > 0) return;
+		if(!value) return;
 		// assessed participants cannot edit or re-submit assessments
 
 		var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, activity, batchEditor);
