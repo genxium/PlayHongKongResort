@@ -184,7 +184,7 @@ function generateBatchAssessmentEditor(par, activity, refreshCallback){
 	     // present but not yet assessed participants
 		var editors = generateAssessmentEditors(sectionEditors, activity, batchEditor);
 		batchEditor.editors = editors;
-		if((activity.relation & assessed) == 0) generateAssessmentButtons(sectionButtons, activity, batchEditor);
+		if((activity.relation & assessed) == 0 && batchEditor.editors.length > 1) generateAssessmentButtons(sectionButtons, activity, batchEditor);
 	}
 
 	var onSuccess = function(data, status, xhr){	    
@@ -203,7 +203,7 @@ function generateBatchAssessmentEditor(par, activity, refreshCallback){
 
 		var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, activity, batchEditor);
 		batchEditor.editors = editors;
-		if((activity.relation & assessed) == 0)	generateAssessmentButtons(sectionButtons, activity, batchEditor);
+		if((activity.relation & assessed) == 0 && batchEditor.editors.length > 1)	generateAssessmentButtons(sectionButtons, activity, batchEditor);
 	};
 
 	var onError = function(xhr, status, err){

@@ -36,6 +36,7 @@ public class ActivityDetail extends Activity {
     protected List<BasicUser> m_presentParticipants = null;
 
     public ActivityDetail(Activity activity, List<Image> images, List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants, List<BasicUser> presentParticipants) {
+        super();
         m_id = activity.getId();
         m_title = activity.getTitle();
         m_content = activity.getContent();

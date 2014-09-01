@@ -87,13 +87,15 @@ public class ActivityController extends Controller {
 	public static Result ownership(String token, Integer activityId) {
 		try {
 			Integer ownerId = DataUtils.getUserIdByToken(token);
-			if (ownerId == null) throw new NullPointerException();
-			if (!SQLCommander.validateOwnership(ownerId, activityId)) throw new NullPointerException();
-			return ok();
+			if (ownerId == null) throw new UserNotFoundException();
+			if (!SQLCommander.validateOwnership(ownerId, activityId)) throw new AccessDeniedException();
+			ObjectNode ret = Json.newObject();
+			ret.put(Activity.HOST, String.valueOf(ownerId));
+			return ok(ret);
 		} catch (Exception e) {
 			System.out.println(ActivityController.class.getName() + ".ownership, " + e.getMessage());
 		}
-		return badRequest();
+		return ok();
 	}
 
 	public static Result updateParticipants() {

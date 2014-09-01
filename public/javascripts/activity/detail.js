@@ -114,8 +114,8 @@ function displayActivityDetail(par){
 
 		for(var i=0;i<g_activity.images.length;++i){
 			var imageNode=$('<img>',{
-						src: g_activity.images[i].url
-					}).appendTo(imagesNode);
+				src: g_activity.images[i].url
+			}).appendTo(imagesNode);
 		}
 	}	
 	g_tabParticipants.empty();
@@ -159,7 +159,7 @@ function displayActivityDetail(par){
 	var onSuccess=function(data, status, xhr){
 		g_tabComments.empty();
 		var jsonResponse=JSON.parse(data);
-		if(jsonResponse != null || Object.keys(jsonResponse).length ==0) return;
+		if(jsonResponse == null || Object.keys(jsonResponse).length == 0) return;
 		for(var key in jsonResponse){
 			var commentJson = jsonResponse[key];
 			generateCommentCell(g_tabComments, commentJson, g_activity.id).appendTo(g_tabComments);
@@ -185,6 +185,7 @@ function displayActivityDetail(par){
 		url: "/activity/ownership",
 		data: params,
 		success: function(data, status, xhr){
+			if(data == null || data == "") return;
 			var boxes = new Array();
 			for(var i = 0; i < g_participantsForm.labels.length; i++){
 				var label = g_participantsForm.labels[i];
