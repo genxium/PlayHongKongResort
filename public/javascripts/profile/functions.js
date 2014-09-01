@@ -147,6 +147,8 @@ function queryUserDetail(){
 		url: "/user/detail",
 		data: params,
 		success: function(data, status, xhr){
+			if(g_sectionUser == null) return;
+			g_sectionUser.empty();
 			var userJson=JSON.parse(data);
 			var username=userJson[g_keyName];
 			var prefix=$("<span>", {
