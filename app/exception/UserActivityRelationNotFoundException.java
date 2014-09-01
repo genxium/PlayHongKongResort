@@ -8,8 +8,4 @@ public class UserActivityRelationNotFoundException extends Exception {
 		super("user-activity-relation not found.");
 	}
 	
-	public UserActivityRelationNotFoundException(String message) {
-		super(message);
-	}
-	
 }

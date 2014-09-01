@@ -342,7 +342,7 @@ public class ActivityController extends Controller {
 			Activity activity = SQLCommander.queryActivity(activityId);
 			if (activity == null) throw new ActivityNotFoundException();
 			int originalRelation = SQLCommander.isActivityMarkable(userId, activity, relation);
-			if (originalRelation == UserActivityRelation.invalid) throw new UnexpectedUserActivityRelationException("Relation is invalid for marking!");
+			if (originalRelation == UserActivityRelation.invalid) throw new UnexpectedUserActivityRelationException();
 
 			int newRelation = UserActivityRelation.maskRelation(relation, originalRelation);
 

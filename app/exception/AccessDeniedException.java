@@ -8,7 +8,4 @@ public class AccessDeniedException extends Exception {
 		super("Access Denied");
 	}
 
-	public AccessDeniedException(String message) {
-		super(message);
-	}	
 } 

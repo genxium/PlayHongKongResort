@@ -8,8 +8,4 @@ public class ActivityHasNotBegunException extends Exception {
 		super("Activity has not begun yet.");
 	}
 	
-	public ActivityHasNotBegunException(String message) {
-		super(message);
-	}
-	
 }

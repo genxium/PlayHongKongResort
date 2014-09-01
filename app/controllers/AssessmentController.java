@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.SQLHelper;
 import dao.EasyPreparedStatementBuilder;
 import model.*;
+import exception.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -46,16 +47,16 @@ public class AssessmentController extends Controller {
             Map<String, String[]> formData = body.asFormUrlEncoded();
 
             String token = formData.get(User.TOKEN)[0];
-            if (token == null) throw new Exception();
+            if (token == null) throw new NullPointerException();
             Integer userId = DataUtils.getUserIdByToken(token);
-            if (userId == null) throw new Exception();
+            if (userId == null) throw new UserNotFoundException();
             User user = SQLCommander.queryUser(userId);
-            if (user == null) throw new Exception();
+            if (user == null) throw new UserNotFoundException();
             Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-            if (activityId == null) throw new Exception();
+            if (activityId == null) throw new ActivityNotFoundException();
 
             Integer relation = SQLCommander.queryUserActivityRelation(userId, activityId);
-            if ((relation & UserActivityRelation.present) == 0) throw new Exception();
+            if ((relation & UserActivityRelation.present) == 0) throw new UnexpectedUserActivityRelationException();
 
             String bundle = formData.get(BUNDLE)[0];
             JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
@@ -70,7 +71,7 @@ public class AssessmentController extends Controller {
             }
 
             int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
-            if(originalRelation == UserActivityRelation.invalid) throw new Exception();
+            if(originalRelation == UserActivityRelation.invalid) throw new UnexpectedUserActivityRelationException();
 
             int newRelation = UserActivityRelation.maskRelation(UserActivityRelation.assessed, originalRelation);
 
@@ -78,7 +79,7 @@ public class AssessmentController extends Controller {
             builder.update(UserActivityRelation.TABLE).set(UserActivityRelation.RELATION, newRelation);
             builder.where(UserActivityRelation.USER_ID, "=", userId);
             builder.where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
-            if(!SQLHelper.update(builder)) throw new Exception();
+            if(!SQLHelper.update(builder)) throw new NullPointerException();
 
             ObjectNode ret = Json.newObject();
             ret.put(UserActivityRelation.RELATION, newRelation);

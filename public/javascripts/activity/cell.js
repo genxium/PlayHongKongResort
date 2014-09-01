@@ -21,21 +21,7 @@ function onBtnEditClicked(evt){
     	evt.preventDefault();
     	var data = evt.data;
         var activity = data[g_keyActivity];
-
-        g_onEditorCancelled=function(){
-                g_sectionActivityEditor.modal("hide");
-        };
-
-        g_activityEditor=generateActivityEditor(activity);
-        g_modalActivityEditor.empty();
-        g_modalActivityEditor.append(g_activityEditor);
-
-        g_sectionActivityEditor.css("position", "absolute");
-        g_sectionActivityEditor.css("height", "90%");
-        g_sectionActivityEditor.css("padding", "5pt");
-        g_sectionActivityEditor.modal({
-                show: true
-        });
+	showActivityEditor(activity);
 }
 
 function onBtnJoinClicked(evt){
@@ -50,27 +36,23 @@ function onBtnJoinClicked(evt){
 	params[g_keyActivityId] = data[g_keyActivityId];
 	params[g_keyToken] = token;
 
-	try{
-		$.ajax({
-			type: "POST",
-			url: "/activity/join",
-			data: params,
-			success: function(data, status, xhr){
-				var cell=btnJoin.parent();
-				btnJoin.remove();
+	$.ajax({
+		type: "POST",
+		url: "/activity/join",
+		data: params,
+		success: function(data, status, xhr){
+			var cell = btnJoin.parent();
+			btnJoin.remove();
 
-				var appliedIndicator=$('<div>', {
-					class: g_classAppliedIndicator,
-					text: 'Applied'
-				}).appendTo(cell);
-			},
-			error: function(xhr, status, errThrown){
+			$('<div>', {
+				class: g_classAppliedIndicator,
+				text: 'Applied'
+			}).appendTo(cell);
+		},
+		error: function(xhr, status, errThrown){
 
-			}
-		});
-	} catch(err){
-
-	}
+		}
+	});
 }
 
 function onBtnDetailClicked(evt){
@@ -78,12 +60,8 @@ function onBtnDetailClicked(evt){
         var data = evt.data;
         var activityId = data[g_keyActivityId];
 
-	try{
-		var detailPagePath="/activity/detail/show?"+g_keyActivityId+"="+activityId;
-		window.open(detailPagePath);
-    	} catch(err){
-        	alert(err.toString());
-	}
+	var detailPagePath="/activity/detail/show?"+g_keyActivityId+"="+activityId;
+	window.open(detailPagePath);
 }
 
 // Generators

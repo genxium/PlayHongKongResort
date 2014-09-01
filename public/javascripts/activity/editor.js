@@ -82,7 +82,7 @@ function removeActivityEditor(){
 }
 
 function initActivityEditor(){
-	var wrap=$("#wrap");
+	var wrap = $("#wrap");
 	/*
 		Note: ALL attributes, especially the `class` attribute MUST be written INSIDE the div tag, bootstrap is NOT totally compatible with jQuery!!!
 	*/
@@ -95,7 +95,26 @@ function initActivityEditor(){
 	g_modalActivityEditor = $("<div>", {
 		class: "modal-content"
 	}).appendTo(dialog);
+
+        g_onEditorCancelled = function(){
+                g_sectionActivityEditor.modal("hide");
+        };
+
 	removeActivityEditor();
+}
+
+function showActivityEditor(activity) {
+
+        g_activityEditor = generateActivityEditor(activity);
+        g_modalActivityEditor.empty();
+        g_modalActivityEditor.append(g_activityEditor);
+
+        g_sectionActivityEditor.css("position", "absolute");
+        g_sectionActivityEditor.css("height", "90%");
+        g_sectionActivityEditor.css("padding", "5pt");
+        g_sectionActivityEditor.modal({
+                show: true
+        });
 }
 
 function countSelectedImages(){

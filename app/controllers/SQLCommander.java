@@ -469,96 +469,113 @@ public class SQLCommander {
 
     public static boolean isActivityEditable(Integer userId, Integer activityId) {
         boolean ret = false;
-        do {
-            if (userId == null) break;
-            if (activityId == null) break;
-            Activity activity = SQLCommander.queryActivity(activityId);
-            ret = isActivityEditable(userId, activity);
-        } while (false);
+        try {
+		if (userId == null) throw new UserNotFoundException();
+		if (activityId == null) throw new ActivityNotFoundException();
+		Activity activity = SQLCommander.queryActivity(activityId);
+		ret = isActivityEditable(userId, activity);
+        } catch (Exception e) {
+		System.out.println(SQLCommander.class.getName() + ".isActivityEditable, " + e.getMessage());
+	}
         return ret;
     }
 
     public static boolean isActivityEditable(Integer userId, Activity activity) {
         boolean ret = false;
-        do {
-            if (userId == null) break;
-            if (activity == null) break;
-            if (!validateOwnership(userId, activity)) break;
-            if (activity.getStatus() != Activity.CREATED) break;
-            ret = true;
-        } while (false);
+        try {
+		if (userId == null) throw new UserNotFoundException();
+		if (activity == null) throw new ActivityNotFoundException();
+		if (!validateOwnership(userId, activity)) throw new AccessDeniedException();
+		if (activity.getStatus() != Activity.CREATED) throw new InvalidActivityStatusException();
+		ret = true;
+        } catch (Exception e) {
+		System.out.println(SQLCommander.class.getName() + ".isActivityEditable, " + e.getMessage());
+	} 
         return ret;
     }
 
     public static boolean isActivityJoinable(Integer userId, int activityId) {
         boolean ret = false;
-        do {
-            if (userId == null) break;
-            Activity activity = queryActivity(activityId);
-            ret = isActivityJoinable(userId, activity);
-        } while (false);
+	try {
+		if (userId == null) throw new UserNotFoundException();
+		Activity activity = queryActivity(activityId);
+		if (activity == null) throw new ActivityNotFoundException();
+		ret = isActivityJoinable(userId, activity);
+        } catch (Exception e) {
+		System.out.println(SQLCommander.class.getName() + ".isActivityJoinable, " + e.getMessage());
+	} 
         return ret;
     }
 
     public static boolean isActivityJoinable(User user, Activity activity) {
         boolean ret = false;
-        do {
-            if (user == null) break;
-            int userId = user.getId();
-            ret = isActivityJoinable(userId, activity);
-        } while (false);
+        try {
+		if (user == null) throw new UserNotFoundException();
+		int userId = user.getId();
+		ret = isActivityJoinable(userId, activity);
+        } catch (Exception e) {
+		System.out.println(SQLCommander.class.getName() + ".isActivityJoinable, " + e.getMessage());
+	} 
         return ret;
     }
 
     public static boolean isActivityJoinable(Integer userId, Activity activity) {
         boolean ret = false;
-        do {
-            if (userId == null) break;
-            if (activity == null) break;
-            if (activity.getStatus() != Activity.ACCEPTED) break;
-            int activityId = activity.getId();
-            int relation = queryUserActivityRelation(userId, activityId);
-            if (relation != UserActivityRelation.invalid) break;
-            ret = true;
-        } while (false);
+        try {
+		if (userId == null) throw new UserNotFoundException();
+		if (activity == null) throw new ActivityNotFoundException();
+		if (activity.getStatus() != Activity.ACCEPTED) throw new InvalidActivityStatusException();
+		int activityId = activity.getId();
+		int relation = queryUserActivityRelation(userId, activityId);
+		if (relation != UserActivityRelation.invalid) throw new UnexpectedUserActivityRelationException();
+		ret = true;
+        } catch (Exception e) {
+		System.out.println(SQLCommander.class.getName() + ".isActivityJoinable, " + e.getMessage());
+	} 
         return ret;
     }
 
     public static boolean isActivityCommentable(Integer from, Integer to, Integer activityId) {
         boolean ret = false;
-        do {
-            if (from == null) break;
-            if (to == null) break;
-            if (activityId == null) break;
-            Activity activity = queryActivity(activityId);
-            if (activity == null) break;
-            ret = isActivityCommentable(from, to, activity);
-        } while (false);
+        try {
+		if (from == null) throw new UserNotFoundException();
+		if (to == null) throw new UserNotFoundException();
+		if (activityId == null) throw new ActivityNotFoundException();
+		Activity activity = queryActivity(activityId);
+		if (activity == null) throw new ActivityNotFoundException();
+		ret = isActivityCommentable(from, to, activity);
+        } catch (Exception e) {
+		System.out.println(SQLCommander.class.getName() + ".isActivityCommentable, " + e.getMessage());	
+	} 
         return ret;
     }
 
     public static boolean isActivityCommentable(Integer from, Integer to, Activity activity) {
         boolean ret = false;
-        do {
-            if (from == null) break;
-            if (to == null) break;
-            if (activity == null) break;
-            if (activity.hasBegun()) break;
-            ret = true;
-        } while (false);
+        try {
+		if (from == null) throw new UserNotFoundException();
+		if (to == null) throw new UserNotFoundException();
+		if (activity == null) throw new ActivityNotFoundException();
+		if (activity.hasBegun()) throw new ActivityHasNotBegunException();
+		ret = true;
+        } catch (Exception e) {
+		System.out.println(SQLCommander.class.getName() + ".isActivityCommentable, " + e.getMessage());	
+	} 
         return ret;
     }
 
     public static boolean isUserAssessable(Integer from, Integer to, Integer activityId) {
         boolean ret = false;
-        do {
-            if (from == null) break;
-            if (to == null) break;
-            if (activityId == null) break;
-            Activity activity = queryActivity(activityId);
-            if (activity == null) break;
-            ret = isUserAssessable(from, to, activity);
-        } while (false);
+        try {
+		if (from == null) throw new UserNotFoundException();
+		if (to == null) throw new UserNotFoundException();
+		if (activityId == null) throw new ActivityNotFoundException();
+		Activity activity = queryActivity(activityId);
+		if (activity == null) throw new ActivityNotFoundException();
+		ret = isUserAssessable(from, to, activity);
+        } catch (Exception e) {
+		System.out.println(SQLCommander.class.getName() + ".isUserAssessable, " + e.getMessage());
+	}
         return ret;
     }
 
@@ -641,131 +658,129 @@ public class SQLCommander {
     }
 
     public static int uploadUserAvatar(User user, String imageURL) {
-        try {
-            EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
-            builderImage.insert(Image.URL, imageURL).into(Image.TABLE);
-            int lastImageId = SQLHelper.insert(builderImage);
-            if (lastImageId == SQLHelper.INVALID) throw new Exception();
+	    int ret = INVALID;
+	    try {
+		    EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
+		    builderImage.insert(Image.URL, imageURL).into(Image.TABLE);
+		    int lastImageId = SQLHelper.insert(builderImage);
+		    if (lastImageId == SQLHelper.INVALID) throw new Exception();
 
-            EasyPreparedStatementBuilder builderUser = new EasyPreparedStatementBuilder();
-            builderUser.update(User.TABLE).set(User.AVATAR, lastImageId).where(User.ID, "=", user.getId());
-            if (!SQLHelper.update(builderUser)) {
-                if (deleteImageRecord(lastImageId)) {
-                    System.out.println(SQLCommander.class.getName()+".uploadUserAvatar");
-                }
-                throw new Exception();
-            }
-            return lastImageId;
-        } catch (Exception e){
-            return INVALID;
-        }
+		    EasyPreparedStatementBuilder builderUser = new EasyPreparedStatementBuilder();
+		    builderUser.update(User.TABLE).set(User.AVATAR, lastImageId).where(User.ID, "=", user.getId());
+		    if (!SQLHelper.update(builderUser)) {
+			    if (deleteImageRecord(lastImageId)) {
+				    System.out.println(SQLCommander.class.getName()+".uploadUserAvatar");
+			    }
+			    throw new NullPointerException();
+		    }
+		    ret = lastImageId;
+	    } catch (Exception e){
+		    System.out.println(SQLCommander.class.getName() + ".uploadUserAvatar, " + e.getMessage());
+	    }
+	    return ret;
     }
 
     public static Image queryImage(int imageId) {
-        Image image = null;
-        do {
-            try {
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-                String[] names = {Image.ID, Image.URL};
-                builder.select(names).from(Image.TABLE).where(Image.ID, "=", imageId);
-                List<JSONObject> images = SQLHelper.select(builder);
-                if (images == null) break;
-                Iterator<JSONObject> itImage = images.iterator();
-                if (itImage.hasNext()) {
-                    JSONObject imageJson = itImage.next();
-                    image = new Image(imageJson);
-                }
-            } catch (Exception e) {
+	    Image image = null;
+	    try {
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    String[] names = {Image.ID, Image.URL};
+		    builder.select(names).from(Image.TABLE).where(Image.ID, "=", imageId);
+		    List<JSONObject> images = SQLHelper.select(builder);
+		    if (images == null) throw new ImageNotFoundException();
+		    Iterator<JSONObject> itImage = images.iterator();
+		    if (itImage.hasNext()) {
+			    JSONObject imageJson = itImage.next();
+			    image = new Image(imageJson);
+		    }
+	    } catch (Exception e) {
 
-            }
-        } while (false);
-        return image;
+	    }
+	    return image;
     }
 
     public static boolean deleteImageRecord(int imageId) {
-        boolean ret = false;
-        do {
-            try {
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-                builder.from(Image.TABLE).where(Image.ID, "=", imageId);
-                ret = SQLHelper.delete(builder);
-            } catch (Exception e) {
+	    boolean ret = false;
+	    try {
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    builder.from(Image.TABLE).where(Image.ID, "=", imageId);
+		    ret = SQLHelper.delete(builder);
+	    } catch (Exception e) {
 
-            }
-        } while (false);
-        return ret;
+	    }
+	    return ret;
     }
 
     public static boolean deleteImageRecord(int imageId, int activityId) {
-        boolean ret = false;
-        do {
-            try {
-                String[] whereCols = {ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID};
-                String[] whereOps = {"=", "="};
-                Object[] whereVals = {activityId, imageId};
+	    boolean ret = false;
+	    try {
+		    String[] whereCols = {ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID};
+		    String[] whereOps = {"=", "="};
+		    Object[] whereVals = {activityId, imageId};
 
-                EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
-                builderRelation.from(ActivityImageRelation.TABLE).where(whereCols, whereOps, whereVals);
+		    EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
+		    builderRelation.from(ActivityImageRelation.TABLE).where(whereCols, whereOps, whereVals);
 
-                if (!SQLHelper.delete(builderRelation)) break;
+		    if (!SQLHelper.delete(builderRelation)) throw new NullPointerException();
 
-                EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
-                builderImage.from(Image.TABLE).where(Image.ID, "=", imageId);
-                ret = SQLHelper.delete(builderImage);
-            } catch (Exception e) {
+		    EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
+		    builderImage.from(Image.TABLE).where(Image.ID, "=", imageId);
+		    ret = SQLHelper.delete(builderImage);
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".deleteImageRecord, " + e.getMessage());
+	    }
 
-            }
-        } while (false);
-
-        return ret;
+	    return ret;
     }
 
     public static List<Image> queryImages(int activityId) {
-        List<Image> images = new LinkedList<Image>();
-        try {
-            String query = "SELECT " + Image.ID + ", " + Image.URL + " FROM " + Image.TABLE + " WHERE EXISTS (SELECT NULL FROM " + ActivityImageRelation.TABLE + " WHERE "
-                    + ActivityImageRelation.ACTIVITY_ID + "=? AND " + ActivityImageRelation.TABLE + "." + ActivityImageRelation.IMAGE_ID + "=" + Image.TABLE + "." + Image.ID +
-                    ")";
-            PreparedStatement statement = SQLHelper.getConnection().prepareStatement(query);
-            statement.setInt(1, activityId);
-            List<JSONObject> imageRecords = SQLHelper.select(statement);
-            for (JSONObject imageRecord : imageRecords) {
-                Image image = new Image(imageRecord);
-                images.add(image);
-            }
+	    List<Image> images = new LinkedList<Image>();
+	    try {
+		    String query = "SELECT " + Image.ID + ", " + Image.URL + " FROM " + Image.TABLE + " WHERE EXISTS (SELECT NULL FROM " + ActivityImageRelation.TABLE + " WHERE "
+			    + ActivityImageRelation.ACTIVITY_ID + "=? AND " + ActivityImageRelation.TABLE + "." + ActivityImageRelation.IMAGE_ID + "=" + Image.TABLE + "." + Image.ID +
+			    ")";
+		    PreparedStatement statement = SQLHelper.getConnection().prepareStatement(query);
+		    statement.setInt(1, activityId);
+		    List<JSONObject> imageRecords = SQLHelper.select(statement);
+		    for (JSONObject imageRecord : imageRecords) {
+			    Image image = new Image(imageRecord);
+			    images.add(image);
+		    }
 
-        } catch (Exception e) {
-            System.out.println(SQLCommander.class.getName()+".queryImages, " + e.getMessage());
-        }
-        return images;
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName()+".queryImages, " + e.getMessage());
+	    }
+	    return images;
     }
 
     public static int uploadImage(User user, final Activity activity, final String imageURL) {
-        int lastImageId = INVALID;
-        do {
-            if (user == null) break;
-            if (activity == null) break;
-            EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
-            builderImage.insert(Image.URL, imageURL).into(Image.TABLE);
-            lastImageId = SQLHelper.insert(builderImage);
-            if (lastImageId == INVALID) break;
+	    int lastImageId = INVALID;
+	    try {
+		    if (user == null) throw new UserNotFoundException();
+		    if (activity == null) throw new ActivityNotFoundException();
+		    EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
+		    builderImage.insert(Image.URL, imageURL).into(Image.TABLE);
+		    lastImageId = SQLHelper.insert(builderImage);
+		    if (lastImageId == INVALID) throw new NullPointerException();
 
-            String[] cols = {ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID};
-            Object[] vals = {activity.getId(), lastImageId};
-            EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
-            builderRelation.insert(cols, vals).into(ActivityImageRelation.TABLE);
+		    String[] cols = {ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID};
+		    Object[] vals = {activity.getId(), lastImageId};
+		    EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
+		    builderRelation.insert(cols, vals).into(ActivityImageRelation.TABLE);
 
-            int lastRecordId = SQLHelper.insert(builderRelation);
-            if (lastRecordId == SQLHelper.INVALID) {
-                if (deleteImageRecord(lastImageId)) {
-                    lastImageId = INVALID;
-                    System.out.println(SQLCommander.class.getName() + ".uploadImage: image " + lastImageId + " reverted");
-                }
-                break;
-            }
+		    int lastRecordId = SQLHelper.insert(builderRelation);
+		    if (lastRecordId == SQLHelper.INVALID) {
+			    if (deleteImageRecord(lastImageId)) {
+				    lastImageId = INVALID;
+				    System.out.println(SQLCommander.class.getName() + ".uploadImage: image " + lastImageId + " reverted");
+			    }
+			    throw new NullPointerException();
+		    }
 
-        } while (false);
-        return lastImageId;
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".uploadImage, " + e.getMessage());
+	    } 
+	    return lastImageId;
     }
 
     public static List<BasicUser> queryUsers(int activityId, int maskedRelation) {

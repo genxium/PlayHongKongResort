@@ -23,10 +23,7 @@ function BatchAssessmentEditor(){
 	this.editors = null;	
 }
 
-/*
-	generateAssessmentEditor(par: DOM, participant: User)
-*/
-function generateAssessmentEditor(par, participant, batchEditor){
+function generateAssessmentEditor(par, participant, activity, batchEditor){
 	var singleEditor = new SingleAssessmentEditor();
 	var row = $('<p>').appendTo(par);
 	var name = $('<a>', {
@@ -36,41 +33,49 @@ function generateAssessmentEditor(par, participant, batchEditor){
 	}).appendTo(row);
 	singleEditor.participantId = participant.id;
 	singleEditor.name = participant.name;
-	var content=$('<input>', {
-		type: 'text',
-		style: "margin-left: 10pt; display: inline"
-	}).appendTo(row); 
-	content.on("input paste keyup", {editor: singleEditor}, function(evt){
-		var data = evt.data;
-		var editor = data.editor;
-		editor.content = $(this).val();	
-	});	
-	var lock=$('<input>', {
-		type: "checkbox",
-		style: "margin-left: 10pt; display: inline"
-	}).appendTo(row);
-	lock.on("change", function(evt){
-		evt.preventDefault();
-		var checked = $(this).is(":checked");
-		if(!checked) {
-			content.prop("disabled", false);
-			--g_lockedCount;
-			if(g_btnSubmit != null) g_btnSubmit.prop("disabled", true);
-		} else {
-			content.prop("disabled", true);
-			++g_lockedCount;
-			if(g_lockedCount == batchEditor.editors.length && g_btnSubmit != null) g_btnSubmit.prop("disabled", false);
-		}
-	});
-	singleEditor.lock = lock;
+	if((activity.relation & assessed) == 0) {
+		var content = $('<input>', {
+			type: 'text',
+			style: "margin-left: 10pt; display: inline"
+		}).appendTo(row); 
+		content.on("input paste keyup", {editor: singleEditor}, function(evt){
+			evt.preventDefault();
+			var data = evt.data;
+			var editor = data.editor;
+			editor.content = $(this).val();	
+		});	
+		var lock=$('<input>', {
+			type: "checkbox",
+			style: "margin-left: 10pt; display: inline"
+		}).appendTo(row);
+		lock.on("change", function(evt){
+			evt.preventDefault();
+			var checked = $(this).is(":checked");
+			if(!checked) {
+				content.prop("disabled", false);
+				--g_lockedCount;
+				if(g_btnSubmit != null) g_btnSubmit.prop("disabled", true);
+			} else {
+				content.prop("disabled", true);
+				++g_lockedCount;
+				if(g_lockedCount == batchEditor.editors.length && g_btnSubmit != null) g_btnSubmit.prop("disabled", false);
+			}
+		});
+		singleEditor.lock = lock;
+	} else {
+		var more = $('<span>', {
+			text: "More>>",
+			style: "display: inline; color: blue; margin-left: 5pt; cursor: pointer"
+		}).appendTo(row);					
+	}
 	return singleEditor;
 }
 
-function generateAssessmentEditors(par, participants, batchEditor) {
+function generateAssessmentEditors(par, participants, activity, batchEditor) {
 	par.empty();
 	var editors = new Array();
 	for(var i = 0; i < participants.length; i++){
-		var editor = generateAssessmentEditor(par, participants[i], batchEditor);
+		var editor = generateAssessmentEditor(par, participants[i], activity, batchEditor);
 		editors.push(editor);
 	}				
 	return editors;
@@ -173,12 +178,11 @@ function generateBatchAssessmentEditor(par, activity, participants, refreshCallb
 		style: "margin-top: 5pt"
 	}).appendTo(sectionAll);
 
-	if( ((activity.relation & present) > 0 || (activity.relation == hosted))
-	     && (activity.relation & assessed) == 0) {
+	if( (activity.relation & present) > 0 || (activity.relation == hosted) ) {
 	     // present but not yet assessed participants
-		var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, batchEditor);
+		var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, activity, batchEditor);
 		batchEditor.editors = editors;
-		generateAssessmentButtons(sectionButtons, activity, batchEditor);
+		if((activity.relation & assessed) == 0) generateAssessmentButtons(sectionButtons, activity, batchEditor);
 	}
 
 	var onSuccess = function(data, status, xhr){	    
@@ -195,9 +199,9 @@ function generateBatchAssessmentEditor(par, activity, participants, refreshCallb
 		if(!value || (activity.relation & assessed) > 0) return;
 		// assessed participants cannot edit or re-submit assessments
 
-		var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, batchEditor);
+		var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, activity, batchEditor);
 		batchEditor.editors = editors;
-		generateAssessmentButtons(sectionButtons, activity, batchEditor);
+		if((activity.relation & assessed) == 0)	generateAssessmentButtons(sectionButtons, activity, batchEditor);
 	};
 
 	var onError = function(xhr, status, err){
@@ -273,7 +277,7 @@ function removeAssessmentsViewer(){
 }
 
 function initAssessmentsViewer(){
-	var wrap=$("#wrap");
+	var wrap = $("#wrap");
 	/*
 		Note: ALL attributes, especially the `class` attribute MUST be written INSIDE the div tag, bootstrap is NOT totally compatible with jQuery!!!
 	*/
@@ -285,6 +289,42 @@ function initAssessmentsViewer(){
 	}).appendTo(g_sectionAssessmentsViewer);
 	g_modalAssessmentsViewer = $("<div>", {
 		class: "modal-content"
-	}).appendTo(dialog);
+	}).appendTo(dialog);	
+
 	removeAssessmentsViewer();
 }
+
+function showAssessmentsViewer(assessments) {
+		
+	g_assessmentsViewer = generateAssessmentsViewer(assessments);
+        g_modalAssessmentsViewer.empty();
+        g_modalAssessmentsViewer.append(g_assessmentsViewer);
+
+        g_sectionAssessmentsViewer.css("position", "absolute");
+        g_sectionAssessmentsViewer.css("height", "90%");
+        g_sectionAssessmentsViewer.css("padding", "5pt");
+        g_sectionAssessmentsViewer.modal({
+                show: true
+        });
+
+}
+
+function generateAssessmentsViewer(assessments) {
+	var ret = $('<div>', {
+		style: "padding: 5pt"
+	});
+	
+	try {
+		if (assessments == null) throw new NullPointerException(); 
+
+		for(var i = 0; i < assessments.length; i++) {
+			$('<p>', {
+				text: assessment.content,
+				style: "border: 2pt solid; border-radius: 3pt"
+			}).appendTo(ret);
+		}
+	} catch (e) {
+		
+	}
+	return ret;
+} 
