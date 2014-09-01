@@ -171,7 +171,7 @@ function displayActivityDetail(par){
 
 	var viewer = null;
 	if(g_activity.hasOwnProperty("viewer")) viewer = g_activity.viewer;
-	var batchAssessmentEditor = generateBatchAssessmentEditor(g_tabAssessments, g_activity, g_activity.presentParticipants, queryActivityDetail);
+	var batchAssessmentEditor = generateBatchAssessmentEditor(g_tabAssessments, g_activity, queryActivityDetail);
 
 	var token = $.cookie(g_keyToken);
 	if(token == null) return;

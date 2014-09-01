@@ -126,8 +126,9 @@ public class Activity {
     }
 
     public boolean hasBegun() {
-	    Calendar calendar = new GregorianCalendar();
-	    return calendar.getTimeInMillis() > m_beginTime.getTime();
+		return true;
+		// Calendar calendar = new GregorianCalendar();
+		// return calendar.getTimeInMillis() > m_beginTime.getTime();
     }
 
     protected Activity() {

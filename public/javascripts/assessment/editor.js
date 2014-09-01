@@ -58,7 +58,7 @@ function generateAssessmentEditor(par, participant, activity, batchEditor){
 			} else {
 				content.prop("disabled", true);
 				++g_lockedCount;
-				if(g_lockedCount == batchEditor.editors.length && g_btnSubmit != null) g_btnSubmit.prop("disabled", false);
+				if(g_lockedCount >= (batchEditor.editors.length - 1) && g_btnSubmit != null) g_btnSubmit.prop("disabled", false);
 			}
 		});
 		singleEditor.lock = lock;
@@ -68,11 +68,13 @@ function generateAssessmentEditor(par, participant, activity, batchEditor){
 			style: "display: inline; color: blue; margin-left: 5pt; cursor: pointer"
 		}).appendTo(row);					
 	}
+	if(g_loggedInUser != null && g_loggedInUser.id == participant.id) row.hide(); 
 	return singleEditor;
 }
 
-function generateAssessmentEditors(par, participants, activity, batchEditor) {
+function generateAssessmentEditors(par, activity, batchEditor) {
 	par.empty();
+	var participants = activity.selectedParticipants; 
 	var editors = new Array();
 	for(var i = 0; i < participants.length; i++){
 		var editor = generateAssessmentEditor(par, participants[i], activity, batchEditor);
@@ -142,7 +144,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 	g_btnSubmit.prop("disabled", true);
 }
 
-function generateBatchAssessmentEditor(par, activity, participants, refreshCallback){
+function generateBatchAssessmentEditor(par, activity, refreshCallback){
 	par.empty();
 	g_lockedCount = 0; // clear lock count on batch editor generated
 	g_refreshCallback = refreshCallback;
@@ -180,7 +182,7 @@ function generateBatchAssessmentEditor(par, activity, participants, refreshCallb
 
 	if( (activity.relation & present) > 0 || (activity.relation == hosted) ) {
 	     // present but not yet assessed participants
-		var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, activity, batchEditor);
+		var editors = generateAssessmentEditors(sectionEditors, activity, batchEditor);
 		batchEditor.editors = editors;
 		if((activity.relation & assessed) == 0) generateAssessmentButtons(sectionButtons, activity, batchEditor);
 	}

@@ -24,14 +24,16 @@ public class AssessmentController extends Controller {
     public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer userId, Integer activityId) {
         response().setContentType("text/plain");
         try {
-            List<Assessment> assessments = SQLCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, activityId);
-            ObjectNode result = Json.newObject();
-            for (Assessment assessment : assessments) {
-                result.put(String.valueOf(assessment.getId()), assessment.toObjectNode());
-            }
-            return ok(result);
+		Integer viewerId = DataUtils.getUserIdByToken(token); 
+		if(viewerId.equals(userId)) throw new AccessDeniedException();
+		List<Assessment> assessments = SQLCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, activityId);
+		ObjectNode result = Json.newObject();
+		for (Assessment assessment : assessments) {
+			result.put(String.valueOf(assessment.getId()), assessment.toObjectNode());
+		}
+		return ok(result);
         } catch (Exception e) {
-            System.out.println(AssessmentController.class.getName() + ".query, " + e.getCause());
+		System.out.println(AssessmentController.class.getName() + ".query, " + e.getMessage());
         }
         return badRequest();
     }
@@ -41,52 +43,52 @@ public class AssessmentController extends Controller {
         response().setContentType("text/plain");
 
         try {
-            Http.RequestBody body = request().body();
+		Http.RequestBody body = request().body();
 
-            // get file data from request body stream
-            Map<String, String[]> formData = body.asFormUrlEncoded();
+		// get file data from request body stream
+		Map<String, String[]> formData = body.asFormUrlEncoded();
 
-            String token = formData.get(User.TOKEN)[0];
-            if (token == null) throw new NullPointerException();
-            Integer userId = DataUtils.getUserIdByToken(token);
-            if (userId == null) throw new UserNotFoundException();
-            User user = SQLCommander.queryUser(userId);
-            if (user == null) throw new UserNotFoundException();
-            Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-            if (activityId == null) throw new ActivityNotFoundException();
+		String token = formData.get(User.TOKEN)[0];
+		if (token == null) throw new NullPointerException();
+		Integer userId = DataUtils.getUserIdByToken(token);
+		if (userId == null) throw new UserNotFoundException();
+		User user = SQLCommander.queryUser(userId);
+		if (user == null) throw new UserNotFoundException();
+		Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+		if (activityId == null) throw new ActivityNotFoundException();
 
-            Integer relation = SQLCommander.queryUserActivityRelation(userId, activityId);
-            if ((relation & UserActivityRelation.present) == 0) throw new UnexpectedUserActivityRelationException();
+		Integer relation = SQLCommander.queryUserActivityRelation(userId, activityId);
+		if ((relation & UserActivityRelation.present) == 0) throw new UnexpectedUserActivityRelationException();
 
-            String bundle = formData.get(BUNDLE)[0];
-            JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
-            for (Object obj : assessmentJsons) {
-                Assessment assessment = new Assessment((JSONObject) obj);
-                assessment.setActivityId(activityId);
-                assessment.setFrom(userId);
-                Assessment existingAssessment = SQLCommander.queryAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo());
-                if (existingAssessment != null) continue;
-                if (!SQLCommander.isUserAssessable(assessment.getFrom(), assessment.getTo(), assessment.getActivityId()))   continue;
-                SQLCommander.createAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo(), assessment.getContent());
-            }
+		String bundle = formData.get(BUNDLE)[0];
+		JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
+		for (Object obj : assessmentJsons) {
+			Assessment assessment = new Assessment((JSONObject) obj);
+			assessment.setActivityId(activityId);
+			assessment.setFrom(userId);
+			Assessment existingAssessment = SQLCommander.queryAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo());
+			if (existingAssessment != null) continue;
+			if (!SQLCommander.isUserAssessable(assessment.getFrom(), assessment.getTo(), assessment.getActivityId()))   continue;
+			SQLCommander.createAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo(), assessment.getContent());
+		}
 
-            int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
-            if(originalRelation == UserActivityRelation.invalid) throw new UnexpectedUserActivityRelationException();
+		int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
+		if(originalRelation == UserActivityRelation.invalid) throw new UnexpectedUserActivityRelationException();
 
-            int newRelation = UserActivityRelation.maskRelation(UserActivityRelation.assessed, originalRelation);
+		int newRelation = UserActivityRelation.maskRelation(UserActivityRelation.assessed, originalRelation);
 
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            builder.update(UserActivityRelation.TABLE).set(UserActivityRelation.RELATION, newRelation);
-            builder.where(UserActivityRelation.USER_ID, "=", userId);
-            builder.where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
-            if(!SQLHelper.update(builder)) throw new NullPointerException();
+		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		builder.update(UserActivityRelation.TABLE).set(UserActivityRelation.RELATION, newRelation);
+		builder.where(UserActivityRelation.USER_ID, "=", userId);
+		builder.where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
+		if(!SQLHelper.update(builder)) throw new NullPointerException();
 
-            ObjectNode ret = Json.newObject();
-            ret.put(UserActivityRelation.RELATION, newRelation);
-            return ok(ret);
+		ObjectNode ret = Json.newObject();
+		ret.put(UserActivityRelation.RELATION, newRelation);
+		return ok(ret);
         } catch (Exception e) {
-	    System.out.println(AssessmentController.class.getName()+".submit, " + e.getMessage());
-            return badRequest();
+		System.out.println(AssessmentController.class.getName()+".submit, " + e.getMessage());
         }
+	return badRequest();
     }
 }

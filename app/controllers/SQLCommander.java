@@ -588,7 +588,7 @@ public class SQLCommander {
 		if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
 		int relation1 = queryUserActivityRelation(from, activity.getId());
 		int relation2 = queryUserActivityRelation(to, activity.getId());
-		if ((relation1 & UserActivityRelation.present) == 0 || (relation2 & UserActivityRelation.present) == 0)	throw new UnexpectedUserActivityRelationException();
+		if ((relation1 & UserActivityRelation.selected) == 0 || (relation2 & UserActivityRelation.selected) == 0)	throw new UnexpectedUserActivityRelationException();
 		ret = true;
 	} catch (Exception e) {
 		System.out.println(SQLCommander.class.getName() + ".isUserAssessable, " + e.getMessage());
