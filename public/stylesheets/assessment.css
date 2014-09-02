@@ -1,0 +1,25 @@
+.assessments-viewer, th, td {
+    border: 1px solid green;
+}
+
+.assessments-viewer {
+    width: 100%;
+}
+
+.assessments-viewer-row {
+    width: 100%;
+}
+
+.assessments-viewer-row > th {
+    background-color: green;
+    color: white;
+    text-align: center;
+    width: 50%;
+}
+
+.assessments-viewer-row > td {
+    color: white;
+    text-align: center;
+    color: black;
+    width: 50%;
+}

@@ -43,7 +43,7 @@ GET /comment/query controllers.CommentController.query(activity_id: Integer ?=nu
 
 # Assessment
 POST /assessment/submit controllers.AssessmentController.submit
-GET /assessment/query controllers.AssessmentController.query(refIndex: String ?=null, numItems: Integer ?=null, direction: Integer ?=null, token: String ?=null, userId: Integer ?=null, activityId: Integer ?=null)
+GET /assessment/query controllers.AssessmentController.query(ref_index: String ?=null, num_items: Integer ?=null, direction: Integer ?=null, token: String ?=null, user_id: Integer ?=null, activity_id: Integer ?=null)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

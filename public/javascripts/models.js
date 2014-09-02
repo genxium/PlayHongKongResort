@@ -80,13 +80,10 @@ function Activity(activityJson){
     }
 }
 
-function Assessment(content, to) {
-	this.content = content;
-	this.to = to;
-}
-
 function Assessment(assessmentJson) {
 	if(assessmentJson.hasOwnProperty("content")) this.content = assessmentJson["content"];
 	if(assessmentJson.hasOwnProperty("from")) this.from = assessmentJson["from"];
 	if(assessmentJson.hasOwnProperty("to")) this.to = assessmentJson["to"];
+	if(assessmentJson.hasOwnProperty("from_name")) this.from_name = assessmentJson["from_name"];
+	if(assessmentJson.hasOwnProperty("to_name")) this.to_name = assessmentJson["to_name"];
 }

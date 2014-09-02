@@ -7,6 +7,13 @@ var g_sectionAssessmentsViewer = null;
 var g_modalAssessmentsViewer = null;
 var g_assessmentsViewer = null;
 
+function createAssessment(content, to) {
+	var assessmentJson = {};
+	assessmentJson["content"] = content;
+	assessmentJson["to"] = to;
+	return new Assessment(assessmentJson);
+}
+
 /*
 	Trying out new style of info gathering for DOMs
 */
@@ -143,7 +150,8 @@ function generateAssessmentButtons(par, activity, batchEditor){
 			var editor = batchEditor.editors[i];
 			var content = editor.content;
 			var to = editor.participantId;
-			var assessment = new Assessment(content, to); 
+			if(to == g_loggedInUser.id) continue;
+			var assessment = createAssessment(content, to); 
 			assessments.push(assessment);	
 		}
 		var params = {};
@@ -228,7 +236,7 @@ function generateBatchAssessmentEditor(par, activity, refreshCallback){
 		if(!value) return;
 		// assessed participants cannot edit or re-submit assessments
 
-		var editors = generateAssessmentEditors(sectionEditors, activity.presentParticipants, activity, batchEditor);
+		var editors = generateAssessmentEditors(sectionEditors, activity, batchEditor);
 		batchEditor.editors = editors;
 		if((activity.relation & assessed) == 0 && batchEditor.editors.length > 1)	generateAssessmentButtons(sectionButtons, activity, batchEditor);
 	};
@@ -277,14 +285,14 @@ function updateAttendance(activityId, attendance, onSuccess, onError){
 
 function queryAssessments(userId, activityId, onSuccess, onError) {
 	var params = {};	
-	params[g_keyUserId] = userId; 
-	params[g_keyActivityId] = activityId;
-	
+
 	params[g_keyRefIndex] = 0;
 	params[g_keyNumItems] = 20;
 	params[g_keyDirection] = 1;
 	var token = $.cookie(g_keyToken);
-	params[g_keyToken] = token;
+	if(token != null) params[g_keyToken] = token;
+        params[g_keyUserId] = userId;
+	params[g_keyActivityId] = activityId;
 
 	$.ajax({
 		type: "GET",
@@ -339,21 +347,36 @@ function showAssessmentsViewer(assessments) {
 }
 
 function generateAssessmentsViewer(assessments) {
-	var ret = $('<div>', {
-		style: "padding: 5pt"
-	});
-	
+        var ret = $("<div>", {
+            style: "padding: 10%"
+        });
+
+	var tbl = $("<table class='assessments-viewer'>").appendTo(ret);
+
 	try {
-		if (assessments == null) throw new NullPointerException(); 
+		if (assessments == null) throw new NullPointerException();
+                var head = $("<tr class='assessments-viewer-row'>").appendTo(tbl);
+
+                $('<th>', {
+                    text: "Content"
+                }).appendTo(head);
+
+                $('<th>', {
+                    text: "From"
+                }).appendTo(head);
 
 		for(var i = 0; i < assessments.length; i++) {
-			$('<p>', {
-				text: assessment.content,
-				style: "border: 2pt solid; border-radius: 3pt"
-			}).appendTo(ret);
+		        var assessment = assessments[i];
+			var row = $("<tr class='assessments-viewer-row'>").appendTo(tbl);
+                        $('<td>', {
+                            text: assessment.content
+                        }).appendTo(row);
+                        $('<td>', {
+                            text: assessment.from_name
+                        }).appendTo(row);
 		}
 	} catch (e) {
-		
+		alert(e.message);
 	}
 	return ret;
 } 

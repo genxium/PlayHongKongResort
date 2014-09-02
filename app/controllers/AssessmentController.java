@@ -14,7 +14,6 @@ import play.mvc.Http;
 import play.mvc.Result;
 import utilities.DataUtils;
 
-import java.sql.Timestamp;
 import java.util.*;
 
 public class AssessmentController extends Controller {
@@ -24,16 +23,14 @@ public class AssessmentController extends Controller {
     public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer userId, Integer activityId) {
         response().setContentType("text/plain");
         try {
-		Integer viewerId = DataUtils.getUserIdByToken(token); 
-		if(viewerId.equals(userId)) throw new AccessDeniedException();
-		List<Assessment> assessments = SQLCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, activityId);
-		ObjectNode result = Json.newObject();
-		for (Assessment assessment : assessments) {
-			result.put(String.valueOf(assessment.getId()), assessment.toObjectNode());
-		}
-		return ok(result);
+		    Integer viewerId = DataUtils.getUserIdByToken(token);
+		    if(viewerId.equals(userId)) throw new AccessDeniedException();
+		    List<Assessment> assessments = SQLCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, null, userId, activityId);
+            ObjectNode result = Json.newObject();
+            for (Assessment assessment : assessments)   result.put(String.valueOf(assessment.getId()), assessment.toObjectNodeWithNames());
+            return ok(result);
         } catch (Exception e) {
-		System.out.println(AssessmentController.class.getName() + ".query, " + e.getMessage());
+		    System.out.println(AssessmentController.class.getName() + ".query, " + e.getMessage());
         }
         return badRequest();
     }
@@ -58,7 +55,7 @@ public class AssessmentController extends Controller {
 		if (activityId == null) throw new ActivityNotFoundException();
 
 		Integer relation = SQLCommander.queryUserActivityRelation(userId, activityId);
-		if ((relation & UserActivityRelation.present) == 0) throw new UnexpectedUserActivityRelationException();
+		if ((relation & UserActivityRelation.present) == 0) throw new InvalidUserActivityRelationException();
 
 		String bundle = formData.get(BUNDLE)[0];
 		JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
@@ -73,7 +70,7 @@ public class AssessmentController extends Controller {
 		}
 
 		int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
-		if(originalRelation == UserActivityRelation.invalid) throw new UnexpectedUserActivityRelationException();
+		if(originalRelation == UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
 
 		int newRelation = UserActivityRelation.maskRelation(UserActivityRelation.assessed, originalRelation);
 

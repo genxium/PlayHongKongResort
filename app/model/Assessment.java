@@ -26,7 +26,7 @@ public class Assessment {
     public static final String GENERATED_TIME = "generated_time";
 
     public static final String FROM_NAME = "from_name";
-    public static final String to_name = "to_name";
+    public static final String TO_NAME = "to_name";
 
     protected Integer m_id = null;
     protected String m_content = null;
@@ -83,6 +83,9 @@ public class Assessment {
         if (assessmentJson.containsKey(ACTIVITY_ID)) {
             m_activityId = Converter.toInteger(assessmentJson.get(ACTIVITY_ID));
         }
+        if (assessmentJson.containsKey(GENERATED_TIME)) {
+            m_generatedTime = (Timestamp) assessmentJson.get(GENERATED_TIME);
+        }
     }
 
     public ObjectNode toObjectNode() {
@@ -94,7 +97,20 @@ public class Assessment {
             ret.put(CONTENT, m_content);
             ret.put(GENERATED_TIME, m_generatedTime.toString());
         } catch (Exception e) {
+            System.out.println(Assessment.class.getName() + ".toObjectNode, " + e.getMessage());
+        }
+        return ret;
+    }
 
+    public ObjectNode toObjectNodeWithNames() {
+        ObjectNode ret = toObjectNode();
+        try {
+            User fromUser = SQLCommander.queryUser(m_from);
+            User toUser = SQLCommander.queryUser(m_to);
+            ret.put(FROM_NAME, fromUser.getName());
+            ret.put(TO_NAME, toUser.getName());
+        } catch (Exception e) {
+            System.out.println(Assessment.class.getName() + ".toObjectNodeWithNames, " + e.getMessage());
         }
         return ret;
     }

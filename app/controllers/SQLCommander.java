@@ -6,7 +6,6 @@ import model.*;
 import exception.*;
 import org.json.simple.JSONObject;
 
-import javax.persistence.Basic;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
@@ -310,73 +309,63 @@ public class SQLCommander {
     }
 
     public static List<Comment> queryTopLevelComments(Integer activityId, String refIndex, String orderKey, String orderDirection, Integer numItems, Integer direction) {
-        List<Comment> ret = new ArrayList<Comment>();
-        do {
-            try {
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+	    List<Comment> ret = new ArrayList<Comment>();
+	    try {
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-                // query table Comment
-                String[] names = {Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
-                String[] whereCols = {Comment.ACTIVITY_ID, Comment.PARENT_ID};
-                String[] whereOps = {"=", "="};
-                Object[] whereVals = {activityId, INVALID};
+		    // query table Comment
+		    String[] names = {Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
+		    String[] whereCols = {Comment.ACTIVITY_ID, Comment.PARENT_ID};
+		    String[] whereOps = {"=", "="};
+		    Object[] whereVals = {activityId, INVALID};
 
-                builder.select(names).from(Comment.TABLE).where(whereCols, whereOps, whereVals).order(orderKey, orderDirection);
+		    builder.select(names).from(Comment.TABLE).where(whereCols, whereOps, whereVals).order(orderKey, orderDirection);
 
-                if (refIndex.equals(INITIAL_REF_INDEX)) {
-                    builder.where(orderKey, ">=", INITIAL_REF_INDEX);
-                } else if (direction.equals(DIRECTION_FORWARD)) {
-                    builder.where(orderKey, ">", refIndex);
-                } else {
-                    builder.where(orderKey, "<", refIndex);
-                }
+		    if (refIndex.equals(INITIAL_REF_INDEX)) {
+			    builder.where(orderKey, ">=", INITIAL_REF_INDEX);
+		    } else if (direction.equals(DIRECTION_FORWARD)) {
+			    builder.where(orderKey, ">", refIndex);
+		    } else {
+			    builder.where(orderKey, "<", refIndex);
+		    }
 
-                if (numItems != null) {
-                    builder.limit(numItems);
-                }
+		    if (numItems != null) {
+			    builder.limit(numItems);
+		    }
 
-                List<JSONObject> commentsJson = SQLHelper.select(builder);
-                if (commentsJson == null) break;
-                for (JSONObject commentJson : commentsJson) {
-                    ret.add(new Comment(commentJson));
-                }
-            } catch (Exception e) {
-                System.out.println(SQLCommander.class.getName() + ".queryTopLevelComments, " + e.getMessage());
-            }
-        } while (false);
-        return ret;
+		    List<JSONObject> commentsJson = SQLHelper.select(builder);
+		    if (commentsJson == null) throw new NullPointerException();
+		    for (JSONObject commentJson : commentsJson)	ret.add(new Comment(commentJson));
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".queryTopLevelComments, " + e.getMessage());
+	    }
+	    return ret;
     }
 
     public static List<Comment> querySubComments(Integer parentId, String refIndex, String orderKey, String orderDirection, Integer numItems, Integer direction) {
-        List<Comment> ret = new ArrayList<Comment>();
-        do {
-            try {
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+	    List<Comment> ret = new ArrayList<Comment>();
+	    try {
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-                String[] names = {Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
-                builder.select(names).from(Comment.TABLE).where(Comment.PARENT_ID, "=", parentId).order(orderKey, orderDirection);
+		    String[] names = {Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
+		    builder.select(names).from(Comment.TABLE).where(Comment.PARENT_ID, "=", parentId).order(orderKey, orderDirection);
 
-                if (refIndex.equals(INITIAL_REF_INDEX)) {
-                    builder.where(orderKey, ">=", INITIAL_REF_INDEX);
-                } else if (direction == DIRECTION_FORWARD) {
-                    builder.where(orderKey, ">", refIndex);
-                } else {
-                    builder.where(orderKey, "<", refIndex);
-                }
-                if (numItems != null) {
-                    builder.limit(numItems);
-                }
+		    if (refIndex.equals(INITIAL_REF_INDEX)) {
+			    builder.where(orderKey, ">=", INITIAL_REF_INDEX);
+		    } else if (direction == DIRECTION_FORWARD) {
+			    builder.where(orderKey, ">", refIndex);
+		    } else {
+			    builder.where(orderKey, "<", refIndex);
+		    }
+		    if (numItems != null) builder.limit(numItems);
 
-                List<JSONObject> commentsJson = SQLHelper.select(builder);
-                if (commentsJson == null) break;
-                for (JSONObject commentJson : commentsJson) {
-                    ret.add(new Comment(commentJson));
-                }
-            } catch (Exception e) {
-                System.out.println(SQLCommander.class.getName() + ".querySubComments, " + e.getMessage());
-            }
-        } while (false);
-        return ret;
+		    List<JSONObject> commentsJson = SQLHelper.select(builder);
+		    if (commentsJson == null) throw new NullPointerException();
+		    for (JSONObject commentJson : commentsJson)	ret.add(new Comment(commentJson));
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".querySubComments, " + e.getMessage());
+	    }
+	    return ret;
     }
 
     public static Assessment queryAssessment(Integer activityId, Integer from, Integer to) {
@@ -398,34 +387,34 @@ public class SQLCommander {
         return ret;
     }
 
-    public static List<Assessment> queryAssessments(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, Integer activityId) {
-        List<Assessment> ret = new ArrayList<Assessment>();
-        try {
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] names = {Assessment.ID, Assessment.CONTENT, Assessment.CONTENT, Assessment.FROM, Assessment.ACTIVITY_ID, Assessment.TO, Assessment.GENERATED_TIME};
-            builder.select(names).from(Assessment.TABLE).where(Assessment.ACTIVITY_ID, "=", activityId).order(orderKey, orientation);
+    public static List<Assessment> queryAssessments(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, Integer from, Integer to, Integer activityId) {
+	    List<Assessment> ret = new ArrayList<Assessment>();
+	    try {
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    String[] names = {Assessment.ID, Assessment.CONTENT, Assessment.CONTENT, Assessment.FROM, Assessment.ACTIVITY_ID, Assessment.TO, Assessment.GENERATED_TIME};
+		    builder.select(names).from(Assessment.TABLE)
+                    .where(Assessment.ACTIVITY_ID, "=", activityId)
+                    .order(orderKey, orientation);
+
+            if(from != null) builder.where(Assessment.FROM, "=", from);
+            if(to != null) builder.where(Assessment.TO, "=", to);
 
             if (refIndex.equals(INITIAL_REF_INDEX)) {
-                builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
-            } else if (direction.equals(DIRECTION_FORWARD)) {
-                builder.where(orderKey, ">", refIndex);
-            } else {
-                builder.where(orderKey, "<", refIndex);
-            }
-            if (numItems != null) {
-                builder.limit(numItems);
-            }
+			    builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
+		    } else if (direction.equals(DIRECTION_FORWARD)) {
+			    builder.where(orderKey, ">", refIndex);
+		    } else {
+			    builder.where(orderKey, "<", refIndex);
+		    }
+            if (numItems != null)	builder.limit(numItems);
 
-            List<JSONObject> assessmentJsons = SQLHelper.select(builder);
-            if (assessmentJsons != null) {
-                for (JSONObject assessmentJson : assessmentJsons) {
-                    ret.add(new Assessment(assessmentJson));
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(SQLCommander.class.getName() + ".queryAssessments, " + e.getMessage());
-        }
-        return ret;
+		    List<JSONObject> assessmentJsons = SQLHelper.select(builder);
+		    if (assessmentJsons == null) throw new NullPointerException();
+		    for (JSONObject assessmentJson : assessmentJsons)	ret.add(new Assessment(assessmentJson));
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".queryAssessments, " + e.getMessage());
+	    }
+	    return ret;
     }
 
     public static boolean updateAssessment(Integer activityId, Integer from, Integer to, String content) {
@@ -527,7 +516,7 @@ public class SQLCommander {
 		if (activity.getStatus() != Activity.ACCEPTED) throw new InvalidActivityStatusException();
 		int activityId = activity.getId();
 		int relation = queryUserActivityRelation(userId, activityId);
-		if (relation != UserActivityRelation.invalid) throw new UnexpectedUserActivityRelationException();
+		if (relation != UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
 		ret = true;
         } catch (Exception e) {
 		System.out.println(SQLCommander.class.getName() + ".isActivityJoinable, " + e.getMessage());
@@ -569,6 +558,7 @@ public class SQLCommander {
         try {
 		if (from == null) throw new UserNotFoundException();
 		if (to == null) throw new UserNotFoundException();
+		if (from.equals(to)) throw new InvalidAssessmentBehaviourException();
 		if (activityId == null) throw new ActivityNotFoundException();
 		Activity activity = queryActivity(activityId);
 		if (activity == null) throw new ActivityNotFoundException();
@@ -584,11 +574,12 @@ public class SQLCommander {
 	try {
 		if (from == null) throw new UserNotFoundException();
 		if (to == null) throw new UserNotFoundException();
+		if (from.equals(to)) throw new InvalidAssessmentBehaviourException();
 		if (activity == null) throw new ActivityNotFoundException();
 		if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
 		int relation1 = queryUserActivityRelation(from, activity.getId());
 		int relation2 = queryUserActivityRelation(to, activity.getId());
-		if ((relation1 & UserActivityRelation.selected) == 0 || (relation2 & UserActivityRelation.selected) == 0)	throw new UnexpectedUserActivityRelationException();
+		if ((relation1 & UserActivityRelation.selected) == 0 || (relation2 & UserActivityRelation.selected) == 0)	throw new InvalidUserActivityRelationException();
 		ret = true;
 	} catch (Exception e) {
 		System.out.println(SQLCommander.class.getName() + ".isUserAssessable, " + e.getMessage());
@@ -621,9 +612,9 @@ public class SQLCommander {
 		if (activity == null) throw new ActivityNotFoundException();
 		if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
 		int originalRelation = queryUserActivityRelation(userId, activity.getId());
-		if (originalRelation == UserActivityRelation.invalid) throw new UnexpectedUserActivityRelationException();
-		if ((originalRelation & UserActivityRelation.selected) == 0) throw new UnexpectedUserActivityRelationException();
-		if ((originalRelation & relation) > 0) throw new UnexpectedUserActivityRelationException();
+		if (originalRelation == UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
+		if ((originalRelation & UserActivityRelation.selected) == 0) throw new InvalidUserActivityRelationException();
+		if ((originalRelation & relation) > 0) throw new InvalidUserActivityRelationException();
 		ret = originalRelation;
 	} catch (Exception e) {
 		System.out.println(SQLCommander.class.getName() + ".isActivityMarkable, " + e.getMessage());
