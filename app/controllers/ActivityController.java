@@ -115,8 +115,8 @@ public class ActivityController extends Controller {
 			JSONArray selectedParticipantsJson = (JSONArray) JSONValue.parse(selectedParticipantsJsonStr);
 
 			Integer viewerId = DataUtils.getUserIdByToken(token);
-			if (viewerId == null) throw new NullPointerException();
-			if (!SQLCommander.validateOwnership(viewerId, activityId)) throw new NullPointerException();
+			if (viewerId == null) throw new UserNotFoundException();
+			if (!SQLCommander.validateOwnership(viewerId, activityId)) throw new AccessDeniedException();
 
 			for (Object appliedParticipantJson : appliedParticipantsJson) {
 				Integer userId = Integer.valueOf((String) appliedParticipantJson);

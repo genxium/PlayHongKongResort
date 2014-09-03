@@ -744,15 +744,16 @@ public class SQLCommander {
 	    return images;
     }
 
-    public static int uploadImage(User user, final Activity activity, final String imageURL) {
-	    int lastImageId = INVALID;
+    public static int createImage(User user, final Activity activity, final String imageURL) {
+	    int ret = INVALID;
 	    try {
 		    if (user == null) throw new UserNotFoundException();
 		    if (activity == null) throw new ActivityNotFoundException();
 		    EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
 		    builderImage.insert(Image.URL, imageURL).into(Image.TABLE);
-		    lastImageId = SQLHelper.insert(builderImage);
+		    int lastImageId = SQLHelper.insert(builderImage);
 		    if (lastImageId == INVALID) throw new NullPointerException();
+		    ret = lastImageId;
 
 		    String[] cols = {ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID};
 		    Object[] vals = {activity.getId(), lastImageId};
@@ -761,17 +762,14 @@ public class SQLCommander {
 
 		    int lastRecordId = SQLHelper.insert(builderRelation);
 		    if (lastRecordId == SQLHelper.INVALID) {
-			    if (deleteImageRecord(lastImageId)) {
-				    lastImageId = INVALID;
-				    System.out.println(SQLCommander.class.getName() + ".uploadImage: image " + lastImageId + " reverted");
-			    }
-			    throw new NullPointerException();
+			    ret = INVALID;
+			    if (deleteImageRecord(lastImageId))	System.out.println(SQLCommander.class.getName() + ".createImage, image " + lastImageId + " reverted");
 		    }
 
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".uploadImage, " + e.getMessage());
+		    System.out.println(SQLCommander.class.getName() + ".createImage, " + e.getMessage());
 	    } 
-	    return lastImageId;
+	    return ret;
     }
 
     public static List<BasicUser> queryUsers(int activityId, int maskedRelation) {

@@ -176,44 +176,29 @@ function displayActivityDetail(par){
 	var token = $.cookie(g_keyToken);
 	if(token == null) return;
 
-	var params = {};
-	params[g_keyToken] = token;
-	params[g_keyActivityId] = g_activity.id;
-
-	$.ajax({
-		type: "GET",
-		url: "/activity/ownership",
-		data: params,
-		success: function(data, status, xhr){
-			if(data == null || data == "") return;
-			var boxes = new Array();
-			for(var i = 0; i < g_participantsForm.labels.length; i++){
-				var label = g_participantsForm.labels[i];
-				var participantId = g_participantsForm.participantsId[i];
-				var checkStatus = null;
-				if(g_participantsForm.participantsStatus[i] == g_aliasSelected)	checkStatus = true;
-				else	checkStatus = false;
-				var checkbox = $('<input>',{
-					type: "checkbox",
-					checked: checkStatus
-				}).appendTo(label);
-				boxes.push(checkbox);
-				if(participantId == g_activity.host.id) checkbox.hide();
-			}
-			g_participantsForm.setBoxes(boxes);
-			if(boxes.length > 0){
-				var btnSubmit=$('<button>',{
-					text: 'Confirm Selection',
-					style: 'color: white; background-color:black; font-size: 13pt'
-				}).appendTo(selectionForm);
-				btnSubmit.on("click", onBtnSubmitClicked);
-			}
-			$('<hr>').appendTo(selectionForm);
-		},
-		error: function(xhr, status, errThrown){
-
-	       }
-	});
+	if(g_loggedInUser != null && g_loggedInUser.id == g_activity.host.id) {
+		var boxes = new Array();
+		for(var i = 0; i < g_participantsForm.labels.length; i++){
+			var label = g_participantsForm.labels[i];
+			var participantId = g_participantsForm.participantsId[i];
+			var checkStatus = null;
+			if(g_participantsForm.participantsStatus[i] == g_aliasSelected)	checkStatus = true;
+			else	checkStatus = false;
+			var checkbox = $('<input>',{
+				type: "checkbox",
+				checked: checkStatus
+			}).appendTo(label);
+			boxes.push(checkbox);
+			if(participantId == g_activity.host.id) checkbox.hide();
+		}
+		g_participantsForm.setBoxes(boxes);
+		var btnSubmit=$('<button>',{
+			text: 'Confirm Selection',
+			style: 'color: white; background-color:black; font-size: 13pt'
+		}).appendTo(selectionForm);
+		btnSubmit.on("click", onBtnSubmitClicked);
+		$('<hr>').appendTo(selectionForm);
+	}
 
 	generateCommentEditor(ret, g_activity.id);
 
