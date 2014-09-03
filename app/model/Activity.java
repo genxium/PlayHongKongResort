@@ -184,11 +184,9 @@ public class Activity {
 	    ObjectNode ret = toObjectNode(viewerId);
 	    try {
 		    List<Image> images = SQLCommander.queryImages(m_id);
-		    if (images == null || images.size() <= 0) throw new ImageNotFoundException();
+		    if (images == null || images.size() <= 0) return ret;
 		    ArrayNode imagesNode = new ArrayNode(JsonNodeFactory.instance);
-		    for (Image image : images) {
-			    imagesNode.add(image.toObjectNode());
-		    }
+		    for (Image image : images)	imagesNode.add(image.toObjectNode());
 		    ret.put(ActivityDetail.IMAGES, imagesNode);
 	    } catch (Exception e) {
 		    System.out.println(Activity.class.getName() + ".toObjectNodeWithImages, " + e.getMessage());
