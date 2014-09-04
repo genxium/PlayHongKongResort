@@ -154,9 +154,6 @@ function onSave(evt){
 
         var data = evt.data;
 
-        setNonSavable();
-        setNonSubmittable();
-
         var formData = new FormData();
 
         // check files
@@ -191,19 +188,37 @@ function onSave(evt){
 
         // append user token and activity id for identity
         var token = $.cookie(g_keyToken.toString());
+	if(token == null) {
+		alert("Are you logged out?");
+		return;
+	}
         formData.append(g_keyToken, token);
 
         // append activity title and content
+        var title = data[g_keyTitle].val();
+	var content = data[g_keyContent].val();
+	if(title == null || content == null || title == "" || content == "") {
+		alert("Neither title nor content could be empty.");
+		return;
+	}
         formData.append(g_keyTitle, data[g_keyTitle].val());
         formData.append(g_keyContent, data[g_keyContent].val());
 
         // append activity begin time and deadline
         var beginTimePicker = data[g_indexBeginTimePicker];
         var beginTime = getDateTime(beginTimePicker);
-        formData.append(g_keyBeginTime, beginTime);
 
         var deadlinePicker = data[g_indexDeadlinePicker];
         var deadline = getDateTime(deadlinePicker);
+
+	var beginTimeObj = new Date(beginTime);
+	var deadlineObj = new Date(deadline);
+		
+	if(deadlineObj > beginTimeObj) {
+		alert("Deadline can not be after the begin time of an activity.");
+		return;
+	}
+        formData.append(g_keyBeginTime, beginTime);
         formData.append(g_keyDeadline, deadline);
 
         var isNewActivity = false;
@@ -211,6 +226,9 @@ function onSave(evt){
         if(activityId == null) isNewActivity = true;
 
         if(!isNewActivity)	formData.append(g_keyActivityId, activityId.toString());
+
+        setNonSavable();
+        setNonSubmittable();
 
         $.ajax({
                 method: "POST",
@@ -244,17 +262,21 @@ function onSubmit(evt){
 
         var data = evt.data;
 
-        setNonSavable();
-        setNonSubmittable();
-
         var params = {};
 
         // append user token and activity id for identity
         var token = $.cookie(g_keyToken);
+	if(token == null) {
+		alert("Are you logged out?");
+		return;
+	}
         params[g_keyToken] = token;
 	
 	var activityId = (data.hasOwnProperty(g_keyActivityId) && data[g_keyActivityId] != null) ? data[g_keyActivityId] : g_activityEditor.data(g_keyActivityId);
         params[g_keyActivityId] = activityId;
+
+        setNonSavable();
+        setNonSubmittable();
 
         $.ajax({
                 method: "PUT",

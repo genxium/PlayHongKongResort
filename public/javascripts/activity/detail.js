@@ -7,20 +7,6 @@ var g_tabAssessments = null;
 // local variables
 var g_activityId = null;
 var g_activity = null;
-var g_participantsForm = null;
-
-var g_aliasApplied = 0;
-var g_aliasSelected = 1;
-
-function ParticipantsForm(labels, participantsId, participantsStatus){
-	this.boxes = null;
-	this.participantsId = participantsId;
-	this.labels = labels;
-	this.participantsStatus = participantsStatus;
-	this.setBoxes = function(boxes){
-		this.boxes = boxes;
-	}
-}
 
 // Assistive Functions
 function refreshOnEnter(){
@@ -119,36 +105,7 @@ function displayActivityDetail(par){
 		}
 	}	
 	g_tabParticipants.empty();
-	var selectionForm = $('<form>').appendTo(g_tabParticipants);
-
-	var labels = new Array();
-	var participantsId = new Array();
-	var participantsStatus = new Array();
-	for(var i = 0; i < g_activity.selectedParticipants.length; ++i){
-		var participant = g_activity.selectedParticipants[i];
-		participantsId.push(participant.id);
-		participantsStatus.push(g_aliasSelected);
-		var label = $('<label>', {
-			text: participant.email,
-			style: "background-color: aquamarine"
-		}).appendTo(selectionForm);
-		labels.push(label);
-		$('<br>').appendTo(selectionForm);
-	}
-
-	for(var i = 0; i < g_activity.appliedParticipants.length; ++i){
-		var participant = g_activity.appliedParticipants[i];
-		participantsId.push(participant.id);
-		participantsStatus.push(g_aliasApplied);
-		var label=$('<label>', {
-			text: participant.email,
-			style: "background-color: pink"
-		}).appendTo(selectionForm);
-		labels.push(label);
-		$('<br>').appendTo(selectionForm);
-	}
-
-	g_participantsForm = new ParticipantsForm(labels, participantsId, participantsStatus);
+	g_participantsForm = generateParticipantsSelectionForm(g_tabParticipants, g_activity);
 
 	var params={};
 	params[g_keyActivityId] = g_activity.id;
@@ -175,30 +132,6 @@ function displayActivityDetail(par){
 
 	var token = $.cookie(g_keyToken);
 	if(token == null) return;
-
-	if(g_loggedInUser != null && g_loggedInUser.id == g_activity.host.id) {
-		var boxes = new Array();
-		for(var i = 0; i < g_participantsForm.labels.length; i++){
-			var label = g_participantsForm.labels[i];
-			var participantId = g_participantsForm.participantsId[i];
-			var checkStatus = null;
-			if(g_participantsForm.participantsStatus[i] == g_aliasSelected)	checkStatus = true;
-			else	checkStatus = false;
-			var checkbox = $('<input>',{
-				type: "checkbox",
-				checked: checkStatus
-			}).appendTo(label);
-			boxes.push(checkbox);
-			if(participantId == g_activity.host.id) checkbox.hide();
-		}
-		g_participantsForm.setBoxes(boxes);
-		var btnSubmit=$('<button>',{
-			text: 'Confirm Selection',
-			style: 'color: white; background-color:black; font-size: 13pt'
-		}).appendTo(selectionForm);
-		btnSubmit.on("click", onBtnSubmitClicked);
-		$('<hr>').appendTo(selectionForm);
-	}
 
 	generateCommentEditor(ret, g_activity.id);
 

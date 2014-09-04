@@ -27,55 +27,55 @@ public class SQLCommander {
 
     public static User queryUser(Integer userId) {
 
-        User user = null;
-	try {
-		String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
-		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		builder.select(names).from(User.TABLE).where(User.ID, "=", userId);
-		List<JSONObject> results = SQLHelper.select(builder);
-		if (results == null || results.size() <= 0) return null;
-		Iterator<JSONObject> it = results.iterator();
-		if (!it.hasNext()) return null;
-		JSONObject userJson = it.next();
-		user = new User(userJson);
-	} catch (Exception e) {
+	    User user = null;
+	    try {
+		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    builder.select(names).from(User.TABLE).where(User.ID, "=", userId);
+		    List<JSONObject> results = SQLHelper.select(builder);
+		    if (results == null || results.size() <= 0) return null;
+		    Iterator<JSONObject> it = results.iterator();
+		    if (!it.hasNext()) return null;
+		    JSONObject userJson = it.next();
+		    user = new User(userJson);
+	    } catch (Exception e) {
 
-	}
-        return user;
+	    }
+	    return user;
     }
 
     public static User queryUserByEmail(String email) {
-        User user = null;
-	try {
-		String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
-		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		builder.select(names).from(User.TABLE).where(User.EMAIL, "=", email);
-		List<JSONObject> results = SQLHelper.select(builder);
-		if (results == null || results.size() <= 0) return null;
-		Iterator<JSONObject> it = results.iterator();
-		if (!it.hasNext()) return null;
-		JSONObject userJson = it.next();
-		user = new User(userJson);
-	} catch (Exception e) {
-		System.out.println(SQLCommander.class.getName() + ".queryUserByEmail, " + e.getMessage());
+	    User user = null;
+	    try {
+		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    builder.select(names).from(User.TABLE).where(User.EMAIL, "=", email);
+		    List<JSONObject> results = SQLHelper.select(builder);
+		    if (results == null || results.size() <= 0) return null;
+		    Iterator<JSONObject> it = results.iterator();
+		    if (!it.hasNext()) return null;
+		    JSONObject userJson = it.next();
+		    user = new User(userJson);
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".queryUserByEmail, " + e.getMessage());
 
-	}
-        return user;
+	    }
+	    return user;
     }
 
     public static int registerUser(User user) {
-        int ret = INVALID;
-        try {
-            String[] cols = {User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID};
-            Object[] values = {user.getEmail(), user.getPassword(), user.getName(), user.getGroupId()};
+	    int ret = INVALID;
+	    try {
+		    String[] cols = {User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID};
+		    Object[] values = {user.getEmail(), user.getPassword(), user.getName(), user.getGroupId()};
 
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            builder.insert(cols, values).into(User.TABLE);
-            ret = SQLHelper.insert(builder);
-        } catch (Exception e) {
-            System.out.println(SQLCommander.class.getName() + ".registerUser, " + e.getMessage());
-        }
-        return ret;
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    builder.insert(cols, values).into(User.TABLE);
+		    ret = SQLHelper.insert(builder);
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".registerUser, " + e.getMessage());
+	    }
+	    return ret;
     }
 
     public static Integer createActivity(String title, String content, Integer userId) {
@@ -118,194 +118,194 @@ public class SQLCommander {
     }
 
     public static boolean updateActivity(Activity activity) {
-        boolean ret = false;
-	int activityId = activity.getId();
-	try {
-		String[] cols = {Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
-		Object[] values = {activity.getTitle(), activity.getContent(), activity.getCreatedTime().toString(), activity.getBeginTime().toString(), activity.getDeadline().toString(), activity.getCapacity()};
-		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		builder.update(Activity.TABLE).set(cols, values).where(Activity.ID, "=", activityId);
-		ret = SQLHelper.update(builder);
+	    boolean ret = false;
+	    int activityId = activity.getId();
+	    try {
+		    String[] cols = {Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
+		    Object[] values = {activity.getTitle(), activity.getContent(), activity.getCreatedTime().toString(), activity.getBeginTime().toString(), activity.getDeadline().toString(), activity.getCapacity()};
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    builder.update(Activity.TABLE).set(cols, values).where(Activity.ID, "=", activityId);
+		    ret = SQLHelper.update(builder);
 
-	} catch (Exception e) {
-		System.out.println(SQLCommander.class.getName() + ".updateActivity: " + e.getMessage());
-	}
-        return ret;
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".updateActivity: " + e.getMessage());
+	    }
+	    return ret;
     }
 
     /* querying activities */
     public static Activity queryActivity(int activityId) {
 
-        Activity activity = null;
-	try {
-		String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
-		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId);
-		List<JSONObject> results = SQLHelper.select(builder);
-		if (results == null || results.size() <= 0) return null;
-		Iterator<JSONObject> it = results.iterator();
-		if (it.hasNext()) {
-			JSONObject activityJson = it.next();
-			User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
-			activity = new Activity(activityJson, host);
-		}
-	} catch (Exception e) {
-		System.out.println(SQLCommander.class.getName() + ".queryActivity, " + e.getMessage());
-	}
-        return activity;
+	    Activity activity = null;
+	    try {
+		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId);
+		    List<JSONObject> results = SQLHelper.select(builder);
+		    if (results == null || results.size() <= 0) return null;
+		    Iterator<JSONObject> it = results.iterator();
+		    if (it.hasNext()) {
+			    JSONObject activityJson = it.next();
+			    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+			    activity = new Activity(activityJson, host);
+		    }
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".queryActivity, " + e.getMessage());
+	    }
+	    return activity;
 
     }
 
     public static ActivityDetail queryActivityDetail(int activityId) {
-        ActivityDetail activityDetail = null;
-        try {
-            Activity activity = queryActivity(activityId);
-            List<Image> images = queryImages(activityId);
-            List<BasicUser> appliedParticipants = queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied, null));
-            List<BasicUser> selectedParticipants = querySelectedParticipants(activityId);
-            List<BasicUser> presentParticipants = queryPresentParticipants(activityId);
-            activityDetail = new ActivityDetail(activity, images, appliedParticipants, selectedParticipants, presentParticipants);
-        } catch (Exception e) {
-            System.out.println(SQLCommander.class.getName() + ".queryActivityDetail, " + e.getMessage());
-        }
-        return activityDetail;
+	    ActivityDetail activityDetail = null;
+	    try {
+		    Activity activity = queryActivity(activityId);
+		    List<Image> images = queryImages(activityId);
+		    List<BasicUser> appliedParticipants = queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied, null));
+		    List<BasicUser> selectedParticipants = querySelectedParticipants(activityId);
+		    List<BasicUser> presentParticipants = queryPresentParticipants(activityId);
+		    activityDetail = new ActivityDetail(activity, images, appliedParticipants, selectedParticipants, presentParticipants);
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".queryActivityDetail, " + e.getMessage());
+	    }
+	    return activityDetail;
     }
 
     public static List<Activity> queryActivities(Integer userId, int relation) {
-        List<Activity> ret = new ArrayList<Activity>();
-        try {
-            String query = "SELECT ";
+	    List<Activity> ret = new ArrayList<Activity>();
+	    try {
+		    String query = "SELECT ";
 
-            String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
-            for (int i = 0; i < names.length; i++) {
-                query += names[i];
-                if (i < names.length - 1) query += ", ";
-            }
+		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+		    for (int i = 0; i < names.length; i++) {
+			    query += names[i];
+			    if (i < names.length - 1) query += ", ";
+		    }
 
-            query += " FROM " + Activity.TABLE + " WHERE EXISTS (SELECT NULL FROM " + UserActivityRelation.TABLE + " WHERE "
-                    + UserActivityRelation.USER_ID + "=? AND "
-                    + UserActivityRelation.RELATION + "=? AND "
-                    + UserActivityRelation.TABLE + "." + UserActivityRelation.ACTIVITY_ID + "=" + Activity.TABLE + "." + Activity.ID + ")";
-            Connection connection = SQLHelper.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1, userId);
-            statement.setInt(2, relation);
-            List<JSONObject> activityJsons = SQLHelper.select(statement);
-            if (activityJsons == null) return null;
-	    for (JSONObject activityJson : activityJsons) {
-		    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
-		    ret.add(new Activity(activityJson, host));
+		    query += " FROM " + Activity.TABLE + " WHERE EXISTS (SELECT NULL FROM " + UserActivityRelation.TABLE + " WHERE "
+			    + UserActivityRelation.USER_ID + "=? AND "
+			    + UserActivityRelation.RELATION + "=? AND "
+			    + UserActivityRelation.TABLE + "." + UserActivityRelation.ACTIVITY_ID + "=" + Activity.TABLE + "." + Activity.ID + ")";
+		    Connection connection = SQLHelper.getConnection();
+		    PreparedStatement statement = connection.prepareStatement(query);
+		    statement.setInt(1, userId);
+		    statement.setInt(2, relation);
+		    List<JSONObject> activityJsons = SQLHelper.select(statement);
+		    if (activityJsons == null) return null;
+		    for (JSONObject activityJson : activityJsons) {
+			    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+			    ret.add(new Activity(activityJson, host));
+		    }
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".queryActivities, " + e.getMessage());
 	    }
-        } catch (Exception e) {
-            System.out.println(SQLCommander.class.getName() + ".queryActivities, " + e.getMessage());
-        }
-        return ret;
+	    return ret;
     }
 
     public static List<Activity> queryActivities(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, int status) {
-        List<Activity> ret = new ArrayList<Activity>();
-        try {
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
-            builder.select(names).from(Activity.TABLE).where(Activity.STATUS, "=", status).order(orderKey, orientation);
+	    List<Activity> ret = new ArrayList<Activity>();
+	    try {
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+		    builder.select(names).from(Activity.TABLE).where(Activity.STATUS, "=", status).order(orderKey, orientation);
 
-            if (refIndex.equals(INITIAL_REF_INDEX)) {
-                builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
-            } else if (direction.equals(DIRECTION_FORWARD)) {
-                builder.where(orderKey, ">", refIndex);
-            } else {
-                builder.where(orderKey, "<", refIndex);
-            }
-            if (numItems != null) {
-                builder.limit(numItems);
-            }
+		    if (refIndex.equals(INITIAL_REF_INDEX)) {
+			    builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
+		    } else if (direction.equals(DIRECTION_FORWARD)) {
+			    builder.where(orderKey, ">", refIndex);
+		    } else {
+			    builder.where(orderKey, "<", refIndex);
+		    }
+		    if (numItems != null) {
+			    builder.limit(numItems);
+		    }
 
-            List<JSONObject> activityJsons = SQLHelper.select(builder);
-            if (activityJsons != null) {
-                for (JSONObject activityJson : activityJsons) {
-                    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
-                    ret.add(new Activity(activityJson, host));
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(SQLCommander.class.getName() + ".queryActivities: " + e.getMessage());
-        }
-        return ret;
+		    List<JSONObject> activityJsons = SQLHelper.select(builder);
+		    if (activityJsons != null) {
+			    for (JSONObject activityJson : activityJsons) {
+				    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+				    ret.add(new Activity(activityJson, host));
+			    }
+		    }
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".queryActivities: " + e.getMessage());
+	    }
+	    return ret;
     }
 
     public static List<Activity> queryHostedActivities(Integer hostId, Integer viewerId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction){
-        List<Activity> ret = new ArrayList<Activity>();
-        try {
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
-            builder.select(names).from(Activity.TABLE).order(orderKey, orientation);
+	    List<Activity> ret = new ArrayList<Activity>();
+	    try {
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+		    builder.select(names).from(Activity.TABLE).order(orderKey, orientation);
 
-            if (refIndex.equals(INITIAL_REF_INDEX)) {
-                builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
-            } else if (direction.equals(DIRECTION_FORWARD)) {
-                builder.where(orderKey, ">", refIndex);
-            } else {
-                builder.where(orderKey, "<", refIndex);
-            }
+		    if (refIndex.equals(INITIAL_REF_INDEX)) {
+			    builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
+		    } else if (direction.equals(DIRECTION_FORWARD)) {
+			    builder.where(orderKey, ">", refIndex);
+		    } else {
+			    builder.where(orderKey, "<", refIndex);
+		    }
 
-            // extra where criterion
-            builder.where(Activity.HOST_ID, "=", hostId);
-            if(!hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
+		    // extra where criterion
+		    builder.where(Activity.HOST_ID, "=", hostId);
+		    if(!hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
 
-            if (numItems != null) {
-                builder.limit(numItems);
-            }
+		    if (numItems != null) {
+			    builder.limit(numItems);
+		    }
 
-            List<JSONObject> activityJsons = SQLHelper.select(builder);
-            if (activityJsons != null) {
-                for (JSONObject activityJson : activityJsons) {
-                    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
-                    ret.add(new Activity(activityJson, host));
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(SQLCommander.class.getName() + ".queryActivities: " + e.getMessage());
-        }
-        return ret;
+		    List<JSONObject> activityJsons = SQLHelper.select(builder);
+		    if (activityJsons != null) {
+			    for (JSONObject activityJson : activityJsons) {
+				    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+				    ret.add(new Activity(activityJson, host));
+			    }
+		    }
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".queryActivities: " + e.getMessage());
+	    }
+	    return ret;
     }
 
     public static int queryUserActivityRelation(Integer userId, Integer activityId) {
-        int ret = UserActivityRelation.invalid;
-	try {
-		if (userId == null) throw new UserNotFoundException();
-		if (activityId == null) throw new ActivityNotFoundException();
-		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+	    int ret = UserActivityRelation.invalid;
+	    try {
+		    if (userId == null) throw new UserNotFoundException();
+		    if (activityId == null) throw new ActivityNotFoundException();
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-		builder.select(UserActivityRelation.RELATION).from(UserActivityRelation.TABLE);
-		builder.where(UserActivityRelation.USER_ID, "=", userId);
-		builder.where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
+		    builder.select(UserActivityRelation.RELATION).from(UserActivityRelation.TABLE);
+		    builder.where(UserActivityRelation.USER_ID, "=", userId);
+		    builder.where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
 
-		List<JSONObject> records = SQLHelper.select(builder);
-		if (records == null) throw new UserActivityRelationNotFoundException();
-		if (records.size() != 1) throw new UserActivityRelationNotFoundException();
-		JSONObject record = records.get(0);
-		ret = (Integer) record.get(UserActivityRelation.RELATION);
-	} catch (Exception e) {
-		System.out.println(SQLCommander.class.getName() + ".queryUserActivityRelation, " + e.getMessage());
-	}
-        return ret;
+		    List<JSONObject> records = SQLHelper.select(builder);
+		    if (records == null) throw new UserActivityRelationNotFoundException();
+		    if (records.size() != 1) throw new UserActivityRelationNotFoundException();
+		    JSONObject record = records.get(0);
+		    ret = (Integer) record.get(UserActivityRelation.RELATION);
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".queryUserActivityRelation, " + e.getMessage());
+	    }
+	    return ret;
     }
 
     public static Comment queryComment(Integer commentId) {
-        Comment ret = null;
-        do {
-            try {
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-                String[] names = {Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
-                builder.select(names).from(Comment.TABLE).where(Comment.ID, "=", commentId);
-                List<JSONObject> commentsJson = SQLHelper.select(builder);
-                if (commentsJson == null || commentsJson.size() <= 0) break;
-                ret = new Comment(commentsJson.get(0));
-            } catch (Exception e) {
+	    Comment ret = null;
+	    do {
+		    try {
+			    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			    String[] names = {Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
+			    builder.select(names).from(Comment.TABLE).where(Comment.ID, "=", commentId);
+			    List<JSONObject> commentsJson = SQLHelper.select(builder);
+			    if (commentsJson == null || commentsJson.size() <= 0) break;
+			    ret = new Comment(commentsJson.get(0));
+		    } catch (Exception e) {
 
-            }
-        } while (false);
-        return ret;
+		    }
+	    } while (false);
+	    return ret;
     }
 
     public static List<Comment> queryTopLevelComments(Integer activityId, String refIndex, String orderKey, String orderDirection, Integer numItems, Integer direction) {
@@ -369,22 +369,22 @@ public class SQLCommander {
     }
 
     public static Assessment queryAssessment(Integer activityId, Integer from, Integer to) {
-        Assessment ret = null;
-        try {
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] names = {Assessment.ID, Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO, Assessment.CONTENT, Assessment.GENERATED_TIME};
-            String[] whereCols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO};
-            String[] whereOps = {"=", "=", "="};
-            Object[] whereVals = {activityId, from, to};
-            builder.select(names).where(whereCols, whereOps, whereVals).from(Assessment.TABLE);
-            List<JSONObject> assessmentJsons = SQLHelper.select(builder);
-            if (assessmentJsons != null && assessmentJsons.size() == 1) {
-                ret = new Assessment(assessmentJsons.get(0));
-            }
-        } catch (Exception e) {
-            ret = null;
-        }
-        return ret;
+	    Assessment ret = null;
+	    try {
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    String[] names = {Assessment.ID, Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO, Assessment.CONTENT, Assessment.GENERATED_TIME};
+		    String[] whereCols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO};
+		    String[] whereOps = {"=", "=", "="};
+		    Object[] whereVals = {activityId, from, to};
+		    builder.select(names).where(whereCols, whereOps, whereVals).from(Assessment.TABLE);
+		    List<JSONObject> assessmentJsons = SQLHelper.select(builder);
+		    if (assessmentJsons != null && assessmentJsons.size() == 1) {
+			    ret = new Assessment(assessmentJsons.get(0));
+		    }
+	    } catch (Exception e) {
+		    ret = null;
+	    }
+	    return ret;
     }
 
     public static List<Assessment> queryAssessments(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, Integer from, Integer to, Integer activityId) {
@@ -393,20 +393,20 @@ public class SQLCommander {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    String[] names = {Assessment.ID, Assessment.CONTENT, Assessment.CONTENT, Assessment.FROM, Assessment.ACTIVITY_ID, Assessment.TO, Assessment.GENERATED_TIME};
 		    builder.select(names).from(Assessment.TABLE)
-                    .where(Assessment.ACTIVITY_ID, "=", activityId)
-                    .order(orderKey, orientation);
+			    .where(Assessment.ACTIVITY_ID, "=", activityId)
+			    .order(orderKey, orientation);
 
-            if(from != null) builder.where(Assessment.FROM, "=", from);
-            if(to != null) builder.where(Assessment.TO, "=", to);
+		    if(from != null) builder.where(Assessment.FROM, "=", from);
+		    if(to != null) builder.where(Assessment.TO, "=", to);
 
-            if (refIndex.equals(INITIAL_REF_INDEX)) {
+		    if (refIndex.equals(INITIAL_REF_INDEX)) {
 			    builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
 		    } else if (direction.equals(DIRECTION_FORWARD)) {
 			    builder.where(orderKey, ">", refIndex);
 		    } else {
 			    builder.where(orderKey, "<", refIndex);
 		    }
-            if (numItems != null)	builder.limit(numItems);
+		    if (numItems != null)	builder.limit(numItems);
 
 		    List<JSONObject> assessmentJsons = SQLHelper.select(builder);
 		    if (assessmentJsons == null) throw new NullPointerException();
@@ -418,208 +418,209 @@ public class SQLCommander {
     }
 
     public static boolean updateAssessment(Integer activityId, Integer from, Integer to, String content) {
-        boolean ret = false;
-        try {
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] whereCols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO};
-            String[] whereOps = {"=", "=", "="};
-            Object[] whereVals = {activityId, from, to};
-            builder.update(Assessment.TABLE).set(Assessment.CONTENT, content).where(whereCols, whereOps, whereVals);
-            ret = SQLHelper.update(builder);
-        } catch (Exception e) {
+	    boolean ret = false;
+	    try {
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    String[] whereCols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO};
+		    String[] whereOps = {"=", "=", "="};
+		    Object[] whereVals = {activityId, from, to};
+		    builder.update(Assessment.TABLE).set(Assessment.CONTENT, content).where(whereCols, whereOps, whereVals);
+		    ret = SQLHelper.update(builder);
+	    } catch (Exception e) {
 
-        }
-        return ret;
+	    }
+	    return ret;
     }
 
     public static int createAssessment(Integer activityId, Integer from, Integer to, String content) {
-        int ret = SQLHelper.INVALID;
-        try {
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] cols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO, Assessment.CONTENT};
-            Object[] vals = {activityId, from, to, content};
-            builder.insert(cols, vals).into(Assessment.TABLE);
-            ret = SQLHelper.insert(builder);
-        } catch (Exception e) {
+	    int ret = SQLHelper.INVALID;
+	    try {
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    String[] cols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO, Assessment.CONTENT};
+		    Object[] vals = {activityId, from, to, content};
+		    builder.insert(cols, vals).into(Assessment.TABLE);
+		    ret = SQLHelper.insert(builder);
+	    } catch (Exception e) {
 
-        }
-        return ret;
+	    }
+	    return ret;
     }
 
     public static boolean validateOwnership(int userId, int activityId) {
-        Activity activity = queryActivity(activityId);
-        if(activity == null) return false;
-        return validateOwnership(userId, activity);
+	    Activity activity = queryActivity(activityId);
+	    if(activity == null) return false;
+	    return validateOwnership(userId, activity);
     }
 
     public static boolean validateOwnership(int userId, Activity activity) {
-        return (activity != null && activity.getHost().getId() == userId);
+	    return (activity != null && activity.getHost().getId() == userId);
     }
 
     public static boolean isActivityEditable(Integer userId, Integer activityId) {
-        boolean ret = false;
-        try {
-		if (userId == null) throw new UserNotFoundException();
-		if (activityId == null) throw new ActivityNotFoundException();
-		Activity activity = SQLCommander.queryActivity(activityId);
-		ret = isActivityEditable(userId, activity);
-        } catch (Exception e) {
-		System.out.println(SQLCommander.class.getName() + ".isActivityEditable, " + e.getMessage());
-	}
-        return ret;
+	    boolean ret = false;
+	    try {
+		    if (userId == null) throw new UserNotFoundException();
+		    if (activityId == null) throw new ActivityNotFoundException();
+		    Activity activity = SQLCommander.queryActivity(activityId);
+		    ret = isActivityEditable(userId, activity);
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".isActivityEditable, " + e.getMessage());
+	    }
+	    return ret;
     }
 
     public static boolean isActivityEditable(Integer userId, Activity activity) {
-        boolean ret = false;
-        try {
-		if (userId == null) throw new UserNotFoundException();
-		if (activity == null) throw new ActivityNotFoundException();
-		if (!validateOwnership(userId, activity)) throw new AccessDeniedException();
-		if (activity.getStatus() != Activity.CREATED) throw new InvalidActivityStatusException();
-		ret = true;
-        } catch (Exception e) {
-		System.out.println(SQLCommander.class.getName() + ".isActivityEditable, " + e.getMessage());
-	} 
-        return ret;
+	    boolean ret = false;
+	    try {
+		    if (userId == null) throw new UserNotFoundException();
+		    if (activity == null) throw new ActivityNotFoundException();
+		    if (!validateOwnership(userId, activity)) throw new AccessDeniedException();
+		    if (activity.getStatus() != Activity.CREATED) throw new InvalidActivityStatusException();
+		    ret = true;
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".isActivityEditable, " + e.getMessage());
+	    } 
+	    return ret;
     }
 
     public static boolean isActivityJoinable(Integer userId, int activityId) {
-        boolean ret = false;
-	try {
-		if (userId == null) throw new UserNotFoundException();
-		Activity activity = queryActivity(activityId);
-		if (activity == null) throw new ActivityNotFoundException();
-		ret = isActivityJoinable(userId, activity);
-        } catch (Exception e) {
-		System.out.println(SQLCommander.class.getName() + ".isActivityJoinable, " + e.getMessage());
-	} 
-        return ret;
+	    boolean ret = false;
+	    try {
+		    if (userId == null) throw new UserNotFoundException();
+		    Activity activity = queryActivity(activityId);
+		    if (activity == null) throw new ActivityNotFoundException();
+		    ret = isActivityJoinable(userId, activity);
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".isActivityJoinable, " + e.getMessage());
+	    } 
+	    return ret;
     }
 
     public static boolean isActivityJoinable(User user, Activity activity) {
-        boolean ret = false;
-        try {
-		if (user == null) throw new UserNotFoundException();
-		int userId = user.getId();
-		ret = isActivityJoinable(userId, activity);
-        } catch (Exception e) {
-		System.out.println(SQLCommander.class.getName() + ".isActivityJoinable, " + e.getMessage());
-	} 
-        return ret;
+	    boolean ret = false;
+	    try {
+		    if (user == null) throw new UserNotFoundException();
+		    int userId = user.getId();
+		    ret = isActivityJoinable(userId, activity);
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".isActivityJoinable, " + e.getMessage());
+	    } 
+	    return ret;
     }
 
     public static boolean isActivityJoinable(Integer userId, Activity activity) {
-        boolean ret = false;
-        try {
-		if (userId == null) throw new UserNotFoundException();
-		if (activity == null) throw new ActivityNotFoundException();
-		if (activity.getStatus() != Activity.ACCEPTED) throw new InvalidActivityStatusException();
-		int activityId = activity.getId();
-		int relation = queryUserActivityRelation(userId, activityId);
-		if (relation != UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
-		ret = true;
-        } catch (Exception e) {
-		System.out.println(SQLCommander.class.getName() + ".isActivityJoinable, " + e.getMessage());
-	} 
-        return ret;
+	    boolean ret = false;
+	    try {
+		    if (userId == null) throw new UserNotFoundException();
+		    if (activity == null) throw new ActivityNotFoundException();
+		    if (activity.getStatus() != Activity.ACCEPTED) throw new InvalidActivityStatusException();
+		    if (activity.isDeadlineExpired()) throw new DeadlineHasPassedException();
+		    int activityId = activity.getId();
+		    int relation = queryUserActivityRelation(userId, activityId);
+		    if (relation != UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
+		    ret = true;
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".isActivityJoinable, " + e.getMessage());
+	    } 
+	    return ret;
     }
 
     public static boolean isActivityCommentable(Integer from, Integer to, Integer activityId) {
-        boolean ret = false;
-        try {
-		if (from == null) throw new UserNotFoundException();
-		if (to == null) throw new UserNotFoundException();
-		if (activityId == null) throw new ActivityNotFoundException();
-		Activity activity = queryActivity(activityId);
-		if (activity == null) throw new ActivityNotFoundException();
-		ret = isActivityCommentable(from, to, activity);
-        } catch (Exception e) {
-		System.out.println(SQLCommander.class.getName() + ".isActivityCommentable, " + e.getMessage());	
-	} 
-        return ret;
+	    boolean ret = false;
+	    try {
+		    if (from == null) throw new UserNotFoundException();
+		    if (to == null) throw new UserNotFoundException();
+		    if (activityId == null) throw new ActivityNotFoundException();
+		    Activity activity = queryActivity(activityId);
+		    if (activity == null) throw new ActivityNotFoundException();
+		    ret = isActivityCommentable(from, to, activity);
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".isActivityCommentable, " + e.getMessage());	
+	    } 
+	    return ret;
     }
 
     public static boolean isActivityCommentable(Integer from, Integer to, Activity activity) {
-        boolean ret = false;
-        try {
-		if (from == null) throw new UserNotFoundException();
-		if (to == null) throw new UserNotFoundException();
-		if (activity == null) throw new ActivityNotFoundException();
-		if (activity.hasBegun()) throw new ActivityHasNotBegunException();
-		ret = true;
-        } catch (Exception e) {
-		System.out.println(SQLCommander.class.getName() + ".isActivityCommentable, " + e.getMessage());	
-	} 
-        return ret;
+	    boolean ret = false;
+	    try {
+		    if (from == null) throw new UserNotFoundException();
+		    if (to == null) throw new UserNotFoundException();
+		    if (activity == null) throw new ActivityNotFoundException();
+		    if (activity.hasBegun()) throw new ActivityHasNotBegunException();
+		    ret = true;
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".isActivityCommentable, " + e.getMessage());	
+	    } 
+	    return ret;
     }
 
     public static boolean isUserAssessable(Integer from, Integer to, Integer activityId) {
-        boolean ret = false;
-        try {
-		if (from == null) throw new UserNotFoundException();
-		if (to == null) throw new UserNotFoundException();
-		if (from.equals(to)) throw new InvalidAssessmentBehaviourException();
-		if (activityId == null) throw new ActivityNotFoundException();
-		Activity activity = queryActivity(activityId);
-		if (activity == null) throw new ActivityNotFoundException();
-		ret = isUserAssessable(from, to, activity);
-        } catch (Exception e) {
-		System.out.println(SQLCommander.class.getName() + ".isUserAssessable, " + e.getMessage());
-	}
-        return ret;
+	    boolean ret = false;
+	    try {
+		    if (from == null) throw new UserNotFoundException();
+		    if (to == null) throw new UserNotFoundException();
+		    if (from.equals(to)) throw new InvalidAssessmentBehaviourException();
+		    if (activityId == null) throw new ActivityNotFoundException();
+		    Activity activity = queryActivity(activityId);
+		    if (activity == null) throw new ActivityNotFoundException();
+		    ret = isUserAssessable(from, to, activity);
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".isUserAssessable, " + e.getMessage());
+	    }
+	    return ret;
     }
 
     public static boolean isUserAssessable(Integer from, Integer to, Activity activity) {
-        boolean ret = false;
-	try {
-		if (from == null) throw new UserNotFoundException();
-		if (to == null) throw new UserNotFoundException();
-		if (from.equals(to)) throw new InvalidAssessmentBehaviourException();
-		if (activity == null) throw new ActivityNotFoundException();
-		if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
-		int relation1 = queryUserActivityRelation(from, activity.getId());
-		int relation2 = queryUserActivityRelation(to, activity.getId());
-		if ((relation1 & UserActivityRelation.selected) == 0 || (relation2 & UserActivityRelation.selected) == 0)	throw new InvalidUserActivityRelationException();
-		ret = true;
-	} catch (Exception e) {
-		System.out.println(SQLCommander.class.getName() + ".isUserAssessable, " + e.getMessage());
-	}
-        return ret;
+	    boolean ret = false;
+	    try {
+		    if (from == null) throw new UserNotFoundException();
+		    if (to == null) throw new UserNotFoundException();
+		    if (from.equals(to)) throw new InvalidAssessmentBehaviourException();
+		    if (activity == null) throw new ActivityNotFoundException();
+		    if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
+		    int relation1 = queryUserActivityRelation(from, activity.getId());
+		    int relation2 = queryUserActivityRelation(to, activity.getId());
+		    if ((relation1 & UserActivityRelation.selected) == 0 || (relation2 & UserActivityRelation.selected) == 0)	throw new InvalidUserActivityRelationException();
+		    ret = true;
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".isUserAssessable, " + e.getMessage());
+	    }
+	    return ret;
     }
 
     /*
-         Method isActivityMarkable(...) returns UserActivityRelation.invalid if the activity is not markable by
-        specified user, or the original relation otherwise.
-    */
+       Method isActivityMarkable(...) returns UserActivityRelation.invalid if the activity is not markable by
+       specified user, or the original relation otherwise.
+       */
     public static int isActivityMarkable(Integer userId, Integer activityId, int relation) {
-        int ret = UserActivityRelation.invalid;
-        try {
-		if (userId == null) throw new UserNotFoundException();
-		if (activityId == null) throw new ActivityNotFoundException();
-		Activity activity = queryActivity(activityId);
-		if (activity == null) throw new ActivityNotFoundException();
-		ret = isActivityMarkable(userId, activity, relation);
-	} catch (Exception e) {
-		System.out.println(SQLCommander.class.getName() + ".isActivityMarkable, " + e.getMessage());
-	}
-        return ret;
+	    int ret = UserActivityRelation.invalid;
+	    try {
+		    if (userId == null) throw new UserNotFoundException();
+		    if (activityId == null) throw new ActivityNotFoundException();
+		    Activity activity = queryActivity(activityId);
+		    if (activity == null) throw new ActivityNotFoundException();
+		    ret = isActivityMarkable(userId, activity, relation);
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".isActivityMarkable, " + e.getMessage());
+	    }
+	    return ret;
     }
 
     public static int isActivityMarkable(Integer userId, Activity activity, int relation) {
-        int ret = UserActivityRelation.invalid;
-	try {
-		if (userId == null) throw new UserNotFoundException();
-		if (activity == null) throw new ActivityNotFoundException();
-		if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
-		int originalRelation = queryUserActivityRelation(userId, activity.getId());
-		if (originalRelation == UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
-		if ((originalRelation & UserActivityRelation.selected) == 0) throw new InvalidUserActivityRelationException();
-		if ((originalRelation & relation) > 0) throw new InvalidUserActivityRelationException();
-		ret = originalRelation;
-	} catch (Exception e) {
-		System.out.println(SQLCommander.class.getName() + ".isActivityMarkable, " + e.getMessage());
-	}
-        return ret;
+	    int ret = UserActivityRelation.invalid;
+	    try {
+		    if (userId == null) throw new UserNotFoundException();
+		    if (activity == null) throw new ActivityNotFoundException();
+		    if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
+		    int originalRelation = queryUserActivityRelation(userId, activity.getId());
+		    if (originalRelation == UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
+		    if ((originalRelation & UserActivityRelation.selected) == 0) throw new InvalidUserActivityRelationException();
+		    if ((originalRelation & relation) > 0) throw new InvalidUserActivityRelationException();
+		    ret = originalRelation;
+	    } catch (Exception e) {
+		    System.out.println(SQLCommander.class.getName() + ".isActivityMarkable, " + e.getMessage());
+	    }
+	    return ret;
     }
 
     public static boolean acceptActivity(User user, Activity activity) {
@@ -804,96 +805,97 @@ public class SQLCommander {
     }
 
     public static boolean updateUserActivityRelation(Integer ownerId, Integer userId, Integer activityId, int relation) {
-        try {
-            java.util.Date date = new java.util.Date();
-            Timestamp currentTime = new Timestamp(date.getTime());
-            String timeStr = currentTime.toString();
+	    try {
+		    java.util.Date date = new java.util.Date();
+		    Timestamp currentTime = new Timestamp(date.getTime());
+		    String timeStr = currentTime.toString();
 
-            String timestampFieldName = null;
-            if ((relation & UserActivityRelation.selected) > 0) {
-                timestampFieldName = UserActivityRelation.LAST_ACCEPTED_TIME;
-            } else {
-                timestampFieldName = UserActivityRelation.LAST_REJECTED_TIME;
-            }
-            String[] cols = {UserActivityRelation.RELATION, timestampFieldName};
-            Object[] vals = {relation, timeStr};
+		    String timestampFieldName = null;
+		    if ((relation & UserActivityRelation.selected) > 0) {
+			    timestampFieldName = UserActivityRelation.LAST_ACCEPTED_TIME;
+		    } else {
+			    timestampFieldName = UserActivityRelation.LAST_REJECTED_TIME;
+		    }
+		    String[] cols = {UserActivityRelation.RELATION, timestampFieldName};
+		    Object[] vals = {relation, timeStr};
 
-            String[] whereCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID};
-            String[] whereOps = {"=", "="};
-            Object[] whereVals = {activityId, userId};
+		    String[] whereCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID};
+		    String[] whereOps = {"=", "="};
+		    Object[] whereVals = {activityId, userId};
 
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            builder.update(UserActivityRelation.TABLE).set(cols, vals).where(whereCols, whereOps, whereVals);
-            if(!SQLHelper.update(builder)) throw new Exception();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    builder.update(UserActivityRelation.TABLE).set(cols, vals).where(whereCols, whereOps, whereVals);
+		    if(!SQLHelper.update(builder)) throw new Exception();
+		    return true;
+	    } catch (Exception e) {
+		    return false;
+	    }
     }
 
     public static List<BasicUser> querySelectedParticipants(int activityId) {
-        List<BasicUser> ret = new LinkedList<BasicUser>();
+	    List<BasicUser> ret = new LinkedList<BasicUser>();
 
-        int possibleRelation1 = UserActivityRelation.selected;
-        List<BasicUser> lst1 = queryUsers(activityId, possibleRelation1);
+	    int possibleRelation1 = UserActivityRelation.selected;
+	    List<BasicUser> lst1 = queryUsers(activityId, possibleRelation1);
 
-        int possibleRelation11 = possibleRelation1 | UserActivityRelation.present;
-        List<BasicUser> lst11 = queryUsers(activityId, possibleRelation11);
+	    int possibleRelation11 = possibleRelation1 | UserActivityRelation.present;
+	    List<BasicUser> lst11 = queryUsers(activityId, possibleRelation11);
 
-        int possibleRelation12 = possibleRelation1 | UserActivityRelation.absent;
-        List<BasicUser> lst12 = queryUsers(activityId, possibleRelation12);
+	    int possibleRelation12 = possibleRelation1 | UserActivityRelation.absent;
+	    List<BasicUser> lst12 = queryUsers(activityId, possibleRelation12);
 
-        int possibleRelation111 = possibleRelation11 | UserActivityRelation.assessed;
-        List<BasicUser> lst111 = queryUsers(activityId, possibleRelation111);
+	    int possibleRelation111 = possibleRelation11 | UserActivityRelation.assessed;
+	    List<BasicUser> lst111 = queryUsers(activityId, possibleRelation111);
 
-        int possibleRelation121 = possibleRelation12 | UserActivityRelation.assessed;
-        List<BasicUser> lst121 = queryUsers(activityId, possibleRelation121);
+	    int possibleRelation121 = possibleRelation12 | UserActivityRelation.assessed;
+	    List<BasicUser> lst121 = queryUsers(activityId, possibleRelation121);
 
-        ret.addAll(lst1);
-        ret.addAll(lst11);
-        ret.addAll(lst12);
-        ret.addAll(lst111);
-        ret.addAll(lst121);
+	    ret.addAll(lst1);
+	    ret.addAll(lst11);
+	    ret.addAll(lst12);
+	    ret.addAll(lst111);
+	    ret.addAll(lst121);
 
-        return ret;
+	    return ret;
     }
 
     public static List<BasicUser> queryPresentParticipants(int activityId) {
-        List<BasicUser> ret = new LinkedList<BasicUser>();
+	    List<BasicUser> ret = new LinkedList<BasicUser>();
 
-        int baseRelation1 = UserActivityRelation.selected;
-        int possibleRelation11 = baseRelation1 | UserActivityRelation.present;
+	    int baseRelation1 = UserActivityRelation.selected;
+	    int possibleRelation11 = baseRelation1 | UserActivityRelation.present;
 
-        List<BasicUser> lst11 = queryUsers(activityId, possibleRelation11);
+	    List<BasicUser> lst11 = queryUsers(activityId, possibleRelation11);
 
-        int possibleRelation111 = (possibleRelation11 | UserActivityRelation.assessed);
+	    int possibleRelation111 = (possibleRelation11 | UserActivityRelation.assessed);
 
-        List<BasicUser> lst111 = queryUsers(activityId, possibleRelation111);
+	    List<BasicUser> lst111 = queryUsers(activityId, possibleRelation111);
 
-        ret.addAll(lst11);
-        ret.addAll(lst111);
+	    ret.addAll(lst11);
+	    ret.addAll(lst111);
 
-        return ret;
+	    return ret;
     }
 
     public static List<BasicUser> queryAssessedParticipants(int activityId) {
-        List<BasicUser> ret = new LinkedList<BasicUser>();
+	    List<BasicUser> ret = new LinkedList<BasicUser>();
 
-        int baseRelation1 = UserActivityRelation.selected;
+	    int baseRelation1 = UserActivityRelation.selected;
 
-        int baseRelation11 = baseRelation1 | UserActivityRelation.present;
+	    int baseRelation11 = baseRelation1 | UserActivityRelation.present;
 
-        int baseRelation12 = baseRelation1 | UserActivityRelation.absent;
+	    int baseRelation12 = baseRelation1 | UserActivityRelation.absent;
 
-        int possibleRelation111 = baseRelation11 | UserActivityRelation.assessed;
-        List<BasicUser> lst111 = queryUsers(activityId, possibleRelation111);
+	    int possibleRelation111 = baseRelation11 | UserActivityRelation.assessed;
+	    List<BasicUser> lst111 = queryUsers(activityId, possibleRelation111);
 
-        int possibleRelation121 = baseRelation12 | UserActivityRelation.assessed;
-        List<BasicUser> lst121 = queryUsers(activityId, possibleRelation121);
+	    int possibleRelation121 = baseRelation12 | UserActivityRelation.assessed;
+	    List<BasicUser> lst121 = queryUsers(activityId, possibleRelation121);
 
-        ret.addAll(lst111);
-        ret.addAll(lst121);
+	    ret.addAll(lst111);
+	    ret.addAll(lst121);
 
-        return ret;
+	    return ret;
     }
+
 };

@@ -105,25 +105,30 @@ public class ActivityController extends Controller {
 			Map<String, String[]> formData = request().body().asFormUrlEncoded();
 			String token = formData.get(User.TOKEN)[0];
 			Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-
-			String[] appliedParticipantsJsonStrs = formData.get(ActivityDetail.APPLIED_PARTICIPANTS);
+			Activity activity = SQLCommander.queryActivity(activityId);
+			if(activity == null) throw new ActivityNotFoundException();
+			if(activity.hasBegun()) throw new ActivityHasBegunException();
+			// String[] appliedParticipantsJsonStrs = formData.get(ActivityDetail.APPLIED_PARTICIPANTS);
 			String[] selectedParticipantsJsonStrs = formData.get(ActivityDetail.SELECTED_PARTICIPANTS);
-			String appliedParticipantsJsonStr = (appliedParticipantsJsonStrs.length > 0) ? appliedParticipantsJsonStrs[0] : "[]";
+			// String appliedParticipantsJsonStr = (appliedParticipantsJsonStrs.length > 0) ? appliedParticipantsJsonStrs[0] : "[]";
 			String selectedParticipantsJsonStr = (selectedParticipantsJsonStrs.length > 0) ? selectedParticipantsJsonStrs[0] : "[]";
 
-			JSONArray appliedParticipantsJson = (JSONArray) JSONValue.parse(appliedParticipantsJsonStr);
+			// JSONArray appliedParticipantsJson = (JSONArray) JSONValue.parse(appliedParticipantsJsonStr);
 			JSONArray selectedParticipantsJson = (JSONArray) JSONValue.parse(selectedParticipantsJsonStr);
 
 			Integer viewerId = DataUtils.getUserIdByToken(token);
 			if (viewerId == null) throw new UserNotFoundException();
 			if (!SQLCommander.validateOwnership(viewerId, activityId)) throw new AccessDeniedException();
 
+			/* Forbid unselecting participants, uncomment corresponding codes to resume */
+			/* 			
 			for (Object appliedParticipantJson : appliedParticipantsJson) {
 				Integer userId = Integer.valueOf((String) appliedParticipantJson);
 				if (userId.equals(viewerId)) continue; // anti-cracking by unselecting the host of an activity
 				int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
 				SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied, originalRelation));
 			}
+			*/
 
 			for (Object selectedParticipantJson : selectedParticipantsJson) {
 				Integer userId = Integer.valueOf((String) selectedParticipantJson);
@@ -151,6 +156,16 @@ public class ActivityController extends Controller {
 
 			Map<String, String[]> formData = data.asFormUrlEncoded();
 
+			String activityTitle = formData.get(Activity.TITLE)[0];
+			String activityContent = formData.get(Activity.CONTENT)[0];
+			String activityBeginTime = formData.get(Activity.BEGIN_TIME)[0];
+			String activityDeadline = formData.get(Activity.DEADLINE)[0];
+
+			Timestamp beginTime = Timestamp.valueOf(activityBeginTime);
+			Timestamp deadline = Timestamp.valueOf(activityDeadline);
+			
+			if(deadline.after(beginTime)) throw new DeadlineAfterBeginTimeException();
+
 			String token = formData.get(User.TOKEN)[0];
 			if (token == null) throw new NullPointerException();
 			Integer userId = DataUtils.getUserIdByToken(token);
@@ -158,38 +173,29 @@ public class ActivityController extends Controller {
 			User user = SQLCommander.queryUser(userId);
 			if (user == null) throw new NullPointerException();
 
-			String activityTitle = formData.get(Activity.TITLE)[0];
-			String activityContent = formData.get(Activity.CONTENT)[0];
-			String activityBeginTime = formData.get(Activity.BEGIN_TIME)[0];
-			String activityDeadline = formData.get(Activity.DEADLINE)[0];
-
 			if (DataUtils.validateTitle(activityTitle) == false || DataUtils.validateContent(activityContent) == false) throw new NullPointerException();
 			boolean isNewActivity = true;
 			Integer activityId = null;
-			if (formData.containsKey(UserActivityRelation.ACTIVITY_ID) == true) {
+			if (formData.containsKey(UserActivityRelation.ACTIVITY_ID)) {
 				activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 				isNewActivity = false;
 			}
 			Activity activity = null;
 
-			if (isNewActivity == true) {
-				// create activity
-				activityId = SQLCommander.createActivity(activityTitle, activityContent, userId);
-				if (activityId == null || activityId.equals(SQLHelper.INVALID)) throw new NullPointerException();
-			}
+			if (isNewActivity)	activityId = SQLCommander.createActivity(activityTitle, activityContent, userId);
+			if (activityId == null || activityId.equals(SQLHelper.INVALID)) throw new ActivityNotFoundException();
 
 			// update activity
 			activity = SQLCommander.queryActivity(activityId);
-			if (SQLCommander.isActivityEditable(userId, activity) == false) throw new NullPointerException();
+			if (activity == null) throw new ActivityNotFoundException();
+			if (!SQLCommander.isActivityEditable(userId, activity)) throw new AccessDeniedException();
 
 			activity.setTitle(activityTitle);
 			activity.setContent(activityContent);
-			activity.setBeginTime(Timestamp.valueOf(activityBeginTime));
-			activity.setDeadline(Timestamp.valueOf(activityDeadline));
+			activity.setBeginTime(beginTime);
+			activity.setDeadline(deadline);
 
-			boolean res = SQLCommander.updateActivity(activity);
-
-			if (res == false) throw new NullPointerException();
+			if(!SQLCommander.updateActivity(activity))	throw new NullPointerException();
 
 			// save new images
 			List<Image> previousImages = SQLCommander.queryImages(activityId);
@@ -197,8 +203,7 @@ public class ActivityController extends Controller {
 				Iterator<Http.MultipartFormData.FilePart> imageIterator = imageFiles.iterator();
 				while (imageIterator.hasNext()) {
 					Http.MultipartFormData.FilePart imageFile = imageIterator.next();
-					int newImageId = ExtraCommander.saveImageOfActivity(imageFile, user, activity);
-					if (newImageId == ExtraCommander.INVALID) break;
+					if(ExtraCommander.INVALID == ExtraCommander.saveImageOfActivity(imageFile, user, activity)) break;
 				}
 			}
 
@@ -207,8 +212,8 @@ public class ActivityController extends Controller {
 
 			if (formData.containsKey(OLD_IMAGE)) {
 				JSONArray selectedOldImagesJson = (JSONArray) JSONValue.parse(formData.get(OLD_IMAGE)[0]);
-				for (int i = 0; i < selectedOldImagesJson.size(); i++) {
-					Integer imageId = ((Long) selectedOldImagesJson.get(i)).intValue();
+				for (Object selectedOldImageJson : selectedOldImagesJson) {
+					Integer imageId = ((Long) selectedOldImageJson).intValue();
 					selectedOldImagesSet.add(imageId);
 				}
 			}
