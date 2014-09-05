@@ -187,15 +187,15 @@ function compareYmdhisDate(foo, bar) {
 		var parts = foo.split(" ");
 		var ymd = parts[0].split("-"); 
 		var his = parts[1].split(":");
-		for(var n in ymd) first.push(parseInt(n));
-		for(var n in his) first.push(parseInt(n));
+		for(var n in ymd) first.push(parseInt(ymd[n]));
+		for(var n in his) first.push(parseInt(his[n]));
 	}
 	{
 		var parts = bar.split(" ");
 		var ymd = parts[0].split("-"); 
 		var his = parts[1].split(":");
-		for(var n in ymd) second.push(parseInt(n));
-		for(var n in his) second.push(parseInt(n));
+		for(var n in ymd) second.push(parseInt(ymd[n]));
+		for(var n in his) second.push(parseInt(his[n]));
 	}
 	for(var i = 0; i <  first.length; i++) {
 		if(first[i] < second[i]) return -1;
