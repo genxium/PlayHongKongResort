@@ -210,11 +210,8 @@ function onSave(evt){
 
         var deadlinePicker = data[g_indexDeadlinePicker];
         var deadline = getDateTime(deadlinePicker);
-
-	var beginTimeObj = new Date(beginTime);
-	var deadlineObj = new Date(deadline);
 		
-	if(deadlineObj > beginTimeObj) {
+	if(compareYmdhisDate(deadline, beginTime) > 0) {
 		alert("Deadline can not be after the begin time of an activity.");
 		return;
 	}
