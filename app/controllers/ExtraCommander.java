@@ -124,7 +124,7 @@ public class ExtraCommander extends SQLCommander {
 		String fileName = imageFile.getFilename();
 		File file = imageFile.getFile();
 		try {
-			if (DataUtils.validateImage(imageFile)) throw new NullPointerException();
+			if (!DataUtils.validateImage(imageFile)) throw new InvalidImageException();
 			if (user == null) throw new UserNotFoundException();
 			if (activity == null) throw new ActivityNotFoundException();
 
