@@ -66,7 +66,7 @@ public class SQLHelper {
             s_useUnicode = attributes.get(USE_UNICODE);
             ret = true;
         } catch (Exception e) {
-            System.out.println("SQLHelper.readMySQLConfig:" + e.getMessage());
+            System.out.println(SQLHelper.class.getName() + ".readMySQLConfig:" + e.getMessage());
         }
         return ret;
     }

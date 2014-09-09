@@ -3,6 +3,8 @@ conf/database_config.xml
 *.sh
 .target
 .target/*
+test
+test/*
 
 # built application files
 *.apk

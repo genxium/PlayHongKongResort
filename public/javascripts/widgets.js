@@ -21,9 +21,9 @@ function initWidgets(callbackPreviousPage, callbackNextPage){
 /*
  * Return a modal handle
  * */
-function createModal(par, message){
+function createModal(par, message, widthRatioPercentage, heightRatioPercentage){
 	var container=$("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='' aria-hidden='true'>", {
-		style: "width: 80%; height: 80%"
+		style: "width: " + widthRatioPercentage + "%; height: " + heightRatioPercentage + "%"
 	}).appendTo(par);	
 	var dialog=$("<div class='modal-dialog modal-lg'>").appendTo(container);
 	var content=$("<div class='modal-content'>", {

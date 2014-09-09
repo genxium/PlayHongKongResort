@@ -44,6 +44,8 @@ var g_onEditorCancelled = null;
 var g_onQueryActivitiesSuccess = null;
 var g_onQueryActivitiesError = null;
 
+var g_loadingWidget = null;
+
 // Assistive functions
 function formatDigits(value, numberOfDigits){
        var valueStr = value.toString();
@@ -227,6 +229,10 @@ function onSave(evt){
         setNonSavable();
         setNonSubmittable();
 
+	if(g_loadingWidget == null) g_loadingWidget = createModal($("#wrap"), "Saving changes, please wait or click shadow area to dismiss", 80, 20);
+		
+	showModal(g_loadingWidget);
+
         $.ajax({
                 method: "POST",
                 url: "/activity/save",
@@ -235,16 +241,18 @@ function onSave(evt){
                 contentType: false, // tell jQuery not to set contentType
                 processData: false, // tell jQuery not to process the data
                 success: function(data, status, xhr){
-                    setSubmittable();
-                    var jsonResponse = JSON.parse(data);
-                    if(jsonResponse.hasOwnProperty(g_keyActivityId)) {
-                        alert("Activity created!");
-			g_activityEditor.data(g_keyActivityId, parseInt(jsonResponse[g_keyActivityId]));
-                    } else {
-                        alert("Changes saved.");
-                    }
+			hideModal(g_loadingWidget);
+			setSubmittable();
+			var jsonResponse = JSON.parse(data);
+			if(jsonResponse.hasOwnProperty(g_keyActivityId)) {
+				alert("Activity created!");
+				g_activityEditor.data(g_keyActivityId, parseInt(jsonResponse[g_keyActivityId]));
+			} else {
+				alert("Changes saved.");
+			}
                 },
                 error: function(xhr, status, err){
+			hideModal(g_loadingWidget)
                         setSavable();
                 }
         });
