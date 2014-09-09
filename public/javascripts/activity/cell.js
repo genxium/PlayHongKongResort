@@ -30,6 +30,14 @@ function onBtnJoinClicked(evt){
 
 	evt.preventDefault();
 	var data = evt.data;
+	var activity = data[g_keyActivity];
+
+	var currentYmdhis = getCurrentYmdhisDate();
+	if(compareYmdhisDate(currentYmdhis, activity.applicationDeadline) > 0) {
+		alert("Application deadline has expired!");
+		return;
+	}
+
 	var token = $.cookie(g_keyToken).toString();
 
 	var params={};
@@ -105,6 +113,7 @@ function generateActivityCell(activityJson){
 		}).appendTo(ret);
 		var dJoin = {};
 		dJoin[g_keyActivityId] = activity.id;
+		dJoin[g_keyActivity] = activity;
 		btnJoin.on("click", dJoin, onBtnJoinClicked);
 
 	} else if((activity.relation & applied) > 0
