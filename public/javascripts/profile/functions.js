@@ -122,9 +122,8 @@ function onBtnNextPageClicked(evt){
 }
 
 function onSectionActivitiesScrolled(evt){
-	if( $(this).scrollTop() + $(this).height() >= $(document).height() ){
-		evt.preventDefault();
-	}
+	if( $(this).scrollTop() + $(this).height() < $(document).height() ) return;
+	evt.preventDefault();
 }
 
 function refreshOnEnter(){

@@ -236,36 +236,34 @@ public class EasyPreparedStatementBuilder {
     }
 
     protected String appendWhere(String query) {
+	if (m_whereCols == null) return query; 
         String ret = query;
-        if (m_whereCols != null) {
-            ret += " WHERE ";
-            for (int i = 0; i < m_whereCols.size(); i++) {
-                String col = m_whereCols.get(i);
-                String op = m_whereOps.get(i);
-                ret += ("`" + col + "`" + op + "?");
-                if (i < m_whereCols.size() - 1) {
-                    if (m_whereLink == null) ret += " AND ";
-                    else ret += (" " + m_whereLink + " ");
-                }
-            }
-        }
+	ret += " WHERE ";
+	for (int i = 0; i < m_whereCols.size(); i++) {
+		String col = m_whereCols.get(i);
+		String op = m_whereOps.get(i);
+		ret += ("`" + col + "`" + op + "?");
+		if (i < m_whereCols.size() - 1) {
+			if (m_whereLink == null) ret += " AND ";
+			else ret += (" " + m_whereLink + " ");
+		}
+	}
         return ret;
     }
 
     protected String appendOrder(String query) {
+        if (m_orderBy == null) return query;
         String ret = query;
-        if (m_orderBy != null) {
-            ret += " ORDER BY ";
-            for (int i = 0; i < m_orderBy.size(); i++) {
-                String col = m_orderBy.get(i);
-                ret += ("`" + col + "`");
-                if (m_orientations.size() > i) {
-                    String orientation = m_orientations.get(i);
-                    ret += " " + orientation;
-                }
-                if (i < m_orderBy.size() - 1) ret += ", ";
-            }
-        }
+	ret += " ORDER BY ";
+	for (int i = 0; i < m_orderBy.size(); i++) {
+		String col = m_orderBy.get(i);
+		ret += ("`" + col + "`");
+		if (m_orientations.size() > i) {
+			String orientation = m_orientations.get(i);
+			ret += " " + orientation;
+		}
+		if (i < m_orderBy.size() - 1) ret += ", ";
+	}
         return ret;
     }
 

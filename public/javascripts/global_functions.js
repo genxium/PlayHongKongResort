@@ -183,7 +183,7 @@ function queryActivities(refIndex, numItems, order, direction, userId, relation,
 function getCurrentYmdhisDate() {
 	var date = new Date();
 	var anterior =  date.getFullYear().toString() + "-" + (date.getMonth() + 1).toString() + "-" + date.getDate().toString(); 
-	var posterior = date.getHours().toString() + ":" + date.getMinutes().toString() + ":" date.getSeconds().toString(); 
+	var posterior = date.getHours().toString() + ":" + date.getMinutes().toString() + ":" + date.getSeconds().toString(); 
 	return anterior + " " + posterior;
 }
 

@@ -36,29 +36,23 @@ function onBtnNextPageClicked(evt){
 }
 
 function onSectionDefaultActivitiesScrolled(evt){
-	if( $(this).scrollTop() + $(this).height() >= $(document).height() ){
-		evt.preventDefault();
-		alert("Bottom!");
-	}
+	if( $(this).scrollTop() + $(this).height() < $(document).height() )	return;
+	evt.preventDefault();
 }
 
 function showRegisterSection(){
-	if(g_sectionRegister){
-		g_sectionRegister.show();
-	}
+	if(g_sectionRegister)	return;
+	g_sectionRegister.show();
 }
 
 function hideRegisterSection(){
-	if(g_sectionRegister){
-		g_sectionRegister.hide();
-	}
+	if(g_sectionRegister == null)	return;
+	g_sectionRegister.hide();
 }
 
 function removeRegisterSection(){
-	if(g_sectionRegister){
-		g_sectionRegister.remove();
-		g_sectionRegister=null;
-	}
+	if(g_sectionRegister == null)	return;
+	g_sectionRegister.remove();
 }
 
 function refreshOnEnter(){

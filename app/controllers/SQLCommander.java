@@ -211,21 +211,19 @@ public class SQLCommander {
 
 		    if (refIndex.equals(INITIAL_REF_INDEX)) {
 			    builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
-		    } else if (direction.equals(DIRECTION_FORWARD)) {
+		    } else if ( (direction.equals(DIRECTION_FORWARD) && orientation.equals(SQLHelper.ASCEND)) || (direction.equals(DIRECTION_BACKWARD) && orientation.equals(SQLHelper.DESCEND)) ) {
 			    builder.where(orderKey, ">", refIndex);
 		    } else {
 			    builder.where(orderKey, "<", refIndex);
 		    }
-		    if (numItems != null) {
-			    builder.limit(numItems);
-		    }
+		    
+		    if (numItems != null)	builder.limit(numItems);
 
 		    List<JSONObject> activityJsons = SQLHelper.select(builder);
-		    if (activityJsons != null) {
-			    for (JSONObject activityJson : activityJsons) {
-				    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
-				    ret.add(new Activity(activityJson, host));
-			    }
+		    if (activityJsons == null)	return null;
+		    for (JSONObject activityJson : activityJsons) {
+			    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+			    ret.add(new Activity(activityJson, host));
 		    }
 	    } catch (Exception e) {
 		    System.out.println(SQLCommander.class.getName() + ".queryActivities: " + e.getMessage());
@@ -242,7 +240,7 @@ public class SQLCommander {
 
 		    if (refIndex.equals(INITIAL_REF_INDEX)) {
 			    builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
-		    } else if (direction.equals(DIRECTION_FORWARD)) {
+		    } else if ( (direction.equals(DIRECTION_FORWARD) && orientation.equals(SQLHelper.ASCEND)) || (direction.equals(DIRECTION_BACKWARD) && orientation.equals(SQLHelper.DESCEND)) ) {
 			    builder.where(orderKey, ">", refIndex);
 		    } else {
 			    builder.where(orderKey, "<", refIndex);
@@ -252,19 +250,17 @@ public class SQLCommander {
 		    builder.where(Activity.HOST_ID, "=", hostId);
 		    if(!hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
 
-		    if (numItems != null) {
-			    builder.limit(numItems);
-		    }
+		    if (numItems != null)	builder.limit(numItems);
 
 		    List<JSONObject> activityJsons = SQLHelper.select(builder);
-		    if (activityJsons != null) {
-			    for (JSONObject activityJson : activityJsons) {
-				    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
-				    ret.add(new Activity(activityJson, host));
-			    }
+		    if (activityJsons == null) return null;
+		    for (JSONObject activityJson : activityJsons) {
+			    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+			    Activity activity = new Activity(activityJson, host);
+			    ret.add(activity);
 		    }
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".queryActivities: " + e.getMessage());
+		    System.out.println(SQLCommander.class.getName() + ".queryHostedActivities, " + e.getMessage());
 	    }
 	    return ret;
     }

@@ -1,5 +1,7 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.SQLHelper;
 import dao.EasyPreparedStatementBuilder;
@@ -54,12 +56,13 @@ public class ActivityController extends Controller {
 				activities = SQLCommander.queryActivities(refIndex, Activity.ID, orderStr, numItems, direction, status);
 			}
 			if (activities == null) throw new NullPointerException();
-			ObjectNode result = Json.newObject();
+			// ObjectNode result = Json.newObject();
+			ArrayNode result = new ArrayNode(JsonNodeFactory.instance);
 			for (Activity activity : activities) {
 				// non-host viewers can only see accepted activities
 				if (activity.getStatus() != Activity.ACCEPTED && userId != null && !userId.equals(viewerId))
 					continue;
-				result.put(String.valueOf(activity.getId()), activity.toObjectNodeWithImages(viewerId));
+				result.add(activity.toObjectNodeWithImages(viewerId));
 			}
 			return ok(result);
 		} catch (Exception e) {

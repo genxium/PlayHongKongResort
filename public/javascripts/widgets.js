@@ -1,10 +1,19 @@
 /*
-	Pager Widget
+	Pager Widgets
 */
-function Pager(container, onPageChange) {
-	this.container = container;
-	this.onPageChange = onPageChange; // prototype: queryActivities in global_functions.js
 
+function PagerContainer(currentPage, orderKey, startingIndex, endingIndex, numItemsPerPage) {
+	this.currentPage = currentPage;
+	this.orderKey = orderKey;
+	this.startingIndex = startingIndex;
+	this.endingIndex = endingIndex;
+	this.numItemsPerPage = numItemsPerPage;
+}
+
+function PagerCoordinator(container, totalPages, onClick) {
+	this.container = container;
+	this.totalPages = totalPages;
+	this.onClick = onClick;
 }
 
 var g_btnPreviousPage=null;

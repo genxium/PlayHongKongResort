@@ -52,47 +52,44 @@ public class SQLHelper {
     private static String s_useUnicode = null;
 
     public static boolean readMySQLConfig() {
-        boolean ret = false;
-        try {
-            String fullPath = Play.application().path() + "/conf/" + "database_config.xml";
-            Map<String, String> attributes = XMLHelper.readDatabaseConfig(fullPath);
-            s_databaseName = attributes.get(DATABASE_NAME);
-            s_host = attributes.get(HOST);
-            s_port = Integer.parseInt(attributes.get(PORT));
-            s_user = attributes.get(USER);
-            s_password = attributes.get(PASSWORD);
-            s_charsetResult = attributes.get(CHARSET_RESULT);
-            s_charsetEncoding = attributes.get(CHARSET_ENCODING);
-            s_useUnicode = attributes.get(USE_UNICODE);
-            ret = true;
-        } catch (Exception e) {
-            System.out.println(SQLHelper.class.getName() + ".readMySQLConfig:" + e.getMessage());
-        }
-        return ret;
+	    boolean ret = false;
+	    try {
+		    String fullPath = Play.application().path() + "/conf/" + "database_config.xml";
+		    Map<String, String> attributes = XMLHelper.readDatabaseConfig(fullPath);
+		    s_databaseName = attributes.get(DATABASE_NAME);
+		    s_host = attributes.get(HOST);
+		    s_port = Integer.parseInt(attributes.get(PORT));
+		    s_user = attributes.get(USER);
+		    s_password = attributes.get(PASSWORD);
+		    s_charsetResult = attributes.get(CHARSET_RESULT);
+		    s_charsetEncoding = attributes.get(CHARSET_ENCODING);
+		    s_useUnicode = attributes.get(USE_UNICODE);
+		    ret = true;
+	    } catch (Exception e) {
+		    System.out.println(SQLHelper.class.getName() + ".readMySQLConfig:" + e.getMessage());
+	    }
+	    return ret;
     }
 
     public static String getConnectionURI() {
-        String ret = null;
-        do {
-            try {
-                boolean configResult = readMySQLConfig();
-                if (configResult == false) break;
+	    String ret = null;
+	    try {
+		    if(!readMySQLConfig()) return null;
 
-                Class.forName("com.mysql.jdbc.Driver");
-                StringBuilder builder = new StringBuilder();
-                builder.append("jdbc:mysql://");
-                builder.append(s_host + ":");
-                builder.append(s_port.toString() + "/");
-                builder.append(s_databaseName);
-                if (s_charsetResult != null) builder.append("?" + s_charsetResult);
-                if (s_charsetEncoding != null) builder.append("&" + s_charsetEncoding);
-                if (s_useUnicode != null) builder.append("&" + s_useUnicode);
-                ret = builder.toString();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        } while (false);
-        return ret;
+		    Class.forName("com.mysql.jdbc.Driver");
+		    StringBuilder builder = new StringBuilder();
+		    builder.append("jdbc:mysql://");
+		    builder.append(s_host + ":");
+		    builder.append(s_port.toString() + "/");
+		    builder.append(s_databaseName);
+		    if (s_charsetResult != null) builder.append("?" + s_charsetResult);
+		    if (s_charsetEncoding != null) builder.append("&" + s_charsetEncoding);
+		    if (s_useUnicode != null) builder.append("&" + s_useUnicode);
+		    ret = builder.toString();
+	    } catch (Exception e) {
+		    System.out.println(SQLHelper.class.getName() + ".getConnectionURI, " + e.getMessage());
+	    }
+	    return ret;
 
     }
 
@@ -105,7 +102,7 @@ public class SQLHelper {
             poolableConnectionFactory.setPool(connectionPool);
             ret = new PoolingDataSource<PoolableConnection>(connectionPool);
         } catch (Exception e) {
-            System.out.println("SQLHelper.setupDataSource: " + e.getMessage());
+            System.out.println(SQLHelper.class.getName() + ".setupDataSource: " + e.getMessage());
             ret = null;
         }
         return ret;
@@ -116,13 +113,12 @@ public class SQLHelper {
         try {
             if (s_dataSource == null) {
                 String connectURI = getConnectionURI();
-                System.out.println("connectionURI=" + connectURI);
                 s_dataSource = setupDataSource(connectURI);
             }
             if (s_dataSource == null) System.out.println("s_dataSource is null");
             connection = s_dataSource.getConnection();
         } catch (Exception e) {
-            System.out.println("SQLHelper.getConnection: " + e.getMessage());
+            System.out.println(SQLHelper.class.getName() + ".getConnection: " + e.getMessage());
             connection = null;
         }
         return connection;
@@ -130,11 +126,10 @@ public class SQLHelper {
 
     public static void closeConnection(Connection connection) {
         try {
-            if (connection != null) {
-                connection.close();
-            }
+            if (connection == null)	return;
+	    connection.close();
         } catch (Exception e) {
-            System.out.println("SQLHelper.closeConnection:" + e.getMessage());
+            System.out.println(SQLHelper.class.getName() + ".closeConnection:" + e.getMessage());
         }
     }
 
@@ -151,7 +146,7 @@ public class SQLHelper {
             statement.close();
             closeConnection(connection);
         } catch (Exception e) {
-            System.out.println("SQLHelper.select: " + e.getMessage());
+            System.out.println(SQLHelper.class.getName() + ".select: " + e.getMessage());
         }
         return ret;
     }
@@ -172,7 +167,7 @@ public class SQLHelper {
             closeConnection(connection);
         } catch (Exception e) {
             // return the invalid value for exceptions
-            System.out.println("SQLHelper.insert: " + e.getMessage());
+            System.out.println(SQLHelper.class.getName() + ".insert: " + e.getMessage());
         }
         return lastId;
     }
@@ -188,7 +183,7 @@ public class SQLHelper {
             closeConnection(connection);
             bRet = true;
         } catch (Exception e) {
-            System.out.println("SQLHelper.update: " + e.getMessage());
+            System.out.println(SQLHelper.class.getName() + ".update: " + e.getMessage());
         }
         return bRet;
     }
@@ -204,7 +199,7 @@ public class SQLHelper {
             closeConnection(connection);
             bRet = true;
         } catch (Exception e) {
-            System.out.println("SQLHelper.update: " + e.getMessage());
+            System.out.println(SQLHelper.class.getName() + ".update: " + e.getMessage());
         }
         return bRet;
     }
@@ -221,7 +216,7 @@ public class SQLHelper {
             statement.close();
             closeConnection(connection);
         } catch (Exception e) {
-            System.out.println("SQLHelper.select: " + e.getMessage());
+            System.out.println(SQLHelper.class.getName() + ".select: " + e.getMessage());
         }
         return ret;
     }
@@ -240,7 +235,7 @@ public class SQLHelper {
             closeConnection(connection);
         } catch (Exception e) {
             // return the invalid value for exceptions
-            System.out.println("SQLHelper.insert: " + e.getMessage());
+            System.out.println(SQLHelper.class.getName() + ".insert: " + e.getMessage());
         }
         return lastId;
     }
@@ -254,7 +249,7 @@ public class SQLHelper {
             closeConnection(connection);
             bRet = true;
         } catch (Exception e) {
-            System.out.println("SQLHelper.update: " + e.getMessage());
+            System.out.println(SQLHelper.class.getName() + ".update: " + e.getMessage());
         }
         return bRet;
     }
@@ -268,16 +263,14 @@ public class SQLHelper {
             closeConnection(connection);
             bRet = true;
         } catch (Exception e) {
-            System.out.println("SQLHelper.update: " + e.getMessage());
+            System.out.println(SQLHelper.class.getName() + ".update: " + e.getMessage());
         }
         return bRet;
     }
 
     public static String convertOrder(int order) {
-        String ret = null;
-        if (order == (+1)) ret = ASCEND;
-        else if (order == (-1)) ret = DESCEND;
-        else ;
-        return ret;
+        if (order == (+1)) return ASCEND;
+        else if (order == (-1)) return DESCEND;
+        else return null;
     }
 };
