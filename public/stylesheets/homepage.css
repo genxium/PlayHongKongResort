@@ -1,4 +1,4 @@
-.classSectionUserAvatar{
+.section-avatar{
 	display: table-column-group;
 	position: relative;
 	float: left;
@@ -7,10 +7,10 @@
 }
 
 /* Activity Cells */
-#idSectionDefaultActivities
+#section-activities
 {
-    display: block;
-    position: relative;
+	display: block;
+	position: relative;
 	width: 960pt;
 	height: 300pt;
 	border: 1pt solid #ff0000;

@@ -2,7 +2,8 @@
 	Pager Widgets
 */
 
-function PagerContainer(currentPage, orderKey, startingIndex, endingIndex, numItemsPerPage) {
+function PagerScreen(container, currentPage, orderKey, startingIndex, endingIndex, numItemsPerPage) {
+	this.container = container;
 	this.currentPage = currentPage;
 	this.orderKey = orderKey;
 	this.startingIndex = startingIndex;
@@ -10,8 +11,8 @@ function PagerContainer(currentPage, orderKey, startingIndex, endingIndex, numIt
 	this.numItemsPerPage = numItemsPerPage;
 }
 
-function PagerCoordinator(container, totalPages, onClick) {
-	this.container = container;
+function PagerCoordinator(screen, totalPages, onClick) {
+	this.screen = screen;
 	this.totalPages = totalPages;
 	this.onClick = onClick;
 }
@@ -20,8 +21,8 @@ var g_btnPreviousPage=null;
 var g_btnNextPage=null;
 
 function initWidgets(callbackPreviousPage, callbackNextPage){
-	g_btnPreviousPage=$("#btn_previous_page");
-	g_btnNextPage=$("#btn_next_page");
+	g_btnPreviousPage=$("#btn-previous-page");
+	g_btnNextPage=$("#btn-next-page");
 		
 	g_btnPreviousPage.on("click", callbackPreviousPage);
 	g_btnNextPage.on("click", callbackNextPage);

@@ -17,6 +17,7 @@ $(document).ready(function(){
 	};
 
 	g_onRegisterSuccess=function(){
+		alert("Registered successfully!");
 		refreshOnEnter();
 		queryActivities(0, g_numItemsPerPage, g_orderDescend, g_directionForward, null, null, g_statusAccepted, onQueryActivitiesSuccess, onQueryActivitiesError);
 	}
@@ -30,10 +31,12 @@ $(document).ready(function(){
 	g_onQueryActivitiesSuccess=onQueryActivitiesSuccess;
 
 	// execute on page loaded
-	g_sectionDefaultActivities=$("#idSectionDefaultActivities"); 
-	g_sectionDefaultActivities.on("scroll", onSectionDefaultActivitiesScrolled);
+	g_sectionActivities=$("#section-activities"); 
+	g_sectionActivities.on("scroll", onSectionDefaultActivitiesScrolled);
 
 	initWidgets(onBtnPreviousPageClicked, onBtnNextPageClicked);
+
+	g_pagerContainer = new PagerScreen(g_sectionActivities, 0, g_orderDescend, 0, 0, g_numItemsPerPage); 
 	checkLoginStatus();
 	
 });

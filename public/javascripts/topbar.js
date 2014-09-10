@@ -3,7 +3,7 @@ var g_topbar = null;
 function initTopbar(){
 	g_topbar = $("#topbar");
 	var topbarTitle = $("<span>", {
-		id: "topbar_title",
+		id: "topbar-title",
 		style: "float: left; margin-left: 5pt; margin-top: 10pt",
 		text: "Hong Kong Resort"
 	}).appendTo(g_topbar);

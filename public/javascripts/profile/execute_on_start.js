@@ -24,8 +24,8 @@ $(document).ready(function(){
 	g_onEnter = refreshOnEnter;
 	initActivityEditor();
 
-	g_formAvatar = $("#form_avatar");
-	g_sectionResponse=$("#section_response");
+	g_formAvatar = $("#form-avatar");
+	g_sectionResponse=$("#section-response");
 
 	g_activitiesFilter = $("#activities-filter");
 	g_activitiesFilter.on("change", function(){
@@ -45,9 +45,9 @@ $(document).ready(function(){
 	g_sectionActivities.bind("scroll", onSectionActivitiesScrolled);
 	g_sectionActivities.data(g_keyPageIndex, 0);
 
-	g_sectionUser=$("#section_user");
+	g_sectionUser=$("#section-user");
 
-	g_btnUploadAvatar=$("#btn_upload_avatar");
+	g_btnUploadAvatar=$("#btn-upload-avatar");
 	g_btnUploadAvatar.on("click", onBtnUploadAvatarClicked);
  	g_onEditorRemoved = queryActivities;
 

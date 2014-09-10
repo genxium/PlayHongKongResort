@@ -1,4 +1,4 @@
-#widget_paging
+#widget-pager
 {
 	clear: both;
 	display: block;
@@ -7,7 +7,7 @@
 	margin-top: 10pt;
 }
 
-#widget_paging > #btn_previous_page
+#widget-pager > #btn-previous-page
 {
 	display: inline;
 	position: relative;
@@ -17,7 +17,7 @@
 	font-size: 12pt;
 }
 
-#widget_paging > #btn_next_page
+#widget-pager > #btn-next-page
 {
 	display: inline;
 	position: relative;
