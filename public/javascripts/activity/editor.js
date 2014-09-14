@@ -44,6 +44,8 @@ var g_onEditorCancelled = null;
 var g_onQueryActivitiesSuccess = null;
 var g_onQueryActivitiesError = null;
 
+var g_onActivitySaveSuccess = null;
+
 var g_loadingWidget = null;
 
 // Assistive functions
@@ -250,6 +252,8 @@ function onSave(evt){
 			} else {
 				alert("Changes saved.");
 			}
+			if(g_onActivitySaveSuccess == null) return;
+			g_onActivitySaveSuccess();
                 },
                 error: function(xhr, status, err){
 			hideModal(g_loadingWidget)

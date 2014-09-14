@@ -4,6 +4,8 @@ var g_replyEditor = null;
 var g_onCommentsQuerySuccess = null;
 var g_onCommentsQueryError = null;
 
+var g_onCommentSubmitSuccess = null;
+
 function queryComments(params, onSuccess, onError){
     if(onSuccess != null) g_onCommentsQuerySuccess = onSuccess;
     if(onError != null) g_onCommentsQueryError = onError;
@@ -58,6 +60,8 @@ function generateReplyEditor(activityId, parentId, predecessorId, toUsername){
 				data: params,
 				success: function(data, status, xhr){
 					removeReplyEditor();
+					if(g_onCommentSubmitSuccess == null) return;
+					g_onCommentSubmitSuccess();
 				},
 				error: function(xhr, status, err){
 					alert("Comment not submitted...");

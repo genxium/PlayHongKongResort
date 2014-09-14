@@ -13,6 +13,10 @@ $(document).ready(function(){
 
 	g_onQueryActivitiesSuccess = onQueryActivitiesSuccess;
 	g_onQueryActivitiesError = onQueryActivitiesError;
+	
+	g_onActivitySaveSuccess = function() {
+		queryActivities(0, g_numItemsPerPage, order, g_directionForward, g_userId, relation, null, onQueryActivitiesSuccess, onQueryActivitiesError);
+	}
 
 	g_onLoginSuccess = function(){
 		refreshOnLoggedIn();

@@ -104,16 +104,19 @@ function displayActivityDetail(par){
 			}).appendTo(imagesNode);
 		}
 	}	
+
+	// Tab participants
 	g_tabParticipants.empty();
 	g_participantsForm = generateParticipantsSelectionForm(g_tabParticipants, g_activity);
 
+	// Tab Q&A a.k.a comments
 	var params={};
 	params[g_keyActivityId] = g_activity.id;
 	params[g_keyRefIndex] = 0;
 	params[g_keyNumItems] = 20;
 	params[g_keyDirection] = 1;
 
-	var onSuccess=function(data, status, xhr){
+	var onSuccess = function(data, status, xhr){
 		g_tabComments.empty();
 		var jsonResponse=JSON.parse(data);
 		if(jsonResponse == null || Object.keys(jsonResponse).length == 0) return;
@@ -126,14 +129,24 @@ function displayActivityDetail(par){
 	var onError = function(xhr, status, err){};
 	queryComments(params, onSuccess, onError);
 
+	// Tab assessments
 	var viewer = null;
 	if(g_activity.hasOwnProperty("viewer")) viewer = g_activity.viewer;
 	var batchAssessmentEditor = generateBatchAssessmentEditor(g_tabAssessments, g_activity, queryActivityDetail);
 
 	var token = $.cookie(g_keyToken);
 	if(token == null) return;
-
+	
+	// Comment editor
 	generateCommentEditor(ret, g_activity.id);
+	g_onCommentSubmitSuccess = function() {
+		var localParams={};
+		localParams[g_keyActivityId] = g_activity.id;
+		localParams[g_keyRefIndex] = 0;
+		localParams[g_keyNumItems] = 20;
+		localParams[g_keyDirection] = 1;
+		queryComments(localParams, onSuccess, onError);
+	};
 
 	return ret;
 }
