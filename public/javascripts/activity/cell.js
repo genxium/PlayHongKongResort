@@ -3,18 +3,17 @@
  */
 
 // general dom elements
-var g_classCellActivityContainer="classCellActivityContainer";
-var g_classCellActivityTitle="classCellActivityTitle";
-var g_classCellActivityContent="classCellActivityContent";
+var g_classCellActivityContainer="cell-container";
+var g_classCellActivityTitle="cell-title";
+var g_classCellActivityContent="cell-content";
 
-var g_classActivityCoverImage="classActivityCoverImage";
+var g_classActivityCoverImage="cell-cover";
 
-var g_classActivityStatusIndicator="classActivityStatusIndicator";
-var g_classAppliedIndicator="classAppliedIndicator";
+var g_classCellRelationIndicator="cell-relation-indicator";
 
 // button keys
-var g_classBtnJoin="classBtnJoin";
-var g_classBtnDetail="classBtnDetail";
+var g_classBtnJoin = "btn-join";
+var g_classBtnDetail = "btn-detail";
 
 // Assistant Handlers
 function onBtnEditClicked(evt){
@@ -53,7 +52,7 @@ function onBtnJoinClicked(evt){
 			btnJoin.remove();
 
 			$('<div>', {
-				class: g_classAppliedIndicator,
+				class: g_classCellRelationIndicator,
 				text: 'Applied'
 			}).appendTo(cell);
 		},
@@ -94,23 +93,44 @@ function generateActivityCell(activityJson){
 		class: g_classCellActivityContainer
 	});
 
-	if(coverImageUrl!=null){
-		var coverImage=$('<img>', {
-			class: g_classActivityCoverImage,
-			src: coverImageUrl
-		}).appendTo(ret);
+	var titleRow = $("<p>", {
+		style: "width: 100%; padding-bottom: 3pt; border-bottom: 1px solid #00ccff"
+	}).appendTo(ret);
+
+	var cellActivityTitle = $('<span>', {	
+		class: g_classCellActivityTitle,
+		text: activity.title
+	}).appendTo(titleRow);
+
+	if(activity.status != null){
+
+		var statusIndicator = $('<span>',{
+		    style: "color: red; font-size: 12pt; clear: left; float: right; text-align: right; vertical-align: center",
+		    text: statusStr
+		}).appendTo(titleRow);
+
+		if(parseInt(activity.status) == g_statusCreated){
+			var btnWrapper = $("<span>").appendTo(titleRow);
+			// this condition is temporarily hard-coded
+			var btnEdit = $('<button>', {
+				class: g_classBtnEdit,
+				text: 'Edit'
+			}).appendTo(btnWrapper);
+			var dEdit = {};
+			dEdit[g_keyActivity] = activity;
+			btnEdit.on("click", dEdit, onBtnEditClicked);
+		}
 	}
 
-	var cellActivityTitle=$('<div>', {	
-		class: g_classCellActivityTitle,
-		html: activity.title
+	var btnRow = $("<p>", {
+		style: "margin-top: 5pt; clear: left"
 	}).appendTo(ret);
 
 	if(activity.relation == null){
 		var btnJoin = $('<button>', {
 			class: g_classBtnJoin,
 			text: 'Join'
-		}).appendTo(ret);
+		}).appendTo(btnRow);
 		var dJoin = {};
 		dJoin[g_keyActivityId] = activity.id;
 		dJoin[g_keyActivity] = activity;
@@ -119,38 +139,28 @@ function generateActivityCell(activityJson){
 	} else if((activity.relation & applied) > 0
 	            && (g_loggedInUser != null && g_loggedInUser.id != activity.host.id)) {
 		
-		var appliedIndicator=$('<div>', {
-			class: g_classAppliedIndicator,
+		var appliedIndicator = $('<div>', {
+			class: g_classCellRelationIndicator,
 			text: 'Applied'
-		}).appendTo(ret);
+		}).appendTo(btnRow);
 	} else;
 
-	if(activity.status != null){
-
-		var statusIndicator = $('<div>',{
-		    class: g_classActivityStatusIndicator,
-		    text: statusStr
-		}).appendTo(ret);
-
-		if(parseInt(activity.status) == g_statusCreated){
-		    // this condition is temporarily hard-coded
-		    var btnEdit = $('<button>', {
-			class: g_classBtnEdit,
-			text: 'Edit'
-		    }).appendTo(ret);
-		    var dEdit = {};
-		    dEdit[g_keyActivity] = activity;
-		    btnEdit.on("click", dEdit, onBtnEditClicked);
-		}
-	}
-
-	var btnDetail=$('<button>', {
+	var btnDetail = $('<button>', {
 		class: g_classBtnDetail,
 		text: 'Detail'
-	}).appendTo(ret);
+	}).appendTo(btnRow);
 	var dDetail = {};
 	dDetail[g_keyActivityId] = activity.id;
 	btnDetail.on("click", dDetail, onBtnDetailClicked);
+
 	
+	if(coverImageUrl != null){
+		var imgRow = $("<p>").appendTo(ret);
+		var coverImage=$('<img>', {
+			class: g_classActivityCoverImage,
+			src: coverImageUrl
+		}).appendTo(imgRow);
+	}
+
 	return ret;
 }

@@ -36,17 +36,17 @@
 	margin-bottom: 2pt;
 }
 
-.classBtnEdit
+.btn-edit
 {
 	position: relative;
 	width:	auto;
-	margin-left:	5pt;
+	margin-left:	10pt;
    	font-size:	12pt;
-	background-color:	#cccc00;
-	color:	#0000ff;
+	background-color: black;
+	color:	white;
 }
 
-.classBtnSave
+.btn-save
 {
 	display: inline;
 	position: relative;
@@ -59,7 +59,7 @@
 	color: #cccccc;
 }
 
-.classBtnDelete
+.btn-delete
 {
 	display: table-cell;
 	position: relative;
@@ -72,7 +72,7 @@
 	background-color: #ff0000;
 }
 
-.classBtnSubmit
+.btn-submit
 {
 	display: table-cell;
 	position: relative;
@@ -85,7 +85,7 @@
 	background-color: #0000ee;
 }
 
-.classBtnCancel
+.btn-cancel
 {
 	display: table-cell;
 	position: relative;
@@ -102,24 +102,25 @@
 }
 
 /* Activity Cells */
-.classCellActivityContainer
+.cell-container
 {
 	display: inline;
 	float: left;
 	width: 33%;
 	height: 50%;
+	padding: 3pt;
 	margin: 5pt 5pt;
 	border: 2pt solid #00ccff;
+	border-radius: 8pt;
 }
 
-.classActivityCoverImage
+.cell-cover
 {
 	height: 50%;
 }
 
-.classCellActivityTitle
+.cell-title
 {
-	display: block;
 	position: relative;
 	margin-bottom: 2pt;
 	height: 25%;
@@ -127,11 +128,10 @@
 	max-height: 25%;
 	max-width:	100%;
 	font-size: 13pt;
-	border-bottom: thick dotted #00ccff;
 	overflow: hidden;
 }
 
-.classCellActivityContent
+.cell-content
 {
 	display: block;
 	position: relative;
@@ -145,7 +145,7 @@
 	overflow: hidden;
 }
 
-.classBtnJoin
+.btn-join
 {
 	display: inline;
 	position: relative;
@@ -157,7 +157,7 @@
 	color:	blue;
 }
 
-.classBtnDetail{
+.btn-detail{
 	display: inline;
 	position: relative;
 	margin-left: 5pt;
@@ -167,7 +167,7 @@
 	color:	blue;
 }
 
-.classActivityStatusIndicator
+.cell-status-indicator
 {
 	display: inline;
 	position: relative;
@@ -177,7 +177,7 @@
 	color: red;
 }
 
-.classAppliedIndicator
+.cell-relation-indicator
 {
 	display: inline;
 	position: relative;

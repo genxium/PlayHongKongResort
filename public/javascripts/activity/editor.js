@@ -12,17 +12,17 @@ var g_classFieldActivityTitle = "classFieldActivityTitle";
 var g_classFieldActivityContent = "classFieldActivityContent";
 
 // button keys
-var g_classBtnEdit = "classBtnEdit";
-var g_classBtnSubmit = "classBtnSubmit";
-var g_classBtnDelete = "classBtnDelete";
-var g_classBtnSave = "classBtnSave";
-var g_classBtnCancel = "classBtnCancel";
+var g_classBtnEdit = "btn-edit";
+var g_classBtnSubmit = "btn-submit";
+var g_classBtnDelete = "btn-delete";
+var g_classBtnSave = "btn-save";
+var g_classBtnCancel = "btn-cancel";
 
 // DOM indexes for cascaded DOM element search
 var g_indexImageOfActivityPrefix = "indexImageOfActivityPrefix";
-var g_indexDeadlinePicker = "deadlinePicker"
-var g_indexBeginTimePicker = "beginTimePicker";
-var g_indexAssociatedImage = "indexAssociatedImage";
+var g_indexDeadlinePicker = "deadline-picker"
+var g_indexBeginTimePicker = "begin-time-picker";
+var g_indexAssociatedImage = "associated-image";
 
 var g_indexOldImages = "old_images";
 var g_indexNewImages = "new_images";

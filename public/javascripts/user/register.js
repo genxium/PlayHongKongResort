@@ -14,7 +14,7 @@ var g_onRegisterSuccess=null;
 var g_onRegisterError=null;
 
 function initRegisterWidget(){	
-	g_sectionRegister=$("#idSectionRegister");
+	g_sectionRegister=$("#section-register");
 	var registerForm=generateRegisterForm();
     	g_sectionRegister.append(registerForm);
 }
@@ -51,14 +51,13 @@ function emptyRegisterFields(){
 }
 
 function onBtnRegisterClicked(evt){
-    do{
         var username=g_registerUsername.val();
         var email=g_registerEmail.val();
         var password=g_registerPassword.val();
 
-        if(username==null || username.length==0
-            || email==null || email.length==0 || validateEmail(email)==false
-            || password==null || password.length==0 || validatePassword(password)==false || validatePasswordConfirm()==false) break;
+        if(username == null || username.length == 0
+            || email == null || email.length == 0 || !validateEmail(email)
+            || password==null || password.length==0 || !validatePassword(password) || !validatePasswordConfirm()) return;
 
         var params={};
         params[g_keyName]=username;
@@ -78,7 +77,6 @@ function onBtnRegisterClicked(evt){
 			g_onRegisterError();
 		}
         });
-    }while(false);
 }
 
 function generateRegisterForm(){
@@ -150,18 +148,17 @@ function generateRegisterForm(){
 	});	
 
 	g_registerEmail.on("input keyup paste", function(evt){
-		do{
-		    evt.preventDefault();
-		    g_spanCheckEmail.empty();
-		    var email=$(this).val();
-		    if(email==null || email.length==0) break;
-		    if(validateEmail(email)==false) {
-					 g_spanCheckEmail.text(" Not valid email format");
-					 break;
-				}
-		    var params={};
-		    params["email"]=email;
-		    $.ajax({
+		evt.preventDefault();
+		g_spanCheckEmail.empty();
+		var email=$(this).val();
+		if(email == null || email.length == 0) return;
+		if(!validateEmail(email)) {
+			 g_spanCheckEmail.text(" Not valid email format");
+			 return;
+		}
+		var params={};
+		params[g_keyEmail]=email;
+		$.ajax({
 			type: "GET",
 			url: "/user/email/duplicate",
 			data: params,
@@ -171,39 +168,34 @@ function generateRegisterForm(){
 			error: function(xhr, status, err){
 				g_spanCheckEmail.text(" This email cannot be used :(");        
 			}
-		    });
-		}while(false);
+		});
 	});	
 
 	g_registerPassword.on("input keyup paste", function(evt){
-		do{
-		    evt.preventDefault();
-		    g_spanCheckPassword.empty();
-		    var password=$(this).val();
-		    if(password==null || password.length==0) break;
-		    if(validatePassword(password)==false) {
-					g_spanCheckPassword.text(" Password can only contain alphabet letters and numbers");
-					break;
-				}
-				g_spanCheckPassword.text("");
-		}while(false);
+		evt.preventDefault();
+		g_spanCheckPassword.empty();
+		var password = $(this).val();
+		if(password == null || password.length ==0 ) return;
+		if(!validatePassword(password)) {
+			g_spanCheckPassword.text(" Password can only contain alphabet letters and numbers");
+			return;
+		}
+		g_spanCheckPassword.text("");
 	});	
  
 	g_registerPasswordConfirm.on("input keyup paste", function(evt){
-		do{
-			evt.preventDefault();
-			g_spanCheckPasswordConfirm.empty();
-			if(validatePasswordConfirm()==false) {
-				g_spanCheckPasswordConfirm.text(" Doesn't match! ");
-				break;
-			}
-			g_spanCheckPasswordConfirm.text("");
-		}while(false);
+		evt.preventDefault();
+		g_spanCheckPasswordConfirm.empty();
+		if(!validatePasswordConfirm()) {
+			g_spanCheckPasswordConfirm.text(" Doesn't match! ");
+			return;
+		}
+		g_spanCheckPasswordConfirm.text("");
 	});	
 
 	var row5=$('<tr>').appendTo(ret);
 	var cell51=$('<td>').appendTo(row5);
-	var btnRegister=$('<button>', {
+	var btnRegister = $('<button>', {
 		style: "font-family: Serif; font-size: 15pt; background-color: Teal; color: white",
 		text: "Register"	
 	}).appendTo(cell51);
@@ -212,13 +204,9 @@ function generateRegisterForm(){
 }
 
 function validatePasswordConfirm(){
-	var ret=false;
-	do{
-		var password=g_registerPassword.val();		
-		var passwordConfirm=g_registerPasswordConfirm.val();
-		if(password==null || passwordConfirm==null) break;
-		if(password!=passwordConfirm) break;
-		ret=true;	
-	}while(false);
-	return ret;
+	var password = g_registerPassword.val();		
+	var passwordConfirm = g_registerPasswordConfirm.val();
+	if(password == null || passwordConfirm == null) return false;
+	if(password != passwordConfirm) return false;
+	return true;
 } 

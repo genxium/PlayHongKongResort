@@ -13,7 +13,6 @@
 	position: relative;
 	width: 960pt;
 	height: 300pt;
-	border: 1pt solid #ff0000;
 	overflow: auto;
-	clear: both;
+	clear: left;
 }
