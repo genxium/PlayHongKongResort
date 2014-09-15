@@ -32,7 +32,7 @@ public class ActivityController extends Controller {
 		}
 	}
 
-	public static Result query(String refIndex, Integer numItems, Integer order, Integer direction, String token, Integer userId, Integer relation, Integer status) {
+	public static Result query(String refIndex, Integer numItems, Integer orientation, Integer direction, String token, Integer vieweeId, Integer relation, Integer status) {
 		response().setContentType("text/plain");
 		try {
 			// anti-cracking by param direction
@@ -40,30 +40,32 @@ public class ActivityController extends Controller {
 			if (!direction.equals(SQLCommander.DIRECTION_FORWARD) && !direction.equals(SQLCommander.DIRECTION_BACKWARD))    throw new NullPointerException();
 
 			// anti-cracking by param order
-			if (order == null)  throw new NullPointerException();
-			String orderStr = SQLHelper.convertOrder(order);
-			if (orderStr == null)   throw new NullPointerException();
+			if (orientation == null)  throw new NullPointerException();
+			String orientationStr = SQLHelper.convertOrientation(orientation);
+			if (orientationStr == null)   throw new NullPointerException();
 
 			// anti=cracking by param token
 			Integer viewerId = null;
 			if (token != null) viewerId = DataUtils.getUserIdByToken(token);
 			List<Activity> activities = null;
-			if (relation != null && relation != UserActivityRelation.hosted && userId != null) {
-				activities = SQLCommander.queryActivities(userId, UserActivityRelation.maskRelation(relation, null));
-			} else if (relation != null && relation == UserActivityRelation.hosted && userId != null && viewerId != null) {
-				activities = SQLCommander.queryHostedActivities(userId, viewerId, refIndex, Activity.ID, orderStr, numItems, direction);
+			if (relation != null && relation != UserActivityRelation.hosted && vieweeId != null) {
+				activities = SQLCommander.queryActivities(vieweeId, UserActivityRelation.maskRelation(relation, null));
+			} else if (relation != null && relation == UserActivityRelation.hosted && vieweeId != null && viewerId != null) {
+				activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, refIndex, Activity.ID, orientationStr, numItems, direction);
 			} else {
-				activities = SQLCommander.queryActivities(refIndex, Activity.ID, orderStr, numItems, direction, status);
+				activities = SQLCommander.queryActivities(refIndex, Activity.ID, orientationStr, numItems, direction, status);
 			}
 			if (activities == null) throw new NullPointerException();
-			// ObjectNode result = Json.newObject();
-			ArrayNode result = new ArrayNode(JsonNodeFactory.instance);
+			ObjectNode result = Json.newObject();
+			result.put(Activity.COUNT, 0);		
+
+			ArrayNode activitiesNode = new ArrayNode(JsonNodeFactory.instance);
 			for (Activity activity : activities) {
 				// non-host viewers can only see accepted activities
-				if (activity.getStatus() != Activity.ACCEPTED && userId != null && !userId.equals(viewerId))
-					continue;
-				result.add(activity.toObjectNodeWithImages(viewerId));
+				if (activity.getStatus() != Activity.ACCEPTED && vieweeId != null && !vieweeId.equals(viewerId))	continue;
+				activitiesNode.add(activity.toObjectNodeWithImages(viewerId));
 			}
+			result.put(Activity.ACTIVITIES, activitiesNode);
 			return ok(result);
 		} catch (Exception e) {
 			System.out.println(ActivityController.class.getName() + ".query, " + e.getMessage());

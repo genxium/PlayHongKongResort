@@ -34,7 +34,7 @@ function generateAssessmentEditor(par, participant, activity, batchEditor){
 	var singleEditor = new SingleAssessmentEditor();
 	var row = $('<p>').appendTo(par);
 	var name = $('<a>', {
-		href: "/user/profile/show?" + g_keyUserId + "=" + participant.id,
+		href: "/user/profile/show?" + g_keyVieweeId + "=" + participant.id,
 		text: "@" + participant.name,
 		style: "margin-left: 5pt; display: inline; cursor: pointer; color: BlueViolet"
 	}).appendTo(row);
@@ -75,11 +75,10 @@ function generateAssessmentEditor(par, participant, activity, batchEditor){
 			style: "display: inline; color: blue; margin-left: 5pt; cursor: pointer"
 		}).appendTo(row);					
 		var dBtnView = {};
-		dBtnView[g_keyUserId] = participant.id;
+		dBtnView[g_keyVieweeId] = participant.id;
 		dBtnView[g_keyActivityId] = activity.id; 
 		btnView.on("click", dBtnView, function(evt){
 			evt.preventDefault();
-			var data = evt.data;
 			var onSuccess = function(data, status, xhr) {
 				var jsonResponse = JSON.parse(data);
 				if(jsonResponse == null || Object.keys(jsonResponse).length == 0) return;
@@ -96,7 +95,7 @@ function generateAssessmentEditor(par, participant, activity, batchEditor){
 			var onError = function(xhr, status, err) {
 
 			};
-			queryAssessments(data[g_keyUserId], data[g_keyActivityId], onSuccess, onError);	
+			queryAssessments(evt.data[g_keyVieweeId], evt.data[g_keyActivityId], onSuccess, onError);	
 		});
 	}
 	if(g_loggedInUser != null && g_loggedInUser.id == participant.id) row.hide(); 
@@ -283,7 +282,7 @@ function updateAttendance(activityId, attendance, onSuccess, onError){
 	});
 }
 
-function queryAssessments(userId, activityId, onSuccess, onError) {
+function queryAssessments(to, activityId, onSuccess, onError) {
 	var params = {};	
 
 	params[g_keyRefIndex] = 0;
@@ -291,7 +290,7 @@ function queryAssessments(userId, activityId, onSuccess, onError) {
 	params[g_keyDirection] = 1;
 	var token = $.cookie(g_keyToken);
 	if(token != null) params[g_keyToken] = token;
-        params[g_keyUserId] = userId;
+        params[g_keyTo] = to;
 	params[g_keyActivityId] = activityId;
 
 	$.ajax({

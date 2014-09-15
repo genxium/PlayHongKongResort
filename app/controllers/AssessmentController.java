@@ -20,12 +20,12 @@ public class AssessmentController extends Controller {
 
     public static final String BUNDLE = "bundle";
 
-    public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer userId, Integer activityId) {
+    public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer to, Integer activityId) {
         response().setContentType("text/plain");
         try {
-		    Integer viewerId = DataUtils.getUserIdByToken(token);
-		    if(viewerId.equals(userId)) throw new AccessDeniedException();
-		    List<Assessment> assessments = SQLCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, null, userId, activityId);
+		    Integer from = DataUtils.getUserIdByToken(token);
+		    if(from.equals(to)) throw new AccessDeniedException();
+		    List<Assessment> assessments = SQLCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, null, to, activityId);
             ObjectNode result = Json.newObject();
             for (Assessment assessment : assessments)   result.put(String.valueOf(assessment.getId()), assessment.toObjectNodeWithNames());
             return ok(result);

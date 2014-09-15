@@ -7,7 +7,7 @@
 }
 
 /* Activity Cells */
-#section-activities
+#pager-screen-activities
 {
 	display: block;
 	position: relative;
@@ -15,4 +15,9 @@
 	height: 300pt;
 	overflow: auto;
 	clear: left;
+}
+
+#pager-bar-activities
+{
+
 }

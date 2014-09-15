@@ -73,10 +73,9 @@ function onBtnDetailClicked(evt){
 
 // Generators
 
-function generateActivityCell(activityJson){
+function generateActivityCell(par, activity){
 
 	var arrayStatusName = ['created','pending','rejected','accepted','expired'];
-        var activity = new Activity(activityJson);
 
 	var coverImageUrl = null;
 	if(activity.images != null) {
@@ -91,7 +90,7 @@ function generateActivityCell(activityJson){
 
 	var ret=$('<div>', {
 		class: g_classCellActivityContainer
-	});
+	}).appendTo(par);
 
 	var titleRow = $("<p>", {
 		style: "width: 100%; padding-bottom: 3pt; border-bottom: 1px solid #00ccff"
@@ -161,6 +160,4 @@ function generateActivityCell(activityJson){
 			src: coverImageUrl
 		}).appendTo(imgRow);
 	}
-
-	return ret;
 }

@@ -1,24 +1,15 @@
 package dao;
 
+import org.apache.commons.dbcp2.*;
+import org.apache.commons.pool2.ObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.json.simple.JSONObject;
 import play.Play;
 
 import javax.sql.DataSource;
-import java.sql.PreparedStatement;
 import java.sql.Connection;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
-import org.apache.commons.pool2.ObjectPool;
-import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.apache.commons.dbcp2.ConnectionFactory;
-import org.apache.commons.dbcp2.PoolableConnection;
-import org.apache.commons.dbcp2.PoolingDataSource;
-import org.apache.commons.dbcp2.PoolableConnectionFactory;
-import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
-
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -268,7 +259,7 @@ public class SQLHelper {
         return bRet;
     }
 
-    public static String convertOrder(int order) {
+    public static String convertOrientation(int order) {
         if (order == (+1)) return ASCEND;
         else if (order == (-1)) return DESCEND;
         else return null;

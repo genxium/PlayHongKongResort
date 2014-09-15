@@ -3,10 +3,11 @@ var g_numItemsPerPage = 6;
 var g_baseTwo = 2;
 var g_baseTen = 10;
 var g_rootElement = $(":root");
+var g_inf = (1 << 53);
 
 // order is used in sorting (e.g. ascend/descend)
-var g_orderAscend = (+1);
 var g_orderDescend = (-1);
+var g_orderAscend = (+1);
 
 // direction is used in paging (e.g. scroll up/down)
 var g_directionForward = (+1);
@@ -29,10 +30,16 @@ var g_keyBundle = "bundle";
 // structured data keys (should be consistent with server-side in a protocol manner)
 var g_keyUser = "user";
 var g_keyUserId = "user_id";
+var g_keyVieweeId = "viewee_id";
 var g_keyName = "name";
 var g_keyEmail = "email";
 var g_keyPassword = "password";
 var g_keyAvatar = "avatar";
+
+var g_keyButton = "button";
+
+var g_keyCount = "count";
+var g_keyActivities = "activities";
 
 var g_keyActivity = "activity";
 var g_keyActivityId = "activity_id";
@@ -66,6 +73,9 @@ var g_keyReplyeeId = "replyee_id";
 var g_keyReplyeeName = "replyee_name";
 var g_keySubComments = "sub_comments";
 
+var g_keyFrom = "from";
+var g_keyTo = "to";
+
 // general keys
 var g_keyPageIndex = "page_index";
 var g_keyStartingIndex = "starting_index";
@@ -74,6 +84,7 @@ var g_keyEndingIndex = "ending_index";
 var g_keyRefIndex = "ref_index";
 var g_keyNumItems = "num_items";
 var g_keyOrder = "order";
+var g_keyOrientation = "orientation";
 var g_keyDirection = "direction";
 
 // constants

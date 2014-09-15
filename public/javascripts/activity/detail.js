@@ -84,7 +84,7 @@ function displayActivityDetail(par){
 			style: "margin-left: 5pt"
 		}).appendTo(d);
 		var host = $('<a>', {
-			href: '/user/profile/show?'+g_keyUserId+"="+g_activity.host.id.toString(),
+			href: "/user/profile/show?" + g_keyVieweeId + "=" + g_activity.host.id.toString(),
 			text: "@"+g_activity.host.name,
 			style: "font-size: 14pt; font-weight: bold;"
 		}).appendTo(sp2);

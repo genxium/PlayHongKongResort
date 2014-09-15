@@ -154,32 +154,6 @@ function firstChild(obj, selector){
 	return $(obj.children(selector)[0]);
 }
 
-function queryActivities(refIndex, numItems, order, direction, userId, relation, status, onSuccess, onError){
-	var params = {};
-	if(refIndex != null) params[g_keyRefIndex] = refIndex.toString();
-	if(numItems != null) params[g_keyNumItems] = numItems;
-	if(order != null) params[g_keyOrder] = parseInt(order);
-	if(direction != null) params[g_keyDirection] = parseInt(direction);
-	if(userId != null) params[g_keyUserId] = userId;
-	if(relation != null) params[g_keyRelation] = relation;
-	if(status != null) params[g_keyStatus] = status;
-
-	var token = $.cookie(g_keyToken);
-	if(token != null)	params[g_keyToken] = token;
-
-	try{
-		$.ajax({
-			type: "GET",
-			url: "/activity/query",
-			data: params,
-			success: onSuccess,
-			error: onError 
-		});
-	} catch(err){
-
-	}
-}
-
 function getCurrentYmdhisDate() {
 	var date = new Date();
 	var anterior =  date.getFullYear().toString() + "-" + (date.getMonth() + 1).toString() + "-" + date.getDate().toString(); 

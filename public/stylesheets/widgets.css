@@ -1,27 +1,3 @@
-#widget-pager
-{
-	margin-top: 10pt;
-	height: 35pt;
-}
-
-#widget-pager > #btn-previous-page
-{
-	display: inline;
-	position: relative;
-	width: 100pt;
-	margin-right: 3pt;
-	font-size: 12pt;
-}
-
-#widget-pager > #btn-next-page
-{
-	display: inline;
-	position: relative;
-	width: 100pt;
-	margin-left: 3pt;
-	font-size: 12pt;
-}
-
 /*
  * The top level container of the whole switch.
  * */

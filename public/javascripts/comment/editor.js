@@ -94,7 +94,7 @@ function generateCommentCell(par, commentJson, activityId){
 	var commenterName=commentJson[g_keyCommenterName];
         var spanCommenterName=$('<span>').appendTo(row);        
 	var hrefCommenterName=$('<a>', {
-	    href: "/user/profile/show?"+g_keyUserId+"="+commenterId,
+	    href: "/user/profile/show?" + g_keyVieweeId + "=" + commenterId,
             text: commenterName, 
             style: "text-align: left; margin-left: 25pt; color: brown;"
 	}).appendTo(spanCommenterName);
@@ -154,7 +154,7 @@ function generateSubCommentCell(commentJson, activityId){
 	var replyeeName=commentJson[g_keyReplyeeName];
 	var spanReplyee=$('<span>').appendTo(row);
 	var hrefReplyee=$('<a>', {
-		href: "/user/profile/show?"+g_keyUserId+"="+replyeeId,
+		href: "/user/profile/show?" + g_keyVieweeId + "=" + replyeeId,
 		text: "to @"+replyeeName+": ",
 		style: "color: BlueViolet"	
 	}).appendTo(spanReplyee);
@@ -167,7 +167,7 @@ function generateSubCommentCell(commentJson, activityId){
 	var commenterName=commentJson[g_keyCommenterName];
         var spanCommenterName=$('<span>').appendTo(row);        
 	var hrefCommenterName=$('<a>', {
-	    href: "/user/profile/show?"+g_keyUserId+"="+commenterId,
+	    href: "/user/profile/show?" + g_keyVieweeId + "=" + commenterId,
             text: commenterName, 
             style: "text-align: left; margin-left: 25pt; color: brown;"
 	}).appendTo(spanCommenterName);

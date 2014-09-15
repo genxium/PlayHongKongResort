@@ -3,21 +3,12 @@
  */
 
 // general DOM elements
-var g_formAvatar=null;
-var g_sectionActivities=null;
-var g_sectionUser=null;
-var g_sectionResponse=null;
-var g_activitiesFilter=null;
-var g_activitiesSorter=null;
-
-// input-field keys
-var g_idFieldAvatar="idFieldAvatar";
+var g_formAvatar = null;
+var g_sectionUser = null;
+var g_sectionResponse = null;
 
 // buttons
 var g_btnUploadAvatar=null;
-
-// others
-var g_userId=null;
 
 // Assistant Callback Functions
 function onUploadAvatarFormSubmission(formEvt){
@@ -48,45 +39,11 @@ function onUploadAvatarFormSubmission(formEvt){
 
 }
 
-function onQueryActivitiesSuccess(data, status, xhr){
-
-	var jsonResponse = JSON.parse(data);
-	if(jsonResponse == null) return;
-	var count = Object.keys(jsonResponse).length;
-	if(count <= 0) return;
-
-	var oldStartingIndex = g_sectionActivities.data(g_keyStartingIndex);
-	var oldEndingIndex = g_sectionActivities.data(g_keyEndingIndex);
-
-	// clean target section
-	g_sectionActivities.empty();
-	var idx=0;
-	// display contents
-	for(var key in jsonResponse){
-		var activityJson = jsonResponse[key];
-		var activityId = activityJson[g_keyId];
-		if(idx == 0)	g_sectionActivities.data(g_keyStartingIndex, activityId);
-		if(idx == count-1)	g_sectionActivities.data(g_keyEndingIndex, activityId);
-		var cell = generateActivityCell(activityJson);
-		g_sectionActivities.append(cell);
-		++idx;
-	}
-
-	var pageIndex = g_sectionActivities.data(g_keyPageIndex);
-	var order = g_activitiesSorter.val();
-	var newStartingIndex = g_sectionActivities.data(g_keyStartingIndex);
-	var newEndingIndex = g_sectionActivities.data(g_keyEndingIndex);
-	if(order == +1 && newStartingIndex > oldEndingIndex) ++pageIndex;
-	if(order == +1 && newEndingIndex < oldStartingIndex) --pageIndex;
-	if(order == -1 && newStartingIndex < oldEndingIndex) ++pageIndex;
-	if(order == -1 && newEndingIndex > oldStartingIndex) --pageIndex; 
-	g_sectionActivities.data(g_keyPageIndex, pageIndex);
-
+function queryActivitiesAndRefresh() {
+	if(g_vieweeId == null) return;
+	queryActivities(0, g_pagerContainer.nItems, g_pagerContainer.orientation, g_directionForward, g_vieweeId, g_pagerContainer.relation, g_pagerContainer.status, onQueryActivitiesSuccess, onQueryActivitiesError);
 }
 
-function onQueryActivitiesError(xhr, status, err) {
-
-}
 
 // Event Handlers
 function onBtnUploadAvatarClicked(evt){
@@ -102,30 +59,6 @@ function onBtnUploadAvatarClicked(evt){
 	g_formAvatar.submit();
 }
 
-function onBtnPreviousPageClicked(evt){
-	
-	var pageIndex=g_sectionActivities.data(g_keyPageIndex);
-	var startingIndex=g_sectionActivities.data(g_keyStartingIndex);
-
-	var relation = g_activitiesFilter.val();
-	var order = g_activitiesSorter.val();
-	queryActivities(startingIndex, g_numItemsPerPage, order, g_directionBackward, g_userId, relation, null, onQueryActivitiesSuccess, onQueryActivitiesError);
-
-}
-
-function onBtnNextPageClicked(evt){
-	var pageIndex=g_sectionActivities.data(g_keyPageIndex);
-	var endingIndex=g_sectionActivities.data(g_keyEndingIndex);
-	var relation = g_activitiesFilter.val();
-	var order = g_activitiesSorter.val();
-	queryActivities(endingIndex, g_numItemsPerPage, order, g_directionForward, g_userId, relation, null, onQueryActivitiesSuccess, onQueryActivitiesError);
-}
-
-function onSectionActivitiesScrolled(evt){
-	if( $(this).scrollTop() + $(this).height() < $(document).height() ) return;
-	evt.preventDefault();
-}
-
 function refreshOnEnter(){
 	g_formAvatar.hide();
 	queryUserDetail();
@@ -138,7 +71,7 @@ function refreshOnLoggedIn(){
 
 function queryUserDetail(){
 	var params={};
-	params[g_keyUserId]=g_userId;
+	params[g_keyVieweeId] = g_vieweeId;
 	var token=$.cookie(g_keyToken);
 	if(token!=null) params[g_keyToken]=token;
 	$.ajax({

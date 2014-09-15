@@ -20,13 +20,13 @@ POST /activity/delete controllers.ActivityController.delete()
 POST /activity/join controllers.ActivityController.join()
 POST /activity/save controllers.ActivityController.save()
 PUT /activity/submit controllers.ActivityController.submit()
-GET /activity/query controllers.ActivityController.query(ref_index: String ?=null, num_items: Integer ?=null, order: Integer ?=null, direction: Integer ?=null, token: String ?= null, user_id: Integer ?=null, relation: Integer ?=null, status: Integer ?=null)
+GET /activity/query controllers.ActivityController.query(ref_index: String ?=null, num_items: Integer ?=null, orientation: Integer ?=null, direction: Integer ?=null, token: String ?= null, viewee_id: Integer ?=null, relation: Integer ?=null, status: Integer ?=null)
 GET /activity/detail controllers.ActivityController.detail(activity_id: Integer ?=null, token: String ?=null)
 PUT /activity/mark controllers.ActivityController.mark()
 
 # Profile
 GET /user/profile/show controllers.UserController.showProfile()
-GET /user/detail controllers.UserController.detail(user_id: Integer ?=null, token : String ?=null)
+GET /user/detail controllers.UserController.detail(viewee_id: Integer ?=null, token : String ?=null)
 POST /user/avatar/upload controllers.UserController.uploadAvatar()
 
 # Admin
@@ -43,7 +43,7 @@ GET /comment/query controllers.CommentController.query(activity_id: Integer ?=nu
 
 # Assessment
 POST /assessment/submit controllers.AssessmentController.submit
-GET /assessment/query controllers.AssessmentController.query(ref_index: String ?=null, num_items: Integer ?=null, direction: Integer ?=null, token: String ?=null, user_id: Integer ?=null, activity_id: Integer ?=null)
+GET /assessment/query controllers.AssessmentController.query(ref_index: String ?=null, num_items: Integer ?=null, direction: Integer ?=null, token: String ?=null, to: Integer ?=null, activity_id: Integer ?=null)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

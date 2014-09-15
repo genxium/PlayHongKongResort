@@ -24,18 +24,21 @@ public class Activity {
     public static final int ACCEPTED = 3;
     public static final int EXPIRED = 4;
 
-    public static String TABLE = "activity";
-    public static String ID = "id";
-    public static String TITLE = "title";
-    public static String CONTENT = "content";
-    public static String CREATED_TIME = "created_time";
-    public static String BEGIN_TIME = "begin_time";
-    public static String DEADLINE = "application_deadline";
-    public static String CAPACITY = "capacity";
-    public static String STATUS = "status";
-    public static String HOST_ID = "host_id";
-    public static String HOST = "host";
-    public static String VIEWER = "viewer";
+    public static final String TABLE = "activity";
+    public static final String ID = "id";
+    public static final String TITLE = "title";
+    public static final String CONTENT = "content";
+    public static final String CREATED_TIME = "created_time";
+    public static final String BEGIN_TIME = "begin_time";
+    public static final String DEADLINE = "application_deadline";
+    public static final String CAPACITY = "capacity";
+    public static final String STATUS = "status";
+    public static final String HOST_ID = "host_id";
+    public static final String HOST = "host";
+    public static final String VIEWER = "viewer";
+
+    public static final String COUNT = "count";
+    public static final String ACTIVITIES = "activities";
 
     protected int m_id = 0;
 

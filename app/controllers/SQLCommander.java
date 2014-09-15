@@ -171,7 +171,7 @@ public class SQLCommander {
 	    return activityDetail;
     }
 
-    public static List<Activity> queryActivities(Integer userId, int relation) {
+    public static List<Activity> queryActivities(Integer vieweeId, int relation) {
 	    List<Activity> ret = new ArrayList<Activity>();
 	    try {
 		    String query = "SELECT ";
@@ -188,7 +188,7 @@ public class SQLCommander {
 			    + UserActivityRelation.TABLE + "." + UserActivityRelation.ACTIVITY_ID + "=" + Activity.TABLE + "." + Activity.ID + ")";
 		    Connection connection = SQLHelper.getConnection();
 		    PreparedStatement statement = connection.prepareStatement(query);
-		    statement.setInt(1, userId);
+		    statement.setInt(1, vieweeId);
 		    statement.setInt(2, relation);
 		    List<JSONObject> activityJsons = SQLHelper.select(statement);
 		    if (activityJsons == null) return null;

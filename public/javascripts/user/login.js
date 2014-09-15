@@ -87,7 +87,7 @@ function onBtnLogoutClicked(evt){
 
 function onBtnProfileClicked(evt){
 	try{
-		var profilePath = "/user/profile/show?" + g_keyUserId + "=" + g_loggedInUser.id;
+		var profilePath = "/user/profile/show?" + g_keyVieweeId + "=" + g_loggedInUser.id;
 		var profilePage = window.open(profilePath);
 	} catch (err){
 

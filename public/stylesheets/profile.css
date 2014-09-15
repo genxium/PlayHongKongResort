@@ -1,4 +1,4 @@
-#section-activities
+#pager-screen-activities
 {
 	display: block;
 	position: relative;
@@ -6,6 +6,11 @@
 	height: 300pt;
 	border: 1pt solid #ccccff;
 	overflow: auto;
+}
+
+#pager-bar-activities
+{
+
 }
 
 #section_user
