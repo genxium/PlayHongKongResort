@@ -1,4 +1,4 @@
-#section-activities
+#pager-screen-activities
 {
 	margin-top: 5pt;
 	width: 80%;
@@ -7,11 +7,8 @@
 	overflow: auto;
 }
 
-.classAcceptedIndicator
+#pager-bar-activities
 {
-	vertical-align: text-bottom;
-	font-size:	16pt;
-	color:	blue;
 }
 
 #select-filter
