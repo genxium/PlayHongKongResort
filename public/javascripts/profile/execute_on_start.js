@@ -48,7 +48,7 @@ $(document).ready(function(){
 
 	g_btnUploadAvatar = $("#btn-upload-avatar");
 	g_btnUploadAvatar.on("click", onBtnUploadAvatarClicked);
- 	g_onEditorRemoved = queryActivities;
+ 	g_onEditorRemoved = queryActivitiesAndRefresh;
 
 	g_onActivitySaveSuccess = queryActivitiesAndRefresh;
 

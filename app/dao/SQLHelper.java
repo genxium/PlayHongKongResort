@@ -12,8 +12,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
+import utilities.DataUtils;
 
 public class SQLHelper {
+
+    public static final String TAG = SQLHelper.class.getName();
 
     protected static DataSource s_dataSource = null;
 
@@ -57,7 +60,7 @@ public class SQLHelper {
 		    s_useUnicode = attributes.get(USE_UNICODE);
 		    ret = true;
 	    } catch (Exception e) {
-		    System.out.println(SQLHelper.class.getName() + ".readMySQLConfig:" + e.getMessage());
+		    DataUtils.log(TAG, "readMySQLConfig", e);
 	    }
 	    return ret;
     }
@@ -78,7 +81,7 @@ public class SQLHelper {
 		    if (s_useUnicode != null) builder.append("&" + s_useUnicode);
 		    ret = builder.toString();
 	    } catch (Exception e) {
-		    System.out.println(SQLHelper.class.getName() + ".getConnectionURI, " + e.getMessage());
+		    DataUtils.log(TAG, "getConnectionURI", e);
 	    }
 	    return ret;
 
@@ -207,7 +210,7 @@ public class SQLHelper {
             statement.close();
             closeConnection(connection);
         } catch (Exception e) {
-            System.out.println(SQLHelper.class.getName() + ".select: " + e.getMessage());
+            DataUtils.log(TAG, "select", e);
         }
         return ret;
     }
@@ -226,7 +229,7 @@ public class SQLHelper {
             closeConnection(connection);
         } catch (Exception e) {
             // return the invalid value for exceptions
-            System.out.println(SQLHelper.class.getName() + ".insert: " + e.getMessage());
+            DataUtils.log(TAG, "insert", e);
         }
         return lastId;
     }
@@ -240,7 +243,7 @@ public class SQLHelper {
             closeConnection(connection);
             bRet = true;
         } catch (Exception e) {
-            System.out.println(SQLHelper.class.getName() + ".update: " + e.getMessage());
+            DataUtils.log(TAG, "update", e);
         }
         return bRet;
     }
@@ -254,7 +257,7 @@ public class SQLHelper {
             closeConnection(connection);
             bRet = true;
         } catch (Exception e) {
-            System.out.println(SQLHelper.class.getName() + ".update: " + e.getMessage());
+            DataUtils.log(TAG, "delete", e);
         }
         return bRet;
     }

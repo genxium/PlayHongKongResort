@@ -2,17 +2,15 @@ package controllers;
 
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
-import model.*;
 import exception.*;
+import model.*;
 import org.json.simple.JSONObject;
+import utilities.DataUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /*
  * Note that the relation (a.k.a UserActivityRelation.RELATION) in this class is always referring to masked relation
@@ -20,10 +18,12 @@ import java.util.List;
 
 public class SQLCommander {
 
-    public static Integer INVALID = (-1);
-    public static String INITIAL_REF_INDEX = "0";
-    public static Integer DIRECTION_FORWARD = (+1);
-    public static Integer DIRECTION_BACKWARD = (-1);
+    public static final String TAG = SQLCommander.class.getName();
+
+    public static final int INVALID = (-1);
+    public static final String INITIAL_REF_INDEX = "0";
+    public static final int DIRECTION_FORWARD = (+1);
+    public static final int DIRECTION_BACKWARD = (-1);
 
     public static User queryUser(Integer userId) {
 
@@ -79,7 +79,7 @@ public class SQLCommander {
     }
 
     public static Integer createActivity(String title, String content, Integer userId) {
-	    int lastActivityId = SQLHelper.INVALID;
+	    Integer lastActivityId = null;
 
 	    List<String> names = new LinkedList<String>();
 	    names.add(Activity.TITLE);
@@ -94,7 +94,7 @@ public class SQLCommander {
 	    EasyPreparedStatementBuilder builderActivity = new EasyPreparedStatementBuilder();
 	    builderActivity.insert(names, values).into(Activity.TABLE);
 	    lastActivityId = SQLHelper.insert(builderActivity);
-	    if (lastActivityId == SQLHelper.INVALID) return SQLHelper.INVALID;
+	    if (lastActivityId.equals(SQLHelper.INVALID)) return SQLHelper.INVALID;
 	    names.clear();
 	    values.clear();
 
@@ -197,7 +197,7 @@ public class SQLCommander {
 			    ret.add(new Activity(activityJson, host));
 		    }
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".queryActivities, " + e.getMessage());
+		    DataUtils.log(TAG, "queryActivities", e);
 	    }
 	    return ret;
     }
@@ -207,15 +207,8 @@ public class SQLCommander {
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
-		    builder.select(names).from(Activity.TABLE).where(Activity.STATUS, "=", status).order(orderKey, orientation);
-
-		    if (refIndex.equals(INITIAL_REF_INDEX)) {
-			    builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
-		    } else if ( (direction.equals(DIRECTION_FORWARD) && orientation.equals(SQLHelper.ASCEND)) || (direction.equals(DIRECTION_BACKWARD) && orientation.equals(SQLHelper.DESCEND)) ) {
-			    builder.where(orderKey, ">", refIndex);
-		    } else {
-			    builder.where(orderKey, "<", refIndex);
-		    }
+		    builder.select(names).from(Activity.TABLE).where(Activity.STATUS, "=", status);
+		    builder = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction);
 		    
 		    if (numItems != null)	builder.limit(numItems);
 
@@ -225,8 +218,10 @@ public class SQLCommander {
 			    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
 			    ret.add(new Activity(activityJson, host));
 		    }
+
+            if (direction.equals(DIRECTION_BACKWARD)) Collections.reverse(ret);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".queryActivities: " + e.getMessage());
+		    DataUtils.log(TAG, "queryActivities", e);
 	    }
 	    return ret;
     }
@@ -236,15 +231,8 @@ public class SQLCommander {
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
-		    builder.select(names).from(Activity.TABLE).order(orderKey, orientation);
-
-		    if (refIndex.equals(INITIAL_REF_INDEX)) {
-			    builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
-		    } else if ( (direction.equals(DIRECTION_FORWARD) && orientation.equals(SQLHelper.ASCEND)) || (direction.equals(DIRECTION_BACKWARD) && orientation.equals(SQLHelper.DESCEND)) ) {
-			    builder.where(orderKey, ">", refIndex);
-		    } else {
-			    builder.where(orderKey, "<", refIndex);
-		    }
+		    builder.select(names).from(Activity.TABLE);
+            builder = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction);
 
 		    // extra where criterion
 		    builder.where(Activity.HOST_ID, "=", hostId);
@@ -259,8 +247,10 @@ public class SQLCommander {
 			    Activity activity = new Activity(activityJson, host);
 			    ret.add(activity);
 		    }
+
+            if (direction.equals(DIRECTION_BACKWARD)) Collections.reverse(ret);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".queryHostedActivities, " + e.getMessage());
+		    DataUtils.log(TAG, "queryHostedActivities", e);
 	    }
 	    return ret;
     }
@@ -289,22 +279,20 @@ public class SQLCommander {
 
     public static Comment queryComment(Integer commentId) {
 	    Comment ret = null;
-	    do {
-		    try {
-			    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-			    String[] names = {Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
-			    builder.select(names).from(Comment.TABLE).where(Comment.ID, "=", commentId);
-			    List<JSONObject> commentsJson = SQLHelper.select(builder);
-			    if (commentsJson == null || commentsJson.size() <= 0) break;
-			    ret = new Comment(commentsJson.get(0));
-		    } catch (Exception e) {
-
-		    }
-	    } while (false);
+        try {
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            String[] names = {Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
+            builder.select(names).from(Comment.TABLE).where(Comment.ID, "=", commentId);
+            List<JSONObject> commentsJson = SQLHelper.select(builder);
+            if (commentsJson == null || commentsJson.size() <= 0) throw new NullPointerException();
+            ret = new Comment(commentsJson.get(0));
+        } catch (Exception e) {
+            DataUtils.log(TAG, "queryComment", e);
+        }
 	    return ret;
     }
 
-    public static List<Comment> queryTopLevelComments(Integer activityId, String refIndex, String orderKey, String orderDirection, Integer numItems, Integer direction) {
+    public static List<Comment> queryTopLevelComments(Integer activityId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction) {
 	    List<Comment> ret = new ArrayList<Comment>();
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -315,58 +303,45 @@ public class SQLCommander {
 		    String[] whereOps = {"=", "="};
 		    Object[] whereVals = {activityId, INVALID};
 
-		    builder.select(names).from(Comment.TABLE).where(whereCols, whereOps, whereVals).order(orderKey, orderDirection);
+		    builder.select(names).from(Comment.TABLE).where(whereCols, whereOps, whereVals);
 
-		    if (refIndex.equals(INITIAL_REF_INDEX)) {
-			    builder.where(orderKey, ">=", INITIAL_REF_INDEX);
-		    } else if (direction.equals(DIRECTION_FORWARD)) {
-			    builder.where(orderKey, ">", refIndex);
-		    } else {
-			    builder.where(orderKey, "<", refIndex);
-		    }
+		    builder = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction);
 
-		    if (numItems != null) {
-			    builder.limit(numItems);
-		    }
+		    if (numItems != null)   builder.limit(numItems);
 
 		    List<JSONObject> commentsJson = SQLHelper.select(builder);
 		    if (commentsJson == null) throw new NullPointerException();
 		    for (JSONObject commentJson : commentsJson)	ret.add(new Comment(commentJson));
+            if(direction.equals(DIRECTION_BACKWARD)) Collections.reverse(ret);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".queryTopLevelComments, " + e.getMessage());
+		    DataUtils.log(TAG, "queryTopLevelComments", e);
 	    }
 	    return ret;
     }
 
-    public static List<Comment> querySubComments(Integer parentId, String refIndex, String orderKey, String orderDirection, Integer numItems, Integer direction) {
+    public static List<Comment> querySubComments(Integer parentId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction) {
 	    List<Comment> ret = new ArrayList<Comment>();
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
 		    String[] names = {Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
-		    builder.select(names).from(Comment.TABLE).where(Comment.PARENT_ID, "=", parentId).order(orderKey, orderDirection);
+		    builder.select(names).from(Comment.TABLE).where(Comment.PARENT_ID, "=", parentId);
+            builder = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction);
 
-		    if (refIndex.equals(INITIAL_REF_INDEX)) {
-			    builder.where(orderKey, ">=", INITIAL_REF_INDEX);
-		    } else if (direction == DIRECTION_FORWARD) {
-			    builder.where(orderKey, ">", refIndex);
-		    } else {
-			    builder.where(orderKey, "<", refIndex);
-		    }
 		    if (numItems != null) builder.limit(numItems);
 
 		    List<JSONObject> commentsJson = SQLHelper.select(builder);
 		    if (commentsJson == null) throw new NullPointerException();
 		    for (JSONObject commentJson : commentsJson)	ret.add(new Comment(commentJson));
+            if(direction.equals(DIRECTION_BACKWARD)) Collections.reverse(ret);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".querySubComments, " + e.getMessage());
+		    DataUtils.log(TAG, "querySubComments", e);
 	    }
 	    return ret;
     }
 
     public static Assessment queryAssessment(Integer activityId, Integer from, Integer to) {
-	    Assessment ret = null;
-	    try {
+        try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    String[] names = {Assessment.ID, Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO, Assessment.CONTENT, Assessment.GENERATED_TIME};
 		    String[] whereCols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO};
@@ -374,13 +349,12 @@ public class SQLCommander {
 		    Object[] whereVals = {activityId, from, to};
 		    builder.select(names).where(whereCols, whereOps, whereVals).from(Assessment.TABLE);
 		    List<JSONObject> assessmentJsons = SQLHelper.select(builder);
-		    if (assessmentJsons != null && assessmentJsons.size() == 1) {
-			    ret = new Assessment(assessmentJsons.get(0));
-		    }
+		    if (assessmentJsons == null || assessmentJsons.size() != 1) return null;
+            return new Assessment(assessmentJsons.get(0));
 	    } catch (Exception e) {
-		    ret = null;
+		    DataUtils.log(TAG, "queryAssessment", e);
 	    }
-	    return ret;
+	    return null;
     }
 
     public static List<Assessment> queryAssessments(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, Integer from, Integer to, Integer activityId) {
@@ -389,26 +363,21 @@ public class SQLCommander {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    String[] names = {Assessment.ID, Assessment.CONTENT, Assessment.CONTENT, Assessment.FROM, Assessment.ACTIVITY_ID, Assessment.TO, Assessment.GENERATED_TIME};
 		    builder.select(names).from(Assessment.TABLE)
-			    .where(Assessment.ACTIVITY_ID, "=", activityId)
-			    .order(orderKey, orientation);
+			    .where(Assessment.ACTIVITY_ID, "=", activityId);
 
 		    if(from != null) builder.where(Assessment.FROM, "=", from);
 		    if(to != null) builder.where(Assessment.TO, "=", to);
 
-		    if (refIndex.equals(INITIAL_REF_INDEX)) {
-			    builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
-		    } else if (direction.equals(DIRECTION_FORWARD)) {
-			    builder.where(orderKey, ">", refIndex);
-		    } else {
-			    builder.where(orderKey, "<", refIndex);
-		    }
+            builder = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction);
+
 		    if (numItems != null)	builder.limit(numItems);
 
 		    List<JSONObject> assessmentJsons = SQLHelper.select(builder);
 		    if (assessmentJsons == null) throw new NullPointerException();
 		    for (JSONObject assessmentJson : assessmentJsons)	ret.add(new Assessment(assessmentJson));
+            if (direction.equals(DIRECTION_BACKWARD)) Collections.reverse(ret);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".queryAssessments, " + e.getMessage());
+		    DataUtils.log(TAG, "queryAssessments", e);
 	    }
 	    return ret;
     }
@@ -444,8 +413,7 @@ public class SQLCommander {
 
     public static boolean validateOwnership(int userId, int activityId) {
 	    Activity activity = queryActivity(activityId);
-	    if(activity == null) return false;
-	    return validateOwnership(userId, activity);
+        return activity != null && validateOwnership(userId, activity);
     }
 
     public static boolean validateOwnership(int userId, Activity activity) {
@@ -894,4 +862,24 @@ public class SQLCommander {
 	    return ret;
     }
 
-};
+    static EasyPreparedStatementBuilder processOrientationAndDirection(EasyPreparedStatementBuilder builder, String refIndex, String orderKey, String orientation, Integer direction) {
+        if (refIndex.equals(INITIAL_REF_INDEX)) {
+            builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
+            builder.order(orderKey, orientation);
+        } else if (direction.equals(DIRECTION_FORWARD) && orientation.equals(SQLHelper.ASCEND)) {
+            builder.where(orderKey, ">", refIndex);
+            builder.order(orderKey, orientation);
+        } else if (direction.equals(DIRECTION_FORWARD) && orientation.equals(SQLHelper.DESCEND)) {
+            builder.where(orderKey, "<", refIndex);
+            builder.order(orderKey, orientation);
+        } else if (direction.equals(DIRECTION_BACKWARD) && orientation.equals(SQLHelper.DESCEND)) {
+            builder.where(orderKey, ">", refIndex);
+            builder.order(orderKey, SQLHelper.ASCEND);
+        } else {
+            // direction.equals(DIRECTION_BACKWARD) && orientation.equals(SQLHelper.ASCEND)
+            builder.where(orderKey, "<", refIndex);
+            builder.order(orderKey, SQLHelper.DESCEND);
+        }
+        return builder;
+    }
+}
