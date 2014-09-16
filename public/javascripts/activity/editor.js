@@ -294,10 +294,7 @@ function onSubmit(evt){
                 success: function(data, status, xhr){
                         removeActivityEditor();
                         if(g_onEditorRemoved == null) return;
-            			var refIndex = 0; // temporarily hardcoded
-            			var relation = g_activitiesFilter.val();
-            			var order = g_activitiesSorter.val();
-                        g_onEditorRemoved(refIndex, g_numItemsPerPage, order, g_directionForward, g_userId, relation, null, g_onQueryActivitiesSuccess, g_onQueryActivitiesError);
+			g_onEditorRemoved();
                 },
                 error: function(xhr, status, err){
                         setSubmittable();
@@ -369,10 +366,7 @@ function onBtnDeleteClicked(evt){
 	        success: function(data, status, xhr){
                     g_activityEditor.remove();
                     if(g_onEditorRemoved == null)   return;
-                    var refIndex = 0; // temporarily hardcoded
-                    var relation = g_activitiesFilter.val();
-                    var order = g_activitiesSorter.val();
-                    g_onEditorRemoved(refIndex, g_numItemsPerPage, order, g_directionForward, g_userId, relation, null, g_onQueryActivitiesSuccess, g_onQueryActivitiesError);
+		    g_onEditorRemoved();
                 },
 	        error: function(xhr, status, err){
 
