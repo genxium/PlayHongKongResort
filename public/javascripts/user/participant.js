@@ -13,7 +13,7 @@ function ParticipantsForm(labels, participantsId, participantsStatus){
 }
 
 function generateParticipantsSelectionForm(par, activity) {
-	var form = $('<form>').appendTo(g_tabParticipants);
+	var form = $('<form>').appendTo(par);
 
 	var labels = new Array();
 	var participantsId = new Array();
@@ -45,6 +45,8 @@ function generateParticipantsSelectionForm(par, activity) {
 	var ret = new ParticipantsForm(labels, participantsId, participantsStatus); 
 	if(g_loggedInUser == null) return ret;
 	if(g_loggedInUser.id != activity.host.id) return ret; 
+	var currentYmdhis = getCurrentYmdhisDate(); 
+	if(compareYmdhisDate(currentYmdhis, activity.beginTime) > 0) return ret;
 
 	var boxes = new Array();
 	for(var i = 0; i < labels.length; i++){

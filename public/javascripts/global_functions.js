@@ -1,14 +1,12 @@
 function callbackOnPageLoaded(windowHandle, callbackFunc){
-    do{ 
-        if(callbackFunc==null) break;
+        if(callbackFunc==null) return;
         var signaled=false;
         windowHandle.onload=windowHandle.onreadystatechange=function(){
-            if(!signaled && (this.readyState==null || this.readyState=='complete')){
-                signaled=true;
-                callbackFunc();
-            }
+	    var completed = (this.readyState==null || this.readyState=='complete');
+            if(signaled || !completed) return;
+	    signaled=true;
+	    callbackFunc();
         };
-    }while(false);
 }
 
 function loadJavaScript(windowHandle, script, callbackFunc){

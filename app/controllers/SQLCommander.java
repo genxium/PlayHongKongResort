@@ -208,18 +208,14 @@ public class SQLCommander {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
 		    builder.select(names).from(Activity.TABLE).where(Activity.STATUS, "=", status);
-		    builder = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction);
-		    
-		    if (numItems != null)	builder.limit(numItems);
+            List<JSONObject> activityJsons = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
 
-		    List<JSONObject> activityJsons = SQLHelper.select(builder);
 		    if (activityJsons == null)	return null;
 		    for (JSONObject activityJson : activityJsons) {
 			    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
 			    ret.add(new Activity(activityJson, host));
 		    }
 
-            if (direction.equals(DIRECTION_BACKWARD)) Collections.reverse(ret);
 	    } catch (Exception e) {
 		    DataUtils.log(TAG, "queryActivities", e);
 	    }
@@ -232,15 +228,12 @@ public class SQLCommander {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
 		    builder.select(names).from(Activity.TABLE);
-            builder = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction);
+            // extra where criterion
+            builder.where(Activity.HOST_ID, "=", hostId);
+            if(!hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
 
-		    // extra where criterion
-		    builder.where(Activity.HOST_ID, "=", hostId);
-		    if(!hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
+            List<JSONObject> activityJsons = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
 
-		    if (numItems != null)	builder.limit(numItems);
-
-		    List<JSONObject> activityJsons = SQLHelper.select(builder);
 		    if (activityJsons == null) return null;
 		    for (JSONObject activityJson : activityJsons) {
 			    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
@@ -248,7 +241,6 @@ public class SQLCommander {
 			    ret.add(activity);
 		    }
 
-            if (direction.equals(DIRECTION_BACKWARD)) Collections.reverse(ret);
 	    } catch (Exception e) {
 		    DataUtils.log(TAG, "queryHostedActivities", e);
 	    }
@@ -305,14 +297,11 @@ public class SQLCommander {
 
 		    builder.select(names).from(Comment.TABLE).where(whereCols, whereOps, whereVals);
 
-		    builder = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction);
+            List<JSONObject> commentsJson = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
 
-		    if (numItems != null)   builder.limit(numItems);
-
-		    List<JSONObject> commentsJson = SQLHelper.select(builder);
 		    if (commentsJson == null) throw new NullPointerException();
 		    for (JSONObject commentJson : commentsJson)	ret.add(new Comment(commentJson));
-            if(direction.equals(DIRECTION_BACKWARD)) Collections.reverse(ret);
+
 	    } catch (Exception e) {
 		    DataUtils.log(TAG, "queryTopLevelComments", e);
 	    }
@@ -326,14 +315,11 @@ public class SQLCommander {
 
 		    String[] names = {Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
 		    builder.select(names).from(Comment.TABLE).where(Comment.PARENT_ID, "=", parentId);
-            builder = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction);
+            List<JSONObject> commentsJson = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
 
-		    if (numItems != null) builder.limit(numItems);
-
-		    List<JSONObject> commentsJson = SQLHelper.select(builder);
 		    if (commentsJson == null) throw new NullPointerException();
 		    for (JSONObject commentJson : commentsJson)	ret.add(new Comment(commentJson));
-            if(direction.equals(DIRECTION_BACKWARD)) Collections.reverse(ret);
+
 	    } catch (Exception e) {
 		    DataUtils.log(TAG, "querySubComments", e);
 	    }
@@ -368,14 +354,11 @@ public class SQLCommander {
 		    if(from != null) builder.where(Assessment.FROM, "=", from);
 		    if(to != null) builder.where(Assessment.TO, "=", to);
 
-            builder = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction);
+            List<JSONObject> assessmentJsons = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
 
-		    if (numItems != null)	builder.limit(numItems);
-
-		    List<JSONObject> assessmentJsons = SQLHelper.select(builder);
-		    if (assessmentJsons == null) throw new NullPointerException();
+		    if (assessmentJsons == null) return ret;
 		    for (JSONObject assessmentJson : assessmentJsons)	ret.add(new Assessment(assessmentJson));
-            if (direction.equals(DIRECTION_BACKWARD)) Collections.reverse(ret);
+
 	    } catch (Exception e) {
 		    DataUtils.log(TAG, "queryAssessments", e);
 	    }
@@ -862,7 +845,7 @@ public class SQLCommander {
 	    return ret;
     }
 
-    static EasyPreparedStatementBuilder processOrientationAndDirection(EasyPreparedStatementBuilder builder, String refIndex, String orderKey, String orientation, Integer direction) {
+    static List<JSONObject> processOrientationAndDirection(EasyPreparedStatementBuilder builder, String refIndex, String orderKey, String orientation, Integer direction, Integer nItems) {
         if (refIndex.equals(INITIAL_REF_INDEX)) {
             builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
             builder.order(orderKey, orientation);
@@ -880,6 +863,9 @@ public class SQLCommander {
             builder.where(orderKey, "<", refIndex);
             builder.order(orderKey, SQLHelper.DESCEND);
         }
-        return builder;
+        if(nItems != null) builder.limit(nItems);
+        List<JSONObject> ret = SQLHelper.select(builder);
+        if(direction.equals(DIRECTION_BACKWARD)) Collections.reverse(ret);
+        return ret;
     }
 }

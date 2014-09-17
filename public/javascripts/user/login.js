@@ -16,8 +16,7 @@ var g_loggedInUser = null;
 
 function initLoginWidget(){
 	if(g_sectionLogin == null) return;
-	var loginForm=generateLoginForm();
-	g_sectionLogin.append(loginForm);
+	generateLoginForm(g_sectionLogin);
 }
 
 function onBtnLoginClicked(evt){
@@ -42,7 +41,7 @@ function onBtnLoginClicked(evt){
                 $.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
                 if(g_sectionLogin != null){
                     g_sectionLogin.empty();
-                    g_sectionLogin.append(generateLoggedInMenu);
+                    generateLoggedInMenu(g_sectionLogin);
                 }
                 if(g_onLoginSuccess != null){
                     g_onLoginSuccess();
@@ -57,41 +56,31 @@ function onBtnLoginClicked(evt){
 }
 
 function onBtnLogoutClicked(evt){
-	try{
-		var token = $.cookie(g_keyToken);
-		var params={};
-		params[g_keyToken]=token;
-		$.ajax({
-			type: "POST",
-			url: "/user/logout",
-			data: params,
-			success: function(data, status, xhr){
-				$.removeCookie(g_keyToken, {path: '/'});
-				if(g_sectionLogin!=null){
-					g_sectionLogin.empty();
-					g_sectionLogin.append(generateLoginForm);
-				}
-				if(g_onEnter!=null){
-					g_onEnter();	
-				}
-			},
-			error: function(xhr, status, err){
-				// reload the whole page if exception occurs
-				location.reload();	
-			}	
-		});
-	} catch(err){
-
-	}
+	var token = $.cookie(g_keyToken);
+	var params={};
+	params[g_keyToken]=token;
+	$.ajax({
+		type: "POST",
+		url: "/user/logout",
+		data: params,
+		success: function(data, status, xhr){
+			$.removeCookie(g_keyToken, {path: '/'});
+			if(g_sectionLogin == null) return;
+			g_sectionLogin.empty();
+			generateLoginForm(g_sectionLogin);
+			if(g_onEnter == null) return;
+			g_onEnter();
+		},
+		error: function(xhr, status, err){
+			// reload the whole page if exception occurs
+			location.reload();	
+		}	
+	});
 }
 
 function onBtnProfileClicked(evt){
-	try{
-		var profilePath = "/user/profile/show?" + g_keyVieweeId + "=" + g_loggedInUser.id;
-		var profilePage = window.open(profilePath);
-	} catch (err){
-
-	}
+	var profilePath = "/user/profile/show?" + g_keyVieweeId + "=" + g_loggedInUser.id;
+	var profilePage = window.open(profilePath);
 }
 
 function onBtnCreateClicked(evt){
@@ -99,7 +88,7 @@ function onBtnCreateClicked(evt){
 	g_onEditorCancelled=function(){
 		g_sectionActivityEditor.modal("hide");
 	};
-	g_activityEditor=generateActivityEditor(null);
+	g_activityEditor = generateActivityEditor(null);
 	g_modalActivityEditor.empty();
 	g_modalActivityEditor.append(g_activityEditor);
 	g_sectionActivityEditor.modal({
@@ -107,23 +96,22 @@ function onBtnCreateClicked(evt){
 	});
 }
 
-function generateLoginForm(){
+function generateLoginForm(par){
 	var ret = $('<table>', {
 		style: "border-collapse:separate; border-spacing:5pt; margin: auto"
-	});
+	}).appendTo(par);
 	var row1 = $('<tr>').appendTo(ret);
 	var cell11 = $('<td>').appendTo(row1);
 	g_loginUserHandle = $('<input>', {
 		placeHolder: "Email",
 		type: "text",	
-		style: "font-size: 14pt; margin-left: 2pt"
+		style: "font-family: Serif; font-size: 14pt; margin-left: 2pt"
 	}).appendTo(cell11);
 
 	g_loginUserHandle.keypress(function (evt) {
-  		if (evt.which == 13) {
-  			evt.preventDefault();
-			g_btnLogin.click();
-  		}
+  		if (evt.which != 13) return;
+		evt.preventDefault();
+		g_btnLogin.click();
 	});
 
 	var row2 = $('<tr>').appendTo(ret);
@@ -135,10 +123,9 @@ function generateLoginForm(){
 	}).appendTo(cell21);
 
 	g_loginPassword.keypress(function (evt) {
-  		if (evt.which == 13) {
-  			evt.preventDefault();
+  		if (evt.which != 13) return;
+		evt.preventDefault();
     		g_btnLogin.click();
-  		}
 	});
 
 	var cell22=$('<td>').appendTo(row2);
@@ -147,15 +134,13 @@ function generateLoginForm(){
 		text: "Login"
 	}).appendTo(cell22);
 	g_btnLogin.on("click", onBtnLoginClicked);
-
-	return ret;	
 }
 
-function generateLoggedInMenu(){
+function generateLoggedInMenu(par){
 
 	var ret=$('<div>', {
 		style: "height: auto"
-	});
+	}).appendTo(par);
 	
 	var avatar=$('<img>',{
 		src: g_loggedInUser.avatar,
@@ -189,45 +174,38 @@ function generateLoggedInMenu(){
 		text: "Create"	
 	}).appendTo(rightHalf);
 	g_btnCreate.on("click", onBtnCreateClicked);
-
-	return ret;
 }
 
 function checkLoginStatus(){
-	do{
-		var token = $.cookie(g_keyToken);
-		if(token==null) {
-			if(g_onEnter!=null){
-				g_onEnter();
+	var token = $.cookie(g_keyToken);
+	if(token == null) {
+		if(g_onEnter == null) return;
+		g_onEnter();
+		return;
+	}
+	var params={};
+	params[g_keyToken]=token.toString();
+	$.ajax({
+		method: "GET",
+		url: "/user/status",
+		data: params,
+		success: function(data, status, xhr){
+			var userJson = JSON.parse(data);
+			g_loggedInUser = new User(userJson);
+			$.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
+			if(g_sectionLogin != null){
+				g_sectionLogin.empty();
+				generateLoggedInMenu(g_sectionLogin);
 			}
-			break;
+			if(g_onLoginSuccess == null) return;
+			g_onLoginSuccess();	
+		},
+		error: function(xhr, status, errorThrown){
+			// refresh screen
+			$.removeCookie(g_keyToken, {path: '/'});
+			if(g_onEnter ==null) return;
+			g_onEnter();		
 		}
-		var params={};
-		params[g_keyToken]=token.toString();
-		$.ajax({
-			method: "GET",
-			url: "/user/status",
-			data: params,
-			success: function(data, status, xhr){
-				var userJson = JSON.parse(data);
-				g_loggedInUser = new User(userJson);
-				$.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
-				if(g_sectionLogin != null){
-					g_sectionLogin.empty();
-					g_sectionLogin.append(generateLoggedInMenu);
-				}
-				if(g_onLoginSuccess != null){
-					g_onLoginSuccess();	
-				}
-            		},
-			error: function(xhr, status, errorThrown){
-				// refresh screen
-				$.removeCookie(g_keyToken, {path: '/'});
-				if(g_onEnter!=null){
-					g_onEnter();		
-				}
-			}
-		});
+	});
 
-	} while(false);
 }
