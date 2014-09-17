@@ -15,17 +15,18 @@ public class User extends BasicUser {
     public static int MANAGER = 2;
     public static int ADMIN = 3;
 
-    public static String TABLE = "user";
-    public static String PASSWORD = "password";
-    public static String GROUP_ID = "group_id";
-    public static String AUTHENTICATION_STATUS = "authentication_status";
-    public static String GENDER = "gender";
-    public static String LAST_LOGGED_IN_TIME = "last_logged_in_time";
-    public static String LAST_LOGGED_OUT_TIME = "last_logged_out_time";
-    public static String LAST_EXIT_TIME = "last_exit_time";
+    public static final String TABLE = "user";
+    public static final String PASSWORD = "password";
+    public static final String GROUP_ID = "group_id";
+    public static final String AUTHENTICATION_STATUS = "authentication_status";
+    public static final String GENDER = "gender";
+    public static final String LAST_LOGGED_IN_TIME = "last_logged_in_time";
+    public static final String LAST_LOGGED_OUT_TIME = "last_logged_out_time";
+    public static final String LAST_EXIT_TIME = "last_exit_time";
 
-    public static String TOKEN = "token";
-    public static String VERIFICATION_CODE = "verification_code";
+    public static final String TOKEN = "token";
+    public static final String VERIFICATION_CODE = "verification_code";
+    public static final String PASSWORD_RESET_CODE = "password_reset_code";  
 
     protected String m_password = null;
 

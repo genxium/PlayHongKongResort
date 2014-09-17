@@ -21,6 +21,7 @@ import utilities.Converter;
 import utilities.DataUtils;
 import utilities.General;
 import views.html.email_verification;
+import views.html.password_reset;
 
 import javax.mail.Message;
 import javax.mail.Session;
@@ -265,6 +266,17 @@ public class UserController extends Controller {
             DataUtils.log(TAG, "emailVerification", e);
         }
         return badRequest();
+    }
+
+    public static Result passwordReset() {
+	response().setContentType("text/html");
+	try {
+		Content html = password_reset.render("hongkongresort@126.com");	
+		return ok(html);
+	} catch (Exception e) {
+		DataUtils.log(TAG, "passwordReset", e);
+	}
+	return badRequest();
     }
 
     public static Result detail(Integer vieweeId, String token) {

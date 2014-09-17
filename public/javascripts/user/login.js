@@ -7,6 +7,7 @@ var g_btnLogin = null;
 var g_btnLogout = null;
 var g_btnProfile = null;
 var g_btnCreate = null;
+var g_btnResetPassword = null;
 
 var g_onLoginSuccess = null;
 var g_onLoginError = null;
@@ -39,18 +40,15 @@ function onBtnLoginClicked(evt){
                 g_loggedInUser = new User(userJson);
                 // store token in cookie iff query succeeds
                 $.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
-                if(g_sectionLogin != null){
-                    g_sectionLogin.empty();
-                    generateLoggedInMenu(g_sectionLogin);
-                }
-                if(g_onLoginSuccess != null){
-                    g_onLoginSuccess();
-                }
+                if(g_sectionLogin == null) return;
+		g_sectionLogin.empty();
+		generateLoggedInMenu(g_sectionLogin);
+                if(g_onLoginSuccess == null) return;
+		g_onLoginSuccess();
 	    },
 	    error: function(xhr, status, err){
-		if(g_onLoginError != null){
-		    g_onLoginError();
-		}
+		if(g_onLoginError == null) return;
+		g_onLoginError();
 	    }
 	});
 }
@@ -113,7 +111,14 @@ function generateLoginForm(par){
 		evt.preventDefault();
 		g_btnLogin.click();
 	});
+	
+	var cell12 = $("<td>").appendTo(row1);
+	g_btnLogin=$('<button>', {
+		style: "font-size: 14pt; margin-left: 2pt; background-color: IndianRed; color: white",	
+		text: "Login"
+	}).appendTo(cell12);
 
+	g_btnLogin.on("click", onBtnLoginClicked);
 	var row2 = $('<tr>').appendTo(ret);
 	var cell21 = $('<td>').appendTo(row2);
 	g_loginPassword = $('<input>', {
@@ -129,11 +134,14 @@ function generateLoginForm(par){
 	});
 
 	var cell22=$('<td>').appendTo(row2);
-	g_btnLogin=$('<button>', {
-		style: "font-size: 14pt; margin-left: 2pt; background-color: IndianRed; color: white",	
-		text: "Login"
-	}).appendTo(cell22);
-	g_btnLogin.on("click", onBtnLoginClicked);
+	g_btnResetPassword = $("<button>", {
+		text: "Forgot Password",
+		style: "background: none; border: none; color: white; font-size: 12pt; vertical-align: middle; text-align: center; cursor: pointer; text-decoration: underline;"	
+	}).appendTo(cell22);	
+	g_btnResetPassword.click( function(evt) {
+		evt.preventDefault();
+		window.open("/user/password/reset");
+	});
 }
 
 function generateLoggedInMenu(par){
