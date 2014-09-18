@@ -252,6 +252,11 @@ function generateBatchAssessmentEditor(par, activity, refreshCallback){
 	var onClick = function(evt){
 		evt.preventDefault();
 		if(activity.relation == invalid) return;
+		var currentYmdhis = getCurrentYmdhisDate();
+		if(compareYmdhisDate(currentYmdhis, activity.beginTime) < 0) {
+			alert("Activity has not begun yet!");
+			return; 
+		}
 		var value = getBinarySwitchState(attendanceSwitch);
 		var newVal = !value;
 		setBinarySwitch(attendanceSwitch, newVal);	

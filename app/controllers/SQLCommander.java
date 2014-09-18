@@ -411,7 +411,7 @@ public class SQLCommander {
 		    Activity activity = SQLCommander.queryActivity(activityId);
 		    ret = isActivityEditable(userId, activity);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".isActivityEditable, " + e.getMessage());
+		    DataUtils.log(TAG, "isActivityEditable", e);
 	    }
 	    return ret;
     }
@@ -425,7 +425,7 @@ public class SQLCommander {
 		    if (activity.getStatus() != Activity.CREATED) throw new InvalidActivityStatusException();
 		    ret = true;
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".isActivityEditable, " + e.getMessage());
+		    DataUtils.log(TAG, "isActivityEditable", e);
 	    } 
 	    return ret;
     }
@@ -438,7 +438,7 @@ public class SQLCommander {
 		    if (activity == null) throw new ActivityNotFoundException();
 		    ret = isActivityJoinable(userId, activity);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".isActivityJoinable, " + e.getMessage());
+		    DataUtils.log(TAG, "isActivityJoinable", e);
 	    } 
 	    return ret;
     }
@@ -450,7 +450,7 @@ public class SQLCommander {
 		    int userId = user.getId();
 		    ret = isActivityJoinable(userId, activity);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".isActivityJoinable, " + e.getMessage());
+		    DataUtils.log(TAG, "isActivityJoinable", e);
 	    } 
 	    return ret;
     }
@@ -467,7 +467,7 @@ public class SQLCommander {
 		    if (relation != UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
 		    ret = true;
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".isActivityJoinable, " + e.getMessage());
+		    DataUtils.log(TAG, "isActivityJoinable", e);
 	    } 
 	    return ret;
     }
@@ -482,7 +482,7 @@ public class SQLCommander {
 		    if (activity == null) throw new ActivityNotFoundException();
 		    ret = isActivityCommentable(from, to, activity);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".isActivityCommentable, " + e.getMessage());	
+		    DataUtils.log(TAG, "isActivityCommentable", e);
 	    } 
 	    return ret;
     }
@@ -496,7 +496,7 @@ public class SQLCommander {
 		    if (activity.hasBegun()) throw new ActivityHasNotBegunException();
 		    ret = true;
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".isActivityCommentable, " + e.getMessage());	
+		    DataUtils.log(TAG, "isActivityCommentable", e);
 	    } 
 	    return ret;
     }
@@ -512,7 +512,7 @@ public class SQLCommander {
 		    if (activity == null) throw new ActivityNotFoundException();
 		    ret = isUserAssessable(from, to, activity);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".isUserAssessable, " + e.getMessage());
+		    DataUtils.log(TAG, "isUserAssessable", e);
 	    }
 	    return ret;
     }
@@ -530,7 +530,7 @@ public class SQLCommander {
 		    if ((relation1 & UserActivityRelation.selected) == 0 || (relation2 & UserActivityRelation.selected) == 0)	throw new InvalidUserActivityRelationException();
 		    ret = true;
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".isUserAssessable, " + e.getMessage());
+		    DataUtils.log(TAG, "isUserAssessable", e);
 	    }
 	    return ret;
     }
@@ -548,7 +548,7 @@ public class SQLCommander {
 		    if (activity == null) throw new ActivityNotFoundException();
 		    ret = isActivityMarkable(userId, activity, relation);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".isActivityMarkable, " + e.getMessage());
+		    DataUtils.log(TAG, "isActivityMarkable", e);
 	    }
 	    return ret;
     }
@@ -565,7 +565,7 @@ public class SQLCommander {
 		    if ((originalRelation & relation) > 0) throw new InvalidUserActivityRelationException();
 		    ret = originalRelation;
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".isActivityMarkable, " + e.getMessage());
+		    DataUtils.log(TAG, "isActivityMarkable", e);
 	    }
 	    return ret;
     }

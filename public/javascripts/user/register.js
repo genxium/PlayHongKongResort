@@ -125,15 +125,14 @@ function generateRegisterForm(){
 	g_spanCheckPasswordConfirm=$('<span>').appendTo(cell42);
 
 	g_registerUsername.on("input keyup paste", function(evt){
-		do{
-		    evt.preventDefault();
-		    g_spanCheckUsername.empty();
-		    var name=$(this).val();
-		    if(name==null || name.length==0) break;
+		evt.preventDefault();
+		g_spanCheckUsername.empty();
+		var name=$(this).val();
+		if(name == null || name.length == 0) return;
 
-		    var params={};
-		    params[g_keyName]=name;
-		    $.ajax({
+		var params={};
+		params[g_keyName]=name;
+		$.ajax({
 			type: "GET",
 			url: "/user/name/duplicate",
 			data: params,
@@ -143,8 +142,7 @@ function generateRegisterForm(){
 			error: function(xhr, status, err){
 			    g_spanCheckUsername.text(" This username cannot be used :(");        
 			}
-		    });
-		}while(false);
+		});
 	});	
 
 	g_registerEmail.on("input keyup paste", function(evt){

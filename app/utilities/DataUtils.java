@@ -81,7 +81,7 @@ public class DataUtils {
     }
 
     public static void log(String tag, String method, Exception e) {
-        System.out.println(tag + method + e.getMessage());
+        System.out.println(tag + "." + method + ", " + e.getMessage());
     }
 	
     public static String encryptByTime(String seed) {
