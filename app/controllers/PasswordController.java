@@ -40,7 +40,11 @@ public class PasswordController extends UserController {
             User user = SQLCommander.queryUserByEmail(email);
             if(user == null) throw new UserNotFoundException();
             String code = generateVerificationCode(user);
+  	    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+	    builder.update(User.TABLE).set(User.PASSWORD_RESET_CODE, code).where(User.EMAIL, "=", email);
+	    if(!SQLHelper.update(builder)) throw new NullPointerException();
             sendResetEmail(user.getName(), user.getEmail(), code);
+	    return ok();
         } catch (Exception e) {
             DataUtils.log(TAG, "emailRequest", e);
         }

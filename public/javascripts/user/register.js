@@ -148,20 +148,20 @@ function generateRegisterForm(){
 	g_registerEmail.on("input keyup paste", function(evt){
 		evt.preventDefault();
 		g_spanCheckEmail.empty();
-		var email=$(this).val();
+		var email = $(this).val();
 		if(email == null || email.length == 0) return;
 		if(!validateEmail(email)) {
 			 g_spanCheckEmail.text(" Not valid email format");
 			 return;
 		}
 		var params={};
-		params[g_keyEmail]=email;
+		params[g_keyEmail] = email;
 		$.ajax({
 			type: "GET",
 			url: "/user/email/duplicate",
 			data: params,
 			success: function(data, status, xhr){
-			    g_spanCheckEmail.text(" This email can be used :)");        
+				g_spanCheckEmail.text(" This email can be used :)");        
 			},
 			error: function(xhr, status, err){
 				g_spanCheckEmail.text(" This email cannot be used :(");        

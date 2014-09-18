@@ -154,7 +154,9 @@ function generateActivityCell(par, activity){
 
 	
 	if(coverImageUrl != null){
-		var imgRow = $("<p>").appendTo(ret);
+		var imgRow = $("<p>", {
+			style: "height: 100%"
+		}).appendTo(ret);
 		var coverImage=$('<img>', {
 			class: g_classActivityCoverImage,
 			src: coverImageUrl

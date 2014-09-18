@@ -5,14 +5,15 @@ var g_sectionResponse = null;
 
 function onEmailInput(evt) {
 	g_spanHint.empty();;
-	var value = $(this).val();
-	if(!validateEmail(value)) {
+	var email = $(this).val();
+	if(email == null || email.length == 0) return;
+	if(!validateEmail(email)) {
 		g_spanHint.text("Not valid email format");
 		return;
 	}	
 	
 	var params={};
-	params[g_keyEmail]=email;
+	params[g_keyEmail] = email;
 	$.ajax({
 		type: "GET",
 		url: "/user/email/duplicate",
@@ -33,7 +34,7 @@ function onEmailRequest(evt) {
 	params[g_keyEmail] = email;
 	$.ajax({
 		type: "GET",
-		url: "/usr/password/request",
+		url: "/user/password/request",
 		data: params,
 		success: function(data, status, xhr) {
 			g_sectionResponse.empty();	
@@ -47,7 +48,7 @@ function onEmailRequest(evt) {
 			}).appendTo(linkSpan);
 		},
 		error: function(xhr, status, err) {
-
+			alert("Email request rejected!");
 		}
 	});	
 }
@@ -59,5 +60,5 @@ $(document).ready(function(){
 	g_sectionResponse = $("#response");
 
 	g_fieldEmail.on("input keyup paste", onEmailInput);
-	g_btnSubmit.submit(onEmailRequest);
+	g_btnSubmit.click(onEmailRequest);
 });
