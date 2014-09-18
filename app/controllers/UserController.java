@@ -7,7 +7,6 @@ import exception.InvalidLoginParamsException;
 import exception.InvalidRegistrationParamsException;
 import exception.InvalidUserActivityRelationException;
 import exception.UserNotFoundException;
-import models.Image;
 import models.User;
 import models.UserActivityRelation;
 import org.json.simple.JSONObject;
@@ -34,12 +33,12 @@ public class UserController extends Controller {
 
     public static final String TAG = UserController.class.getName();
 
-    public static Result showProfile() {
+    public static Result profile() {
         try {
             Content html = views.html.profile.render();
             return ok(html);
         } catch (Exception e) {
-            DataUtils.log(TAG, "showProfile", e);
+            DataUtils.log(TAG, "profile", e);
         }
         return badRequest();
     }
@@ -53,7 +52,7 @@ public class UserController extends Controller {
             msg.setFrom(new InternetAddress("hongkongresort@126.com", "The HongKongResort Team"));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, name));
             msg.setSubject("Welcome to HongKongResort");
-            String link = "http://128.199.168.153/user/email/verify?code=" + code;
+            String link = "http://128.199.168.153/user/email/verify?email=" + recipient + "&code=" + code;
             msg.setText("Dear " + name + ", you're our member now! Please click the following link to complete email verification: " + link);
             Transport.send(msg);
         } catch (Exception e) {
@@ -86,7 +85,7 @@ public class UserController extends Controller {
             result.put(User.TOKEN, token);
             return ok(result);
         } catch (Exception e) {
-            System.out.println("UserController, " + e.getMessage());
+            DataUtils.log(TAG, "login", e);
         }
 
         return badRequest();
@@ -143,43 +142,6 @@ public class UserController extends Controller {
         return badRequest("User doesn't exist or not logged in");
     }
 
-    public static Result uploadAvatar() {
-        // define response attributes
-        response().setContentType("text/plain");
-        try {
-            RequestBody body = request().body();
-
-            // get file data from request body stream
-            Http.MultipartFormData data = body.asMultipartFormData();
-            Http.MultipartFormData.FilePart avatarFile = data.getFile(User.AVATAR);
-
-            // get user token from request body stream
-            String token = DataUtils.getUserToken(data);
-            Integer userId = DataUtils.getUserIdByToken(token);
-            if (userId == null) throw new UserNotFoundException();
-            User user = SQLCommander.queryUser(userId);
-            if (user == null) throw new UserNotFoundException();
-
-            if (avatarFile == null) throw new NullPointerException();
-            int previousAvatarId = user.getAvatar();
-            int newAvatarId = ExtraCommander.saveAvatarFile(avatarFile, user);
-            if (newAvatarId == ExtraCommander.INVALID) throw new NullPointerException();
-
-            // delete previous avatar record and file
-            Image previousAvatar = SQLCommander.queryImage(previousAvatarId);
-            boolean isPreviousAvatarDeleted = ExtraCommander.deleteImageRecordAndFile(previousAvatar);
-            if (isPreviousAvatarDeleted) {
-                System.out.println("UserController.uploadAvatar: previous avatar file and record deleted.");
-            }
-
-            return ok("Avatar uploaded");
-
-        } catch (Exception e) {
-            DataUtils.log(TAG, "uploadAvatar", e);
-        }
-        return badRequest("Avatar not uploaded!");
-    }
-
     public static Result relation(Integer activityId, String token) {
         // define response attributes
         response().setContentType("text/plain");
@@ -213,7 +175,7 @@ public class UserController extends Controller {
         return badRequest();
     }
 
-    public static Result nameDuplicate(String name) {
+    public static Result duplicate(String name) {
         // define response attributes
         response().setContentType("text/plain");
         try {
@@ -224,13 +186,10 @@ public class UserController extends Controller {
             if (userJsons != null && userJsons.size() > 0) throw new UserNotFoundException();
             return ok();
         } catch (Exception e) {
-            DataUtils.log(TAG, "nameDuplicate", e);
+            DataUtils.log(TAG, "duplicate", e);
         }
         return badRequest();
     }
-
-
-
 
     public static Result detail(Integer vieweeId, String token) {
         try {
@@ -246,7 +205,7 @@ public class UserController extends Controller {
     }
 
     protected static String generateVerificationCode(User user) {
-	return DataUtils.encryptByTime(user.getName());
+	    return DataUtils.encryptByTime(user.getName());
     }
 
 }

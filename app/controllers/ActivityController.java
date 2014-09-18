@@ -3,10 +3,10 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import dao.SQLHelper;
 import dao.EasyPreparedStatementBuilder;
-import models.*;
+import dao.SQLHelper;
 import exception.*;
+import models.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import play.libs.Json;
@@ -17,9 +17,14 @@ import play.mvc.Result;
 import utilities.DataUtils;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ActivityController extends Controller {
+
+    public static final String TAG = ActivityController.class.getName();
 
 	public static final String OLD_IMAGE = "old_image";
 
@@ -68,7 +73,7 @@ public class ActivityController extends Controller {
 			result.put(Activity.ACTIVITIES, activitiesNode);
 			return ok(result);
 		} catch (Exception e) {
-			System.out.println(ActivityController.class.getName() + ".query, " + e.getMessage());
+			DataUtils.log(TAG, "query", e);
 		}
 		return badRequest();
 	}
@@ -84,7 +89,7 @@ public class ActivityController extends Controller {
 			result = activityDetail.toObjectNode(userId);
 			return ok(result);
 		} catch (Exception e) {
-			System.out.println(ActivityController.class.getName() + ".detail, " + e.getMessage());
+			DataUtils.log(TAG, "detail", e);
 		}
 		return badRequest();
 	}
@@ -98,7 +103,7 @@ public class ActivityController extends Controller {
 			ret.put(Activity.HOST, String.valueOf(ownerId));
 			return ok(ret);
 		} catch (Exception e) {
-			System.out.println(ActivityController.class.getName() + ".ownership, " + e.getMessage());
+			DataUtils.log(TAG, "ownership", e);
 		}
 		return ok();
 	}
@@ -143,7 +148,7 @@ public class ActivityController extends Controller {
 			}
 			return ok();
 		} catch (Exception e) {
-			System.out.println(ActivityController.class.getName() + ".updateParticipants: " + e.getMessage());
+			DataUtils.log(TAG, "updateParticipants", e);
 		}
 
 		return badRequest();
@@ -178,7 +183,7 @@ public class ActivityController extends Controller {
 			User user = SQLCommander.queryUser(userId);
 			if (user == null) throw new NullPointerException();
 
-			if (DataUtils.validateTitle(activityTitle) == false || DataUtils.validateContent(activityContent) == false) throw new NullPointerException();
+			if (!DataUtils.validateTitle(activityTitle) || !DataUtils.validateContent(activityContent)) throw new NullPointerException();
 			boolean isNewActivity = true;
 			Integer activityId = null;
 			if (formData.containsKey(UserActivityRelation.ACTIVITY_ID)) {
@@ -205,11 +210,9 @@ public class ActivityController extends Controller {
 			// save new images
 			List<Image> previousImages = SQLCommander.queryImages(activityId);
 			if (imageFiles != null && imageFiles.size() > 0) {
-				Iterator<Http.MultipartFormData.FilePart> imageIterator = imageFiles.iterator();
-				while (imageIterator.hasNext()) {
-					Http.MultipartFormData.FilePart imageFile = imageIterator.next();
-					if(ExtraCommander.INVALID == ExtraCommander.saveImageOfActivity(imageFile, user, activity)) break;
-				}
+                for (Http.MultipartFormData.FilePart imageFile : imageFiles) {
+                    if (ExtraCommander.INVALID == ExtraCommander.saveImageOfActivity(imageFile, user, activity)) break;
+                }
 			}
 
 			// selected old images
@@ -225,20 +228,18 @@ public class ActivityController extends Controller {
 
 			// delete previous images
 			if (previousImages != null && previousImages.size() > 0) {
-				Iterator<Image> itPreviousImage = previousImages.iterator();
-				while (itPreviousImage.hasNext()) {
-					Image previousImage = itPreviousImage.next();
-					if (selectedOldImagesSet.contains(previousImage.getImageId())) continue;
-					boolean isDeleted = ExtraCommander.deleteImageRecordAndFile(previousImage, activityId);
-					if (!isDeleted) break;
-				}
+                for (Image previousImage : previousImages) {
+                    if (selectedOldImagesSet.contains(previousImage.getImageId())) continue;
+                    boolean isDeleted = ExtraCommander.deleteImageRecordAndFile(previousImage, activityId);
+                    if (!isDeleted) break;
+                }
 			}
 
 			ObjectNode ret = Json.newObject();
 			if (isNewActivity)	ret.put(UserActivityRelation.ACTIVITY_ID, activityId.toString());
 			return ok(ret);
 		} catch (Exception e) {
-			System.out.println(ActivityController.class.getName()+".save, "+e.getMessage());
+            DataUtils.log(TAG, "save", e);
 		}
 		return badRequest();
 	}
@@ -275,7 +276,7 @@ public class ActivityController extends Controller {
 			return ok();
 
 		} catch (Exception e) {
-			System.out.println(ActivityController.class.getName()+", "+e.getMessage());
+			DataUtils.log(TAG, "submit", e);
 		}
 
 		return badRequest();
@@ -302,7 +303,7 @@ public class ActivityController extends Controller {
 			if(!ExtraCommander.deleteActivity(activityId)) throw new NullPointerException();
 			return ok();
 		} catch (Exception e) {
-			System.out.println(ActivityController.class.getName()+".delete, " + e.getMessage());
+            DataUtils.log(TAG, "delete", e);
 		}
 		return badRequest();
 	}
@@ -334,9 +335,9 @@ public class ActivityController extends Controller {
 
 			return ok();
 		} catch (Exception e) {
-			System.out.println(ActivityController.class.getName() + ".join, " + e.getMessage());
-			return badRequest();
+            DataUtils.log(TAG, "join", e);
 		}
+        return badRequest();
 	}
 
 	public static Result mark() {
@@ -373,8 +374,8 @@ public class ActivityController extends Controller {
 			ret.put(UserActivityRelation.RELATION, newRelation);
 			return ok(ret);
 		} catch (Exception e) {
-			System.out.println(ActivityController.class.getName() + ".mark, " + e.getMessage());
-			return badRequest();
+            DataUtils.log(TAG, "mark", e);
 		}
+        return badRequest();
 	}
 }

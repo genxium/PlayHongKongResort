@@ -33,17 +33,25 @@ public class EmailController extends UserController {
         return badRequest();
     }
 
-    public static Result verify(String code) {
+    public static Result verify(String email, String code) {
         response().setContentType("text/html");
         try {
             EasyPreparedStatementBuilder builderUpdate = new EasyPreparedStatementBuilder();
-            builderUpdate.update(User.TABLE).set(User.GROUP_ID, User.USER).where(User.VERIFICATION_CODE, "=", code);
+            builderUpdate.update(User.TABLE).
+                    set(User.GROUP_ID, User.USER).
+                    set(User.VERIFICATION_CODE, "").
+                    where(User.EMAIL, "=", email).
+                    where(User.VERIFICATION_CODE, "=", code);
+
             boolean res = SQLHelper.update(builderUpdate);
 
             String[] names = {User.ID, User.EMAIL, User.NAME, User.PASSWORD, User.GROUP_ID, User.AVATAR};
             EasyPreparedStatementBuilder builderSelect = new EasyPreparedStatementBuilder();
-            builderSelect.select(names).from(User.TABLE).where(User.VERIFICATION_CODE, "=", code);
+            builderSelect.select(names).from(User.TABLE).where(User.EMAIL, "=", email);
             List<JSONObject> userJsons = SQLHelper.select(builderSelect);
+
+            if(userJsons == null || userJsons.size() != 1) throw new UserNotFoundException();
+
             User user = new User(userJsons.get(0));
             Content html = email_verification.render(res, user.getName(), user.getEmail());
             return ok(html);

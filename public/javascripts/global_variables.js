@@ -35,6 +35,7 @@ var g_keyName = "name";
 var g_keyEmail = "email";
 var g_keyPassword = "password";
 var g_keyAvatar = "avatar";
+var g_keyPasswordResetCode = "password_reset_code";
 
 var g_keyButton = "button";
 

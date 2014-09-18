@@ -4,8 +4,6 @@
 
 package models;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import org.json.simple.JSONObject;
 
 public class User extends BasicUser {
@@ -44,19 +42,7 @@ public class User extends BasicUser {
         return m_groupId;
     }
 
-    public void setGroupId(int groupId) {
-        m_groupId = groupId;
-    }
-
     protected String m_verificationCode = null;
-
-    public String getVerificationCode() {
-        return m_verificationCode;
-    }
-
-    public void setVerificationCode(String verificationCode) {
-        m_verificationCode = verificationCode;
-    }
 
     public User(String email, String password, String name) {
         super(email, name);
@@ -68,10 +54,5 @@ public class User extends BasicUser {
         super(userJson);
         if (userJson.containsKey(PASSWORD)) m_password = (String) userJson.get(PASSWORD);
         if (userJson.containsKey(GROUP_ID)) m_groupId = (Integer) userJson.get(GROUP_ID);
-    }
-
-    public ObjectNode toObjectNode(Integer viewerId) {
-        ObjectNode ret = super.toObjectNode(viewerId);
-        return ret;
     }
 }

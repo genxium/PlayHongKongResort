@@ -1,9 +1,12 @@
 package controllers;
 
+import dao.EasyPreparedStatementBuilder;
+import dao.SQLHelper;
 import exception.UserNotFoundException;
 import models.User;
 import play.mvc.Content;
 import play.mvc.Result;
+import utilities.Converter;
 import utilities.DataUtils;
 import views.html.password_index;
 import views.html.password_reset;
@@ -13,6 +16,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.Map;
 import java.util.Properties;
 
 public class PasswordController extends UserController {
@@ -73,6 +77,20 @@ public class PasswordController extends UserController {
 
     protected static Result confirm() {
         try {
+            Map<String, String[]> formData = request().body().asFormUrlEncoded();
+            String email = formData.get(User.EMAIL)[0];
+            String code = formData.get(User.PASSWORD_RESET_CODE)[0];
+            String password = formData.get(User.PASSWORD)[0];
+            String passwordDigest = Converter.md5(password);
+
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            builder.update(User.TABLE)
+                    .set(User.PASSWORD, passwordDigest)
+                    .set(User.PASSWORD_RESET_CODE, "")
+                    .where(User.EMAIL, "=", email)
+                    .where(User.PASSWORD_RESET_CODE, "=", code);
+
+            if (!SQLHelper.update(builder)) throw new NullPointerException();
             return ok();
         } catch (Exception e) {
             DataUtils.log(TAG, "confirm", e);

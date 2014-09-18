@@ -36,6 +36,7 @@ function generateAssessmentEditor(par, participant, activity, batchEditor){
 	var name = $('<a>', {
 		href: "/user/profile/show?" + g_keyVieweeId + "=" + participant.id,
 		text: "@" + participant.name,
+		target: "_blank",
 		style: "margin-left: 5pt; display: inline; cursor: pointer; color: BlueViolet"
 	}).appendTo(row);
 	singleEditor.participantId = participant.id;

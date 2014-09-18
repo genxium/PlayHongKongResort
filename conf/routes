@@ -11,8 +11,7 @@ POST /user/login controllers.UserController.login()
 POST /user/register controllers.UserController.register()
 
 GET /user/status controllers.UserController.status(token: String ?=null)
-GET /user/name/duplicate controllers.UserController.nameDuplicate(name: String ?=null)
-
+GET /user/name/duplicate controllers.UserController.duplicate(name: String ?=null)
 
 GET /user/relation controllers.UserController.relation(activity_id: Integer ?=null, token: String ?=null)
 POST /user/logout controllers.UserController.logout()
@@ -22,7 +21,7 @@ GET /user/password/request controllers.PasswordController.request(email: String 
 GET /user/password/reset controllers.PasswordController.reset()
 POST /user/password/confirm controllers.PasswordController.confirm()
 
-GET /user/email/verify controllers.EmailController.verify(code: String ?=null)
+GET /user/email/verify controllers.EmailController.verify(email: String ?=null, code: String ?=null)
 GET /user/email/duplicate controllers.EmailController.duplicate(email: String ?=null)
 
 # Home Page
@@ -36,9 +35,10 @@ GET /activity/detail controllers.ActivityController.detail(activity_id: Integer 
 PUT /activity/mark controllers.ActivityController.mark()
 
 # Profile
-GET /user/profile/show controllers.UserController.showProfile()
+GET /user/profile/show controllers.UserController.profile()
 GET /user/detail controllers.UserController.detail(viewee_id: Integer ?=null, token : String ?=null)
-POST /user/avatar/upload controllers.UserController.uploadAvatar()
+
+POST /user/avatar/upload controllers.AvatarController.upload()
 
 # Admin
 PUT /admin/accept controllers.AdminController.accept()

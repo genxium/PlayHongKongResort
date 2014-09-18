@@ -51,31 +51,31 @@ function emptyRegisterFields(){
 }
 
 function onBtnRegisterClicked(evt){
-        var username=g_registerUsername.val();
-        var email=g_registerEmail.val();
-        var password=g_registerPassword.val();
+        var username = g_registerUsername.val();
+        var email = g_registerEmail.val();
+        var password = g_registerPassword.val();
 
         if(username == null || username.length == 0
             || email == null || email.length == 0 || !validateEmail(email)
             || password==null || password.length==0 || !validatePassword(password) || !validatePasswordConfirm()) return;
 
-        var params={};
-        params[g_keyName]=username;
-        params[g_keyEmail]=email;
-        params[g_keyPassword]=password;
+        var params = {};
+        params[g_keyName] = username;
+        params[g_keyEmail] = email;
+        params[g_keyPassword] = password;
 
         $.ajax({
-		type: "POST",
-		url: "/user/register",
-		data: params,
-		success: function(data, status, xhr){
-			if(g_onRegisterSuccess == null) return;
-			g_onRegisterSuccess();
-		},
-		error: function(xhr, status, err){
-			if(g_onRegisterError == null)
-			g_onRegisterError();
-		}
+            type: "POST",
+            url: "/user/register",
+            data: params,
+            success: function(data, status, xhr){
+                if(g_onRegisterSuccess == null) return;
+                g_onRegisterSuccess();
+            },
+            error: function(xhr, status, err){
+                if(g_onRegisterError == null) return;
+                g_onRegisterError();
+            }
         });
 }
 
