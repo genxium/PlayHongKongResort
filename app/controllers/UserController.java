@@ -7,9 +7,9 @@ import exception.InvalidLoginParamsException;
 import exception.InvalidRegistrationParamsException;
 import exception.InvalidUserActivityRelationException;
 import exception.UserNotFoundException;
-import model.Image;
-import model.User;
-import model.UserActivityRelation;
+import models.Image;
+import models.User;
+import models.UserActivityRelation;
 import org.json.simple.JSONObject;
 import play.libs.Json;
 import play.mvc.Content;
@@ -20,15 +20,12 @@ import play.mvc.Result;
 import utilities.Converter;
 import utilities.DataUtils;
 import utilities.General;
-import views.html.email_verification;
-import views.html.password_reset;
 
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -56,7 +53,7 @@ public class UserController extends Controller {
             msg.setFrom(new InternetAddress("hongkongresort@126.com", "The HongKongResort Team"));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, name));
             msg.setSubject("Welcome to HongKongResort");
-            String link = "http://107.170.251.163/user/email/verify?code=" + code;
+            String link = "http://128.199.168.153/user/email/verify?code=" + code;
             msg.setText("Dear " + name + ", you're our member now! Please click the following link to complete email verification: " + link);
             Transport.send(msg);
         } catch (Exception e) {
@@ -232,52 +229,8 @@ public class UserController extends Controller {
         return badRequest();
     }
 
-    public static Result emailDuplicate(String email) {
-        // define response attributes
-        response().setContentType("text/plain");
-        try {
-            if (email == null || !General.validateEmail(email)) throw new NullPointerException();
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            builder.select(User.ID).from(User.TABLE).where(User.EMAIL, "=", email);
-            List<JSONObject> userJsons = SQLHelper.select(builder);
-            if (userJsons != null && userJsons.size() > 0) throw new UserNotFoundException();
-            return ok();
-        } catch (Exception e) {
-            DataUtils.log(TAG, "emailDuplicate", e);
-        }
-        return badRequest();
-    }
 
-    public static Result emailVerification(String code) {
-        response().setContentType("text/html");
-        try {
-            EasyPreparedStatementBuilder builderUpdate = new EasyPreparedStatementBuilder();
-            builderUpdate.update(User.TABLE).set(User.GROUP_ID, User.USER).where(User.VERIFICATION_CODE, "=", code);
-            boolean res = SQLHelper.update(builderUpdate);
 
-            String[] names = {User.ID, User.EMAIL, User.NAME, User.PASSWORD, User.GROUP_ID, User.AVATAR};
-            EasyPreparedStatementBuilder builderSelect = new EasyPreparedStatementBuilder();
-            builderSelect.select(names).from(User.TABLE).where(User.VERIFICATION_CODE, "=", code);
-            List<JSONObject> userJsons = SQLHelper.select(builderSelect);
-            User user = new User(userJsons.get(0));
-            Content html = email_verification.render(res, user.getName(), user.getEmail());
-            return ok(html);
-        } catch (Exception e) {
-            DataUtils.log(TAG, "emailVerification", e);
-        }
-        return badRequest();
-    }
-
-    public static Result passwordReset() {
-	response().setContentType("text/html");
-	try {
-		Content html = password_reset.render("hongkongresort@126.com");	
-		return ok(html);
-	} catch (Exception e) {
-		DataUtils.log(TAG, "passwordReset", e);
-	}
-	return badRequest();
-    }
 
     public static Result detail(Integer vieweeId, String token) {
         try {
@@ -288,25 +241,12 @@ public class UserController extends Controller {
             return ok(viewee.toObjectNode(viewerId));
         } catch (Exception e) {
             DataUtils.log(TAG, "detail", e);
-            System.out.println(UserController.class.getName() + ".detail, " + e.getMessage());
         }
         return badRequest();
     }
 
     protected static String generateVerificationCode(User user) {
-        String ret = null;
-        try {
-            java.util.Date date = new java.util.Date();
-            Timestamp currentTime = new Timestamp(date.getTime());
-            Long epochTime = currentTime.getTime();
-            String username = user.getName();
-            String tmp = Converter.md5(epochTime.toString() + username);
-            int length = tmp.length();
-            ret = tmp.substring(0, length / 2);
-        } catch (Exception e) {
-
-        }
-        return ret;
+	return DataUtils.encryptByTime(user.getName());
     }
 
 }

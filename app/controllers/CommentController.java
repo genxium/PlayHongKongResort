@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 
-import model.Comment;
-import model.User;
+import models.Comment;
+import models.User;
 import exception.*;
 
 import play.mvc.Controller;

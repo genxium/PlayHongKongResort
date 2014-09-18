@@ -1,4 +1,4 @@
-package model;
+package models;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -13,8 +13,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.List;
-
-import exception.*;
 
 public class Activity {
 

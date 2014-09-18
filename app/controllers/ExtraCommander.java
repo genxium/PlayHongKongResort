@@ -2,11 +2,11 @@ package controllers;
 
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
-import model.Activity;
-import model.Image;
-import model.User;
+import models.Activity;
+import models.Image;
+import models.User;
 import exception.*;
-import model.UserActivityRelation;
+import models.UserActivityRelation;
 import org.apache.commons.io.FileUtils;
 import play.mvc.Http.MultipartFormData.FilePart;
 import utilities.DataUtils;

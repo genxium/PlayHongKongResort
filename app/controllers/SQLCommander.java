@@ -3,7 +3,7 @@ package controllers;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import exception.*;
-import model.*;
+import models.*;
 import org.json.simple.JSONObject;
 import utilities.DataUtils;
 

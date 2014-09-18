@@ -140,7 +140,7 @@ function generateLoginForm(par){
 	}).appendTo(cell22);	
 	g_btnResetPassword.click( function(evt) {
 		evt.preventDefault();
-		window.open("/user/password/reset");
+		window.open("/user/password/index");
 	});
 }
 

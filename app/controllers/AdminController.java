@@ -1,8 +1,8 @@
 package controllers;
 
-import model.Activity;
-import model.User;
-import model.UserActivityRelation;
+import models.Activity;
+import models.User;
+import models.UserActivityRelation;
 import exception.*;
 import play.mvc.Controller;
 import play.mvc.Result;

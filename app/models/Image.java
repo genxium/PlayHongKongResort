@@ -2,7 +2,7 @@
  * This is the base class of image model
  * */
 
-package model;
+package models;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import play.Play;

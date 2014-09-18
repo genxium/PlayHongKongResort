@@ -1,4 +1,4 @@
-package model;
+package models;
 
 import controllers.SQLCommander;
 import com.fasterxml.jackson.databind.node.ObjectNode;

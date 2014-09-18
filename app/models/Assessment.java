@@ -1,16 +1,12 @@
-package model;
+package models;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.SQLCommander;
-import dao.SQLHelper;
 import org.json.simple.JSONObject;
 import play.libs.Json;
 import utilities.Converter;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 public class Assessment {
 

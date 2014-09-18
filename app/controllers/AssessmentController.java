@@ -3,7 +3,7 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.SQLHelper;
 import dao.EasyPreparedStatementBuilder;
-import model.*;
+import models.*;
 import exception.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

@@ -1,13 +1,8 @@
 package controllers;
 
-import play.Play;
 import play.mvc.Content;
 import play.mvc.Controller;
 import play.mvc.Result;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Scanner;
 
 public class Application extends Controller {
 

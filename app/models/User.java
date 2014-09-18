@@ -2,7 +2,7 @@
  * This is the base class of user model
  * */
 
-package model;
+package models;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 

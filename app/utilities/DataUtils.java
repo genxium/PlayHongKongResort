@@ -1,6 +1,6 @@
 package utilities;
 
-import model.User;
+import models.User;
 import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
@@ -10,6 +10,8 @@ import java.sql.Timestamp;
 import java.util.Map;
 
 public class DataUtils {
+
+    public static final String TAG = DataUtils.class.getName();
 
     public static String getFileExt(String fileName) {
         int dotPos = fileName.lastIndexOf('.');
@@ -81,4 +83,18 @@ public class DataUtils {
     public static void log(String tag, String method, Exception e) {
         System.out.println(tag + method + e.getMessage());
     }
+	
+    public static String encryptByTime(String seed) {
+	try {
+	    java.util.Date date = new java.util.Date();
+	    Timestamp currentTime = new Timestamp(date.getTime());
+	    Long epochTime = currentTime.getTime();
+	    String tmp = Converter.md5(epochTime.toString() + seed);
+	    int length = tmp.length();
+	    return tmp.substring(0, length / 2);
+	} catch (Exception e) {
+	    log(TAG, "encryptByTime", e);
+	}
+	return null;
+    } 
 }

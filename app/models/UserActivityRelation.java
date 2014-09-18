@@ -1,4 +1,4 @@
-package model;
+package models;
 
 public class UserActivityRelation {
     public static final int fullmask = ((1 << 16) - 1);
