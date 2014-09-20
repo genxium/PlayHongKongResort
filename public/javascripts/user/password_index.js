@@ -22,7 +22,7 @@ function onEmailInput(evt) {
 			g_spanHint.text(" Account not existing ");        
 		},
 		error: function(xhr, status, err){
-			g_spanHint.text(" Accoutn exists ");        
+			g_spanHint.text(" Account exists ");        
 		}
 	});
 }

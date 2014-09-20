@@ -87,7 +87,7 @@ function generateCommentCell(par, commentJson, activityId){
         var row=$('<p>').appendTo(ret);
         var content=$('<span>', {
             text: commentJson[g_keyContent],
-            style: "text-align: left; margin-left: 25pt"
+            style: "text-align: left; margin-left: 25pt; font-size: 14pt"
         }).appendTo(row);
         
 	var commenterId=commentJson[g_keyCommenterId];
@@ -97,12 +97,12 @@ function generateCommentCell(par, commentJson, activityId){
 	    href: "/user/profile/show?" + g_keyVieweeId + "=" + commenterId,
             text: commenterName,
             target: "_blank",
-            style: "text-align: left; margin-left: 25pt; color: brown;"
+            style: "text-align: left; margin-left: 25pt; color: brown; font-size: 14pt"
 	}).appendTo(spanCommenterName);
         
     var generatedTime=$('<span>', {
         text: commentJson[g_keyGeneratedTime],
-        style: "text-align: left; margin-left:  25pt; color: blue"
+        style: "text-align: left; margin-left:  25pt; color: blue; font-size: 14pt"
     }).appendTo(row);
 
     var token = $.cookie(g_keyToken);
@@ -157,26 +157,26 @@ function generateSubCommentCell(commentJson, activityId){
 		href: "/user/profile/show?" + g_keyVieweeId + "=" + replyeeId,
 		text: "to @"+replyeeName+": ",
 		target: "_blank",
-		style: "color: BlueViolet"	
+		style: "color: BlueViolet; font-size: 13pt"	
 	}).appendTo(spanReplyee);
         var content=$('<span>', {
             text: commentJson[g_keyContent],
-            style: "text-align: left; margin-left: 25pt"
+            style: "text-align: left; margin-left: 25pt; font-size: 13pt"
         }).appendTo(row);
         
 	var commenterId=commentJson[g_keyCommenterId];
 	var commenterName=commentJson[g_keyCommenterName];
         var spanCommenterName=$('<span>').appendTo(row);        
 	var hrefCommenterName=$('<a>', {
-	    href: "/user/profile/show?" + g_keyVieweeId + "=" + commenterId,
-        text: commenterName,
-        target: "_blank",
-        style: "text-align: left; margin-left: 25pt; color: brown;"
+		href: "/user/profile/show?" + g_keyVieweeId + "=" + commenterId,
+		text: commenterName,
+		target: "_blank",
+		style: "text-align: left; margin-left: 25pt; color: brown; font-size: 13pt"
 	}).appendTo(spanCommenterName);
         
         var generatedTime=$('<span>', {
             text: commentJson[g_keyGeneratedTime], 
-            style: "text-align: left; margin-left:  25pt; color: blue"
+            style: "text-align: left; margin-left:  25pt; color: blue; font-size: 13pt"
         }).appendTo(row);        
         
         var token=$.cookie(g_keyToken);
