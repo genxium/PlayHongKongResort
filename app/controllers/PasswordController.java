@@ -3,12 +3,14 @@ package controllers;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import exception.UserNotFoundException;
+import exception.InvalidPasswordException;
 import models.User;
 import play.mvc.Content;
 import play.mvc.Result;
 import play.mvc.Http.Request;
 import utilities.Converter;
 import utilities.DataUtils;
+import utilities.General;
 import views.html.password_index;
 import views.html.password_reset;
 
@@ -61,7 +63,7 @@ public class PasswordController extends UserController {
             msg.setFrom(new InternetAddress("hongkongresort@126.com", "The HongKongResort Team"));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, name));
             msg.setSubject("HongKongResort");
-            String link = request().host() + "/user/password/reset?email=" + recipient + "&code=" + code;
+            String link = "http://" + request().host() + "/user/password/reset?email=" + recipient + "&code=" + code;
             msg.setText("Dear " + name + ", you can now click the following link to reset your password: " + link);
             Transport.send(msg);
         } catch (Exception e) {
@@ -86,6 +88,8 @@ public class PasswordController extends UserController {
             String email = formData.get(User.EMAIL)[0];
             String code = formData.get(User.PASSWORD_RESET_CODE)[0];
             String password = formData.get(User.PASSWORD)[0];
+
+            if(!General.validatePassword(password)) throw new InvalidPasswordException(); 
             String passwordDigest = Converter.md5(password);
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();

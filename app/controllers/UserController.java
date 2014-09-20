@@ -53,7 +53,7 @@ public class UserController extends Controller {
             msg.setFrom(new InternetAddress("hongkongresort@126.com", "The HongKongResort Team"));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, name));
             msg.setSubject("Welcome to HongKongResort");
-            String link = request().host() + "/user/email/verify?email=" + recipient + "&code=" + code;
+            String link = "http://" + request().host() + "/user/email/verify?email=" + recipient + "&code=" + code;
             msg.setText("Dear " + name + ", you're our member now! Please click the following link to complete email verification: " + link);
             Transport.send(msg);
         } catch (Exception e) {

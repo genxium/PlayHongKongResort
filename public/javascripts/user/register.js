@@ -127,6 +127,7 @@ function generateRegisterForm(){
 	g_registerUsername.on("input keyup paste", function(evt){
 		evt.preventDefault();
 		g_spanCheckUsername.empty();
+		g_spanCheckUsername.text("");
 		var name=$(this).val();
 		if(name == null || name.length == 0) return;
 		if(!validateName(name)) {
@@ -152,6 +153,7 @@ function generateRegisterForm(){
 	g_registerEmail.on("input keyup paste", function(evt){
 		evt.preventDefault();
 		g_spanCheckEmail.empty();
+		g_spanCheckEmail.text("");
 		var email = $(this).val();
 		if(email == null || email.length == 0) return;
 		if(!validateEmail(email)) {
@@ -176,23 +178,19 @@ function generateRegisterForm(){
 	g_registerPassword.on("input keyup paste", function(evt){
 		evt.preventDefault();
 		g_spanCheckPassword.empty();
+		g_spanCheckPassword.text("");
 		var password = $(this).val();
 		if(password == null || password.length ==0 ) return;
-		if(!validatePassword(password)) {
-			g_spanCheckPassword.text(" Password can only contain 6~20 alphabet letters and numbers");
-			return;
-		}
-		g_spanCheckPassword.text("");
+		if(validatePassword(password))	return;
+		g_spanCheckPassword.text(" Password can only contain 6~20 alphabet letters and numbers");
 	});	
  
 	g_registerPasswordConfirm.on("input keyup paste", function(evt){
 		evt.preventDefault();
 		g_spanCheckPasswordConfirm.empty();
-		if(!validatePasswordConfirm()) {
-			g_spanCheckPasswordConfirm.text(" Doesn't match! ");
-			return;
-		}
 		g_spanCheckPasswordConfirm.text("");
+		if(validatePasswordConfirm())	return;
+		g_spanCheckPasswordConfirm.text(" Doesn't match! ");
 	});	
 
 	var row5=$('<tr>').appendTo(ret);
