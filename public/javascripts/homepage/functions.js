@@ -3,7 +3,7 @@ function queryActivitiesAndRefresh() {
 }
 
 function showRegisterSection(){
-	if(g_sectionRegister)	return;
+	if(g_sectionRegister == null)	return;
 	g_sectionRegister.show();
 }
 

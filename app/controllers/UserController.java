@@ -102,7 +102,7 @@ public class UserController extends Controller {
             String email = formData.get(User.EMAIL)[0];
             String password = formData.get(User.PASSWORD)[0];
 
-            if (name == null || (email == null || !General.validateEmail(email)) || (password == null || !General.validatePassword(password)))  throw new InvalidRegistrationParamsException();
+            if ((name == null || !General.validateName(name)) || (email == null || !General.validateEmail(email)) || (password == null || !General.validatePassword(password)))  throw new InvalidRegistrationParamsException();
             String passwordDigest = Converter.md5(password);
             User user = new User(email, passwordDigest, name);
             int lastId = SQLCommander.registerUser(user);

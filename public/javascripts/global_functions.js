@@ -91,8 +91,13 @@ function validateEmail(email) {
 }
 
 function validatePassword(password) {
-	var regex = /^([0-9a-zA-Z])+$/;
+	var regex = /^[0-9a-zA-Z]{6,20}$/;
 	return regex.test(password);	
+}
+
+function validateName(name) {
+	var regex = /^[0-9a-zA-Z]{6,20}$/;
+	return regex.test(name);	
 }
 
 function generateDataPicker(time) {

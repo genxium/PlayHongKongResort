@@ -1,21 +1,21 @@
-var g_sectionRegister=null;
+var g_sectionRegister = null;
 
-var g_registerUsername=null;
-var g_registerEmail=null;
-var g_registerPassword=null;
-var g_registerPasswordConfirm=null;
+var g_registerUsername = null;
+var g_registerEmail = null;
+var g_registerPassword = null;
+var g_registerPasswordConfirm = null;
 
-var g_spanCheckUsername=null;
-var g_spanCheckEmail=null;
-var g_spanCheckPassword=null;
-var g_spanCheckPasswordConfirm=null;
+var g_spanCheckUsername = null;
+var g_spanCheckEmail = null;
+var g_spanCheckPassword = null;
+var g_spanCheckPasswordConfirm = null;
 
-var g_onRegisterSuccess=null;
-var g_onRegisterError=null;
+var g_onRegisterSuccess = null;
+var g_onRegisterError = null;
 
 function initRegisterWidget(){	
-	g_sectionRegister=$("#section-register");
-	var registerForm=generateRegisterForm();
+	g_sectionRegister = $("#section-register");
+	var registerForm = generateRegisterForm();
     	g_sectionRegister.append(registerForm);
 }
 
@@ -55,9 +55,9 @@ function onBtnRegisterClicked(evt){
         var email = g_registerEmail.val();
         var password = g_registerPassword.val();
 
-        if(username == null || username.length == 0
+        if(username == null || username.length == 0 || !validateName(username)
             || email == null || email.length == 0 || !validateEmail(email)
-            || password==null || password.length==0 || !validatePassword(password) || !validatePasswordConfirm()) return;
+            || password == null || password.length == 0 || !validatePassword(password) || !validatePasswordConfirm()) return;
 
         var params = {};
         params[g_keyName] = username;
@@ -129,6 +129,10 @@ function generateRegisterForm(){
 		g_spanCheckUsername.empty();
 		var name=$(this).val();
 		if(name == null || name.length == 0) return;
+		if(!validateName(name)) {
+			g_spanCheckUsername.text(" Username can only contain 6~20 alphabet letters and numbers");
+			return;
+		}
 
 		var params={};
 		params[g_keyName]=name;
@@ -175,7 +179,7 @@ function generateRegisterForm(){
 		var password = $(this).val();
 		if(password == null || password.length ==0 ) return;
 		if(!validatePassword(password)) {
-			g_spanCheckPassword.text(" Password can only contain alphabet letters and numbers");
+			g_spanCheckPassword.text(" Password can only contain 6~20 alphabet letters and numbers");
 			return;
 		}
 		g_spanCheckPassword.text("");
