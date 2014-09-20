@@ -43,8 +43,7 @@ function onEmailRequest(evt) {
 			}).appendTo(g_sectionResponse);
 			var linkSpan = $("<span>").appendTo(g_sectionResponse);
 			$("<a>", {
-				text: email,
-				href: email
+				text: email
 			}).appendTo(linkSpan);
 		},
 		error: function(xhr, status, err) {

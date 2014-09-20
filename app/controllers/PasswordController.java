@@ -6,6 +6,7 @@ import exception.UserNotFoundException;
 import models.User;
 import play.mvc.Content;
 import play.mvc.Result;
+import play.mvc.Http.Request;
 import utilities.Converter;
 import utilities.DataUtils;
 import views.html.password_index;
@@ -46,7 +47,7 @@ public class PasswordController extends UserController {
             sendResetEmail(user.getName(), user.getEmail(), code);
 	    return ok();
         } catch (Exception e) {
-            DataUtils.log(TAG, "emailRequest", e);
+            DataUtils.log(TAG, "request", e);
         }
         return badRequest();
     }
@@ -59,8 +60,8 @@ public class PasswordController extends UserController {
             Message msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress("hongkongresort@126.com", "The HongKongResort Team"));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, name));
-            msg.setSubject("Welcome to HongKongResort");
-            String link = "http://128.199.168.153/user/password/reset?email=" + recipient + "&code=" + code;
+            msg.setSubject("HongKongResort");
+            String link = request().host() + "/user/password/reset?email=" + recipient + "&code=" + code;
             msg.setText("Dear " + name + ", you can now click the following link to reset your password: " + link);
             Transport.send(msg);
         } catch (Exception e) {
@@ -68,7 +69,7 @@ public class PasswordController extends UserController {
         }
     }
 
-    protected static Result reset() {
+    public static Result reset() {
         response().setContentType("text/html");
         try {
             Content html = password_reset.render();
@@ -79,7 +80,7 @@ public class PasswordController extends UserController {
         return badRequest();
     }
 
-    protected static Result confirm() {
+    public static Result confirm() {
         try {
             Map<String, String[]> formData = request().body().asFormUrlEncoded();
             String email = formData.get(User.EMAIL)[0];

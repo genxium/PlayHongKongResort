@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<MySQL>
+	<DatabaseName>hongkongresort</DatabaseName>
+	<Host>localhost</Host>
+	<Port>3306</Port>
+	<User>root</User>
+	<Password></Password>
+</MySQL>
+

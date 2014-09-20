@@ -14,6 +14,7 @@ import play.libs.Json;
 import play.mvc.Content;
 import play.mvc.Controller;
 import play.mvc.Http;
+import play.mvc.Http.Request;
 import play.mvc.Http.RequestBody;
 import play.mvc.Result;
 import utilities.Converter;
@@ -52,7 +53,7 @@ public class UserController extends Controller {
             msg.setFrom(new InternetAddress("hongkongresort@126.com", "The HongKongResort Team"));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, name));
             msg.setSubject("Welcome to HongKongResort");
-            String link = "http://128.199.168.153/user/email/verify?email=" + recipient + "&code=" + code;
+            String link = request().host() + "/user/email/verify?email=" + recipient + "&code=" + code;
             msg.setText("Dear " + name + ", you're our member now! Please click the following link to complete email verification: " + link);
             Transport.send(msg);
         } catch (Exception e) {

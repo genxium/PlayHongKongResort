@@ -29,6 +29,8 @@ var g_keyBundle = "bundle";
 
 // structured data keys (should be consistent with server-side in a protocol manner)
 var g_keyUser = "user";
+var g_keyCode = "code";
+
 var g_keyUserId = "user_id";
 var g_keyVieweeId = "viewee_id";
 var g_keyName = "name";

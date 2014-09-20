@@ -1,5 +1,4 @@
 # Project specific files
-conf/database_config.xml
 *.sh
 .target
 .target/*
