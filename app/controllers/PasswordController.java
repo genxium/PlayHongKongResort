@@ -60,7 +60,7 @@ public class PasswordController extends UserController {
 
         try {
             Message msg = new MimeMessage(session);
-            msg.setFrom(new InternetAddress("hongkongresort@126.com", "The HongKongResort Team"));
+            msg.setFrom(new InternetAddress("admin@hongkongresort.com", "The HongKongResort Team"));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, name));
             msg.setSubject("HongKongResort");
             String link = "http://" + request().host() + "/user/password/reset?email=" + recipient + "&code=" + code;

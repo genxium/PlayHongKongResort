@@ -50,7 +50,7 @@ public class UserController extends Controller {
 
         try {
             Message msg = new MimeMessage(session);
-            msg.setFrom(new InternetAddress("hongkongresort@126.com", "The HongKongResort Team"));
+            msg.setFrom(new InternetAddress("admin@hongkongresort.com", "The HongKongResort Team"));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, name));
             msg.setSubject("Welcome to HongKongResort");
             String link = "http://" + request().host() + "/user/email/verify?email=" + recipient + "&code=" + code;
