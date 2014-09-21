@@ -29,7 +29,7 @@ public class SQLHelper {
     public static String CHARSET_ENCODING = "CharsetEncoding";
     public static String USE_UNICODE = "UseUnicode";
 
-    public static Integer INVALID = (-1);
+    public static int INVALID = (-1);
     public static String AND = "AND";
     public static String OR = "OR";
 

@@ -113,25 +113,26 @@ function generateLoginForm(par){
 	});
 	
 	var cell12 = $("<td>").appendTo(row1);
-	g_btnLogin=$('<button>', {
-		style: "font-size: 14pt; margin-left: 2pt; background-color: IndianRed; color: white",	
-		text: "Login"
-	}).appendTo(cell12);
-
-	g_btnLogin.on("click", onBtnLoginClicked);
-	var row2 = $('<tr>').appendTo(ret);
-	var cell21 = $('<td>').appendTo(row2);
 	g_loginPassword = $('<input>', {
-		placeHolder: "Password",
-		type: "password",
-		style: "font-family: Serif; font-size: 14pt; margin-left: 2pt"
-	}).appendTo(cell21);
+                placeHolder: "Password",
+                type: "password",
+                style: "font-family: Serif; font-size: 14pt; margin-left: 2pt"
+        }).appendTo(cell12);
 
 	g_loginPassword.keypress(function (evt) {
   		if (evt.which != 13) return;
 		evt.preventDefault();
     		g_btnLogin.click();
 	});
+
+	var row2 = $('<tr>').appendTo(ret);
+	var cell21 = $('<td>').appendTo(row2);
+        g_btnLogin=$('<button>', {
+                style: "font-size: 14pt; margin-left: 2pt; background-color: IndianRed; color: white",
+                text: "Login"
+        }).appendTo(cell21);
+
+        g_btnLogin.on("click", onBtnLoginClicked);
 
 	var cell22=$('<td>').appendTo(row2);
 	g_btnResetPassword = $("<button>", {

@@ -248,7 +248,6 @@ public class SQLCommander {
     }
 
     public static int queryUserActivityRelation(Integer userId, Integer activityId) {
-	    int ret = UserActivityRelation.invalid;
 	    try {
 		    if (userId == null) throw new UserNotFoundException();
 		    if (activityId == null) throw new ActivityNotFoundException();
@@ -259,29 +258,28 @@ public class SQLCommander {
 		    builder.where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
 
 		    List<JSONObject> records = SQLHelper.select(builder);
-		    if (records == null) throw new UserActivityRelationNotFoundException();
-		    if (records.size() != 1) throw new UserActivityRelationNotFoundException();
+		    if (records == null) return UserActivityRelation.invalid;
+		    if (records.size() != 1) return UserActivityRelation.invalid;
 		    JSONObject record = records.get(0);
-		    ret = (Integer) record.get(UserActivityRelation.RELATION);
+		    return (Integer) record.get(UserActivityRelation.RELATION);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".queryUserActivityRelation, " + e.getMessage());
+		    DataUtils.log(TAG, "queryUserActivityRelation", e);
 	    }
-	    return ret;
+	    return UserActivityRelation.invalid;
     }
 
     public static Comment queryComment(Integer commentId) {
-	    Comment ret = null;
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             String[] names = {Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
             builder.select(names).from(Comment.TABLE).where(Comment.ID, "=", commentId);
             List<JSONObject> commentsJson = SQLHelper.select(builder);
             if (commentsJson == null || commentsJson.size() <= 0) throw new NullPointerException();
-            ret = new Comment(commentsJson.get(0));
+            return new Comment(commentsJson.get(0));
         } catch (Exception e) {
             DataUtils.log(TAG, "queryComment", e);
         }
-	    return ret;
+	    return null;
     }
 
     public static List<Comment> queryTopLevelComments(Integer activityId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction) {

@@ -19,7 +19,7 @@ function refreshOnLoggedIn(){
 
 function queryActivityDetail(activityId){
 
-		var token = $.cookie(g_keyToken);
+        var token = $.cookie(g_keyToken);
     	var params = {};
     	params[g_keyActivityId] = activityId;
         if(token != null)	params[g_keyToken] = token;
@@ -30,7 +30,7 @@ function queryActivityDetail(activityId){
             data: params,
             success: function(data, status, xhr){
                 var activityJson = JSON.parse(data);
-    			g_activity = new Activity(activityJson);
+    		g_activity = new Activity(activityJson);
                 displayActivityDetail(g_sectionActivity);
             },
             error: function(xhr, status, err){
@@ -48,29 +48,7 @@ function displayActivityDetail(par){
 		style: "font-size: 18pt; color: blue"
 	}).appendTo(ret);
 
-	// deadline and begin time
-	var times=$("<table border='1'>", {
-		style: "margin-bottom: 5pt"
-	}).appendTo(ret);
-	var deadlineRow = $('<tr>').appendTo(times);
-	var deadlineTitle = $('<td>', {
-		text: "Application Deadline",
-		style: "padding-left: 5pt; padding-right: 5pt"
-	}).appendTo(deadlineRow);
-	var deadline = $('<td>', {
-		text: g_activity.applicationDeadline.toString(),
-		style: "color: red; padding-left: 8pt; padding-right: 5pt"
-	}).appendTo(deadlineRow);
-
-	var beginTimeRow = $('<tr>').appendTo(times);
-	var beginTimeTitle = $('<td>', {
-		text: "Begin Time",
-		style: "padding-left: 5pt; padding-right: 5pt"
-	}).appendTo(beginTimeRow);
-	var beginTime = $('<td>', {
-		text: g_activity.beginTime.toString(),
-		style: "color: blue; padding-left: 8pt; padding-right: 5pt"
-	}).appendTo(beginTimeRow);
+        displayTimesTable(ret, g_activity);
 
 	if(g_activity.host.id != null && g_activity.host.name != null){
 		var d = $('<div>', {
@@ -98,10 +76,9 @@ function displayActivityDetail(par){
 
 	if(g_activity.images != null) {
 		var imagesNode=$('<p>').appendTo(ret);
-
 		for(var i=0;i<g_activity.images.length;++i){
-			var imageNode=$('<img>',{
-				src: g_activity.images[i].url
+			$('<img>',{
+                            src: g_activity.images[i].url
 			}).appendTo(imagesNode);
 		}
 	}	
@@ -111,24 +88,19 @@ function displayActivityDetail(par){
 	g_participantsForm = generateParticipantsSelectionForm(g_tabParticipants, g_activity);
 
 	// Tab Q&A a.k.a comments
-	var params={};
-	params[g_keyActivityId] = g_activity.id;
-	params[g_keyRefIndex] = 0;
-	params[g_keyNumItems] = 20;
-	params[g_keyDirection] = 1;
-
 	var onSuccess = function(data, status, xhr){
 		g_tabComments.empty();
-		var jsonResponse=JSON.parse(data);
+		var jsonResponse = JSON.parse(data);
 		if(jsonResponse == null || Object.keys(jsonResponse).length == 0) return;
 		for(var key in jsonResponse){
 			var commentJson = jsonResponse[key];
-			generateCommentCell(g_tabComments, commentJson, g_activity.id).appendTo(g_tabComments);
+			generateCommentCell(g_tabComments, commentJson, g_activity).appendTo(g_tabComments);
 			$('<br>').appendTo(g_tabComments);
 		}
 	};
 	var onError = function(xhr, status, err){};
-	queryComments(params, onSuccess, onError);
+
+	queryCommentsAndRefresh(g_activity, onSuccess, onError);
 
 	// Tab assessments
 	var viewer = null;
@@ -136,18 +108,21 @@ function displayActivityDetail(par){
 	var batchAssessmentEditor = generateBatchAssessmentEditor(g_tabAssessments, g_activity, queryActivityDetail);
 
 	var token = $.cookie(g_keyToken);
-	if(token == null) return;
-	
+	if(token == null)   return ret;
+
+	if(g_activity.hasBegun()) {
+	    $("<p>", {
+	        style: "color: red; font-size: 13pt",
+	        text: "Q & A is disabled because the activity has begun. You can still view existing conversations"
+	    }).appendTo(ret);
+	    return ret;
+	}
+
 	// Comment editor
-	generateCommentEditor(ret, g_activity.id);
+	generateCommentEditor(ret, g_activity);
 	g_onCommentSubmitSuccess = function() {
-		var localParams={};
-		localParams[g_keyActivityId] = g_activity.id;
-		localParams[g_keyRefIndex] = 0;
-		localParams[g_keyNumItems] = 20;
-		localParams[g_keyDirection] = 1;
-		queryComments(localParams, onSuccess, onError);
-	};
+	    queryCommentsAndRefresh(g_activity, onSuccess, onError);
+	}
 
 	return ret;
 }
@@ -182,9 +157,12 @@ function onParticipantsSelectionFormSubmission(formEvt){
 		success: function(data, status, xhr){
 			for(var i = 0; i < g_participantsForm.labels.length; ++i){
 			    var label = g_participantsForm.labels[i];
+			    // ignore selected participants
+			    if(g_participantsForm.participantsStatus[i] == g_aliasSelected) continue;
 			    var box = g_participantsForm.boxes[i];
-			    if(box.is(":checked"))	label.css("background-color", "aquamarine");
-			    else	label.css("background-color", "pink");
+			    if(!box.is(":checked")) continue;
+                            label.css("background-color", "aquamarine");
+                            box.hide();
 			}
 		},
 		error: function(xhr, status, err) {

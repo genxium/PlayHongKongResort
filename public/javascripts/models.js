@@ -23,8 +23,19 @@ function Activity(activityJson){
 	this.title = activityJson["title"];
 	this.content = activityJson["content"];
 	this.createdTime = activityJson["created_time"];
-	this.beginTime = activityJson["begin_time"];
 	this.applicationDeadline = activityJson["application_deadline"];
+	this.isDeadlineExpired = function() {
+            var now = getCurrentYmdhisDate();
+            if(compareYmdhisDate(now, this.applicationDeadline) >= 0) return true;
+            else return false;
+	};
+	this.beginTime = activityJson["begin_time"];
+	this.hasBegun = function() {
+            var now = getCurrentYmdhisDate();
+            if(compareYmdhisDate(now, this.beginTime) >= 0) return true;
+            else return false;
+	};
+
 	this.capacity = activityJson["capacity"];
 	this.status = activityJson["status"];
 	this.relation = activityJson["relation"];
@@ -48,36 +59,53 @@ function Activity(activityJson){
 		}
 		this.appliedParticipants = participants;
 	}
-    if(activityJson.hasOwnProperty("selected_participants")){
-        var participants = new Array();
-        var participantsJson = activityJson["selected_participants"];
-        for(var key in participantsJson){
-            var participantJson = participantsJson[key];
-            var participant = new User(participantJson);
-            participants.push(participant);
+
+        if(activityJson.hasOwnProperty("selected_participants")){
+            var participants = new Array();
+            var participantsJson = activityJson["selected_participants"];
+            for(var key in participantsJson){
+                var participantJson = participantsJson[key];
+                var participant = new User(participantJson);
+                participants.push(participant);
+            }
+            this.selectedParticipants = participants;
         }
-        this.selectedParticipants = participants;
-    }
-    if(activityJson.hasOwnProperty("present_participants")){
-        var participants = new Array();
-        var participantsJson = activityJson["present_participants"];
-        for(var key in participantsJson){
-            var participantJson = participantsJson[key];
-            var participant = new User(participantJson);
-            participants.push(participant);
+        if(activityJson.hasOwnProperty("present_participants")){
+            var participants = new Array();
+            var participantsJson = activityJson["present_participants"];
+            for(var key in participantsJson){
+                var participantJson = participantsJson[key];
+                var participant = new User(participantJson);
+                participants.push(participant);
+            }
+            this.presentParticipants = participants;
         }
-        this.presentParticipants = participants;
-    }
-    if(activityJson.hasOwnProperty("host")){
-        var hostJson = activityJson["host"];
-        var host = new User(hostJson);
-        this.host = host;
-    }
-    if(activityJson.hasOwnProperty("viewer")){
-        var viewerJson = activityJson["viewer"];
-        var viewer = new User(viewerJson);
-        this.viewer = viewer;
-    }
+        if(activityJson.hasOwnProperty("host")){
+            var hostJson = activityJson["host"];
+            var host = new User(hostJson);
+            this.host = host;
+        }
+        if(activityJson.hasOwnProperty("viewer")){
+            var viewerJson = activityJson["viewer"];
+            var viewer = new User(viewerJson);
+            this.viewer = viewer;
+        }
+}
+
+function Comment(commentJson) {
+
+        if(commentJson.hasOwnProperty("id")) this.id = parseInt(commentJson["id"]);
+        if(commentJson.hasOwnProperty("content")) this.content = commentJson["content"];
+        if(commentJson.hasOwnProperty("commenter_id")) this.commenterId = parseInt(commentJson["commenter_id"]);
+        if(commentJson.hasOwnProperty("commenter_name")) this.commenterName = commentJson["commenter_name"];
+        if(commentJson.hasOwnProperty("activity_id")) this.activityId = parseInt(commentJson["activity_id"]);
+        if(commentJson.hasOwnProperty("parent_id")) this.parentId = parseInt(commentJson["parent_id"]);
+        if(commentJson.hasOwnProperty("predecessor_id")) this.predecessorId = parseInt(commentJson["predecessor_id"]);
+        if(commentJson.hasOwnProperty("generated_time")) this.generatedTime = commentJson["generated_time"];
+
+        if(commentJson.hasOwnProperty("replyee_id")) this.replyeeId = parseInt(commentJson["replyee_id"]);
+        if(commentJson.hasOwnProperty("replyee_name")) this.replyeeName = commentJson["replyee_name"];
+
 }
 
 function Assessment(assessmentJson) {

@@ -2,8 +2,8 @@
 {
 	display: block;
 	position: relative;
-	width: 100%;
-	height: 300pt;
+	width: 720pt;
+        height: 350pt;
 	border: 1pt solid #ccccff;
 	overflow: auto;
 }
@@ -13,7 +13,7 @@
 
 }
 
-#section_user
+#section-user
 {
 	display: block;
 	position: relative;

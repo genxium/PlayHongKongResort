@@ -25,14 +25,13 @@ function onBtnEditClicked(evt){
 
 function onBtnJoinClicked(evt){
 
-	var btnJoin=$(this);
+	var btnJoin = $(this);
 
 	evt.preventDefault();
 	var data = evt.data;
 	var activity = data[g_keyActivity];
 
-	var currentYmdhis = getCurrentYmdhisDate();
-	if(compareYmdhisDate(currentYmdhis, activity.applicationDeadline) > 0) {
+	if(activity.isDeadlineExpired()) {
 		alert("Application deadline has expired!");
 		return;
 	}
@@ -75,7 +74,7 @@ function onBtnDetailClicked(evt){
 
 function generateActivityCell(par, activity){
 
-	var arrayStatusName = ['created','pending','rejected','accepted','expired'];
+	var arrayStatusName = ['created', 'pending', 'rejected', 'accepted', 'expired'];
 
 	var coverImageUrl = null;
 	if(activity.images != null) {
@@ -88,7 +87,7 @@ function generateActivityCell(par, activity){
 
 	var statusStr = arrayStatusName[parseInt(activity.status)];
 
-	var ret=$('<div>', {
+	var ret = $('<div>', {
 		class: g_classCellActivityContainer
 	}).appendTo(par);
 
@@ -125,7 +124,7 @@ function generateActivityCell(par, activity){
 		style: "margin-top: 5pt; clear: left"
 	}).appendTo(ret);
 
-	if(activity.relation == null){
+	if(activity.relation == null && !activity.isDeadlineExpired()){
 		var btnJoin = $('<button>', {
 			class: g_classBtnJoin,
 			text: 'Join'
@@ -152,7 +151,8 @@ function generateActivityCell(par, activity){
 	dDetail[g_keyActivityId] = activity.id;
 	btnDetail.on("click", dDetail, onBtnDetailClicked);
 
-	
+        displayTimesTable(ret, activity);
+
 	if(coverImageUrl != null){
 		var imgRow = $("<p>", {
 			style: "height: 100%"

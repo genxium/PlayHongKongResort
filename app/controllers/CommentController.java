@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 
+import models.Activity;
 import models.Comment;
 import models.User;
 import exception.*;
@@ -21,19 +22,18 @@ import java.util.Arrays;
 
 public class CommentController extends Controller {
 
+    public static final String TAG = CommentController.class.getName();
+
     public static Result query(Integer activityId, String refIndex, Integer numItems, Integer direction, String token) {
 	    response().setContentType("text/plain");
 	    try {
-		    Integer userId = null;
-		    if (token != null) userId = DataUtils.getUserIdByToken(token);
-
 		    List<Comment> comments = SQLCommander.queryTopLevelComments(activityId, refIndex, Comment.ID, SQLHelper.DESCEND, numItems, direction);
 
 		    ArrayNode result = new ArrayNode(JsonNodeFactory.instance);
 		    for (Comment comment : comments)	result.add(comment.toObjectNodeWithSubComments());
 		    return ok(result);
 	    } catch (Exception e) {
-		    System.out.println(CommentController.class.getName() + ".query, " + e.getMessage());
+		    DataUtils.log(TAG, "query", e);
 	    }
 	    return badRequest();
     }
@@ -48,12 +48,14 @@ public class CommentController extends Controller {
 
 		    String token = formData.get(User.TOKEN)[0];
 		    Integer activityId = Integer.valueOf(formData.get(Comment.ACTIVITY_ID)[0]);
+            Activity activity = SQLCommander.queryActivity(activityId);
+
+            if(activity == null) throw new ActivityNotFoundException();
+            if(activity.hasBegun()) throw new ActivityHasBegunException();
 
 		    if (token == null) throw new NullPointerException();
 		    Integer userId = DataUtils.getUserIdByToken(token);
 		    if (userId == null) throw new UserNotFoundException();
-
-		    int lastCommentId = SQLHelper.INVALID;
 
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
@@ -74,13 +76,12 @@ public class CommentController extends Controller {
 			    vals.add(parentId);
 		    }
 		    builder.insert(cols, vals).into(Comment.TABLE);
-		    lastCommentId = SQLHelper.insert(builder);
-		    if (lastCommentId == SQLHelper.INVALID) throw new NullPointerException();
+		    if (SQLHelper.INVALID == SQLHelper.insert(builder)) throw new NullPointerException();
 
 		    return ok();
 
 	    } catch (Exception e) {
-		    System.out.println(CommentController.class.getName() + ".submit, " + e.getMessage());
+		    DataUtils.log(TAG, "submit", e);
 	    }
 	    return badRequest();
     }

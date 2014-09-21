@@ -90,6 +90,8 @@ var g_keyOrder = "order";
 var g_keyOrientation = "orientation";
 var g_keyDirection = "direction";
 
+var g_keyCell = "cell";
+
 // constants
 var g_statusCreated = 0;
 var g_statusPending = 1;

@@ -179,7 +179,7 @@ public class ActivityController extends Controller {
 			String token = formData.get(User.TOKEN)[0];
 			if (token == null) throw new NullPointerException();
 			Integer userId = DataUtils.getUserIdByToken(token);
-			if (userId == null || userId == null) throw new NullPointerException();
+			if (userId == null) throw new NullPointerException();
 			User user = SQLCommander.queryUser(userId);
 			if (user == null) throw new NullPointerException();
 

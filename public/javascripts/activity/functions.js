@@ -87,3 +87,29 @@ function onQueryActivitiesSuccess(data, status, xhr){
 function onQueryActivitiesError(xhr, status, err){
 
 }
+
+function displayTimesTable(par, activity) {
+    	// deadline and begin time
+    	var times = $("<table border='1'>", {
+    		style: "margin-bottom: 5pt"
+    	}).appendTo(par);
+    	var deadlineRow = $('<tr>').appendTo(times);
+    	var deadlineTitle = $('<td>', {
+    		text: "Application Deadline",
+    		style: "padding-left: 5pt; padding-right: 5pt"
+    	}).appendTo(deadlineRow);
+    	var deadline = $('<td>', {
+    		text: activity.applicationDeadline.toString(),
+    		style: "color: red; padding-left: 8pt; padding-right: 5pt"
+    	}).appendTo(deadlineRow);
+
+    	var beginTimeRow = $('<tr>').appendTo(times);
+    	var beginTimeTitle = $('<td>', {
+    		text: "Begin Time",
+    		style: "padding-left: 5pt; padding-right: 5pt"
+    	}).appendTo(beginTimeRow);
+    	var beginTime = $('<td>', {
+    		text: activity.beginTime.toString(),
+    		style: "color: blue; padding-left: 8pt; padding-right: 5pt"
+    	}).appendTo(beginTimeRow);
+}
