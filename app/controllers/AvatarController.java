@@ -31,7 +31,7 @@ public class AvatarController extends ImageController {
 
             if (avatarFile == null) throw new NullPointerException();
             int previousAvatarId = user.getAvatar();
-            int newAvatarId = ExtraCommander.saveAvatarFile(avatarFile, user);
+            int newAvatarId = ExtraCommander.saveAvatar(avatarFile, user);
             if (newAvatarId == ExtraCommander.INVALID) throw new NullPointerException();
 
             // delete previous avatar record and file

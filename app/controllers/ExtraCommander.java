@@ -2,11 +2,8 @@ package controllers;
 
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
-import models.Activity;
-import models.Image;
-import models.User;
+import models.*;
 import exception.*;
-import models.UserActivityRelation;
 import org.apache.commons.io.FileUtils;
 import play.mvc.Http.MultipartFormData.FilePart;
 import utilities.DataUtils;
@@ -16,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ExtraCommander extends SQLCommander {
+
+    public static final String TAG = ExtraCommander.class.getName();
 
 	public static boolean deleteActivity(int activityId) {
 		boolean ret = false;
@@ -29,12 +28,11 @@ public class ExtraCommander extends SQLCommander {
 			List<Image> previousImages = queryImages(activityId);
 			if (previousImages != null && previousImages.size() > 0) {
 				// delete previous images
-				Iterator<Image> itPreviousImage = previousImages.iterator();
-				while (itPreviousImage.hasNext()) {
-					Image previousImage = itPreviousImage.next();
-					if(!deleteImageRecordAndFile(previousImage, activityId)) break;
-				}
+                for (Image previousImage : previousImages)  deleteImageRecordAndFile(previousImage, activityId);
 			}
+
+            deleteComments(activityId);
+            deleteAssessments(activityId);
 
 			// delete record in table activity
 			EasyPreparedStatementBuilder builderActivity = new EasyPreparedStatementBuilder();
@@ -42,14 +40,10 @@ public class ExtraCommander extends SQLCommander {
 			ret = SQLHelper.delete(builderActivity);
 
 		} catch (Exception e) {
-			System.out.println(ExtraCommander.class.getName() + ".deleteActivity:" + e.getMessage());
+			DataUtils.log(TAG, "deleteActivity", e);
 		}
 
 		return ret;
-	}
-
-	public static boolean deleteComments(Integer activityId) {
-		return false;
 	}
 
 	public static boolean deleteImageRecordAndFile(Image image) {
@@ -61,10 +55,10 @@ public class ExtraCommander extends SQLCommander {
 			File imageFile = new File(imageAbsolutePath);
 			boolean isFileDeleted = imageFile.delete();
 			boolean isRecordDeleted = deleteImageRecord(imageId);
-			if (isFileDeleted == false || isRecordDeleted == false) throw new NullPointerException();
+			if (!isFileDeleted || !isRecordDeleted) throw new NullPointerException();
 			ret = true;
 		} catch (Exception e) {
-			System.out.println(ExtraCommander.class.getName() + ".deleteImageRecordAndFile: " + e.getMessage());
+			DataUtils.log(TAG, "deleteImageRecordAndFile", e);
 		}
 		return ret;
 	}
@@ -78,15 +72,15 @@ public class ExtraCommander extends SQLCommander {
 			File imageFile = new File(imageAbsolutePath);
 			boolean isFileDeleted = imageFile.delete();
 			boolean isRecordDeleted = deleteImageRecord(imageId, activityId);
-			if (isFileDeleted == false || isRecordDeleted == false) throw new NullPointerException();
+			if (!isFileDeleted || !isRecordDeleted) throw new NullPointerException();
 			ret = true;
 		} catch (Exception e) {
-			System.out.println(ExtraCommander.class.getName() + ".deleteImageRecordAndFile: " + e.getMessage());
+			DataUtils.log(TAG, "deleteImageRecordAndFile", e);
 		}
 		return ret;
 	}
 
-	public static int saveAvatarFile(FilePart imageFile, User user) {
+	public static int saveAvatar(FilePart imageFile, User user) {
 		int ret = INVALID;
 		String fileName = imageFile.getFilename();
 		File file = imageFile.getFile();
@@ -108,12 +102,12 @@ public class ExtraCommander extends SQLCommander {
 				FileUtils.moveFile(file, new File(imageAbsolutePath));
 			} catch (Exception err) {
 				imageId = INVALID;
-				System.out.println(ExtraCommander.class.getName() + ".saveAvatarFile, " + newImageName + " could not be saved.");
-				if(SQLCommander.deleteImageRecord(imageId))	System.out.println(ExtraCommander.class.getName() + ".saveAvatarFile, " + newImageName + " has been reverted");
+				System.out.println(ExtraCommander.class.getName() + ".saveAvatar, " + newImageName + " could not be saved.");
+				if(SQLCommander.deleteImageRecord(imageId))	System.out.println(ExtraCommander.class.getName() + ".saveAvatar, " + newImageName + " has been reverted");
 			}
 			ret = imageId;
 		} catch (Exception e) {
-			System.out.println(ExtraCommander.class.getName() + ".saveAvatarFile, " + e.getMessage());
+			DataUtils.log(TAG, "saveAvatar", e);
 		}
 
 		return ret;
@@ -142,16 +136,42 @@ public class ExtraCommander extends SQLCommander {
 				// Save renamed file to server storage at the final step
 				FileUtils.moveFile(file, new File(imageAbsolutePath));
 			} catch (Exception err) {
-				imageId = INVALID;
-				System.out.println(ExtraCommander.class.getName() + ".saveImageOfActivity: " + newImageName + " could not be saved.");
-				if(deleteImageRecord(imageId))	System.out.println(ExtraCommander.class.getName() + ".saveImageOfActivity, " + newImageName + " has been reverted");
+                DataUtils.log(TAG, "saveImageOfActivity", err);
+                imageId = INVALID;
+                if(deleteImageRecord(imageId))	System.out.println(TAG + ".saveImageOfActivity, " + newImageName + " has been reverted");
 			}
 
 			ret = imageId;
 		} catch (Exception e) {
-			System.out.println(ExtraCommander.class.getName() + ".saveImageOfActivity: " + e.getMessage());
+			DataUtils.log(TAG, "saveImageOfActivity", e);
 		}
 
 		return ret;
 	}
+
+    public static boolean deleteComments(Integer activityId) {
+        try {
+            if(activityId == null) throw new NullPointerException();
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            builder.from(Comment.TABLE).where(Comment.ACTIVITY_ID, "=", activityId);
+            if(!SQLHelper.delete(builder)) throw new NullPointerException();
+            return true;
+        } catch (Exception e) {
+            DataUtils.log(TAG, "deleteComments", e);
+        }
+        return false;
+    }
+
+    public static boolean deleteAssessments(Integer activityId) {
+        try {
+            if(activityId == null) throw new NullPointerException();
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            builder.from(Assessment.TABLE).where(Assessment.ACTIVITY_ID, "=", activityId);
+            if(!SQLHelper.delete(builder)) throw new NullPointerException();
+            return true;
+        } catch (Exception e) {
+            DataUtils.log(TAG, "deleteAssessments", e);
+        }
+        return false;
+    }
 }
