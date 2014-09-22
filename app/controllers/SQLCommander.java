@@ -417,7 +417,7 @@ public class SQLCommander {
 		    if (userId == null) throw new UserNotFoundException();
 		    if (activity == null) throw new ActivityNotFoundException();
 		    if (!validateOwnership(userId, activity)) throw new AccessDeniedException();
-		    if (activity.getStatus() != Activity.CREATED || activity.getStatus() != Activity.REJECTED) throw new InvalidActivityStatusException();
+		    if (activity.getStatus() != Activity.CREATED && activity.getStatus() != Activity.REJECTED) throw new InvalidActivityStatusException();
 		    return true;
 	    } catch (Exception e) {
 		    DataUtils.log(TAG, "isActivityEditable", e);
