@@ -102,9 +102,19 @@ function onBtnDeleteClicked(evt){
 	}
 }
 
-
 function queryActivitiesAndRefresh() {
 	queryActivities(0, g_pagerContainer.nItems, g_pagerContainer.orientation, g_directionForward, g_vieweeId, g_pagerContainer.relation, g_pagerContainer.status, onQueryActivitiesSuccessAdmin, onQueryActivitiesErrorAdmin);
+}
+
+function onPagerButtonClickedAdmin(evt) {
+	var button = evt.data;
+	var container = button.container;
+	var page = button.page;
+	if (page == container.page) return;
+	var direction = page > container.page ? g_directionForward : g_directionBackward;
+	var refIndex = page > container.page ? g_pagerContainer.ed : g_pagerContainer.st;
+
+	queryActivities(refIndex, container.nItems, container.orientation, direction, g_vieweeId, container.relation, container.status, onQueryActivitiesSuccessAdmin, onQueryActivitiesErrorAdmin);
 }
 
 function onQueryActivitiesSuccessAdmin(data, status, xhr){
@@ -115,10 +125,10 @@ function onQueryActivitiesSuccessAdmin(data, status, xhr){
 	var oldEd = g_pagerContainer.ed;
 
 	// display pager container
-	g_pagerContainer.screen.empty();
 	var activitiesJson = jsonResponse[g_keyActivities];
 	var length = Object.keys(activitiesJson).length;
 	if(length == 0) return;
+	g_pagerContainer.screen.empty();
 
 	for(var idx = 0; idx < length; ++idx) {
 		var activityJson = activitiesJson[idx];
@@ -146,13 +156,13 @@ function onQueryActivitiesSuccessAdmin(data, status, xhr){
 	var btnPrevious = $("<button>", {
 		text: "上一頁"
 	}).appendTo(g_pagerContainer.bar);
-	btnPrevious.on("click", previous, onPagerButtonClicked);
+	btnPrevious.on("click", previous, onPagerButtonClickedAdmin);
 
 	var next = new PagerButton(g_pagerContainer, page + 1);
 	var btnNext = $("<button>", {
 		text: "下一頁"
 	}).appendTo(g_pagerContainer.bar);
-	btnNext.on("click", next, onPagerButtonClicked);
+	btnNext.on("click", next, onPagerButtonClickedAdmin);
 } 
 
 function onQueryActivitiesErrorAdmin(xhr, status, err){
