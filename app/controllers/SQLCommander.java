@@ -118,19 +118,17 @@ public class SQLCommander {
     }
 
     public static boolean updateActivity(Activity activity) {
-	    boolean ret = false;
 	    int activityId = activity.getId();
 	    try {
 		    String[] cols = {Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
 		    Object[] values = {activity.getTitle(), activity.getContent(), activity.getCreatedTime().toString(), activity.getBeginTime().toString(), activity.getDeadline().toString(), activity.getCapacity()};
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    builder.update(Activity.TABLE).set(cols, values).where(Activity.ID, "=", activityId);
-		    ret = SQLHelper.update(builder);
-
+		    return SQLHelper.update(builder);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".updateActivity: " + e.getMessage());
+		    DataUtils.log(TAG, "updateActivity", e);
 	    }
-	    return ret;
+	    return false;
     }
 
     /* querying activities */
@@ -415,17 +413,16 @@ public class SQLCommander {
     }
 
     public static boolean isActivityEditable(Integer userId, Activity activity) {
-	    boolean ret = false;
 	    try {
 		    if (userId == null) throw new UserNotFoundException();
 		    if (activity == null) throw new ActivityNotFoundException();
 		    if (!validateOwnership(userId, activity)) throw new AccessDeniedException();
-		    if (activity.getStatus() != Activity.CREATED) throw new InvalidActivityStatusException();
-		    ret = true;
+		    if (activity.getStatus() != Activity.CREATED || activity.getStatus() != Activity.REJECTED) throw new InvalidActivityStatusException();
+		    return true;
 	    } catch (Exception e) {
 		    DataUtils.log(TAG, "isActivityEditable", e);
 	    } 
-	    return ret;
+	    return false;
     }
 
     public static boolean isActivityJoinable(Integer userId, int activityId) {

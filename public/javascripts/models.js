@@ -37,7 +37,7 @@ function Activity(activityJson){
 	};
 
 	this.capacity = activityJson["capacity"];
-	this.status = activityJson["status"];
+	this.status = parseInt(activityJson["status"]);
 	this.relation = activityJson["relation"];
 	if(activityJson.hasOwnProperty("images")){
 		var images = new Array();

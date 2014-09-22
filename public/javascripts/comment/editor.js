@@ -1,3 +1,5 @@
+var g_tabComments = null;
+
 var g_minContentLength = 5;
 var g_replyEditor = null;
 

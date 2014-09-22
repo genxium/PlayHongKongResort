@@ -210,9 +210,9 @@ public class ActivityController extends Controller {
 			// save new images
 			List<Image> previousImages = SQLCommander.queryImages(activityId);
 			if (imageFiles != null && imageFiles.size() > 0) {
-                for (Http.MultipartFormData.FilePart imageFile : imageFiles) {
-                    if (ExtraCommander.INVALID == ExtraCommander.saveImageOfActivity(imageFile, user, activity)) break;
-                }
+				for (Http.MultipartFormData.FilePart imageFile : imageFiles) {
+				    if (ExtraCommander.INVALID == ExtraCommander.saveImageOfActivity(imageFile, user, activity)) break;
+				}
 			}
 
 			// selected old images
@@ -228,18 +228,18 @@ public class ActivityController extends Controller {
 
 			// delete previous images
 			if (previousImages != null && previousImages.size() > 0) {
-                for (Image previousImage : previousImages) {
-                    if (selectedOldImagesSet.contains(previousImage.getImageId())) continue;
-                    boolean isDeleted = ExtraCommander.deleteImageRecordAndFile(previousImage, activityId);
-                    if (!isDeleted) break;
-                }
+				for (Image previousImage : previousImages) {
+				    if (selectedOldImagesSet.contains(previousImage.getImageId())) continue;
+				    boolean isDeleted = ExtraCommander.deleteImageRecordAndFile(previousImage, activityId);
+				    if (!isDeleted) break;
+				}
 			}
 
 			ObjectNode ret = Json.newObject();
 			if (isNewActivity)	ret.put(UserActivityRelation.ACTIVITY_ID, activityId.toString());
 			return ok(ret);
 		} catch (Exception e) {
-            DataUtils.log(TAG, "save", e);
+			DataUtils.log(TAG, "save", e);
 		}
 		return badRequest();
 	}

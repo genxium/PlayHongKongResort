@@ -85,7 +85,7 @@ function generateActivityCell(par, activity){
             }
 	}
 
-	var statusStr = arrayStatusName[parseInt(activity.status)];
+	var statusStr = arrayStatusName[activity.status];
 
 	var ret = $('<div>', {
 		class: g_classCellActivityContainer
@@ -107,7 +107,7 @@ function generateActivityCell(par, activity){
 		    text: statusStr
 		}).appendTo(titleRow);
 
-		if(parseInt(activity.status) == g_statusCreated){
+		if(activity.status == g_statusCreated || activity.status == g_statusRejected){
 			var btnWrapper = $("<span>").appendTo(titleRow);
 			// this condition is temporarily hard-coded
 			var btnEdit = $('<button>', {

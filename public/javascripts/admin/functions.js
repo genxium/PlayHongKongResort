@@ -115,11 +115,11 @@ function onQueryActivitiesSuccessAdmin(data, status, xhr){
 	var oldEd = g_pagerContainer.ed;
 
 	// display pager container
+	g_pagerContainer.screen.empty();
 	var activitiesJson = jsonResponse[g_keyActivities];
 	var length = Object.keys(activitiesJson).length;
 	if(length == 0) return;
 
-	g_pagerContainer.screen.empty();
 	for(var idx = 0; idx < length; ++idx) {
 		var activityJson = activitiesJson[idx];
 		var activity = new Activity(activityJson);

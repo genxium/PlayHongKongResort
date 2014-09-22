@@ -1,8 +1,6 @@
 // general dom elements
 var g_sectionActivity = null;
 var g_tabParticipants = null;
-var g_tabComments = null;
-var g_tabAssessments = null;
 
 // local variables
 var g_activityId = null;
@@ -105,7 +103,7 @@ function displayActivityDetail(par){
 	// Tab assessments
 	var viewer = null;
 	if(g_activity.hasOwnProperty("viewer")) viewer = g_activity.viewer;
-	var batchAssessmentEditor = generateBatchAssessmentEditor(g_tabAssessments, g_activity, queryActivityDetail);
+	g_batchAssessmentEditor = generateBatchAssessmentEditor(g_tabAssessments, g_activity, queryActivityDetail);
 
 	var token = $.cookie(g_keyToken);
 	if(token == null)   return ret;
