@@ -7,10 +7,6 @@ var g_activityEditor = null;
 var g_modalActivityEditor = null;
 var g_sectionActivityEditor = null;
 
-// input-box keys
-var g_classFieldActivityTitle = "classFieldActivityTitle";
-var g_classFieldActivityContent = "classFieldActivityContent";
-
 // button keys
 var g_classBtnEdit = "btn-edit";
 var g_classBtnSubmit = "btn-submit";
@@ -21,7 +17,6 @@ var g_classBtnCancel = "btn-cancel";
 // DOM indexes for cascaded DOM element search
 var g_indexDeadlinePicker = "deadline-picker"
 var g_indexBeginTimePicker = "begin-time-picker";
-var g_indexAssociatedImage = "associated-image";
 
 var g_indexOldImages = "old_images";
 var g_indexNewImages = "new_images";
@@ -46,6 +41,8 @@ var g_onQueryActivitiesError = null;
 var g_onActivitySaveSuccess = null;
 
 var g_loadingWidget = null;
+
+var g_keyBtnAdd = "btn-add";
 
 // Assistive functions
 function formatDigits(value, numberOfDigits){
@@ -158,8 +155,9 @@ function onSave(evt){
         var data = evt.data;
 
         var formData = new FormData();
-
-        // check files
+	/*
+        
+	// check files
         var newImages = data[g_indexNewImages];
         var newImagesCount = newImages.length;
         for(var i = 0; i < newImagesCount; i++){
@@ -188,6 +186,7 @@ function onSave(evt){
             selectedOldImages.push(imageId);
         }
         formData.append(g_indexOldImage, JSON.stringify(selectedOldImages));
+	*/
 
         // append user token and activity id for identity
         var token = $.cookie(g_keyToken.toString());
@@ -301,8 +300,30 @@ function onSubmit(evt){
         });
 }
 
-function previewImage(input) {
-        var images=input.files;
+function attachAddButton(par, newImages) {
+	var spanBtnAdd = $("<span>", {
+		style: "display:inline-block; height: 72pt; width: 50pt;"
+	}).appendTo(par);
+	var picBtnAdd = $("<img>", {
+		src: "/assets/images/ic-add.png",
+		style: "position: absolute; width: 72pt; height: 72pt;"
+	}).appendTo(spanBtnAdd);
+	var btnAdd = $("<input>", {
+		type: "file",
+		style: "position: absolute; width: 72pt; height: 72pt; filter: alpha(opacity=0); opacity: 0;"
+	}).appendTo(spanBtnAdd);
+	btnAdd.change(function(evt) {
+		evt.preventDefault();
+		setSavable();
+		setNonSubmittable();
+		previewImage(this, newImages);
+	});
+	spanBtnAdd.data(g_keyBtnAdd, btnAdd);
+}
+
+function previewImage(spanBtnAdd, newImages) {
+	var input = spanBtnAdd.data(g_keyBtnAdd)[0];
+        var images  = input.files;
         if (images == null) return;
         var image = images[0];
         if(image == null) return;
@@ -314,29 +335,26 @@ function previewImage(input) {
         var reader = new FileReader();
 
         reader.onload = function (e) {
-            var legacy=$(input).data(g_indexAssociatedImage);
-            if(legacy!=null){
-                legacy.remove();
-                $(input).removeData(g_indexAssociatedImage);
-            }
 
-            var node=$('<p>');
-            var imageNode=$('<img>', {
-                   src: e.target.result
-            }).appendTo(node);
-            var checkbox=$('<input>',{
-                   type: "checkbox",
-                   checked: true
-            }).appendTo(node);
+		var node=$('<span>');
+		var imageNode=$('<img>', {
+			src: e.target.result
+		}).appendTo(node);
 
-            checkbox.on("change", function(evt){
-                evt.preventDefault();
-                setSavable();
-                setNonSubmittable();
-            });
-            $(input).after(node);
-            $(input).data(g_indexAssociatedImage, node);
-            $(input).data(g_indexCheckbox, checkbox);
+		var checkbox = $('<input>',{
+			type: "checkbox",
+			checked: true
+		}).appendTo(node);
+
+		checkbox.on("change", function(evt){
+			evt.preventDefault();
+			setSavable();
+			setNonSubmittable();
+		});
+		node.data(g_keyImageId, img.id);
+		node.data(g_indexCheckbox, checkbox);
+		$(input).before(node);
+		newImages.push(node);
         }
 
         reader.readAsDataURL(image);
@@ -398,13 +416,11 @@ function generateActivityEditor(activity){
 	var activityId = null;
 	var activityTitle = "";
 	var activityContent = "";
-	var activityImages = null;
 
 	if(!isNewActivity) {
 		activityId = activity.id;
 		activityTitle = activity.title;
 		activityContent = activity.content;
-		activityImages = activity.images;
 	}
 
 	var ret=$('<form>', {
@@ -417,7 +433,7 @@ function generateActivityEditor(activity){
 	}).appendTo(ret);
 
 	var titleInput=$('<input>', {
-		class: g_classFieldActivityTitle,
+		class: "input-title",
 		type: 'text',
 		value: activityTitle
 	}).appendTo(ret);
@@ -434,9 +450,8 @@ function generateActivityEditor(activity){
 		style: "margin-top: 5pt"
 	}).appendTo(ret);
 
-	var contentInput = $('<textarea>',
-	{
-		class: g_classFieldActivityContent
+	var contentInput = $('<textarea>',	{
+		class: "input-content" 
 	}).appendTo(ret);
 	contentInput.val(activityContent);
 	contentInput.on("input paste keyup", function(evt){
@@ -447,11 +462,13 @@ function generateActivityEditor(activity){
 	});
 
         var oldImages = new Array();
-	if(activityImages != null) {
-
-		for(var key in activityImages){
-                        var node=$('<p>').appendTo(ret);
-                        var img = activityImages[key];
+	if(activity != null && activity.images != null) {
+		var oldImagesRow = $("<p>", {
+			style: "overflow: auto; height: 72pt"	
+		}).appendTo(ret);
+		for(var key in activity.images){
+			var node = $("<span>").appendTo(oldImagesRow);
+                        var img = activity.images[key];
                         var imageNode = $('<img>',{
                                 src: img.url
                         }).appendTo(node);
@@ -469,21 +486,15 @@ function generateActivityEditor(activity){
 		}
 	}
 
-        var newImages = new Array();
-	for (var i = 0; i < g_maxNumberOfImagesForSingleActivity; i++) {
-		$('<br>').appendTo(ret);
-		var imageField = $('<input>', {
-			type: 'file'
-		}).appendTo(ret);
-		imageField.on("change", function(evt){
-		        evt.preventDefault();
-			setSavable();
-			setNonSubmittable();
-			previewImage(this);
-		});
-		newImages.push(imageField);
-	}
+	$('<br>').appendTo(ret);
 
+        var newImages = new Array();
+	var newImagesRow = $("<p>", {
+		style: "overflow: auto; height: 72pt"
+	}).appendTo(ret);
+
+	attachAddButton(newImagesRow, newImages);
+	
 	// Schedules
 	var deadline = reformatDate(new Date());
 	if(activity != null && activity.applicationDeadline != null) deadline = activity.applicationDeadline;

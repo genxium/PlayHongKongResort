@@ -1,14 +1,4 @@
-#idBtnCreate
-{
-	display: inline;
-	position: relative;
-	float: left;
-	width: 64pt;
-	height: 35px;
-	font-size: 15pt;
-}
-
-.classFieldActivityTitle
+.input-title
 {
 	display: block;
 	position: relative;
@@ -22,7 +12,7 @@
 	margin-bottom: 2pt;
 }
 
-.classFieldActivityContent
+.input-content
 {
 	display: block;
 	position: relative;
