@@ -26,8 +26,8 @@ var g_indexNewImage = "new_image";
 
 var g_indexCheckbox = "checkbox";
 
-var g_wImageCell = 72;
-var g_hImageCell = 72;
+var g_wImageCell = 200;
+var g_hImageCell = 200;
 
 // general variables
 var g_imagesLimit = 3;
@@ -127,7 +127,7 @@ function countImages(newImagesNodes, oldImagesNodes){
 	for(var key in oldImagesNodes) {
 		var node = oldImagesNodes[key];
 		var checkbox = node.data(g_indexCheckbox);
-		if(!check.is(":checked")) continue;
+		if(!checkbox.is(":checked")) continue;
 		++ret;
 	}
 	return ret;
@@ -168,13 +168,16 @@ function onSave(evt){
         var data = evt.data;
 
         var formData = new FormData();
+	var countImages = 0;
 	
 	// check files
         var newImages = data[g_indexNewImages];
         for(var key in newImages){
             var file = newImages[key];
-            formData.append(g_indexNewImage + "-" + i.toString(), file);
-        }
+            formData.append(g_indexNewImage + "-" + key.toString(), file);
+	}
+	
+	countImages = Object.keys(newImages).length;
 
         var oldImagesNodes = data[g_indexOldImagesNodes]
         var oldImagesCount = oldImagesNodes.length;
@@ -185,8 +188,13 @@ function onSave(evt){
             if(checkbox == null || !checkbox.is(":checked")) continue;
             var imageId = node.data(g_keyImageId);
             selectedOldImages.push(imageId);
+	    ++countImages;
         }
         formData.append(g_indexOldImage, JSON.stringify(selectedOldImages));
+	
+	if(countImages > g_imagesLimit) {
+		alert("No more than 3 images! Don't cheat!");
+	}
 
         // append user token and activity id for identity
         var token = $.cookie(g_keyToken.toString());
@@ -407,7 +415,7 @@ function refreshAddButton(par, newImages, newImagesNodes, oldImagesNodes) {
 	var offset = Object.keys(newImages).length;
 
 	g_nodeBtnAdd = $("<span>", {
-		style: "display:inline-block; position: absolute; cursor: pointer"
+		style: "display:inline-block; position: absolute;"
 	}).appendTo(par);
 	g_nodeBtnAdd.css("height", g_hImageCell);
 	g_nodeBtnAdd.css("width", g_wImageCell);
@@ -415,10 +423,10 @@ function refreshAddButton(par, newImages, newImagesNodes, oldImagesNodes) {
 
 	var picBtnAdd = $("<img>", {
 		src: "/assets/icons/add.png",
-		style: "position: absolute;"
+		style: "position: absolute; cursor: pointer;"
 	}).appendTo(g_nodeBtnAdd);
-	picBtnAdd.css("height", g_hImageCell);
-	picBtnAdd.css("width", g_wImageCell);
+	picBtnAdd.css("height", g_hImageCell - 5);
+	picBtnAdd.css("width", g_wImageCell - 5);
 
 	g_btnAdd = $("<input>", {
 		type: "file",
@@ -508,39 +516,73 @@ function generateActivityEditor(activity){
 		activityContent = $(this).val();
 	});
 
+	$("<p>", {
+		style: "font-size: 14pt; color: red; padding: 5pt",
+		text: "Up to 3 images can be saved for an activity"
+	}).appendTo(ret);
+
+        var newImages = {};
+	var newImagesNodes = {};
         var oldImagesNodes = new Array();
+
+	var newImagesRow = $("<p>", {
+		style: "overflow-x: auto;"
+	});
+	newImagesRow.css("height", g_hImageCell + 5);
+
 	if(activity != null && activity.images != null) {
 		var oldImagesRow = $("<p>", {
-			style: "overflow-x: auto; height: 75pt"	
+			style: "overflow-x: auto;"	
 		}).appendTo(ret);
-		for(var key in activity.images){
+		oldImagesRow.css("height", g_hImageCell + 5);
+
+		var countOldImages = Object.keys(activity.images).length;
+		for(var i =0; i < countOldImages; i++){
 			var node = $("<span>").appendTo(oldImagesRow);
-                        var img = activity.images[key];
-                        var imageNode = $('<img>',{
-                                src: img.url
+			node.css("width", g_wImageCell);
+			node.css("height", g_hImageCell);
+
+                        var img = activity.images[i];
+                        var imgDom = $('<img>',{
+                                src: img.url,
+				style: "padding: 2pt"
                         }).appendTo(node);
+			imgDom.css("width", g_wImageCell);
+			imgDom.css("height", g_hImageCell);
+
                         var checkbox = $('<input>',{
                                 type: "checkbox",
-                                checked: true
+                                checked: true,
+				disabled: true,
+				style: "position: absolute"
                         }).appendTo(node);
-                        checkbox.on("change", function(){
+			checkbox.css("left", i * g_wImageCell + 10);		
+
+                        checkbox.on("change", function(evt){
+				evt.preventDefault()
                                 setSavable();
                                 setNonSubmittable();
+				refreshAddButton(newImagesRow, newImages, newImagesNodes, oldImagesNodes);
                         });
+
                         node.data(g_keyImageId, img.id);
                         node.data(g_indexCheckbox, checkbox);
+			node.click(function(evt) {
+				evt.preventDefault();
+				var box = $(this).data(g_indexCheckbox);
+				var val = !box.is(":checked");
+				if(val && countImages(newImagesNodes, oldImagesNodes) >= g_imagesLimit) return;
+				box.attr("checked", val);
+				box.change();
+			});
                         oldImagesNodes.push(node);
 		}
 	}
 
+	newImagesRow.appendTo(ret);
 	$('<br>').appendTo(ret);
 
-        var newImages = {};
-	var newImagesRow = $("<p>", {
-		style: "overflow-x: auto; margin-left: 5pt; height: 75pt"
-	}).appendTo(ret);
 	
-	var newImagesNodes = {};
 	refreshAddButton(newImagesRow, newImages, newImagesNodes, oldImagesNodes);
 	
 	// Schedules
