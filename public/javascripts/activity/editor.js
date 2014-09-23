@@ -18,7 +18,7 @@ var g_classBtnCancel = "btn-cancel";
 var g_indexDeadlinePicker = "deadline-picker"
 var g_indexBeginTimePicker = "begin-time-picker";
 
-var g_indexOldImages = "old_images";
+var g_indexOldImagesNodes = "old_images_nodes";
 var g_indexNewImages = "new_images";
 
 var g_indexOldImage = "old_image";
@@ -30,7 +30,8 @@ var g_wImageCell = 72;
 var g_hImageCell = 72;
 
 // general variables
-var g_maxNumberOfImagesForSingleActivity = 3;
+var g_imagesLimit = 3;
+
 var g_savable = false;
 var g_submittable = true;
 
@@ -45,7 +46,8 @@ var g_onActivitySaveSuccess = null;
 
 var g_loadingWidget = null;
 
-var g_keyBtnAdd = "btn-add";
+var g_nodeBtnAdd = null;
+var g_btnAdd = null;
 
 // Assistive functions
 function formatDigits(value, numberOfDigits){
@@ -120,8 +122,15 @@ function showActivityEditor(activity) {
         });
 }
 
-function countSelectedImages(){
-
+function countImages(newImagesNodes, oldImagesNodes){
+	var ret = Object.keys(newImagesNodes).length;
+	for(var key in oldImagesNodes) {
+		var node = oldImagesNodes[key];
+		var checkbox = node.data(g_indexCheckbox);
+		if(!check.is(":checked")) continue;
+		++ret;
+	}
+	return ret;
 }
 
 function isFileValid(file){
@@ -159,37 +168,25 @@ function onSave(evt){
         var data = evt.data;
 
         var formData = new FormData();
-       	/* 
+	
 	// check files
         var newImages = data[g_indexNewImages];
-        var newImagesCount = newImages.length;
-        for(var i = 0; i < newImagesCount; i++){
-            var field = newImages[i][0]; // pull DOM element
-            var checkbox = $(field).data(g_indexCheckbox);
-            if(checkbox == null) continue;
-            // Note that checkbox.checked doesn't work here because of jQuery encapsulation!
-            if(!checkbox.is(':checked')) continue;
-            var files = field.files;
-            var count = files.length;
-            if(count != 1) continue;
-            var file = files[0];
+        for(var key in newImages){
+            var file = newImages[key];
             formData.append(g_indexNewImage + "-" + i.toString(), file);
         }
 
-        var oldImages = data[g_indexOldImages]
-        var oldImagesCount = oldImages.length;
+        var oldImagesNodes = data[g_indexOldImagesNodes]
+        var oldImagesCount = oldImagesNodes.length;
         var selectedOldImages = new Array();
         for(var i = 0; i < oldImagesCount; i++){
-            var field = oldImages[i][0]; // pull DOM element
-            var checkbox = $(field).data(g_indexCheckbox);
-            if(checkbox == null) continue;
-            // Note that checkbox.checked doesn't work because of jQuery encapsulation!
-            if(!checkbox.is(':checked')) continue;
-            var imageId = $(field).data(g_keyImageId);
+            var node = oldImagesNodes[i];
+            var checkbox = node.data(g_indexCheckbox);
+            if(checkbox == null || !checkbox.is(":checked")) continue;
+            var imageId = node.data(g_keyImageId);
             selectedOldImages.push(imageId);
         }
         formData.append(g_indexOldImage, JSON.stringify(selectedOldImages));
-	*/
 
         // append user token and activity id for identity
         var token = $.cookie(g_keyToken.toString());
@@ -305,38 +302,8 @@ function onSubmit(evt){
         });
 }
 
-function attachAddButton(par, newImages, newImagesNodes) {
-	var nodeBtnAdd = $("<span>", {
-		style: "display:inline-block; position: absolute"
-	}).appendTo(par);
-	nodeBtnAdd.css("height", g_hImageCell);
-	nodeBtnAdd.css("width", g_wImageCell);
-
-	var picBtnAdd = $("<img>", {
-		src: "/assets/images/ic-add.png",
-		style: "position: absolute;"
-	}).appendTo(nodeBtnAdd);
-	picBtnAdd.css("height", g_hImageCell);
-	picBtnAdd.css("width", g_wImageCell);
-
-	var btnAdd = $("<input>", {
-		type: "file",
-		style: "filter: alpha(opacity=0); opacity: 0; position: absolute;"
-	}).appendTo(nodeBtnAdd);
-	btnAdd.css("height", g_hImageCell);
-	btnAdd.css("width", g_wImageCell);
-
-	btnAdd.change(function(evt) {
-		evt.preventDefault();
-		setSavable();
-		setNonSubmittable();
-		previewImage(par, nodeBtnAdd, newImages, newImagesNodes);
-	});
-	nodeBtnAdd.data(g_keyBtnAdd, btnAdd);
-}
-
-function previewImage(par, nodeBtnAdd, newImages, newImagesNodes) {
-	var input = nodeBtnAdd.data(g_keyBtnAdd)[0];
+function previewImage(par, newImages, newImagesNodes, oldImagesNodes) {
+	var input = g_btnAdd[0]; // pull DOM
         var images  = input.files;
         if (images == null) return;
         var newImage = images[0];
@@ -349,14 +316,12 @@ function previewImage(par, nodeBtnAdd, newImages, newImagesNodes) {
         var reader = new FileReader();
 
         reader.onload = function (e) {
-		var key = new Date().getMilliseconds(); // the key which identifies an image in the map newImages
+		var key = new Date().getTime(); // the key which identifies an image in the map newImages
 
 		var offset = Object.keys(newImages).length;
 		newImages[key] = newImage; // add new image to model map
-
-		nodeBtnAdd.css("left", (offset + 1) * g_wImageCell);
 		var node = $('<span>', {
-			style: "position: absolute"
+			style: "position: absolute; padding: 2pt"
 		}).appendTo(par);
 		node.css("width", g_wImageCell);
 		node.css("height", g_hImageCell);
@@ -369,12 +334,13 @@ function previewImage(par, nodeBtnAdd, newImages, newImagesNodes) {
 		img.css("width", g_wImageCell);
 		img.css("height", g_hImageCell);
 
-
 		var btnDelete = $("<button>", {
 			text: "delete",
 			style: "color: white; background-color: red"
 		}).appendTo(node);
-			
+		
+		refreshAddButton(par, newImages, newImagesNodes, oldImagesNodes);
+		
 		btnDelete.click(function(evt){
 			evt.preventDefault();
 			setSavable();
@@ -390,8 +356,7 @@ function previewImage(par, nodeBtnAdd, newImages, newImagesNodes) {
 				var l = parseInt(newImageNode.css("left"));
 				newImageNode.css("left", l - g_wImageCell);
 			}
-			var l = parseInt(nodeBtnAdd.css("left"));
-			nodeBtnAdd.css("left", l - g_wImageCell);
+			refreshAddButton(par, newImages, newImagesNodes, oldImagesNodes);
 		});
         }
 
@@ -435,8 +400,61 @@ function onCancel(evt){
         g_onEditorCancelled();
 }
 
+function refreshAddButton(par, newImages, newImagesNodes, oldImagesNodes) {
+	
+	removeAddButton();
+
+	var offset = Object.keys(newImages).length;
+
+	g_nodeBtnAdd = $("<span>", {
+		style: "display:inline-block; position: absolute; cursor: pointer"
+	}).appendTo(par);
+	g_nodeBtnAdd.css("height", g_hImageCell);
+	g_nodeBtnAdd.css("width", g_wImageCell);
+	g_nodeBtnAdd.css("left", offset * g_wImageCell);	
+
+	var picBtnAdd = $("<img>", {
+		src: "/assets/icons/add.png",
+		style: "position: absolute;"
+	}).appendTo(g_nodeBtnAdd);
+	picBtnAdd.css("height", g_hImageCell);
+	picBtnAdd.css("width", g_wImageCell);
+
+	g_btnAdd = $("<input>", {
+		type: "file",
+		style: "filter: alpha(opacity=0); opacity: 0; position: absolute;"
+	}).appendTo(g_nodeBtnAdd);
+	g_btnAdd.css("height", g_hImageCell);
+	g_btnAdd.css("width", g_wImageCell);
+
+	g_btnAdd.change(function(evt) {
+		evt.preventDefault();
+		setSavable();
+		setNonSubmittable();
+		previewImage(par, newImages, newImagesNodes, oldImagesNodes);
+	});
+
+	var imagesTot = countImages(newImagesNodes, oldImagesNodes);
+	if(imagesTot < g_imagesLimit) enableField(g_btnAdd);
+	else disableField(g_btnAdd);
+}
+
+function removeAddButton() {
+	if(g_nodeBtnAdd != null) {
+		g_nodeBtnAdd.empty();
+		g_nodeBtnAdd.remove();
+		g_nodeBtnAdd = null;
+	}
+	if(g_btnAdd != null) {
+		g_btnAdd.remove();
+		g_btnAdd = null;
+	}
+}
+
 // Generators
 function generateActivityEditor(activity){
+	
+	removeAddButton();
 	setNonSavable();
 	setSubmittable();
 	var isNewActivity = false;
@@ -490,7 +508,7 @@ function generateActivityEditor(activity){
 		activityContent = $(this).val();
 	});
 
-        var oldImages = new Array();
+        var oldImagesNodes = new Array();
 	if(activity != null && activity.images != null) {
 		var oldImagesRow = $("<p>", {
 			style: "overflow-x: auto; height: 75pt"	
@@ -511,7 +529,7 @@ function generateActivityEditor(activity){
                         });
                         node.data(g_keyImageId, img.id);
                         node.data(g_indexCheckbox, checkbox);
-                        oldImages.push(node);
+                        oldImagesNodes.push(node);
 		}
 	}
 
@@ -519,12 +537,11 @@ function generateActivityEditor(activity){
 
         var newImages = {};
 	var newImagesRow = $("<p>", {
-		style: "overflow-x: auto; height: 75pt"
+		style: "overflow-x: auto; margin-left: 5pt; height: 75pt"
 	}).appendTo(ret);
 	
 	var newImagesNodes = {};
-
-	attachAddButton(newImagesRow, newImages, newImagesNodes);
+	refreshAddButton(newImagesRow, newImages, newImagesNodes, oldImagesNodes);
 	
 	// Schedules
 	var deadline = reformatDate(new Date());
@@ -583,7 +600,7 @@ function generateActivityEditor(activity){
         dSave[g_keyContent] = contentInput;
         dSave[g_indexDeadlinePicker] = deadlinePicker;
         dSave[g_indexBeginTimePicker] = beginTimePicker;
-        dSave[g_indexOldImages] = oldImages;
+        dSave[g_indexOldImagesNodes] = oldImagesNodes;
         dSave[g_indexNewImages] = newImages;
 	btnSave.on("click", dSave, onSave);
 

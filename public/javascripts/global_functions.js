@@ -140,3 +140,11 @@ function compareYmdhisDate(foo, bar) {
 	}
 	return 0;
 }
+
+function disableField(field) {
+	field.prop('disabled', true);
+}
+
+function enableField(field) {
+	field.prop('disabled', false);
+}
