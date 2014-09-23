@@ -19,7 +19,6 @@ var g_classBtnSave = "btn-save";
 var g_classBtnCancel = "btn-cancel";
 
 // DOM indexes for cascaded DOM element search
-var g_indexImageOfActivityPrefix = "indexImageOfActivityPrefix";
 var g_indexDeadlinePicker = "deadline-picker"
 var g_indexBeginTimePicker = "begin-time-picker";
 var g_indexAssociatedImage = "associated-image";
@@ -33,7 +32,7 @@ var g_indexNewImage = "new_image";
 var g_indexCheckbox = "checkbox";
 
 // general variables
-var g_maxNumberOfImagesForSingleActivity=3;
+var g_maxNumberOfImagesForSingleActivity = 3;
 var g_savable = false;
 var g_submittable = true;
 
@@ -51,7 +50,7 @@ var g_loadingWidget = null;
 // Assistive functions
 function formatDigits(value, numberOfDigits){
        var valueStr = value.toString();
-       while(valueStr.length<numberOfDigits) valueStr="0"+valueStr;
+       while(valueStr.length < numberOfDigits) valueStr = "0" + valueStr;
        return valueStr;
 }
 
@@ -59,20 +58,20 @@ function formatDate(time){
 	time=time.replace(/-/g,"/");
 	var date = new Date(Date.parse(time));
 	var year = date.getFullYear();
-	var month = date.getMonth()+1;
+	var month = date.getMonth() + 1;
 	var day = date.getDate();
 	var hour = date.getHours();
 	var min = date.getMinutes();
-	return year+"-"+formatDigits(month, 2)+"-"+formatDigits(day, 2)+" "+formatDigits(hour, 2)+":"+formatDigits(min, 2);	
+	return year + "-" + formatDigits(month, 2) + "-" + formatDigits(day, 2) + " " + formatDigits(hour, 2) + ":" + formatDigits(min, 2);	
 }
 
 function reformatDate(date){
 	var year = date.getFullYear();
-	var month = date.getMonth()+1;
+	var month = date.getMonth() + 1;
 	var day = date.getDate();
 	var hour = date.getHours();
 	var min = date.getMinutes();
-	return year+"-"+formatDigits(month, 2)+"-"+formatDigits(day, 2)+" "+formatDigits(hour, 2)+":"+formatDigits(min, 2);	
+	return year + "-" + formatDigits(month, 2) + "-" + formatDigits(day, 2) + " " + formatDigits(hour, 2) + ":" + formatDigits(min, 2);	
 }
 
 function removeActivityEditor(){
@@ -574,7 +573,7 @@ function generateActivityEditor(activity){
 }
 
 function generateDateSelection(time){
-        var ret=generateDataPicker(time);
+        var ret = generateDatePicker(time);
         ret.on("input change keyup", function(evt){
                 evt.preventDefault();
                 setSavable();

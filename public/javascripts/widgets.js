@@ -1,6 +1,58 @@
 /*
-	Pager Widgets
-*/
+ * Datetime Picker
+ */
+function generateDatePicker(time) {
+    
+	var ret=$('<div>', {
+		class: 'col-sm-6'    
+	});
+
+	var formGroup=$('<div>', {
+		class: 'form-group'    
+	}).appendTo(ret);
+
+	var inputGroup=$("<div>", {
+		class: 'input-group date'    
+	}).appendTo(formGroup);
+
+	var input=$('<input>', {
+		type: 'text',
+		value: time,
+		disabled: true,
+		class: 'form-control',
+		style: 'background-color: white; cursor: default; width: auto'    
+	}).appendTo(inputGroup);
+
+	var inputGroupAddon=$('<span>', {
+		class: 'input-group-addon'    
+	}).appendTo(inputGroup);
+
+	var glyphiconCalendar=$('<span>', {
+		class: 'glyphicon glyphicon-calendar'   
+	}).appendTo(inputGroupAddon);
+
+	inputGroup.datetimepicker({
+		format: 'YYYY-MM-DD HH:mm',
+		pickSeconds: false,
+		pick12HourFormat: false  
+	});
+	return ret;
+}
+
+function getDateTime(picker){
+	var ret = null;
+	var formGroup = $(picker.children(".form-group")[0]);
+	var inputGroup = $(formGroup.children(".input-group.date")[0]);
+	var input = $(inputGroup.children(".form-control")[0]); 
+	var dateStr = input.val();
+	if (dateStr==null || dateStr=="" || dateStr.length==0) return null;
+	ret = dateStr+":00";
+	return ret;
+}
+
+/*
+ * Pager Widgets
+ */
 
 function PagerContainer(screen, bar, orderKey, orientation, numItemsPerPage) {
 	this.screen = screen; // screen of the container

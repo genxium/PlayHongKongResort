@@ -124,12 +124,14 @@ public class Activity {
 
     public boolean isDeadlineExpired() {
 	    Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+8")); // should match mysql setting `/etc/my.cnf`
-	    return calendar.getTimeInMillis() > m_deadline.getTime();
+        long milisecs = calendar.getTimeInMillis();
+	    return  milisecs > m_deadline.getTime();
     }
 
     public boolean hasBegun() {
 	    Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+8")); // should match mysql setting `/etc/my.cnf`
-	    return calendar.getTimeInMillis() + calendar.getTimeZone().getRawOffset() > m_beginTime.getTime();
+        long milisecs = calendar.getTimeInMillis();
+	    return milisecs > m_beginTime.getTime();
     }
 
     protected Activity() {
