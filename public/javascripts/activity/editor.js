@@ -26,6 +26,9 @@ var g_indexNewImage = "new_image";
 
 var g_indexCheckbox = "checkbox";
 
+var g_wImageCell = 72;
+var g_hImageCell = 72;
+
 // general variables
 var g_maxNumberOfImagesForSingleActivity = 3;
 var g_savable = false;
@@ -146,6 +149,7 @@ function setSubmittable(){
 
 // Assistive Callback Functions
 function onSave(evt){
+	evt.preventDefault();
 
         if(!g_savable){
             alert("You haven't made any changes!");
@@ -155,8 +159,7 @@ function onSave(evt){
         var data = evt.data;
 
         var formData = new FormData();
-	/*
-        
+       	/* 
 	// check files
         var newImages = data[g_indexNewImages];
         var newImagesCount = newImages.length;
@@ -170,7 +173,7 @@ function onSave(evt){
             var count = files.length;
             if(count != 1) continue;
             var file = files[0];
-            formData.append(g_indexNewImage+"-"+i.toString(), file);
+            formData.append(g_indexNewImage + "-" + i.toString(), file);
         }
 
         var oldImages = data[g_indexOldImages]
@@ -262,6 +265,8 @@ function onSave(evt){
 
 function onSubmit(evt){
 
+	evt.preventDefault();
+
         if(!g_submittable) {
             alert("You have to save your changes before submission!");
             return;
@@ -300,72 +305,100 @@ function onSubmit(evt){
         });
 }
 
-function attachAddButton(par, newImages) {
-	var spanBtnAdd = $("<span>", {
-		style: "display:inline-block; height: 72pt; width: 50pt;"
+function attachAddButton(par, newImages, newImagesNodes) {
+	var nodeBtnAdd = $("<span>", {
+		style: "display:inline-block; position: absolute"
 	}).appendTo(par);
+	nodeBtnAdd.css("height", g_hImageCell);
+	nodeBtnAdd.css("width", g_wImageCell);
+
 	var picBtnAdd = $("<img>", {
 		src: "/assets/images/ic-add.png",
-		style: "position: absolute; width: 72pt; height: 72pt;"
-	}).appendTo(spanBtnAdd);
+		style: "position: absolute;"
+	}).appendTo(nodeBtnAdd);
+	picBtnAdd.css("height", g_hImageCell);
+	picBtnAdd.css("width", g_wImageCell);
+
 	var btnAdd = $("<input>", {
 		type: "file",
-		style: "position: absolute; width: 72pt; height: 72pt; filter: alpha(opacity=0); opacity: 0;"
-	}).appendTo(spanBtnAdd);
+		style: "filter: alpha(opacity=0); opacity: 0; position: absolute;"
+	}).appendTo(nodeBtnAdd);
+	btnAdd.css("height", g_hImageCell);
+	btnAdd.css("width", g_wImageCell);
+
 	btnAdd.change(function(evt) {
 		evt.preventDefault();
 		setSavable();
 		setNonSubmittable();
-		previewImage(this, newImages);
+		previewImage(par, nodeBtnAdd, newImages, newImagesNodes);
 	});
-	spanBtnAdd.data(g_keyBtnAdd, btnAdd);
+	nodeBtnAdd.data(g_keyBtnAdd, btnAdd);
 }
 
-function previewImage(spanBtnAdd, newImages) {
-	var input = spanBtnAdd.data(g_keyBtnAdd)[0];
+function previewImage(par, nodeBtnAdd, newImages, newImagesNodes) {
+	var input = nodeBtnAdd.data(g_keyBtnAdd)[0];
         var images  = input.files;
         if (images == null) return;
-        var image = images[0];
-        if(image == null) return;
+        var newImage = images[0];
+        if(newImage == null) return;
         var count = images.length;
-        if(count == 0 || count > 1){
+        if(count != 1){
             alert("Choose only 1 image at a time!!!");
             return;
         }
         var reader = new FileReader();
 
         reader.onload = function (e) {
+		var key = new Date().getMilliseconds(); // the key which identifies an image in the map newImages
 
-		var node=$('<span>');
-		var imageNode=$('<img>', {
+		var offset = Object.keys(newImages).length;
+		newImages[key] = newImage; // add new image to model map
+
+		nodeBtnAdd.css("left", (offset + 1) * g_wImageCell);
+		var node = $('<span>', {
+			style: "position: absolute"
+		}).appendTo(par);
+		node.css("width", g_wImageCell);
+		node.css("height", g_hImageCell);
+		node.css("left", offset * g_wImageCell);
+		newImagesNodes[key] = node; // add new image node to view map		
+
+		var img = $('<img>', {
 			src: e.target.result
 		}).appendTo(node);
+		img.css("width", g_wImageCell);
+		img.css("height", g_hImageCell);
 
-		var checkbox = $('<input>',{
-			type: "checkbox",
-			checked: true
+
+		var btnDelete = $("<button>", {
+			text: "delete",
+			style: "color: white; background-color: red"
 		}).appendTo(node);
-
-		checkbox.on("change", function(evt){
+			
+		btnDelete.click(function(evt){
 			evt.preventDefault();
 			setSavable();
 			setNonSubmittable();
+			if(!newImages.hasOwnProperty(key)) return;
+			delete newImages[key];	
+			if(!newImagesNodes.hasOwnProperty(key)) return;
+			newImagesNodes[key].remove();
+			delete newImagesNodes[key];
+			for(var otherKey in newImagesNodes) {
+				if(otherKey < key) continue;
+				var newImageNode = newImagesNodes[otherKey];	
+				var l = parseInt(newImageNode.css("left"));
+				newImageNode.css("left", l - g_wImageCell);
+			}
+			var l = parseInt(nodeBtnAdd.css("left"));
+			nodeBtnAdd.css("left", l - g_wImageCell);
 		});
-		node.data(g_keyImageId, img.id);
-		node.data(g_indexCheckbox, checkbox);
-		$(input).before(node);
-		newImages.push(node);
         }
 
-        reader.readAsDataURL(image);
+        reader.readAsDataURL(newImage);
 }
 
-function onBtnSaveClicked(evt){
-	evt.preventDefault();
-        onSave(evt);
-}
-
-function onBtnDeleteClicked(evt){
+function onDelete(evt){
 
 	evt.preventDefault();
 	var data = evt.data;
@@ -394,12 +427,8 @@ function onBtnDeleteClicked(evt){
 	}
 }
 
-function onBtnSubmitClicked(evt){
-	evt.preventDefault();
-        onSubmit(evt);
-}
+function onCancel(evt){
 
-function onBtnCancelClicked(evt){
 	evt.preventDefault();
 	removeActivityEditor();
 	if(g_onEditorCancelled == null) return;
@@ -464,7 +493,7 @@ function generateActivityEditor(activity){
         var oldImages = new Array();
 	if(activity != null && activity.images != null) {
 		var oldImagesRow = $("<p>", {
-			style: "overflow: auto; height: 72pt"	
+			style: "overflow-x: auto; height: 75pt"	
 		}).appendTo(ret);
 		for(var key in activity.images){
 			var node = $("<span>").appendTo(oldImagesRow);
@@ -488,12 +517,14 @@ function generateActivityEditor(activity){
 
 	$('<br>').appendTo(ret);
 
-        var newImages = new Array();
+        var newImages = {};
 	var newImagesRow = $("<p>", {
-		style: "overflow: auto; height: 72pt"
+		style: "overflow-x: auto; height: 75pt"
 	}).appendTo(ret);
+	
+	var newImagesNodes = {};
 
-	attachAddButton(newImagesRow, newImages);
+	attachAddButton(newImagesRow, newImages, newImagesNodes);
 	
 	// Schedules
 	var deadline = reformatDate(new Date());
@@ -554,7 +585,7 @@ function generateActivityEditor(activity){
         dSave[g_indexBeginTimePicker] = beginTimePicker;
         dSave[g_indexOldImages] = oldImages;
         dSave[g_indexNewImages] = newImages;
-	btnSave.on("click", dSave, onBtnSaveClicked);
+	btnSave.on("click", dSave, onSave);
 
 	var btnSubmit = $('<button>',{
 		class: g_classBtnSubmit,
@@ -562,13 +593,13 @@ function generateActivityEditor(activity){
 	}).appendTo(buttons);
 	var dSubmit = {};
 	dSubmit[g_keyActivityId] = activityId;
-	btnSubmit.on("click", dSubmit, onBtnSubmitClicked);
+	btnSubmit.on("click", dSubmit, onSubmit);
 
 	var btnCancel = $('<button>',{
 		class: g_classBtnCancel,
 		text: 'Cancel'
 	}).appendTo(buttons);
-	btnCancel.on("click", onBtnCancelClicked);
+	btnCancel.on("click", onCancel);
 
 	if(!isNewActivity){
 		var btnDelete = $('<button>',{
@@ -577,7 +608,7 @@ function generateActivityEditor(activity){
 		}).appendTo(buttons);
                 var dDelete = {};
                 dDelete[g_keyActivityId] = activityId;
-		btnDelete.on("click", dDelete, onBtnDeleteClicked);
+		btnDelete.on("click", dDelete, onDelete);
 	}
 	ret.data(g_keyActivityId, activityId);			
 	return ret;
