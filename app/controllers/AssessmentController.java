@@ -53,9 +53,13 @@ public class AssessmentController extends Controller {
 		if (user == null) throw new UserNotFoundException();
 		Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 		if (activityId == null) throw new ActivityNotFoundException();
+        Activity activitiy = SQLCommander.queryActivity(activityId);
+        if(activitiy == null) throw new ActivityNotFoundException();
 
 		Integer relation = SQLCommander.queryUserActivityRelation(userId, activityId);
-		if ((relation & UserActivityRelation.present) == 0) throw new InvalidUserActivityRelationException();
+
+        // Only present participants and host can submit assessments
+		if ((relation & UserActivityRelation.present) == 0 && activitiy.getHost().getId() != userId) throw new InvalidUserActivityRelationException();
 
 		String bundle = formData.get(BUNDLE)[0];
 		JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);

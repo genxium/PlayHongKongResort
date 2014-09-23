@@ -267,8 +267,8 @@ function initAssessmentsViewer(){
 	/*
 		Note: ALL attributes, especially the `class` attribute MUST be written INSIDE the div tag, bootstrap is NOT totally compatible with jQuery!!!
 	*/
-	g_sectionAssessmentsViewer = $("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='Assessments' aria-hidden='true'>", {
-		style: "height: 80%; position: absolute"
+	g_sectionAssessmentsViewer = $("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='' aria-hidden='true'>", {
+		style: "position: absolute; width: 80%; height: 80%;"
 	}).appendTo(wrap);
 	var dialog = $("<div>", {
 		class: "modal-dialog modal-lg"
@@ -286,9 +286,6 @@ function showAssessmentsViewer(assessments) {
         g_modalAssessmentsViewer.empty();
         g_modalAssessmentsViewer.append(g_assessmentsViewer);
 
-        g_sectionAssessmentsViewer.css("position", "absolute");
-        g_sectionAssessmentsViewer.css("height", "90%");
-        g_sectionAssessmentsViewer.css("padding", "5pt");
         g_sectionAssessmentsViewer.modal({
                 show: true
         });
