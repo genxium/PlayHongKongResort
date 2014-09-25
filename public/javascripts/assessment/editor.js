@@ -115,6 +115,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 			data: params,
 			success: function(data, status, xhr){
 				alert("Assessment submitted!");
+				activity.relation |= assessed;
 				refreshBatchEditor(activity);
 			},
 			error: function(xhr, status, err){
