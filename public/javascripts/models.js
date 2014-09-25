@@ -7,19 +7,19 @@ var assessed = (1<<4);
 var hosted = (1<<5);
 
 function User(userJson){
-	this.id = userJson["id"];
+	this.id = parseInt(userJson["id"]);
 	this.email = userJson["email"];
 	this.name = userJson["name"];
 	this.avatar = userJson["avatar"];
 }
 
 function Image(imageJson){
-	this.id = imageJson["id"];
+	this.id = parseInt(imageJson["id"]);
 	this.url = imageJson["url"];
 }
 
 function Activity(activityJson){
-	this.id = activityJson["id"];
+	this.id = parseInt(activityJson["id"]);
 	this.title = activityJson["title"];
 	this.content = activityJson["content"];
 	this.createdTime = activityJson["created_time"];
@@ -110,8 +110,8 @@ function Comment(commentJson) {
 
 function Assessment(assessmentJson) {
 	if(assessmentJson.hasOwnProperty("content")) this.content = assessmentJson["content"];
-	if(assessmentJson.hasOwnProperty("from")) this.from = assessmentJson["from"];
-	if(assessmentJson.hasOwnProperty("to")) this.to = assessmentJson["to"];
+	if(assessmentJson.hasOwnProperty("from")) this.from = parseInt(assessmentJson["from"]);
+	if(assessmentJson.hasOwnProperty("to")) this.to = parseInt(assessmentJson["to"]);
 	if(assessmentJson.hasOwnProperty("from_name")) this.from_name = assessmentJson["from_name"];
 	if(assessmentJson.hasOwnProperty("to_name")) this.to_name = assessmentJson["to_name"];
 }

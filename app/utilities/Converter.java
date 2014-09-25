@@ -29,6 +29,7 @@ public class Converter {
 
     public static Integer toInteger(Object obj) {
         if (obj instanceof Integer) return (Integer) obj;
+        else if (obj instanceof Long) return ((Long) obj).intValue();
         else if (obj instanceof String) return Integer.valueOf((String) obj);
         else return null;
     }

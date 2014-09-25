@@ -70,11 +70,26 @@ function onBtnDetailClicked(evt){
 	window.open(detailPagePath);
 }
 
+function getPriorRelation(activity) {
+	if ((activity.relation & assessed) > 0) return assessed;
+	if ((activity.relation & present) > 0) return present;
+	if ((activity.relation & absent) > 0) return absent;
+	if ((activity.relation & selected) > 0) return selected;
+	if ((activity.relation & applied) > 0) return applied;
+}
+
 // Generators
 
 function generateActivityCell(par, activity){
 
-	var arrayStatusName = ['created', 'pending', 'rejected', 'accepted', 'expired'];
+	var arrayStatusName = ["created", "pending", "rejected", "accepted", "expired"];
+	var mapRelationName = {};
+	mapRelationName[applied] = "applied";
+	mapRelationName[selected] = "selected";
+	mapRelationName[present] = "present";
+	mapRelationName[absent] = "absent";
+	mapRelationName[assessed] = "assessed";
+	mapRelationName[hosted] = "";
 
 	var coverImageUrl = null;
 	if(activity.images != null) {
@@ -134,12 +149,11 @@ function generateActivityCell(par, activity){
 		dJoin[g_keyActivity] = activity;
 		btnJoin.on("click", dJoin, onBtnJoinClicked);
 
-	} else if((activity.relation & applied) > 0
-	            && (g_loggedInUser != null && g_loggedInUser.id != activity.host.id)) {
+	} else if(activity.relation != null &&g_loggedInUser != null && g_loggedInUser.id != activity.host.id) {
 		
-		var appliedIndicator = $('<div>', {
+		var relationIndicator = $('<div>', {
 			class: g_classCellRelationIndicator,
-			text: 'Applied'
+			text: mapRelationName[getPriorRelation(activity)]
 		}).appendTo(btnRow);
 	} else;
 

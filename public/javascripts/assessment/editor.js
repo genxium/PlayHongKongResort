@@ -6,9 +6,6 @@ var g_onRefresh = null;
 var g_lockedCount = 0;
 var g_btnSubmit = null;
 
-var g_sectionAssessmentsViewer = null;
-var g_modalAssessmentsViewer = null;
-var g_assessmentsViewer = null;
 
 var g_sectionAssessmentEditors = null;
 var g_sectionAssessmentButtons = null;
@@ -19,6 +16,7 @@ function createAssessment(content, to) {
 	assessmentJson["to"] = to;
 	return new Assessment(assessmentJson);
 }
+
 
 /*
 	Trying out new style of info gathering for DOMs
@@ -65,6 +63,7 @@ function generateAssessmentEditors(par, activity, batchEditor) {
 }
 
 function generateAssessmentButtons(par, activity, batchEditor){
+	par.empty();
 	if(batchEditor.editors == null || batchEditor.editors.length <= 1) return;
 	var row = $('<p>').appendTo(par);
 	var btnCheckAll = $('<button>', {
@@ -116,6 +115,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 			data: params,
 			success: function(data, status, xhr){
 				alert("Assessment submitted!");
+				refreshBatchEditor(activity);
 			},
 			error: function(xhr, status, err){
 
@@ -155,6 +155,7 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 	} else {
 		disabled = true;
 	}
+
 	var attendanceSwitch = createBinarySwitch(sectionAll, disabled, initVal, "N/A", "Present", "Absent", "switch-attendance");	
 	g_sectionAssessmentEditors = $('<div>', {
 		style: "margin-top: 5pt"
@@ -231,101 +232,6 @@ function updateAttendance(activityId, attendance, onSuccess, onError){
 	});
 }
 
-function queryAssessments(to, activityId, onSuccess, onError) {
-	
-	var params = {};	
-
-	params[g_keyRefIndex] = 0;
-	params[g_keyNumItems] = 20;
-	params[g_keyDirection] = 1;
-	var token = $.cookie(g_keyToken);
-	if(token != null) params[g_keyToken] = token;
-        params[g_keyTo] = to;
-	params[g_keyActivityId] = activityId;
-
-	$.ajax({
-		type: "GET",
-		url: "/assessment/query",
-		data: params,
-		success: onSuccess,
-		error: onError
-	});
-}
-
-function removeAssessmentsViewer(){
-        if(g_sectionAssessmentsViewer == null) return;
-        g_sectionAssessmentsViewer.hide();
-        g_sectionAssessmentsViewer.modal("hide");
-        if(g_modalAssessmentsViewer == null) return;
-        g_modalAssessmentsViewer.empty();
-        if(g_assessmentsViewer == null) return;
-        g_assessmentsViewer.remove();
-}
-
-function initAssessmentsViewer(){
-	var wrap = $("#wrap");
-	/*
-		Note: ALL attributes, especially the `class` attribute MUST be written INSIDE the div tag, bootstrap is NOT totally compatible with jQuery!!!
-	*/
-	g_sectionAssessmentsViewer = $("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='' aria-hidden='true'>", {
-		style: "position: absolute; width: 80%; height: 80%;"
-	}).appendTo(wrap);
-	var dialog = $("<div>", {
-		class: "modal-dialog modal-lg"
-	}).appendTo(g_sectionAssessmentsViewer);
-	g_modalAssessmentsViewer = $("<div>", {
-		class: "modal-content"
-	}).appendTo(dialog);	
-
-	removeAssessmentsViewer();
-}
-
-function showAssessmentsViewer(assessments) {
-		
-	g_assessmentsViewer = generateAssessmentsViewer(assessments);
-        g_modalAssessmentsViewer.empty();
-        g_modalAssessmentsViewer.append(g_assessmentsViewer);
-
-        g_sectionAssessmentsViewer.modal({
-                show: true
-        });
-
-}
-
-function generateAssessmentsViewer(assessments) {
-        var ret = $("<div>", {
-            style: "padding: 10%"
-        });
-
-	var tbl = $("<table class='assessments-viewer'>").appendTo(ret);
-
-	try {
-		if (assessments == null) throw new NullPointerException();
-                var head = $("<tr class='assessments-viewer-row'>").appendTo(tbl);
-
-                $('<th>', {
-                    text: "Content"
-                }).appendTo(head);
-
-                $('<th>', {
-                    text: "From"
-                }).appendTo(head);
-
-		for(var i = 0; i < assessments.length; i++) {
-		        var assessment = assessments[i];
-			var row = $("<tr class='assessments-viewer-row'>").appendTo(tbl);
-                        $('<td>', {
-                            text: assessment.content
-                        }).appendTo(row);
-                        $('<td>', {
-                            text: assessment.from_name
-                        }).appendTo(row);
-		}
-	} catch (e) {
-		alert(e.message);
-	}
-	return ret;
-} 
 
 function generateAssessedView(row, participant, activity) {
 	var btnView = $('<span>', {
@@ -334,23 +240,7 @@ function generateAssessedView(row, participant, activity) {
 	}).appendTo(row);					
 	btnView.on("click", function(evt){
 		evt.preventDefault();
-		var onSuccess = function(data, status, xhr) {
-			var jsonResponse = JSON.parse(data);
-			if(jsonResponse == null || Object.keys(jsonResponse).length == 0) return;
-			var assessments = new Array();
-			for(var key in jsonResponse) {
-				var assessmentJson = jsonResponse[key];
-				var assessment = new Assessment(assessmentJson);
-				assessments.push(assessment);
-			}
-			
-			showAssessmentsViewer(assessments);				
-			
-		};
-		var onError = function(xhr, status, err) {
-
-		};
-		queryAssessments(participant.id, activity.id, onSuccess, onError);	
+		queryAssessmentsAndRefresh(participant.id, activity.id);	
 	});
 }
 
