@@ -169,6 +169,7 @@ CREATE TABLE `login` (
   `id` int(32) NOT NULL AUTO_INCREMENT,
   `user_id` int(32) NOT NULL,
   `token` varchar(32) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `token` (`token`),
   KEY `login_ibfk_1` (`user_id`),
@@ -349,4 +350,4 @@ CREATE TABLE `user_activity_relation` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-09-26 15:32:17
+-- Dump completed on 2014-09-26 15:42:07
