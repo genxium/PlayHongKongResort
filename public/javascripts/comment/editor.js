@@ -67,7 +67,7 @@ function generateReplyEditor(activity, comment){
 
                 $.ajax({
                         type: "POST",
-                        url: "/comment/submit",
+                        url: "/comment/sub/submit",
                         data: params,
                         success: function(data, status, xhr){
                                 removeReplyEditor();
@@ -93,7 +93,7 @@ function generateReplyEditor(activity, comment){
 }
 
 function generateCommentCell(par, commentJson, activity){
-	var ret=$('<div>').appendTo(par);
+	    var ret=$('<div>').appendTo(par);
         var comment = new Comment(commentJson);
 
         var row = $('<p>').appendTo(ret);
@@ -103,56 +103,55 @@ function generateCommentCell(par, commentJson, activity){
         }).appendTo(row);
 
         var spanCommenterName = $('<span>').appendTo(row);
-	var hrefCommenterName = $('<a>', {
-	    href: "/user/profile/show?" + g_keyVieweeId + "=" + comment.commenterId,
-            text: comment.commenterName,
-            target: "_blank",
-            style: "text-align: left; margin-left: 25pt; color: brown; font-size: 14pt"
-	}).appendTo(spanCommenterName);
+        var hrefCommenterName = $('<a>', {
+            href: "/user/profile/show?" + g_keyVieweeId + "=" + comment.commenterId,
+                text: comment.commenterName,
+                target: "_blank",
+                style: "text-align: left; margin-left: 25pt; color: brown; font-size: 14pt"
+        }).appendTo(spanCommenterName);
         
         var generatedTime = $('<span>', {
             text: comment.generatedTime,
             style: "text-align: left; margin-left:  25pt; color: blue; font-size: 14pt"
         }).appendTo(row);
 
+        // Sub-Comments
+        var subComments = commentJson[g_keySubComments];
+        for(var key in subComments){
+            var subCommentJson = subComments[key];
+            generateSubCommentCell(ret, subCommentJson, activity);
+        }
+
         var token = $.cookie(g_keyToken);
-	if(token != null && !activity.hasBegun()) {
+        if(token == null || activity.hasBegun()) return;
 
-		var operations = $('<span>',{
-                        style: "margin-left: 20pt"
-                }).appendTo(row);
+        var operations = $('<span>',{
+                style: "margin-left: 20pt"
+        }).appendTo(row);
 
-		var btnReply = $('<button>',{
-		    text: "reply",
-		    style: "color: white; background-color: black; border: none"
-		}).appendTo(operations);
+        var btnReply = $('<button>',{
+            text: "reply",
+            style: "color: white; background-color: black; border: none"
+        }).appendTo(operations);
 
-		var parentId = comment.parentId;
-		var predecessorId = comment.id;
-		if(parentId == (-1)){
-		    // root comment
-		    parentId = predecessorId;
-		}
-		var dBtnReply = {};
-		dBtnReply[g_keyCell] = ret;
+        var parentId = comment.parentId;
+        var predecessorId = comment.id;
+        if(parentId == (-1)){
+            // root comment
+            parentId = predecessorId;
+        }
+        var dBtnReply = {};
+        dBtnReply[g_keyCell] = ret;
 
-		btnReply.on("click", dBtnReply, function(evt){
-			evt.preventDefault();
-			var data = evt.data;
-			removeReplyEditor();
-			g_replyEditor = generateReplyEditor(activity, comment);
-			data.cell.append(g_replyEditor);
-		});
-	}
+        btnReply.on("click", dBtnReply, function(evt){
+            evt.preventDefault();
+            var data = evt.data;
+            removeReplyEditor();
+            g_replyEditor = generateReplyEditor(activity, comment);
+            data.cell.append(g_replyEditor);
+        });
 
-	// Sub-Comments
-	var subComments = commentJson[g_keySubComments];
-	for(var key in subComments){
-		var subCommentJson = subComments[key];
-		generateSubCommentCell(ret, subCommentJson, activity);
-	}
-
-	return ret;
+        return ret;
 }
 
 function generateSubCommentCell(par, commentJson, activity){
