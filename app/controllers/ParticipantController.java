@@ -1,26 +1,20 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import dao.EasyPreparedStatementBuilder;
-import dao.SQLHelper;
-import exception.*;
-import models.*;
+import exception.AccessDeniedException;
+import exception.ActivityHasBegunException;
+import exception.ActivityNotFoundException;
+import exception.UserNotFoundException;
+import models.Activity;
+import models.ActivityDetail;
+import models.User;
+import models.UserActivityRelation;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
-import play.libs.Json;
-import play.mvc.Content;
-import play.mvc.Controller;
-import play.mvc.Http;
 import play.mvc.Result;
+import utilities.Converter;
 import utilities.DataUtils;
 
-import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class ParticipantController extends UserController {
 
@@ -59,7 +53,7 @@ public class ParticipantController extends UserController {
 			*/
 
 			for (Object selectedParticipantJson : selectedParticipantsJson) {
-				Integer userId = Integer.valueOf((String) selectedParticipantJson);
+				Integer userId = Converter.toInteger(selectedParticipantJson);
 				if (userId.equals(viewerId)) continue; // anti-cracking by selecting the host of an activity
 				int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
 				SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected, originalRelation));
