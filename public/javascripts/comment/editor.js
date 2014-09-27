@@ -1,32 +1,60 @@
-var g_tabComments = null;
-
 var g_minContentLength = 5;
 var g_replyEditor = null;
 
-var g_onCommentsQuerySuccess = null;
-var g_onCommentsQueryError = null;
-
 var g_onCommentSubmitSuccess = null;
+var g_tabComments = null;
 
-function queryCommentsAndRefresh(activity, onSuccess, onError) {
-    var params = {};
-    params[g_keyActivityId] = activity.id;
-    params[g_keyRefIndex] = 0;
-    params[g_keyNumItems] = 20;
-    params[g_keyDirection] = 1;
-    queryComments(params, onSuccess, onError);
+var g_pagerContainer = null;
+
+function onPagerButtonClicked(evt) {
+	// this function is only valid in detail's page
+	if(g_activity == null) return;
+	// Please note that this function name might conflict with 
+	var button = evt.data;
+	var container = button.container;
+	var page = button.page;
+	if (page == container.page) return;
+	var direction = page > container.page ? g_directionForward : g_directionBackward;
+	var refIndex = page > container.page ? g_pagerContainer.ed : g_pagerContainer.st;
+
+	queryActivities(refIndex, container.nItems, direction, g_activity, onQueryCommentsSuccess, onQueryCommentsError);
 }
 
-function queryComments(params, onSuccess, onError){
-    if(onSuccess != null) g_onCommentsQuerySuccess = onSuccess;
-    if(onError != null) g_onCommentsQueryError = onError;
+function queryCommentsAndRefresh(activity) {
+    queryComments(0, 20, 1, activity.id, onQueryCommentsSuccess, onQueryCommentsError);
+}
+
+function queryComments(refIndex, numItems, direction, activityId, onSuccess, onError){
+    var params = {};
+    params[g_keyActivityId] = activityId;
+    params[g_keyRefIndex] = refIndex;
+    params[g_keyNumItems] = numItems;
+    params[g_keyDirection] = direction;
     $.ajax({
         type: "GET",
         url: "/comment/query",
         data: params,
-        success: g_onCommentsQuerySuccess,
-        error: g_onCommentsQueryError
+        success: onSuccess,
+        error: onError
     });
+}
+
+// Tab Q&A a.k.a comments
+function onQueryCommentsSuccess(data, status, xhr){	
+	// this function is only valid in detail's page
+	if(g_activity == null) return;
+	g_tabComments.empty();
+	var jsonResponse = JSON.parse(data);
+	if(jsonResponse == null || Object.keys(jsonResponse).length == 0) return;
+	for(var key in jsonResponse){
+		var commentJson = jsonResponse[key];
+		generateCommentCell(g_tabComments, commentJson, g_activity).appendTo(g_tabComments);
+		$('<br>').appendTo(g_tabComments);
+	}
+}
+
+function onQueryCommentsError(xhr, status, err){
+	
 }
 
 function removeReplyEditor(){

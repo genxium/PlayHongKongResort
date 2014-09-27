@@ -73,10 +73,13 @@ function displayActivityDetail(par){
 	}).appendTo(ret);
 
 	if(g_activity.images != null) {
+		// the images are expected to be arranged in a non-uniform manner(not confirmed), thus they should not be bounded to static CSS styling, the current style is a temporary solution
+		var constantHeight = 128;
 		var imagesNode=$('<p>').appendTo(ret);
 		for(var i=0;i<g_activity.images.length;++i){
 			$('<img>',{
-                            src: g_activity.images[i].url
+                            src: g_activity.images[i].url,
+			    style: "width: auto; height: " + constantHeight.toString() + "px;"
 			}).appendTo(imagesNode);
 		}
 	}	
@@ -85,20 +88,7 @@ function displayActivityDetail(par){
 	g_tabParticipants.empty();
 	g_participantsForm = generateParticipantsSelectionForm(g_tabParticipants, g_activity);
 
-	// Tab Q&A a.k.a comments
-	var onSuccess = function(data, status, xhr){
-		g_tabComments.empty();
-		var jsonResponse = JSON.parse(data);
-		if(jsonResponse == null || Object.keys(jsonResponse).length == 0) return;
-		for(var key in jsonResponse){
-			var commentJson = jsonResponse[key];
-			generateCommentCell(g_tabComments, commentJson, g_activity).appendTo(g_tabComments);
-			$('<br>').appendTo(g_tabComments);
-		}
-	};
-	var onError = function(xhr, status, err){};
-
-	queryCommentsAndRefresh(g_activity, onSuccess, onError);
+	queryCommentsAndRefresh(g_activity);
 
 	// Tab assessments
 	var viewer = null;
@@ -119,7 +109,7 @@ function displayActivityDetail(par){
 	// Comment editor
 	generateCommentEditor(ret, g_activity);
 	g_onCommentSubmitSuccess = function() {
-	    queryCommentsAndRefresh(g_activity, onSuccess, onError);
+	    queryCommentsAndRefresh(g_activity);
 	}
 
 	return ret;

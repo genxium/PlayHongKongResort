@@ -275,6 +275,7 @@ function generateUnassessedView(row, singleEditor, batchEditor) {
 }
 
 function refreshBatchEditor(activity) {
+	if (!activity.hasBegun()) return;
 
 	if(g_batchAssessmentEditor == null || g_sectionAssessmentEditors == null || g_sectionAssessmentButtons == null) return;
 	var editors = generateAssessmentEditors(g_sectionAssessmentEditors, activity, g_batchAssessmentEditor);
