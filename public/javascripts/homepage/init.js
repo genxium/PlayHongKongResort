@@ -6,7 +6,6 @@ $(document).ready(function(){
 	
 	// initialize pager widgets
 	g_pagerContainer = new PagerContainer($("#pager-screen-activities"), $("#pager-bar-activities"), g_keyActivityId, g_orderDescend, g_numItemsPerPage);		
-	g_pagerContainer.orientation = g_orderDescend;
 	g_pagerContainer.status = g_statusAccepted;	
 
 	g_onLoginSuccess = function(){

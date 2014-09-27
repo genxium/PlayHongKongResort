@@ -4,8 +4,6 @@ var g_replyEditor = null;
 var g_onCommentSubmitSuccess = null;
 var g_tabComments = null;
 
-var g_pagerContainer = null;
-
 function onPagerButtonClicked(evt) {
 	// this function is only valid in detail's page
 	if(g_activity == null) return;
@@ -15,13 +13,13 @@ function onPagerButtonClicked(evt) {
 	var page = button.page;
 	if (page == container.page) return;
 	var direction = page > container.page ? g_directionForward : g_directionBackward;
-	var refIndex = page > container.page ? g_pagerContainer.ed : g_pagerContainer.st;
+	var refIndex = page > container.page ? g_tabComments.ed : g_tabComments.st;
 
-	queryActivities(refIndex, container.nItems, direction, g_activity, onQueryCommentsSuccess, onQueryCommentsError);
+	queryComments(refIndex, container.nItems, direction, g_activity.id, onQueryCommentsSuccess, onQueryCommentsError);
 }
 
 function queryCommentsAndRefresh(activity) {
-    queryComments(0, 20, 1, activity.id, onQueryCommentsSuccess, onQueryCommentsError);
+    queryComments(0, g_tabComments.nItems, 1, activity.id, onQueryCommentsSuccess, onQueryCommentsError);
 }
 
 function queryComments(refIndex, numItems, direction, activityId, onSuccess, onError){
@@ -43,14 +41,28 @@ function queryComments(refIndex, numItems, direction, activityId, onSuccess, onE
 function onQueryCommentsSuccess(data, status, xhr){	
 	// this function is only valid in detail's page
 	if(g_activity == null) return;
-	g_tabComments.empty();
+
+	var oldSt = g_tabComments.st;
+	var oldEd = g_tabComments.ed;
+
 	var jsonResponse = JSON.parse(data);
-	if(jsonResponse == null || Object.keys(jsonResponse).length == 0) return;
+	if(jsonResponse == null) return;
+	var length = Object.keys(jsonResponse).length;
+	if( length == 0) return;
+
+	g_tabComments.screen.empty();
+	var idx = 0;
 	for(var key in jsonResponse){
 		var commentJson = jsonResponse[key];
-		generateCommentCell(g_tabComments, commentJson, g_activity).appendTo(g_tabComments);
-		$('<br>').appendTo(g_tabComments);
+		generateCommentCell(g_tabComments.screen, commentJson, g_activity);
+		var comment = new Comment(commentJson);
+		$('<br>').appendTo(g_tabComments.screen);
+		if(idx == 0)	g_tabComments.st = comment.id;
+		if(idx == length - 1)	g_tabComments.ed = comment.id;
+		++idx;
 	}
+
+	createPagerBar(g_tabComments, oldSt, oldEd, onPagerButtonClicked);
 }
 
 function onQueryCommentsError(xhr, status, err){
@@ -121,9 +133,8 @@ function generateReplyEditor(activity, comment){
 }
 
 function generateCommentCell(par, commentJson, activity){
-	    var ret=$('<div>').appendTo(par);
-        var comment = new Comment(commentJson);
-
+	var comment = new Comment(commentJson);
+	var ret=$('<div>').appendTo(par);
         var row = $('<p>').appendTo(ret);
         var content = $('<span>', {
             text: comment.content,
@@ -178,8 +189,6 @@ function generateCommentCell(par, commentJson, activity){
             g_replyEditor = generateReplyEditor(activity, comment);
             data.cell.append(g_replyEditor);
         });
-
-        return ret;
 }
 
 function generateSubCommentCell(par, commentJson, activity){
@@ -238,8 +247,6 @@ function generateSubCommentCell(par, commentJson, activity){
             g_replyEditor = generateReplyEditor(activity, comment);
             data[g_keyCell].append(g_replyEditor);
     });
-
-    return ret;
 }
 
 function generateCommentEditor(par, activity){

@@ -81,6 +81,33 @@ function PagerButton(container, page) {
 	this.page = page;
 }
 
+function createPagerBar(container, oldSt, oldEd, onPagerButtonClicked) {
+	var page  = container.page;
+	var orientation = container.orientation; 
+	var newSt = container.st; 
+	var newEd = container.ed;
+	if(orientation == +1 && newSt > oldEd) ++page;
+	if(orientation == +1 && newEd < oldSt) --page;
+	if(orientation == -1 && newSt < oldEd) ++page;
+	if(orientation == -1 && newEd > oldSt) --page; 
+	container.page = page;
+
+	// display pager bar 
+	container.bar.empty();
+
+	var previous = new PagerButton(container, page - 1);
+	var btnPrevious = $("<button>", {
+		text: "上一頁"
+	}).appendTo(container.bar);
+	btnPrevious.on("click", previous, onPagerButtonClicked);
+
+	var next = new PagerButton(container, page + 1);
+	var btnNext = $("<button>", {
+		text: "下一頁"
+	}).appendTo(container.bar);
+	btnNext.on("click", next, onPagerButtonClicked);
+}
+
 /*
  * Return a modal handle
  * */

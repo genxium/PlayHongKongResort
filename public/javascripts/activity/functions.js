@@ -58,30 +58,7 @@ function onQueryActivitiesSuccess(data, status, xhr){
 		generateActivityCell(g_pagerContainer.screen, activity);
 	}
 
-	var page  = g_pagerContainer.page;
-	var orientation = g_pagerContainer.orientation; 
-	var newSt = g_pagerContainer.st; 
-	var newEd = g_pagerContainer.ed;
-	if(orientation == +1 && newSt > oldEd) ++page;
-	if(orientation == +1 && newEd < oldSt) --page;
-	if(orientation == -1 && newSt < oldEd) ++page;
-	if(orientation == -1 && newEd > oldSt) --page; 
-	g_pagerContainer.page = page;
-
-	// display pager bar 
-	g_pagerContainer.bar.empty();
-
-	var previous = new PagerButton(g_pagerContainer, page - 1);
-	var btnPrevious = $("<button>", {
-		text: "上一頁"
-	}).appendTo(g_pagerContainer.bar);
-	btnPrevious.on("click", previous, onPagerButtonClicked);
-
-	var next = new PagerButton(g_pagerContainer, page + 1);
-	var btnNext = $("<button>", {
-		text: "下一頁"
-	}).appendTo(g_pagerContainer.bar);
-	btnNext.on("click", next, onPagerButtonClicked);
+	createPagerBar(g_pagerContainer, oldSt, oldEd, onPagerButtonClicked);
 } 
 
 function onQueryActivitiesError(xhr, status, err){
