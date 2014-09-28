@@ -19,20 +19,22 @@ public class Comment {
     public static final String ID = "id";
     public static final String COMMENT_ID = "comment_id";
     public static final String CONTENT = "content";
-    public static final String COMMENTER_ID = "commenter_id";
+    public static final String COMMENTER_ID = "from";
+    public static final String TO = "to";
     public static final String ACTIVITY_ID = "activity_id";
     public static final String PARENT_ID = "parent_id";
     public static final String PREDECESSOR_ID = "predecessor_id";
     public static final String GENERATED_TIME = "generated_time";
 
-    public static final String COMMENTER_NAME = "commenter_name";
-    public static final String REPLYEE_ID = "replyee_id";
-    public static final String REPLYEE_NAME = "replyee_name";
+    public static final String COMMENTER_NAME = "from_name";
+    public static final String REPLYEE_ID = "to";
+    public static final String REPLYEE_NAME = "to_name";
     public static final String SUB_COMMENTS = "sub_comments";
 
     protected Integer m_id = null;
     protected String m_content = null;
-    protected Integer m_commenterId = null;
+    protected Integer m_from = null;
+    protected Integer m_to = null;
     protected Integer m_activityId = null;
     protected Integer m_parentId = null;
     protected Integer m_predecessorId = null;
@@ -47,7 +49,7 @@ public class Comment {
     }
 
     public Integer getCommenterId() {
-        return m_commenterId;
+        return m_from;
     }
 
     public Integer getActivityId() {
@@ -75,7 +77,7 @@ public class Comment {
                 m_content = (String) commentJson.get(CONTENT);
             }
             if (commentJson.containsKey(COMMENTER_ID)) {
-                m_commenterId = (Integer) commentJson.get(COMMENTER_ID);
+                m_from = (Integer) commentJson.get(COMMENTER_ID);
             }
             if (commentJson.containsKey(ACTIVITY_ID)) {
                 m_activityId = (Integer) commentJson.get(ACTIVITY_ID);
@@ -101,7 +103,7 @@ public class Comment {
             ret.put(ID, m_id);
             ret.put(PARENT_ID, m_parentId);
             ret.put(CONTENT, m_content);
-            ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
+            ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_from).getName());
             ret.put(GENERATED_TIME, m_generatedTime.toString());
         } catch (Exception e) {
 
@@ -110,28 +112,25 @@ public class Comment {
     }
 
     public ObjectNode toSubCommentObjectNode() {
-        ObjectNode ret = Json.newObject();
-        ;
-        do {
-            try {
-                ret.put(ID, m_id);
-                ret.put(PARENT_ID, m_parentId);
-                ret.put(CONTENT, m_content);
-                ret.put(COMMENTER_ID, m_commenterId);
-                ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
-                ret.put(GENERATED_TIME, m_generatedTime.toString());
+	    ObjectNode ret = Json.newObject();
+	    try {
+		    ret.put(ID, m_id);
+		    ret.put(PARENT_ID, m_parentId);
+		    ret.put(CONTENT, m_content);
+		    ret.put(COMMENTER_ID, m_from);
+		    ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_from).getName());
+		    ret.put(GENERATED_TIME, m_generatedTime.toString());
 
-                Comment predecessorComment = SQLCommander.queryComment(m_predecessorId);
-                if (predecessorComment == null) break;
-                Integer replyeeId = predecessorComment.getCommenterId();
-                String replyeeName = SQLCommander.queryUser(replyeeId).getName();
-                ret.put(REPLYEE_ID, replyeeId);
-                ret.put(REPLYEE_NAME, replyeeName);
-            } catch (Exception e) {
+		    Comment predecessorComment = SQLCommander.queryComment(m_predecessorId);
+		    if (predecessorComment == null) return ret;
+		    Integer replyeeId = predecessorComment.getCommenterId();
+		    String replyeeName = SQLCommander.queryUser(replyeeId).getName();
+		    ret.put(REPLYEE_ID, replyeeId);
+		    ret.put(REPLYEE_NAME, replyeeName);
+	    } catch (Exception e) {
 
-            }
-        } while (false);
-        return ret;
+	    }
+	    return ret;
     }
 
     public ObjectNode toObjectNodeWithSubComments() {
@@ -140,8 +139,8 @@ public class Comment {
             ret.put(ID, m_id);
             ret.put(PARENT_ID, m_parentId);
             ret.put(CONTENT, m_content);
-            ret.put(COMMENTER_ID, m_commenterId);
-            ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_commenterId).getName());
+            ret.put(COMMENTER_ID, m_from);
+            ret.put(COMMENTER_NAME, SQLCommander.queryUser(m_from).getName());
             ret.put(GENERATED_TIME, m_generatedTime.toString());
             List<Comment> subComments = SQLCommander.querySubComments(m_id, SQLCommander.INITIAL_REF_INDEX, ID, SQLHelper.DESCEND, null, SQLCommander.DIRECTION_FORWARD);
 

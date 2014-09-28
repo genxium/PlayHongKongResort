@@ -66,18 +66,16 @@ var g_keyImageId = "image_id"
 var g_keyUrl = "url";
 
 var g_keyComment = "comment";
-var g_keyCommenterId = "commenter_id";
-var g_keyCommenterName = "commenter_name";
 var g_keyParentId = "parent_id";
 var g_keyPredecessorId = "predecessor_id";
 var g_keyCommentType = "type";
 var g_keyGeneratedTime = "generated_time";
-var g_keyReplyeeId = "replyee_id";
-var g_keyReplyeeName = "replyee_name";
 var g_keySubComments = "sub_comments";
 
 var g_keyFrom = "from";
+var g_keyFromName = "from_name";
 var g_keyTo = "to";
+var g_keyToName = "to_name";
 
 // general keys
 var g_keyPageIndex = "page_index";

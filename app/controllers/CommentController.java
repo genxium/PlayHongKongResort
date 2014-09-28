@@ -47,13 +47,13 @@ public class CommentController extends Controller {
 		    if (content == null || content.length() <= Comment.MIN_CONTENT_LENGTH) throw new NullPointerException();
 
 		    String token = formData.get(User.TOKEN)[0];
-            if (token == null) throw new InvalidCommentParamsException();
+		    if (token == null) throw new InvalidCommentParamsException();
 
 		    Integer activityId = Integer.valueOf(formData.get(Comment.ACTIVITY_ID)[0]);
-            Activity activity = SQLCommander.queryActivity(activityId);
+		    Activity activity = SQLCommander.queryActivity(activityId);
 
-            if(activity == null) throw new ActivityNotFoundException();
-            if(activity.hasBegun()) throw new ActivityHasBegunException();
+		    if(activity == null) throw new ActivityNotFoundException();
+		    if(activity.hasBegun()) throw new ActivityHasBegunException();
 
 		    Integer userId = DataUtils.getUserIdByToken(token);
 		    if (userId == null) throw new UserNotFoundException();

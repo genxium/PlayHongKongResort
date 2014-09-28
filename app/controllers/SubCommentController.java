@@ -13,6 +13,7 @@ import models.Comment;
 import models.User;
 import play.mvc.Result;
 import utilities.DataUtils;
+import utilities.Converter;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -43,6 +44,7 @@ public class SubCommentController extends CommentController {
             Map<String, String[]> formData = request().body().asFormUrlEncoded();
             if (!formData.containsKey(Comment.PREDECESSOR_ID)) throw new InvalidCommentParamsException();
             if (!formData.containsKey(Comment.PARENT_ID)) throw new InvalidCommentParamsException();
+	    if (!formData.containsKey(Comment.REPLYEE_ID)) throw new InvalidCommentParamsException();
 
             String content = formData.get(Comment.CONTENT)[0];
             if (content == null || content.length() <= Comment.MIN_CONTENT_LENGTH) throw new NullPointerException();
@@ -56,15 +58,18 @@ public class SubCommentController extends CommentController {
             if(activity == null) throw new ActivityNotFoundException();
             if(activity.hasBegun()) throw new ActivityHasBegunException();
 
-            Integer userId = DataUtils.getUserIdByToken(token);
-            if (userId == null) throw new UserNotFoundException();
+            Integer from = DataUtils.getUserIdByToken(token);
+            if (from == null) throw new UserNotFoundException();
+
+	    Integer to = Converter.toInteger(formData.get(Comment.REPLYEE_ID));
+	    if (to == null) throw new InvalidCommentParamsException();
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-            String[] columnNames = {Comment.CONTENT, Comment.ACTIVITY_ID, Comment.COMMENTER_ID};
+            String[] columnNames = {Comment.CONTENT, Comment.ACTIVITY_ID, Comment.COMMENTER_ID, Comment.REPLYEE_ID};
             List<String> cols = new LinkedList<String>(Arrays.asList(columnNames));
 
-            Object[] columnValues = {content, activityId, userId};
+            Object[] columnValues = {content, activityId, from, to};
             List<Object> vals = new LinkedList<Object>(Arrays.asList(columnValues));
 
             Integer predecessorId = Integer.valueOf(formData.get(Comment.PREDECESSOR_ID)[0]);
