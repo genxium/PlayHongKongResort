@@ -78,7 +78,7 @@ function removeReplyEditor(){
 function generateReplyEditor(activity, comment){
     var ret = $('<p>');
     var input = $('<input>', {
-        placeholder: "to @" + comment.commenterName + ":"
+        placeholder: "to @" + comment.fromName + ":"
     }).appendTo(ret);
     var btnSubmit = $('<button>',{
         text: "SUBMIT REPLY",
@@ -88,7 +88,7 @@ function generateReplyEditor(activity, comment){
     btnSubmit.on("click", {input: input}, function(evt) {
 
                 evt.preventDefault();
-                var data=evt.data;
+                var data = evt.data;
                 var content = data.input.val();
                 var token = $.cookie(g_keyToken);
 
@@ -104,6 +104,7 @@ function generateReplyEditor(activity, comment){
                 params[g_keyPredecessorId] = comment.id;
                 params[g_keyActivityId] = activity.id;
                 params[g_keyToken] = token;
+                params[g_keyTo] = comment.from;
 
                 $.ajax({
                         type: "POST",
@@ -141,13 +142,13 @@ function generateCommentCell(par, commentJson, activity){
             style: "text-align: left; margin-left: 25pt; font-size: 14pt"
         }).appendTo(row);
 
-        var spanCommenterName = $('<span>').appendTo(row);
-        var hrefCommenterName = $('<a>', {
-            href: "/user/profile/show?" + g_keyVieweeId + "=" + comment.commenterId,
-                text: comment.commenterName,
+        var spanFromName = $('<span>').appendTo(row);
+        var hrefFromName = $('<a>', {
+            href: "/user/profile/show?" + g_keyVieweeId + "=" + comment.from,
+                text: comment.fromName,
                 target: "_blank",
                 style: "text-align: left; margin-left: 25pt; color: brown; font-size: 14pt"
-        }).appendTo(spanCommenterName);
+        }).appendTo(spanFromName);
         
         var generatedTime = $('<span>', {
             text: comment.generatedTime,
@@ -200,25 +201,25 @@ function generateSubCommentCell(par, commentJson, activity){
     }).appendTo(par);
 
     var row=$('<p>').appendTo(ret);
-    var spanReplyee=$('<span>').appendTo(row);
-    var hrefReplyee=$('<a>', {
-            href: "/user/profile/show?" + g_keyVieweeId + "=" + comment.replyeeId,
-            text: "to @" + comment.replyeeName + ": ",
+    var spanTo=$('<span>').appendTo(row);
+    var hrefTo=$('<a>', {
+            href: "/user/profile/show?" + g_keyVieweeId + "=" + comment.to,
+            text: "to @" + comment.toName + ": ",
             target: "_blank",
             style: "color: BlueViolet; font-size: 13pt"
-    }).appendTo(spanReplyee);
+    }).appendTo(spanTo);
     var content=$('<span>', {
         text: comment.content,
         style: "text-align: left; margin-left: 25pt; font-size: 13pt"
     }).appendTo(row);
 ;
-    var spanCommenterName = $('<span>').appendTo(row);
-    var hrefCommenterName = $('<a>', {
-            href: "/user/profile/show?" + g_keyVieweeId + "=" + comment.commenterId,
-            text: comment.commenterName,
+    var spanFromName = $('<span>').appendTo(row);
+    var hrefFromName = $('<a>', {
+            href: "/user/profile/show?" + g_keyVieweeId + "=" + comment.from,
+            text: comment.fromName,
             target: "_blank",
             style: "text-align: left; margin-left: 25pt; color: brown; font-size: 13pt"
-    }).appendTo(spanCommenterName);
+    }).appendTo(spanFromName);
 
     var generatedTime = $('<span>', {
         text: comment.generatedTime,

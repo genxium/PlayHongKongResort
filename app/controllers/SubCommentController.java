@@ -8,13 +8,13 @@ import exception.ActivityHasBegunException;
 import exception.ActivityNotFoundException;
 import exception.InvalidCommentParamsException;
 import exception.UserNotFoundException;
-import models.Activity;
-import models.Comment;
-import models.User;
+import models.*;
+import org.jboss.netty.handler.codec.marshalling.CompatibleMarshallingEncoder;
 import play.mvc.Result;
 import utilities.DataUtils;
 import utilities.Converter;
 
+import java.sql.PreparedStatement;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class SubCommentController extends CommentController {
         try {
             List<Comment> comments = SQLCommander.querySubComments(parentId, refIndex, Comment.ID, SQLHelper.DESCEND, numItems, direction);
             ArrayNode result = new ArrayNode(JsonNodeFactory.instance);
-            for (Comment comment : comments)	result.add(comment.toObjectNodeWithSubComments());
+            for (Comment comment : comments)	result.add(comment.toObjectNode());
             return ok(result);
         } catch (Exception e) {
             DataUtils.log(TAG, "query", e);
@@ -44,7 +44,7 @@ public class SubCommentController extends CommentController {
             Map<String, String[]> formData = request().body().asFormUrlEncoded();
             if (!formData.containsKey(Comment.PREDECESSOR_ID)) throw new InvalidCommentParamsException();
             if (!formData.containsKey(Comment.PARENT_ID)) throw new InvalidCommentParamsException();
-	    if (!formData.containsKey(Comment.REPLYEE_ID)) throw new InvalidCommentParamsException();
+	        if (!formData.containsKey(Comment.TO)) throw new InvalidCommentParamsException();
 
             String content = formData.get(Comment.CONTENT)[0];
             if (content == null || content.length() <= Comment.MIN_CONTENT_LENGTH) throw new NullPointerException();
@@ -61,12 +61,12 @@ public class SubCommentController extends CommentController {
             Integer from = DataUtils.getUserIdByToken(token);
             if (from == null) throw new UserNotFoundException();
 
-	    Integer to = Converter.toInteger(formData.get(Comment.REPLYEE_ID));
-	    if (to == null) throw new InvalidCommentParamsException();
+            Integer to = Converter.toInteger(formData.get(Comment.TO)[0]);
+            if (to == null) throw new InvalidCommentParamsException();
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-            String[] columnNames = {Comment.CONTENT, Comment.ACTIVITY_ID, Comment.COMMENTER_ID, Comment.REPLYEE_ID};
+            String[] columnNames = {Comment.CONTENT, Comment.ACTIVITY_ID, Comment.FROM, Comment.TO};
             List<String> cols = new LinkedList<String>(Arrays.asList(columnNames));
 
             Object[] columnValues = {content, activityId, from, to};
@@ -81,8 +81,16 @@ public class SubCommentController extends CommentController {
             vals.add(parentId);
 
             builder.insert(cols, vals).into(Comment.TABLE);
-            if (SQLHelper.INVALID == SQLHelper.insert(builder)) throw new NullPointerException();
+            int lastId = SQLHelper.insert(builder);
+            if (lastId == SQLHelper.INVALID) throw new NullPointerException();
 
+            String query = "UPDATE " + Comment.TABLE
+                            + " SET " + Comment.NUM_CHILDREN + "=" + Comment.NUM_CHILDREN + "+1"
+                            + " WHERE " + Comment.ID + "=?";
+            PreparedStatement statement = SQLHelper.getConnection().prepareStatement(query);
+            statement.setInt(1, parentId);
+
+            if (!SQLHelper.update(statement)) throw new NullPointerException();
             return ok();
 
         } catch (Exception e) {

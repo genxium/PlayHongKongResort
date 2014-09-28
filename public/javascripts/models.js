@@ -96,15 +96,15 @@ function Comment(commentJson) {
 
         if(commentJson.hasOwnProperty("id")) this.id = parseInt(commentJson["id"]);
         if(commentJson.hasOwnProperty("content")) this.content = commentJson["content"];
-        if(commentJson.hasOwnProperty("from")) this.commenterId = parseInt(commentJson["from"]);
-        if(commentJson.hasOwnProperty("from_name")) this.commenterName = commentJson["from_name"];
+        if(commentJson.hasOwnProperty("from")) this.from = parseInt(commentJson["from"]);
+        if(commentJson.hasOwnProperty("from_name")) this.fromName = commentJson["from_name"];
         if(commentJson.hasOwnProperty("activity_id")) this.activityId = parseInt(commentJson["activity_id"]);
         if(commentJson.hasOwnProperty("parent_id")) this.parentId = parseInt(commentJson["parent_id"]);
         if(commentJson.hasOwnProperty("predecessor_id")) this.predecessorId = parseInt(commentJson["predecessor_id"]);
         if(commentJson.hasOwnProperty("generated_time")) this.generatedTime = commentJson["generated_time"];
 
-        if(commentJson.hasOwnProperty("to")) this.replyeeId = parseInt(commentJson["to"]);
-        if(commentJson.hasOwnProperty("to_name")) this.replyeeName = commentJson["to_name"];
+        if(commentJson.hasOwnProperty("to")) this.to = parseInt(commentJson["to"]);
+        if(commentJson.hasOwnProperty("to_name")) this.toName = commentJson["to_name"];
 
 }
 

@@ -9,8 +9,8 @@ public class Converter {
             md.update(input.getBytes());
             byte[] digest = md.digest();
             StringBuffer buffer = new StringBuffer();
-            for (int i = 0; i < digest.length; ++i) {
-                buffer.append(Integer.toHexString((digest[i] & 0xFF) | 0x100).substring(1, 3));
+            for (byte aDigest : digest) {
+                buffer.append(Integer.toHexString((aDigest & 0xFF) | 0x100).substring(1, 3));
             }
             return buffer.toString();
         } catch (Exception e) {

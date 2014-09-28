@@ -30,7 +30,7 @@ public class CommentController extends Controller {
 		    List<Comment> comments = SQLCommander.queryTopLevelComments(activityId, refIndex, Comment.ID, SQLHelper.DESCEND, numItems, direction);
 
 		    ArrayNode result = new ArrayNode(JsonNodeFactory.instance);
-		    for (Comment comment : comments)	result.add(comment.toObjectNodeWithSubComments());
+		    for (Comment comment : comments)	result.add(comment.toObjectNode());
 		    return ok(result);
 	    } catch (Exception e) {
 		    DataUtils.log(TAG, "query", e);
@@ -60,7 +60,7 @@ public class CommentController extends Controller {
 
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-		    String[] columnNames = {Comment.CONTENT, Comment.ACTIVITY_ID, Comment.COMMENTER_ID};
+		    String[] columnNames = {Comment.CONTENT, Comment.ACTIVITY_ID, Comment.FROM};
 		    List<String> cols = new LinkedList<String>(Arrays.asList(columnNames));
 
 		    Object[] columnValues = {content, activityId, userId};

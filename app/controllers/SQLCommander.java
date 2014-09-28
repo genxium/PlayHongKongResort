@@ -269,7 +269,7 @@ public class SQLCommander {
     public static Comment queryComment(Integer commentId) {
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] names = {Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
+            String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
             builder.select(names).from(Comment.TABLE).where(Comment.ID, "=", commentId);
             List<JSONObject> commentsJson = SQLHelper.select(builder);
             if (commentsJson == null || commentsJson.size() <= 0) throw new NullPointerException();
@@ -286,7 +286,7 @@ public class SQLCommander {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
 		    // query table Comment
-		    String[] names = {Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
+		    String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
 		    String[] whereCols = {Comment.ACTIVITY_ID, Comment.PARENT_ID};
 		    String[] whereOps = {"=", "="};
 		    Object[] whereVals = {activityId, INVALID};
@@ -309,7 +309,7 @@ public class SQLCommander {
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-		    String[] names = {Comment.ID, Comment.CONTENT, Comment.COMMENTER_ID, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
+		    String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
 		    builder.select(names).from(Comment.TABLE).where(Comment.PARENT_ID, "=", parentId);
             List<JSONObject> commentsJson = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
 
