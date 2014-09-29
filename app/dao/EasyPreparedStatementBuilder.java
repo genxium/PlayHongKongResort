@@ -446,24 +446,29 @@ public class EasyPreparedStatementBuilder {
             String query = "UPDATE " + m_table;
             query += " SET ";
 
+            boolean hasPrevFields = false;
+
             if (m_updateCols != null) {
                 for (int i = 0; i < m_updateCols.size(); i++) {
+                    if (hasPrevFields) query += ", ";
+                    hasPrevFields = true;
                     query += ("`" + m_updateCols.get(i) + "`" + "=?");
-                    if (i < m_updateCols.size() - 1) query += ", ";
                 }
             }
 
             if (m_increaseCols != null) {
                 for (int i = 0; i < m_increaseCols.size(); i++) {
+                    if (hasPrevFields) query += ", ";
+                    hasPrevFields = true;
                     query += ("`" + m_increaseCols.get(i) + "`" + "=" + "`" + m_increaseCols.get(i) + "`" + "+?");
-                    if (i < m_increaseCols.size() - 1) query += ", ";
                 }
             }
 
             if (m_decreaseCols != null) {
                 for (int i = 0; i < m_decreaseCols.size(); i++) {
+                    if (hasPrevFields) query += ", ";
+                    hasPrevFields = true;
                     query += ("`" + m_decreaseCols.get(i) + "`" + "=" + "`" + m_decreaseCols.get(i) + "`" + "-?");
-                    if (i < m_decreaseCols.size() - 1) query += ", ";
                 }
             }
 
