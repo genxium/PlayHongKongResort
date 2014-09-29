@@ -4,6 +4,7 @@ import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import exception.*;
 import models.*;
+import org.h2.command.Prepared;
 import org.json.simple.JSONObject;
 import utilities.DataUtils;
 
@@ -108,13 +109,9 @@ public class SQLCommander {
 
 	    EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
 	    builderRelation.insert(names, values).into(UserActivityRelation.TABLE);
-	    int lastRelationId = SQLHelper.insert(builderRelation);
-	    if (lastRelationId != SQLHelper.INVALID) return lastActivityId;
+	    SQLHelper.insert(builderRelation);
 
-	    EasyPreparedStatementBuilder builderDelete = new EasyPreparedStatementBuilder();
-	    builderDelete.from(Activity.TABLE).where(Activity.ID, "=", lastActivityId);
-	    if (SQLHelper.delete(builderDelete))	System.out.println(SQLCommander.class.getName() + ".createActivity, successfully reverted");
-	    return SQLHelper.INVALID;
+        return lastActivityId;
     }
 
     public static boolean updateActivity(Activity activity) {
@@ -702,15 +699,10 @@ public class SQLCommander {
 		    Object[] vals = {activity.getId(), lastImageId};
 		    EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
 		    builderRelation.insert(cols, vals).into(ActivityImageRelation.TABLE);
-
-		    int lastRecordId = SQLHelper.insert(builderRelation);
-		    if (lastRecordId == SQLHelper.INVALID) {
-			    ret = INVALID;
-			    if (deleteImageRecord(lastImageId))	System.out.println(SQLCommander.class.getName() + ".createImage, image " + lastImageId + " reverted");
-		    }
+            SQLHelper.insert(builderRelation);
 
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".createImage, " + e.getMessage());
+		    DataUtils.log(TAG, "createImage", e);
 	    } 
 	    return ret;
     }
@@ -767,7 +759,9 @@ public class SQLCommander {
 
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    builder.update(UserActivityRelation.TABLE).set(cols, vals).where(whereCols, whereOps, whereVals);
-		    if(!SQLHelper.update(builder)) throw new Exception();
+		    if (!SQLHelper.update(builder)) throw new Exception();
+
+            if ((relation & UserActivityRelation.selected) == 0) return true;
 		    return true;
 	    } catch (Exception e) {
 		    return false;

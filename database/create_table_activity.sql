@@ -11,6 +11,8 @@ CREATE TABLE `activity` (
   `capacity` int(32) NOT NULL DEFAULT '0',
   `status` int(3) NOT NULL DEFAULT '0',
   `host_id` int(32) NOT NULL,
+  `num_applied` int(32) DEFAULT '0',
+  `num_selected` int(32) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `activity_ibfk_1` (`host_id`),
   CONSTRAINT `activity_ibfk_1` FOREIGN KEY (`host_id`) REFERENCES `user` (`id`)

@@ -14,6 +14,10 @@ public class EasyPreparedStatementBuilder {
     protected List<Object> m_insertVals = null;
     protected List<String> m_updateCols = null;
     protected List<Object> m_updateVals = null;
+    protected List<String> m_increaseCols = null;
+    protected List<Object> m_increaseVals = null;
+    protected List<String> m_decreaseCols = null;
+    protected List<Object> m_decreaseVals = null;
     protected List<String> m_whereCols = null;
     protected List<String> m_whereOps = null;
     protected List<Object> m_whereVals = null;
@@ -117,6 +121,66 @@ public class EasyPreparedStatementBuilder {
         int n = cols.length;
         for (int i = 0; i < n; i++) {
             set(cols[i], vals[i]);
+        }
+        return this;
+    }
+
+    public EasyPreparedStatementBuilder increase(String col, Object val) {
+        if (m_increaseCols == null) m_increaseCols = new LinkedList<String>();
+        if (m_increaseVals == null) m_increaseVals = new LinkedList<Object>();
+        m_increaseCols.add(col);
+        m_increaseVals.add(val);
+        return this;
+    }
+
+    public EasyPreparedStatementBuilder increase(List<String> cols, List<Object> vals) {
+        if (cols == null || vals == null) return this;
+        if (cols.size() != vals.size()) return this;
+        int n = cols.size();
+        for (int i = 0; i < n; i++) {
+            String col = cols.get(i);
+            Object val = vals.get(i);
+            increase(col, val);
+        }
+        return this;
+    }
+
+    public EasyPreparedStatementBuilder increase(String[] cols, Object[] vals) {
+        if (cols == null || vals == null) return this;
+        if (cols.length != vals.length) return this;
+        int n = cols.length;
+        for (int i = 0; i < n; i++) {
+            increase(cols[i], vals[i]);
+        }
+        return this;
+    }
+
+    public EasyPreparedStatementBuilder decrease(String col, Object val) {
+        if (m_decreaseCols == null) m_decreaseCols = new LinkedList<String>();
+        if (m_decreaseVals == null) m_decreaseVals = new LinkedList<Object>();
+        m_decreaseCols.add(col);
+        m_decreaseVals.add(val);
+        return this;
+    }
+
+    public EasyPreparedStatementBuilder decrease(List<String> cols, List<Object> vals) {
+        if (cols == null || vals == null) return this;
+        if (cols.size() != vals.size()) return this;
+        int n = cols.size();
+        for (int i = 0; i < n; i++) {
+            String col = cols.get(i);
+            Object val = vals.get(i);
+            decrease(col, val);
+        }
+        return this;
+    }
+
+    public EasyPreparedStatementBuilder decrease(String[] cols, Object[] vals) {
+        if (cols == null || vals == null) return this;
+        if (cols.length != vals.length) return this;
+        int n = cols.length;
+        for (int i = 0; i < n; i++) {
+            decrease(cols[i], vals[i]);
         }
         return this;
     }
@@ -382,9 +446,25 @@ public class EasyPreparedStatementBuilder {
             String query = "UPDATE " + m_table;
             query += " SET ";
 
-            for (int i = 0; i < m_updateCols.size(); i++) {
-                query += ("`"+m_updateCols.get(i)+"`"+ "=?");
-                if (i < m_updateCols.size() - 1) query += ", ";
+            if (m_updateCols != null) {
+                for (int i = 0; i < m_updateCols.size(); i++) {
+                    query += ("`" + m_updateCols.get(i) + "`" + "=?");
+                    if (i < m_updateCols.size() - 1) query += ", ";
+                }
+            }
+
+            if (m_increaseCols != null) {
+                for (int i = 0; i < m_increaseCols.size(); i++) {
+                    query += ("`" + m_increaseCols.get(i) + "`" + "=" + "`" + m_increaseCols.get(i) + "`" + "+?");
+                    if (i < m_increaseCols.size() - 1) query += ", ";
+                }
+            }
+
+            if (m_decreaseCols != null) {
+                for (int i = 0; i < m_decreaseCols.size(); i++) {
+                    query += ("`" + m_decreaseCols.get(i) + "`" + "=" + "`" + m_decreaseCols.get(i) + "`" + "-?");
+                    if (i < m_decreaseCols.size() - 1) query += ", ";
+                }
             }
 
             query = appendWhere(query);
@@ -394,6 +474,18 @@ public class EasyPreparedStatementBuilder {
             statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             if (m_updateVals != null) {
                 for (Object val : m_updateVals) {
+                    statement.setObject(index++, val);
+                }
+            }
+
+            if (m_increaseVals != null) {
+                for (Object val : m_increaseVals) {
+                    statement.setObject(index++, val);
+                }
+            }
+
+            if (m_decreaseVals != null) {
+                for (Object val : m_decreaseVals) {
                     statement.setObject(index++, val);
                 }
             }

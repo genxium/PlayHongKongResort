@@ -85,13 +85,9 @@ public class SubCommentController extends CommentController {
             int lastId = SQLHelper.insert(builder);
             if (lastId == SQLHelper.INVALID) throw new NullPointerException();
 
-            String query = "UPDATE " + Comment.TABLE
-                            + " SET " + Comment.NUM_CHILDREN + "=" + Comment.NUM_CHILDREN + "+1"
-                            + " WHERE " + Comment.ID + "=?";
-            PreparedStatement statement = SQLHelper.getConnection().prepareStatement(query);
-            statement.setInt(1, parentId);
-
-            if (!SQLHelper.update(statement)) throw new NullPointerException();
+            EasyPreparedStatementBuilder increment = new EasyPreparedStatementBuilder();
+            builder.update(Comment.TABLE).increase(Comment.NUM_CHILDREN, 1).where(Comment.ID, "=", parentId);
+            if (!SQLHelper.update(increment)) throw new NullPointerException();
             return ok();
 
         } catch (Exception e) {

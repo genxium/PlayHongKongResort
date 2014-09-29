@@ -96,7 +96,7 @@ public class SQLHelper {
             poolableConnectionFactory.setPool(connectionPool);
             ret = new PoolingDataSource<PoolableConnection>(connectionPool);
         } catch (Exception e) {
-            System.out.println(SQLHelper.class.getName() + ".setupDataSource: " + e.getMessage());
+            DataUtils.log(TAG, "setupDataSource", e);
             ret = null;
         }
         return ret;
@@ -112,7 +112,7 @@ public class SQLHelper {
             if (s_dataSource == null) System.out.println("s_dataSource is null");
             connection = s_dataSource.getConnection();
         } catch (Exception e) {
-            System.out.println(SQLHelper.class.getName() + ".getConnection: " + e.getMessage());
+            DataUtils.log(TAG, "getConnection", e);
             connection = null;
         }
         return connection;
@@ -121,9 +121,9 @@ public class SQLHelper {
     public static void closeConnection(Connection connection) {
         try {
             if (connection == null)	return;
-	    connection.close();
+	        connection.close();
         } catch (Exception e) {
-            System.out.println(SQLHelper.class.getName() + ".closeConnection:" + e.getMessage());
+            DataUtils.log(TAG, "closeConnection", e);
         }
     }
 
@@ -140,7 +140,7 @@ public class SQLHelper {
             statement.close();
             closeConnection(connection);
         } catch (Exception e) {
-            System.out.println(SQLHelper.class.getName() + ".select: " + e.getMessage());
+            DataUtils.log(TAG, "select", e);
         }
         return ret;
     }
@@ -161,7 +161,7 @@ public class SQLHelper {
             closeConnection(connection);
         } catch (Exception e) {
             // return the invalid value for exceptions
-            System.out.println(SQLHelper.class.getName() + ".insert: " + e.getMessage());
+            DataUtils.log(TAG, "insert", e);
         }
         return lastId;
     }
@@ -177,7 +177,7 @@ public class SQLHelper {
             closeConnection(connection);
             bRet = true;
         } catch (Exception e) {
-            System.out.println(SQLHelper.class.getName() + ".update: " + e.getMessage());
+            DataUtils.log(TAG, "update", e);
         }
         return bRet;
     }

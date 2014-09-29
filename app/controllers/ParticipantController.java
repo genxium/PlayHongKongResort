@@ -1,19 +1,19 @@
 package controllers;
 
+import dao.EasyPreparedStatementBuilder;
+import dao.SQLHelper;
 import exception.AccessDeniedException;
 import exception.ActivityHasBegunException;
 import exception.ActivityNotFoundException;
 import exception.UserNotFoundException;
-import models.Activity;
-import models.ActivityDetail;
-import models.User;
-import models.UserActivityRelation;
+import models.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import play.mvc.Result;
 import utilities.Converter;
 import utilities.DataUtils;
 
+import java.sql.PreparedStatement;
 import java.util.Map;
 
 public class ParticipantController extends UserController {
@@ -52,13 +52,23 @@ public class ParticipantController extends UserController {
 			}
 			*/
 
+            int count = 0;
 			for (Object selectedParticipantJson : selectedParticipantsJson) {
 				Integer userId = Converter.toInteger(selectedParticipantJson);
 				if (userId.equals(viewerId)) continue; // anti-cracking by selecting the host of an activity
 				int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
-				SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected, originalRelation));
+				if (!SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected, originalRelation))) continue;
+                ++count;
 			}
-			return ok();
+
+            EasyPreparedStatementBuilder change = new EasyPreparedStatementBuilder();
+            change.update(Activity.TABLE).
+                    decrease(Activity.NUM_APPLIED, count).
+                    increase(Activity.NUM_SELECTED, count).
+                    where(Activity.ID, "=", activityId);
+            if (!SQLHelper.update(change)) throw new NullPointerException();
+
+            return ok();
 		} catch (Exception e) {
 			DataUtils.log(TAG, "update", e);
 		}

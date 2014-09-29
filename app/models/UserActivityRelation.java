@@ -11,7 +11,6 @@ public class UserActivityRelation {
     public static final int hosted = (1 << 5);
 
     public static String TABLE = "user_activity_relation";
-    public static String ID = "id";
     public static String USER_ID = "user_id";
     public static String ACTIVITY_ID = "activity_id";
     public static String RELATION = "relation";

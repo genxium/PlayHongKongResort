@@ -3,6 +3,7 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.typesafe.config.ConfigException;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import exception.*;
@@ -283,10 +284,11 @@ public class ActivityController extends Controller {
 			Object[] values = {activityId, userId, UserActivityRelation.maskRelation(UserActivityRelation.applied, null)};
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 			builder.insert(names, values).into(UserActivityRelation.TABLE);
+            SQLHelper.insert(builder);
 
-			int lastRelationTableId = SQLHelper.insert(builder);
-			if (lastRelationTableId == SQLHelper.INVALID) throw new Exception();
-
+            EasyPreparedStatementBuilder increment = new EasyPreparedStatementBuilder();
+            increment.update(Activity.TABLE).increase(Activity.NUM_APPLIED, 1).where(Activity.ID, "=", activityId);
+            if (!SQLHelper.update(increment)) throw new NullPointerException();
 			return ok();
 		} catch (Exception e) {
             DataUtils.log(TAG, "join", e);

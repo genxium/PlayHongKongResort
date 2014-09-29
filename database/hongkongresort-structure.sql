@@ -32,10 +32,12 @@ CREATE TABLE `activity` (
   `capacity` int(32) NOT NULL DEFAULT '0',
   `status` int(3) NOT NULL DEFAULT '0',
   `host_id` int(32) NOT NULL,
+  `num_applied` int(32) DEFAULT '0',
+  `num_selected` int(32) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `activity_ibfk_1` (`host_id`),
   CONSTRAINT `activity_ibfk_1` FOREIGN KEY (`host_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -46,16 +48,14 @@ DROP TABLE IF EXISTS `activity_image_relation`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `activity_image_relation` (
-  `id` int(32) NOT NULL AUTO_INCREMENT,
   `activity_id` int(32) NOT NULL,
   `image_id` int(32) NOT NULL,
   `generated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
   KEY `activity_image_relation_ibfk_1` (`activity_id`),
   KEY `activity_image_relation_ibfk_2` (`image_id`),
   CONSTRAINT `activity_image_relation_ibfk_1` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`),
   CONSTRAINT `activity_image_relation_ibfk_2` FOREIGN KEY (`image_id`) REFERENCES `image` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -292,7 +292,6 @@ DROP TABLE IF EXISTS `user_activity_relation`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_activity_relation` (
-  `id` int(32) NOT NULL AUTO_INCREMENT,
   `user_id` int(32) NOT NULL,
   `activity_id` int(32) NOT NULL,
   `relation` int(3) NOT NULL,
@@ -300,14 +299,13 @@ CREATE TABLE `user_activity_relation` (
   `last_applying_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `last_accepted_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `last_rejected_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
   UNIQUE KEY `UA_UNI_ID` (`user_id`,`activity_id`),
   KEY `user_activity_relation_ibfk_1` (`user_id`),
   KEY `user_activity_relation_ibfk_2` (`activity_id`),
   KEY `relation_index` (`relation`) USING BTREE,
   CONSTRAINT `user_activity_relation_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `user_activity_relation_ibfk_2` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -319,4 +317,4 @@ CREATE TABLE `user_activity_relation` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-09-29 15:25:26
+-- Dump completed on 2014-09-30  0:53:06
