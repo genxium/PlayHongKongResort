@@ -23,7 +23,7 @@ public class AssessmentController extends Controller {
     public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer to, Integer activityId) {
         response().setContentType("text/plain");
         try {
-		    Integer from = DataUtils.getUserIdByToken(token);
+		    Integer from = SQLCommander.queryUserId(token);
 		    if(from.equals(to)) throw new AccessDeniedException();
 		    List<Assessment> assessments = SQLCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, null, to, activityId);
             ObjectNode result = Json.newObject();
@@ -47,7 +47,7 @@ public class AssessmentController extends Controller {
 
 		String token = formData.get(User.TOKEN)[0];
 		if (token == null) throw new NullPointerException();
-		Integer userId = DataUtils.getUserIdByToken(token);
+		Integer userId = SQLCommander.queryUserId(token);
 		if (userId == null) throw new UserNotFoundException();
 		User user = SQLCommander.queryUser(userId);
 		if (user == null) throw new UserNotFoundException();

@@ -863,4 +863,19 @@ public class SQLCommander {
         if(direction.equals(DIRECTION_BACKWARD)) Collections.reverse(ret);
         return ret;
     }
+
+    static Integer queryUserId(String token) {
+        try {
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            builder.select(Login.USER_ID).from(Login.TABLE).where(Login.TOKEN, "=", token);
+            List<JSONObject> allJson = SQLHelper.select(builder);
+            if (allJson == null || allJson.size() != 1) return null;
+            JSONObject loginJson = allJson.get(0);
+            Login login = new Login(loginJson);
+            return login.getUserId();
+        } catch (Exception e) {
+            DataUtils.log(TAG, "queryUserId", e);
+        }
+        return null;
+    }
 }

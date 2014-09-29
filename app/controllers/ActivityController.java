@@ -51,7 +51,7 @@ public class ActivityController extends Controller {
 
 			// anti=cracking by param token
 			Integer viewerId = null;
-			if (token != null) viewerId = DataUtils.getUserIdByToken(token);
+			if (token != null) viewerId = SQLCommander.queryUserId(token);
 			List<Activity> activities = null;
 			if (relation != null && relation != UserActivityRelation.hosted && vieweeId != null) {
 				activities = SQLCommander.queryActivities(vieweeId, UserActivityRelation.maskRelation(relation, null));
@@ -85,7 +85,7 @@ public class ActivityController extends Controller {
 			ActivityDetail activityDetail = SQLCommander.queryActivityDetail(activityId);
 			if (activityDetail == null) throw new NullPointerException();
 			Integer userId = null;
-			if (token != null) userId = DataUtils.getUserIdByToken(token);
+			if (token != null) userId = SQLCommander.queryUserId(token);
 			result = activityDetail.toObjectNode(userId);
 			return ok(result);
 		} catch (Exception e) {
@@ -96,7 +96,7 @@ public class ActivityController extends Controller {
 
 	public static Result ownership(String token, Integer activityId) {
 		try {
-			Integer ownerId = DataUtils.getUserIdByToken(token);
+			Integer ownerId = SQLCommander.queryUserId(token);
 			if (ownerId == null) throw new UserNotFoundException();
 			if (!SQLCommander.validateOwnership(ownerId, activityId)) throw new AccessDeniedException();
 			ObjectNode ret = Json.newObject();
@@ -132,7 +132,7 @@ public class ActivityController extends Controller {
 
 			String token = formData.get(User.TOKEN)[0];
 			if (token == null) throw new NullPointerException();
-			Integer userId = DataUtils.getUserIdByToken(token);
+			Integer userId = SQLCommander.queryUserId(token);
 			if (userId == null) throw new NullPointerException();
 			User user = SQLCommander.queryUser(userId);
 			if (user == null) throw new NullPointerException();
@@ -211,7 +211,7 @@ public class ActivityController extends Controller {
 			String token = formData.get(User.TOKEN)[0];
 			Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 
-			Integer userId = DataUtils.getUserIdByToken(token);
+			Integer userId = SQLCommander.queryUserId(token);
 			if (userId == null) throw new Exception();
 			User user = SQLCommander.queryUser(userId);
 			if (user == null) throw new Exception();
@@ -248,7 +248,7 @@ public class ActivityController extends Controller {
 			Integer activityId = Integer.parseInt(ids[0]);
 			String token = tokens[0];
 
-			Integer userId = DataUtils.getUserIdByToken(token);
+			Integer userId = SQLCommander.queryUserId(token);
 			if (userId == null) throw new NullPointerException();
 
 			Activity activity = SQLCommander.queryActivity(activityId);
@@ -271,7 +271,7 @@ public class ActivityController extends Controller {
 			Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 			String token = formData.get(User.TOKEN)[0];
 			if (token == null) throw new Exception();
-			Integer userId = DataUtils.getUserIdByToken(token);
+			Integer userId = SQLCommander.queryUserId(token);
 			if (userId == null) throw new Exception();
 
 			Activity activity = SQLCommander.queryActivity(activityId);
@@ -303,7 +303,7 @@ public class ActivityController extends Controller {
 			String token = formData.get(User.TOKEN)[0];
 			if (token == null) throw new NullPointerException();
 			Integer relation = Integer.parseInt(formData.get(UserActivityRelation.RELATION)[0]);
-			Integer userId = DataUtils.getUserIdByToken(token);
+			Integer userId = SQLCommander.queryUserId(token);
 			if (userId == null) throw new UserNotFoundException();
 
 			Activity activity = SQLCommander.queryActivity(activityId);

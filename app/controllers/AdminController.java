@@ -20,7 +20,7 @@ public class AdminController extends Controller {
 		    Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 		    String token = formData.get(User.TOKEN)[0];
 
-		    Integer userId = DataUtils.getUserIdByToken(token);
+		    Integer userId = SQLCommander.queryUserId(token);
 		    if (userId == null) throw new UserNotFoundException();
 		    User user = SQLCommander.queryUser(userId);
 		    if (user == null) throw new UserNotFoundException();
@@ -46,7 +46,7 @@ public class AdminController extends Controller {
                 Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
                 String token = formData.get(User.TOKEN)[0];
 
-                Integer userId = DataUtils.getUserIdByToken(token);
+                Integer userId = SQLCommander.queryUserId(token);
                 if (userId == null) throw new UserNotFoundException();
                 User user = SQLCommander.queryUser(userId);
                 if (user == null) throw new UserNotFoundException();
@@ -71,7 +71,7 @@ public class AdminController extends Controller {
 		    Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 		    String token = formData.get(User.TOKEN)[0];
 
-		    Integer userId = DataUtils.getUserIdByToken(token);
+		    Integer userId = SQLCommander.queryUserId(token);
 		    if (userId == null) throw new UserNotFoundException();
 
 		    User user = SQLCommander.queryUser(userId);

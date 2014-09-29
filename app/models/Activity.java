@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.SQLCommander;
 import org.json.simple.JSONObject;
 import play.libs.Json;
+import utilities.DataUtils;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -15,6 +16,8 @@ import java.util.TimeZone;
 import java.util.List;
 
 public class Activity {
+
+    public static final String TAG = Activity.class.getName();
 
     public static final int CREATED = 0;
     public static final int PENDING = 1;
@@ -178,7 +181,7 @@ public class Activity {
 	    if (viewerId.equals(m_host.getId()))	ret.put(Activity.STATUS, String.valueOf(m_status));
 	    if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	ret.put(Activity.STATUS, String.valueOf(m_status));
         } catch (Exception e) {
-            System.out.println(Activity.class.getName() + ".toObjectNode, " + e.getMessage());
+            DataUtils.log(TAG, "toObjectNode", e);
         }
         return ret;
     }
@@ -192,7 +195,7 @@ public class Activity {
 		    for (Image image : images)	imagesNode.add(image.toObjectNode());
 		    ret.put(ActivityDetail.IMAGES, imagesNode);
 	    } catch (Exception e) {
-		    System.out.println(Activity.class.getName() + ".toObjectNodeWithImages, " + e.getMessage());
+		    DataUtils.log(TAG, "toObjectNodeWithImages", e);
 	    }
 	    return ret;
     }

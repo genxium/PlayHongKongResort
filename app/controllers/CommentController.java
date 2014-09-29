@@ -55,7 +55,7 @@ public class CommentController extends Controller {
 		    if(activity == null) throw new ActivityNotFoundException();
 		    if(activity.hasBegun()) throw new ActivityHasBegunException();
 
-		    Integer userId = DataUtils.getUserIdByToken(token);
+		    Integer userId = SQLCommander.queryUserId(token);
 		    if (userId == null) throw new UserNotFoundException();
 
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();

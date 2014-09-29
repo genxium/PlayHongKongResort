@@ -38,7 +38,7 @@ public class ParticipantController extends UserController {
 			// JSONArray appliedParticipantsJson = (JSONArray) JSONValue.parse(appliedParticipantsJsonStr);
 			JSONArray selectedParticipantsJson = (JSONArray) JSONValue.parse(selectedParticipantsJsonStr);
 
-			Integer viewerId = DataUtils.getUserIdByToken(token);
+			Integer viewerId = SQLCommander.queryUserId(token);
 			if (viewerId == null) throw new UserNotFoundException();
 			if (!SQLCommander.validateOwnership(viewerId, activityId)) throw new AccessDeniedException();
 

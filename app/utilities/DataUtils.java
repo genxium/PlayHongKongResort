@@ -1,12 +1,16 @@
 package utilities;
 
+import dao.EasyPreparedStatementBuilder;
+import dao.SQLHelper;
+import models.Login;
 import models.User;
+import org.json.simple.JSONObject;
 import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
-import play.mvc.Http.RequestBody;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Map;
 
 public class DataUtils {
@@ -33,27 +37,6 @@ public class DataUtils {
         Map<String, String[]> formData = data.asFormUrlEncoded();
         String[] tokens = formData.get(User.TOKEN);
         return tokens[0];
-    }
-
-    public static String getUserToken(RequestBody body) {
-        Map<String, String[]> formData = body.asFormUrlEncoded();
-        String[] tokens = formData.get(User.TOKEN);
-        return tokens[0];
-    }
-
-    public static Integer getUserIdByToken(String token) {
-        Integer userId = null;
-        try {
-            userId = Integer.parseInt(Controller.session(token));
-        } catch (Exception e) {
-            System.out.println("DataUtils.getUserIdByToken, " + e.getMessage());
-        }
-        return userId;
-    }
-
-    public static String getNameByEmail(String email) {
-        int lastAtSignPos = email.lastIndexOf('@');
-        return email.substring(0, lastAtSignPos);
     }
 
     public static boolean validateTitle(String title) {

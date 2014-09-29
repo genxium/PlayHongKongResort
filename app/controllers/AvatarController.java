@@ -24,7 +24,7 @@ public class AvatarController extends ImageController {
 
             // get user token from request body stream
             String token = DataUtils.getUserToken(data);
-            Integer userId = DataUtils.getUserIdByToken(token);
+            Integer userId = SQLCommander.queryUserId(token);
             if (userId == null) throw new UserNotFoundException();
             User user = SQLCommander.queryUser(userId);
             if (user == null) throw new UserNotFoundException();
@@ -41,12 +41,12 @@ public class AvatarController extends ImageController {
                 System.out.println(TAG + ".upload, previous avatar file and record deleted.");
             }
 
-            return ok("Avatar uploaded");
+            return ok();
 
         } catch (Exception e) {
             DataUtils.log(TAG, "upload", e);
         }
-        return badRequest("Avatar not uploaded!");
+        return badRequest();
 
     }
 

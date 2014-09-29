@@ -8,11 +8,12 @@ import exception.ActivityHasBegunException;
 import exception.ActivityNotFoundException;
 import exception.InvalidCommentParamsException;
 import exception.UserNotFoundException;
-import models.*;
-import org.jboss.netty.handler.codec.marshalling.CompatibleMarshallingEncoder;
+import models.Activity;
+import models.Comment;
+import models.User;
 import play.mvc.Result;
-import utilities.DataUtils;
 import utilities.Converter;
+import utilities.DataUtils;
 
 import java.sql.PreparedStatement;
 import java.util.Arrays;
@@ -58,7 +59,7 @@ public class SubCommentController extends CommentController {
             if(activity == null) throw new ActivityNotFoundException();
             if(activity.hasBegun()) throw new ActivityHasBegunException();
 
-            Integer from = DataUtils.getUserIdByToken(token);
+            Integer from = SQLCommander.queryUserId(token);
             if (from == null) throw new UserNotFoundException();
 
             Integer to = Converter.toInteger(formData.get(Comment.TO)[0]);

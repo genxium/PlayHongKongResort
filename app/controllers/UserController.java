@@ -7,6 +7,7 @@ import exception.InvalidLoginParamsException;
 import exception.InvalidRegistrationParamsException;
 import exception.InvalidUserActivityRelationException;
 import exception.UserNotFoundException;
+import models.Login;
 import models.User;
 import models.UserActivityRelation;
 import org.json.simple.JSONObject;
@@ -81,7 +82,13 @@ public class UserController extends Controller {
             String token = Converter.generateToken(email, password);
             Integer userId = user.getId();
 
-            session(token, userId.toString());
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            String[] cols = {Login.USER_ID, Login.TOKEN};
+            Object[] vals = {userId, token};
+            builder.insert(cols, vals).into(Login.TABLE);
+            int lastId = SQLHelper.insert(builder);
+            if (lastId == SQLHelper.INVALID)  throw new NullPointerException();
+
             ObjectNode result = user.toObjectNode(userId);
             result.put(User.TOKEN, token);
             return ok(result);
@@ -130,12 +137,10 @@ public class UserController extends Controller {
         response().setContentType("text/plain");
         try {
             if (token == null) throw new NullPointerException();
-            Integer userId = DataUtils.getUserIdByToken(token);
+            Integer userId = SQLCommander.queryUserId(token);
             User user = SQLCommander.queryUser(userId);
 
             if (user == null) throw new UserNotFoundException();
-            session(token, userId.toString());
-
             return ok(user.toObjectNode(userId));
         } catch (Exception e) {
             DataUtils.log(TAG, "status", e);
@@ -148,7 +153,7 @@ public class UserController extends Controller {
         response().setContentType("text/plain");
 
         try {
-            Integer userId = DataUtils.getUserIdByToken(token);
+            Integer userId = SQLCommander.queryUserId(token);
             int relation = SQLCommander.queryUserActivityRelation(userId, activityId);
 
             if (relation == UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
@@ -168,7 +173,9 @@ public class UserController extends Controller {
         try {
             Map<String, String[]> formData = request().body().asFormUrlEncoded();
             String token = formData.get(User.TOKEN)[0];
-            session().remove(token);
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            builder.from(Login.TABLE).where(Login.TOKEN, "=", token);
+            if (!SQLHelper.delete(builder)) throw new NullPointerException();
             return ok();
         } catch (Exception e) {
             DataUtils.log(TAG, "logout", e);
@@ -196,7 +203,7 @@ public class UserController extends Controller {
         try {
             response().setContentType("text/plain");
             Integer viewerId = null;
-            if (token != null)  viewerId = DataUtils.getUserIdByToken(token);
+            if (token != null)  viewerId = SQLCommander.queryUserId(token);
             User viewee = SQLCommander.queryUser(vieweeId);
             return ok(viewee.toObjectNode(viewerId));
         } catch (Exception e) {
