@@ -86,9 +86,7 @@ public class UserController extends Controller {
             String[] cols = {Login.USER_ID, Login.TOKEN};
             Object[] vals = {userId, token};
             builder.insert(cols, vals).into(Login.TABLE);
-            int lastId = SQLHelper.insert(builder);
-            if (lastId == SQLHelper.INVALID)  throw new NullPointerException();
-
+            SQLHelper.insert(builder);
             ObjectNode result = user.toObjectNode(userId);
             result.put(User.TOKEN, token);
             return ok(result);
