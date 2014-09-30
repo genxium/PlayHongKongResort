@@ -7,6 +7,7 @@ import controllers.SQLCommander;
 import org.json.simple.JSONObject;
 import play.libs.Json;
 import utilities.DataUtils;
+import utilities.Converter;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -104,6 +105,18 @@ public class Activity {
     public int getCapacity() {
 	    return m_capacity;
     }
+	
+    protected int m_numApplied = 0;
+
+    public int getNumApplied() {
+	return m_numApplied;
+    }
+
+    protected int m_numSelected = 0;
+	
+    public int getNumSelected() {
+	return m_numSelected;
+    } 
 
     protected int m_status = CREATED;
 
@@ -145,7 +158,7 @@ public class Activity {
 
     public Activity(JSONObject activityJson, User host) {
 	    if (activityJson.containsKey(ID))
-		    m_id = (Integer) activityJson.get(ID);
+		    m_id = Converter.toInteger(activityJson.get(ID));
 	    if (activityJson.containsKey(TITLE))
 		    m_title = (String) activityJson.get(TITLE);
 	    if (activityJson.containsKey(CONTENT))
@@ -157,9 +170,13 @@ public class Activity {
 	    if (activityJson.containsKey(DEADLINE))
 		    m_deadline = (Timestamp) activityJson.get(DEADLINE);
 	    if (activityJson.containsKey(CAPACITY))
-		    m_capacity = (Integer) activityJson.get(CAPACITY);
+		    m_capacity = Converter.toInteger(activityJson.get(CAPACITY));
+	    if (activityJson.containsKey(NUM_APPLIED))
+		    m_numApplied = Converter.toInteger(activityJson.get(NUM_APPLIED));
+	    if (activityJson.containsKey(NUM_SELECTED))
+	            m_numSelected = Converter.toInteger(activityJson.get(NUM_SELECTED));
 	    if (activityJson.containsKey(STATUS))
-		    m_status = (Integer) activityJson.get(STATUS);
+		    m_status = Converter.toInteger(activityJson.get(STATUS));
 	    if (host != null)
 		    m_host = host;
     }
@@ -167,21 +184,24 @@ public class Activity {
     public ObjectNode toObjectNode(Integer viewerId) {
         ObjectNode ret = Json.newObject();
         try {
-            ret.put(Activity.ID, String.valueOf(m_id));
-            ret.put(Activity.TITLE, m_title);
-            ret.put(Activity.CONTENT, m_content);
+            ret.put(ID, String.valueOf(m_id));
+            ret.put(TITLE, m_title);
+            ret.put(CONTENT, m_content);
             SimpleDateFormat splfmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            ret.put(Activity.CREATED_TIME, splfmt.format(m_createdTime));
-            ret.put(Activity.BEGIN_TIME, splfmt.format(m_beginTime));
-            ret.put(Activity.DEADLINE, splfmt.format(m_deadline));
-            ret.put(Activity.CAPACITY, String.valueOf(m_capacity));
-            ret.put(Activity.HOST, m_host.toObjectNode(viewerId));
+            ret.put(CREATED_TIME, splfmt.format(m_createdTime));
+            ret.put(BEGIN_TIME, splfmt.format(m_beginTime));
+            ret.put(DEADLINE, splfmt.format(m_deadline));
+            ret.put(CAPACITY, String.valueOf(m_capacity));
+	    ret.put(NUM_APPLIED, String.valueOf(m_numApplied));
+	    ret.put(NUM_SELECTED, String.valueOf(m_numSelected));
+            ret.put(HOST, m_host.toObjectNode(viewerId));
+            
             if (viewerId == null) return ret;
 	    int relation = SQLCommander.queryUserActivityRelation(viewerId, m_id);
 	    if (relation != UserActivityRelation.invalid)	ret.put(UserActivityRelation.RELATION, relation);
 	    m_viewer = SQLCommander.queryUser(viewerId);
-	    if (viewerId.equals(m_host.getId()))	ret.put(Activity.STATUS, String.valueOf(m_status));
-	    if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	ret.put(Activity.STATUS, String.valueOf(m_status));
+	    if (viewerId.equals(m_host.getId()))	ret.put(STATUS, String.valueOf(m_status));
+	    if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	ret.put(STATUS, String.valueOf(m_status));
         } catch (Exception e) {
             DataUtils.log(TAG, "toObjectNode", e);
         }

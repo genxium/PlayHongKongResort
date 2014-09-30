@@ -39,7 +39,7 @@ function onBtnJoinClicked(evt){
 	var token = $.cookie(g_keyToken).toString();
 
 	var params={};
-	params[g_keyActivityId] = data[g_keyActivityId];
+	params[g_keyActivityId] = activity.id;
 	params[g_keyToken] = token;
 
 	$.ajax({
@@ -49,7 +49,7 @@ function onBtnJoinClicked(evt){
 		success: function(data, status, xhr){
 			var cell = btnJoin.parent();
 			btnJoin.remove();
-
+			activity.relation |= selected;
 			$('<div>', {
 				class: g_classCellRelationIndicator,
 				text: 'Applied'
@@ -145,7 +145,6 @@ function generateActivityCell(par, activity){
 			text: 'Join'
 		}).appendTo(btnRow);
 		var dJoin = {};
-		dJoin[g_keyActivityId] = activity.id;
 		dJoin[g_keyActivity] = activity;
 		btnJoin.on("click", dJoin, onBtnJoinClicked);
 

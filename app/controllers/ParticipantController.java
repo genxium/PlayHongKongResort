@@ -30,45 +30,33 @@ public class ParticipantController extends UserController {
 			Activity activity = SQLCommander.queryActivity(activityId);
 			if(activity == null) throw new ActivityNotFoundException();
 			if(activity.hasBegun()) throw new ActivityHasBegunException();
-			// String[] appliedParticipantsJsonStrs = formData.get(ActivityDetail.APPLIED_PARTICIPANTS);
 			String[] selectedParticipantsJsonStrs = formData.get(ActivityDetail.SELECTED_PARTICIPANTS);
-			// String appliedParticipantsJsonStr = (appliedParticipantsJsonStrs.length > 0) ? appliedParticipantsJsonStrs[0] : "[]";
 			String selectedParticipantsJsonStr = (selectedParticipantsJsonStrs.length > 0) ? selectedParticipantsJsonStrs[0] : "[]";
 
-			// JSONArray appliedParticipantsJson = (JSONArray) JSONValue.parse(appliedParticipantsJsonStr);
 			JSONArray selectedParticipantsJson = (JSONArray) JSONValue.parse(selectedParticipantsJsonStr);
 
 			Integer viewerId = SQLCommander.queryUserId(token);
 			if (viewerId == null) throw new UserNotFoundException();
 			if (!SQLCommander.validateOwnership(viewerId, activityId)) throw new AccessDeniedException();
 
-			/* Forbid unselecting participants, uncomment corresponding codes to resume */
-			/* 			
-			for (Object appliedParticipantJson : appliedParticipantsJson) {
-				Integer userId = Integer.valueOf((String) appliedParticipantJson);
-				if (userId.equals(viewerId)) continue; // anti-cracking by unselecting the host of an activity
-				int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
-				SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied, originalRelation));
-			}
-			*/
-
-            int count = 0;
+			int count = 0;
 			for (Object selectedParticipantJson : selectedParticipantsJson) {
 				Integer userId = Converter.toInteger(selectedParticipantJson);
 				if (userId.equals(viewerId)) continue; // anti-cracking by selecting the host of an activity
 				int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
+				if ((originalRelation & UserActivityRelation.selected) > 0) continue;
 				if (!SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected, originalRelation))) continue;
-                ++count;
+				++count;
 			}
 
-            EasyPreparedStatementBuilder change = new EasyPreparedStatementBuilder();
-            change.update(Activity.TABLE).
-                    decrease(Activity.NUM_APPLIED, count).
-                    increase(Activity.NUM_SELECTED, count).
-                    where(Activity.ID, "=", activityId);
-            if (!SQLHelper.update(change)) throw new NullPointerException();
+			EasyPreparedStatementBuilder change = new EasyPreparedStatementBuilder();
+			change.update(Activity.TABLE).
+			decrease(Activity.NUM_APPLIED, count).
+			increase(Activity.NUM_SELECTED, count).
+			where(Activity.ID, "=", activityId);
+			if (!SQLHelper.update(change)) throw new NullPointerException();
 
-            return ok();
+			return ok();
 		} catch (Exception e) {
 			DataUtils.log(TAG, "update", e);
 		}

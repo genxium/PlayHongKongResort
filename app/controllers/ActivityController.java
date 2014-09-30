@@ -284,14 +284,14 @@ public class ActivityController extends Controller {
 			Object[] values = {activityId, userId, UserActivityRelation.maskRelation(UserActivityRelation.applied, null)};
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 			builder.insert(names, values).into(UserActivityRelation.TABLE);
-            SQLHelper.insert(builder);
+			SQLHelper.insert(builder);
 
-            EasyPreparedStatementBuilder increment = new EasyPreparedStatementBuilder();
-            increment.update(Activity.TABLE).increase(Activity.NUM_APPLIED, 1).where(Activity.ID, "=", activityId);
-            if (!SQLHelper.update(increment)) throw new NullPointerException();
+			EasyPreparedStatementBuilder increment = new EasyPreparedStatementBuilder();
+			increment.update(Activity.TABLE).increase(Activity.NUM_APPLIED, 1).where(Activity.ID, "=", activityId);
+			if (!SQLHelper.update(increment)) throw new NullPointerException();
 			return ok();
 		} catch (Exception e) {
-            DataUtils.log(TAG, "join", e);
+			DataUtils.log(TAG, "join", e);
 		}
         return badRequest();
 	}

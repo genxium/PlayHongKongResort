@@ -133,19 +133,16 @@ public class SQLCommander {
 
 	    Activity activity = null;
 	    try {
-		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, Activity.NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId);
 		    List<JSONObject> results = SQLHelper.select(builder);
-		    if (results == null || results.size() <= 0) return null;
-		    Iterator<JSONObject> it = results.iterator();
-		    if (it.hasNext()) {
-			    JSONObject activityJson = it.next();
-			    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
-			    activity = new Activity(activityJson, host);
-		    }
+		    if (results == null || results.size() != 1) throw new ActivityNotFoundException();
+		    JSONObject activityJson = results.get(0);
+		    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+		    activity = new Activity(activityJson, host);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".queryActivity, " + e.getMessage());
+		    DataUtils.log(TAG, "queryActivity", e);
 	    }
 	    return activity;
 
@@ -161,7 +158,7 @@ public class SQLCommander {
 		    List<BasicUser> presentParticipants = queryPresentParticipants(activityId);
 		    activityDetail = new ActivityDetail(activity, images, appliedParticipants, selectedParticipants, presentParticipants);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".queryActivityDetail, " + e.getMessage());
+		    DataUtils.log(TAG, "queryActivityDetail", e);
 	    }
 	    return activityDetail;
     }
@@ -171,7 +168,7 @@ public class SQLCommander {
 	    try {
 		    String query = "SELECT ";
 
-		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, Activity.NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
 		    for (int i = 0; i < names.length; i++) {
 			    query += names[i];
 			    if (i < names.length - 1) query += ", ";
@@ -201,7 +198,7 @@ public class SQLCommander {
 	    List<Activity> ret = new ArrayList<Activity>();
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, Activity.NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
 		    builder.select(names).from(Activity.TABLE).where(Activity.STATUS, "=", status);
             List<JSONObject> activityJsons = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
 

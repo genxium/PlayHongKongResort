@@ -1,6 +1,7 @@
 var g_participantsForm = null;
 var g_aliasApplied = 0;
 var g_aliasSelected = 1;
+var g_tabParticipants = null;
 
 function ParticipantsForm(labels, participantsId, participantsStatus){
 	this.boxes = null;

@@ -1,6 +1,5 @@
 // general dom elements
 var g_sectionActivity = null;
-var g_tabParticipants = null;
 
 // local variables
 var g_activityId = null;
@@ -29,6 +28,19 @@ function queryActivityDetail(activityId){
             success: function(data, status, xhr){
                 var activityJson = JSON.parse(data);
     		g_activity = new Activity(activityJson);
+		var barButtons = $("#bar-buttons");	
+		barButtons.empty();
+		if(g_activity.relation == null && !g_activity.isDeadlineExpired()){
+			var btnJoin = $('<button>', {
+				class: g_classBtnJoin,
+				text: 'Join'
+			}).appendTo(barButtons);
+			var dJoin = {};
+			dJoin[g_keyActivity] = g_activity;
+			btnJoin.on("click", dJoin, onBtnJoinClicked);
+
+		}
+
                 displayActivityDetail(g_sectionActivity);
             },
             error: function(xhr, status, err){
@@ -119,14 +131,13 @@ function displayActivityDetail(par){
 function onParticipantsSelectionFormSubmission(formEvt){
 	
 	formEvt.preventDefault(); // prevent default action.
-	var appliedParticipants = new Array();
 	var selectedParticipants = new Array();
 	for(var i = 0; i < g_participantsForm.labels.length; i++) {
 		var box = g_participantsForm.boxes[i];
+		if (box == null || !box.is(":checked")) continue;
 		var participantId = g_participantsForm.participantsId[i];
 		if(participantId == g_activity.host.id) continue;
-		if(box.is(":checked"))	selectedParticipants.push(participantId);
-		else	appliedParticipants.push(participantId);
+		selectedParticipants.push(participantId);
 	}
 	// append user token and activity id for identity
 	var token = $.cookie(g_keyToken);
@@ -135,7 +146,6 @@ function onParticipantsSelectionFormSubmission(formEvt){
 	var params={};
 	params[g_keyToken] = token;
 	params[g_keyActivityId] = g_activityId;
-	params[g_keyAppliedParticipants] = JSON.stringify(appliedParticipants);
 	params[g_keySelectedParticipants] = JSON.stringify(selectedParticipants);
 
 	$.ajax({
@@ -165,6 +175,46 @@ function onBtnSubmitClicked(evt){
 	var selectionForm=$(this).parent();	
 	selectionForm.submit(onParticipantsSelectionFormSubmission);
 	selectionForm.submit();
+}
+
+function onBtnJoinClicked(evt){
+
+	var btnJoin = $(this);
+
+	evt.preventDefault();
+	var data = evt.data;
+	var activity = data[g_keyActivity];
+
+	if (activity == null) return;
+
+	if (activity.isDeadlineExpired()) {
+		alert("Application deadline has expired!");
+		return;
+	}
+
+	var token = $.cookie(g_keyToken).toString();
+
+	var params={};
+	params[g_keyActivityId] = activity.id;
+	params[g_keyToken] = token;
+
+	$.ajax({
+		type: "POST",
+		url: "/activity/join",
+		data: params,
+		success: function(data, status, xhr){
+			var cell = btnJoin.parent();
+			btnJoin.remove();
+			activity.relation |= selected;
+			$('<div>', {
+				class: g_classCellRelationIndicator,
+				text: 'Applied'
+			}).appendTo(cell);
+		},
+		error: function(xhr, status, errThrown){
+
+		}
+	});
 }
 
 // execute on start
