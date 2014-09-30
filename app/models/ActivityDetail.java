@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.ArrayList;
 import java.util.List;
 
+import utilities.DataUtils;
+
 public class ActivityDetail extends Activity {
 
     public static String IMAGES = "images";
@@ -44,6 +46,8 @@ public class ActivityDetail extends Activity {
         m_beginTime = activity.getBeginTime();
         m_deadline = activity.getDeadline();
         m_capacity = activity.getCapacity();
+	m_numApplied = activity.getNumApplied();
+	m_numSelected = activity.getNumSelected();
         m_status = activity.getStatus();
         m_host = activity.getHost();
         m_images = images;
@@ -79,8 +83,7 @@ public class ActivityDetail extends Activity {
 
             ArrayNode presentParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
             for (BasicUser participant : m_presentParticipants) {
-                if (viewerId != null && viewerId.equals(participant.getId()))
-                    continue; // viewer cannot assess himself/herself
+                if (viewerId != null && viewerId.equals(participant.getId()))	continue; // viewer cannot assess himself/herself
                 presentParticipantsNode.add(participant.toObjectNode(viewerId));
             }
             ret.put(PRESENT_PARTICIPANTS, presentParticipantsNode);
@@ -88,7 +91,7 @@ public class ActivityDetail extends Activity {
             if (m_viewer != null) ret.put(VIEWER, m_viewer.toObjectNode(m_viewer.getId()));
 
         } catch (Exception e) {
-            System.out.println(ActivityDetail.class.getName() + ".toObjectNode, " + e.getMessage());
+            DataUtils.log(TAG, "toObjectNode", e);
         }
         return ret;
     }

@@ -23,59 +23,13 @@ function onBtnEditClicked(evt){
 	showActivityEditor(activity);
 }
 
-function onBtnJoinClicked(evt){
-
-	var btnJoin = $(this);
-
-	evt.preventDefault();
-	var data = evt.data;
-	var activity = data[g_keyActivity];
-
-	if(activity.isDeadlineExpired()) {
-		alert("Application deadline has expired!");
-		return;
-	}
-
-	var token = $.cookie(g_keyToken).toString();
-
-	var params={};
-	params[g_keyActivityId] = activity.id;
-	params[g_keyToken] = token;
-
-	$.ajax({
-		type: "POST",
-		url: "/activity/join",
-		data: params,
-		success: function(data, status, xhr){
-			var cell = btnJoin.parent();
-			btnJoin.remove();
-			activity.relation |= selected;
-			$('<div>', {
-				class: g_classCellRelationIndicator,
-				text: 'Applied'
-			}).appendTo(cell);
-		},
-		error: function(xhr, status, errThrown){
-
-		}
-	});
-}
-
 function onBtnDetailClicked(evt){
         evt.preventDefault();
         var data = evt.data;
         var activityId = data[g_keyActivityId];
 
-	var detailPagePath="/activity/detail/show?"+g_keyActivityId+"="+activityId;
+	var detailPagePath = "/activity/detail/show?" + g_keyActivityId + "=" + activityId;
 	window.open(detailPagePath);
-}
-
-function getPriorRelation(activity) {
-	if ((activity.relation & assessed) > 0) return assessed;
-	if ((activity.relation & present) > 0) return present;
-	if ((activity.relation & absent) > 0) return absent;
-	if ((activity.relation & selected) > 0) return selected;
-	if ((activity.relation & applied) > 0) return applied;
 }
 
 // Generators
@@ -83,13 +37,6 @@ function getPriorRelation(activity) {
 function generateActivityCell(par, activity){
 
 	var arrayStatusName = ["created", "pending", "rejected", "accepted", "expired"];
-	var mapRelationName = {};
-	mapRelationName[applied] = "applied";
-	mapRelationName[selected] = "selected";
-	mapRelationName[present] = "present";
-	mapRelationName[absent] = "absent";
-	mapRelationName[assessed] = "assessed";
-	mapRelationName[hosted] = "";
 
 	var coverImageUrl = null;
 	if(activity.images != null) {
@@ -139,22 +86,7 @@ function generateActivityCell(par, activity){
 		style: "margin-top: 5pt; clear: left"
 	}).appendTo(ret);
 
-	if(activity.relation == null && !activity.isDeadlineExpired()){
-		var btnJoin = $('<button>', {
-			class: g_classBtnJoin,
-			text: 'Join'
-		}).appendTo(btnRow);
-		var dJoin = {};
-		dJoin[g_keyActivity] = activity;
-		btnJoin.on("click", dJoin, onBtnJoinClicked);
-
-	} else if(activity.relation != null &&g_loggedInUser != null && g_loggedInUser.id != activity.host.id) {
-		
-		var relationIndicator = $('<div>', {
-			class: g_classCellRelationIndicator,
-			text: mapRelationName[getPriorRelation(activity)]
-		}).appendTo(btnRow);
-	} else;
+	attachJoinButton(btnRow, activity);
 
 	var btnDetail = $('<button>', {
 		class: g_classBtnDetail,

@@ -30,17 +30,7 @@ function queryActivityDetail(activityId){
     		g_activity = new Activity(activityJson);
 		var barButtons = $("#bar-buttons");	
 		barButtons.empty();
-		if(g_activity.relation == null && !g_activity.isDeadlineExpired()){
-			var btnJoin = $('<button>', {
-				class: g_classBtnJoin,
-				text: 'Join'
-			}).appendTo(barButtons);
-			var dJoin = {};
-			dJoin[g_keyActivity] = g_activity;
-			btnJoin.on("click", dJoin, onBtnJoinClicked);
-
-		}
-
+		attachJoinButton(barButtons, g_activity);
                 displayActivityDetail(g_sectionActivity);
             },
             error: function(xhr, status, err){

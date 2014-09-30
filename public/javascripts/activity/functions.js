@@ -90,3 +90,79 @@ function displayTimesTable(par, activity) {
     		style: "color: blue; padding-left: 8pt; padding-right: 5pt"
     	}).appendTo(beginTimeRow);
 }
+
+function getPriorRelation(activity) {
+	if ((activity.relation & assessed) > 0) return assessed;
+	if ((activity.relation & present) > 0) return present;
+	if ((activity.relation & absent) > 0) return absent;
+	if ((activity.relation & selected) > 0) return selected;
+	if ((activity.relation & applied) > 0) return applied;
+}
+
+function onBtnJoinClicked(evt){
+
+	var btnJoin = $(this);
+
+	evt.preventDefault();
+	var data = evt.data;
+	var activity = data[g_keyActivity];
+
+	if(activity.isDeadlineExpired()) {
+		alert("Application deadline has expired!");
+		return;
+	}
+
+	var token = $.cookie(g_keyToken).toString();
+
+	var params={};
+	params[g_keyActivityId] = activity.id;
+	params[g_keyToken] = token;
+
+	$.ajax({
+		type: "POST",
+		url: "/activity/join",
+		data: params,
+		success: function(data, status, xhr){
+			var par = btnJoin.parent();
+			btnJoin.remove();
+			activity.relation |= selected;
+			$('<div>', {
+				class: g_classCellRelationIndicator,
+				text: 'applied'
+			}).appendTo(par);
+		},
+		error: function(xhr, status, errThrown){
+
+		}
+	});
+}
+
+function attachJoinButton(par, activity) {
+
+	var mapRelationName = {};
+	mapRelationName[applied] = "applied";
+	mapRelationName[selected] = "selected";
+	mapRelationName[present] = "present";
+	mapRelationName[absent] = "absent";
+	mapRelationName[assessed] = "assessed";
+	mapRelationName[hosted] = "";
+
+	if(activity.relation == null && !activity.isDeadlineExpired()){
+		var btnJoin = $('<button>', {
+			class: g_classBtnJoin,
+			text: 'Join'
+		}).appendTo(par);
+		var dJoin = {};
+		dJoin[g_keyActivity] = activity;
+		btnJoin.on("click", dJoin, onBtnJoinClicked);
+
+	} else if(activity.relation != null && g_loggedInUser != null && g_loggedInUser.id != activity.host.id) {
+		
+		var relationIndicator = $('<div>', {
+			class: g_classCellRelationIndicator,
+			text: mapRelationName[getPriorRelation(activity)]
+		}).appendTo(par);
+
+	} else;
+
+}
