@@ -99,35 +99,39 @@ public class Comment {
 		    ret.put(CONTENT, m_content);
 		    ret.put(FROM, m_from);
 		    ret.put(FROM_NAME, SQLCommander.queryUser(m_from).getName());
-            ret.put(TO, m_to);
-            ret.put(TO_NAME, SQLCommander.queryUser(m_to).getName());
+		    ret.put(TO, m_to);
+		    ret.put(TO_NAME, SQLCommander.queryUser(m_to).getName());
 		    ret.put(GENERATED_TIME, m_generatedTime.toString());
-       } catch (Exception e) {
-            DataUtils.log(TAG, "toSubCommentObjectNode", e);
+	    } catch (Exception e) {
+		    DataUtils.log(TAG, "toSubCommentObjectNode", e);
 	    }
 	    return ret;
     }
 
-    public ObjectNode toObjectNode() {
-        ObjectNode ret = Json.newObject();
-        try {
-            ret.put(ID, m_id);
-            ret.put(PARENT_ID, m_parentId);
-            ret.put(CONTENT, m_content);
-            ret.put(FROM, m_from);
-            ret.put(FROM_NAME, SQLCommander.queryUser(m_from).getName());
-            ret.put(GENERATED_TIME, m_generatedTime.toString());
-            List<Comment> subComments = SQLCommander.querySubComments(m_id, SQLCommander.INITIAL_REF_INDEX, ID, SQLHelper.DESCEND, null, SQLCommander.DIRECTION_FORWARD);
+    public ObjectNode toObjectNode(boolean single) {
+	    ObjectNode ret = Json.newObject();
+	    try {
+		    ret.put(ID, m_id);
+		    ret.put(PARENT_ID, m_parentId);
+		    ret.put(CONTENT, m_content);
+		    ret.put(FROM, m_from);
+		    ret.put(FROM_NAME, SQLCommander.queryUser(m_from).getName());
+		    ret.put(GENERATED_TIME, m_generatedTime.toString());
+		    ret.put(NUM_CHILDREN, m_numChildren.toString());
 
-            ArrayNode subCommentsNode = new ArrayNode(JsonNodeFactory.instance);
-            for (Comment subComment : subComments) {
-                subCommentsNode.add(subComment.toSubCommentObjectNode());
-            }
-            ret.put(SUB_COMMENTS, subCommentsNode);
-        } catch (Exception e) {
-            DataUtils.log(TAG, "toObjectNode", e);
-        }
-        return ret;
+		    if (single) return ret;
+		    int limit = 3;
+		    List<Comment> subComments = SQLCommander.querySubComments(m_id, SQLCommander.INITIAL_REF_INDEX, ID, SQLHelper.DESCEND, 3, SQLCommander.DIRECTION_FORWARD);
+
+		    ArrayNode subCommentsNode = new ArrayNode(JsonNodeFactory.instance);
+		    for (Comment subComment : subComments) {
+			    subCommentsNode.add(subComment.toSubCommentObjectNode());
+		    }
+		    ret.put(SUB_COMMENTS, subCommentsNode);
+	    } catch (Exception e) {
+		    DataUtils.log(TAG, "toObjectNode", e);
+	    }
+	    return ret;
     }
 }
 

@@ -110,6 +110,16 @@ function firstChild(obj, selector){
 	return $(obj.children(selector)[0]);
 }
 
+function truncateMillisec (dateStr) {
+	try {
+		var parts = dateStr.split(".");
+		if (parts.length <= 1) throw "oops!";
+		return parts[0];
+	} catch (err) {
+		return dateStr;
+	}
+}
+
 function getCurrentYmdhisDate() {
 	var date = new Date();
 	var anterior =  date.getFullYear().toString() + "-" + (date.getMonth() + 1).toString() + "-" + date.getDate().toString(); 

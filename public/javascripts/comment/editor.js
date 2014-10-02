@@ -4,20 +4,6 @@ var g_replyEditor = null;
 var g_onCommentSubmitSuccess = null;
 var g_tabComments = null;
 
-function onPagerButtonClicked(evt) {
-	// this function is only valid in detail's page
-	if(g_activity == null) return;
-	// Please note that this function name might conflict with 
-	var button = evt.data;
-	var container = button.container;
-	var page = button.page;
-	if (page == container.page) return;
-	var direction = page > container.page ? g_directionForward : g_directionBackward;
-	var refIndex = page > container.page ? g_tabComments.ed : g_tabComments.st;
-
-	queryComments(refIndex, container.nItems, direction, g_activity.id, onQueryCommentsSuccess, onQueryCommentsError);
-}
-
 function queryCommentsAndRefresh(activity) {
     queryComments(0, g_tabComments.nItems, g_directionForward, activity.id, onQueryCommentsSuccess, onQueryCommentsError);
 }
@@ -44,17 +30,18 @@ function queryComments(refIndex, numItems, direction, activityId, onSuccess, onE
 
 function generateCommentsQueryParams(container, page) {
 
-    if (page == container.page) return null;
+	if (page == container.page) return null;
 	var direction = page > container.page ? g_directionForward : g_directionBackward;
 	var refIndex = page > container.page ? g_tabComments.ed : g_tabComments.st;
 
 	var params = {};
-    params[g_keyActivityId] = g_activity.id;
-    params[g_keyRefIndex] = refIndex;
-    params[g_keyNumItems] = container.nItems;
-    params[g_keyDirection] = direction;
+	params[g_keyActivityId] = g_activity.id;
+	params[g_keyRefIndex] = refIndex;
+	params[g_keyNumItems] = container.nItems;
+	params[g_keyDirection] = direction;
 
-    return params;
+	return params;
+
 }
 
 // Tab Q&A a.k.a comments
@@ -74,7 +61,7 @@ function onQueryCommentsSuccess(data){
 	var idx = 0;
 	for(var key in jsonResponse){
 		var commentJson = jsonResponse[key];
-		generateCommentCell(g_tabComments.screen, commentJson, g_activity);
+		generateCommentCell(g_tabComments.screen, commentJson, g_activity, false);
 		var comment = new Comment(commentJson);
 		$('<br>').appendTo(g_tabComments.screen);
 		if(idx == 0)	g_tabComments.st = comment.id;
@@ -153,10 +140,12 @@ function generateReplyEditor(activity, comment){
     return ret;
 }
 
-function generateCommentCell(par, commentJson, activity){
+function generateCommentCell(par, commentJson, activity, single){
 	var comment = new Comment(commentJson);
-	var ret=$('<div>').appendTo(par);
+	var ret = $('<div>').appendTo(par);
         var row = $('<p>').appendTo(ret);
+	if (single) row.css("background-color", "Cornsilk");
+
         var content = $('<span>', {
             text: comment.content,
             style: "text-align: left; margin-left: 25pt; font-size: 14pt"
@@ -171,16 +160,30 @@ function generateCommentCell(par, commentJson, activity){
         }).appendTo(spanFromName);
         
         var generatedTime = $('<span>', {
-            text: comment.generatedTime,
+            text: truncateMillisec(comment.generatedTime),
             style: "text-align: left; margin-left:  25pt; color: blue; font-size: 14pt"
         }).appendTo(row);
 
-        // Sub-Comments
-        var subComments = commentJson[g_keySubComments];
-        for(var key in subComments){
-            var subCommentJson = subComments[key];
-            generateSubCommentCell(ret, subCommentJson, activity);
-        }
+	if (!single && comment.numChildren > 0) {
+		var spanView = $("<span>", {
+			style: "margin-left: 5px"
+		}).appendTo(row);
+		$("<a>", {
+			text: "view all replies(" + comment.numChildren + ")",
+			href: "/comment/view?" + g_keyCommentId + "=" + comment.id.toString() + "&" + g_keyActivityId + "=" + activity.id.toString(),
+			target: "_blank",
+			style: "cursor: pointer"
+		}).appendTo(spanView);
+	}
+
+	if (!single) {
+		// Sub-Comments
+		var subComments = commentJson[g_keySubComments];
+		for(var key in subComments){
+		    var subCommentJson = subComments[key];
+		    generateSubCommentCell(ret, subCommentJson, activity);
+		}
+	}
 
         var token = $.cookie(g_keyToken);
         if(token == null || activity.hasBegun()) return;
@@ -194,12 +197,6 @@ function generateCommentCell(par, commentJson, activity){
             style: "color: white; background-color: black; border: none"
         }).appendTo(operations);
 
-        var parentId = comment.parentId;
-        var predecessorId = comment.id;
-        if(parentId == (-1)){
-            // root comment
-            parentId = predecessorId;
-        }
         var dBtnReply = {};
         dBtnReply[g_keyCell] = ret;
 
@@ -232,7 +229,7 @@ function generateSubCommentCell(par, commentJson, activity){
         text: comment.content,
         style: "text-align: left; margin-left: 25pt; font-size: 13pt"
     }).appendTo(row);
-;
+
     var spanFromName = $('<span>').appendTo(row);
     var hrefFromName = $('<a>', {
             href: "/user/profile/show?" + g_keyVieweeId + "=" + comment.from,
@@ -242,11 +239,11 @@ function generateSubCommentCell(par, commentJson, activity){
     }).appendTo(spanFromName);
 
     var generatedTime = $('<span>', {
-        text: comment.generatedTime,
+        text: truncateMillisec(comment.generatedTime),
         style: "text-align: left; margin-left:  25pt; color: blue; font-size: 13pt"
     }).appendTo(row);
 
-    var token=$.cookie(g_keyToken);
+    var token = $.cookie(g_keyToken);
     if(token == null || activity.hasBegun()) return ret;
 
     var operations=$('<span>',{

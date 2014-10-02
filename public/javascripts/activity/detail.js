@@ -22,7 +22,7 @@ function queryActivityDetail(activityId){
         if(token != null)	params[g_keyToken] = token;
 
         $.ajax({
-            method: "GET",
+            type: "GET",
             url: "/activity/detail",
             data: params,
             success: function(data, status, xhr){

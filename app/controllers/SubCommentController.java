@@ -30,7 +30,7 @@ public class SubCommentController extends CommentController {
         try {
             List<Comment> comments = SQLCommander.querySubComments(parentId, refIndex, Comment.ID, SQLHelper.DESCEND, numItems, direction);
             ArrayNode result = new ArrayNode(JsonNodeFactory.instance);
-            for (Comment comment : comments)	result.add(comment.toObjectNode());
+            for (Comment comment : comments)	result.add(comment.toSubCommentObjectNode());
             return ok(result);
         } catch (Exception e) {
             DataUtils.log(TAG, "query", e);

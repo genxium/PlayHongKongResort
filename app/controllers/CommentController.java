@@ -11,6 +11,7 @@ import models.Comment;
 import models.User;
 import exception.*;
 
+import play.mvc.Content;
 import play.mvc.Controller;
 import play.mvc.Result;
 import utilities.DataUtils;
@@ -24,13 +25,25 @@ public class CommentController extends Controller {
 
     public static final String TAG = CommentController.class.getName();
 
+    public static Result querySingle(Integer commentId) {
+	    response().setContentType("text/plain");
+	    try {
+		    Comment comment = SQLCommander.queryComment(commentId);
+		    return ok(comment.toObjectNode(true));
+	    } catch (Exception e) {
+		    DataUtils.log(TAG, "query", e);
+	    }
+	    return badRequest();
+	
+    }
+
     public static Result query(Integer activityId, String refIndex, Integer numItems, Integer direction) {
 	    response().setContentType("text/plain");
 	    try {
 		    List<Comment> comments = SQLCommander.queryTopLevelComments(activityId, refIndex, Comment.ID, SQLHelper.DESCEND, numItems, direction);
 
 		    ArrayNode result = new ArrayNode(JsonNodeFactory.instance);
-		    for (Comment comment : comments)	result.add(comment.toObjectNode());
+		    for (Comment comment : comments)	result.add(comment.toObjectNode(false));
 		    return ok(result);
 	    } catch (Exception e) {
 		    DataUtils.log(TAG, "query", e);
@@ -75,5 +88,15 @@ public class CommentController extends Controller {
 		    DataUtils.log(TAG, "submit", e);
 	    }
 	    return badRequest();
+    }
+
+    public static Result view() {
+	    try {
+		    Content html = views.html.comment.render();
+		    return ok(html);
+	    } catch (Exception e) {
+		    DataUtils.log(TAG, "view", e);
+            }
+	    return badRequest();	
     }
 }

@@ -1,11 +1,11 @@
 $(document).ready(function(){
 
-	var params=extractParams(window.location.href);
-	for(var i=0;i<params.length;i++){
-		var param=params[i];
-		var pair=param.split("=");
+	var params = extractParams(window.location.href);
+	for(var i = 0; i < params.length; i++){
+		var param = params[i];
+		var pair = param.split("=");
 		if(pair[0] == g_keyVieweeId){
-			g_vieweeId = pair[1];
+			g_vieweeId = parseInt(pair[1]);
 			break;
 		}
 	}
@@ -13,7 +13,9 @@ $(document).ready(function(){
 	initTopbar();
 	
 	// initialize pager widgets
-	g_pagerContainer = new PagerContainer($("#pager-screen-activities"), $("#pager-bar-activities"), g_keyActivityId, g_orderDescend, g_numItemsPerPage);		
+	g_pagerContainer = new PagerContainer($("#pager-screen-activities"), $("#pager-bar-activities"),
+	                                        g_keyActivityId, g_orderDescend, g_numItemsPerPage,
+	                                        "/activity/query", generateActivitiesQueryParams);
 	g_pagerContainer.relation = hosted;
 	g_pagerContainer.orientation = g_orderDescend;
 

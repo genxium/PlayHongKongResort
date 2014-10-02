@@ -66,6 +66,7 @@ var g_keyImageId = "image_id"
 var g_keyUrl = "url";
 
 var g_keyComment = "comment";
+var g_keyCommentId = "comment_id";
 var g_keyParentId = "parent_id";
 var g_keyPredecessorId = "predecessor_id";
 var g_keyCommentType = "type";

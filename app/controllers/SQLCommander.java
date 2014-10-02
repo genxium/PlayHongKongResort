@@ -256,7 +256,7 @@ public class SQLCommander {
     public static Comment queryComment(Integer commentId) {
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
+            String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.NUM_CHILDREN, Comment.GENERATED_TIME};
             List<JSONObject> commentsJson = builder.select(names).from(Comment.TABLE).where(Comment.ID, "=", commentId).execSelect();
             if (commentsJson == null || commentsJson.size() <= 0) throw new NullPointerException();
             return new Comment(commentsJson.get(0));
@@ -272,14 +272,14 @@ public class SQLCommander {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
 		    // query table Comment
-		    String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
+		    String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.NUM_CHILDREN, Comment.GENERATED_TIME};
 		    String[] whereCols = {Comment.ACTIVITY_ID, Comment.PARENT_ID};
 		    String[] whereOps = {"=", "="};
 		    Object[] whereVals = {activityId, INVALID};
 
 		    builder.select(names).from(Comment.TABLE).where(whereCols, whereOps, whereVals);
 
-            List<JSONObject> commentsJson = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
+		    List<JSONObject> commentsJson = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
 
 		    if (commentsJson == null) throw new NullPointerException();
 		    for (JSONObject commentJson : commentsJson)	ret.add(new Comment(commentJson));
