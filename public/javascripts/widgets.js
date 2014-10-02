@@ -54,7 +54,7 @@ function getDateTime(picker){
  * Pager Widgets
  */
 
-function PagerContainer(screen, bar, orderKey, orientation, numItemsPerPage) {
+function PagerContainer(screen, bar, orderKey, orientation, numItemsPerPage, url, paramsGenerator) {
 	this.screen = screen; // screen of the container
 	this.bar = bar; // control bar of the container
 	this.orderKey = orderKey;
@@ -74,14 +74,21 @@ function PagerContainer(screen, bar, orderKey, orientation, numItemsPerPage) {
 	this.relation = null;
 	this.status = null;
 
+    this.url = url;
+
+    // prototype: paramsGenerator(page)
+    this.paramsGenerator = paramsGenerator;
 }
 
 function PagerButton(container, page) {
+    // the pager button is determined to trigger only "GET" ajax
 	this.container = container;
 	this.page = page;
 }
 
-function createPagerBar(container, oldSt, oldEd, onPagerButtonClicked) {
+function createPagerBar(container, oldSt, oldEd, onSuccess, onError) {
+
+    // prototypes: onSuccess(data), onError()
 	var page  = container.page;
 	var orientation = container.orientation; 
 	var newSt = container.st; 
@@ -97,15 +104,55 @@ function createPagerBar(container, oldSt, oldEd, onPagerButtonClicked) {
 
 	var previous = new PagerButton(container, page - 1);
 	var btnPrevious = $("<button>", {
-		text: "上一頁"
+		text: "Prev",
+		style: "margin-right: 2px"
 	}).appendTo(container.bar);
-	btnPrevious.on("click", previous, onPagerButtonClicked);
+	btnPrevious.click(previous, function(evt) {
+	    if (container.url == null) return;
+        var button = evt.data;
+        var params = container.paramsGenerator(container, button.page);
+        if (params == null) return;
+        disableField(btnPrevious);
+        $.ajax({
+            type: "GET",
+            url: container.url,
+            data: params,
+            success: function(data, status, xhr) {
+                enableField(btnPrevious);
+                onSuccess(data);
+            },
+            error: function(xhr, status, err) {
+                enableField(btnPrevious);
+                onError();
+            }
+        });
+	});
 
 	var next = new PagerButton(container, page + 1);
-	var btnNext = $("<button>", {
-		text: "下一頁"
-	}).appendTo(container.bar);
-	btnNext.on("click", next, onPagerButtonClicked);
+    var btnNext = $("<button>", {
+        text: "Next",
+        style: "margin-left: 2px"
+    }).appendTo(container.bar);
+    btnNext.click(next, function(evt) {
+        if (container.url == null) return;
+        var button = evt.data;
+        var params = container.paramsGenerator(container, button.page);
+        if (params == null) return;
+        disableField(btnNext);
+        $.ajax({
+            type: "GET",
+            url: container.url,
+            data: params,
+            success: function(data, status, xhr) {
+                enableField(btnNext);
+                onSuccess(data);
+            },
+            error: function(xhr, status, err) {
+                enableField(btnNext);
+                onError();
+            }
+        });
+    });
 }
 
 /*

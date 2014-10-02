@@ -85,8 +85,7 @@ public class UserController extends Controller {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             String[] cols = {Login.USER_ID, Login.TOKEN};
             Object[] vals = {userId, token};
-            builder.insert(cols, vals).into(Login.TABLE);
-            SQLHelper.insert(builder);
+            builder.insert(cols, vals).into(Login.TABLE).execInsert();
             ObjectNode result = user.toObjectNode(userId);
             result.put(User.TOKEN, token);
             return ok(result);
@@ -121,7 +120,7 @@ public class UserController extends Controller {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.update(User.TABLE).set(columnNames, columnValues).where(User.ID, "=", lastId);
 
-            if(!SQLHelper.update(builder)) throw new NullPointerException();
+            if(!builder.execUpdate()) throw new NullPointerException();
             sendVerificationEmail(user.getName(), user.getEmail(), code);
             return ok();
         } catch (Exception e) {
@@ -173,7 +172,7 @@ public class UserController extends Controller {
             String token = formData.get(User.TOKEN)[0];
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.from(Login.TABLE).where(Login.TOKEN, "=", token);
-            if (!SQLHelper.delete(builder)) throw new NullPointerException();
+            if (!builder.execDelete()) throw new NullPointerException();
             return ok();
         } catch (Exception e) {
             DataUtils.log(TAG, "logout", e);
@@ -187,8 +186,7 @@ public class UserController extends Controller {
         try {
             if (name == null) throw new NullPointerException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            builder.select(User.ID).from(User.TABLE).where(User.NAME, "=", name);
-            List<JSONObject> userJsons = SQLHelper.select(builder);
+            List<JSONObject> userJsons = builder.select(User.ID).from(User.TABLE).where(User.NAME, "=", name).execSelect();
             if (userJsons != null && userJsons.size() > 0) throw new UserNotFoundException();
             return ok();
         } catch (Exception e) {

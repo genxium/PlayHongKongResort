@@ -211,7 +211,9 @@ function onBtnJoinClicked(evt){
 $(document).ready(function(){
 
 	g_sectionActivity = $("#section-activity");
-	g_tabComments = new PagerContainer($("#pager-screen-activities"), $("#pager-bar-activities"), g_keyId, g_orderDescend, 5);		
+	g_tabComments = new PagerContainer($("#pager-screen-activities"), $("#pager-bar-activities"),
+	                                     g_keyId, g_orderDescend, 5,
+	                                     "/comment/query", generateCommentsQueryParams);
 	g_tabParticipants = $("#tab-participants");
 	g_tabAssessments = $("#tab-assessments");
 

@@ -3,7 +3,8 @@ var g_activitiesFilter = null;
 var g_activitiesSorter = null;
 var g_pagerContainer = null;
 
-function queryActivities(refIndex, numItems, orientation, direction, vieweeId, relation, status, onSuccess, onError){
+function queryActivities(refIndex, numItems, orientation, direction, vieweeId, relation, status, onSuccess, onError) {
+    // prototypes: onSuccess(data), onError
 	var params = {};
 	if(refIndex != null) params[g_keyRefIndex] = refIndex.toString();
 	if(numItems != null) params[g_keyNumItems] = numItems;
@@ -20,23 +21,35 @@ function queryActivities(refIndex, numItems, orientation, direction, vieweeId, r
 		type: "GET",
 		url: "/activity/query",
 		data: params,
-		success: onSuccess,
-		error: onError 
+		success: function(data, status, xhr) {
+		    onSuccess(data);
+		},
+		error: function(xhr, status, err) {
+		    onError();
+		}
 	});
 }
 
-function onPagerButtonClicked(evt) {
-	var button = evt.data;
-	var container = button.container;
-	var page = button.page;
-	if (page == container.page) return;
-	var direction = page > container.page ? g_directionForward : g_directionBackward;
-	var refIndex = page > container.page ? g_pagerContainer.ed : g_pagerContainer.st;
+function generateActivitiesQueryParams(container, page) {
+    if (page == container.page) return null;
+    var direction = page > container.page ? g_directionForward : g_directionBackward;
+    var refIndex = page > container.page ? g_pagerContainer.ed : g_pagerContainer.st;
 
-	queryActivities(refIndex, container.nItems, container.orientation, direction, g_vieweeId, container.relation, container.status, onQueryActivitiesSuccess, onQueryActivitiesError);
+    var params = {};
+    if(refIndex != null) params[g_keyRefIndex] = refIndex.toString();
+    if(numItems != null) params[g_keyNumItems] = container.nItems;
+    if(orientation != null) params[g_keyOrientation] = container.orientation;
+    if(direction != null) params[g_keyDirection] = direction;
+    if(vieweeId != null) params[g_keyVieweeId] = g_vieweeId;
+    if(relation != null) params[g_keyRelation] = container.relation;
+    if(status != null) params[g_keyStatus] = container.status;
+
+    var token = $.cookie(g_keyToken);
+    if(token != null)	params[g_keyToken] = token;
+    return params;
 }
 
-function onQueryActivitiesSuccess(data, status, xhr){
+function onQueryActivitiesSuccess(data){
 	var jsonResponse = JSON.parse(data);
 	if(jsonResponse == null) return;
 	
@@ -58,10 +71,10 @@ function onQueryActivitiesSuccess(data, status, xhr){
 		generateActivityCell(g_pagerContainer.screen, activity);
 	}
 
-	createPagerBar(g_pagerContainer, oldSt, oldEd, onPagerButtonClicked);
+	createPagerBar(g_pagerContainer, oldSt, oldEd, onQueryActivitiesSuccess, onQueryActivitiesError);
 } 
 
-function onQueryActivitiesError(xhr, status, err){
+function onQueryActivitiesError(xhr){
 
 }
 

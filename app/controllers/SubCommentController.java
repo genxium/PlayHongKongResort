@@ -81,13 +81,12 @@ public class SubCommentController extends CommentController {
             cols.add(Comment.PARENT_ID);
             vals.add(parentId);
 
-            builder.insert(cols, vals).into(Comment.TABLE);
-            int lastId = SQLHelper.insert(builder);
+            int lastId = builder.insert(cols, vals).into(Comment.TABLE).execInsert();
             if (lastId == SQLHelper.INVALID) throw new NullPointerException();
 
             EasyPreparedStatementBuilder increment = new EasyPreparedStatementBuilder();
             increment.update(Comment.TABLE).increase(Comment.NUM_CHILDREN, 1).where(Comment.ID, "=", parentId);
-            if (!SQLHelper.update(increment)) throw new NullPointerException();
+            if (!increment.execUpdate()) throw new NullPointerException();
             return ok();
 
         } catch (Exception e) {

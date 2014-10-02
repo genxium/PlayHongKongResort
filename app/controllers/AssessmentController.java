@@ -18,6 +18,7 @@ import java.util.*;
 
 public class AssessmentController extends Controller {
 
+    public static final String TAG = AssessmentController.class.getName();
     public static final String BUNDLE = "bundle";
 
     public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer to, Integer activityId) {
@@ -40,55 +41,55 @@ public class AssessmentController extends Controller {
         response().setContentType("text/plain");
 
         try {
-		Http.RequestBody body = request().body();
+            Http.RequestBody body = request().body();
 
-		// get file data from request body stream
-		Map<String, String[]> formData = body.asFormUrlEncoded();
+            // get file data from request body stream
+            Map<String, String[]> formData = body.asFormUrlEncoded();
 
-		String token = formData.get(User.TOKEN)[0];
-		if (token == null) throw new NullPointerException();
-		Integer userId = SQLCommander.queryUserId(token);
-		if (userId == null) throw new UserNotFoundException();
-		User user = SQLCommander.queryUser(userId);
-		if (user == null) throw new UserNotFoundException();
-		Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-		if (activityId == null) throw new ActivityNotFoundException();
-        Activity activitiy = SQLCommander.queryActivity(activityId);
-        if(activitiy == null) throw new ActivityNotFoundException();
+            String token = formData.get(User.TOKEN)[0];
+            if (token == null) throw new NullPointerException();
+            Integer userId = SQLCommander.queryUserId(token);
+            if (userId == null) throw new UserNotFoundException();
+            User user = SQLCommander.queryUser(userId);
+            if (user == null) throw new UserNotFoundException();
+            Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+            if (activityId == null) throw new ActivityNotFoundException();
+            Activity activitiy = SQLCommander.queryActivity(activityId);
+            if(activitiy == null) throw new ActivityNotFoundException();
 
-		Integer relation = SQLCommander.queryUserActivityRelation(userId, activityId);
+            Integer relation = SQLCommander.queryUserActivityRelation(userId, activityId);
 
-        // Only present participants and host can submit assessments
-		if ((relation & UserActivityRelation.present) == 0 && activitiy.getHost().getId() != userId) throw new InvalidUserActivityRelationException();
+            // Only present participants and host can submit assessments
+            if ((relation & UserActivityRelation.present) == 0 && activitiy.getHost().getId() != userId) throw new InvalidUserActivityRelationException();
 
-		String bundle = formData.get(BUNDLE)[0];
-		JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
-		for (Object obj : assessmentJsons) {
-			Assessment assessment = new Assessment((JSONObject) obj);
-			assessment.setActivityId(activityId);
-			assessment.setFrom(userId);
-			Assessment existingAssessment = SQLCommander.queryAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo());
-			if (existingAssessment != null) continue;
-			if (!SQLCommander.isUserAssessable(assessment.getFrom(), assessment.getTo(), assessment.getActivityId()))   continue;
-			SQLCommander.createAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo(), assessment.getContent());
-		}
+            String bundle = formData.get(BUNDLE)[0];
+            JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
+            for (Object obj : assessmentJsons) {
+                Assessment assessment = new Assessment((JSONObject) obj);
+                assessment.setActivityId(activityId);
+                assessment.setFrom(userId);
+                Assessment existingAssessment = SQLCommander.queryAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo());
+                if (existingAssessment != null) continue;
+                if (!SQLCommander.isUserAssessable(assessment.getFrom(), assessment.getTo(), assessment.getActivityId()))   continue;
+                SQLCommander.createAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo(), assessment.getContent());
+            }
 
-		int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
-		if(originalRelation == UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
+            int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
+            if(originalRelation == UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
 
-		int newRelation = UserActivityRelation.maskRelation(UserActivityRelation.assessed, originalRelation);
+            int newRelation = UserActivityRelation.maskRelation(UserActivityRelation.assessed, originalRelation);
 
-		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		builder.update(UserActivityRelation.TABLE).set(UserActivityRelation.RELATION, newRelation);
-		builder.where(UserActivityRelation.USER_ID, "=", userId);
-		builder.where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
-		if(!SQLHelper.update(builder)) throw new NullPointerException();
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            builder.update(UserActivityRelation.TABLE).set(UserActivityRelation.RELATION, newRelation)
+                    .where(UserActivityRelation.USER_ID, "=", userId)
+                    .where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
+            if(!builder.execUpdate()) throw new NullPointerException();
 
-		ObjectNode ret = Json.newObject();
-		ret.put(UserActivityRelation.RELATION, newRelation);
-		return ok(ret);
+            ObjectNode ret = Json.newObject();
+            ret.put(UserActivityRelation.RELATION, newRelation);
+            return ok(ret);
         } catch (Exception e) {
-		System.out.println(AssessmentController.class.getName()+".submit, " + e.getMessage());
+		    DataUtils.log(TAG, "submit", e);
         }
 	return badRequest();
     }

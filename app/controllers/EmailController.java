@@ -23,8 +23,7 @@ public class EmailController extends UserController {
         try {
             if (email == null || !General.validateEmail(email)) throw new NullPointerException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            builder.select(User.ID).from(User.TABLE).where(User.EMAIL, "=", email);
-            List<JSONObject> userJsons = SQLHelper.select(builder);
+            List<JSONObject> userJsons = builder.select(User.ID).from(User.TABLE).where(User.EMAIL, "=", email).execSelect();
             if (userJsons != null && userJsons.size() > 0) throw new UserNotFoundException();
             return ok();
         } catch (Exception e) {
@@ -37,18 +36,15 @@ public class EmailController extends UserController {
         response().setContentType("text/html");
         try {
             EasyPreparedStatementBuilder builderUpdate = new EasyPreparedStatementBuilder();
-            builderUpdate.update(User.TABLE).
-                    set(User.GROUP_ID, User.USER).
-                    set(User.VERIFICATION_CODE, "").
-                    where(User.EMAIL, "=", email).
-                    where(User.VERIFICATION_CODE, "=", code);
-
-            boolean res = SQLHelper.update(builderUpdate);
+            boolean res = builderUpdate.update(User.TABLE)
+                                        .set(User.GROUP_ID, User.USER)
+                                        .set(User.VERIFICATION_CODE, "")
+                                        .where(User.EMAIL, "=", email)
+                                        .where(User.VERIFICATION_CODE, "=", code).execUpdate();
 
             String[] names = {User.ID, User.EMAIL, User.NAME, User.PASSWORD, User.GROUP_ID, User.AVATAR};
             EasyPreparedStatementBuilder builderSelect = new EasyPreparedStatementBuilder();
-            builderSelect.select(names).from(User.TABLE).where(User.EMAIL, "=", email);
-            List<JSONObject> userJsons = SQLHelper.select(builderSelect);
+            List<JSONObject> userJsons = builderSelect.select(names).from(User.TABLE).where(User.EMAIL, "=", email).execSelect();
 
             if(userJsons == null || userJsons.size() != 1) throw new UserNotFoundException();
 

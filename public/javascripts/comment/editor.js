@@ -19,10 +19,11 @@ function onPagerButtonClicked(evt) {
 }
 
 function queryCommentsAndRefresh(activity) {
-    queryComments(0, g_tabComments.nItems, 1, activity.id, onQueryCommentsSuccess, onQueryCommentsError);
+    queryComments(0, g_tabComments.nItems, g_directionForward, activity.id, onQueryCommentsSuccess, onQueryCommentsError);
 }
 
 function queryComments(refIndex, numItems, direction, activityId, onSuccess, onError){
+    // prototypes: onSuccess(data), onError
     var params = {};
     params[g_keyActivityId] = activityId;
     params[g_keyRefIndex] = refIndex;
@@ -32,13 +33,32 @@ function queryComments(refIndex, numItems, direction, activityId, onSuccess, onE
         type: "GET",
         url: "/comment/query",
         data: params,
-        success: onSuccess,
-        error: onError
+        success: function(data, status, xhr) {
+            onSuccess(data);
+        },
+        error: function(xhr, status, err) {
+            onError();
+        }
     });
 }
 
+function generateCommentsQueryParams(container, page) {
+
+    if (page == container.page) return null;
+	var direction = page > container.page ? g_directionForward : g_directionBackward;
+	var refIndex = page > container.page ? g_tabComments.ed : g_tabComments.st;
+
+	var params = {};
+    params[g_keyActivityId] = g_activity.id;
+    params[g_keyRefIndex] = refIndex;
+    params[g_keyNumItems] = container.nItems;
+    params[g_keyDirection] = direction;
+
+    return params;
+}
+
 // Tab Q&A a.k.a comments
-function onQueryCommentsSuccess(data, status, xhr){	
+function onQueryCommentsSuccess(data){
 	// this function is only valid in detail's page
 	if(g_activity == null) return;
 
@@ -62,10 +82,10 @@ function onQueryCommentsSuccess(data, status, xhr){
 		++idx;
 	}
 
-	createPagerBar(g_tabComments, oldSt, oldEd, onPagerButtonClicked);
+	createPagerBar(g_tabComments, oldSt, oldEd, onQueryCommentsSuccess, onQueryCommentsError);
 }
 
-function onQueryCommentsError(xhr, status, err){
+function onQueryCommentsError(){
 	
 }
 
@@ -122,7 +142,7 @@ function generateReplyEditor(activity, comment){
 
     });
 
-    var btnCollapse=$('<button>',{
+    var btnCollapse = $('<button>',{
         text: "COLLAPSE",
         style: "color: red; text-decoration: underline; background-color: none; border: none"
     }).appendTo(ret);
@@ -252,7 +272,7 @@ function generateSubCommentCell(par, commentJson, activity){
 
 function generateCommentEditor(par, activity){
     var editor = $('<div>').appendTo(par);
-    var input=$('<input>', {
+    var input = $('<input>', {
         style: "font-size: 15pt"
     }).appendTo(editor);
 
@@ -283,6 +303,7 @@ function generateCommentEditor(par, activity){
 			url: "/comment/submit",
 			data: params,
 			success: function(data, status, xhr){
+			    input.val("");
 				queryCommentsAndRefresh(activity, null, null);
 			},
 			error: function(xhr, status, err){

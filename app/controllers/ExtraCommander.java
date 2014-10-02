@@ -23,7 +23,7 @@ public class ExtraCommander extends SQLCommander {
 			// as well as corresponding image files
 			EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
 			builderRelation.from(UserActivityRelation.TABLE).where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
-			if(!SQLHelper.delete(builderRelation)) throw new NullPointerException();
+			if(!builderRelation.execDelete()) throw new NullPointerException();
 
 			List<Image> previousImages = queryImages(activityId);
 			if (previousImages != null && previousImages.size() > 0) {
@@ -36,8 +36,7 @@ public class ExtraCommander extends SQLCommander {
 
 			// delete record in table activity
 			EasyPreparedStatementBuilder builderActivity = new EasyPreparedStatementBuilder();
-			builderActivity.from(Activity.TABLE).where(Activity.ID, "=", activityId);
-			ret = SQLHelper.delete(builderActivity);
+            ret = builderActivity.from(Activity.TABLE).where(Activity.ID, "=", activityId).execDelete();
 
 		} catch (Exception e) {
 			DataUtils.log(TAG, "deleteActivity", e);
@@ -154,7 +153,7 @@ public class ExtraCommander extends SQLCommander {
             if(activityId == null) throw new NullPointerException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.from(Comment.TABLE).where(Comment.ACTIVITY_ID, "=", activityId);
-            if(!SQLHelper.delete(builder)) throw new NullPointerException();
+            if(!builder.execDelete()) throw new NullPointerException();
             return true;
         } catch (Exception e) {
             DataUtils.log(TAG, "deleteComments", e);
@@ -167,7 +166,7 @@ public class ExtraCommander extends SQLCommander {
             if(activityId == null) throw new NullPointerException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.from(Assessment.TABLE).where(Assessment.ACTIVITY_ID, "=", activityId);
-            if(!SQLHelper.delete(builder)) throw new NullPointerException();
+            if(!builder.execDelete()) throw new NullPointerException();
             return true;
         } catch (Exception e) {
             DataUtils.log(TAG, "deleteAssessments", e);

@@ -226,7 +226,7 @@ public class ActivityController extends Controller {
 			Object[] values = {Activity.PENDING};
 
 			builder.update(Activity.TABLE).set(names, values).where(Activity.ID, "=", activity.getId());
-			if(!SQLHelper.update(builder)) throw new Exception();
+			if(!builder.execUpdate()) throw new NullPointerException();
 
 			return ok();
 
@@ -283,12 +283,11 @@ public class ActivityController extends Controller {
 			String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION};
 			Object[] values = {activityId, userId, UserActivityRelation.maskRelation(UserActivityRelation.applied, null)};
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-			builder.insert(names, values).into(UserActivityRelation.TABLE);
-			SQLHelper.insert(builder);
+			builder.insert(names, values).into(UserActivityRelation.TABLE).execInsert();
 
 			EasyPreparedStatementBuilder increment = new EasyPreparedStatementBuilder();
 			increment.update(Activity.TABLE).increase(Activity.NUM_APPLIED, 1).where(Activity.ID, "=", activityId);
-			if (!SQLHelper.update(increment)) throw new NullPointerException();
+			if (!increment.execUpdate()) throw new NullPointerException();
 			return ok();
 		} catch (Exception e) {
 			DataUtils.log(TAG, "join", e);
@@ -324,7 +323,7 @@ public class ActivityController extends Controller {
 			Object[] whereVals = {activityId, userId};
 			builder.update(UserActivityRelation.TABLE).set(names, values).where(whereCols, whereOps, whereVals);
 
-			if(!SQLHelper.update(builder)) throw new NullPointerException();
+			if(!builder.execUpdate()) throw new NullPointerException();
 
 			ObjectNode ret = Json.newObject();
 			ret.put(UserActivityRelation.RELATION, newRelation);

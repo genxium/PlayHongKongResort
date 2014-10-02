@@ -96,7 +96,25 @@ function generateActivityCell(par, activity){
 	dDetail[g_keyActivityId] = activity.id;
 	btnDetail.on("click", dDetail, onBtnDetailClicked);
 
-        displayTimesTable(ret, activity);
+    displayTimesTable(ret, activity);
+
+    var participantsRow = $("<p>", {
+        style: "margin-top: 2px"
+    }).appendTo(ret);
+
+    var spanSelected = $("<span>", {
+        text: activity.numSelected.toString() + " selected",
+        style: "color: PaleVioletRed"
+    }).appendTo(participantsRow);
+
+    var spanSlash = $("<span>", {
+        text: " / "
+    }).appendTo(participantsRow);
+
+    var spanApplied = $("<span>", {
+        text: (activity.numApplied + activity.numSelected).toString() + " applied", // display the total number of applied users including the selected ones
+        style: "color: purple"
+    }).appendTo(participantsRow);
 
 	if(coverImageUrl != null){
 		var imgRow = $("<p>", {

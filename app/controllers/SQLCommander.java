@@ -32,8 +32,7 @@ public class SQLCommander {
 	    try {
 		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    builder.select(names).from(User.TABLE).where(User.ID, "=", userId);
-		    List<JSONObject> results = SQLHelper.select(builder);
+            List<JSONObject> results = builder.select(names).from(User.TABLE).where(User.ID, "=", userId).execSelect();
 		    if (results == null || results.size() <= 0) return null;
 		    Iterator<JSONObject> it = results.iterator();
 		    if (!it.hasNext()) return null;
@@ -50,8 +49,7 @@ public class SQLCommander {
 	    try {
 		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    builder.select(names).from(User.TABLE).where(User.EMAIL, "=", email);
-		    List<JSONObject> results = SQLHelper.select(builder);
+            List<JSONObject> results = builder.select(names).from(User.TABLE).where(User.EMAIL, "=", email).execSelect();
 		    if (results == null || results.size() <= 0) return null;
 		    Iterator<JSONObject> it = results.iterator();
 		    if (!it.hasNext()) return null;
@@ -71,8 +69,7 @@ public class SQLCommander {
 		    Object[] values = {user.getEmail(), user.getPassword(), user.getName(), user.getGroupId()};
 
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    builder.insert(cols, values).into(User.TABLE);
-		    ret = SQLHelper.insert(builder);
+		    ret = builder.insert(cols, values).into(User.TABLE).execInsert();
 	    } catch (Exception e) {
 		    System.out.println(SQLCommander.class.getName() + ".registerUser, " + e.getMessage());
 	    }
@@ -93,8 +90,7 @@ public class SQLCommander {
 	    values.add(userId);
 
 	    EasyPreparedStatementBuilder builderActivity = new EasyPreparedStatementBuilder();
-	    builderActivity.insert(names, values).into(Activity.TABLE);
-	    lastActivityId = SQLHelper.insert(builderActivity);
+        lastActivityId = builderActivity.insert(names, values).into(Activity.TABLE).execInsert();
 	    if (lastActivityId.equals(SQLHelper.INVALID)) return SQLHelper.INVALID;
 	    names.clear();
 	    values.clear();
@@ -108,8 +104,7 @@ public class SQLCommander {
 	    values.add(UserActivityRelation.maskRelation(UserActivityRelation.selected, null));
 
 	    EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
-	    builderRelation.insert(names, values).into(UserActivityRelation.TABLE);
-	    SQLHelper.insert(builderRelation);
+	    builderRelation.insert(names, values).into(UserActivityRelation.TABLE).execInsert();
 
         return lastActivityId;
     }
@@ -120,8 +115,7 @@ public class SQLCommander {
 		    String[] cols = {Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
 		    Object[] values = {activity.getTitle(), activity.getContent(), activity.getCreatedTime().toString(), activity.getBeginTime().toString(), activity.getDeadline().toString(), activity.getCapacity()};
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    builder.update(Activity.TABLE).set(cols, values).where(Activity.ID, "=", activityId);
-		    return SQLHelper.update(builder);
+		    return builder.update(Activity.TABLE).set(cols, values).where(Activity.ID, "=", activityId).execUpdate();
 	    } catch (Exception e) {
 		    DataUtils.log(TAG, "updateActivity", e);
 	    }
@@ -135,8 +129,7 @@ public class SQLCommander {
 	    try {
 		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, Activity.NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId);
-		    List<JSONObject> results = SQLHelper.select(builder);
+            List<JSONObject> results = builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId).execSelect();
 		    if (results == null || results.size() != 1) throw new ActivityNotFoundException();
 		    JSONObject activityJson = results.get(0);
 		    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
@@ -245,11 +238,11 @@ public class SQLCommander {
 		    if (activityId == null) throw new ActivityNotFoundException();
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-		    builder.select(UserActivityRelation.RELATION).from(UserActivityRelation.TABLE);
-		    builder.where(UserActivityRelation.USER_ID, "=", userId);
-		    builder.where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
+            List<JSONObject> records = builder.select(UserActivityRelation.RELATION).from(UserActivityRelation.TABLE)
+                    .where(UserActivityRelation.USER_ID, "=", userId)
+                    .where(UserActivityRelation.ACTIVITY_ID, "=", activityId)
+                    .execSelect();
 
-		    List<JSONObject> records = SQLHelper.select(builder);
 		    if (records == null) return UserActivityRelation.invalid;
 		    if (records.size() != 1) return UserActivityRelation.invalid;
 		    JSONObject record = records.get(0);
@@ -264,8 +257,7 @@ public class SQLCommander {
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
-            builder.select(names).from(Comment.TABLE).where(Comment.ID, "=", commentId);
-            List<JSONObject> commentsJson = SQLHelper.select(builder);
+            List<JSONObject> commentsJson = builder.select(names).from(Comment.TABLE).where(Comment.ID, "=", commentId).execSelect();
             if (commentsJson == null || commentsJson.size() <= 0) throw new NullPointerException();
             return new Comment(commentsJson.get(0));
         } catch (Exception e) {
@@ -323,8 +315,7 @@ public class SQLCommander {
 		    String[] whereCols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO};
 		    String[] whereOps = {"=", "=", "="};
 		    Object[] whereVals = {activityId, from, to};
-		    builder.select(names).where(whereCols, whereOps, whereVals).from(Assessment.TABLE);
-		    List<JSONObject> assessmentJsons = SQLHelper.select(builder);
+            List<JSONObject> assessmentJsons = builder.select(names).where(whereCols, whereOps, whereVals).from(Assessment.TABLE).execSelect();
 		    if (assessmentJsons == null || assessmentJsons.size() != 1) return null;
             return new Assessment(assessmentJsons.get(0));
 	    } catch (Exception e) {
@@ -356,32 +347,28 @@ public class SQLCommander {
     }
 
     public static boolean updateAssessment(Integer activityId, Integer from, Integer to, String content) {
-	    boolean ret = false;
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    String[] whereCols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO};
 		    String[] whereOps = {"=", "=", "="};
 		    Object[] whereVals = {activityId, from, to};
-		    builder.update(Assessment.TABLE).set(Assessment.CONTENT, content).where(whereCols, whereOps, whereVals);
-		    ret = SQLHelper.update(builder);
+		    return builder.update(Assessment.TABLE).set(Assessment.CONTENT, content).where(whereCols, whereOps, whereVals).execUpdate();
 	    } catch (Exception e) {
 
 	    }
-	    return ret;
+	    return false;
     }
 
     public static int createAssessment(Integer activityId, Integer from, Integer to, String content) {
-	    int ret = SQLHelper.INVALID;
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    String[] cols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO, Assessment.CONTENT};
 		    Object[] vals = {activityId, from, to, content};
-		    builder.insert(cols, vals).into(Assessment.TABLE);
-		    ret = SQLHelper.insert(builder);
+		    return builder.insert(cols, vals).into(Assessment.TABLE).execInsert();
 	    } catch (Exception e) {
 
 	    }
-	    return ret;
+	    return SQLHelper.INVALID;
     }
 
     public static boolean validateOwnership(int userId, int activityId) {
@@ -564,10 +551,9 @@ public class SQLCommander {
 	    if (activity == null) return false;
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    builder.update(Activity.TABLE).set(Activity.STATUS, Activity.ACCEPTED).where(Activity.ID, "=", activity.getId());
-		    return SQLHelper.update(builder);
+		    return builder.update(Activity.TABLE).set(Activity.STATUS, Activity.ACCEPTED).where(Activity.ID, "=", activity.getId()).execUpdate();
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".acceptActivity, " + e.getMessage());
+		    DataUtils.log(TAG, "acceptActivity", e);
 	    }
 	    return false;
     }
@@ -577,10 +563,9 @@ public class SQLCommander {
 	    if (activity == null) return false;
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    builder.update(Activity.TABLE).set(Activity.STATUS, Activity.REJECTED).where(Activity.ID, "=", activity.getId());
-		    return SQLHelper.update(builder);
+		    return builder.update(Activity.TABLE).set(Activity.STATUS, Activity.REJECTED).where(Activity.ID, "=", activity.getId()).execUpdate();
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".rejectActivity, " + e.getMessage());
+		    DataUtils.log(TAG, "rejectActivity", e);
 	    }
 	    return false;
     }
@@ -589,16 +574,13 @@ public class SQLCommander {
 	    int ret = INVALID;
 	    try {
 		    EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
-		    builderImage.insert(Image.URL, imageURL).into(Image.TABLE);
-		    int lastImageId = SQLHelper.insert(builderImage);
+		    int lastImageId = builderImage.insert(Image.URL, imageURL).into(Image.TABLE).execInsert();
 		    if (lastImageId == SQLHelper.INVALID) throw new Exception();
 
 		    EasyPreparedStatementBuilder builderUser = new EasyPreparedStatementBuilder();
 		    builderUser.update(User.TABLE).set(User.AVATAR, lastImageId).where(User.ID, "=", user.getId());
-		    if (!SQLHelper.update(builderUser)) {
-			    if (deleteImageRecord(lastImageId)) {
-				    System.out.println(SQLCommander.class.getName()+".uploadUserAvatar");
-			    }
+		    if (!builderUser.execUpdate()) {
+			    deleteImageRecord(lastImageId);
 			    throw new NullPointerException();
 		    }
 		    ret = lastImageId;
@@ -613,8 +595,7 @@ public class SQLCommander {
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    String[] names = {Image.ID, Image.URL};
-		    builder.select(names).from(Image.TABLE).where(Image.ID, "=", imageId);
-		    List<JSONObject> images = SQLHelper.select(builder);
+            List<JSONObject> images = builder.select(names).from(Image.TABLE).where(Image.ID, "=", imageId).execSelect();
 		    if (images == null) throw new ImageNotFoundException();
 		    Iterator<JSONObject> itImage = images.iterator();
 		    if (itImage.hasNext()) {
@@ -631,8 +612,7 @@ public class SQLCommander {
 	    boolean ret = false;
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    builder.from(Image.TABLE).where(Image.ID, "=", imageId);
-		    ret = SQLHelper.delete(builder);
+		    return builder.from(Image.TABLE).where(Image.ID, "=", imageId).execDelete();
 	    } catch (Exception e) {
 
 	    }
@@ -640,7 +620,6 @@ public class SQLCommander {
     }
 
     public static boolean deleteImageRecord(int imageId, int activityId) {
-	    boolean ret = false;
 	    try {
 		    String[] whereCols = {ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID};
 		    String[] whereOps = {"=", "="};
@@ -649,16 +628,15 @@ public class SQLCommander {
 		    EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
 		    builderRelation.from(ActivityImageRelation.TABLE).where(whereCols, whereOps, whereVals);
 
-		    if (!SQLHelper.delete(builderRelation)) throw new NullPointerException();
+		    if (!builderRelation.execDelete()) throw new NullPointerException();
 
 		    EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
-		    builderImage.from(Image.TABLE).where(Image.ID, "=", imageId);
-		    ret = SQLHelper.delete(builderImage);
+		    return builderImage.from(Image.TABLE).where(Image.ID, "=", imageId).execDelete();
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".deleteImageRecord, " + e.getMessage());
+		    DataUtils.log(TAG, "deleteImageRecord", e);
 	    }
 
-	    return ret;
+	    return false;
     }
 
     public static List<Image> queryImages(int activityId) {
@@ -676,32 +654,28 @@ public class SQLCommander {
 		    }
 
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName()+".queryImages, " + e.getMessage());
+		    DataUtils.log(TAG, "queryImages", e);
 	    }
 	    return images;
     }
 
     public static int createImage(User user, final Activity activity, final String imageURL) {
-	    int ret = INVALID;
 	    try {
 		    if (user == null) throw new UserNotFoundException();
 		    if (activity == null) throw new ActivityNotFoundException();
 		    EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
-		    builderImage.insert(Image.URL, imageURL).into(Image.TABLE);
-		    int lastImageId = SQLHelper.insert(builderImage);
+		    int lastImageId = builderImage.insert(Image.URL, imageURL).into(Image.TABLE).execInsert();
 		    if (lastImageId == INVALID) throw new NullPointerException();
-		    ret = lastImageId;
 
 		    String[] cols = {ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID};
 		    Object[] vals = {activity.getId(), lastImageId};
 		    EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
-		    builderRelation.insert(cols, vals).into(ActivityImageRelation.TABLE);
-            SQLHelper.insert(builderRelation);
-
+		    builderRelation.insert(cols, vals).into(ActivityImageRelation.TABLE).execInsert();
+            return lastImageId;
 	    } catch (Exception e) {
 		    DataUtils.log(TAG, "createImage", e);
 	    } 
-	    return ret;
+	    return INVALID;
     }
 
     public static List<BasicUser> queryUsers(int activityId, int maskedRelation) {
@@ -730,7 +704,7 @@ public class SQLCommander {
 		    }
 
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".queryUsers: " + e.getMessage());
+		    DataUtils.log(TAG, "queryUsers", e);
 	    }
 	    return users;
     }
@@ -756,7 +730,7 @@ public class SQLCommander {
 
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    builder.update(UserActivityRelation.TABLE).set(cols, vals).where(whereCols, whereOps, whereVals);
-		    if (!SQLHelper.update(builder)) throw new Exception();
+		    if (!builder.execUpdate()) throw new Exception();
 
             if ((relation & UserActivityRelation.selected) == 0) return true;
 		    return true;
@@ -850,7 +824,7 @@ public class SQLCommander {
             builder.order(orderKey, SQLHelper.DESCEND);
         }
         if(nItems != null) builder.limit(nItems);
-        List<JSONObject> ret = SQLHelper.select(builder);
+        List<JSONObject> ret = builder.execSelect();
         if(direction.equals(DIRECTION_BACKWARD)) Collections.reverse(ret);
         return ret;
     }
@@ -858,8 +832,7 @@ public class SQLCommander {
     static Integer queryUserId(String token) {
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            builder.select(Login.USER_ID).from(Login.TABLE).where(Login.TOKEN, "=", token);
-            List<JSONObject> allJson = SQLHelper.select(builder);
+            List<JSONObject> allJson = builder.select(Login.USER_ID).from(Login.TABLE).where(Login.TOKEN, "=", token).execSelect();
             if (allJson == null || allJson.size() != 1) return null;
             JSONObject loginJson = allJson.get(0);
             Login login = new Login(loginJson);

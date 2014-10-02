@@ -67,7 +67,7 @@ public class CommentController extends Controller {
 		    List<Object> vals = new LinkedList<Object>(Arrays.asList(columnValues));
 
 		    builder.insert(cols, vals).into(Comment.TABLE);
-		    if (SQLHelper.INVALID == SQLHelper.insert(builder)) throw new NullPointerException();
+		    if (SQLHelper.INVALID == builder.execInsert()) throw new NullPointerException();
 
 		    return ok();
 

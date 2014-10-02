@@ -50,11 +50,11 @@ public class ParticipantController extends UserController {
 			}
 
 			EasyPreparedStatementBuilder change = new EasyPreparedStatementBuilder();
-			change.update(Activity.TABLE).
-			decrease(Activity.NUM_APPLIED, count).
-			increase(Activity.NUM_SELECTED, count).
-			where(Activity.ID, "=", activityId);
-			if (!SQLHelper.update(change)) throw new NullPointerException();
+			change.update(Activity.TABLE)
+                    .decrease(Activity.NUM_APPLIED, count)
+                    .increase(Activity.NUM_SELECTED, count)
+                    .where(Activity.ID, "=", activityId);
+			if (!change.execUpdate()) throw new NullPointerException();
 
 			return ok();
 		} catch (Exception e) {

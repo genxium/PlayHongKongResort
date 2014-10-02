@@ -36,10 +36,12 @@ function Activity(activityJson){
             else return false;
 	};
 
-	this.capacity = activityJson["capacity"];
-	this.status = parseInt(activityJson["status"]);
-	this.relation = activityJson["relation"];
-	if(activityJson.hasOwnProperty("images")){
+	if (activityJson.hasOwnProperty("capacity")) this.capacity = parseInt(activityJson["capacity"]);
+	if (activityJson.hasOwnProperty("num_applied")) this.numApplied = parseInt(activityJson["num_applied"]);
+	if (activityJson.hasOwnProperty("num_selected")) this.numSelected = parseInt(activityJson["num_selected"]);
+	if (activityJson.hasOwnProperty("status")) this.status = parseInt(activityJson["status"]);
+	if (activityJson.hasOwnProperty("relation")) this.relation = parseInt(activityJson["relation"]);
+	if (activityJson.hasOwnProperty("images")){
 		var images = new Array();
 		var imagesJson = activityJson["images"];
 		for(var key in imagesJson){
@@ -49,6 +51,7 @@ function Activity(activityJson){
 		}
 		this.images = images;
 	}
+
 	if(activityJson.hasOwnProperty("applied_participants")){
 		var participants = new Array();
 		var participantsJson = activityJson["applied_participants"];
@@ -102,6 +105,7 @@ function Comment(commentJson) {
         if(commentJson.hasOwnProperty("parent_id")) this.parentId = parseInt(commentJson["parent_id"]);
         if(commentJson.hasOwnProperty("predecessor_id")) this.predecessorId = parseInt(commentJson["predecessor_id"]);
         if(commentJson.hasOwnProperty("generated_time")) this.generatedTime = commentJson["generated_time"];
+        if(commentJson.hasOwnProperty("num_children")) this.num_children = parseInt(commentJson["num_children"]);
 
         if(commentJson.hasOwnProperty("to")) this.to = parseInt(commentJson["to"]);
         if(commentJson.hasOwnProperty("to_name")) this.toName = commentJson["to_name"];
@@ -109,9 +113,11 @@ function Comment(commentJson) {
 }
 
 function Assessment(assessmentJson) {
+
 	if(assessmentJson.hasOwnProperty("content")) this.content = assessmentJson["content"];
 	if(assessmentJson.hasOwnProperty("from")) this.from = parseInt(assessmentJson["from"]);
 	if(assessmentJson.hasOwnProperty("to")) this.to = parseInt(assessmentJson["to"]);
 	if(assessmentJson.hasOwnProperty("from_name")) this.from_name = assessmentJson["from_name"];
 	if(assessmentJson.hasOwnProperty("to_name")) this.to_name = assessmentJson["to_name"];
+
 }

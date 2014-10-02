@@ -1,12 +1,18 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
+import utilities.DataUtils;
+import org.json.simple.JSONObject;
+
 public class EasyPreparedStatementBuilder {
+
+    public static final String TAG = EasyPreparedStatementBuilder.class.getName();
 
     protected String m_table = null;
     protected List<String> m_selectCols = null;
@@ -510,5 +516,76 @@ public class EasyPreparedStatementBuilder {
 
         }
         return statement;
+    }
+
+    public List<JSONObject> execSelect() {
+        List<JSONObject> ret = null;
+        try {
+            Connection connection = SQLHelper.getConnection();
+            PreparedStatement statement = this.toSelect(connection);
+            ResultSet rs = statement.executeQuery();
+            if (rs != null) {
+                ret = ResultSetUtil.convertToJSON(rs);
+                rs.close();
+            }
+            statement.close();
+            SQLHelper.closeConnection(connection);
+        } catch (Exception e) {
+            DataUtils.log(TAG, "select", e);
+        }
+        return ret;
+    }
+
+    public Integer execInsert() {
+        Integer lastId = SQLHelper.INVALID;
+        try {
+            Connection connection = SQLHelper.getConnection();
+            PreparedStatement statement = this.toInsert(connection);
+            // the following command returns the last inserted row id for the auto incremented key
+            statement.executeUpdate();
+            ResultSet rs = statement.getGeneratedKeys();
+            if (rs != null && rs.next()) {
+                lastId = (int) rs.getLong(1);
+                rs.close();
+            }
+            statement.close();
+            SQLHelper.closeConnection(connection);
+        } catch (Exception e) {
+            // return the invalid value for exceptions
+            DataUtils.log(TAG, "insert", e);
+        }
+        return lastId;
+    }
+
+    public boolean execUpdate() {
+        boolean bRet = false;
+        try {
+            Connection connection = SQLHelper.getConnection();
+            PreparedStatement statement = this.toUpdate(connection);
+            // the following command returns the last inserted row id for the auto incremented key
+            statement.executeUpdate();
+            statement.close();
+            SQLHelper.closeConnection(connection);
+            bRet = true;
+        } catch (Exception e) {
+            DataUtils.log(TAG, "update", e);
+        }
+        return bRet;
+    }
+
+    public boolean execDelete() {
+        boolean bRet = false;
+        try {
+            Connection connection = SQLHelper.getConnection();
+            PreparedStatement statement = this.toDelete(connection);
+            // the following command returns the last inserted row id for the auto incremented key
+            statement.executeUpdate();
+            statement.close();
+            SQLHelper.closeConnection(connection);
+            bRet = true;
+        } catch (Exception e) {
+            DataUtils.log(TAG, "delete", e);
+        }
+        return bRet;
     }
 }
