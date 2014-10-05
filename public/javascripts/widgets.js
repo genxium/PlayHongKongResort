@@ -127,6 +127,11 @@ function createPagerBar(container, oldSt, oldEd, onSuccess, onError) {
             }
         });
 	});
+	
+	var currentPageIndicator = $("<text>", {
+		text: container.page.toString(),
+		style: "font-size: 14pt; margin-left: 10px; margin-right: 10px;"
+	}).appendTo(container.bar);
 
 	var next = new PagerButton(container, page + 1);
     var btnNext = $("<button>", {

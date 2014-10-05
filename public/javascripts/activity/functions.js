@@ -37,12 +37,12 @@ function generateActivitiesQueryParams(container, page) {
 
     var params = {};
     if(refIndex != null) params[g_keyRefIndex] = refIndex.toString();
-    if(numItems != null) params[g_keyNumItems] = container.nItems;
-    if(orientation != null) params[g_keyOrientation] = container.orientation;
+    if(container.nItems != null) params[g_keyNumItems] = container.nItems;
+    if(container.orientation != null) params[g_keyOrientation] = container.orientation;
     if(direction != null) params[g_keyDirection] = direction;
-    if(vieweeId != null) params[g_keyVieweeId] = g_vieweeId;
-    if(relation != null) params[g_keyRelation] = container.relation;
-    if(status != null) params[g_keyStatus] = container.status;
+    if(g_vieweeId != null) params[g_keyVieweeId] = g_vieweeId;
+    if(container.relation != null) params[g_keyRelation] = container.relation;
+    if(container.status != null) params[g_keyStatus] = container.status;
 
     var token = $.cookie(g_keyToken);
     if(token != null)	params[g_keyToken] = token;

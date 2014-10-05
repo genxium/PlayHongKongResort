@@ -79,6 +79,7 @@ function onQuerySubCommentsError(){
 
 function generateSubCommentsQueryParams(container, page) {
 
+	if (container == null || container.page == null) return;
 	if (page == container.page) return null;
 	var direction = page > container.page ? g_directionForward : g_directionBackward;
 	var refIndex = page > container.page ? g_pagerContainer.ed : g_pagerContainer.st;
