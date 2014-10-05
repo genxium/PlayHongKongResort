@@ -16,6 +16,7 @@ CREATE TABLE `user` (
   `last_exit_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `verification_code` varchar(32) DEFAULT NULL,
+  `unread_count` int(32) NOT NULL DEFAULT '0',
   `password_reset_code` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),

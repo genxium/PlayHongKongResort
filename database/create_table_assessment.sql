@@ -11,8 +11,6 @@ CREATE TABLE `assessment` (
   PRIMARY KEY (`id`),
   KEY `assessment_ibfk_1` (`from`),
   KEY `assessment_ibfk_2` (`to`),
-  KEY `assessment_ibfk_3` (`activity_id`),
-  CONSTRAINT `assessment_ibfk_1` FOREIGN KEY (`from`) REFERENCES `user` (`id`),
-  CONSTRAINT `assessment_ibfk_2` FOREIGN KEY (`to`) REFERENCES `user` (`id`),
-  CONSTRAINT `assessment_ibfk_3` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`)
+  KEY `assessment_ibfk_3` (`activity_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

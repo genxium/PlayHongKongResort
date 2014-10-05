@@ -14,6 +14,6 @@ CREATE TABLE `activity` (
   `num_applied` int(32) DEFAULT '0',
   `num_selected` int(32) DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `activity_ibfk_1` (`host_id`),
-  CONSTRAINT `activity_ibfk_1` FOREIGN KEY (`host_id`) REFERENCES `user` (`id`)
+  KEY `status_index` (`status`),
+  KEY `activity_ibfk_1` (`host_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

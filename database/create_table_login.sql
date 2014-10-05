@@ -6,6 +6,6 @@ CREATE TABLE `login` (
   `token` varchar(32) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY `token` (`token`),
-  KEY `login_ibfk_1` (`user_id`),
-  CONSTRAINT `login_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  KEY `login_ibfk_1` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

@@ -12,7 +12,5 @@ CREATE TABLE `user_activity_relation` (
   UNIQUE KEY `UA_UNI_ID` (`user_id`,`activity_id`),
   KEY `user_activity_relation_ibfk_1` (`user_id`),
   KEY `user_activity_relation_ibfk_2` (`activity_id`),
-  KEY `relation_index` (`relation`) USING BTREE,
-  CONSTRAINT `user_activity_relation_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
-  CONSTRAINT `user_activity_relation_ibfk_2` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`)
+  KEY `relation_index` (`relation`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

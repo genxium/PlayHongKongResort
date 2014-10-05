@@ -10,10 +10,9 @@ CREATE TABLE `comment` (
   `predecessor_id` int(32) NOT NULL DEFAULT '-1',
   `generated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `parent_id` int(32) NOT NULL DEFAULT '-1',
-  `num_children` int(32) NOT NULL DEFAULT 0,
+  `num_children` int(32) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `comment_ibfk_1` (`from`),
   KEY `comment_ibfk_2` (`activity_id`),
-  CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`from`) REFERENCES `user` (`id`),
-  CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`)
+  KEY `comment_ibfk_3` (`to`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.20, for Linux (i686)
+-- MySQL dump 10.13  Distrib 5.6.14, for osx10.7 (x86_64)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
--- Server version	5.6.20
+-- Server version	5.6.14
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -35,8 +35,8 @@ CREATE TABLE `activity` (
   `num_applied` int(32) DEFAULT '0',
   `num_selected` int(32) DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `activity_ibfk_1` (`host_id`),
-  CONSTRAINT `activity_ibfk_1` FOREIGN KEY (`host_id`) REFERENCES `user` (`id`)
+  KEY `status_index` (`status`),
+  KEY `activity_ibfk_1` (`host_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -52,9 +52,7 @@ CREATE TABLE `activity_image_relation` (
   `image_id` int(32) NOT NULL,
   `generated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY `activity_image_relation_ibfk_1` (`activity_id`),
-  KEY `activity_image_relation_ibfk_2` (`image_id`),
-  CONSTRAINT `activity_image_relation_ibfk_1` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`),
-  CONSTRAINT `activity_image_relation_ibfk_2` FOREIGN KEY (`image_id`) REFERENCES `image` (`id`)
+  KEY `activity_image_relation_ibfk_2` (`image_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -75,10 +73,7 @@ CREATE TABLE `assessment` (
   PRIMARY KEY (`id`),
   KEY `assessment_ibfk_1` (`from`),
   KEY `assessment_ibfk_2` (`to`),
-  KEY `assessment_ibfk_3` (`activity_id`),
-  CONSTRAINT `assessment_ibfk_1` FOREIGN KEY (`from`) REFERENCES `user` (`id`),
-  CONSTRAINT `assessment_ibfk_2` FOREIGN KEY (`to`) REFERENCES `user` (`id`),
-  CONSTRAINT `assessment_ibfk_3` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`)
+  KEY `assessment_ibfk_3` (`activity_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -102,8 +97,7 @@ CREATE TABLE `comment` (
   PRIMARY KEY (`id`),
   KEY `comment_ibfk_1` (`from`),
   KEY `comment_ibfk_2` (`activity_id`),
-  CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`from`) REFERENCES `user` (`id`),
-  CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`)
+  KEY `comment_ibfk_3` (`to`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -172,8 +166,7 @@ CREATE TABLE `login` (
   `token` varchar(32) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY `token` (`token`),
-  KEY `login_ibfk_1` (`user_id`),
-  CONSTRAINT `login_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  KEY `login_ibfk_1` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -278,6 +271,8 @@ CREATE TABLE `user` (
   `last_exit_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `verification_code` varchar(32) DEFAULT NULL,
+  `unread_count` int(32) NOT NULL DEFAULT '0',
+  `password_reset_code` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `name` (`name`)
@@ -302,9 +297,7 @@ CREATE TABLE `user_activity_relation` (
   UNIQUE KEY `UA_UNI_ID` (`user_id`,`activity_id`),
   KEY `user_activity_relation_ibfk_1` (`user_id`),
   KEY `user_activity_relation_ibfk_2` (`activity_id`),
-  KEY `relation_index` (`relation`) USING BTREE,
-  CONSTRAINT `user_activity_relation_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
-  CONSTRAINT `user_activity_relation_ibfk_2` FOREIGN KEY (`activity_id`) REFERENCES `activity` (`id`)
+  KEY `relation_index` (`relation`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -317,4 +310,4 @@ CREATE TABLE `user_activity_relation` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-09-29 23:28:18
+-- Dump completed on 2014-10-06  0:43:53
