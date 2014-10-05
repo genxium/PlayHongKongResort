@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.14, for osx10.7 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.20, for Linux (i686)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
--- Server version	5.6.14
+-- Server version	5.6.20
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -35,8 +35,8 @@ CREATE TABLE `activity` (
   `num_applied` int(32) DEFAULT '0',
   `num_selected` int(32) DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `status_index` (`status`),
-  KEY `activity_ibfk_1` (`host_id`)
+  KEY `activity_ibfk_1` (`host_id`),
+  KEY `status_index` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -97,7 +97,9 @@ CREATE TABLE `comment` (
   PRIMARY KEY (`id`),
   KEY `comment_ibfk_1` (`from`),
   KEY `comment_ibfk_2` (`activity_id`),
-  KEY `comment_ibfk_3` (`to`)
+  KEY `comment_ibfk_3` (`to`),
+  KEY `comment_ibfk_4` (`parent_id`),
+  KEY `comment_ibfk_5` (`predecessor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -167,6 +169,31 @@ CREATE TABLE `login` (
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY `token` (`token`),
   KEY `login_ibfk_1` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `notification`
+--
+
+DROP TABLE IF EXISTS `notification`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `notification` (
+  `id` int(32) NOT NULL AUTO_INCREMENT,
+  `is_read` int(2) DEFAULT '0',
+  `from` int(32) NOT NULL,
+  `to` int(32) NOT NULL,
+  `content` varchar(128) NOT NULL,
+  `activity_id` int(32) NOT NULL,
+  `comment_id` int(32) DEFAULT NULL,
+  `assessment_id` int(32) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `notification_ibfk_1` (`activity_id`) USING BTREE,
+  KEY `notification_ibfk_2` (`comment_id`) USING BTREE,
+  KEY `notification_ibfk_3` (`assessment_id`) USING BTREE,
+  KEY `notification_ibfk_4` (`from`) USING BTREE,
+  KEY `notification_ibfk_5` (`to`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -272,7 +299,6 @@ CREATE TABLE `user` (
   `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `verification_code` varchar(32) DEFAULT NULL,
   `unread_count` int(32) NOT NULL DEFAULT '0',
-  `password_reset_code` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `name` (`name`)
@@ -310,4 +336,4 @@ CREATE TABLE `user_activity_relation` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-10-06  0:43:53
+-- Dump completed on 2014-10-05 13:11:25
