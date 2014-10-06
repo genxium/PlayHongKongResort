@@ -190,9 +190,8 @@ public class ActivityController extends Controller {
 				}
 			}
 
-			ObjectNode ret = Json.newObject();
-			if (isNewActivity)	ret.put(UserActivityRelation.ACTIVITY_ID, activityId.toString());
-			return ok(ret);
+			activity = SQLCommander.queryActivity(activityId);
+			return ok(activity.toObjectNodeWithImages(userId));
 		} catch (Exception e) {
 			DataUtils.log(TAG, "save", e);
 		}

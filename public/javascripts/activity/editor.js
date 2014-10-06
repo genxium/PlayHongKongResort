@@ -126,9 +126,7 @@ function initActivityEditor(){
 
 function showActivityEditor(activity) {
 
-        g_activityEditor = generateActivityEditor(activity);
-        g_modalActivityEditor.empty();
-        g_modalActivityEditor.append(g_activityEditor);
+	refreshActivityEditor(activity);
 
         g_sectionActivityEditor.css("position", "absolute");
         g_sectionActivityEditor.css("height", "90%");
@@ -136,6 +134,12 @@ function showActivityEditor(activity) {
         g_sectionActivityEditor.modal({
                 show: true
         });
+}
+
+function refreshActivityEditor(activity) {
+        g_activityEditor = generateActivityEditor(activity);
+        g_modalActivityEditor.empty();
+        g_modalActivityEditor.append(g_activityEditor);
 }
 
 function countImages(editor){
@@ -151,32 +155,42 @@ function countImages(editor){
 function isFileValid(file){
 	var ret=false;
 	var fileSizeLimit= (1<<20)// 2 mega bytes
-		if(file.size > fileSizeLimit) return false;
+	if(file.size > fileSizeLimit) return false;
 	return true;
 }
 
-function disableEditableFields() {
-
+function disableEditorButtons(editor) {
+	if (editor == null) return;
+	if (!g_savable) disableField(editor.btnSave);
+	if (!g_submittable) disableField(editor.btnSubmit);
+	if (editor.btnDelete != null) disableField(editor.btnDelete);
 }
 
-function enableEditableFields() {
-
+function enableEditorButtons(editor) {
+	if (editor == null) return;
+	if (g_savable) enableField(editor.btnSave);
+	if (g_submittable) enableField(editor.btnSubmit);
+	if (editor.btnDelete != null) enableField(editor.btnDelete);
 }
 
 function setNonSavable(){
 	g_savable = false;
+	disableEditorButtons(g_editor);
 }
 
 function setSavable(){
 	g_savable = true;
+	enableEditorButtons(g_editor);
 }
 
 function setNonSubmittable(){
 	g_submittable = false;
+	disableEditorButtons(g_editor);
 }
 
 function setSubmittable(){
 	g_submittable = true;
+	enableEditorButtons(g_editor);
 }
 
 // Assistive Callback Functions
@@ -189,8 +203,6 @@ function onSave(evt){
             alert("You haven't made any changes!");
             return;
         }
-
-        var data = evt.data;
 
         var formData = new FormData();
 
@@ -265,18 +277,21 @@ function onSave(evt){
                 processData: false, // tell jQuery not to process the data
                 success: function(data, status, xhr){
 			setSubmittable();
-			var jsonResponse = JSON.parse(data);
-			if(jsonResponse.hasOwnProperty(g_keyActivityId)) {
-				alert("Activity created!");
-				g_editor.id = parseInt(jsonResponse[g_keyActivityId]);
+			var activityJson = JSON.parse(data);
+			var activity = new Activity(activityJson);
+			if (g_editor.id == null) {
+				alert("Activity created.");
 			} else {
 				alert("Changes saved.");
 			}
+			g_editor.id = activity.id;
+			refreshActivityEditor(activity);	
 			if(g_onActivitySaveSuccess == null) return;
 			g_onActivitySaveSuccess();
                 },
                 error: function(xhr, status, err){
                         setSavable();
+			alert("Activity not saved!");
                 }
         });
 }
@@ -513,7 +528,6 @@ function generateActivityEditor(activity){
 	        evt.preventDefault();
 		setSavable();
 		setNonSubmittable();
-		activityTitle = $(this).val();
 	});
 
 	var contentText = $('<p>', {
@@ -529,7 +543,6 @@ function generateActivityEditor(activity){
 	        evt.preventDefault();
 		setSavable();
 		setNonSubmittable();
-		activityContent = $(this).val();
 	});
 
 	$("<p>", {
@@ -672,7 +685,6 @@ function generateActivityEditor(activity){
                 dDelete[g_keyActivityId] = activityId;
 		btnDelete.on("click", dDelete, onDelete);
 	}
-	ret.data(g_keyActivityId, activityId);			
 
 	// ActivityEditor(id, titleField, contentField, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete)
 	g_editor = new ActivityEditor(activityId, titleInput, contentInput, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete);	

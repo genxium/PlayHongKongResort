@@ -20,7 +20,7 @@ function generateDatePicker(time) {
 		value: time,
 		disabled: true,
 		class: 'form-control',
-		style: 'background-color: white; cursor: default; width: auto'    
+		style: 'color: black; background-color: white; cursor: default; width: auto'    
 	}).appendTo(inputGroup);
 
 	var inputGroupAddon=$('<span>', {
