@@ -37,7 +37,7 @@ CREATE TABLE `activity` (
   PRIMARY KEY (`id`),
   KEY `activity_ibfk_1` (`host_id`),
   KEY `status_index` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -74,7 +74,7 @@ CREATE TABLE `assessment` (
   KEY `assessment_ibfk_1` (`from`),
   KEY `assessment_ibfk_2` (`to`),
   KEY `assessment_ibfk_3` (`activity_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -100,7 +100,7 @@ CREATE TABLE `comment` (
   KEY `comment_ibfk_3` (`to`),
   KEY `comment_ibfk_4` (`parent_id`),
   KEY `comment_ibfk_5` (`predecessor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -115,7 +115,7 @@ CREATE TABLE `image` (
   `url` varchar(128) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `url` (`url`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -188,12 +188,14 @@ CREATE TABLE `notification` (
   `activity_id` int(32) NOT NULL,
   `comment_id` int(32) DEFAULT NULL,
   `assessment_id` int(32) DEFAULT NULL,
+  `type` int(4) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `notification_ibfk_1` (`activity_id`) USING BTREE,
   KEY `notification_ibfk_2` (`comment_id`) USING BTREE,
   KEY `notification_ibfk_3` (`assessment_id`) USING BTREE,
   KEY `notification_ibfk_4` (`from`) USING BTREE,
-  KEY `notification_ibfk_5` (`to`) USING BTREE
+  KEY `notification_ibfk_5` (`to`) USING BTREE,
+  KEY `type_index` (`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -302,7 +304,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -336,4 +338,4 @@ CREATE TABLE `user_activity_relation` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-10-05 13:11:25
+-- Dump completed on 2014-10-06 11:13:49

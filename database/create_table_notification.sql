@@ -31,12 +31,14 @@ CREATE TABLE `notification` (
   `activity_id` int(32) NOT NULL,
   `comment_id` int(32) DEFAULT NULL,
   `assessment_id` int(32) DEFAULT NULL,
+  `type` int(4) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `notification_ibfk_1` (`activity_id`) USING BTREE,
   KEY `notification_ibfk_2` (`comment_id`) USING BTREE,
   KEY `notification_ibfk_3` (`assessment_id`) USING BTREE,
   KEY `notification_ibfk_4` (`from`) USING BTREE,
-  KEY `notification_ibfk_5` (`to`) USING BTREE
+  KEY `notification_ibfk_5` (`to`) USING BTREE,
+  KEY `type_index` (`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -49,4 +51,4 @@ CREATE TABLE `notification` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-10-05 13:21:19
+-- Dump completed on 2014-10-06 11:14:37
