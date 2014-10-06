@@ -2,6 +2,8 @@
  * variables
  */
 
+var g_editor = null;
+
 // general DOM elements
 var g_activityEditor = null;
 var g_modalActivityEditor = null;
@@ -15,16 +17,8 @@ var g_classBtnSave = "btn-save";
 var g_classBtnCancel = "btn-cancel";
 
 // DOM indexes for cascaded DOM element search
-var g_indexDeadlinePicker = "deadline-picker"
-var g_indexBeginTimePicker = "begin-time-picker";
-
-var g_indexOldImagesNodes = "old_images_nodes";
-var g_indexNewImages = "new_images";
-
 var g_indexOldImage = "old_image";
 var g_indexNewImage = "new_image";
-
-var g_indexCheckbox = "checkbox";
 
 var g_wImageCell = 200;
 var g_hImageCell = 200;
@@ -48,6 +42,28 @@ var g_loadingWidget = null;
 
 var g_nodeBtnAdd = null;
 var g_btnAdd = null;
+
+// Existing images selector
+function ImageSelector(id, image, indicator) {
+	this.id = id;
+	this.image = image;
+	this.indicator = indicator;
+	this.checked = true;
+}
+
+function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete) {
+	if (id != null) this.id = id;
+	this.titleField = titleField;
+	this.contentField = contentField;
+	this.newImageFiles = newImageFiles;
+	this.newImageNodes = newImageNodes;
+	this.imageSelectors = imageSelectors;
+	this.beginTimePicker = beginTimePicker;
+	this.deadlinePicker = deadlinePicker;
+	this.btnSave = btnSave;
+	this.btnSubmit = btnSubmit;
+	if (btnDelete != null) this.btnDelete = btnDelete; 
+}
 
 // Assistive functions
 function formatDigits(value, numberOfDigits){
@@ -122,45 +138,54 @@ function showActivityEditor(activity) {
         });
 }
 
-function countImages(newImagesNodes, oldImagesNodes){
-	var ret = Object.keys(newImagesNodes).length;
-	for(var key in oldImagesNodes) {
-		var node = oldImagesNodes[key];
-		var checkbox = node.data(g_indexCheckbox);
-		if(!checkbox.is(":checked")) continue;
+function countImages(editor){
+	var ret = Object.keys(editor.newImageFiles).length;
+	for(var key in editor.imageSelectors) {
+		var selector = editor.imageSelectors[key];
+		if(!selector.checked) continue;
 		++ret;
 	}
 	return ret;
 }
 
 function isFileValid(file){
-    var ret=false;
-    var fileSizeLimit= (1<<20)// 2 mega bytes
-    if(file.size > fileSizeLimit) return false;
-    return true;
+	var ret=false;
+	var fileSizeLimit= (1<<20)// 2 mega bytes
+		if(file.size > fileSizeLimit) return false;
+	return true;
+}
+
+function disableEditableFields() {
+
+}
+
+function enableEditableFields() {
+
 }
 
 function setNonSavable(){
-    g_savable = false;
+	g_savable = false;
 }
 
 function setSavable(){
-    g_savable = true;
+	g_savable = true;
 }
 
 function setNonSubmittable(){
-    g_submittable = false;
+	g_submittable = false;
 }
 
 function setSubmittable(){
-    g_submittable = true;
+	g_submittable = true;
 }
 
 // Assistive Callback Functions
 function onSave(evt){
 	evt.preventDefault();
+	
+	if (g_editor == null) return;
 
-        if(!g_savable){
+        if (!g_savable){
             alert("You haven't made any changes!");
             return;
         }
@@ -168,58 +193,52 @@ function onSave(evt){
         var data = evt.data;
 
         var formData = new FormData();
+
+        // append user token and activity id for identity
+        var token = $.cookie(g_keyToken.toString());
+	if (token == null) {
+		alert("Are you logged out?");
+		return;
+	}
+        formData.append(g_keyToken, token);
+
 	var countImages = 0;
 	
 	// check files
-        var newImages = data[g_indexNewImages];
-        for(var key in newImages){
-            var file = newImages[key];
+        for (var key in g_editor.newImageFiles) {
+            var file = g_editor.newImageFiles[key];
             formData.append(g_indexNewImage + "-" + key.toString(), file);
 	}
 	
-	countImages = Object.keys(newImages).length;
+	countImages = Object.keys(g_editor.newImageFiles).length;
 
-        var oldImagesNodes = data[g_indexOldImagesNodes]
-        var oldImagesCount = oldImagesNodes.length;
         var selectedOldImages = new Array();
-        for(var i = 0; i < oldImagesCount; i++){
-            var node = oldImagesNodes[i];
-            var checkbox = node.data(g_indexCheckbox);
-            if(checkbox == null || !checkbox.is(":checked")) continue;
-            var imageId = node.data(g_keyImageId);
-            selectedOldImages.push(imageId);
+        for(var i = 0; i < g_editor.imageSelectors.length; i++){
+            var selector = g_editor.imageSelectors[i];
+            if(!selector.checked) continue;
+            selectedOldImages.push(selector.id);
 	    ++countImages;
         }
         formData.append(g_indexOldImage, JSON.stringify(selectedOldImages));
 	
 	if(countImages > g_imagesLimit) {
 		alert("No more than 3 images! Don't cheat!");
-	}
-
-        // append user token and activity id for identity
-        var token = $.cookie(g_keyToken.toString());
-	if(token == null) {
-		alert("Are you logged out?");
 		return;
 	}
-        formData.append(g_keyToken, token);
 
         // append activity title and content
-        var title = data[g_keyTitle].val();
-	var content = data[g_keyContent].val();
+        var title = g_editor.titleField.val();
+	var content = g_editor.contentField.val();
 	if(title == null || content == null || title == "" || content == "") {
 		alert("Neither title nor content could be empty.");
 		return;
 	}
-        formData.append(g_keyTitle, data[g_keyTitle].val());
-        formData.append(g_keyContent, data[g_keyContent].val());
+        formData.append(g_keyTitle, title);
+        formData.append(g_keyContent, content);
 
         // append activity begin time and deadline
-        var beginTimePicker = data[g_indexBeginTimePicker];
-        var beginTime = getDateTime(beginTimePicker);
-
-        var deadlinePicker = data[g_indexDeadlinePicker];
-        var deadline = getDateTime(deadlinePicker);
+        var beginTime = getDateTime(g_editor.beginTimePicker);
+        var deadline = getDateTime(g_editor.deadlinePicker);
 		
 	if(compareYmdhisDate(deadline, beginTime) > 0) {
 		alert("Deadline can not be after the begin time of an activity.");
@@ -229,17 +248,13 @@ function onSave(evt){
         formData.append(g_keyDeadline, deadline);
 
         var isNewActivity = false;
-	var activityId = (data.hasOwnProperty(g_keyActivityId) && data[g_keyActivityId] != null) ? data[g_keyActivityId] : g_activityEditor.data(g_keyActivityId);
+	var activityId = g_editor.id; 
         if(activityId == null) isNewActivity = true;
 
-        if(!isNewActivity)	formData.append(g_keyActivityId, activityId.toString());
+        if(!isNewActivity)	formData.append(g_keyActivityId, activityId);
 
         setNonSavable();
         setNonSubmittable();
-
-	if(g_loadingWidget == null) g_loadingWidget = createModal($("#wrap"), "Saving changes, please wait or click shadow area to dismiss", 80, 20);
-		
-	showModal(g_loadingWidget);
 
         $.ajax({
                 method: "POST",
@@ -249,12 +264,11 @@ function onSave(evt){
                 contentType: false, // tell jQuery not to set contentType
                 processData: false, // tell jQuery not to process the data
                 success: function(data, status, xhr){
-			hideModal(g_loadingWidget);
 			setSubmittable();
 			var jsonResponse = JSON.parse(data);
 			if(jsonResponse.hasOwnProperty(g_keyActivityId)) {
 				alert("Activity created!");
-				g_activityEditor.data(g_keyActivityId, parseInt(jsonResponse[g_keyActivityId]));
+				g_editor.id = parseInt(jsonResponse[g_keyActivityId]);
 			} else {
 				alert("Changes saved.");
 			}
@@ -262,7 +276,6 @@ function onSave(evt){
 			g_onActivitySaveSuccess();
                 },
                 error: function(xhr, status, err){
-			hideModal(g_loadingWidget)
                         setSavable();
                 }
         });
@@ -272,7 +285,9 @@ function onSubmit(evt){
 
 	evt.preventDefault();
 
-        if(!g_submittable) {
+	if (g_editor == null) return;
+
+        if (!g_submittable) {
             alert("You have to save your changes before submission!");
             return;
         }
@@ -289,7 +304,7 @@ function onSubmit(evt){
 	}
         params[g_keyToken] = token;
 	
-	var activityId = (data.hasOwnProperty(g_keyActivityId) && data[g_keyActivityId] != null) ? data[g_keyActivityId] : g_activityEditor.data(g_keyActivityId);
+	var activityId = g_editor.id; 
         params[g_keyActivityId] = activityId;
 
         setNonSavable();
@@ -310,7 +325,7 @@ function onSubmit(evt){
         });
 }
 
-function previewImage(par, newImages, newImagesNodes, oldImagesNodes) {
+function previewImage(par, editor) {
 	var input = g_btnAdd[0]; // pull DOM
         var images  = input.files;
         if (images == null) return;
@@ -326,15 +341,15 @@ function previewImage(par, newImages, newImagesNodes, oldImagesNodes) {
         reader.onload = function (e) {
 		var key = new Date().getTime(); // the key which identifies an image in the map newImages
 
-		var offset = Object.keys(newImages).length;
-		newImages[key] = newImage; // add new image to model map
+		var offset = Object.keys(editor.newImageFiles).length;
+		editor.newImageFiles[key] = newImage; // add new image to file map
 		var node = $('<span>', {
 			style: "position: absolute; padding: 2pt"
 		}).appendTo(par);
 		node.css("width", g_wImageCell);
 		node.css("height", g_hImageCell);
 		node.css("left", offset * g_wImageCell);
-		newImagesNodes[key] = node; // add new image node to view map		
+		editor.newImageNodes[key] = node; // add new image node to view map		
 
 		var img = $('<img>', {
 			src: e.target.result
@@ -344,27 +359,28 @@ function previewImage(par, newImages, newImagesNodes, oldImagesNodes) {
 
 		var btnDelete = $("<button>", {
 			text: "delete",
-			style: "color: white; background-color: red"
+			style: "color: white; background-color: red;"
 		}).appendTo(node);
+		btnDelete.css("width", g_wImageCell);
 		
-		refreshAddButton(par, newImages, newImagesNodes, oldImagesNodes);
+		refreshAddButton(par, editor);
 		
 		btnDelete.click(function(evt){
 			evt.preventDefault();
 			setSavable();
 			setNonSubmittable();
-			if(!newImages.hasOwnProperty(key)) return;
-			delete newImages[key];	
-			if(!newImagesNodes.hasOwnProperty(key)) return;
-			newImagesNodes[key].remove();
-			delete newImagesNodes[key];
-			for(var otherKey in newImagesNodes) {
+			if(!editor.newImageFiles.hasOwnProperty(key)) return;
+			delete editor.newImageFiles[key];	
+			if(!editor.newImageNodes.hasOwnProperty(key)) return;
+			editor.newImageNodes[key].remove();
+			delete editor.newImageNodes[key];
+			for(var otherKey in editor.newImageNodes) {
 				if(otherKey < key) continue;
-				var newImageNode = newImagesNodes[otherKey];	
+				var newImageNode = editor.newImageNodes[otherKey];	
 				var l = parseInt(newImageNode.css("left"));
 				newImageNode.css("left", l - g_wImageCell);
 			}
-			refreshAddButton(par, newImages, newImagesNodes, oldImagesNodes);
+			refreshAddButton(par, editor);
 		});
         }
 
@@ -408,11 +424,11 @@ function onCancel(evt){
         g_onEditorCancelled();
 }
 
-function refreshAddButton(par, newImages, newImagesNodes, oldImagesNodes) {
+function refreshAddButton(par, editor) {
 	
 	removeAddButton();
 
-	var offset = Object.keys(newImages).length;
+	var offset = Object.keys(editor.newImageFiles).length;
 
 	g_nodeBtnAdd = $("<span>", {
 		style: "display:inline-block; position: absolute;"
@@ -439,10 +455,10 @@ function refreshAddButton(par, newImages, newImagesNodes, oldImagesNodes) {
 		evt.preventDefault();
 		setSavable();
 		setNonSubmittable();
-		previewImage(par, newImages, newImagesNodes, oldImagesNodes);
+		previewImage(par, editor);
 	});
 
-	var imagesTot = countImages(newImagesNodes, oldImagesNodes);
+	var imagesTot = countImages(editor);
 	if(imagesTot < g_imagesLimit) enableField(g_btnAdd);
 	else disableField(g_btnAdd);
 }
@@ -478,16 +494,16 @@ function generateActivityEditor(activity){
 		activityContent = activity.content;
 	}
 
-	var ret=$('<form>', {
+	var ret = $('<form>', {
 		style: "display: block; padding: 5pt"
 	});
 
-	var titleText=$('<p>', {
+	var titleText = $('<p>', {
 		text: "Title",
 		style: "margin-top: 5pt"	
 	}).appendTo(ret);
 
-	var titleInput=$('<input>', {
+	var titleInput = $('<input>', {
 		class: "input-title",
 		type: 'text',
 		value: activityTitle
@@ -521,13 +537,14 @@ function generateActivityEditor(activity){
 		text: "Up to 3 images can be saved for an activity"
 	}).appendTo(ret);
 
-        var newImages = {};
-	var newImagesNodes = {};
-        var oldImagesNodes = new Array();
+        var newImageFiles = {};
+	var newImageNodes = {};
+	var imageSelectors = new Array();
 
 	var newImagesRow = $("<p>", {
 		style: "overflow-x: auto;"
 	});
+
 	newImagesRow.css("height", g_hImageCell + 5);
 
 	if(activity != null && activity.images != null) {
@@ -542,48 +559,41 @@ function generateActivityEditor(activity){
 			node.css("width", g_wImageCell);
 			node.css("height", g_hImageCell);
 
-                        var img = activity.images[i];
-                        var imgDom = $('<img>',{
-                                src: img.url,
-				style: "padding: 2pt"
+                        var image = $('<img>',{
+                                src: activity.images[i].url,
+				style: "position: absolute; padding: 2pt"
                         }).appendTo(node);
-			imgDom.css("width", g_wImageCell);
-			imgDom.css("height", g_hImageCell);
+			image.css("width", g_wImageCell);
+			image.css("height", g_hImageCell);
+			image.css("left", i * g_wImageCell + 10);
 
-                        var checkbox = $('<input>',{
-                                type: "checkbox",
-                                checked: true,
-				disabled: true,
-				style: "position: absolute"
+                        var indicator = $('<img>',{
+				src: "/assets/icons/checked.png",
+				style: "position: absolute;"
                         }).appendTo(node);
-			checkbox.css("left", i * g_wImageCell + 10);		
+			indicator.css("width", 0.3 * g_wImageCell);
+			indicator.css("height", 0.3 * g_hImageCell);
+			indicator.css("left", i * g_wImageCell + 10);		
 
-                        checkbox.on("change", function(evt){
-				evt.preventDefault()
+			var selector = new ImageSelector(activity.images[i].id, image, indicator);
+			node.click(selector, function(evt) {
+				evt.preventDefault();
+				var selector = evt.data;
+				var val = !(selector.checked);
+				if (val && countImages(g_editor) >= g_imagesLimit) return;
+				selector.checked = val;
+				if (val) selector.indicator.show();
+				else selector.indicator.hide();
                                 setSavable();
                                 setNonSubmittable();
-				refreshAddButton(newImagesRow, newImages, newImagesNodes, oldImagesNodes);
-                        });
-
-                        node.data(g_keyImageId, img.id);
-                        node.data(g_indexCheckbox, checkbox);
-			node.click(function(evt) {
-				evt.preventDefault();
-				var box = $(this).data(g_indexCheckbox);
-				var val = !box.is(":checked");
-				if(val && countImages(newImagesNodes, oldImagesNodes) >= g_imagesLimit) return;
-				box.attr("checked", val);
-				box.change();
+				refreshAddButton(newImagesRow, g_editor);
 			});
-                        oldImagesNodes.push(node);
+			imageSelectors.push(selector);
 		}
 	}
 
 	newImagesRow.appendTo(ret);
 	$('<br>').appendTo(ret);
-
-	
-	refreshAddButton(newImagesRow, newImages, newImagesNodes, oldImagesNodes);
 	
 	// Schedules
 	var deadline = reformatDate(new Date());
@@ -636,15 +646,7 @@ function generateActivityEditor(activity){
 		class: g_classBtnSave,
 		text: 'Save'
 	}).appendTo(buttons);
-	var dSave = {};
-	dSave[g_keyActivityId] = activityId;
-        dSave[g_keyTitle] = titleInput;
-        dSave[g_keyContent] = contentInput;
-        dSave[g_indexDeadlinePicker] = deadlinePicker;
-        dSave[g_indexBeginTimePicker] = beginTimePicker;
-        dSave[g_indexOldImagesNodes] = oldImagesNodes;
-        dSave[g_indexNewImages] = newImages;
-	btnSave.on("click", dSave, onSave);
+	btnSave.on("click", onSave);
 
 	var btnSubmit = $('<button>',{
 		class: g_classBtnSubmit,
@@ -660,8 +662,9 @@ function generateActivityEditor(activity){
 	}).appendTo(buttons);
 	btnCancel.on("click", onCancel);
 
+	var btnDelete = null;
 	if(!isNewActivity){
-		var btnDelete = $('<button>',{
+		btnDelete = $('<button>',{
 			class: g_classBtnDelete,
 			text: 'Delete'
 		}).appendTo(buttons);
@@ -670,6 +673,12 @@ function generateActivityEditor(activity){
 		btnDelete.on("click", dDelete, onDelete);
 	}
 	ret.data(g_keyActivityId, activityId);			
+
+	// ActivityEditor(id, titleField, contentField, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete)
+	g_editor = new ActivityEditor(activityId, titleInput, contentInput, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete);	
+
+	refreshAddButton(newImagesRow, g_editor);
+
 	return ret;
 }
 
