@@ -299,6 +299,7 @@ CREATE TABLE `user` (
   `last_logged_out_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `last_exit_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `password_reset_code` varchar(32) DEFAULT NULL,
   `verification_code` varchar(32) DEFAULT NULL,
   `unread_count` int(32) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
