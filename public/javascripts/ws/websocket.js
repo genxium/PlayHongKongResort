@@ -1,5 +1,5 @@
 var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
-var g_ws = new WS("ws://128.199.168.153:8888/el/echo");
+var g_ws = new WS("ws://192.241.204.75/el/echo");
 g_ws.onopen = function() {
 	alert("Connection is open!");
 };
