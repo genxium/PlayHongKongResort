@@ -1,7 +1,6 @@
 package controllers;
 
 import dao.EasyPreparedStatementBuilder;
-import dao.SQLHelper;
 import exception.AccessDeniedException;
 import exception.ActivityHasBegunException;
 import exception.ActivityNotFoundException;
@@ -13,7 +12,6 @@ import play.mvc.Result;
 import utilities.Converter;
 import utilities.DataUtils;
 
-import java.sql.PreparedStatement;
 import java.util.Map;
 
 public class ParticipantController extends UserController {
@@ -45,7 +43,7 @@ public class ParticipantController extends UserController {
 				if (userId.equals(viewerId)) continue; // anti-cracking by selecting the host of an activity
 				int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
 				if ((originalRelation & UserActivityRelation.selected) > 0) continue;
-				if (!SQLCommander.updateUserActivityRelation(viewerId, userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected, originalRelation))) continue;
+				if (!SQLCommander.updateUserActivityRelation(userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected, originalRelation))) continue;
 				++count;
 			}
 

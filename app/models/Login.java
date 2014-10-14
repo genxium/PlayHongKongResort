@@ -26,4 +26,12 @@ public class Login {
         if(loginJson.containsKey(TOKEN)) m_token = (String)loginJson.get(TOKEN);
         if(loginJson.containsKey(TIMESTAMP)) m_timestamp = (Timestamp) loginJson.get(TIMESTAMP);
     }
+
+    public boolean hasExpired() {
+        /*
+        * TODO: check expiry by current time (UTF+8) and User.TOKEN_LIFE
+        * TODO: if token has expired, delete the entry in table `login`
+        * */
+        return false;
+    }
 }

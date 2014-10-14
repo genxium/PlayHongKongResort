@@ -8,6 +8,8 @@ import org.json.simple.JSONObject;
 
 public class User extends BasicUser {
 
+    public static final int TOKEN_LIFE = 7889230; // in seconds, this equals 3 months
+
     public static int VISITOR = 0;
     public static int USER = 1;
     public static int MANAGER = 2;

@@ -3,7 +3,6 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.typesafe.config.ConfigException;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import exception.*;
@@ -52,7 +51,11 @@ public class ActivityController extends Controller {
 
 			// anti=cracking by param token
 			Integer viewerId = null;
-			if (token != null) viewerId = SQLCommander.queryUserId(token);
+            User viewer = null;
+			if (token != null) {
+                viewerId = SQLCommander.queryUserId(token);
+                viewer = SQLCommander.queryUser(viewerId);
+            }
 			List<Activity> activities = null;
 			if (relation != null && relation != UserActivityRelation.hosted && vieweeId != null) {
 				activities = SQLCommander.queryActivities(vieweeId, UserActivityRelation.maskRelation(relation, null));
@@ -63,17 +66,25 @@ public class ActivityController extends Controller {
 			}
 			if (activities == null) throw new NullPointerException();
 			ObjectNode result = Json.newObject();
-			result.put(Activity.COUNT, 0);		
+			result.put(Activity.COUNT, 0);
+
+            boolean isAdmin = false;
+            if (viewer != null && SQLCommander.validateAdminAccess(viewer)) isAdmin = true;
 
 			ArrayNode activitiesNode = new ArrayNode(JsonNodeFactory.instance);
 			for (Activity activity : activities) {
-				// non-host viewers can only see accepted activities
-				if (activity.getStatus() != Activity.ACCEPTED && vieweeId != null && !vieweeId.equals(viewerId))	continue;
+				boolean isHost = (viewerId != null && viewer != null && activity.getHost().getId() == viewerId);
+                // only hosts and admins can view non-accepted activities
+				if (activity.getStatus() != Activity.ACCEPTED
+                        &&
+                    (!isHost || !isAdmin))	continue;
 				activitiesNode.add(activity.toObjectNodeWithImages(viewerId));
 			}
 			result.put(Activity.ACTIVITIES, activitiesNode);
 			return ok(result);
-		} catch (Exception e) {
+		} catch (TokenExpiredException e) {
+            return badRequest(TokenExpiredResult.get());
+        } catch (Exception e) {
 			DataUtils.log(TAG, "query", e);
 		}
 		return badRequest();
@@ -81,14 +92,12 @@ public class ActivityController extends Controller {
 
 	public static Result detail(Integer activityId, String token) {
 		response().setContentType("text/plain");
-		ObjectNode result = null;
 		try {
 			ActivityDetail activityDetail = SQLCommander.queryActivityDetail(activityId);
-			if (activityDetail == null) throw new NullPointerException();
+			if (activityDetail == null) throw new ActivityNotFoundException();
 			Integer userId = null;
 			if (token != null) userId = SQLCommander.queryUserId(token);
-			result = activityDetail.toObjectNode(userId);
-			return ok(result);
+			return ok(activityDetail.toObjectNode(userId));
 		} catch (Exception e) {
 			DataUtils.log(TAG, "detail", e);
 		}
@@ -192,7 +201,9 @@ public class ActivityController extends Controller {
 
 			activity = SQLCommander.queryActivity(activityId);
 			return ok(activity.toObjectNodeWithImages(userId));
-		} catch (Exception e) {
+		} catch (TokenExpiredException e) {
+            return badRequest(TokenExpiredResult.get());
+        } catch (Exception e) {
 			DataUtils.log(TAG, "save", e);
 		}
 		return badRequest();
@@ -203,32 +214,33 @@ public class ActivityController extends Controller {
 		response().setContentType("text/plain");
 
 		try {
-			Http.RequestBody body = request().body();
+            Http.RequestBody body = request().body();
 
-			// get user token and activity id from request body stream
-			Map<String, String[]> formData = body.asFormUrlEncoded();
+            // get user token and activity id from request body stream
+            Map<String, String[]> formData = body.asFormUrlEncoded();
 
-			String token = formData.get(User.TOKEN)[0];
-			Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+            String token = formData.get(User.TOKEN)[0];
+            Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 
-			Integer userId = SQLCommander.queryUserId(token);
-			if (userId == null) throw new Exception();
-			User user = SQLCommander.queryUser(userId);
-			if (user == null) throw new Exception();
+            Integer userId = SQLCommander.queryUserId(token);
+            if (userId == null) throw new Exception();
+            User user = SQLCommander.queryUser(userId);
+            if (user == null) throw new Exception();
 
-			Activity activity = SQLCommander.queryActivity(activityId);
-			if (!SQLCommander.isActivityEditable(userId, activity)) throw new Exception();
+            Activity activity = SQLCommander.queryActivity(activityId);
+            if (!SQLCommander.isActivityEditable(userId, activity)) throw new Exception();
 
-			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-			String[] names = {Activity.STATUS};
-			Object[] values = {Activity.PENDING};
+            String[] names = {Activity.STATUS};
+            Object[] values = {Activity.PENDING};
 
-			builder.update(Activity.TABLE).set(names, values).where(Activity.ID, "=", activity.getId());
-			if(!builder.execUpdate()) throw new NullPointerException();
+            builder.update(Activity.TABLE).set(names, values).where(Activity.ID, "=", activity.getId());
+            if (!builder.execUpdate()) throw new NullPointerException();
 
-			return ok();
-
+            return ok();
+        } catch (TokenExpiredException e) {
+            return badRequest(TokenExpiredResult.get());
 		} catch (Exception e) {
 			DataUtils.log(TAG, "submit", e);
 		}
@@ -256,7 +268,9 @@ public class ActivityController extends Controller {
 
 			if(!ExtraCommander.deleteActivity(activityId)) throw new NullPointerException();
 			return ok();
-		} catch (Exception e) {
+		} catch (TokenExpiredException e) {
+            return badRequest(TokenExpiredResult.get());
+        } catch (Exception e) {
             DataUtils.log(TAG, "delete", e);
 		}
 		return badRequest();
@@ -288,7 +302,9 @@ public class ActivityController extends Controller {
 			increment.update(Activity.TABLE).increase(Activity.NUM_APPLIED, 1).where(Activity.ID, "=", activityId);
 			if (!increment.execUpdate()) throw new NullPointerException();
 			return ok();
-		} catch (Exception e) {
+		} catch (TokenExpiredException e) {
+            return badRequest(TokenExpiredResult.get());
+        } catch (Exception e) {
 			DataUtils.log(TAG, "join", e);
 		}
         return badRequest();
@@ -327,7 +343,9 @@ public class ActivityController extends Controller {
 			ObjectNode ret = Json.newObject();
 			ret.put(UserActivityRelation.RELATION, newRelation);
 			return ok(ret);
-		} catch (Exception e) {
+		} catch (TokenExpiredException e) {
+            return badRequest(TokenExpiredResult.get());
+        } catch (Exception e) {
             DataUtils.log(TAG, "mark", e);
 		}
         return badRequest();

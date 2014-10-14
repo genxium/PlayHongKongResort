@@ -4,7 +4,6 @@ import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import exception.*;
 import models.*;
-import org.h2.command.Prepared;
 import org.json.simple.JSONObject;
 import utilities.DataUtils;
 
@@ -709,7 +708,7 @@ public class SQLCommander {
 	    return users;
     }
 
-    public static boolean updateUserActivityRelation(Integer ownerId, Integer userId, Integer activityId, int relation) {
+    public static boolean updateUserActivityRelation(Integer userId, Integer activityId, int relation) {
 	    try {
 		    java.util.Date date = new java.util.Date();
 		    Timestamp currentTime = new Timestamp(date.getTime());
@@ -721,18 +720,15 @@ public class SQLCommander {
 		    } else {
 			    timestampFieldName = UserActivityRelation.LAST_REJECTED_TIME;
 		    }
-		    String[] cols = {UserActivityRelation.RELATION, timestampFieldName};
-		    Object[] vals = {relation, timeStr};
-
-		    String[] whereCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID};
-		    String[] whereOps = {"=", "="};
-		    Object[] whereVals = {activityId, userId};
 
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    builder.update(UserActivityRelation.TABLE).set(cols, vals).where(whereCols, whereOps, whereVals);
+		    builder.update(UserActivityRelation.TABLE)
+                    .set(UserActivityRelation.RELATION, relation)
+                    .set(timestampFieldName, timeStr)
+                    .where(UserActivityRelation.ACTIVITY_ID, "=", activityId)
+                    .where(UserActivityRelation.USER_ID, "=", userId);
 		    if (!builder.execUpdate()) throw new Exception();
 
-            if ((relation & UserActivityRelation.selected) == 0) return true;
 		    return true;
 	    } catch (Exception e) {
 		    return false;
@@ -829,17 +825,19 @@ public class SQLCommander {
         return ret;
     }
 
-    static Integer queryUserId(String token) {
-        try {
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            List<JSONObject> allJson = builder.select(Login.USER_ID).from(Login.TABLE).where(Login.TOKEN, "=", token).execSelect();
-            if (allJson == null || allJson.size() != 1) return null;
-            JSONObject loginJson = allJson.get(0);
-            Login login = new Login(loginJson);
-            return login.getUserId();
-        } catch (Exception e) {
-            DataUtils.log(TAG, "queryUserId", e);
-        }
-        return null;
+    static Integer queryUserId(String token) throws TokenExpiredException {
+
+        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+        List<JSONObject> allJson = builder.select(Login.USER_ID).from(Login.TABLE).where(Login.TOKEN, "=", token).execSelect();
+        if (allJson == null || allJson.size() != 1) return null;
+        JSONObject loginJson = allJson.get(0);
+        Login login = new Login(loginJson);
+        if (login.hasExpired()) throw new TokenExpiredException();
+        return login.getUserId();
+
+    }
+
+    public static boolean validateAdminAccess(User user) {
+        return (user != null && user.getGroupId() == User.ADMIN);
     }
 }
