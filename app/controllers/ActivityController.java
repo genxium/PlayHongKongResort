@@ -77,7 +77,7 @@ public class ActivityController extends Controller {
                 // only hosts and admins can view non-accepted activities
 				if (activity.getStatus() != Activity.ACCEPTED
                         &&
-                    (!isHost || !isAdmin))	continue;
+                    (!isHost && !isAdmin))	continue;
 				activitiesNode.add(activity.toObjectNodeWithImages(viewerId));
 			}
 			result.put(Activity.ACTIVITIES, activitiesNode);
