@@ -100,9 +100,8 @@ function validateName(name) {
 	return regex.test(name);	
 }
 
-
-function extractParams(url){
-	var params=url.split("?")[1].split("&");	
+function extractParams(url) {  
+	var params = url.split("?")[1].split("&");	
 	return params;
 }
 

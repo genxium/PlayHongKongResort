@@ -40,6 +40,7 @@ function onBtnLoginClicked(evt){
                 g_loggedInUser = new User(userJson);
                 // store token in cookie iff query succeeds
                 $.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
+		wsConnect();	
                 if(g_sectionLogin == null) return;
 		g_sectionLogin.empty();
 		generateLoggedInMenu(g_sectionLogin);
@@ -63,6 +64,7 @@ function onBtnLogoutClicked(evt){
 		data: params,
 		success: function(data, status, xhr){
 			$.removeCookie(g_keyToken, {path: '/'});
+			wsDisconnect();
 			if(g_sectionLogin == null) return;
 			g_sectionLogin.empty();
 			generateLoginForm(g_sectionLogin);
