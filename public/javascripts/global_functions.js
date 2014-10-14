@@ -157,3 +157,17 @@ function disableField(field) {
 function enableField(field) {
 	field.prop('disabled', false);
 }
+
+function setBackgroundImage(field, url, size, repeat, position) {
+	
+	field.css("background-image", "url(" + url + ")");	
+
+	field.css("background-size", size);
+	field.css("-o-background-size", size);	
+	field.css("-moz-background-size", size);
+	field.css("-webkit-background-size", size);
+	
+	field.css("background-repeat", repeat);
+	
+	field.css("background-position", position);
+}

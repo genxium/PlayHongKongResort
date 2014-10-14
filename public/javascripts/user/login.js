@@ -5,6 +5,7 @@ var g_loginPassword = null;
 
 var g_btnLogin = null;
 var g_btnLogout = null;
+var g_btnNotification = null;
 var g_btnProfile = null;
 var g_btnCreate = null;
 var g_btnResetPassword = null;
@@ -15,12 +16,12 @@ var g_onEnter = null;
 
 var g_loggedInUser = null;
 
-function initLoginWidget(){
+function initLoginWidget() {
 	if(g_sectionLogin == null) return;
 	generateLoginForm(g_sectionLogin);
 }
 
-function onBtnLoginClicked(evt){
+function onBtnLoginClicked(evt) {
         var email = g_loginUserHandle.val();
         var password = g_loginPassword.val();
 
@@ -81,12 +82,12 @@ function onBtnLogoutClicked(evt){
 	});
 }
 
-function onBtnProfileClicked(evt){
+function onBtnProfileClicked(evt) {
 	var profilePath = "/user/profile/show?" + g_keyVieweeId + "=" + g_loggedInUser.id;
 	var profilePage = window.open(profilePath);
 }
 
-function onBtnCreateClicked(evt){
+function onBtnCreateClicked(evt) {
 	evt.preventDefault();
 	g_onEditorCancelled=function(){
 		g_sectionActivityEditor.modal("hide");
@@ -97,6 +98,10 @@ function onBtnCreateClicked(evt){
 	g_sectionActivityEditor.modal({
 		show: true
 	});
+}
+
+function onBtnNotificationClicked(evt) {
+
 }
 
 function generateLoginForm(par){
@@ -152,42 +157,55 @@ function generateLoginForm(par){
 
 function generateLoggedInMenu(par){
 
-	var ret=$('<div>', {
-		style: "height: auto"
+	var ret = $('<div>', {
+		style: "height: 100%"
 	}).appendTo(par);
 	
-	var avatar=$('<img>',{
+	var avatar = $('<img>',{
 		src: g_loggedInUser.avatar,
 		style: "width: 50pt; height: auto; float: left"	
 	}).appendTo(ret);
 
-	var rightHalf=$('<div>',{
-		style: "width: auto; height: auto; margin-left: 10pt; float: left"	
+	var rightHalf = $('<div>',{
+		style: "width: auto; height: 100%; margin-left: 10pt; float: left"	
 	}).appendTo(ret);
 
-	var greetingText = "Hello, "+g_loggedInUser.name;
-	var greeting=$('<p>',{
+	var greetingText = g_loggedInUser.name;
+	var row1 = $("<p>", {
+		style: "width: auto; height: 40%;"
+	}).appendTo(rightHalf);
+	var greeting = $("<span>" ,{
 		style: "font-size: 13pt; color: white",
 		text: greetingText	
-	}).appendTo(rightHalf);
-
-	g_btnLogout=$('<button>', {
-		style: "clear: both; font-size: 13pt; color: white; background-color: crimson",
+	}).appendTo(row1);
+	g_btnLogout = $('<button>', {
+		style: "clear: both; margin-left: 10pt; font-size: 13pt; color: white; background-color: crimson",
 		text: 'Logout'
-	}).appendTo(rightHalf);
-	g_btnLogout.on("click", onBtnLogoutClicked);
+	}).appendTo(row1);
 
-	g_btnProfile=$('<button>', {
-		style: "font-size: 13pt; color: white; background-color: cornflowerblue",
-		text: 'Profile'
-	}).appendTo(rightHalf);
-	g_btnProfile.on("click", onBtnProfileClicked);
+	g_btnLogout.click(onBtnLogoutClicked);
 
-	g_btnCreate=$('<button>', {
-		style: "font-size: 13pt; margin-left: 10pt; background-color: chartreuse",
-		text: "Create"	
+	var row2 = $("<p>", {
+		style: "width: auto; height: 40%;"
 	}).appendTo(rightHalf);
-	g_btnCreate.on("click", onBtnCreateClicked);
+
+	g_btnNotification = $("<button>", {
+		style: "width: 30%; height: 90%;"
+	}).appendTo(row2);
+	setBackgroundImage(g_btnNotification, "/assets/icons/notification.png", "contain", "no-repeat", "center");
+	g_btnNotification.click(onBtnNotificationClicked);
+
+	g_btnProfile = $("<button>", {
+		style: "width: 30%; height: 90%; margin-left: 5pt"
+	}).appendTo(row2);
+	setBackgroundImage(g_btnProfile, "/assets/icons/profile.png", "contain", "no-repeat", "center");
+	g_btnProfile.click(onBtnProfileClicked);
+
+	g_btnCreate = $("<button>", {
+		style: "width: 30%; height: 90%; margin-left: 5pt"
+	}).appendTo(row2);
+	setBackgroundImage(g_btnCreate, "/assets/icons/new_activity.png", "contain", "no-repeat", "center");
+	g_btnCreate.click(onBtnCreateClicked);
 }
 
 function checkLoginStatus(){
