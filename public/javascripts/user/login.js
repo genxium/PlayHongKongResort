@@ -38,6 +38,7 @@ function onBtnLoginClicked(evt){
             success: function(data, status, xhr){
                 var userJson = JSON.parse(data);
                 g_loggedInUser = new User(userJson);
+		if (g_loggedInUser == null) return;
                 // store token in cookie iff query succeeds
                 $.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
 		wsConnect();	
@@ -73,6 +74,8 @@ function onBtnLogoutClicked(evt){
 		},
 		error: function(xhr, status, err){
 			// reload the whole page if exception occurs
+			wsDisconnect();
+			$.removeCookie(g_keyToken, {path: '/'});
 			location.reload();	
 		}	
 	});
@@ -203,16 +206,17 @@ function checkLoginStatus(){
 		success: function(data, status, xhr){
 			var userJson = JSON.parse(data);
 			g_loggedInUser = new User(userJson);
+			if (g_loggedInUser == null) return;
 			$.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
-			if(g_sectionLogin != null){
-				g_sectionLogin.empty();
-				generateLoggedInMenu(g_sectionLogin);
-			}
-			if(g_onLoginSuccess == null) return;
+			wsConnect();	
+			if(g_sectionLogin == null)	return;
+			g_sectionLogin.empty();
+			generateLoggedInMenu(g_sectionLogin);
+			if(g_onLoginSuccess == null)	return;
 			g_onLoginSuccess();	
 		},
 		error: function(xhr, status, errorThrown){
-			// refresh screen
+			wsDisconnect();	
 			$.removeCookie(g_keyToken, {path: '/'});
 			if(g_onEnter ==null) return;
 			g_onEnter();		
