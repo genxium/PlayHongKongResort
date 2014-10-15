@@ -181,14 +181,16 @@ DROP TABLE IF EXISTS `notification`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `notification` (
   `id` int(32) NOT NULL AUTO_INCREMENT,
-  `is_read` int(2) DEFAULT '0',
-  `from` int(32) NOT NULL,
+  `is_read` int(2) NOT NULL DEFAULT '0',
+  `from` int(32) DEFAULT NULL,
   `to` int(32) NOT NULL,
   `content` varchar(128) NOT NULL,
   `activity_id` int(32) NOT NULL,
   `comment_id` int(32) DEFAULT NULL,
   `assessment_id` int(32) DEFAULT NULL,
   `type` int(4) NOT NULL,
+  `relation` int(3) DEFAULT NULL,
+  `status` int(3) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `notification_ibfk_1` (`activity_id`) USING BTREE,
   KEY `notification_ibfk_2` (`comment_id`) USING BTREE,

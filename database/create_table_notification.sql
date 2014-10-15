@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.6.20, for Linux (i686)
+-- MySQL dump 10.13  Distrib 5.6.20, for osx10.6 (x86_64)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
@@ -24,14 +24,16 @@ DROP TABLE IF EXISTS `notification`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `notification` (
   `id` int(32) NOT NULL AUTO_INCREMENT,
-  `is_read` int(2) DEFAULT '0',
-  `from` int(32) NOT NULL,
+  `is_read` int(2) NOT NULL DEFAULT '0',
+  `from` int(32) DEFAULT NULL,
   `to` int(32) NOT NULL,
   `content` varchar(128) NOT NULL,
   `activity_id` int(32) NOT NULL,
   `comment_id` int(32) DEFAULT NULL,
   `assessment_id` int(32) DEFAULT NULL,
   `type` int(4) NOT NULL,
+  `relation` int(3) DEFAULT NULL,
+  `status` int(3) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `notification_ibfk_1` (`activity_id`) USING BTREE,
   KEY `notification_ibfk_2` (`comment_id`) USING BTREE,
@@ -51,4 +53,4 @@ CREATE TABLE `notification` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-10-06 11:14:37
+-- Dump completed on 2014-10-15 12:00:35
