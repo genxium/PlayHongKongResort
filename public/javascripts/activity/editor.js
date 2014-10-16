@@ -68,18 +68,12 @@ function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNod
 	this.submittable = true;
 
 	this.disableEditorButtons = function() {
-		if (!this.savable) {
-			disableField(this.btnSave);
-			this.btnSave.css("color", "white");
-		}
-		if (!this.submittable) {
-			disableField(this.btnSubmit);
-			this.btnSubmit.css("color", "white");
-		}
-		if (this.btnDelete != null) {
-			disableField(this.btnDelete);
-			this.btnDelete.css("color", "white");
-		}
+		disableField(this.btnSave);
+		this.btnSave.css("color", "white");
+		disableField(this.btnSubmit);
+		this.btnSubmit.css("color", "white");
+		disableField(this.btnDelete);
+		this.btnDelete.css("color", "white");
 	}
 
 	this.enableEditorButtons = function() {
@@ -99,7 +93,8 @@ function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNod
 
 	this.setNonSavable = function() {
 		this.savable = false;
-		this.disableEditorButtons();
+		disableField(this.btnSave);
+		this.btnSave.css("color", "white");
 	}
 
 	this.setSavable = function() {
@@ -109,7 +104,8 @@ function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNod
 
 	this.setNonSubmittable = function() {
 		this.submittable = false;
-		this.disableEditorButtons();
+		disableField(this.btnSubmit);
+		this.btnSubmit.css("color", "white");
 	}
 
 	this.setSubmittable = function() {
@@ -306,8 +302,10 @@ function onSave(evt){
 
         if(!isNewActivity)	formData.append(g_keyActivityId, activityId);
 
+	g_editor.disableEditorButtons();
         g_editor.setNonSavable();
         g_editor.setNonSubmittable();
+	g_editor.hint.text("Saving...");
 
         $.ajax({
                 method: "POST",
@@ -318,12 +316,13 @@ function onSave(evt){
                 processData: false, // tell jQuery not to process the data
                 success: function(data, status, xhr){
 			g_editor.setSubmittable();
+			g_editor.enableEditorButtons();
 			var activityJson = JSON.parse(data);
 			var activity = new Activity(activityJson);
 			if (g_editor.id == null) {
-				alert("Activity created.");
+				g_editor.hint.text("Activity created.");
 			} else {
-				alert("Changes saved.");
+				g_editor.hint.text("Changes saved.");
 			}
 			g_editor.id = activity.id;
 			refreshActivityEditor(activity);	
@@ -332,7 +331,8 @@ function onSave(evt){
                 },
                 error: function(xhr, status, err){
                         g_editor.setSavable();
-			alert("Activity not saved!");
+			g_editor.enableEditorButtons();
+			g_editor.hint.text("Activity not saved!");
                 }
         });
 }
@@ -358,6 +358,7 @@ function onSubmit(evt){
 	var activityId = g_editor.id; 
         params[g_keyActivityId] = activityId;
 
+	g_editor.disableEditorButtons();
         g_editor.setNonSavable();
         g_editor.setNonSubmittable();
 
@@ -366,11 +367,13 @@ function onSubmit(evt){
                 url: "/activity/submit",
                 data: params,
                 success: function(data, status, xhr){
+			g_editor.enableEditorButtons();
                         removeActivityEditor();
                         if(g_onEditorRemoved == null) return;
 			g_onEditorRemoved();
                 },
                 error: function(xhr, status, err){
+			g_editor.enableEditorButtons();
                         g_editor.setSubmittable();
                 }
         });
