@@ -171,3 +171,23 @@ function setBackgroundImage(field, url, size, repeat, position) {
 	
 	field.css("background-position", position);
 }
+
+function setDimensions(field, width, height) {
+	if (width != null)	field.css("width", width);
+	if (height != null)	field.css("height", height);
+	
+}
+
+function setOffset(field, left, top) {
+	if (left != null)	field.css("left", left);
+	if (top != null)	field.css("top", top);
+	field.css("right", "auto");
+	field.css("bottom", "auto");
+}
+
+function getOffset(field) {
+	return {
+		left: parseFloat(field.css("left")),
+		top: parseFloat(field.css("top"))
+	};
+}
