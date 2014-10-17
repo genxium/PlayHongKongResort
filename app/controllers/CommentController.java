@@ -2,6 +2,8 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import play.libs.Json;
 
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
@@ -37,13 +39,19 @@ public class CommentController extends Controller {
 	
     }
 
-    public static Result query(Integer activityId, String refIndex, Integer numItems, Integer direction) {
+    public static Result query(Integer activityId, String refIndex, Integer page, Integer numItems, Integer direction) {
 	    response().setContentType("text/plain");
 	    try {
 		    List<Comment> comments = SQLCommander.queryTopLevelComments(activityId, refIndex, Comment.ID, SQLHelper.DESCEND, numItems, direction);
 
-		    ArrayNode result = new ArrayNode(JsonNodeFactory.instance);
-		    for (Comment comment : comments)	result.add(comment.toObjectNode(false));
+		    ObjectNode result = Json.newObject();
+		    result.put(Comment.COUNT, 0);
+		    result.put(Comment.PAGE, page);
+
+		    ArrayNode commentsNode = new ArrayNode(JsonNodeFactory.instance);
+		    for (Comment comment : comments)	commentsNode.add(comment.toObjectNode(false));
+			
+	 	    result.put(Comment.COMMENTS, commentsNode);
 		    return ok(result);
 	    } catch (Exception e) {
 		    DataUtils.log(TAG, "query", e);

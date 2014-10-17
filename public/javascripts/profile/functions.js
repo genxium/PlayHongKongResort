@@ -41,7 +41,7 @@ function onUploadAvatarFormSubmission(formEvt){
 
 function queryActivitiesAndRefresh() {
 	if(g_vieweeId == null) return;
-	queryActivities(0, g_pagerContainer.nItems, g_pagerContainer.orientation, g_directionForward, g_vieweeId, g_pagerContainer.relation, g_pagerContainer.status, onQueryActivitiesSuccess, onQueryActivitiesError);
+	queryActivities(0, 0, g_pagerContainer.nItems, g_pagerContainer.orientation, g_directionForward, g_vieweeId, g_pagerContainer.relation, g_pagerContainer.status, onQueryActivitiesSuccess, onQueryActivitiesError);
 }
 
 

@@ -5,27 +5,28 @@ var g_onCommentSubmitSuccess = null;
 var g_tabComments = null;
 
 function queryCommentsAndRefresh(activity) {
-    queryComments(0, g_tabComments.nItems, g_directionForward, activity.id, onQueryCommentsSuccess, onQueryCommentsError);
+	queryComments(0, 0, g_tabComments.nItems, g_directionForward, activity.id, onQueryCommentsSuccess, onQueryCommentsError);
 }
 
-function queryComments(refIndex, numItems, direction, activityId, onSuccess, onError){
-    // prototypes: onSuccess(data), onError
-    var params = {};
-    params[g_keyActivityId] = activityId;
-    params[g_keyRefIndex] = refIndex;
-    params[g_keyNumItems] = numItems;
-    params[g_keyDirection] = direction;
-    $.ajax({
-        type: "GET",
-        url: "/comment/query",
-        data: params,
-        success: function(data, status, xhr) {
-            onSuccess(data);
-        },
-        error: function(xhr, status, err) {
-            onError();
-        }
-    });
+function queryComments(refIndex, page, numItems, direction, activityId, onSuccess, onError){
+	// prototypes: onSuccess(data), onError
+	var params = {};
+	params[g_keyActivityId] = activityId;
+	params[g_keyRefIndex] = refIndex;
+	params[g_keyPage] = page;
+	params[g_keyNumItems] = numItems;
+	params[g_keyDirection] = direction;
+	$.ajax({
+		type: "GET",
+		url: "/comment/query",
+		data: params,
+		success: function(data, status, xhr) {
+			onSuccess(data);
+		},
+		error: function(xhr, status, err) {
+			onError();
+		}
+	});
 }
 
 function generateCommentsQueryParams(container, page) {
@@ -37,6 +38,7 @@ function generateCommentsQueryParams(container, page) {
 	var params = {};
 	params[g_keyActivityId] = g_activity.id;
 	params[g_keyRefIndex] = refIndex;
+	params[g_keyPage] = page;
 	params[g_keyNumItems] = container.nItems;
 	params[g_keyDirection] = direction;
 
@@ -49,18 +51,20 @@ function onQueryCommentsSuccess(data){
 	// this function is only valid in detail's page
 	if(g_activity == null) return;
 
-	var oldSt = g_tabComments.st;
-	var oldEd = g_tabComments.ed;
-
 	var jsonResponse = JSON.parse(data);
 	if(jsonResponse == null) return;
-	var length = Object.keys(jsonResponse).length;
+
+	var commentsJson = jsonResponse[g_keyComments];
+	var length = Object.keys(commentsJson).length;
 	if( length == 0) return;
+
+	var page = parseInt(jsonResponse[g_keyPage]);
+	g_tabComments.page = page;
 
 	g_tabComments.screen.empty();
 	var idx = 0;
-	for(var key in jsonResponse){
-		var commentJson = jsonResponse[key];
+	for(var key in commentsJson){
+		var commentJson = commentsJson[key];
 		generateCommentCell(g_tabComments.screen, commentJson, g_activity, false);
 		var comment = new Comment(commentJson);
 		$('<br>').appendTo(g_tabComments.screen);
@@ -69,7 +73,7 @@ function onQueryCommentsSuccess(data){
 		++idx;
 	}
 
-	createPagerBar(g_tabComments, oldSt, oldEd, onQueryCommentsSuccess, onQueryCommentsError);
+	createPagerBar(g_tabComments, onQueryCommentsSuccess, onQueryCommentsError);
 }
 
 function onQueryCommentsError(){

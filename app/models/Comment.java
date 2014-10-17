@@ -35,6 +35,10 @@ public class Comment {
     public static final String TO_NAME = "to_name";
     public static final String SUB_COMMENTS = "sub_comments";
 
+    public static final String COUNT = "count";
+    public static final String PAGE = "page";
+    public static final String COMMENTS = "comments";
+
     protected Integer m_id = null;
     protected String m_content = null;
     protected Integer m_from = null;

@@ -37,7 +37,7 @@ public class ActivityController extends Controller {
 		}
 	}
 
-	public static Result query(String refIndex, Integer numItems, Integer orientation, Integer direction, String token, Integer vieweeId, Integer relation, Integer status) {
+	public static Result query(String refIndex, Integer page, Integer numItems, Integer orientation, Integer direction, String token, Integer vieweeId, Integer relation, Integer status) {
 		response().setContentType("text/plain");
 		try {
 			// anti-cracking by param direction
@@ -67,6 +67,7 @@ public class ActivityController extends Controller {
 			if (activities == null) throw new NullPointerException();
 			ObjectNode result = Json.newObject();
 			result.put(Activity.COUNT, 0);
+			result.put(Activity.PAGE, page.toString());
 
             boolean isAdmin = false;
             if (viewer != null && SQLCommander.validateAdminAccess(viewer)) isAdmin = true;

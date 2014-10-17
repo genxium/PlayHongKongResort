@@ -103,7 +103,7 @@ function onBtnDeleteClicked(evt){
 }
 
 function queryActivitiesAndRefresh() {
-	queryActivities(0, g_pagerContainer.nItems, g_pagerContainer.orientation, g_directionForward, g_vieweeId, g_pagerContainer.relation, g_pagerContainer.status, onQueryActivitiesSuccessAdmin, onQueryActivitiesErrorAdmin);
+	queryActivities(0, 0, g_pagerContainer.nItems, g_pagerContainer.orientation, g_directionForward, g_vieweeId, g_pagerContainer.relation, g_pagerContainer.status, onQueryActivitiesSuccessAdmin, onQueryActivitiesErrorAdmin);
 }
 
 function onPagerButtonClickedAdmin(evt) {
@@ -114,7 +114,7 @@ function onPagerButtonClickedAdmin(evt) {
 	var direction = page > container.page ? g_directionForward : g_directionBackward;
 	var refIndex = page > container.page ? g_pagerContainer.ed : g_pagerContainer.st;
 
-	queryActivities(refIndex, container.nItems, container.orientation, direction, g_vieweeId, container.relation, container.status, onQueryActivitiesSuccessAdmin, onQueryActivitiesErrorAdmin);
+	queryActivities(refIndex, page, container.nItems, container.orientation, direction, g_vieweeId, container.relation, container.status, onQueryActivitiesSuccessAdmin, onQueryActivitiesErrorAdmin);
 }
 
 function onQueryActivitiesSuccessAdmin(data, status, xhr){

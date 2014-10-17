@@ -71,6 +71,7 @@ var g_keyParentId = "parent_id";
 var g_keyPredecessorId = "predecessor_id";
 var g_keyCommentType = "type";
 var g_keyGeneratedTime = "generated_time";
+var g_keyComments = "comments";
 var g_keySubComments = "sub_comments";
 
 var g_keyFrom = "from";
@@ -79,9 +80,7 @@ var g_keyTo = "to";
 var g_keyToName = "to_name";
 
 // general keys
-var g_keyPageIndex = "page_index";
-var g_keyStartingIndex = "starting_index";
-var g_keyEndingIndex = "ending_index";
+var g_keyPage = "page";
 
 var g_keyRefIndex = "ref_index";
 var g_keyNumItems = "num_items";

@@ -89,7 +89,7 @@ function PagerCache(size) {
 	};
 }
 
-function PagerContainer(screen, bar, orderKey, orientation, numItemsPerPage, url, paramsGenerator) {
+function PagerContainer(screen, bar, orderKey, orientation, numItemsPerPage, url, paramsGenerator, pagerCache) {
 	this.screen = screen; // screen of the container
 	this.bar = bar; // control bar of the container
 	this.orderKey = orderKey;
@@ -113,26 +113,22 @@ function PagerContainer(screen, bar, orderKey, orientation, numItemsPerPage, url
 
 	// prototype: paramsGenerator(page)
 	this.paramsGenerator = paramsGenerator;
+		
+	// pager cache
+	this.pagerCache = pagerCache;
 }
 
 function PagerButton(container, page) {
-    // the pager button is determined to trigger only "GET" ajax
+	// the pager button is determined to trigger only "GET" ajax
 	this.container = container;
 	this.page = page;
 }
 
-function createPagerBar(container, oldSt, oldEd, onSuccess, onError) {
+function createPagerBar(container, onSuccess, onError) {
 
-    // prototypes: onSuccess(data), onError()
+	// prototypes: onSuccess(data), onError()
 	var page  = container.page;
 	var orientation = container.orientation; 
-	var newSt = container.st; 
-	var newEd = container.ed;
-	if(orientation == +1 && newSt > oldEd) ++page;
-	if(orientation == +1 && newEd < oldSt) --page;
-	if(orientation == -1 && newSt < oldEd) ++page;
-	if(orientation == -1 && newEd > oldSt) --page; 
-	container.page = page;
 
 	// display pager bar 
 	container.bar.empty();
@@ -143,24 +139,24 @@ function createPagerBar(container, oldSt, oldEd, onSuccess, onError) {
 		style: "margin-right: 2px"
 	}).appendTo(container.bar);
 	btnPrevious.click(previous, function(evt) {
-	    if (container.url == null) return;
-        var button = evt.data;
-        var params = container.paramsGenerator(container, button.page);
-        if (params == null) return;
-        disableField(btnPrevious);
-        $.ajax({
-            type: "GET",
-            url: container.url,
-            data: params,
-            success: function(data, status, xhr) {
-                enableField(btnPrevious);
-                onSuccess(data);
-            },
-            error: function(xhr, status, err) {
-                enableField(btnPrevious);
-                onError();
-            }
-        });
+		if (container.url == null) return;
+		var button = evt.data;
+		var params = container.paramsGenerator(container, button.page);
+		if (params == null) return;
+		disableField(btnPrevious);
+		$.ajax({
+		    type: "GET",
+		    url: container.url,
+		    data: params,
+		    success: function(data, status, xhr) {
+			enableField(btnPrevious);
+			onSuccess(data);
+		    },
+		    error: function(xhr, status, err) {
+			enableField(btnPrevious);
+			onError();
+		    }
+		});
 	});
 	
 	var currentPageIndicator = $("<text>", {
@@ -169,11 +165,11 @@ function createPagerBar(container, oldSt, oldEd, onSuccess, onError) {
 	}).appendTo(container.bar);
 
 	var next = new PagerButton(container, page + 1);
-    var btnNext = $("<button>", {
-        text: "Next",
-        style: "margin-left: 2px"
-    }).appendTo(container.bar);
-    btnNext.click(next, function(evt) {
+	var btnNext = $("<button>", {
+		text: "Next",
+		style: "margin-left: 2px"
+	}).appendTo(container.bar);
+	btnNext.click(next, function(evt) {
         if (container.url == null) return;
         var button = evt.data;
         var params = container.paramsGenerator(container, button.page);
