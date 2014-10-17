@@ -74,7 +74,7 @@ function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNod
 		this.btnSubmit.css("color", "white");
 		disableField(this.btnDelete);
 		this.btnDelete.css("color", "white");
-	}
+	};
 
 	this.enableEditorButtons = function() {
 		if (this.savable) {
@@ -89,29 +89,29 @@ function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNod
 			enableField(this.btnDelete);
 			this.btnDelete.css("color", "black");
 		}
-	}
+	};
 
 	this.setNonSavable = function() {
 		this.savable = false;
 		disableField(this.btnSave);
 		this.btnSave.css("color", "white");
-	}
+	};
 
 	this.setSavable = function() {
 		this.savable = true;
 		this.enableEditorButtons();
-	}
+	};
 
 	this.setNonSubmittable = function() {
 		this.submittable = false;
 		disableField(this.btnSubmit);
 		this.btnSubmit.css("color", "white");
-	}
+	};
 
 	this.setSubmittable = function() {
 		this.submittable = true;
 		this.enableEditorButtons();
-	}
+	};
 
 	this.removeExplorerTrigger = function() {
 		if (this.explorerTrigger.node == null)	return;
@@ -121,7 +121,7 @@ function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNod
 		if (this.explorerTrigger.btn == null)	return;
 		this.explorerTrigger.btn.remove();
 		this.explorerTrigger.btn = null;
-	}
+	};
 	
 	this.shiftExplorerTrigger = function(direction) {
 		// direction {
@@ -139,7 +139,7 @@ function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNod
 				setOffset(this.explorerTrigger.node, left, null);
 			break;
 		}
-	}
+	};
 }
 
 // Assistive functions

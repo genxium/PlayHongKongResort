@@ -54,6 +54,41 @@ function getDateTime(picker){
  * Pager Widgets
  */
 
+function PagerCache(size) {
+	this.size = size;
+	this.map = {};
+	this.first = 0;
+	this.last = 0;
+	this.prependPage = function(content) {
+
+		var oldSize = Object.keys(this.map).length;
+		if (this.map.hasOwnProperty(this.first))	{
+			delete this.map[this.first];
+			--this.first;
+		}
+		if (oldSize >= this.size) {
+			delete this.map[this.last];
+			--this.last;
+		}
+		this.map[this.first] = content;
+		
+	};
+	this.appendPage = function(content) {
+
+		var oldSize = Object.keys(this.map).length;
+		if (this.map.hasOwnProperty(this.first))	{
+			delete this.map[this.first];
+			++this.first;
+		}
+		if (oldSize >= this.size) {
+			delete this.map[this.last];
+			++this.last;
+		}
+		this.map[this.last] = content;
+
+	};
+}
+
 function PagerContainer(screen, bar, orderKey, orientation, numItemsPerPage, url, paramsGenerator) {
 	this.screen = screen; // screen of the container
 	this.bar = bar; // control bar of the container
@@ -74,10 +109,10 @@ function PagerContainer(screen, bar, orderKey, orientation, numItemsPerPage, url
 	this.relation = null;
 	this.status = null;
 
-    this.url = url;
+	this.url = url;
 
-    // prototype: paramsGenerator(page)
-    this.paramsGenerator = paramsGenerator;
+	// prototype: paramsGenerator(page)
+	this.paramsGenerator = paramsGenerator;
 }
 
 function PagerButton(container, page) {
