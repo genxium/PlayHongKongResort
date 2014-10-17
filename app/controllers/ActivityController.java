@@ -37,6 +37,57 @@ public class ActivityController extends Controller {
 		}
 	}
 
+    public static Result list(Integer page, Integer numItems, Integer orientation, String token, Integer vieweeId, Integer relation, Integer status) {
+        response().setContentType("text/plain");
+        try {
+
+            // anti-cracking by param order
+            if (orientation == null)  throw new NullPointerException();
+            String orientationStr = SQLHelper.convertOrientation(orientation);
+            if (orientationStr == null)   throw new NullPointerException();
+
+            // anti=cracking by param token
+            Integer viewerId = null;
+            User viewer = null;
+            if (token != null) {
+                viewerId = SQLCommander.queryUserId(token);
+                viewer = SQLCommander.queryUser(viewerId);
+            }
+            List<Activity> activities = null;
+            if (relation != null && relation != UserActivityRelation.HOSTED && vieweeId != null) {
+                activities = SQLCommander.queryActivities(vieweeId, UserActivityRelation.maskRelation(relation, null));
+            } else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null && viewerId != null) {
+                activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, page, Activity.ID, orientationStr, numItems);
+            } else {
+                activities = SQLCommander.queryActivities(page, Activity.ID, orientationStr, numItems, status);
+            }
+            if (activities == null) throw new NullPointerException();
+            ObjectNode result = Json.newObject();
+            result.put(Activity.COUNT, 0);
+            result.put(Activity.PAGE, page.toString());
+
+            boolean isAdmin = false;
+            if (viewer != null && SQLCommander.validateAdminAccess(viewer)) isAdmin = true;
+
+            ArrayNode activitiesNode = new ArrayNode(JsonNodeFactory.instance);
+            for (Activity activity : activities) {
+                boolean isHost = (viewerId != null && viewer != null && activity.getHost().getId() == viewerId);
+                // only hosts and admins can view non-accepted activities
+                if (activity.getStatus() != Activity.ACCEPTED
+                        &&
+                    (!isHost && !isAdmin))	continue;
+                activitiesNode.add(activity.toObjectNodeWithImages(viewerId));
+            }
+            result.put(Activity.ACTIVITIES, activitiesNode);
+            return ok(result);
+        } catch (TokenExpiredException e) {
+            return badRequest(TokenExpiredResult.get());
+        } catch (Exception e) {
+            DataUtils.log(TAG, "list", e);
+        }
+        return badRequest();
+    }
+
 	public static Result query(String refIndex, Integer page, Integer numItems, Integer orientation, Integer direction, String token, Integer vieweeId, Integer relation, Integer status) {
 		response().setContentType("text/plain");
 		try {
@@ -57,9 +108,9 @@ public class ActivityController extends Controller {
                 viewer = SQLCommander.queryUser(viewerId);
             }
 			List<Activity> activities = null;
-			if (relation != null && relation != UserActivityRelation.hosted && vieweeId != null) {
+			if (relation != null && relation != UserActivityRelation.HOSTED && vieweeId != null) {
 				activities = SQLCommander.queryActivities(vieweeId, UserActivityRelation.maskRelation(relation, null));
-			} else if (relation != null && relation == UserActivityRelation.hosted && vieweeId != null && viewerId != null) {
+			} else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null && viewerId != null) {
 				activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, refIndex, Activity.ID, orientationStr, numItems, direction);
 			} else {
 				activities = SQLCommander.queryActivities(refIndex, Activity.ID, orientationStr, numItems, direction, status);
@@ -295,7 +346,7 @@ public class ActivityController extends Controller {
 			if (!joinable) throw new Exception();
 
 			String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION};
-			Object[] values = {activityId, userId, UserActivityRelation.maskRelation(UserActivityRelation.applied, null)};
+			Object[] values = {activityId, userId, UserActivityRelation.maskRelation(UserActivityRelation.APPLIED, null)};
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 			builder.insert(names, values).into(UserActivityRelation.TABLE).execInsert();
 
@@ -326,7 +377,7 @@ public class ActivityController extends Controller {
 			Activity activity = SQLCommander.queryActivity(activityId);
 			if (activity == null) throw new ActivityNotFoundException();
 			int originalRelation = SQLCommander.isActivityMarkable(userId, activity, relation);
-			if (originalRelation == UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
+			if (originalRelation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
 
 			int newRelation = UserActivityRelation.maskRelation(relation, originalRelation);
 

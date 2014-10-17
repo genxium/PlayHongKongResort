@@ -2,7 +2,6 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.EasyPreparedStatementBuilder;
-import dao.SQLHelper;
 import exception.InvalidLoginParamsException;
 import exception.InvalidRegistrationParamsException;
 import exception.InvalidUserActivityRelationException;
@@ -15,7 +14,6 @@ import play.libs.Json;
 import play.mvc.Content;
 import play.mvc.Controller;
 import play.mvc.Http;
-import play.mvc.Http.Request;
 import play.mvc.Http.RequestBody;
 import play.mvc.Result;
 import utilities.Converter;
@@ -153,7 +151,7 @@ public class UserController extends Controller {
             Integer userId = SQLCommander.queryUserId(token);
             int relation = SQLCommander.queryUserActivityRelation(userId, activityId);
 
-            if (relation == UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
+            if (relation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
             ObjectNode ret = Json.newObject();
             ret.put(UserActivityRelation.RELATION, String.valueOf(relation));
             return ok(ret);

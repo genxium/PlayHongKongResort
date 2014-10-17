@@ -73,6 +73,7 @@ function PagerCache(size) {
 		this.map[this.first] = content;
 		
 	};
+
 	this.appendPage = function(content) {
 
 		var oldSize = Object.keys(this.map).length;
@@ -96,7 +97,7 @@ function PagerContainer(screen, bar, orderKey, orientation, numItemsPerPage, url
 	this.orientation = orientation;
 	this.nItems = numItemsPerPage; // number of items per page
 
-	this.page = 0; // current page
+	this.page = -1; // current page
 	this.total = 0; // initial number of total pages should always be 0
 
 	// starting & ending indices of the current page
@@ -127,68 +128,48 @@ function PagerButton(container, page) {
 function createPagerBar(container, onSuccess, onError) {
 
 	// prototypes: onSuccess(data), onError()
+	var pagerCache = container.pagerCache;
+	var map = pagerCache.map;
 	var page  = container.page;
 	var orientation = container.orientation; 
 
 	// display pager bar 
 	container.bar.empty();
 
-	var previous = new PagerButton(container, page - 1);
-	var btnPrevious = $("<button>", {
-		text: "Prev",
-		style: "margin-right: 2px"
-	}).appendTo(container.bar);
-	btnPrevious.click(previous, function(evt) {
-		if (container.url == null) return;
-		var button = evt.data;
-		var params = container.paramsGenerator(container, button.page);
-		if (params == null) return;
-		disableField(btnPrevious);
-		$.ajax({
-		    type: "GET",
-		    url: container.url,
-		    data: params,
-		    success: function(data, status, xhr) {
-			enableField(btnPrevious);
-			onSuccess(data);
-		    },
-		    error: function(xhr, status, err) {
-			enableField(btnPrevious);
-			onError();
-		    }
-		});
-	});
-	
-	var currentPageIndicator = $("<text>", {
-		text: container.page.toString(),
-		style: "font-size: 14pt; margin-left: 10px; margin-right: 10px;"
-	}).appendTo(container.bar);
+	var length = Object.keys(map).length;
+	for(var key in map) {
 
-	var next = new PagerButton(container, page + 1);
-	var btnNext = $("<button>", {
-		text: "Next",
-		style: "margin-left: 2px"
-	}).appendTo(container.bar);
-	btnNext.click(next, function(evt) {
-        if (container.url == null) return;
-        var button = evt.data;
-        var params = container.paramsGenerator(container, button.page);
-        if (params == null) return;
-        disableField(btnNext);
-        $.ajax({
-            type: "GET",
-            url: container.url,
-            data: params,
-            success: function(data, status, xhr) {
-                enableField(btnNext);
-                onSuccess(data);
-            },
-            error: function(xhr, status, err) {
-                enableField(btnNext);
-                onError();
-            }
-        });
-    });
+		var indicator = $("<button>", {
+			text: key,
+			style: "font-size: 14pt; margin-left: 10px; margin-right: 10px;"
+		}).appendTo(container.bar);
+	
+		var pagerButton = new PagerButton(container, key);
+		indicator.click(pagerButton, function(evt) {
+			if (container.url == null) return;
+			var button = evt.data;
+			var params = container.paramsGenerator(container, button.page);
+			if (params == null) return;
+			disableField($(this));
+			$.ajax({
+			    type: "GET",
+			    url: container.url,
+			    data: params,
+			    success: function(data, status, xhr) {
+				enableField(btnPrevious);
+				onSuccess(data);
+			    },
+			    error: function(xhr, status, err) {
+				enableField(btnPrevious);
+				onError();
+			    }
+			});
+		});
+		
+		if (key != page) continue;
+		indicator.css("font-weight", "bold");
+			
+	}	
 }
 
 /*

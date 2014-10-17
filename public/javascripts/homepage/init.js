@@ -5,9 +5,10 @@ $(document).ready(function(){
 	initRegisterWidget();
 	
 	// initialize pager widgets
+	var pagerCache = new PagerCache(5);
 	g_pagerContainer = new PagerContainer($("#pager-screen-activities"), $("#pager-bar-activities"),
 	                                        g_keyActivityId, g_orderDescend, g_numItemsPerPage,
-	                                        "/activity/query", generateActivitiesQueryParams);
+	                                        "/activity/query", generateActivitiesQueryParams, pagerCache);
 	g_pagerContainer.status = g_statusAccepted;	
 
 	g_onLoginSuccess = function(){

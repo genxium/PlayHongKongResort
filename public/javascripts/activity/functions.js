@@ -57,21 +57,27 @@ function onQueryActivitiesSuccess(data){
 	if(jsonResponse == null) return;
 	
 	// display pager container
-	var page = parseInt(jsonResponse[g_keyPage]);
-	g_pagerContainer.page = page;		
-
 	var activitiesJson = jsonResponse[g_keyActivities];
 	var length = Object.keys(activitiesJson).length;
 	if(length == 0) return;
 
+	var activities = new Array();
 	g_pagerContainer.screen.empty();
 	for(var idx = 0; idx < length; ++idx) {
 		var activityJson = activitiesJson[idx];
 		var activity = new Activity(activityJson);
+		activities.push(activity);
 		if(idx == 0)	g_pagerContainer.st = activity.id;
 		if(idx == length - 1)	g_pagerContainer.ed = activity.id;
 		generateActivityCell(g_pagerContainer.screen, activity);
 	}
+
+	var page = parseInt(jsonResponse[g_keyPage]);
+	if (page == g_pagerContainer.page) return;
+	if (page > g_pagerContainer.page) g_pagerContainer.pagerCache.appendPage(activities);
+	else g_pagerContainer.pagerCache.prependPage(activities);
+
+	g_pagerContainer.page = page;		
 
 	createPagerBar(g_pagerContainer, onQueryActivitiesSuccess, onQueryActivitiesError);
 } 
