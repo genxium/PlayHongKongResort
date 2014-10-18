@@ -1,5 +1,3 @@
-var g_selectFilter=null;
-
 var g_keyStatusIndicator = "status-indicator";
 
 // Assistant Handlers
@@ -95,66 +93,32 @@ function onBtnDeleteClicked(evt){
 }
 
 function queryActivitiesAndRefresh() {
-	queryActivities(0, 0, g_pagerContainer.nItems, g_pagerContainer.orientation, g_directionForward, g_vieweeId, g_pagerContainer.relation, g_pagerContainer.status, onQueryActivitiesSuccessAdmin, onQueryActivitiesErrorAdmin);
-}
-
-function onPagerButtonClickedAdmin(evt) {
-	var button = evt.data;
-	var container = button.container;
-	var page = button.page;
-	if (page == container.page) return;
-	var direction = page > container.page ? g_directionForward : g_directionBackward;
-	var refIndex = page > container.page ? g_pagerContainer.ed : g_pagerContainer.st;
-
-	queryActivities(refIndex, page, container.nItems, container.orientation, direction, g_vieweeId, container.relation, container.status, onQueryActivitiesSuccessAdmin, onQueryActivitiesErrorAdmin);
+	var page = 1;
+	queryActivities(page, onQueryActivitiesSuccessAdmin, onQueryActivitiesErrorAdmin);
 }
 
 function onQueryActivitiesSuccessAdmin(data, status, xhr){
 	var jsonResponse = JSON.parse(data);
 	if(jsonResponse == null) return;
-	
-	var oldSt = g_pagerContainer.st;
-	var oldEd = g_pagerContainer.ed;
 
-	// display pager container
+	var page = parseInt(jsonResponse[g_keyPage]);
+	g_pager.page = page;		
+
 	var activitiesJson = jsonResponse[g_keyActivities];
 	var length = Object.keys(activitiesJson).length;
-	if(length == 0) return;
-	g_pagerContainer.screen.empty();
+
+	g_pager.screen.empty();
 
 	for(var idx = 0; idx < length; ++idx) {
 		var activityJson = activitiesJson[idx];
 		var activity = new Activity(activityJson);
 		var activityId = parseInt(activity.id);
-		if(idx == 0)	g_pagerContainer.st = activityId;
-		if(idx == length - 1)	g_pagerContainer.ed = activityId;
-		generateActivityCellForAdmin(g_pagerContainer.screen, activity);
+		if(idx == 0)	g_pager.st = activityId;
+		if(idx == length - 1)	g_pager.ed = activityId;
+		generateActivityCellForAdmin(g_pager.screen, activity);
 	}
 
-	var page  = g_pagerContainer.page;
-	var orientation = g_pagerContainer.orientation; 
-	var newSt = g_pagerContainer.st; 
-	var newEd = g_pagerContainer.ed;
-	if(orientation == +1 && newSt > oldEd) ++page;
-	if(orientation == +1 && newEd < oldSt) --page;
-	if(orientation == -1 && newSt < oldEd) ++page;
-	if(orientation == -1 && newEd > oldSt) --page; 
-	g_pagerContainer.page = page;
-
-	// display pager bar 
-	g_pagerContainer.bar.empty();
-
-	var previous = new PagerButton(g_pagerContainer, page - 1);
-	var btnPrevious = $("<button>", {
-		text: "上一頁"
-	}).appendTo(g_pagerContainer.bar);
-	btnPrevious.on("click", previous, onPagerButtonClickedAdmin);
-
-	var next = new PagerButton(g_pagerContainer, page + 1);
-	var btnNext = $("<button>", {
-		text: "下一頁"
-	}).appendTo(g_pagerContainer.bar);
-	btnNext.on("click", next, onPagerButtonClickedAdmin);
+	g_pager.refreshBar(page);
 } 
 
 function onQueryActivitiesErrorAdmin(xhr, status, err){
@@ -256,16 +220,14 @@ $(document).ready(function(){
 	g_onEnter = queryActivitiesAndRefresh;
 	initActivityEditor();
 
-	var pagerCache = new PagerCache(5);
-	// initialize pager widgets
-	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_keyActivityId, g_orderDescend, g_numItemsPerPage, pagerCache, null);		
-	g_pagerContainer.status = g_statusPending;
+	var selector = createSelector($("#pager-filters"), ["pending", "accepted", "rejected"], [g_statusPending, g_statusAccepted, g_statusRejected], null, null, null, null);
+	var filter = new PagerFilter(g_keyStatus, selector);
+	var filters = [filter];	
 
-	g_selectFilter = $("#select-filter");
-	g_selectFilter.on("change", function() {
-		g_pagerContainer.status = $(this).val();
-		queryActivitiesAndRefresh();
-	});
+	var pagerCache = new PagerCache(10);
+
+	// initialize pager widgets
+	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/query", generateActivitiesQueryParams,pagerCache, filters, onQueryActivitiesSuccessAdmin, onQueryActivitiesErrorAdmin);		
 
 	checkLoginStatus();
 });

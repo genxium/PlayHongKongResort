@@ -58,7 +58,8 @@ function createSelector(par, titles, values, width, height, left, top) {
 	if (titles.length != values.length) return;
 	var length = titles.length;
 
-	var ret = $("<selector>").appendTo(par);
+	var ret = $("<select>").appendTo(par);
+	setMargin(ret, "3pt", null, "3pt", null);
 	setDimensions(ret, width, height); 
 	setOffset(ret, left, top);
 	
@@ -115,14 +116,17 @@ function PagerCache(size) {
 	};
 }
 
-function Pager(screen, bar, orderKey, orientation, numItemsPerPage, url, paramsGenerator, pagerCache, filters) {
+function PagerButton(pager, page) {
+	// the pager button is determined to trigger only "GET" ajax
+	this.pager = pager;
+	this.page = page;
+}
+
+function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, filters, onQuerySuccess, onQueryError) {
 	this.screen = screen; // screen of the pager
-	this.bar = bar; // control bar of the pager
-	this.orderKey = orderKey;
-	this.orientation = orientation;
 	this.nItems = numItemsPerPage; // number of items per page
 
-	this.page = -1; // current page
+	this.page = 0; // current page
 	this.total = 0; // initial number of total pages should always be 0
 
 	// starting & ending indices of the current page
@@ -130,75 +134,91 @@ function Pager(screen, bar, orderKey, orientation, numItemsPerPage, url, paramsG
 	// they could be either integers or strings	
 	this.st = -g_inf; 
 	this.ed = g_inf; 
-
-	// extra fields for filters
-	this.relation = null;
-	this.status = null;
-
 	this.url = url;
 
-	// prototype: paramsGenerator(page)
+	// prototype: paramsGenerator(Pager, page)
 	this.paramsGenerator = paramsGenerator;
+
+	// prototypes: onQuerySuccess(data), onQueryError()
+	this.onQuerySuccess = onQuerySuccess;
+	this.onQueryError = onQueryError;
 		
 	// pager cache
 	this.pagerCache = pagerCache;
 
+	// pager bar
+	this.bar = bar; // control bar of the pager
+	if (bar == null) return;
+	this.refreshBar = function(page) {
+		var pager = this;
+		var pagerCache = pager.pagerCache;
+		// display pager bar 
+		pager.bar.empty();
+		var length = Object.keys(pagerCache.map).length;
+		for(var key in pagerCache.map) {
+
+			var indicator = $("<button>", {
+				text: key,
+				style: "font-size: 14pt; margin-left: 10px; margin-right: 10px;"
+			}).appendTo(pager.bar);
+		
+			var pagerButton = new PagerButton(pager, key);
+			indicator.click(pagerButton, function(evt) {
+				if (pager.url == null) return;
+				var button = evt.data;
+				var params = pager.paramsGenerator(pager, button.page);
+				if (params == null) return;
+				var indicator = $(this);
+				disableField(indicator);
+				$.ajax({
+				    type: "GET",
+				    url: pager.url,
+				    data: params,
+				    success: function(data, status, xhr) {
+					enableField(indicator);
+					pager.onQuerySuccess(data);
+				    },
+				    error: function(xhr, status, err) {
+					enableField(indicator);
+					pager.onQueryError();
+				    }
+				});
+			});
+			
+			if (key != page) continue;
+			indicator.css("font-weight", "bold");
+				
+		}	
+	};	
+
 	// multi-level filters
 	this.filters = filters;
-}
-
-function PagerButton(pager, page) {
-	// the pager button is determined to trigger only "GET" ajax
-	this.pager = pager;
-	this.page = page;
-}
-
-function createPagerBar(pager, onSuccess, onError) {
-
-	// prototypes: onSuccess(data), onError()
-	var page  = pager.page;
-	var orientation = pager.orientation; 
-	var pagerCache = pager.pagerCache;
-	var map = pager.map;
-	var orientation = pager.orientation; 
-
-	// display pager bar 
-	pager.bar.empty();
-
-	var length = Object.keys(map).length;
-	for(var key in map) {
-
-		var indicator = $("<button>", {
-			text: key,
-			style: "font-size: 14pt; margin-left: 10px; margin-right: 10px;"
-		}).appendTo(pager.bar);
 	
-		var pagerButton = new PagerButton(pager, key);
-		indicator.click(pagerButton, function(evt) {
-			if (pager.url == null) return;
-			var button = evt.data;
-			var params = pager.paramsGenerator(pager, button.page);
+	if (filters == null) return;
+	var pager = this;
+	for (var i = 0; i < filters.length; ++i) {
+		var filter = filters[i];
+		filter.selector.change(pager, function(evt){
+			var pager = evt.data;
+			var params = pager.paramsGenerator(pager, 1);	
 			if (params == null) return;
-			disableField($(this));
+			var selector = filter.selector;
+			disableField(selector);
 			$.ajax({
 			    type: "GET",
 			    url: pager.url,
 			    data: params,
 			    success: function(data, status, xhr) {
-				enableField(btnPrevious);
-				onSuccess(data);
+				enableField(selector);
+				pager.onQuerySuccess(data);
 			    },
 			    error: function(xhr, status, err) {
-				enableField(btnPrevious);
-				onError();
+				enableField(selector);
+				pager.onQueryError();
 			    }
 			});
-		});
-		
-		if (key != page) continue;
-		indicator.css("font-weight", "bold");
-			
-	}	
+		});	
+	}
 }
 
 /*

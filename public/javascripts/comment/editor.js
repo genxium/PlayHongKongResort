@@ -5,17 +5,13 @@ var g_onCommentSubmitSuccess = null;
 var g_tabComments = null;
 
 function queryCommentsAndRefresh(activity) {
-	queryComments(0, 0, g_tabComments.nItems, g_directionForward, activity.id, onQueryCommentsSuccess, onQueryCommentsError);
+	var page = 1;
+	queryComments(page, onQueryCommentsSuccess, onQueryCommentsError);
 }
 
 function queryComments(refIndex, page, numItems, direction, activityId, onSuccess, onError){
 	// prototypes: onSuccess(data), onError
-	var params = {};
-	params[g_keyActivityId] = activityId;
-	params[g_keyRefIndex] = refIndex;
-	params[g_keyPage] = page;
-	params[g_keyNumItems] = numItems;
-	params[g_keyDirection] = direction;
+	var params = generateCommentsQueryParams(g_tabComments, page);
 	$.ajax({
 		type: "GET",
 		url: "/comment/query",
@@ -29,19 +25,24 @@ function queryComments(refIndex, page, numItems, direction, activityId, onSucces
 	});
 }
 
-function generateCommentsQueryParams(container, page) {
+function generateCommentsQueryParams(pager, page) {
 
-	if (page == container.page) return null;
-	var direction = page > container.page ? g_directionForward : g_directionBackward;
-	var refIndex = page > container.page ? g_tabComments.ed : g_tabComments.st;
+	if (page == pager.page) return null;
+	var direction = page >= pager.page ? g_directionForward : g_directionBackward;
+	var refIndex = page >= pager.page ? pager.ed : pager.st;
+	if (page == 1) {
+		direction = g_directionForward;
+		refIndex = 0;
+	}
 
 	var params = {};
-	params[g_keyActivityId] = g_activity.id;
+	if (g_commentId != null)	params[g_keyParentId] = g_commentId;
+	if (g_activity != null)		params[g_keyActivityId] = g_activity.id;
 	params[g_keyRefIndex] = refIndex;
 	params[g_keyPage] = page;
-	params[g_keyNumItems] = container.nItems;
+	params[g_keyNumItems] = pager.nItems;
 	params[g_keyDirection] = direction;
-
+	params[g_keyOrientation] = g_orderDescend;
 	return params;
 
 }
@@ -56,7 +57,6 @@ function onQueryCommentsSuccess(data){
 
 	var commentsJson = jsonResponse[g_keyComments];
 	var length = Object.keys(commentsJson).length;
-	if( length == 0) return;
 
 	var page = parseInt(jsonResponse[g_keyPage]);
 	g_tabComments.page = page;
@@ -73,7 +73,7 @@ function onQueryCommentsSuccess(data){
 		++idx;
 	}
 
-	createPagerBar(g_tabComments, onQueryCommentsSuccess, onQueryCommentsError);
+	g_tabComments.refreshBar(page);
 }
 
 function onQueryCommentsError(){

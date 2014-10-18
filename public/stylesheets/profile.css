@@ -24,14 +24,14 @@
 
 #activities-filter
 {
-    border-color: #000000; /* border-color is the magic to make webkit working! */
-	color: #0000FF;
-	font-size: 16pt;
+	border-color: #000000; /* border-color is the magic to make webkit working! */
+color: #0000FF;
+       font-size: 16pt;
 }
 
 #activities-sorter
 {
-    border-color: #000000; /* border-color is the magic to make webkit working! */
-    color: #0000FF;
-    font-size: 16pt;
+	border-color: #000000; /* border-color is the magic to make webkit working! */
+color: #0000FF;
+       font-size: 16pt;
 }

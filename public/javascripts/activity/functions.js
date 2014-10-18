@@ -1,22 +1,9 @@
 var g_vieweeId = null; // should always be null except in profile's page
-var g_activitiesFilter = null;
-var g_activitiesSorter = null;
 var g_pager = null;
 
-function queryActivities(refIndex, page, numItems, orientation, direction, vieweeId, relation, status, onSuccess, onError) {
-    // prototypes: onSuccess(data), onError
-	var params = {};
-	if (refIndex != null)	params[g_keyRefIndex] = refIndex.toString();
-	if (page != null)	params[g_keyPage] = page;
-	if (numItems != null)	params[g_keyNumItems] = numItems;
-	if (orientation != null)	params[g_keyOrientation] = parseInt(orientation);
-	if (direction != null)	params[g_keyDirection] = parseInt(direction);
-	if (vieweeId != null)	params[g_keyVieweeId] = vieweeId;
-	if (relation != null)	params[g_keyRelation] = relation;
-	if (status != null)	params[g_keyStatus] = status;
-
-	var token = $.cookie(g_keyToken);
-	if (token != null)	params[g_keyToken] = token;
+function queryActivities(page, onSuccess, onError) {
+	// prototypes: onSuccess(data), onError
+	var params = generateActivitiesQueryParams(g_pager, page);
 
 	$.ajax({
 		type: "GET",
@@ -31,38 +18,48 @@ function queryActivities(refIndex, page, numItems, orientation, direction, viewe
 	});
 }
 
-function generateActivitiesQueryParams(container, page) {
-	if (page == null || page == container.page) return null;
-	var direction = page > container.page ? g_directionForward : g_directionBackward;
-	var refIndex = page > container.page ? g_pager.ed : g_pager.st;
+function generateActivitiesQueryParams(pager, page) {
+	if (page == null) return null;
+	var direction = page >= pager.page ? g_directionForward : g_directionBackward;
+	var refIndex = page >= pager.page ? g_pager.ed : g_pager.st;
+	if (page == 1) {
+		direction = g_directionForward;
+		refIndex = 0;
+	}
 
 	var params = {};
 	
+	if (g_vieweeId != null)	params[g_keyVieweeId] = g_vieweeId;
 	params[g_keyRefIndex] = refIndex.toString();
 	params[g_keyDirection] = direction;
 	params[g_keyPage] = page;
-	if(container.nItems != null) params[g_keyNumItems] = container.nItems;
-	if(container.orientation != null) params[g_keyOrientation] = container.orientation;
-	if(g_vieweeId != null) params[g_keyVieweeId] = g_vieweeId;
-	if(container.relation != null) params[g_keyRelation] = container.relation;
-	if(container.status != null) params[g_keyStatus] = container.status;
+	if (pager.nItems != null) params[g_keyNumItems] = pager.nItems;
+	if (g_vieweeId != null) params[g_keyVieweeId] = g_vieweeId;
+
+	if (pager.filters != null) {
+		for (var i = 0; i < pager.filters.length; ++i) {
+			var filter = pager.filters[i];
+			params[filter.key] = filter.selector.val();	
+		}
+	}
+
+	if (!params.hasOwnProperty(g_keyOrientation)) params[g_keyOrientation] = g_orderDescend;
+	if (!params.hasOwnProperty(g_keyRelation) && !params.hasOwnProperty(g_keyStatus)) params[g_keyStatus] = g_statusAccepted;
 
 	var token = $.cookie(g_keyToken);
-	if(token != null)	params[g_keyToken] = token;
+	if (token != null)	params[g_keyToken] = token;
 	return params;
 }
 
 function onQueryActivitiesSuccess(data){
 	var jsonResponse = JSON.parse(data);
 	if(jsonResponse == null) return;
-	
-	// display pager container
+
 	var page = parseInt(jsonResponse[g_keyPage]);
 	g_pager.page = page;		
 
 	var activitiesJson = jsonResponse[g_keyActivities];
 	var length = Object.keys(activitiesJson).length;
-	if(length == 0) return;
 
 	g_pager.screen.empty();
 	for(var idx = 0; idx < length; ++idx) {
@@ -73,7 +70,7 @@ function onQueryActivitiesSuccess(data){
 		generateActivityCell(g_pager.screen, activity);
 	}
 
-	createPagerBar(g_pager, onQueryActivitiesSuccess, onQueryActivitiesError);
+	g_pager.refreshBar(page);
 } 
 
 function onQueryActivitiesError(xhr){

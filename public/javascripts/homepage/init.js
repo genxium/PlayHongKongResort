@@ -1,5 +1,6 @@
 function queryActivitiesAndRefresh() {
-	queryActivities(0, 0, g_pager.nItems, g_pager.orientation, g_directionForward, g_vieweeId, g_pager.relation, g_pager.status, onQueryActivitiesSuccess, onQueryActivitiesError);
+	var page = 1;
+	queryActivities(page, onQueryActivitiesSuccess, onQueryActivitiesError);
 }
 
 function showRegisterSection(){
@@ -33,18 +34,14 @@ $(document).ready(function(){
 	initTopbar();
 	initRegisterWidget();
 
-	var filtersBar = $("#pager-filters");
-	var selector = createSelector(["時間倒序", "時間順序"], [g_orderDescend, g_orderAscend], null, null, null, null));
-	var filter = new PagerFilter("orientation", selector);
+	var selector = createSelector($("#pager-filters"), ["時間倒序", "時間順序"], [g_orderDescend, g_orderAscend], null, null, null, null);
+	var filter = new PagerFilter(g_keyOrientation, selector);
 	var filters = [filter];	
 
 	var pagerCache = new PagerCache(5); 
 
 	// initialize pager widgets
-	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"),
-		g_keyActivityId, g_orderDescend, g_numItemsPerPage,
-		"/activity/query", generateActivitiesQueryParams, pagerCache, filters);
-	g_pager.status = g_statusAccepted;	
+	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/query", generateActivitiesQueryParams, pagerCache, filters, onQueryActivitiesSuccess, onQueryActivitiesError);
 
 	g_onLoginSuccess = function(){
 		refreshOnLoggedIn();

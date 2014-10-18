@@ -92,13 +92,13 @@ public class ActivityController extends Controller {
 		response().setContentType("text/plain");
 		try {
 			// anti-cracking by param direction
-			if (direction == null) throw new NullPointerException();
+			if (direction == null) throw new InvalidQueryParamsException();
 			if (!direction.equals(SQLCommander.DIRECTION_FORWARD) && !direction.equals(SQLCommander.DIRECTION_BACKWARD))    throw new NullPointerException();
 
 			// anti-cracking by param order
-			if (orientation == null)  throw new NullPointerException();
+			if (orientation == null)  throw new InvalidQueryParamsException();
 			String orientationStr = SQLHelper.convertOrientation(orientation);
-			if (orientationStr == null)   throw new NullPointerException();
+			if (orientationStr == null)   throw new InvalidQueryParamsException();
 
 			// anti=cracking by param token
 			Integer viewerId = null;
@@ -112,9 +112,11 @@ public class ActivityController extends Controller {
 				activities = SQLCommander.queryActivities(vieweeId, UserActivityRelation.maskRelation(relation, null));
 			} else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null && viewerId != null) {
 				activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, refIndex, Activity.ID, orientationStr, numItems, direction);
-			} else {
+			} else if (status != null) {
 				activities = SQLCommander.queryActivities(refIndex, Activity.ID, orientationStr, numItems, direction, status);
-			}
+			} else {
+                activities = null;
+            }
 			if (activities == null) throw new NullPointerException();
 			ObjectNode result = Json.newObject();
 			result.put(Activity.COUNT, 0);

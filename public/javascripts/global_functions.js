@@ -166,6 +166,13 @@ function enableField(field) {
 	field.prop('disabled', false);
 }
 
+function setMargin(field, left, top, right, bottom) {
+	if (left != null)	field.css("margin-left", left);
+	if (top != null)	field.css("margin-top", top);
+	if (right != null)	field.css("margin-right", right);
+	if (bottom != null)	field.css("margin-bottom", bottom);
+}
+
 function setBackgroundImage(field, url, size, repeat, position) {
 	
 	field.css("background-image", "url(" + url + ")");	

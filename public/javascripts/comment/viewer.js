@@ -1,22 +1,18 @@
 var g_sectionComment = null;
-var g_pagerContainer = null;
+var g_pager = null;
 var g_commentId = null;
 var g_activityId = null;
 var g_comment = null;
 var g_activity = null;
 
 function querySubCommentsAndRefresh() {
-    querySubComments(0, 0, g_pagerContainer.nItems, g_directionForward, g_commentId, onQuerySubCommentsSuccess, onQuerySubCommentsError);
+	var page = 1;
+	querySubComments(page, onQuerySubCommentsSuccess, onQuerySubCommentsError);
 }
 
-function querySubComments(refIndex, page, numItems, direction, commentId, onSuccess, onError){
+function querySubComments(page, onSuccess, onError){
     // prototypes: onSuccess(data), onError
-    var params = {};
-    if (commentId != null)	params[g_keyParentId] = commentId;
-    if (refIndex != null)	params[g_keyRefIndex] = refIndex;
-    if (page != null)		params[g_keyPage] = page;
-    if (numItems != null)	params[g_keyNumItems] = numItems;
-    if (direction != null)	params[g_keyDirection] = direction;
+    var params = generateCommentsQueryParams(g_pager, page);
     $.ajax({
         type: "GET",
         url: "/comment/sub/query",
@@ -28,23 +24,6 @@ function querySubComments(refIndex, page, numItems, direction, commentId, onSucc
             onError();
         }
     });
-}
-
-function generateCommentsQueryParams(container, page) {
-
-	if (page == null || page == container.page) return null;
-	var direction = page > container.page ? g_directionForward : g_directionBackward;
-	var refIndex = page > container.page ? g_pagerContainer.ed : g_pagerContainer.st;
-
-	var params = {};
-	params[g_keyActivityId] = g_activity.id;
-	params[g_keyRefIndex] = refIndex.toString();
-	params[g_keyPage] = page;
-	params[g_keyNumItems] = container.nItems;
-	params[g_keyDirection] = direction;
-
-	return params;
-
 }
 
 // Tab Q&A a.k.a comments
@@ -60,43 +39,25 @@ function onQuerySubCommentsSuccess(data){
 	if( length == 0) return;
 
 	var page = parseInt(jsonResponse[g_keyPage]);
-	g_pagerContainer.page = page;
+	g_pager.page = page;
 
-	g_pagerContainer.screen.empty();
+	g_pager.screen.empty();
 	var idx = 0;
 	for(var key in subCommentsJson){
 		var commentJson = subCommentsJson[key];
-		generateSubCommentCell(g_pagerContainer.screen, commentJson, g_activity);
+		generateSubCommentCell(g_pager.screen, commentJson, g_activity);
 		var comment = new Comment(commentJson);
-		$('<br>').appendTo(g_pagerContainer.screen);
-		if(idx == 0)	g_pagerContainer.st = comment.id;
-		if(idx == length - 1)	g_pagerContainer.ed = comment.id;
+		$('<br>').appendTo(g_pager.screen);
+		if(idx == 0)	g_pager.st = comment.id;
+		if(idx == length - 1)	g_pager.ed = comment.id;
 		++idx;
 	}
 
-	createPagerBar(g_pagerContainer, onQuerySubCommentsSuccess, onQuerySubCommentsError);
+	g_pager.refreshBar(page);
 }
 
 function onQuerySubCommentsError(){
 	
-}
-
-function generateSubCommentsQueryParams(container, page) {
-
-	if (container == null || container.page == null) return;
-	if (page == null || page == container.page) return null;
-	var direction = page > container.page ? g_directionForward : g_directionBackward;
-	var refIndex = page > container.page ? g_pagerContainer.ed : g_pagerContainer.st;
-
-	var params = {};
-	params[g_keyParentId] = g_commentId;
-	params[g_keyRefIndex] = refIndex.toString();
-	params[g_keyPage] = page;
-	params[g_keyNumItems] = container.nItems;
-	params[g_keyDirection] = direction;
-
-	return params;
-
 }
 
 function querySingleComment() {
@@ -121,9 +82,10 @@ function querySingleComment() {
 }
 
 function postInit() {
-	g_pagerContainer = new PagerContainer($("#pager-screen-sub-comments"), $("#pager-bar-sub-comments"),
-			g_keyId, g_orderDescend, 5,
-			"/comment/sub/query", generateSubCommentsQueryParams);
+
+	var pagerCache = new PagerCache(20);	
+
+	g_pager = new PagerContainer($("#pager-screen-sub-comments"), $("#pager-bar-sub-comments"), g_keyId, g_orderDescend, 5, "/comment/sub/query", generateCommentsQueryParams, pagerCache, null, onQuerySubCommentsSuccess, onQuerySubCommentsError);
 
 	g_onLoginSuccess = function() {
 		querySubCommentsAndRefresh();

@@ -35,7 +35,8 @@ function onUploadAvatarFormSubmission(formEvt){
 
 function queryActivitiesAndRefresh() {
 	if(g_vieweeId == null) return;
-	queryActivities(0, 0, g_pagerContainer.nItems, g_pagerContainer.orientation, g_directionForward, g_vieweeId, g_pagerContainer.relation, g_pagerContainer.status, onQueryActivitiesSuccess, onQueryActivitiesError);
+	var page = 1;
+	queryActivities(page, onQueryActivitiesSuccess, onQueryActivitiesError);
 }
 
 
@@ -112,15 +113,15 @@ $(document).ready(function(){
 	}
 	
 	initTopbar();
-
+	var relationSelector = createSelector($("#pager-filters"), ["發起的活動", "參與的活動"], [hosted, present], null, null, null, null);
+	var orientationSelector = createSelector($("#pager-filters"), ["時間倒序", "時間順序"], [g_orderDescend, g_orderAscend], null, null, null, null);
+	var relationFilter = new PagerFilter("relation", relationSelector);
+	var orientationFilter = new PagerFilter("orientation", orientationSelector); 
+	var filters = [relationFilter, orientationFilter];	
 	var pagerCache = new PagerCache(5);
 	
 	// initialize pager widgets
-	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"),
-	                                        g_keyActivityId, g_orderDescend, g_numItemsPerPage,
-	                                        "/activity/query", generateActivitiesQueryParams, pagerCache, null);
-	g_pager.relation = hosted;
-	g_pager.orientation = g_orderDescend;
+	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/query", generateActivitiesQueryParams, pagerCache, filters, onQueryActivitiesSuccess, onQueryActivitiesError);
 
 	g_onQueryActivitiesSuccess = onQueryActivitiesSuccess;
 	g_onQueryActivitiesError = onQueryActivitiesError;
