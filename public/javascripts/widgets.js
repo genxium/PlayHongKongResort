@@ -54,6 +54,31 @@ function getDateTime(picker){
  * Pager Widgets
  */
 
+function createSelector(par, titles, values, width, height, left, top) {
+	if (titles.length != values.length) return;
+	var length = titles.length;
+
+	var ret = $("<selector>").appendTo(par);
+	setDimensions(ret, width, height); 
+	setOffset(ret, left, top);
+	
+	for (var i = 0; i < length; ++i) {
+		var title = titles[i];
+		var val = values[i];
+		$("<option>", {
+			text: title,
+			value: val
+		}).appendTo(ret);
+	}	
+
+	return ret;
+}
+
+function PagerFilter(key, selector) {
+	this.key = key;
+	this.selector = selector;
+}
+
 function PagerCache(size) {
 	this.size = size;
 	this.map = {};
@@ -89,9 +114,9 @@ function PagerCache(size) {
 	};
 }
 
-function PagerContainer(screen, bar, orderKey, orientation, numItemsPerPage, url, paramsGenerator, pagerCache) {
-	this.screen = screen; // screen of the container
-	this.bar = bar; // control bar of the container
+function Pager(screen, bar, orderKey, orientation, numItemsPerPage, url, paramsGenerator, pagerCache, filters) {
+	this.screen = screen; // screen of the pager
+	this.bar = bar; // control bar of the pager
 	this.orderKey = orderKey;
 	this.orientation = orientation;
 	this.nItems = numItemsPerPage; // number of items per page
@@ -116,37 +141,40 @@ function PagerContainer(screen, bar, orderKey, orientation, numItemsPerPage, url
 		
 	// pager cache
 	this.pagerCache = pagerCache;
+
+	// multi-level filters
+	this.filters = filters;
 }
 
-function PagerButton(container, page) {
+function PagerButton(pager, page) {
 	// the pager button is determined to trigger only "GET" ajax
-	this.container = container;
+	this.pager = pager;
 	this.page = page;
 }
 
-function createPagerBar(container, onSuccess, onError) {
+function createPagerBar(pager, onSuccess, onError) {
 
 	// prototypes: onSuccess(data), onError()
-	var page  = container.page;
-	var orientation = container.orientation; 
+	var page  = pager.page;
+	var orientation = pager.orientation; 
 
 	// display pager bar 
-	container.bar.empty();
+	pager.bar.empty();
 
-	var previous = new PagerButton(container, page - 1);
+	var previous = new PagerButton(pager, page - 1);
 	var btnPrevious = $("<button>", {
 		text: "Prev",
 		style: "margin-right: 2px"
-	}).appendTo(container.bar);
+	}).appendTo(pager.bar);
 	btnPrevious.click(previous, function(evt) {
-		if (container.url == null) return;
+		if (pager.url == null) return;
 		var button = evt.data;
-		var params = container.paramsGenerator(container, button.page);
+		var params = pager.paramsGenerator(pager, button.page);
 		if (params == null) return;
 		disableField(btnPrevious);
 		$.ajax({
 		    type: "GET",
-		    url: container.url,
+		    url: pager.url,
 		    data: params,
 		    success: function(data, status, xhr) {
 			enableField(btnPrevious);
@@ -160,24 +188,24 @@ function createPagerBar(container, onSuccess, onError) {
 	});
 	
 	var currentPageIndicator = $("<text>", {
-		text: container.page.toString(),
+		text: pager.page.toString(),
 		style: "font-size: 14pt; margin-left: 10px; margin-right: 10px;"
-	}).appendTo(container.bar);
+	}).appendTo(pager.bar);
 
-	var next = new PagerButton(container, page + 1);
+	var next = new PagerButton(pager, page + 1);
 	var btnNext = $("<button>", {
 		text: "Next",
 		style: "margin-left: 2px"
-	}).appendTo(container.bar);
+	}).appendTo(pager.bar);
 	btnNext.click(next, function(evt) {
-        if (container.url == null) return;
+        if (pager.url == null) return;
         var button = evt.data;
-        var params = container.paramsGenerator(container, button.page);
+        var params = pager.paramsGenerator(pager, button.page);
         if (params == null) return;
         disableField(btnNext);
         $.ajax({
             type: "GET",
-            url: container.url,
+            url: pager.url,
             data: params,
             success: function(data, status, xhr) {
                 enableField(btnNext);
@@ -195,14 +223,14 @@ function createPagerBar(container, onSuccess, onError) {
  * Return a modal handle
  * */
 function createModal(par, message, widthRatioPercentage, heightRatioPercentage){
-	var container=$("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='' aria-hidden='true'>", {
+	var pager=$("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='' aria-hidden='true'>", {
 		style: "width: " + widthRatioPercentage + "%; height: " + heightRatioPercentage + "%"
 	}).appendTo(par);	
-	var dialog=$("<div class='modal-dialog modal-lg'>").appendTo(container);
+	var dialog=$("<div class='modal-dialog modal-lg'>").appendTo(pager);
 	var content=$("<div class='modal-content'>", {
 		text: message
 	}).appendTo(dialog);
-	return container;
+	return pager;
 }
 
 function showModal(container){
@@ -211,7 +239,7 @@ function showModal(container){
         });
 }
 
-function hideModal(container){
+function hideModal(pager){
 	container.modal("hide");
 }
 

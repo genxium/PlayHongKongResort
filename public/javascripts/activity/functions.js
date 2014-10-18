@@ -1,7 +1,7 @@
 var g_vieweeId = null; // should always be null except in profile's page
 var g_activitiesFilter = null;
 var g_activitiesSorter = null;
-var g_pagerContainer = null;
+var g_pager = null;
 
 function queryActivities(refIndex, page, numItems, orientation, direction, vieweeId, relation, status, onSuccess, onError) {
     // prototypes: onSuccess(data), onError
@@ -34,7 +34,7 @@ function queryActivities(refIndex, page, numItems, orientation, direction, viewe
 function generateActivitiesQueryParams(container, page) {
 	if (page == null || page == container.page) return null;
 	var direction = page > container.page ? g_directionForward : g_directionBackward;
-	var refIndex = page > container.page ? g_pagerContainer.ed : g_pagerContainer.st;
+	var refIndex = page > container.page ? g_pager.ed : g_pager.st;
 
 	var params = {};
 	
@@ -58,22 +58,22 @@ function onQueryActivitiesSuccess(data){
 	
 	// display pager container
 	var page = parseInt(jsonResponse[g_keyPage]);
-	g_pagerContainer.page = page;		
+	g_pager.page = page;		
 
 	var activitiesJson = jsonResponse[g_keyActivities];
 	var length = Object.keys(activitiesJson).length;
 	if(length == 0) return;
 
-	g_pagerContainer.screen.empty();
+	g_pager.screen.empty();
 	for(var idx = 0; idx < length; ++idx) {
 		var activityJson = activitiesJson[idx];
 		var activity = new Activity(activityJson);
-		if(idx == 0)	g_pagerContainer.st = activity.id;
-		if(idx == length - 1)	g_pagerContainer.ed = activity.id;
-		generateActivityCell(g_pagerContainer.screen, activity);
+		if(idx == 0)	g_pager.st = activity.id;
+		if(idx == length - 1)	g_pager.ed = activity.id;
+		generateActivityCell(g_pager.screen, activity);
 	}
 
-	createPagerBar(g_pagerContainer, onQueryActivitiesSuccess, onQueryActivitiesError);
+	createPagerBar(g_pager, onQueryActivitiesSuccess, onQueryActivitiesError);
 } 
 
 function onQueryActivitiesError(xhr){
