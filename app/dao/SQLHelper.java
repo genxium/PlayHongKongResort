@@ -157,7 +157,7 @@ public class SQLHelper {
             statement.close();
             closeConnection(connection);
         } catch (Exception e) {
-            // return the invalid value for exceptions
+            // return the INVALID value for exceptions
             DataUtils.log(TAG, "insert", e);
         }
         return lastId;

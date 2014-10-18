@@ -98,6 +98,7 @@ function PagerCache(size) {
 		this.map[this.first] = content;
 		
 	};
+
 	this.appendPage = function(content) {
 
 		var oldSize = Object.keys(this.map).length;
@@ -121,7 +122,7 @@ function Pager(screen, bar, orderKey, orientation, numItemsPerPage, url, paramsG
 	this.orientation = orientation;
 	this.nItems = numItemsPerPage; // number of items per page
 
-	this.page = 0; // current page
+	this.page = -1; // current page
 	this.total = 0; // initial number of total pages should always be 0
 
 	// starting & ending indices of the current page
@@ -157,66 +158,47 @@ function createPagerBar(pager, onSuccess, onError) {
 	// prototypes: onSuccess(data), onError()
 	var page  = pager.page;
 	var orientation = pager.orientation; 
+	var pagerCache = pager.pagerCache;
+	var map = pager.map;
+	var orientation = pager.orientation; 
 
 	// display pager bar 
 	pager.bar.empty();
 
-	var previous = new PagerButton(pager, page - 1);
-	var btnPrevious = $("<button>", {
-		text: "Prev",
-		style: "margin-right: 2px"
-	}).appendTo(pager.bar);
-	btnPrevious.click(previous, function(evt) {
-		if (pager.url == null) return;
-		var button = evt.data;
-		var params = pager.paramsGenerator(pager, button.page);
-		if (params == null) return;
-		disableField(btnPrevious);
-		$.ajax({
-		    type: "GET",
-		    url: pager.url,
-		    data: params,
-		    success: function(data, status, xhr) {
-			enableField(btnPrevious);
-			onSuccess(data);
-		    },
-		    error: function(xhr, status, err) {
-			enableField(btnPrevious);
-			onError();
-		    }
-		});
-	});
-	
-	var currentPageIndicator = $("<text>", {
-		text: pager.page.toString(),
-		style: "font-size: 14pt; margin-left: 10px; margin-right: 10px;"
-	}).appendTo(pager.bar);
+	var length = Object.keys(map).length;
+	for(var key in map) {
 
-	var next = new PagerButton(pager, page + 1);
-	var btnNext = $("<button>", {
-		text: "Next",
-		style: "margin-left: 2px"
-	}).appendTo(pager.bar);
-	btnNext.click(next, function(evt) {
-        if (pager.url == null) return;
-        var button = evt.data;
-        var params = pager.paramsGenerator(pager, button.page);
-        if (params == null) return;
-        disableField(btnNext);
-        $.ajax({
-            type: "GET",
-            url: pager.url,
-            data: params,
-            success: function(data, status, xhr) {
-                enableField(btnNext);
-                onSuccess(data);
-            },
-            error: function(xhr, status, err) {
-                enableField(btnNext);
-                onError();
-            }
-        });
-    });
+		var indicator = $("<button>", {
+			text: key,
+			style: "font-size: 14pt; margin-left: 10px; margin-right: 10px;"
+		}).appendTo(pager.bar);
+	
+		var pagerButton = new PagerButton(pager, key);
+		indicator.click(pagerButton, function(evt) {
+			if (pager.url == null) return;
+			var button = evt.data;
+			var params = pager.paramsGenerator(pager, button.page);
+			if (params == null) return;
+			disableField($(this));
+			$.ajax({
+			    type: "GET",
+			    url: pager.url,
+			    data: params,
+			    success: function(data, status, xhr) {
+				enableField(btnPrevious);
+				onSuccess(data);
+			    },
+			    error: function(xhr, status, err) {
+				enableField(btnPrevious);
+				onError();
+			    }
+			});
+		});
+		
+		if (key != page) continue;
+		indicator.css("font-weight", "bold");
+			
+	}	
 }
 
 /*
@@ -233,13 +215,13 @@ function createModal(par, message, widthRatioPercentage, heightRatioPercentage){
 	return pager;
 }
 
-function showModal(container){
+function showModal(container) {
 	container.modal({
                 show: true    
         });
 }
 
-function hideModal(pager){
+function hideModal(container) {
 	container.modal("hide");
 }
 
@@ -249,11 +231,11 @@ function removeModal(container){
 }
 
 function createBinarySwitch(par, disabled, initVal, disabledText, positiveText, negativeText, inputId){
-	var container=$("<div class='onoffswitch'>").appendTo(par);
-	var input=$("<input type='checkbox' class='onoffswitch-checkbox' id='"+inputId+"'>").appendTo(container);
-	var label=$("<label class='onoffswitch-label' for='"+inputId+"'>").appendTo(container);
-	var inner=$("<span class='onoffswitch-inner'>").appendTo(label);
-	var sw=$("<span class='onoffswitch-switch'>").appendTo(label);
+	var container = $("<div class='onoffswitch'>").appendTo(par);
+	var input = $("<input type='checkbox' class='onoffswitch-checkbox' id='"+inputId+"'>").appendTo(container);
+	var label = $("<label class='onoffswitch-label' for='"+inputId+"'>").appendTo(container);
+	var inner = $("<span class='onoffswitch-inner'>").appendTo(label);
+	var sw = $("<span class='onoffswitch-switch'>").appendTo(label);
 
 	inner.attr("left-text", positiveText);
 	inner.attr("right-text", negativeText);
@@ -289,5 +271,5 @@ function disableBinarySwitch(container){
 	container.off("click");
 	var input = firstChild(container, "input.onoffswitch-checkbox");			
 	input.prop("checked", false);
-	input.prop("disabled", true);
+	disableField(input);
 }

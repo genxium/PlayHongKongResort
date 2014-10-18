@@ -1,14 +1,14 @@
 package models;
 
 public class UserActivityRelation {
-    public static final int fullmask = ((1 << 16) - 1);
-    public static final int invalid = 0;
-    public static final int applied = (1 << 0);
-    public static final int selected = (1 << 1);
-    public static final int present = (1 << 2);
-    public static final int absent = (1 << 3);
-    public static final int assessed = (1 << 4);
-    public static final int hosted = (1 << 5);
+    public static final int FULLMASK = ((1 << 16) - 1);
+    public static final int INVALID = 0;
+    public static final int APPLIED = (1 << 0);
+    public static final int SELECTED = (1 << 1);
+    public static final int PRESENT = (1 << 2);
+    public static final int ABSENT = (1 << 3);
+    public static final int ASSESSED = (1 << 4);
+    public static final int HOSTED = (1 << 5);
 
     public static String TABLE = "user_activity_relation";
     public static String USER_ID = "user_id";
@@ -20,27 +20,27 @@ public class UserActivityRelation {
     public static String LAST_REJECTED_TIME = "last_rejected_time";
 
     public static int maskRelation(int relation, Integer originalRelation) {
-        int ret = invalid;
+        int ret = INVALID;
         if(originalRelation != null) ret = originalRelation;
         switch (relation) {
-            case selected:
-                if((ret & applied) > 0) ret &= (fullmask ^ applied);
-                ret |= selected;
+            case SELECTED:
+                if((ret & APPLIED) > 0) ret &= (FULLMASK ^ APPLIED);
+                ret |= SELECTED;
                 break;
-            case applied:
-                if((ret & selected) > 0) ret &= (fullmask ^ selected);
-                ret |= applied;
+            case APPLIED:
+                if((ret & SELECTED) > 0) ret &= (FULLMASK ^ SELECTED);
+                ret |= APPLIED;
                 break;
-            case present:
-                if((ret & absent) > 0) ret &= (fullmask ^ absent);
-                ret |= present;
+            case PRESENT:
+                if((ret & ABSENT) > 0) ret &= (FULLMASK ^ ABSENT);
+                ret |= PRESENT;
                 break;
-            case absent:
-                if((ret & present) > 0) ret &= (fullmask ^ present);
-                ret |= absent;
+            case ABSENT:
+                if((ret & PRESENT) > 0) ret &= (FULLMASK ^ PRESENT);
+                ret |= ABSENT;
                 break;
-            case assessed:
-                ret |= assessed;
+            case ASSESSED:
+                ret |= ASSESSED;
                 break;
             default:
                 break;

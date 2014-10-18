@@ -551,7 +551,7 @@ public class EasyPreparedStatementBuilder {
             statement.close();
             SQLHelper.closeConnection(connection);
         } catch (Exception e) {
-            // return the invalid value for exceptions
+            // return the INVALID value for exceptions
             DataUtils.log(TAG, "insert", e);
         }
         return lastId;

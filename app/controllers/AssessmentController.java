@@ -59,8 +59,8 @@ public class AssessmentController extends Controller {
 
             Integer relation = SQLCommander.queryUserActivityRelation(userId, activityId);
 
-            // Only present participants and host can submit assessments
-            if ((relation & UserActivityRelation.present) == 0 && activitiy.getHost().getId() != userId) throw new InvalidUserActivityRelationException();
+            // Only PRESENT participants and host can submit assessments
+            if ((relation & UserActivityRelation.PRESENT) == 0 && activitiy.getHost().getId() != userId) throw new InvalidUserActivityRelationException();
 
             String bundle = formData.get(BUNDLE)[0];
             JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
@@ -75,9 +75,9 @@ public class AssessmentController extends Controller {
             }
 
             int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
-            if(originalRelation == UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
+            if(originalRelation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
 
-            int newRelation = UserActivityRelation.maskRelation(UserActivityRelation.assessed, originalRelation);
+            int newRelation = UserActivityRelation.maskRelation(UserActivityRelation.ASSESSED, originalRelation);
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.update(UserActivityRelation.TABLE).set(UserActivityRelation.RELATION, newRelation)

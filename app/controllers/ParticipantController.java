@@ -42,8 +42,8 @@ public class ParticipantController extends UserController {
 				Integer userId = Converter.toInteger(selectedParticipantJson);
 				if (userId.equals(viewerId)) continue; // anti-cracking by selecting the host of an activity
 				int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
-				if ((originalRelation & UserActivityRelation.selected) > 0) continue;
-				if (!SQLCommander.updateUserActivityRelation(userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.selected, originalRelation))) continue;
+				if ((originalRelation & UserActivityRelation.SELECTED) > 0) continue;
+				if (!SQLCommander.updateUserActivityRelation(userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.SELECTED, originalRelation))) continue;
 				++count;
 			}
 

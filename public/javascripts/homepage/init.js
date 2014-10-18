@@ -29,49 +29,49 @@ function refreshOnLoggedIn(){
 
 $(document).ready(function(){
 
-		// initialize local DOMs
-		initTopbar();
-		initRegisterWidget();
+	// initialize local DOMs
+	initTopbar();
+	initRegisterWidget();
 
-		var filtersBar = $("#pager-filters");
-		var selector = createSelector(["時間倒序", "時間順序"], [g_orderDescend, g_orderAscend], null, null, null, null));
-		var filter = new PagerFilter("orientation", selector);
-		var filters = [filter];	
+	var filtersBar = $("#pager-filters");
+	var selector = createSelector(["時間倒序", "時間順序"], [g_orderDescend, g_orderAscend], null, null, null, null));
+	var filter = new PagerFilter("orientation", selector);
+	var filters = [filter];	
 
-		var pagerCache = new PagerCache(5); 
+	var pagerCache = new PagerCache(5); 
 
-		// initialize pager widgets
-		g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"),
-			g_keyActivityId, g_orderDescend, g_numItemsPerPage,
-			"/activity/query", generateActivitiesQueryParams, pagerCache, filters);
-		g_pager.status = g_statusAccepted;	
+	// initialize pager widgets
+	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"),
+		g_keyActivityId, g_orderDescend, g_numItemsPerPage,
+		"/activity/query", generateActivitiesQueryParams, pagerCache, filters);
+	g_pager.status = g_statusAccepted;	
 
-		g_onLoginSuccess = function(){
-			refreshOnLoggedIn();
-			queryActivitiesAndRefresh();
-		};
+	g_onLoginSuccess = function(){
+		refreshOnLoggedIn();
+		queryActivitiesAndRefresh();
+	};
 
-		g_onLoginError = null;
+	g_onLoginError = null;
 
-		g_onEnter = function(){
-			refreshOnEnter();
-			queryActivitiesAndRefresh();
-		};
+	g_onEnter = function(){
+		refreshOnEnter();
+		queryActivitiesAndRefresh();
+	};
 
-		g_onRegisterSuccess = function(){
-			alert("Registered successfully!");
-			refreshOnEnter();
-			queryActivitiesAndRefresh();
-		}
+	g_onRegisterSuccess = function(){
+		alert("Registered successfully!");
+		refreshOnEnter();
+		queryActivitiesAndRefresh();
+	}
 
-		g_onRegisterError = null;
+	g_onRegisterError = null;
 
-		initActivityEditor();
+	initActivityEditor();
 
-		// initialize callback functions
-		g_onEditorRemoved = refreshOnLoggedIn;
-		g_onQueryActivitiesSuccess = onQueryActivitiesSuccess;
+	// initialize callback functions
+	g_onEditorRemoved = refreshOnLoggedIn;
+	g_onQueryActivitiesSuccess = onQueryActivitiesSuccess;
 
-		checkLoginStatus();
+	checkLoginStatus();
 	
 });

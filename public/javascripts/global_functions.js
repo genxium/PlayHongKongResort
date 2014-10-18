@@ -150,6 +150,14 @@ function compareYmdhisDate(foo, bar) {
 	return 0;
 }
 
+function checkField(field) {
+	field.prop("checked", true);
+}
+
+function uncheckField(field) {
+	field.prop("checked", false);
+}
+
 function disableField(field) {
 	field.prop('disabled', true);
 }
@@ -175,7 +183,6 @@ function setBackgroundImage(field, url, size, repeat, position) {
 function setDimensions(field, width, height) {
 	if (width != null)	field.css("width", width);
 	if (height != null)	field.css("height", height);
-	
 }
 
 function setOffset(field, left, top) {

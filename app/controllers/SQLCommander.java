@@ -100,7 +100,7 @@ public class SQLCommander {
 
 	    values.add(lastActivityId);
 	    values.add(userId);
-	    values.add(UserActivityRelation.maskRelation(UserActivityRelation.selected, null));
+	    values.add(UserActivityRelation.maskRelation(UserActivityRelation.SELECTED, null));
 
 	    EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
 	    builderRelation.insert(names, values).into(UserActivityRelation.TABLE).execInsert();
@@ -145,7 +145,7 @@ public class SQLCommander {
 	    try {
 		    Activity activity = queryActivity(activityId);
 		    List<Image> images = queryImages(activityId);
-		    List<BasicUser> appliedParticipants = queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.applied, null));
+		    List<BasicUser> appliedParticipants = queryUsers(activityId, UserActivityRelation.maskRelation(UserActivityRelation.APPLIED, null));
 		    List<BasicUser> selectedParticipants = querySelectedParticipants(activityId);
 		    List<BasicUser> presentParticipants = queryPresentParticipants(activityId);
 		    activityDetail = new ActivityDetail(activity, images, appliedParticipants, selectedParticipants, presentParticipants);
@@ -206,29 +206,79 @@ public class SQLCommander {
 	    return ret;
     }
 
+    public static List<Activity> queryActivities(Integer page, String orderKey, String orientation, Integer numItems, int status) {
+        List<Activity> ret = new ArrayList<Activity>();
+        try {
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, Activity.NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
+            builder.select(names)
+                    .from(Activity.TABLE)
+                    .order(orderKey, orientation)
+                    .where(Activity.STATUS, "=", status)
+                    .limit((page - 1) * numItems, page * numItems);
+            List<JSONObject> activityJsons = builder.execSelect();
+            if (activityJsons == null)	return null;
+            for (JSONObject activityJson : activityJsons) {
+                User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+                ret.add(new Activity(activityJson, host));
+            }
+        } catch (Exception e) {
+            DataUtils.log(TAG, "queryActivities", e);
+        }
+        return ret;
+    }
+
     public static List<Activity> queryHostedActivities(Integer hostId, Integer viewerId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction){
-	    List<Activity> ret = new ArrayList<Activity>();
-	    try {
-		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
-		    builder.select(names).from(Activity.TABLE);
+        List<Activity> ret = new ArrayList<Activity>();
+        try {
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+            builder.select(names).from(Activity.TABLE);
             // extra where criterion
             builder.where(Activity.HOST_ID, "=", hostId);
             if(!hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
 
             List<JSONObject> activityJsons = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
 
-		    if (activityJsons == null) return null;
-		    for (JSONObject activityJson : activityJsons) {
-			    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
-			    Activity activity = new Activity(activityJson, host);
-			    ret.add(activity);
-		    }
+            if (activityJsons == null) return null;
+            for (JSONObject activityJson : activityJsons) {
+                User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+                Activity activity = new Activity(activityJson, host);
+                ret.add(activity);
+            }
 
-	    } catch (Exception e) {
-		    DataUtils.log(TAG, "queryHostedActivities", e);
-	    }
-	    return ret;
+        } catch (Exception e) {
+            DataUtils.log(TAG, "queryHostedActivities", e);
+        }
+        return ret;
+    }
+
+    public static List<Activity> queryHostedActivities(Integer hostId, Integer viewerId, Integer page, String orderKey, String orientation, Integer numItems){
+        List<Activity> ret = new ArrayList<Activity>();
+        try {
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+            builder.select(names)
+                    .from(Activity.TABLE)
+                    .order(orderKey, orientation)
+                    .where(Activity.HOST_ID, "=", hostId)
+                    .limit((page - 1) * numItems, page * numItems);
+
+            if(!hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
+
+            List<JSONObject> activityJsons = builder.execSelect();
+
+            if (activityJsons == null) return null;
+            for (JSONObject activityJson : activityJsons) {
+                User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+                Activity activity = new Activity(activityJson, host);
+                ret.add(activity);
+            }
+
+        } catch (Exception e) {
+            DataUtils.log(TAG, "queryHostedActivities", e);
+        }
+        return ret;
     }
 
     public static int queryUserActivityRelation(Integer userId, Integer activityId) {
@@ -242,14 +292,14 @@ public class SQLCommander {
                     .where(UserActivityRelation.ACTIVITY_ID, "=", activityId)
                     .execSelect();
 
-		    if (records == null) return UserActivityRelation.invalid;
-		    if (records.size() != 1) return UserActivityRelation.invalid;
+		    if (records == null) return UserActivityRelation.INVALID;
+		    if (records.size() != 1) return UserActivityRelation.INVALID;
 		    JSONObject record = records.get(0);
 		    return (Integer) record.get(UserActivityRelation.RELATION);
 	    } catch (Exception e) {
 		    DataUtils.log(TAG, "queryUserActivityRelation", e);
 	    }
-	    return UserActivityRelation.invalid;
+	    return UserActivityRelation.INVALID;
     }
 
     public static Comment queryComment(Integer commentId) {
@@ -289,6 +339,33 @@ public class SQLCommander {
 	    return ret;
     }
 
+    public static List<Comment> queryTopLevelComments(Integer activityId, Integer page, String orderKey, String orientation, Integer numItems) {
+        List<Comment> ret = new ArrayList<Comment>();
+        try {
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+
+            // query table Comment
+            String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.NUM_CHILDREN, Comment.GENERATED_TIME};
+            String[] whereCols = {Comment.ACTIVITY_ID, Comment.PARENT_ID};
+            String[] whereOps = {"=", "="};
+            Object[] whereVals = {activityId, INVALID};
+
+            builder.select(names)
+                    .from(Comment.TABLE)
+                    .where(whereCols, whereOps, whereVals)
+                    .limit((page - 1) * numItems, page * numItems);
+
+            List<JSONObject> commentsJson = builder.execSelect();
+
+            if (commentsJson == null) throw new NullPointerException();
+            for (JSONObject commentJson : commentsJson)	ret.add(new Comment(commentJson));
+
+        } catch (Exception e) {
+            DataUtils.log(TAG, "queryTopLevelComments", e);
+        }
+        return ret;
+    }
+
     public static List<Comment> querySubComments(Integer parentId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction) {
 	    List<Comment> ret = new ArrayList<Comment>();
 	    try {
@@ -305,6 +382,28 @@ public class SQLCommander {
 		    DataUtils.log(TAG, "querySubComments", e);
 	    }
 	    return ret;
+    }
+
+    public static List<Comment> querySubComments(Integer parentId, Integer page, String orderKey, String orientation, Integer numItems) {
+        List<Comment> ret = new ArrayList<Comment>();
+        try {
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+
+            String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
+            builder.select(names)
+                    .from(Comment.TABLE)
+                    .where(Comment.PARENT_ID, "=", parentId)
+                    .limit((page - 1) * numItems, page * numItems);
+
+            List<JSONObject> commentsJson = builder.execSelect();
+
+            if (commentsJson == null) throw new NullPointerException();
+            for (JSONObject commentJson : commentsJson)	ret.add(new Comment(commentJson));
+
+        } catch (Exception e) {
+            DataUtils.log(TAG, "querySubComments", e);
+        }
+        return ret;
     }
 
     public static Assessment queryAssessment(Integer activityId, Integer from, Integer to) {
@@ -439,7 +538,7 @@ public class SQLCommander {
 		    if (activity.isDeadlineExpired()) throw new DeadlineHasPassedException();
 		    int activityId = activity.getId();
 		    int relation = queryUserActivityRelation(userId, activityId);
-		    if (relation != UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
+		    if (relation != UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
 		    ret = true;
 	    } catch (Exception e) {
 		    DataUtils.log(TAG, "isActivityJoinable", e);
@@ -502,7 +601,7 @@ public class SQLCommander {
 		    if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
 		    int relation1 = queryUserActivityRelation(from, activity.getId());
 		    int relation2 = queryUserActivityRelation(to, activity.getId());
-		    if ((relation1 & UserActivityRelation.selected) == 0 || (relation2 & UserActivityRelation.selected) == 0)	throw new InvalidUserActivityRelationException();
+		    if ((relation1 & UserActivityRelation.SELECTED) == 0 || (relation2 & UserActivityRelation.SELECTED) == 0)	throw new InvalidUserActivityRelationException();
 		    ret = true;
 	    } catch (Exception e) {
 		    DataUtils.log(TAG, "isUserAssessable", e);
@@ -511,11 +610,11 @@ public class SQLCommander {
     }
 
     /*
-       Method isActivityMarkable(...) returns UserActivityRelation.invalid if the activity is not markable by
+       Method isActivityMarkable(...) returns UserActivityRelation.INVALID if the activity is not markable by
        specified user, or the original relation otherwise.
        */
     public static int isActivityMarkable(Integer userId, Integer activityId, int relation) {
-	    int ret = UserActivityRelation.invalid;
+	    int ret = UserActivityRelation.INVALID;
 	    try {
 		    if (userId == null) throw new UserNotFoundException();
 		    if (activityId == null) throw new ActivityNotFoundException();
@@ -529,14 +628,14 @@ public class SQLCommander {
     }
 
     public static int isActivityMarkable(Integer userId, Activity activity, int relation) {
-	    int ret = UserActivityRelation.invalid;
+	    int ret = UserActivityRelation.INVALID;
 	    try {
 		    if (userId == null) throw new UserNotFoundException();
 		    if (activity == null) throw new ActivityNotFoundException();
 		    if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
 		    int originalRelation = queryUserActivityRelation(userId, activity.getId());
-		    if (originalRelation == UserActivityRelation.invalid) throw new InvalidUserActivityRelationException();
-		    if ((originalRelation & UserActivityRelation.selected) == 0) throw new InvalidUserActivityRelationException();
+		    if (originalRelation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
+		    if ((originalRelation & UserActivityRelation.SELECTED) == 0) throw new InvalidUserActivityRelationException();
 		    if ((originalRelation & relation) > 0) throw new InvalidUserActivityRelationException();
 		    ret = originalRelation;
 	    } catch (Exception e) {
@@ -715,7 +814,7 @@ public class SQLCommander {
 		    String timeStr = currentTime.toString();
 
 		    String timestampFieldName = null;
-		    if ((relation & UserActivityRelation.selected) > 0) {
+		    if ((relation & UserActivityRelation.SELECTED) > 0) {
 			    timestampFieldName = UserActivityRelation.LAST_ACCEPTED_TIME;
 		    } else {
 			    timestampFieldName = UserActivityRelation.LAST_REJECTED_TIME;
@@ -738,19 +837,19 @@ public class SQLCommander {
     public static List<BasicUser> querySelectedParticipants(int activityId) {
 	    List<BasicUser> ret = new LinkedList<BasicUser>();
 
-	    int possibleRelation1 = UserActivityRelation.selected;
+	    int possibleRelation1 = UserActivityRelation.SELECTED;
 	    List<BasicUser> lst1 = queryUsers(activityId, possibleRelation1);
 
-	    int possibleRelation11 = possibleRelation1 | UserActivityRelation.present;
+	    int possibleRelation11 = possibleRelation1 | UserActivityRelation.PRESENT;
 	    List<BasicUser> lst11 = queryUsers(activityId, possibleRelation11);
 
-	    int possibleRelation12 = possibleRelation1 | UserActivityRelation.absent;
+	    int possibleRelation12 = possibleRelation1 | UserActivityRelation.ABSENT;
 	    List<BasicUser> lst12 = queryUsers(activityId, possibleRelation12);
 
-	    int possibleRelation111 = possibleRelation11 | UserActivityRelation.assessed;
+	    int possibleRelation111 = possibleRelation11 | UserActivityRelation.ASSESSED;
 	    List<BasicUser> lst111 = queryUsers(activityId, possibleRelation111);
 
-	    int possibleRelation121 = possibleRelation12 | UserActivityRelation.assessed;
+	    int possibleRelation121 = possibleRelation12 | UserActivityRelation.ASSESSED;
 	    List<BasicUser> lst121 = queryUsers(activityId, possibleRelation121);
 
 	    ret.addAll(lst1);
@@ -765,12 +864,12 @@ public class SQLCommander {
     public static List<BasicUser> queryPresentParticipants(int activityId) {
 	    List<BasicUser> ret = new LinkedList<BasicUser>();
 
-	    int baseRelation1 = UserActivityRelation.selected;
-	    int possibleRelation11 = baseRelation1 | UserActivityRelation.present;
+	    int baseRelation1 = UserActivityRelation.SELECTED;
+	    int possibleRelation11 = baseRelation1 | UserActivityRelation.PRESENT;
 
 	    List<BasicUser> lst11 = queryUsers(activityId, possibleRelation11);
 
-	    int possibleRelation111 = (possibleRelation11 | UserActivityRelation.assessed);
+	    int possibleRelation111 = (possibleRelation11 | UserActivityRelation.ASSESSED);
 
 	    List<BasicUser> lst111 = queryUsers(activityId, possibleRelation111);
 
@@ -783,16 +882,16 @@ public class SQLCommander {
     public static List<BasicUser> queryAssessedParticipants(int activityId) {
 	    List<BasicUser> ret = new LinkedList<BasicUser>();
 
-	    int baseRelation1 = UserActivityRelation.selected;
+	    int baseRelation1 = UserActivityRelation.SELECTED;
 
-	    int baseRelation11 = baseRelation1 | UserActivityRelation.present;
+	    int baseRelation11 = baseRelation1 | UserActivityRelation.PRESENT;
 
-	    int baseRelation12 = baseRelation1 | UserActivityRelation.absent;
+	    int baseRelation12 = baseRelation1 | UserActivityRelation.ABSENT;
 
-	    int possibleRelation111 = baseRelation11 | UserActivityRelation.assessed;
+	    int possibleRelation111 = baseRelation11 | UserActivityRelation.ASSESSED;
 	    List<BasicUser> lst111 = queryUsers(activityId, possibleRelation111);
 
-	    int possibleRelation121 = baseRelation12 | UserActivityRelation.assessed;
+	    int possibleRelation121 = baseRelation12 | UserActivityRelation.ASSESSED;
 	    List<BasicUser> lst121 = queryUsers(activityId, possibleRelation121);
 
 	    ret.addAll(lst111);

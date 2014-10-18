@@ -199,7 +199,7 @@ public class Activity {
             
             if (viewerId == null) return ret;
 	    int relation = SQLCommander.queryUserActivityRelation(viewerId, m_id);
-	    if (relation != UserActivityRelation.invalid)	ret.put(UserActivityRelation.RELATION, relation);
+	    if (relation != UserActivityRelation.INVALID)	ret.put(UserActivityRelation.RELATION, relation);
 	    m_viewer = SQLCommander.queryUser(viewerId);
 	    if (viewerId.equals(m_host.getId()))	ret.put(STATUS, String.valueOf(m_status));
 	    if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	ret.put(STATUS, String.valueOf(m_status));
