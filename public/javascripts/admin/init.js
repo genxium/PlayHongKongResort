@@ -92,36 +92,46 @@ function onBtnDeleteClicked(evt){
 	}
 }
 
-function queryActivitiesAndRefresh() {
+function listActivitiesAndRefresh() {
 	var page = 1;
-	queryActivities(page, onQueryActivitiesSuccessAdmin, onQueryActivitiesErrorAdmin);
+	listActivities(page, onListActivitiesSuccessAdmin, onListActivitiesErrorAdmin);
 }
 
-function onQueryActivitiesSuccessAdmin(data, status, xhr){
+function onListActivitiesSuccessAdmin(data){
 	var jsonResponse = JSON.parse(data);
-	if(jsonResponse == null) return;
+        if(jsonResponse == null) return;
 
-	var page = parseInt(jsonResponse[g_keyPage]);
-	g_pager.page = page;		
+        var pageSt = parseInt(jsonResponse[g_keyPageSt]);
+        var pageEd = parseInt(jsonResponse[g_keyPageEd]);
+        var page = pageSt;
 
-	var activitiesJson = jsonResponse[g_keyActivities];
-	var length = Object.keys(activitiesJson).length;
+        var activitiesJson = jsonResponse[g_keyActivities];
+        var length = Object.keys(activitiesJson).length;
 
-	g_pager.screen.empty();
+        g_pager.screen.empty();
+        var activities = [];
+        for(var idx = 1; idx <= length; ++idx) {
+                var activityJson = activitiesJson[idx - 1];
+                var activity = new Activity(activityJson);
+                activities.push(activity);
+                if (page == g_pager.page) {
+                        generateActivityCellForAdmin(g_pager.screen, activity);
+                }
 
-	for(var idx = 0; idx < length; ++idx) {
-		var activityJson = activitiesJson[idx];
-		var activity = new Activity(activityJson);
-		var activityId = parseInt(activity.id);
-		if(idx == 0)	g_pager.st = activityId;
-		if(idx == length - 1)	g_pager.ed = activityId;
-		generateActivityCellForAdmin(g_pager.screen, activity);
-	}
+                if (idx % g_pager.nItems != 0) continue;
+                g_pager.cache.putPage(page, activities);
+                activities = [];
+                ++page;
+        }
+        if (activities != null && activities.length > 0) {
+                // for the last page
+                g_pager.cache.putPage(page, activities);
+        }
 
-	g_pager.refreshBar(page);
+        g_pager.refreshBar();
 } 
 
-function onQueryActivitiesErrorAdmin(xhr, status, err){
+function onListActivitiesErrorAdmin(){
 
 }
 
@@ -140,11 +150,11 @@ function generateActivityCellForAdmin(par, activity){
             }
         }
 
-	var ret=$('<p>', {
+	var ret = $('<p>', {
 		style: "display: block"	
 	}).appendTo(par);
 
-	var infoWrap=$('<span>', {
+	var infoWrap = $('<span>', {
 		style: "margin-left: 5pt; display: inline-block;"	
 	}).appendTo(ret);
 
@@ -215,9 +225,9 @@ $(document).ready(function(){
     	// initialize local DOMs
 	initTopbar();
 
-	g_onLoginSuccess = queryActivitiesAndRefresh;
+	g_onLoginSuccess = listActivitiesAndRefresh;
 	g_onLoginError = null;
-	g_onEnter = queryActivitiesAndRefresh;
+	g_onEnter = listActivitiesAndRefresh;
 	initActivityEditor();
 
 	var selector = createSelector($("#pager-filters"), ["pending", "accepted", "rejected"], [g_statusPending, g_statusAccepted, g_statusRejected], null, null, null, null);
@@ -227,7 +237,7 @@ $(document).ready(function(){
 	var pagerCache = new PagerCache(10);
 
 	// initialize pager widgets
-	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/query", generateActivitiesQueryParams,pagerCache, filters, onQueryActivitiesSuccessAdmin, onQueryActivitiesErrorAdmin);		
+	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, pagerCache, filters, onListActivitiesSuccessAdmin, onListActivitiesErrorAdmin);
 
 	checkLoginStatus();
 });

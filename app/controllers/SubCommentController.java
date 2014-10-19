@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
-import exception.ActivityHasBegunException;
-import exception.ActivityNotFoundException;
-import exception.InvalidCommentParamsException;
-import exception.UserNotFoundException;
+import exception.*;
 import models.Activity;
 import models.Comment;
 import models.User;
@@ -85,6 +82,7 @@ public class SubCommentController extends CommentController {
 
             if(activity == null) throw new ActivityNotFoundException();
             if(activity.hasBegun()) throw new ActivityHasBegunException();
+            if(activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
 
             Integer from = SQLCommander.queryUserId(token);
             if (from == null) throw new UserNotFoundException();
@@ -116,6 +114,8 @@ public class SubCommentController extends CommentController {
             if (!increment.execUpdate()) throw new NullPointerException();
             return ok();
 
+        } catch (TokenExpiredException e) {
+            return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
             DataUtils.log(TAG, "submit", e);
         }

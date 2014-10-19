@@ -54,13 +54,16 @@ public class AssessmentController extends Controller {
             if (user == null) throw new UserNotFoundException();
             Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
             if (activityId == null) throw new ActivityNotFoundException();
-            Activity activitiy = SQLCommander.queryActivity(activityId);
-            if(activitiy == null) throw new ActivityNotFoundException();
+
+            Activity activity = SQLCommander.queryActivity(activityId);
+            if (activity == null) throw new ActivityNotFoundException();
+            if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
+            if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
 
             Integer relation = SQLCommander.queryUserActivityRelation(userId, activityId);
 
             // Only PRESENT participants and host can submit assessments
-            if ((relation & UserActivityRelation.PRESENT) == 0 && activitiy.getHost().getId() != userId) throw new InvalidUserActivityRelationException();
+            if ((relation & UserActivityRelation.PRESENT) == 0 && activity.getHost().getId() != userId) throw new InvalidUserActivityRelationException();
 
             String bundle = formData.get(BUNDLE)[0];
             JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
@@ -88,6 +91,8 @@ public class AssessmentController extends Controller {
             ObjectNode ret = Json.newObject();
             ret.put(UserActivityRelation.RELATION, newRelation);
             return ok(ret);
+        } catch (TokenExpiredException e) {
+            return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
 		    DataUtils.log(TAG, "submit", e);
         }

@@ -1,17 +1,16 @@
 var g_sectionComment = null;
-var g_pager = null;
 
-function querySubCommentsAndRefresh() {
+function listSubCommentsAndRefresh() {
 	var page = 1;
-	querySubComments(page, onQuerySubCommentsSuccess, onQuerySubCommentsError);
+	listSubComments(page, onListSubCommentsSuccess, onListSubCommentsError);
 }
 
-function querySubComments(page, onSuccess, onError){
+function listSubComments(page, onSuccess, onError){
     // prototypes: onSuccess(data), onError
-    var params = generateCommentsQueryParams(g_pager, page);
+    var params = generateCommentsListParams(g_pager, page);
     $.ajax({
         type: "GET",
-        url: "/comment/sub/query",
+        url: "/comment/sub/list",
         data: params,
         success: function(data, status, xhr) {
             onSuccess(data);
@@ -23,7 +22,7 @@ function querySubComments(page, onSuccess, onError){
 }
 
 // Tab Q&A a.k.a comments
-function onQuerySubCommentsSuccess(data){
+function onListSubCommentsSuccess(data){
 	// this function is only valid in detail's page
 	if(g_activity == null) return;
 
@@ -32,30 +31,33 @@ function onQuerySubCommentsSuccess(data){
 
 	var subCommentsJson = jsonResponse[g_keySubComments];
 	var length = Object.keys(subCommentsJson).length;
-	if( length == 0) return;
 
 	var page = parseInt(jsonResponse[g_keyPage]);
 
 	g_pager.screen.empty();
 	var idx = 0;
-	var subComments = new Array();
-	for(var key in subCommentsJson){
-		var commentJson = subCommentsJson[key];
-		generateSubCommentCell(g_pager.screen, commentJson, g_activity);
+	var comments = [];
+	for(var idx = 1; idx <= length; ++idx){
+		var commentJson = subCommentsJson[idx - 1];
 		var comment = new Comment(commentJson);
-		subComments.push(comment);
-		$('<br>').appendTo(g_pager.screen);
-		if(idx == 0)	g_pager.st = comment.id;
-		if(idx == length - 1)	g_pager.ed = comment.id;
-		++idx;
-	}
+		comments.push(comment);
+		if (page == g_pager.page) {
+                    generateSubCommentCell(g_pager.screen, commentJson, g_activity);
+                }
 
-	g_pager.cache.putPage(page, subComments);
-	g_pager.page = page;
-	g_pager.refreshBar(page);
+                if (idx % g_pager.nItems != 0) continue;
+                g_pager.cache.putPage(page, comments);
+                comments = [];
+                ++page;
+	}
+	if (comments != null && comments.length > 0) {
+                // for the last page
+                g_pager.cache.putPage(page, comments);
+        }
+        g_pager.refreshBar();
 }
 
-function onQuerySubCommentsError(){
+function onListSubCommentsError(){
 	
 }
 
@@ -71,7 +73,7 @@ function querySingleComment() {
 			g_comment = new Comment(commentJson);
 			g_sectionComment = $("#section-comment");
 			generateCommentCell(g_sectionComment, commentJson, g_activity, true);
-			g_onCommentSubmitSuccess = querySubCommentsAndRefresh;
+			g_onCommentSubmitSuccess = listSubCommentsAndRefresh;
 			postInit();
 		},
 		error: function(xhr, status, err) {
@@ -84,16 +86,16 @@ function postInit() {
 
 	var pagerCache = new PagerCache(20);	
 
-	g_pager = new PagerContainer($("#pager-screen-sub-comments"), $("#pager-bar-sub-comments"), g_keyId, g_orderDescend, 5, "/comment/sub/query", generateCommentsQueryParams, pagerCache, null, onQuerySubCommentsSuccess, onQuerySubCommentsError);
+	g_pager = new PagerContainer($("#pager-screen-sub-comments"), $("#pager-bar-sub-comments"), g_keyId, g_orderDescend, 5, "/comment/sub/list", generateCommentsListParams, pagerCache, null, onListSubCommentsSuccess, onListSubCommentsError);
 
 	g_onLoginSuccess = function() {
-		querySubCommentsAndRefresh();
+		listSubCommentsAndRefresh();
 	};
 
 	g_onLoginError = null;
 
 	g_onEnter = function() {
-		querySubCommentsAndRefresh();
+		listSubCommentsAndRefresh();
 	};
 
 	initActivityEditor();

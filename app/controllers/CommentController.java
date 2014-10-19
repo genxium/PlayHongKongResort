@@ -93,18 +93,19 @@ public class CommentController extends Controller {
 		    Integer activityId = Integer.valueOf(formData.get(Comment.ACTIVITY_ID)[0]);
 		    Activity activity = SQLCommander.queryActivity(activityId);
 
-		    if(activity == null) throw new ActivityNotFoundException();
-		    if(activity.hasBegun()) throw new ActivityHasBegunException();
+		    if (activity == null) throw new ActivityNotFoundException();
 
-		    Integer userId = SQLCommander.queryUserId(token);
-		    if (userId == null) throw new UserNotFoundException();
+		    Integer from = SQLCommander.queryUserId(token);
+		    if (from == null) throw new UserNotFoundException();
 
-		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            SQLCommander.isActivityCommentable(from, activity);
+
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
 		    String[] columnNames = {Comment.CONTENT, Comment.ACTIVITY_ID, Comment.FROM};
 		    List<String> cols = new LinkedList<String>(Arrays.asList(columnNames));
 
-		    Object[] columnValues = {content, activityId, userId};
+		    Object[] columnValues = {content, activityId, from};
 		    List<Object> vals = new LinkedList<Object>(Arrays.asList(columnValues));
 
 		    builder.insert(cols, vals).into(Comment.TABLE);
@@ -112,7 +113,9 @@ public class CommentController extends Controller {
 
 		    return ok();
 
-	    } catch (Exception e) {
+	    } catch (TokenExpiredException e) {
+            return badRequest(TokenExpiredResult.get());
+        } catch (Exception e) {
 		    DataUtils.log(TAG, "submit", e);
 	    }
 	    return badRequest();

@@ -9,17 +9,17 @@ var g_replyEditor = null;
 var g_onCommentSubmitSuccess = null;
 var g_tabComments = null;
 
-function queryCommentsAndRefresh(activity) {
+function listCommentsAndRefresh(activity) {
 	var page = 1;
-	queryComments(page, onQueryCommentsSuccess, onQueryCommentsError);
+        listComments(page, onListCommentsSuccess, onListCommentsError);
 }
 
-function queryComments(page, onSuccess, onError){
+function listComments(page, onSuccess, onError){
 	// prototypes: onSuccess(data), onError
-	var params = generateCommentsQueryParams(g_tabComments, page);
+	var params = generateCommentsListParams(g_tabComments, page);
 	$.ajax({
 		type: "GET",
-		url: "/comment/query",
+		url: "/comment/list",
 		data: params,
 		success: function(data, status, xhr) {
 			onSuccess(data);
@@ -30,30 +30,26 @@ function queryComments(page, onSuccess, onError){
 	});
 }
 
-function generateCommentsQueryParams(pager, page) {
-
-	if (page == pager.page) return null;
-	var direction = page >= pager.page ? g_directionForward : g_directionBackward;
-	var refIndex = page >= pager.page ? pager.ed : pager.st;
-	if (page == 1) {
-		direction = g_directionForward;
-		refIndex = 0;
-	}
+function generateCommentsListParams(pager, page) {
 
 	var params = {};
 	if (g_commentId != null)	params[g_keyParentId] = g_commentId;
 	if (g_activity != null)		params[g_keyActivityId] = g_activity.id;
-	params[g_keyRefIndex] = refIndex;
-	params[g_keyPage] = page;
+	var pageSt = page - 2;
+        var pageEd = page + 2;
+        var offset = pageSt < 1 ? (pageSt - 1) : 0;
+        pageSt -= offset;
+        pageEd -= offset;
+        params[g_keyPageSt] = pageSt;
+        params[g_keyPageEd] = pageEd;
 	params[g_keyNumItems] = pager.nItems;
-	params[g_keyDirection] = direction;
 	params[g_keyOrientation] = g_orderDescend;
 	return params;
 
 }
 
 // Tab Q&A a.k.a comments
-function onQueryCommentsSuccess(data){
+function onListCommentsSuccess(data){
 	// this function is only valid in detail's page
 	if(g_activity == null) return;
 
@@ -63,29 +59,35 @@ function onQueryCommentsSuccess(data){
 	var commentsJson = jsonResponse[g_keyComments];
 	var length = Object.keys(commentsJson).length;
 
-	var page = parseInt(jsonResponse[g_keyPage]);
+        var pageSt = parseInt(jsonResponse[g_keyPageSt]);
+        var pageEd = parseInt(jsonResponse[g_keyPageEd]);
+        var page = pageSt;
 
 	g_tabComments.screen.empty();
-	var idx = 0;
-	var comments = new Array();
-	for(var key in commentsJson){
-		var commentJson = commentsJson[key];
-		generateCommentCell(g_tabComments.screen, commentJson, g_activity, false);
-		var comment = new Comment(commentJson);
-		comments.push(comment);
-		$('<br>').appendTo(g_tabComments.screen);
-		if(idx == 0)	g_tabComments.st = comment.id;
-		if(idx == length - 1)	g_tabComments.ed = comment.id;
-		++idx;
-	}
-	
-	g_tabComments.cache.putPage(page, comments);
-	g_tabComments.page = page;
-	g_tabComments.refreshBar(page);
+
+	var comments = [];
+        for(var idx = 1; idx <= length; ++idx) {
+                var commentJson = commentsJson[idx - 1];
+                var comment = new Comment(commentJson);
+                comments.push(comment);
+                if (page == g_tabComments.page) {
+                    generateCommentCell(g_tabComments.screen, commentJson, g_activity, false);
+                }
+
+                if (idx % g_tabComments.nItems != 0) continue;
+                g_tabComments.cache.putPage(page, comments);
+                comments = [];
+                ++page;
+        }
+        if (comments != null && comments.length > 0) {
+                // for the last page
+                g_tabComments.cache.putPage(page, comments);
+        }
+        g_tabComments.refreshBar();
 }
 
-function onQueryCommentsError(){
-	
+function onListCommentsError(){
+
 }
 
 function removeReplyEditor(){
@@ -154,7 +156,9 @@ function generateReplyEditor(activity, comment){
 
 function generateCommentCell(par, commentJson, activity, single){
 	var comment = new Comment(commentJson);
-	var ret = $('<div>').appendTo(par);
+	var ret = $('<div>', {
+	    style: "margin-top: 5px;"
+	}).appendTo(par);
         var row = $('<p>').appendTo(ret);
 	if (single) row.css("background-color", "Cornsilk");
 
@@ -226,7 +230,7 @@ function generateSubCommentCell(par, commentJson, activity){
     var comment = new Comment(commentJson);
 
     var ret=$('<div>', {
-        style: "text-indent: 25pt; border-left: thick solid #000000" 
+        style: "margin-top: 3px; text-indent: 25pt; border-left: thick solid #000000"
     }).appendTo(par);
 
     var row=$('<p>').appendTo(ret);
@@ -290,8 +294,7 @@ function generateCommentEditor(par, activity){
         style: "font-size: 15pt; margin-left: 2pt"
     }).appendTo(editor);
 
-    // jQuery.bind() doesn't work here because the DOM element hasn't been created yet
-    btnSubmit.on("click", function(evt){
+    btnSubmit.click(function(evt){
 
 		evt.preventDefault();
 		var content = input.val();
@@ -312,8 +315,8 @@ function generateCommentEditor(par, activity){
 			url: "/comment/submit",
 			data: params,
 			success: function(data, status, xhr){
-			    input.val("");
-				queryCommentsAndRefresh(activity, null, null);
+			        input.val("");
+				listCommentsAndRefresh(activity, null, null);
 			},
 			error: function(xhr, status, err){
 				alert("Comment not submitted...");

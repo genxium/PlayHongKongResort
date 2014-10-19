@@ -41,43 +41,41 @@ function queryActivityDetail(activityId){
 
 function displayActivityDetail(par){
 	par.empty();
-	var ret=$('<div>').appendTo(par);
+	var ret = $("<div>").appendTo(par);
+        var row1 = $("<p>").appendTo(ret);
 
-	var title=$('<p>',{
+	var title = $("<span>",{
 		text: g_activity.title.toString(),
 		style: "font-size: 18pt; color: blue"
-	}).appendTo(ret);
+	}).appendTo(row1);
+
+        if(g_activity.host.id != null && g_activity.host.name != null){
+                var sp1 = $('<span>', {
+                        text: " -- by",
+                        style: "margin-left: 20%; font-size : 14pt"
+                }).appendTo(row1);
+                var sp2 = $('<span>', {
+                        style: "margin-left: 5pt"
+                }).appendTo(row1);
+                var host = $('<a>', {
+                        href: "/user/profile/show?" + g_keyVieweeId + "=" + g_activity.host.id.toString(),
+                        text: "@"+g_activity.host.name,
+                        target: "_blank",
+                        style: "font-size: 14pt; font-weight: bold;"
+                }).appendTo(sp2);
+        }
 
         displayTimesTable(ret, g_activity);
 
-	if(g_activity.host.id != null && g_activity.host.name != null){
-		var d = $('<div>', {
-			style: "margin-top: 2pt; margin-bottom: 3pt"
-		}).appendTo(ret);
-		var sp1 = $('<span>', {
-			text: "--by",
-			style: "margin-left: 20%; font-size : 14pt"
-		}).appendTo(d);
-		var sp2 = $('<span>', {
-			style: "margin-left: 5pt"
-		}).appendTo(d);
-		var host = $('<a>', {
-			href: "/user/profile/show?" + g_keyVieweeId + "=" + g_activity.host.id.toString(),
-			text: "@"+g_activity.host.name,
-			target: "_blank",
-			style: "font-size: 14pt; font-weight: bold;"
-		}).appendTo(sp2);
-	}
-
-	var content=$('<div>',{
+	var content = $('<div>',{
 		text: g_activity.content.toString(),
-		style: "font-size: 15pt"
+		style: "margin-top: 10px; font-size: 15pt"
 	}).appendTo(ret);
 
 	if(g_activity.images != null) {
 		// the images are expected to be arranged in a non-uniform manner(not confirmed), thus they should not be bounded to static CSS styling, the current style is a temporary solution
 		var constantHeight = 128;
-		var imagesNode=$('<p>').appendTo(ret);
+		var imagesNode = $('<p>').appendTo(ret);
 		for(var i=0;i<g_activity.images.length;++i){
 			$('<img>',{
                             src: g_activity.images[i].url,
@@ -90,7 +88,7 @@ function displayActivityDetail(par){
 	g_tabParticipants.empty();
 	g_participantsForm = generateParticipantsSelectionForm(g_tabParticipants, g_activity);
 
-	queryCommentsAndRefresh(g_activity);
+	listCommentsAndRefresh(g_activity);
 
 	// Tab assessments
 	var viewer = null;
@@ -195,7 +193,7 @@ function onBtnJoinClicked(evt){
 		success: function(data, status, xhr){
 			var cell = btnJoin.parent();
 			btnJoin.remove();
-			activity.relation |= selected;
+			activity.relation |= applied;
 			$('<div>', {
 				class: g_classCellRelationIndicator,
 				text: 'Applied'
@@ -212,7 +210,7 @@ $(document).ready(function(){
 
 	g_sectionActivity = $("#section-activity");
 	var commentsCache = new PagerCache(5);
-	g_tabComments = new Pager($("#pager-screen-comments"), $("#pager-bar-comments"), 5, "/comment/query", generateCommentsQueryParams, commentsCache, null, onQueryCommentsSuccess, onQueryCommentsError);
+	g_tabComments = new Pager($("#pager-screen-comments"), $("#pager-bar-comments"), 5, "/comment/list", generateCommentsListParams, commentsCache, null, onListCommentsSuccess, onListCommentsError);
 	g_tabParticipants = $("#tab-participants");
 	g_tabAssessments = $("#tab-assessments");
 

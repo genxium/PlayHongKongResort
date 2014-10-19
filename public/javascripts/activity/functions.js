@@ -24,8 +24,13 @@ function generateActivitiesListParams(pager, page) {
 	var params = {};
 	
 	if (g_vieweeId != null)	params[g_keyVieweeId] = g_vieweeId;
-	params[g_keyPageSt] = page - 1 > 0 ? page -1 : 1;
-	params[g_keyPageEd] = page + 1;
+	var pageSt = page - 2;
+	var pageEd = page + 2;
+	var offset = pageSt < 1 ? (pageSt - 1) : 0;
+	pageSt -= offset;
+	pageEd -= offset;
+	params[g_keyPageSt] = pageSt;
+	params[g_keyPageEd] = pageEd;
 	if (pager.nItems != null) params[g_keyNumItems] = pager.nItems;
 	if (g_vieweeId != null) params[g_keyVieweeId] = g_vieweeId;
 
@@ -108,14 +113,6 @@ function displayTimesTable(par, activity) {
     	}).appendTo(beginTimeRow);
 }
 
-function getPriorRelation(activity) {
-	if ((activity.relation & assessed) > 0) return assessed;
-	if ((activity.relation & present) > 0) return present;
-	if ((activity.relation & absent) > 0) return absent;
-	if ((activity.relation & selected) > 0) return selected;
-	if ((activity.relation & applied) > 0) return applied;
-}
-
 function onBtnJoinClicked(evt){
 
 	var btnJoin = $(this);
@@ -166,12 +163,13 @@ function attachJoinButton(par, activity) {
 
 	if(activity.relation == null && !activity.isDeadlineExpired()){
 		var btnJoin = $('<button>', {
-			class: g_classBtnJoin,
+			class: "btn-join",
 			text: 'Join'
 		}).appendTo(par);
+                setDimensions(btnJoin, "33%", null);
 		var dJoin = {};
 		dJoin[g_keyActivity] = activity;
-		btnJoin.on("click", dJoin, onBtnJoinClicked);
+		btnJoin.click(dJoin, onBtnJoinClicked);
 
 	} else if(activity.relation != null && g_loggedInUser != null && g_loggedInUser.id != activity.host.id) {
 		
@@ -182,4 +180,12 @@ function attachJoinButton(par, activity) {
 
 	} else;
 
+}
+
+function getPriorRelation(activity) {
+	if ((activity.relation & assessed) > 0) return assessed;
+	if ((activity.relation & present) > 0) return present;
+	if ((activity.relation & absent) > 0) return absent;
+	if ((activity.relation & selected) > 0) return selected;
+	if ((activity.relation & applied) > 0) return applied;
 }

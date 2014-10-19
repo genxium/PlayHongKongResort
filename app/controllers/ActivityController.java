@@ -344,7 +344,7 @@ public class ActivityController extends Controller {
 			if (userId == null) throw new Exception();
 
 			Activity activity = SQLCommander.queryActivity(activityId);
-			if (activity == null) throw new Exception();
+			if (activity == null) throw new ActivityNotFoundException();
 			boolean joinable = SQLCommander.isActivityJoinable(userId, activity);
 			if (!joinable) throw new Exception();
 

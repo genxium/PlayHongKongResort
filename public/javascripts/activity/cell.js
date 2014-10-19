@@ -12,7 +12,6 @@ var g_classActivityCoverImage="cell-cover";
 var g_classCellRelationIndicator="cell-relation-indicator";
 
 // button keys
-var g_classBtnJoin = "btn-join";
 var g_classBtnDetail = "btn-detail";
 
 // Assistant Handlers
