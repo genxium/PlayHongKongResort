@@ -39,6 +39,26 @@ public class CommentController extends Controller {
 	
     }
 
+    public static Result list(Integer activityId, Integer page_st, Integer page_ed, Integer numItems) {
+        response().setContentType("text/plain");
+        try {
+            List<Comment> comments = SQLCommander.queryTopLevelComments(activityId, page_st, page_ed, Comment.ID, SQLHelper.DESCEND, numItems);
+
+            ObjectNode result = Json.newObject();
+            result.put(Comment.COUNT, 0);
+            result.put(Comment.PAGE_ST, page_st);
+
+            ArrayNode commentsNode = new ArrayNode(JsonNodeFactory.instance);
+            for (Comment comment : comments)	commentsNode.add(comment.toObjectNode(false));
+
+            result.put(Comment.COMMENTS, commentsNode);
+            return ok(result);
+        } catch (Exception e) {
+            DataUtils.log(TAG, "query", e);
+        }
+        return badRequest();
+    }
+
     public static Result query(Integer activityId, String refIndex, Integer page, Integer numItems, Integer direction) {
 	    response().setContentType("text/plain");
 	    try {

@@ -37,7 +37,7 @@ public class ActivityController extends Controller {
 		}
 	}
 
-    public static Result list(Integer page, Integer numItems, Integer orientation, String token, Integer vieweeId, Integer relation, Integer status) {
+    public static Result list(Integer page_st, Integer page_ed, Integer numItems, Integer orientation, String token, Integer vieweeId, Integer relation, Integer status) {
         response().setContentType("text/plain");
         try {
 
@@ -57,14 +57,15 @@ public class ActivityController extends Controller {
             if (relation != null && relation != UserActivityRelation.HOSTED && vieweeId != null) {
                 activities = SQLCommander.queryActivities(vieweeId, UserActivityRelation.maskRelation(relation, null));
             } else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null && viewerId != null) {
-                activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, page, Activity.ID, orientationStr, numItems);
+                activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, page_st, page_ed, Activity.ID, orientationStr, numItems);
             } else {
-                activities = SQLCommander.queryActivities(page, Activity.ID, orientationStr, numItems, status);
+                activities = SQLCommander.queryActivities(page_st, page_ed, Activity.ID, orientationStr, numItems, status);
             }
             if (activities == null) throw new NullPointerException();
             ObjectNode result = Json.newObject();
             result.put(Activity.COUNT, 0);
-            result.put(Activity.PAGE, page.toString());
+            result.put(Activity.PAGE_ST, page_st);
+            result.put(Activity.PAGE_ED, page_ed);
 
             boolean isAdmin = false;
             if (viewer != null && SQLCommander.validateAdminAccess(viewer)) isAdmin = true;

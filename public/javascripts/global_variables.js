@@ -81,6 +81,8 @@ var g_keyToName = "to_name";
 
 // general keys
 var g_keyPage = "page";
+var g_keyPageSt = "page_st";
+var g_keyPageEd = "page_ed";
 
 var g_keyRefIndex = "ref_index";
 var g_keyNumItems = "num_items";

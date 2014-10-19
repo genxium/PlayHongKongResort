@@ -37,6 +37,8 @@ public class Comment {
 
     public static final String COUNT = "count";
     public static final String PAGE = "page";
+    public static final String PAGE_ST = "page_st";
+    public static final String PAGE_ED = "page_ed";
     public static final String COMMENTS = "comments";
 
     protected Integer m_id = null;

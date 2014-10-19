@@ -26,6 +26,26 @@ public class SubCommentController extends CommentController {
 
     public static final String TAG = SubCommentController.class.getName();
 
+    public static Result list(Integer parentId, Integer page_st, Integer page_ed, Integer numItems) {
+        response().setContentType("text/plain");
+        try {
+            List<Comment> comments = SQLCommander.querySubComments(parentId, page_st, page_ed, Comment.ID, SQLHelper.DESCEND, numItems);
+
+            ObjectNode result = Json.newObject();
+            result.put(Comment.COUNT, 0);
+            result.put(Comment.PAGE_ST, page_st);
+            result.put(Comment.PAGE_ED, page_ed);
+
+            ArrayNode commentsNode = new ArrayNode(JsonNodeFactory.instance);
+            for (Comment comment : comments)	commentsNode.add(comment.toSubCommentObjectNode());
+            result.put(Comment.SUB_COMMENTS, commentsNode);
+            return ok(result);
+        } catch (Exception e) {
+            DataUtils.log(TAG, "query", e);
+        }
+        return badRequest();
+    }
+
     public static Result query(Integer parentId, String refIndex, Integer page, Integer numItems, Integer direction) {
         response().setContentType("text/plain");
         try {

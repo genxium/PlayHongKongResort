@@ -206,7 +206,7 @@ public class SQLCommander {
 	    return ret;
     }
 
-    public static List<Activity> queryActivities(Integer page, String orderKey, String orientation, Integer numItems, int status) {
+    public static List<Activity> queryActivities(Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems, int status) {
         List<Activity> ret = new ArrayList<Activity>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -215,7 +215,7 @@ public class SQLCommander {
                     .from(Activity.TABLE)
                     .order(orderKey, orientation)
                     .where(Activity.STATUS, "=", status)
-                    .limit((page - 1) * numItems, page * numItems);
+                    .limit((page_st - 1) * numItems, page_ed * numItems);
             List<JSONObject> activityJsons = builder.execSelect();
             if (activityJsons == null)	return null;
             for (JSONObject activityJson : activityJsons) {
@@ -253,7 +253,7 @@ public class SQLCommander {
         return ret;
     }
 
-    public static List<Activity> queryHostedActivities(Integer hostId, Integer viewerId, Integer page, String orderKey, String orientation, Integer numItems){
+    public static List<Activity> queryHostedActivities(Integer hostId, Integer viewerId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems){
         List<Activity> ret = new ArrayList<Activity>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -262,7 +262,7 @@ public class SQLCommander {
                     .from(Activity.TABLE)
                     .order(orderKey, orientation)
                     .where(Activity.HOST_ID, "=", hostId)
-                    .limit((page - 1) * numItems, page * numItems);
+                    .limit((page_st - 1) * numItems, page_ed * numItems);
 
             if(!hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
 
@@ -339,7 +339,7 @@ public class SQLCommander {
 	    return ret;
     }
 
-    public static List<Comment> queryTopLevelComments(Integer activityId, Integer page, String orderKey, String orientation, Integer numItems) {
+    public static List<Comment> queryTopLevelComments(Integer activityId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
         List<Comment> ret = new ArrayList<Comment>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -353,7 +353,7 @@ public class SQLCommander {
             builder.select(names)
                     .from(Comment.TABLE)
                     .where(whereCols, whereOps, whereVals)
-                    .limit((page - 1) * numItems, page * numItems);
+                    .limit((page_st - 1) * numItems, page_ed * numItems);
 
             List<JSONObject> commentsJson = builder.execSelect();
 
@@ -384,7 +384,7 @@ public class SQLCommander {
 	    return ret;
     }
 
-    public static List<Comment> querySubComments(Integer parentId, Integer page, String orderKey, String orientation, Integer numItems) {
+    public static List<Comment> querySubComments(Integer parentId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
         List<Comment> ret = new ArrayList<Comment>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -393,7 +393,7 @@ public class SQLCommander {
             builder.select(names)
                     .from(Comment.TABLE)
                     .where(Comment.PARENT_ID, "=", parentId)
-                    .limit((page - 1) * numItems, page * numItems);
+                    .limit((page_st - 1) * numItems, page_ed * numItems);
 
             List<JSONObject> commentsJson = builder.execSelect();
 

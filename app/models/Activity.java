@@ -43,6 +43,8 @@ public class Activity {
 
     public static final String COUNT = "count";
     public static final String PAGE = "page";
+    public static final String PAGE_ST = "page_st";
+    public static final String PAGE_ED = "page_ed";
     public static final String ACTIVITIES = "activities";
 
     protected int m_id = 0;
