@@ -33,6 +33,12 @@ function onUploadAvatarFormSubmission(formEvt){
 
 }
 
+function listActivitiesAndRefresh() {
+	if(g_vieweeId == null) return;
+	var page = 1;
+	listActivities(page, onListActivitiesSuccess, onListActivitiesError);
+}
+
 function queryActivitiesAndRefresh() {
 	if(g_vieweeId == null) return;
 	var page = 1;
@@ -121,14 +127,11 @@ $(document).ready(function(){
 	var pagerCache = new PagerCache(5);
 	
 	// initialize pager widgets
-	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/query", generateActivitiesQueryParams, pagerCache, filters, onQueryActivitiesSuccess, onQueryActivitiesError);
-
-	g_onQueryActivitiesSuccess = onQueryActivitiesSuccess;
-	g_onQueryActivitiesError = onQueryActivitiesError;
+	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
 	
 	g_onLoginSuccess = function(){
 		refreshOnLoggedIn();
-		queryActivitiesAndRefresh();
+		listActivitiesAndRefresh();
 	};
 	g_onLoginError = null;
 	g_onEnter = refreshOnEnter;
@@ -140,13 +143,13 @@ $(document).ready(function(){
 	g_activitiesFilter = $("#activities-filter");
 	g_activitiesFilter.on("change", function(){
 		g_pager.relation = $(this).val();
-		queryActivitiesAndRefresh();	 
+		listActivitiesAndRefresh();	 
 	});
 
 	g_activitiesSorter = $("#activities-sorter");
 	g_activitiesSorter.on("change", function(){
 		g_pager.orientation = $(this).val();
-		queryActivitiesAndRefresh();
+		listActivitiesAndRefresh();
 	});
 
 
@@ -154,9 +157,9 @@ $(document).ready(function(){
 
 	g_btnUploadAvatar = $("#btn-upload-avatar");
 	g_btnUploadAvatar.on("click", onBtnUploadAvatarClicked);
- 	g_onEditorRemoved = queryActivitiesAndRefresh;
+ 	g_onEditorRemoved = listActivitiesAndRefresh;
 
-	g_onActivitySaveSuccess = queryActivitiesAndRefresh;
+	g_onActivitySaveSuccess = listActivitiesAndRefresh;
 
 	checkLoginStatus();
 });

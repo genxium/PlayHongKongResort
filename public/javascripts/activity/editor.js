@@ -30,9 +30,6 @@ var g_imagesLimit = 3;
 var g_onEditorRemoved = null;
 var g_onEditorCancelled = null;
 
-var g_onQueryActivitiesSuccess = null;
-var g_onQueryActivitiesError = null;
-
 var g_onActivitySaveSuccess = null;
 
 var g_loadingWidget = null;

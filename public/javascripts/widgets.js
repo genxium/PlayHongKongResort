@@ -88,30 +88,22 @@ function PagerCache(size) {
 	this.prependPage = function(content) {
 
 		var oldSize = Object.keys(this.map).length;
-		if (this.map.hasOwnProperty(this.first))	{
-			delete this.map[this.first];
-			--this.first;
-		}
-		if (oldSize >= this.size) {
+		if (this.map.hasOwnProperty(this.last) && oldSize == this.size)	{
 			delete this.map[this.last];
 			--this.last;
 		}
-		this.map[this.first] = content;
+		this.map[--this.first] = content;
 		
 	};
 
 	this.appendPage = function(content) {
 
 		var oldSize = Object.keys(this.map).length;
-		if (this.map.hasOwnProperty(this.first))	{
+		if (this.map.hasOwnProperty(this.first) && oldSize == this.size)	{
 			delete this.map[this.first];
 			++this.first;
 		}
-		if (oldSize >= this.size) {
-			delete this.map[this.last];
-			++this.last;
-		}
-		this.map[this.last] = content;
+		this.map[++this.last] = content;
 
 	};
 
@@ -128,11 +120,11 @@ function PagerButton(pager, page) {
 	this.page = page;
 }
 
-function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, filters, onQuerySuccess, onQueryError) {
+function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, filters, onSuccess, onError) {
 	this.screen = screen; // screen of the pager
 	this.nItems = numItemsPerPage; // number of items per page
 
-	this.page = 0; // current page
+	this.page = 1; // current page
 	this.total = 0; // initial number of total pages should always be 0
 
 	// starting & ending indices of the current page
@@ -145,9 +137,9 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 	// prototype: paramsGenerator(Pager, page)
 	this.paramsGenerator = paramsGenerator;
 
-	// prototypes: onQuerySuccess(data), onQueryError()
-	this.onQuerySuccess = onQuerySuccess;
-	this.onQueryError = onQueryError;
+	// prototypes: onSuccess(data), onError()
+	this.onSuccess = onSuccess;
+	this.onError = onError;
 		
 	// pager cache
 	this.cache = pagerCache;
@@ -155,8 +147,9 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 	// pager bar
 	this.bar = bar; // control bar of the pager
 	if (bar == null) return;
-	this.refreshBar = function(page) {
+	this.refreshBar = function() {
 		var pager = this;
+		var page = pager.page;
 		var pagerCache = pager.cache;
 		// display pager bar 
 		pager.bar.empty();
@@ -173,6 +166,7 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 			indicator.click(pagerButton, function(evt) {
 				if (pager.url == null) return;
 				var button = evt.data;
+				pager.page = button.page;
 				var params = pager.paramsGenerator(pager, button.page);
 				if (params == null) return;
 				var indicator = $(this);
@@ -183,11 +177,11 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 				    data: params,
 				    success: function(data, status, xhr) {
 					enableField(indicator);
-					pager.onQuerySuccess(data);
+					pager.onSuccess(data);
 				    },
 				    error: function(xhr, status, err) {
 					enableField(indicator);
-					pager.onQueryError();
+					pager.onError();
 				    }
 				});
 			});
@@ -217,11 +211,11 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 			    data: params,
 			    success: function(data, status, xhr) {
 				enableField(selector);
-				pager.onQuerySuccess(data);
+				pager.onSuccess(data);
 			    },
 			    error: function(xhr, status, err) {
 				enableField(selector);
-				pager.onQueryError();
+				pager.onError();
 			    }
 			});
 		});	

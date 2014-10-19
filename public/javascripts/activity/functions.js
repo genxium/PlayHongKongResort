@@ -1,13 +1,13 @@
 var g_vieweeId = null; // should always be null except in profile's page
 var g_pager = null;
 
-function queryActivities(page, onSuccess, onError) {
+function listActivities(page, onSuccess, onError) {
 	// prototypes: onSuccess(data), onError
-	var params = generateActivitiesQueryParams(g_pager, page);
+	var params = generateActivitiesListParams(g_pager, page);
 
 	$.ajax({
 		type: "GET",
-		url: "/activity/query",
+		url: "/activity/list",
 		data: params,
 		success: function(data, status, xhr) {
 		    onSuccess(data);
@@ -18,21 +18,14 @@ function queryActivities(page, onSuccess, onError) {
 	});
 }
 
-function generateActivitiesQueryParams(pager, page) {
+function generateActivitiesListParams(pager, page) {
 	if (page == null) return null;
-	var direction = page >= pager.page ? g_directionForward : g_directionBackward;
-	var refIndex = page >= pager.page ? g_pager.ed : g_pager.st;
-	if (page == 1) {
-		direction = g_directionForward;
-		refIndex = 0;
-	}
 
 	var params = {};
 	
 	if (g_vieweeId != null)	params[g_keyVieweeId] = g_vieweeId;
-	params[g_keyRefIndex] = refIndex.toString();
-	params[g_keyDirection] = direction;
-	params[g_keyPage] = page;
+	params[g_keyPageSt] = page - 1 > 0 ? page -1 : 1;
+	params[g_keyPageEd] = page + 1;
 	if (pager.nItems != null) params[g_keyNumItems] = pager.nItems;
 	if (g_vieweeId != null) params[g_keyVieweeId] = g_vieweeId;
 
@@ -51,32 +44,39 @@ function generateActivitiesQueryParams(pager, page) {
 	return params;
 }
 
-function onQueryActivitiesSuccess(data){
+function onListActivitiesSuccess(data){
 	var jsonResponse = JSON.parse(data);
 	if(jsonResponse == null) return;
 
-	var page = parseInt(jsonResponse[g_keyPage]);
+	var pageSt = parseInt(jsonResponse[g_keyPageSt]);
+	var pageEd = parseInt(jsonResponse[g_keyPageEd]);
+	var page = pageSt;
 
 	var activitiesJson = jsonResponse[g_keyActivities];
 	var length = Object.keys(activitiesJson).length;
 
-	var activities = new Array();
 	g_pager.screen.empty();
-	for(var idx = 0; idx < length; ++idx) {
-		var activityJson = activitiesJson[idx];
+	var activities = [];
+	for(var idx = 1; idx <= length; ++idx) {
+		var activityJson = activitiesJson[idx - 1];
 		var activity = new Activity(activityJson);
 		activities.push(activity);
-		if(idx == 0)	g_pager.st = activity.id;
-		if(idx == length - 1)	g_pager.ed = activity.id;
-		generateActivityCell(g_pager.screen, activity);
-	}
-	g_pager.cache.putPage(page, activities);
+		if (page == g_pager.page) {
+			generateActivityCell(g_pager.screen, activity);
+		}
 
-	g_pager.page = page;		
-	g_pager.refreshBar(page);
+		if (idx != length -1 && idx % g_pager.nItems != 0) continue;
+		g_pager.cache.putPage(page, activities);
+		activities = [];
+		++page;	
+	}
+	// for the last page
+	g_pager.cache.putPage(page, activities);
+	
+	g_pager.refreshBar();
 } 
 
-function onQueryActivitiesError(xhr){
+function onListActivitiesError(xhr){
 
 }
 

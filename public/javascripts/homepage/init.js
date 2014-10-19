@@ -1,3 +1,8 @@
+function listActivitiesAndRefresh() {
+	var page = 1;
+	listActivities(page, onListActivitiesSuccess, onListActivitiesError);
+}
+
 function queryActivitiesAndRefresh() {
 	var page = 1;
 	queryActivities(page, onQueryActivitiesSuccess, onQueryActivitiesError);
@@ -41,24 +46,24 @@ $(document).ready(function(){
 	var pagerCache = new PagerCache(5); 
 
 	// initialize pager widgets
-	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/query", generateActivitiesQueryParams, pagerCache, filters, onQueryActivitiesSuccess, onQueryActivitiesError);
+	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
 
 	g_onLoginSuccess = function(){
 		refreshOnLoggedIn();
-		queryActivitiesAndRefresh();
+		listActivitiesAndRefresh();
 	};
 
 	g_onLoginError = null;
 
 	g_onEnter = function(){
 		refreshOnEnter();
-		queryActivitiesAndRefresh();
+		listActivitiesAndRefresh();
 	};
 
 	g_onRegisterSuccess = function(){
 		alert("Registered successfully!");
 		refreshOnEnter();
-		queryActivitiesAndRefresh();
+		listActivitiesAndRefresh();
 	}
 
 	g_onRegisterError = null;
@@ -67,7 +72,6 @@ $(document).ready(function(){
 
 	// initialize callback functions
 	g_onEditorRemoved = refreshOnLoggedIn;
-	g_onQueryActivitiesSuccess = onQueryActivitiesSuccess;
 
 	checkLoginStatus();
 	
