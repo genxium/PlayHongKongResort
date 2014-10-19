@@ -65,13 +65,15 @@ function onListActivitiesSuccess(data){
 			generateActivityCell(g_pager.screen, activity);
 		}
 
-		if (idx != length -1 && idx % g_pager.nItems != 0) continue;
+		if (idx % g_pager.nItems != 0) continue;
 		g_pager.cache.putPage(page, activities);
 		activities = [];
 		++page;	
 	}
-	// for the last page
-	g_pager.cache.putPage(page, activities);
+	if (activities != null && activities.length > 0) {
+		// for the last page
+		g_pager.cache.putPage(page, activities);
+	}
 	
 	g_pager.refreshBar();
 } 

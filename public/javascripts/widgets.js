@@ -83,8 +83,8 @@ function PagerFilter(key, selector) {
 function PagerCache(size) {
 	this.size = size;
 	this.map = {};
-	this.first = 0;
-	this.last = 0;
+	this.first = 1;
+	this.last = 1;
 	this.prependPage = function(content) {
 
 		var oldSize = Object.keys(this.map).length;
@@ -156,10 +156,10 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 		var length = Object.keys(pagerCache.map).length;
 		for(var key in pagerCache.map) {
 
-			var index = parseInt(key) + 1;
+			var index = parseInt(key);
 			var indicator = $("<button>", {
 				text: index,
-				style: "font-size: 14pt; margin-left: 10px; margin-right: 10px;"
+				style: "color: cadetblue; font-size: 14pt; margin-left: 5px; margin-right: 5px;"
 			}).appendTo(pager.bar);
 		
 			var pagerButton = new PagerButton(pager, index);
@@ -188,6 +188,7 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 			
 			if (index != page) continue;
 			indicator.css("font-weight", "bold");
+			indicator.css("color", "black");
 				
 		}	
 	};	

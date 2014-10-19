@@ -69,6 +69,7 @@ function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNod
 		this.btnSave.css("color", "white");
 		disableField(this.btnSubmit);
 		this.btnSubmit.css("color", "white");
+		if (this.btnDelete == null) return;
 		disableField(this.btnDelete);
 		this.btnDelete.css("color", "white");
 	};
