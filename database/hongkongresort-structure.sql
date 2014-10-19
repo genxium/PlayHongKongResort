@@ -188,7 +188,7 @@ CREATE TABLE `notification` (
   `activity_id` int(32) NOT NULL,
   `comment_id` int(32) DEFAULT NULL,
   `assessment_id` int(32) DEFAULT NULL,
-  `type` int(4) NOT NULL,
+  `cmd` int(32) NOT NULL,
   `relation` int(3) DEFAULT NULL,
   `status` int(3) DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -197,7 +197,7 @@ CREATE TABLE `notification` (
   KEY `notification_ibfk_3` (`assessment_id`) USING BTREE,
   KEY `notification_ibfk_4` (`from`) USING BTREE,
   KEY `notification_ibfk_5` (`to`) USING BTREE,
-  KEY `type_index` (`type`)
+  KEY `cmd_index` (`cmd`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

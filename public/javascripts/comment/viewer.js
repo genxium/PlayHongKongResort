@@ -32,10 +32,11 @@ function onListSubCommentsSuccess(data){
 	var subCommentsJson = jsonResponse[g_keySubComments];
 	var length = Object.keys(subCommentsJson).length;
 
-	var page = parseInt(jsonResponse[g_keyPage]);
+        var pageSt = parseInt(jsonResponse[g_keyPageSt]);
+        var pageEd = parseInt(jsonResponse[g_keyPageEd]);
+        var page = pageSt;
 
 	g_pager.screen.empty();
-	var idx = 0;
 	var comments = [];
 	for(var idx = 1; idx <= length; ++idx){
 		var commentJson = subCommentsJson[idx - 1];
@@ -86,7 +87,7 @@ function postInit() {
 
 	var pagerCache = new PagerCache(20);	
 
-	g_pager = new PagerContainer($("#pager-screen-sub-comments"), $("#pager-bar-sub-comments"), g_keyId, g_orderDescend, 5, "/comment/sub/list", generateCommentsListParams, pagerCache, null, onListSubCommentsSuccess, onListSubCommentsError);
+	g_pager = new Pager($("#pager-screen-sub-comments"), $("#pager-bar-sub-comments"), 5, "/comment/sub/list", generateCommentsListParams, pagerCache, null, onListSubCommentsSuccess, onListSubCommentsError);
 
 	g_onLoginSuccess = function() {
 		listSubCommentsAndRefresh();
