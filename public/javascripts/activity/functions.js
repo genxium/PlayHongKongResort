@@ -56,20 +56,23 @@ function onQueryActivitiesSuccess(data){
 	if(jsonResponse == null) return;
 
 	var page = parseInt(jsonResponse[g_keyPage]);
-	g_pager.page = page;		
 
 	var activitiesJson = jsonResponse[g_keyActivities];
 	var length = Object.keys(activitiesJson).length;
 
+	var activities = new Array();
 	g_pager.screen.empty();
 	for(var idx = 0; idx < length; ++idx) {
 		var activityJson = activitiesJson[idx];
 		var activity = new Activity(activityJson);
+		activities.push(activity);
 		if(idx == 0)	g_pager.st = activity.id;
 		if(idx == length - 1)	g_pager.ed = activity.id;
 		generateActivityCell(g_pager.screen, activity);
 	}
+	g_pager.cache.putPage(page, activities);
 
+	g_pager.page = page;		
 	g_pager.refreshBar(page);
 } 
 

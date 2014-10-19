@@ -1,9 +1,5 @@
 var g_sectionComment = null;
 var g_pager = null;
-var g_commentId = null;
-var g_activityId = null;
-var g_comment = null;
-var g_activity = null;
 
 function querySubCommentsAndRefresh() {
 	var page = 1;
@@ -39,20 +35,23 @@ function onQuerySubCommentsSuccess(data){
 	if( length == 0) return;
 
 	var page = parseInt(jsonResponse[g_keyPage]);
-	g_pager.page = page;
 
 	g_pager.screen.empty();
 	var idx = 0;
+	var subComments = new Array();
 	for(var key in subCommentsJson){
 		var commentJson = subCommentsJson[key];
 		generateSubCommentCell(g_pager.screen, commentJson, g_activity);
 		var comment = new Comment(commentJson);
+		subComments.push(comment);
 		$('<br>').appendTo(g_pager.screen);
 		if(idx == 0)	g_pager.st = comment.id;
 		if(idx == length - 1)	g_pager.ed = comment.id;
 		++idx;
 	}
 
+	g_pager.cache.putPage(page, subComments);
+	g_pager.page = page;
 	g_pager.refreshBar(page);
 }
 

@@ -1,3 +1,8 @@
+var g_commentId = null;
+var g_comment = null;
+var g_activityId = null;
+var g_activity = null;
+
 var g_minContentLength = 5;
 var g_replyEditor = null;
 
@@ -9,7 +14,7 @@ function queryCommentsAndRefresh(activity) {
 	queryComments(page, onQueryCommentsSuccess, onQueryCommentsError);
 }
 
-function queryComments(refIndex, page, numItems, direction, activityId, onSuccess, onError){
+function queryComments(page, onSuccess, onError){
 	// prototypes: onSuccess(data), onError
 	var params = generateCommentsQueryParams(g_tabComments, page);
 	$.ajax({
@@ -59,20 +64,23 @@ function onQueryCommentsSuccess(data){
 	var length = Object.keys(commentsJson).length;
 
 	var page = parseInt(jsonResponse[g_keyPage]);
-	g_tabComments.page = page;
 
 	g_tabComments.screen.empty();
 	var idx = 0;
+	var comments = new Array();
 	for(var key in commentsJson){
 		var commentJson = commentsJson[key];
 		generateCommentCell(g_tabComments.screen, commentJson, g_activity, false);
 		var comment = new Comment(commentJson);
+		comments.push(comment);
 		$('<br>').appendTo(g_tabComments.screen);
 		if(idx == 0)	g_tabComments.st = comment.id;
 		if(idx == length - 1)	g_tabComments.ed = comment.id;
 		++idx;
 	}
-
+	
+	g_tabComments.cache.putPage(page, comments);
+	g_tabComments.page = page;
 	g_tabComments.refreshBar(page);
 }
 

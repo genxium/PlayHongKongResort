@@ -114,6 +114,12 @@ function PagerCache(size) {
 		this.map[this.last] = content;
 
 	};
+
+	this.putPage = function(page, content) {
+		if (page > this.last) this.appendPage(content);
+		else if (page < this.first) this.prependPage(content);
+		else this.map[page] = content;
+	}
 }
 
 function PagerButton(pager, page) {
@@ -144,25 +150,26 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 	this.onQueryError = onQueryError;
 		
 	// pager cache
-	this.pagerCache = pagerCache;
+	this.cache = pagerCache;
 
 	// pager bar
 	this.bar = bar; // control bar of the pager
 	if (bar == null) return;
 	this.refreshBar = function(page) {
 		var pager = this;
-		var pagerCache = pager.pagerCache;
+		var pagerCache = pager.cache;
 		// display pager bar 
 		pager.bar.empty();
 		var length = Object.keys(pagerCache.map).length;
 		for(var key in pagerCache.map) {
 
+			var index = parseInt(key) + 1;
 			var indicator = $("<button>", {
-				text: key,
+				text: index,
 				style: "font-size: 14pt; margin-left: 10px; margin-right: 10px;"
 			}).appendTo(pager.bar);
 		
-			var pagerButton = new PagerButton(pager, key);
+			var pagerButton = new PagerButton(pager, index);
 			indicator.click(pagerButton, function(evt) {
 				if (pager.url == null) return;
 				var button = evt.data;
@@ -185,7 +192,7 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 				});
 			});
 			
-			if (key != page) continue;
+			if (index != page) continue;
 			indicator.css("font-weight", "bold");
 				
 		}	
