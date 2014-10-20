@@ -1,6 +1,13 @@
 var g_vieweeId = null; // should always be null except in profile's page
 var g_pager = null;
 
+function onBtnEditClicked(evt){
+    	evt.preventDefault();
+    	var data = evt.data;
+        var activity = data[g_keyActivity];
+	showActivityEditor(activity);
+}
+
 function listActivities(page, onSuccess, onError) {
 	// prototypes: onSuccess(data), onError
 	var params = generateActivitiesListParams(g_pager, page);
@@ -89,9 +96,7 @@ function onListActivitiesError(xhr){
 
 function displayTimesTable(par, activity) {
     	// deadline and begin time
-    	var times = $("<table border='1'>", {
-    		style: "margin-bottom: 5pt"
-    	}).appendTo(par);
+    	var times = $("<table border='1'>").appendTo(par);
     	var deadlineRow = $('<tr>').appendTo(times);
     	var deadlineTitle = $('<td>', {
     		text: "Application Deadline",
@@ -111,6 +116,24 @@ function displayTimesTable(par, activity) {
     		text: activity.beginTime.toString(),
     		style: "color: blue; padding-left: 8pt; padding-right: 5pt"
     	}).appendTo(beginTimeRow);
+}
+
+function displayParticipantStatistics(par, activity) {
+
+	var spanSelected = $("<span>", {
+		text: activity.numSelected.toString() + " selected",
+		style: "color: PaleVioletRed"
+	}).appendTo(par);
+
+	var spanSlash = $("<span>", {
+		text: " / "
+	}).appendTo(par);
+
+	var spanApplied = $("<span>", {
+		text: (activity.numApplied + activity.numSelected).toString() + " applied", // display the total number of applied users including the selected ones
+		style: "color: purple"
+	}).appendTo(par);
+
 }
 
 function onBtnJoinClicked(evt){
@@ -141,7 +164,7 @@ function onBtnJoinClicked(evt){
 			btnJoin.remove();
 			activity.relation |= selected;
 			$('<div>', {
-				class: g_classCellRelationIndicator,
+				class: "indicator-relation",
 				text: 'applied'
 			}).appendTo(par);
 		},
@@ -153,14 +176,6 @@ function onBtnJoinClicked(evt){
 
 function attachJoinButton(par, activity) {
 
-	var mapRelationName = {};
-	mapRelationName[applied] = "applied";
-	mapRelationName[selected] = "selected";
-	mapRelationName[present] = "present";
-	mapRelationName[absent] = "absent";
-	mapRelationName[assessed] = "assessed";
-	mapRelationName[hosted] = "";
-
 	if(activity.relation == null && !activity.isDeadlineExpired()){
 		var btnJoin = $('<button>', {
 			class: "btn-join",
@@ -170,16 +185,50 @@ function attachJoinButton(par, activity) {
 		var dJoin = {};
 		dJoin[g_keyActivity] = activity;
 		btnJoin.click(dJoin, onBtnJoinClicked);
+	} else {
+		attachRelationIndicator(par, activity);
+	}
 
-	} else if(activity.relation != null && g_loggedInUser != null && g_loggedInUser.id != activity.host.id) {
+}
+
+function attachRelationIndicator(par, activity) {
+
+	if(activity.relation == null || g_loggedInUser == null || g_loggedInUser.id == activity.host.id) return;
+
+	var mapRelationName = {};
+	mapRelationName[applied] = "applied";
+	mapRelationName[selected] = "selected";
+	mapRelationName[present] = "present";
+	mapRelationName[absent] = "absent";
+	mapRelationName[assessed] = "assessed";
+	mapRelationName[hosted] = "";
 		
-		var relationIndicator = $('<div>', {
-			class: g_classCellRelationIndicator,
-			text: mapRelationName[getPriorRelation(activity)]
-		}).appendTo(par);
+	var relationIndicator = $('<span>', {
+		style: "color: violet; margin-left: 10pt; font-size: 12pt; text-align: right; vertical-align: center;",
+		text: mapRelationName[getPriorRelation(activity)]
+	}).appendTo(par);
 
-	} else;
+}
 
+function attachStatusIndicator(par, activity) {
+	if(activity.status == null) return;
+
+	var arrayStatusName = ["created", "pending", "rejected", "accepted", "expired"];
+
+	var statusIndicator = $('<span>',{
+		style: "color: red; margin-left: 10pt; font-size: 12pt; text-align: right; vertical-align: center;",
+		text: arrayStatusName[activity.status]
+	}).appendTo(par);
+
+	if(activity.status != g_statusCreated && activity.status != g_statusRejected) return;
+	var btnWrapper = $("<span>").appendTo(par);
+	var btnEdit = $('<button>', {
+		class: "btn-edit",
+		text: 'Edit'
+	}).appendTo(btnWrapper);
+	var dEdit = {};
+	dEdit[g_keyActivity] = activity;
+	btnEdit.click(dEdit, onBtnEditClicked);
 }
 
 function getPriorRelation(activity) {

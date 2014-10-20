@@ -118,7 +118,9 @@ $(document).ready(function(){
 		}
 	}
 	
-	initTopbar();
+	initTopbar($("#topbar"));
+	initActivityEditor($("#wrap"), listActivitiesAndRefresh);
+
 	var relationSelector = createSelector($("#pager-filters"), ["發起的活動", "參與的活動"], [hosted, present], null, null, null, null);
 	var orientationSelector = createSelector($("#pager-filters"), ["時間倒序", "時間順序"], [g_orderDescend, g_orderAscend], null, null, null, null);
 	var relationFilter = new PagerFilter("relation", relationSelector);
@@ -135,29 +137,14 @@ $(document).ready(function(){
 	};
 	g_onLoginError = null;
 	g_onEnter = refreshOnEnter;
-	initActivityEditor();
 
 	g_formAvatar = $("#form-avatar");
 	g_sectionResponse = $("#section-response");
-
-	g_activitiesFilter = $("#activities-filter");
-	g_activitiesFilter.on("change", function(){
-		g_pager.relation = $(this).val();
-		listActivitiesAndRefresh();	 
-	});
-
-	g_activitiesSorter = $("#activities-sorter");
-	g_activitiesSorter.on("change", function(){
-		g_pager.orientation = $(this).val();
-		listActivitiesAndRefresh();
-	});
-
 
 	g_sectionUser = $("#section-user");
 
 	g_btnUploadAvatar = $("#btn-upload-avatar");
 	g_btnUploadAvatar.on("click", onBtnUploadAvatarClicked);
- 	g_onEditorRemoved = listActivitiesAndRefresh;
 
 	g_onActivitySaveSuccess = listActivitiesAndRefresh;
 

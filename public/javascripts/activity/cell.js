@@ -2,25 +2,7 @@
  * variables
  */
 
-// general dom elements
-var g_classCellActivityContainer="cell-container";
-var g_classCellActivityTitle="cell-title";
-var g_classCellActivityContent="cell-content";
-
-var g_classActivityCoverImage="cell-cover";
-
-var g_classCellRelationIndicator="cell-relation-indicator";
-
-// button keys
-var g_classBtnDetail = "btn-detail";
-
 // Assistant Handlers
-function onBtnEditClicked(evt){
-    	evt.preventDefault();
-    	var data = evt.data;
-        var activity = data[g_keyActivity];
-	showActivityEditor(activity);
-}
 
 function onBtnDetailClicked(evt){
         evt.preventDefault();
@@ -35,8 +17,6 @@ function onBtnDetailClicked(evt){
 
 function generateActivityCell(par, activity){
 
-	var arrayStatusName = ["created", "pending", "rejected", "accepted", "expired"];
-
 	var coverImageUrl = null;
 	if(activity.images != null) {
             for(var key in activity.images){
@@ -46,82 +26,46 @@ function generateActivityCell(par, activity){
             }
 	}
 
-	var statusStr = arrayStatusName[activity.status];
-
-	var ret = $('<div>', {
-		class: g_classCellActivityContainer
+	var ret = $("<p>", {
+		class: "cell-container"
 	}).appendTo(par);
 
-	var titleRow = $("<p>", {
-		style: "width: 100%; padding-bottom: 3pt; border-bottom: 1px solid #00ccff"
+	var left = $("<span>", {
+		style: "display: inline-block; width: 25%; height: 90%;"
 	}).appendTo(ret);
-
-	var cellActivityTitle = $('<span>', {	
-		class: g_classCellActivityTitle,
-		text: activity.title
-	}).appendTo(titleRow);
-
-	if(activity.status != null){
-
-		var statusIndicator = $('<span>',{
-		    style: "color: red; font-size: 12pt; clear: left; float: right; text-align: right; vertical-align: center",
-		    text: statusStr
-		}).appendTo(titleRow);
-
-		if(activity.status == g_statusCreated || activity.status == g_statusRejected){
-			var btnWrapper = $("<span>").appendTo(titleRow);
-			// this condition is temporarily hard-coded
-			var btnEdit = $('<button>', {
-				class: g_classBtnEdit,
-				text: 'Edit'
-			}).appendTo(btnWrapper);
-			var dEdit = {};
-			dEdit[g_keyActivity] = activity;
-			btnEdit.on("click", dEdit, onBtnEditClicked);
-		}
+	if(coverImageUrl != null){
+		setBackgroundImage(left, coverImageUrl, "contain", "no-repeat", "center");
 	}
 
-	var btnRow = $("<p>", {
-		style: "margin-top: 5pt; clear: left"
+	var middle = $("<span>", {
+		style: "display: inline-block; margin-left: 10px; width: 40%; height: 90%;"
+	}).appendTo(ret);
+	var midTop = $("<div>", {
+		style: "margin-bottom: 5pt"
+	}).appendTo(middle);
+	var title = $("<span>", {
+		style: "color: blue; font-size: 15pt;",
+		text: activity.title
+	}).appendTo(midTop);
+	attachRelationIndicator(midTop, activity);
+	displayTimesTable(middle, activity);
+	var midBottom = $("<div>", {
+		style: "margin-top: 5pt"
+	}).appendTo(middle);
+	displayParticipantStatistics(midBottom, activity);
+
+	var right = $("<span>", {
+		style: "display: inline-block; margin-left: 10px; width: 25%; height: 90%;"
 	}).appendTo(ret);
 
-	attachJoinButton(btnRow, activity);
-
+	var rtTop = $("<div>").appendTo(right);
 	var btnDetail = $('<button>', {
-		class: g_classBtnDetail,
-		text: 'Detail'
-	}).appendTo(btnRow);
+		class: "btn-detail",
+		text: 'Go >'
+	}).appendTo(rtTop);
 	var dDetail = {};
 	dDetail[g_keyActivityId] = activity.id;
-	btnDetail.on("click", dDetail, onBtnDetailClicked);
+	btnDetail.click(dDetail, onBtnDetailClicked);
+	attachStatusIndicator(rtTop, activity);
 
-    displayTimesTable(ret, activity);
-
-    var participantsRow = $("<p>", {
-        style: "margin-top: 2px"
-    }).appendTo(ret);
-
-    var spanSelected = $("<span>", {
-        text: activity.numSelected.toString() + " selected",
-        style: "color: PaleVioletRed"
-    }).appendTo(participantsRow);
-
-    var spanSlash = $("<span>", {
-        text: " / "
-    }).appendTo(participantsRow);
-
-    var spanApplied = $("<span>", {
-        text: (activity.numApplied + activity.numSelected).toString() + " applied", // display the total number of applied users including the selected ones
-        style: "color: purple"
-    }).appendTo(participantsRow);
-
-	if(coverImageUrl != null){
-		var imgRow = $("<p>", {
-			style: "height: 100%"
-		}).appendTo(ret);
-		var coverImage=$('<img>', {
-			class: g_classActivityCoverImage,
-			src: coverImageUrl
-		}).appendTo(imgRow);
-	}
 }

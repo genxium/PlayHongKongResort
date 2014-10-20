@@ -177,14 +177,14 @@ function removeActivityEditor(){
         g_activityEditor.remove();
 }
 
-function initActivityEditor(){
-	var wrap = $("#wrap");
+function initActivityEditor(par, onRemove){
+	g_onEditorRemoved = onRemove;
 	/*
 		Note: ALL attributes, especially the `class` attribute MUST be written INSIDE the div tag, bootstrap is NOT totally compatible with jQuery!!!
 	*/
 	g_sectionActivityEditor = $("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='Create an activity!' aria-hidden='true'>", {
 		style: "height: 80%; position: absolute"
-	}).appendTo(wrap);
+	}).appendTo(par);
 	var dialog = $("<div>", {
 		class: "modal-dialog modal-lg"
 	}).appendTo(g_sectionActivityEditor);
@@ -228,8 +228,7 @@ function countImages(editor){
 }
 
 function isFileValid(file){
-	var ret=false;
-	var fileSizeLimit= (1<<20)// 2 mega bytes
+	var fileSizeLimit = (1 << 21)// 2 mega bytes
 	if(file.size > fileSizeLimit) return false;
 	return true;
 }

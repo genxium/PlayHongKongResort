@@ -140,9 +140,9 @@ function generateActivityCellForAdmin(par, activity){
 
 	var arrayStatusName = ['created','pending','rejected','accepted','expired'];
 
-        var coverImageUrl=null;
+        var coverImageUrl = null;
 
-        if(activity.images !=null) {
+        if(activity.images != null) {
             for(var key in activity.images){
                var image = activity.images[key];
                coverImageUrl = image.url;
@@ -159,8 +159,8 @@ function generateActivityCellForAdmin(par, activity){
 	}).appendTo(ret);
 
 	if(coverImageUrl != null){
-		var coverImage=$('<img>', {
-			class: g_classActivityCoverImage,
+		var coverImage = $('<img>', {
+			class: "cell-cover",
 			src: coverImageUrl
 		}).appendTo(infoWrap);
 	}
@@ -170,65 +170,65 @@ function generateActivityCellForAdmin(par, activity){
 		text: activity.title
 	}).appendTo(infoWrap);
 
-	var cellActivityContent=$('<plaintext>', {
+	var cellActivityContent = $('<plaintext>', {
 		style: "color: black; font-size: 15pt",
 		text: activity.content
 	}).appendTo(infoWrap);
 
-	var statusIndicator=$('<span>', {
+	var statusIndicator = $('<span>', {
 		style: "color: red; font-size: 15pt; margin-left: 5pt; display: inline-block",
 		text: arrayStatusName[parseInt(activity.status)]
 	}).appendTo(ret);
 
 	ret.data(g_keyStatusIndicator, statusIndicator);
 	
-	var buttonsWrap=$('<span>', {
+	var buttonsWrap = $('<span>', {
 		style: "margin-left: 5pt; display: inline-block"
 	}).appendTo(ret); 
 
 	// this condition is temporarily hard-coded
-	if(parseInt(activity.status) != g_statusAccepted){
-            var btnAccept=$('<button>', {
+	if(activity.status != g_statusAccepted){
+            var btnAccept = $('<button>', {
 		style: " width: 64pt; height: 36pt; font-size: 16pt; color: DarkSlateBlue; margin-left: 5pt; background-color: #aaaaaa;",
                 text: 'Accept'
             }).appendTo(buttonsWrap);
             var dAccept = {};
             dAccept[g_keyActivityId] = activity.id;
-            btnAccept.on("click", dAccept, onBtnAcceptClicked);
+            btnAccept.click(dAccept, onBtnAcceptClicked);
         }
 
-	if(parseInt(activity.status) != g_statusRejected){
-            var btnReject=$('<button>', {
+	if(activity.status != g_statusRejected){
+            var btnReject = $('<button>', {
 		style: " width: 64pt; height: 36pt; font-size: 16pt; color: purple; margin-left: 5pt; background-color: #aaaaaa;",
                 text: 'Reject'
             }).appendTo(buttonsWrap);
             var dReject = {};
             dReject[g_keyActivityId] = activity.id;
-            btnReject.bind("click", dReject, onBtnRejectClicked);
+            btnReject.click(dReject, onBtnRejectClicked);
         }
 
-	var btnDelete=$('<button>', {
+	var btnDelete = $('<button>', {
 		style: " width: 64pt; height: 36pt; font-size: 16pt; color: IndianRed; margin-left: 5pt; background-color: #aaaaaa;",
 		text: 'Delete'
 	}).appendTo(buttonsWrap);
 	var dDelete = {};
 	dDelete[g_keyActivityId] = activity.id;
-	btnDelete.bind("click", dDelete, onBtnDeleteClicked);
+	btnDelete.click(dDelete, onBtnDeleteClicked);
 	
-	var hr=$('<hr>', {
+	var hr = $('<hr>', {
 		style: "height: 1pt; color: black; background-color: black"
 	}).appendTo(ret);
 	return ret;
 }
 
 $(document).ready(function(){
-    	// initialize local DOMs
-	initTopbar();
+
+	initTopbar($("#topbar"));
+	initActivityEditor($("#wrap"), null);
 
 	g_onLoginSuccess = listActivitiesAndRefresh;
 	g_onLoginError = null;
 	g_onEnter = listActivitiesAndRefresh;
-	initActivityEditor();
 
 	var selector = createSelector($("#pager-filters"), ["pending", "accepted", "rejected"], [g_statusPending, g_statusAccepted, g_statusRejected], null, null, null, null);
 	var filter = new PagerFilter(g_keyStatus, selector);

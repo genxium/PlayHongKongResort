@@ -28,8 +28,6 @@
 
 .btn-edit
 {
-	position: relative;
-	width:	auto;
 	margin-left:	10pt;
    	font-size:	12pt;
 	background-color: black;
@@ -94,20 +92,13 @@
 /* Activity Cells */
 .cell-container
 {
-	display: inline;
-	float: left;
-	width: 33%;
-	height: 45%;
+	display: block;
+	width: 98%;
+	height: 30%;
 	padding: 3pt;
 	margin: 5pt 5pt;
 	border: 2pt solid #00ccff;
 	border-radius: 8pt;
-}
-
-.cell-cover
-{
-        margin-top: 2%;
-	height: 33%;
 }
 
 .cell-title
@@ -147,17 +138,16 @@
 	color:	blue;
 }
 
-.btn-detail{
-	display: inline;
-	position: relative;
-	margin-left: 5pt;
-	width:	33%;
+.btn-detail
+{
+	background-color:	transparent;
+	border: 0;
 	font-size:	12pt;
-	background-color:	#ccccff;
-	color:	blue;
+	color:	IndianRed;
+	text-decoration: underline;
 }
 
-.cell-status-indicator
+.indicator-status
 {
 	display: inline;
 	position: relative;
@@ -165,15 +155,4 @@
 	margin-left: 2pt;
 	font-size: 16pt;
 	color: red;
-}
-
-.cell-relation-indicator
-{
-	display: inline;
-	position: relative;
-	margin-right: 5pt;
-	float: right;
-	vertical-align: bottom;
-	font-size:	13pt;
-	color:	violet;
 }

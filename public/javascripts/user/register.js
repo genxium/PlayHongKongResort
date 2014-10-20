@@ -13,10 +13,25 @@ var g_spanCheckPasswordConfirm = null;
 var g_onRegisterSuccess = null;
 var g_onRegisterError = null;
 
-function initRegisterWidget(){	
-	g_sectionRegister = $("#section-register");
+function initRegisterWidget(par){	
+	g_sectionRegister = par;
 	var registerForm = generateRegisterForm();
     	g_sectionRegister.append(registerForm);
+}
+
+function showRegisterSection(){
+	if(g_sectionRegister == null)	return;
+	g_sectionRegister.show();
+}
+
+function hideRegisterSection(){
+	if(g_sectionRegister == null)	return;
+	g_sectionRegister.hide();
+}
+
+function removeRegisterSection(){
+	if(g_sectionRegister == null)	return;
+	g_sectionRegister.remove();
 }
 
 function emptyRegisterFields(){
