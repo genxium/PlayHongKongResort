@@ -173,6 +173,10 @@ function setMargin(field, left, top, right, bottom) {
 	if (bottom != null)	field.css("margin-bottom", bottom);
 }
 
+function setBackgroundImageDefault(field, url) {
+	setBackgroundImage(field, url, "contain", "no-repeat", "center")
+}
+
 function setBackgroundImage(field, url, size, repeat, position) {
 	
 	field.css("background-image", "url(" + url + ")");	
@@ -205,3 +209,26 @@ function getOffset(field) {
 		top: parseFloat(field.css("top"))
 	};
 }
+
+function isFileValid(file){
+	if (file == null) return false;
+	var fileSizeLimit = (1 << 21)// 2 mega bytes
+	if (file.size > fileSizeLimit) return false;
+	return true;
+}
+
+function validateImage(file){
+	if (file == null) return false;
+	if (!isFileValid(file)) {
+		alert("Please choose an image that is less the 2MB(2048KB) in size");
+		return false;
+	}
+	var fileName = file.value == null ? file.name : file.value;
+	var ext = fileName.split('.').pop().toLowerCase();
+	if ($.inArray(ext, ['png','jpg','jpeg']) == -1) {
+		alert("Invalid image type!");
+		return false;
+	}
+	return true;
+}
+

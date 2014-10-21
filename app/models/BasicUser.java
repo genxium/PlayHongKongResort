@@ -4,8 +4,12 @@ import controllers.SQLCommander;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.simple.JSONObject;
 import play.libs.Json;
+import utilities.DataUtils;
 
 public class BasicUser {
+
+    public static String TAG = BasicUser.class.getName();
+
     public static String ID = "id";
     public static String EMAIL = "email";
     public static String NAME = "name";
@@ -65,17 +69,16 @@ public class BasicUser {
 
     public ObjectNode toObjectNode(Integer viewerId) {
         ObjectNode ret = Json.newObject();
-        ;
         try {
             ret.put(ID, String.valueOf(m_id));
             ret.put(EMAIL, m_email);
             ret.put(NAME, m_name);
             Image image = SQLCommander.queryImage(m_avatar);
             if (image != null) {
-                ret.put(Image.URL, image.getImageURL());
+                ret.put(AVATAR, image.getImageURL());
             }
         } catch (Exception e) {
-            System.out.println("BasicUser.toObjectNode, " + e.getMessage());
+            DataUtils.log(TAG, "toObjectNode", e);
         }
         return ret;
     }

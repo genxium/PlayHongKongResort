@@ -44,11 +44,11 @@ function queryActivitiesAndRefresh() {
 
 // Event Handlers
 function onBtnUploadAvatarClicked(evt){
-	preventDefault();
+	evt.preventDefault();
 	var uploader = evt.data;	
-	var file = uploader.input[0].files[0];
-	if(!validateImage(file))	return;
-	onUploadAvatar(file, upload.responseBar);
+	var file = uploader.trigger.getFile();
+	if (!validateImage(file))	return;
+	onUploadAvatar(file, uploader.responseBar);
 }
 
 function queryUserDetail(){
@@ -62,72 +62,86 @@ function queryUserDetail(){
 		data: params,
 		success: function(data, status, xhr){
 			if(g_sectionUser == null) return;
-			g_sectionUser.empty();
 			var userJson = JSON.parse(data);
-			var username=userJson[g_keyName];
-			var prefix=$("<span>", {
-				text: "You are viewing the profile of ",
-				style: "color: black"
-			}).appendTo(g_sectionUser);
-			var sectionUser=$("<span>", {
+			var username = userJson[g_keyName];
+			g_avatarUploader.title.empty();
+			$("<span>", {
+				text: "Hello, this is  ",
+			}).appendTo(g_avatarUploader.title);
+			$("<span>", {
 				text: username,
-				style: "color: blue"
-			}).appendTo(g_sectionUser);	
+				style: "clear: both; color: blue; font-size: 14pt"
+			}).appendTo(g_avatarUploader.title);
 		}
 	});
 } 
 
-function validateImage(file){
-	var fileName = file.value;
-	var ext = fileName.split('.').pop().toLowerCase();
-	if($.inArray(ext, ['gif','png','jpg','jpeg']) == -1) {
-	    alert('invalid extension!');
-	    return false;
-	}
-	return true;
-}
-
-function AvatarUploader(input, responseBar) {
-	this.input = input;
+function AvatarUploader(title, trigger, btn, responseBar) {
+	this.title = title;
+	this.trigger = trigger;
+	this.btn = btn; // the upload button
 	this.responseBar = responseBar;
 	this.hide = function() {
-		this.input.hide();
+		this.trigger.hide();
 		this.responseBar.hide();
+		this.btn.hide();
 	};
 	this.show = function() {
-		this.input.show();
+		this.trigger.show();
 		this.responseBar.show();
+		this.btn.show();
 	};
 }
 
 function generateAvatarUploader(par) {
-	var row = $("<p>").append(par);
-	var sp1 = $("<span>", {
-		text: "Avatar"
-	}).appendTo(row);
-	var sp2 = $("<span>", {
-		style: "margin-left: 10pt"
-	}).appendTo(row);
-	var input = $("<input>", {
-		type: "file"
-	}).appendTo(sp2);
-	var sp3 = $("<span>", {
-		style: "margin-left: 10pt"
-	}).appendTo(row);
-	var btnUpload = $("<button>", {
-		text: "upload"
-	}).appendTo(sp3);
-	var responseBar = $("<p>").appendTo(par);
+	var title = $("<span>", {
+		style: "position: relative;"
+	}).appendTo(par); 
 
-	var uploader = new AvatarUploader(input, responseBar);
+	var onChange = function(evt){
+                evt.preventDefault();
+                previewAvatar(g_avatarUploader);
+	};
+	var trigger = generateExplorerTriggerSpan(par, onChange, "/assets/icons/add.png", 64, 64, 64, 64);
+	setOffset(trigger.node, 256, null);
+
+	var sp2 = $("<span>", {
+		style: "position: absolute;",
+	}).appendTo(par);
+	setOffset(sp2, 352, 32);
+	var btnUpload = $("<button>", {
+		text: "upload",
+		style: "background-color: cadetblue; color: white;"
+	}).appendTo(sp2);
+
+	var responseBar = $("<p>", {
+		style: "clear: both;"
+	}).appendTo(par);
+	var uploader = new AvatarUploader(title, trigger, btnUpload, responseBar);
 	btnUpload.click(uploader, onBtnUploadAvatarClicked);
 	return uploader;
+}
+
+function previewAvatar(uploader) {
+		
+	var file = uploader.trigger.getFile();
+	if (file == null) return;
+	if (!validateImage(file)) return;
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+		uploader.trigger.changePic(e.target.result)
+        }
+
+        reader.readAsDataURL(file);
+
 }
 
 function requestProfile() {
 	
 	g_sectionUser = $("#section-user");
-	g_avatarUploader = generateAvatarUploader($("#section-avatar"));
+	g_avatarUploader = generateAvatarUploader(g_sectionUser);
+	g_avatarUploader.hide();
 
 	var relationSelector = createSelector($("#pager-filters"), ["發起的活動", "參與的活動"], [hosted, present], null, null, null, null);
 	var orientationSelector = createSelector($("#pager-filters"), ["時間倒序", "時間順序"], [g_orderDescend, g_orderAscend], null, null, null, null);
@@ -142,12 +156,14 @@ function requestProfile() {
 	g_onLoginSuccess = function() {
 		queryUserDetail();
 		listActivitiesAndRefresh();
+		if (g_loggedInUser.id != g_vieweeId) return;
 		if (g_avatarUploader == null) return;
 		g_avatarUploader.show();
 	};
 	g_onLoginError = null;
 	g_onEnter = function() {
 		queryUserDetail();
+		listActivitiesAndRefresh();
 		if (g_avatarUploader == null) return;
 		g_avatarUploader.hide();
 	};

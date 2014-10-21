@@ -34,7 +34,7 @@ function generateActivityCell(par, activity){
 		style: "display: inline-block; width: 25%; height: 90%;"
 	}).appendTo(ret);
 	if(coverImageUrl != null){
-		setBackgroundImage(left, coverImageUrl, "contain", "no-repeat", "center");
+		setBackgroundImageDefault(left, coverImageUrl);
 	}
 
 	var middle = $("<span>", {
