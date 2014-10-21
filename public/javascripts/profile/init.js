@@ -1,19 +1,15 @@
-var g_formAvatar = null;
+var g_avatarUploader = null;
 var g_sectionUser = null;
-var g_sectionResponse = null;
-
-var g_btnUploadAvatar=null;
 
 // Assistant Callback Functions
-function onUploadAvatarFormSubmission(formEvt){
+function onUploadAvatar(file, responseBar){
 
-	formEvt.preventDefault(); // prevent default action.
-
-	var formObj = $(this);
-	var formData = new FormData(this);
-	
 	// append an user token for identity
 	var token = $.cookie(g_keyToken);
+	if (token == null) return;
+
+	var formData = new FormData();
+	formData.append(g_keyAvatar, file);
 	formData.append(g_keyToken, token);
 	
 	$.ajax({
@@ -24,10 +20,10 @@ function onUploadAvatarFormSubmission(formEvt){
 		contentType: false,
 		processData: false,
 		success: function(data, status, xhr){
-			g_sectionResponse.html("Uploaded");
+			responseBar.text("Uploaded");
 		},
 		error: function(xhr, status, err){
-			g_sectionResponse.html("Failed");
+			responseBar.text("Failed");
 		}
 	});
 
@@ -48,33 +44,18 @@ function queryActivitiesAndRefresh() {
 
 // Event Handlers
 function onBtnUploadAvatarClicked(evt){
-
-	var file = document.getElementById(g_keyAvatar);
-	if(validateImage(file)==false){
-		return;
-	}
-
-	// set callback function of form submission
-	g_formAvatar.submit(onUploadAvatarFormSubmission);
-	// invoke submission
-	g_formAvatar.submit();
-}
-
-function refreshOnEnter(){
-	g_formAvatar.hide();
-	queryUserDetail();
-}
-
-function refreshOnLoggedIn(){
-	g_formAvatar.show();
-	queryUserDetail();
+	preventDefault();
+	var uploader = evt.data;	
+	var file = uploader.input[0].files[0];
+	if(!validateImage(file))	return;
+	onUploadAvatar(file, upload.responseBar);
 }
 
 function queryUserDetail(){
 	var params={};
 	params[g_keyVieweeId] = g_vieweeId;
-	var token=$.cookie(g_keyToken);
-	if(token!=null) params[g_keyToken]=token;
+	var token = $.cookie(g_keyToken);
+	if(token != null) params[g_keyToken] = token;
 	$.ajax({
 		type: "GET",
 		url: "/user/detail",
@@ -82,7 +63,7 @@ function queryUserDetail(){
 		success: function(data, status, xhr){
 			if(g_sectionUser == null) return;
 			g_sectionUser.empty();
-			var userJson=JSON.parse(data);
+			var userJson = JSON.parse(data);
 			var username=userJson[g_keyName];
 			var prefix=$("<span>", {
 				text: "You are viewing the profile of ",
@@ -106,6 +87,77 @@ function validateImage(file){
 	return true;
 }
 
+function AvatarUploader(input, responseBar) {
+	this.input = input;
+	this.responseBar = responseBar;
+	this.hide = function() {
+		this.input.hide();
+		this.responseBar.hide();
+	};
+	this.show = function() {
+		this.input.show();
+		this.responseBar.show();
+	};
+}
+
+function generateAvatarUploader(par) {
+	var row = $("<p>").append(par);
+	var sp1 = $("<span>", {
+		text: "Avatar"
+	}).appendTo(row);
+	var sp2 = $("<span>", {
+		style: "margin-left: 10pt"
+	}).appendTo(row);
+	var input = $("<input>", {
+		type: "file"
+	}).appendTo(sp2);
+	var sp3 = $("<span>", {
+		style: "margin-left: 10pt"
+	}).appendTo(row);
+	var btnUpload = $("<button>", {
+		text: "upload"
+	}).appendTo(sp3);
+	var responseBar = $("<p>").appendTo(par);
+
+	var uploader = new AvatarUploader(input, responseBar);
+	btnUpload.click(uploader, onBtnUploadAvatarClicked);
+	return uploader;
+}
+
+function requestProfile() {
+	
+	g_sectionUser = $("#section-user");
+	g_avatarUploader = generateAvatarUploader($("#section-avatar"));
+
+	var relationSelector = createSelector($("#pager-filters"), ["發起的活動", "參與的活動"], [hosted, present], null, null, null, null);
+	var orientationSelector = createSelector($("#pager-filters"), ["時間倒序", "時間順序"], [g_orderDescend, g_orderAscend], null, null, null, null);
+	var relationFilter = new PagerFilter("relation", relationSelector);
+	var orientationFilter = new PagerFilter("orientation", orientationSelector); 
+	var filters = [relationFilter, orientationFilter];	
+	var pagerCache = new PagerCache(5);
+	
+	// initialize pager widgets
+	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
+	
+	g_onLoginSuccess = function() {
+		queryUserDetail();
+		listActivitiesAndRefresh();
+		if (g_avatarUploader == null) return;
+		g_avatarUploader.show();
+	};
+	g_onLoginError = null;
+	g_onEnter = function() {
+		queryUserDetail();
+		if (g_avatarUploader == null) return;
+		g_avatarUploader.hide();
+	};
+
+	g_onActivitySaveSuccess = listActivitiesAndRefresh;
+	
+	checkLoginStatus();
+
+}
+
 $(document).ready(function(){
 
 	var params = extractParams(window.location.href);
@@ -120,33 +172,7 @@ $(document).ready(function(){
 	
 	initTopbar($("#topbar"));
 	initActivityEditor($("#wrap"), listActivitiesAndRefresh);
-
-	var relationSelector = createSelector($("#pager-filters"), ["發起的活動", "參與的活動"], [hosted, present], null, null, null, null);
-	var orientationSelector = createSelector($("#pager-filters"), ["時間倒序", "時間順序"], [g_orderDescend, g_orderAscend], null, null, null, null);
-	var relationFilter = new PagerFilter("relation", relationSelector);
-	var orientationFilter = new PagerFilter("orientation", orientationSelector); 
-	var filters = [relationFilter, orientationFilter];	
-	var pagerCache = new PagerCache(5);
 	
-	// initialize pager widgets
-	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
-	
-	g_onLoginSuccess = function(){
-		refreshOnLoggedIn();
-		listActivitiesAndRefresh();
-	};
-	g_onLoginError = null;
-	g_onEnter = refreshOnEnter;
+	requestProfile();
 
-	g_formAvatar = $("#form-avatar");
-	g_sectionResponse = $("#section-response");
-
-	g_sectionUser = $("#section-user");
-
-	g_btnUploadAvatar = $("#btn-upload-avatar");
-	g_btnUploadAvatar.on("click", onBtnUploadAvatarClicked);
-
-	g_onActivitySaveSuccess = listActivitiesAndRefresh;
-
-	checkLoginStatus();
 });

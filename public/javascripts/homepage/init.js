@@ -36,7 +36,7 @@ function requestHome() {
 	}
 
 	g_onRegisterError = null;
-
+	g_onActivitySaveSuccess = null;
 	checkLoginStatus();
 }
 	
