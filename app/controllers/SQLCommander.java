@@ -236,7 +236,7 @@ public class SQLCommander {
             builder.select(names).from(Activity.TABLE);
             // extra where criterion
             builder.where(Activity.HOST_ID, "=", hostId);
-            if(!hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
+            if(viewerId == null || !hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
 
             List<JSONObject> activityJsons = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
 
@@ -264,7 +264,7 @@ public class SQLCommander {
                     .where(Activity.HOST_ID, "=", hostId)
                     .limit((page_st - 1) * numItems, page_ed * numItems);
 
-            if(!hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
+            if(viewerId == null || !hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
 
             List<JSONObject> activityJsons = builder.execSelect();
 

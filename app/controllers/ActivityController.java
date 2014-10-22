@@ -56,7 +56,7 @@ public class ActivityController extends Controller {
             List<Activity> activities = null;
             if (relation != null && relation != UserActivityRelation.HOSTED && vieweeId != null) {
                 activities = SQLCommander.queryActivities(vieweeId, UserActivityRelation.maskRelation(relation, null));
-            } else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null && viewerId != null) {
+            } else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
                 activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, page_st, page_ed, Activity.ID, orientationStr, numItems);
             } else if (status != null){
                 activities = SQLCommander.queryActivities(page_st, page_ed, Activity.ID, orientationStr, numItems, status);
@@ -113,7 +113,7 @@ public class ActivityController extends Controller {
 			List<Activity> activities = null;
 			if (relation != null && relation != UserActivityRelation.HOSTED && vieweeId != null) {
 				activities = SQLCommander.queryActivities(vieweeId, UserActivityRelation.maskRelation(relation, null));
-			} else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null && viewerId != null) {
+			} else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
 				activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, refIndex, Activity.ID, orientationStr, numItems, direction);
 			} else if (status != null) {
 				activities = SQLCommander.queryActivities(refIndex, Activity.ID, orientationStr, numItems, direction, status);
