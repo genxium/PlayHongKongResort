@@ -205,3 +205,8 @@ function getOffset(field) {
 		top: parseFloat(field.css("top"))
 	};
 }
+
+function stencilize(field) {
+	field.css("background-color", "DimGray");
+	field.css("color", "Gainsboro");
+}

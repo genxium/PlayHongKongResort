@@ -156,3 +156,25 @@
 	font-size: 16pt;
 	color: red;
 }
+
+.table-time, th, td {
+}
+
+.table-time {
+	border: 0; 
+	border-collapse: collapse;
+	border-spacing: 5px 5px;
+}
+
+.table-time-row {
+
+}
+
+.table-time-row > th {
+    text-align: center;
+}
+
+.table-time-row > td {
+    text-align: center;
+    border: 1px solid white;
+}

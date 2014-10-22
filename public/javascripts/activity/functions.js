@@ -96,26 +96,41 @@ function onListActivitiesError(xhr){
 
 function displayTimesTable(par, activity) {
     	// deadline and begin time
-    	var times = $("<table border='1'>").appendTo(par);
-    	var deadlineRow = $('<tr>').appendTo(times);
-    	var deadlineTitle = $('<td>', {
+    	var times = $("<table>", {
+		class: "table-time"
+	}).appendTo(par);
+    	var deadlineRow = $("<tr>", {
+		class: "table-time-row"
+	}).appendTo(times);
+    	var deadlineTitle = $("<td>", {
     		text: "Application Deadline",
-    		style: "padding-left: 5pt; padding-right: 5pt"
+    		style: "background-color: indianred; color: white; padding-left: 5pt; padding-right: 5pt"
     	}).appendTo(deadlineRow);
-    	var deadline = $('<td>', {
-    		text: activity.applicationDeadline.toString(),
-    		style: "color: red; padding-left: 8pt; padding-right: 5pt"
+    	var deadline = $("<td>", {
+    		text: activity.applicationDeadline,
+    		style: "background-color: indianred; color: white; padding-left: 8pt; padding-right: 5pt"
     	}).appendTo(deadlineRow);
+	if (activity.isDeadlineExpired()) {
+		stencilize(deadlineTitle);
+		stencilize(deadline);
+	}
 
-    	var beginTimeRow = $('<tr>').appendTo(times);
-    	var beginTimeTitle = $('<td>', {
+    	var beginTimeRow = $("<tr>", {
+		class: "table-time-row"
+	}).appendTo(times);
+    	var beginTimeTitle = $("<td>", {
     		text: "Begin Time",
-    		style: "padding-left: 5pt; padding-right: 5pt"
+    		style: "background-color: DarkTurquoise; color: white; padding-left: 5pt; padding-right: 5pt"
     	}).appendTo(beginTimeRow);
-    	var beginTime = $('<td>', {
-    		text: activity.beginTime.toString(),
-    		style: "color: blue; padding-left: 8pt; padding-right: 5pt"
+    	var beginTime = $("<td>", {
+    		text: activity.beginTime,
+    		style: "background-color: DarkTurquoise; color: white; padding-left: 8pt; padding-right: 5pt"
     	}).appendTo(beginTimeRow);
+
+	if (activity.hasBegun()) {
+		stencilize(beginTimeTitle);
+		stencilize(beginTime);
+	} 
 }
 
 function displayParticipantStatistics(par, activity) {
