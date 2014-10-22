@@ -208,6 +208,9 @@ function onBtnJoinClicked(evt){
 // execute on start
 $(document).ready(function(){
 
+	initTopbar($("#topbar"));
+	initActivityEditor($("#wrap"), null);
+
 	g_sectionActivity = $("#section-activity");
 	var commentsCache = new PagerCache(5);
 	g_tabComments = new Pager($("#pager-screen-comments"), $("#pager-bar-comments"), 5, "/comment/list", generateCommentsListParams, commentsCache, null, onListCommentsSuccess, onListCommentsError);
@@ -223,14 +226,11 @@ $(document).ready(function(){
 			break;
 		}
 	}
-	initTopbar();
 
 	g_onLoginSuccess = refreshOnLoggedIn;
 	g_onLoginError = null;
 
 	g_onEnter = refreshOnEnter;
 
-	initActivityEditor();
-	
 	checkLoginStatus();
 });
