@@ -83,32 +83,6 @@
 	border-radius: 8pt;
 }
 
-.cell-title
-{
-	position: relative;
-	margin-bottom: 2pt;
-	height: 25%;
-	width: 100%;
-	max-height: 25%;
-	max-width:	100%;
-	font-size: 13pt;
-	overflow: hidden;
-}
-
-.cell-content
-{
-	display: block;
-	position: relative;
-	height: 75%;
-	width: 100%;
-	max-height: 75%;
-	max-width:	100%;
-	font-size: 12pt;
-	font-family: Georgia;
-	color: #0000aa;
-	overflow: hidden;
-}
-
 .btn-join
 {
 	display: inline;
