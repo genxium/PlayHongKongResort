@@ -1,4 +1,91 @@
 /*
+ * ExplorerTrigger
+ * */
+
+function ExplorerTrigger(node, pic, btn) {
+	this.node = node;
+	this.pic = pic;
+	this.btn = btn;
+	this.getFile = function() {
+		if (this.btn == null) return null;	
+		var files = btn[0].files;
+		if (files == null) return null;	
+		if (files.length != 1) {
+			alert("Choose only 1 image at a time!!!");
+			return null;
+		}
+		return files[0];
+	}
+	this.hide = function() {
+		if (this.node == null)	return;
+		this.node.hide();
+	};
+	this.show = function() {
+		if (this.node == null)	return;
+		this.node.show();
+	};
+	this.remove = function() {
+		if (this.pic == null) return;
+		this.pic.remove();
+		this.pic = null;
+		if (this.btn == null)	return;
+		this.btn.remove();
+		this.btn = null;
+		if (this.node == null)	return;
+		this.node.empty();
+		this.node.remove();
+		this.node = null;
+	};
+	this.shift = function(direction, distance) {
+		// direction {
+		//	left: -1,
+		//	right: +1
+		// }
+		//
+		// distance is an integer
+		var currentOffset = getOffset(this.node);
+		switch (direction) {
+			case -1:
+				var left = currentOffset.left - distance;
+				setOffset(this.node, left, null);
+			break;
+			case +1:
+				var left = currentOffset.left + distance;
+				setOffset(this.node, left, null);
+			break;
+		}
+
+	};
+	this.changePic = function(imgSrc) {
+		this.pic.attr("src", imgSrc);
+	};
+}
+
+function generateExplorerTriggerSpan(par, onChange, imgSrc, nodeW, nodeH, picW, picH) {
+	var node = $("<span>", {
+		style: "position: absolute;"
+	}).appendTo(par);
+	setDimensions(node, nodeW, nodeH);
+	setOffset(node, 0, null); 	
+	
+	var pic = $("<img>", {
+		style: "position: absolute; left: 0; top:0; right: 0; bottom:0; margin: auto;",
+		src: imgSrc
+	}).appendTo(node); 
+	setDimensions(pic, picW, picH);
+
+	// btn should have the same dimensions as node to be clickable
+	var btn = $("<input>", {
+		type: "file",
+		style: "filter: alpha(opacity=0); opacity: 0; position: absolute;"
+	}).appendTo(node);
+	setDimensions(btn, nodeW, nodeH);
+
+	btn.change(onChange);
+	return new ExplorerTrigger(node, pic, btn); 
+}
+
+/*
  * Datetime Picker
  */
 function generateDatePicker(time) {

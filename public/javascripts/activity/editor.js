@@ -42,11 +42,6 @@ function ImageSelector(id, image, indicator) {
 	this.checked = true;
 }
 
-function ExplorerTrigger(node, btn) {
-	this.node = node;
-	this.btn = btn;
-}
-
 function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint) {
 	if (id != null) this.id = id;
 	this.titleField = titleField;
@@ -110,34 +105,7 @@ function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNod
 		this.submittable = true;
 		this.enableEditorButtons();
 	};
-
-	this.removeExplorerTrigger = function() {
-		if (this.explorerTrigger.node == null)	return;
-		this.explorerTrigger.node.empty();
-		this.explorerTrigger.node.remove();
-		this.explorerTrigger.node = null;
-		if (this.explorerTrigger.btn == null)	return;
-		this.explorerTrigger.btn.remove();
-		this.explorerTrigger.btn = null;
-	};
 	
-	this.shiftExplorerTrigger = function(direction) {
-		// direction {
-		//	left: -1,
-		//	right: +1
-		// }
-		var currentOffset = getOffset(this.explorerTrigger.node);
-		switch (direction) {
-			case -1:
-				var left = currentOffset.left - g_wImageCell;
-				setOffset(this.explorerTrigger.node, left, null);
-			break;
-			case +1:
-				var left = currentOffset.left + g_wImageCell;
-				setOffset(this.explorerTrigger.node, left, null);
-			break;
-		}
-	};
 }
 
 // Assistive functions
@@ -227,12 +195,6 @@ function countImages(editor){
 	return ret;
 }
 
-function isFileValid(file){
-	var fileSizeLimit = (1 << 21)// 2 mega bytes
-	if(file.size > fileSizeLimit) return false;
-	return true;
-}
-
 // Assistive Callback Functions
 function onSave(evt){
 	evt.preventDefault();
@@ -253,6 +215,10 @@ function onSave(evt){
 	// check files
         for (var key in g_editor.newImageFiles) {
             var file = g_editor.newImageFiles[key];
+	    if (!validateImage(file)) {
+		formData = null;
+		return;
+	    } 
             formData.append(g_indexNewImage + "-" + key.toString(), file);
 	}
 	
@@ -377,16 +343,9 @@ function onSubmit(evt){
 }
 
 function previewImage(par, editor) {
-	var input = editor.explorerTrigger.btn[0]; // pull DOM
-        var images  = input.files;
-        if (images == null) return;
-        var newImage = images[0];
-        if(newImage == null) return;
-        var count = images.length;
-        if(count != 1){
-            alert("Choose only 1 image at a time!!!");
-            return;
-        }
+        var newImage = editor.explorerTrigger.getFile();
+	if (!validateImage(newImage)) return;
+
         var reader = new FileReader();
 
         reader.onload = function (e) {
@@ -412,7 +371,7 @@ function previewImage(par, editor) {
 		}).appendTo(node);
 		setDimensions(btnDelete, g_wImageCell, null);
 		
-		editor.shiftExplorerTrigger(+1);
+		editor.explorerTrigger.shift(+1, g_wImageCell);
 		
 		btnDelete.click(function(evt){
 			evt.preventDefault();
@@ -429,7 +388,7 @@ function previewImage(par, editor) {
 				var offset = getOffset(newImageNode);
 				setOffset(newImageNode, offset.left - g_wImageCell, null);
 			}
-			editor.shiftExplorerTrigger(-1);
+			editor.explorerTrigger.shift(-1, g_wImageCell);
 		});
         }
 
@@ -528,7 +487,7 @@ function generateActivityEditor(activity){
 
 	$("<p>", {
 		style: "font-size: 14pt; color: red; padding: 5pt",
-		text: "Up to 3 images can be saved for an activity"
+		html: "Up to 3 images can be saved for an activity. Single image size is limited to 2MB(2048KB), please go to <a href='http://www.pixlr.com'>Pixlr</a> to compress your image if necessary"
 	}).appendTo(ret);
 
         var newImageFiles = {};
@@ -583,30 +542,16 @@ function generateActivityEditor(activity){
 	}
 
 	newImagesRow.appendTo(ret);
-	var nodeBtnAdd = $("<span>", {
-                style: "display:inline-block; position: absolute;"
-        }).appendTo(newImagesRow);
-	setDimensions(nodeBtnAdd, g_wImageCell, g_hImageCell);
-        setOffset(nodeBtnAdd, 0, null);        
 
-        var picBtnAdd = $("<img>", {
-                src: "/assets/icons/add.png",
-                style: "position: absolute; cursor: pointer;"
-        }).appendTo(nodeBtnAdd);
-	setDimensions(picBtnAdd, g_wImageCell - 10, g_hImageCell - 10);
-
-        btnAdd = $("<input>", {
-                type: "file",
-                style: "filter: alpha(opacity=0); opacity: 0; position: absolute;"
-        }).appendTo(nodeBtnAdd);
-	setDimensions(btnAdd, g_wImageCell, g_hImageCell);
-        btnAdd.change(function(evt) {
+        var onChange = function(evt) {
                 evt.preventDefault();
                 g_editor.setSavable();
                 g_editor.setNonSubmittable();
                 previewImage(newImagesRow, g_editor);
-        });
-	var explorerTrigger = new ExplorerTrigger(nodeBtnAdd, btnAdd);
+        };
+
+	var explorerTrigger = generateExplorerTriggerSpan(newImagesRow, onChange, "/assets/icons/add.png", g_wImageCell, g_hImageCell, g_wImageCell/2, g_hImageCell/2);
+
 	$('<br>').appendTo(ret);
 	
 	// Schedules

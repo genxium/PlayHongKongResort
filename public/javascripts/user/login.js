@@ -157,17 +157,12 @@ function generateLoginForm(par){
 
 function generateLoggedInMenu(par){
 
-	var ret = $('<div>', {
+	var ret = $("<div>", {
 		style: "height: 100%"
 	}).appendTo(par);
 	
-	var avatar = $('<img>',{
-		src: g_loggedInUser.avatar,
-		style: "width: 50pt; height: auto; float: left"	
-	}).appendTo(ret);
-
 	var rightHalf = $('<div>',{
-		style: "width: auto; height: 100%; margin-left: 10pt; float: left"	
+		style: "width: auto; height: 100%; margin-left: 5pt; float: right;"	
 	}).appendTo(ret);
 
 	var greetingText = g_loggedInUser.name;
@@ -206,6 +201,15 @@ function generateLoggedInMenu(par){
 	}).appendTo(row2);
 	setBackgroundImage(g_btnCreate, "/assets/icons/new_activity.png", "contain", "no-repeat", "center");
 	g_btnCreate.click(onBtnCreateClicked);
+
+	var leftHalf = $("<div>", {
+		style: "height: 100%; float: right;"
+	}).appendTo(ret);
+	var avatar = $('<img>',{
+		src: g_loggedInUser.avatar,
+		style: "width: 50pt; height: auto;"	
+	}).appendTo(leftHalf);
+
 }
 
 function checkLoginStatus(){

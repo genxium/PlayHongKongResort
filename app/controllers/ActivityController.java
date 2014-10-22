@@ -58,8 +58,10 @@ public class ActivityController extends Controller {
                 activities = SQLCommander.queryActivities(vieweeId, UserActivityRelation.maskRelation(relation, null));
             } else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null && viewerId != null) {
                 activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, page_st, page_ed, Activity.ID, orientationStr, numItems);
-            } else {
+            } else if (status != null){
                 activities = SQLCommander.queryActivities(page_st, page_ed, Activity.ID, orientationStr, numItems, status);
+            } else {
+                activities = SQLCommander.queryActivities(page_st, page_ed, Activity.ID, orientationStr, numItems, Activity.ACCEPTED);
             }
             if (activities == null) throw new NullPointerException();
             ObjectNode result = Json.newObject();
