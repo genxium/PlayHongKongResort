@@ -12,9 +12,8 @@
 	display: block;
 	position: relative;
 	width: 720pt;
-	height: 350pt;
 	overflow: auto;
-	clear: left;
+	clear: both;
 }
 
 #pager-bar-activities

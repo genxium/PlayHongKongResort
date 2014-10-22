@@ -3,8 +3,6 @@
 	display: block;
 	position: relative;
 	width: 720pt;
-        height: 350pt;
-	border: 1pt solid #ccccff;
 	overflow: auto;
 }
 
