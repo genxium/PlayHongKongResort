@@ -187,19 +187,19 @@ function generateLoggedInMenu(par){
 	g_btnNotification = $("<button>", {
 		style: "width: 30%; height: 90%;"
 	}).appendTo(row2);
-	setBackgroundImage(g_btnNotification, "/assets/icons/notification.png", "contain", "no-repeat", "center");
+	setBackgroundImageDefault(g_btnNotification, "/assets/icons/notification.png");
 	g_btnNotification.click(onBtnNotificationClicked);
 
 	g_btnProfile = $("<button>", {
 		style: "width: 30%; height: 90%; margin-left: 5pt"
 	}).appendTo(row2);
-	setBackgroundImage(g_btnProfile, "/assets/icons/profile.png", "contain", "no-repeat", "center");
+	setBackgroundImageDefault(g_btnProfile, "/assets/icons/profile.png");
 	g_btnProfile.click(onBtnProfileClicked);
 
 	g_btnCreate = $("<button>", {
 		style: "width: 30%; height: 90%; margin-left: 5pt"
 	}).appendTo(row2);
-	setBackgroundImage(g_btnCreate, "/assets/icons/new_activity.png", "contain", "no-repeat", "center");
+	setBackgroundImageDefault(g_btnCreate, "/assets/icons/new_activity.png");
 	g_btnCreate.click(onBtnCreateClicked);
 
 	var leftHalf = $("<div>", {

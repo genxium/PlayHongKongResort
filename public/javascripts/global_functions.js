@@ -193,12 +193,19 @@ function setBackgroundImage(field, url, size, repeat, position) {
 
 function setDimensions(field, width, height) {
 	if (width != null)	field.css("width", width);
+	else field.css("width", "auto");
+
 	if (height != null)	field.css("height", height);
+	else field.css("height", "auto");
 }
 
 function setOffset(field, left, top) {
 	if (left != null)	field.css("left", left);
+	else field.css("left", "auto");
+	
 	if (top != null)	field.css("top", top);
+	else field.css("top", "auto"); 
+	
 	field.css("right", "auto");
 	field.css("bottom", "auto");
 }

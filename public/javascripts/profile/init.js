@@ -103,20 +103,21 @@ function generateAvatarUploader(par) {
                 previewAvatar(g_avatarUploader);
 	};
 	var trigger = generateExplorerTriggerSpan(par, onChange, "/assets/icons/add.png", 64, 64, 64, 64);
-	setOffset(trigger.node, 256, null);
+	setOffset(trigger.node, 256, 0);
 
 	var sp2 = $("<span>", {
 		style: "position: absolute;",
 	}).appendTo(par);
-	setOffset(sp2, 352, 32);
+	setOffset(sp2, 256, 64); // behind the trigger
 	var btnUpload = $("<button>", {
 		text: "upload",
 		style: "background-color: cadetblue; color: white;"
 	}).appendTo(sp2);
 
-	var responseBar = $("<p>", {
-		style: "clear: both;"
+	var responseBar = $("<span>", {
+		style: "position: absolute;"
 	}).appendTo(par);
+	setOffset(responseBar, 320, 64); // roughly to the right of the upload button
 	var uploader = new AvatarUploader(title, trigger, btnUpload, responseBar);
 	btnUpload.click(uploader, onBtnUploadAvatarClicked);
 	return uploader;

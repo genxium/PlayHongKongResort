@@ -10,7 +10,6 @@ var g_modalActivityEditor = null;
 var g_sectionActivityEditor = null;
 
 // button keys
-var g_classBtnEdit = "btn-edit";
 var g_classBtnSubmit = "btn-submit";
 var g_classBtnDelete = "btn-delete";
 var g_classBtnSave = "btn-save";
@@ -61,33 +60,33 @@ function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNod
 
 	this.disableEditorButtons = function() {
 		disableField(this.btnSave);
-		this.btnSave.css("color", "white");
+		this.btnSave.css("color", "dimgray");
 		disableField(this.btnSubmit);
-		this.btnSubmit.css("color", "white");
+		this.btnSubmit.css("color", "dimgray");
 		if (this.btnDelete == null) return;
 		disableField(this.btnDelete);
-		this.btnDelete.css("color", "white");
+		this.btnDelete.css("color", "dimgray");
 	};
 
 	this.enableEditorButtons = function() {
 		if (this.savable) {
 			enableField(this.btnSave);
-			this.btnSave.css("color", "black");
+			this.btnSave.css("color", "white");
 		}	
 		if (this.submittable) {
 			enableField(this.btnSubmit);
-			this.btnSubmit.css("color", "black");
+			this.btnSubmit.css("color", "white");
 		}	
 		if (this.btnDelete != null) {
 			enableField(this.btnDelete);
-			this.btnDelete.css("color", "black");
+			this.btnDelete.css("color", "white");
 		}
 	};
 
 	this.setNonSavable = function() {
 		this.savable = false;
 		disableField(this.btnSave);
-		this.btnSave.css("color", "white");
+		this.btnSave.css("color", "dimgray");
 	};
 
 	this.setSavable = function() {
@@ -98,7 +97,7 @@ function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNod
 	this.setNonSubmittable = function() {
 		this.submittable = false;
 		disableField(this.btnSubmit);
-		this.btnSubmit.css("color", "white");
+		this.btnSubmit.css("color", "dimgray");
 	};
 
 	this.setSubmittable = function() {
@@ -605,7 +604,7 @@ function generateActivityEditor(activity){
 		class: g_classBtnSave,
 		text: 'Save'
 	}).appendTo(buttons);
-	btnSave.on("click", onSave);
+	btnSave.click(onSave);
 
 	var btnSubmit = $('<button>',{
 		class: g_classBtnSubmit,
@@ -613,13 +612,13 @@ function generateActivityEditor(activity){
 	}).appendTo(buttons);
 	var dSubmit = {};
 	dSubmit[g_keyActivityId] = activityId;
-	btnSubmit.on("click", dSubmit, onSubmit);
+	btnSubmit.click(dSubmit, onSubmit);
 
 	var btnCancel = $('<button>',{
 		class: g_classBtnCancel,
 		text: 'Cancel'
 	}).appendTo(buttons);
-	btnCancel.on("click", onCancel);
+	btnCancel.click(onCancel);
 
 	var btnDelete = null;
 	if(!isNewActivity){
@@ -629,7 +628,7 @@ function generateActivityEditor(activity){
 		}).appendTo(buttons);
                 var dDelete = {};
                 dDelete[g_keyActivityId] = activityId;
-		btnDelete.on("click", dDelete, onDelete);
+		btnDelete.click(dDelete, onDelete);
 	}
 
 	var hint = $("<p>", {

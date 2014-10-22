@@ -26,67 +26,49 @@
 	margin-bottom: 2pt;
 }
 
-.btn-edit
-{
-	margin-left:	10pt;
-   	font-size:	12pt;
-	background-color: black;
-	color:	white;
-}
-
 .btn-save
 {
-	display: inline;
-	position: relative;
+	display: inline-block;
 	padding-top: 3pt;
 	width: auto;
 	height: 36pt;
 	font-size: 15pt;
-	margin-top: 10pt;
-	background-color: #CC00FF;
-	color: #cccccc;
+	background-color: indianred;
+	border: 0;
 }
 
 .btn-delete
 {
-	display: table-cell;
-	position: relative;
-	padding-top: 3pt;
-	width: auto;
-	height: 36pt;
-	font-size: 16pt;
-	color: #cccccc;
-	margin-top: 10pt;	
-	background-color: #ff0000;
-}
-
-.btn-submit
-{
-	display: table-cell;
-	position: relative;
-	padding-top: 3pt;
-	width: auto;
-	height: 36pt;
-	font-size: 16pt;
-	color: #cccccc;
-	margin-top: 10pt;	
-	background-color: #0000ee;
-}
-
-.btn-cancel
-{
-	display: table-cell;
-	position: relative;
+	display: inline-block;
 	padding-top: 3pt;
 	width: auto;
 	height: 36pt;
 	font-size: 15pt;
-	margin-top: 10pt;
-	margin-left: 50pt;
+	background-color: #ff0000;
+	border: 0;
 }
 
-.classFieldImageOfActivity{
-	display: table-row;
+.btn-submit
+{
+	display: inline-block;
+	padding-top: 3pt;
+	width: auto;
+	height: 36pt;
+	font-size: 15pt;
+	background-color: #0000ee;
+	border: 0;
+}
+
+.btn-cancel
+{
+	display: inline-block;
+	padding-top: 3pt;
+	width: auto;
+	height: 36pt;
+	font-size: 15pt;
+	margin-left: 50pt;
+	border: 0;
+	color: white;
 }
 
 /* Activity Cells */

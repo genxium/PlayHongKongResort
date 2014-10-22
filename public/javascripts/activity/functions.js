@@ -104,7 +104,7 @@ function displayTimesTable(par, activity) {
 	}).appendTo(times);
     	var deadlineTitle = $("<td>", {
     		text: "Application Deadline",
-    		style: "background-color: indianred; color: white; padding-left: 5pt; padding-right: 5pt"
+    		style: "background-color: orangered; color: white; padding-left: 5pt; padding-right: 5pt"
     	}).appendTo(deadlineRow);
     	var deadline = $("<td>", {
     		text: activity.applicationDeadline,
@@ -120,11 +120,11 @@ function displayTimesTable(par, activity) {
 	}).appendTo(times);
     	var beginTimeTitle = $("<td>", {
     		text: "Begin Time",
-    		style: "background-color: DarkTurquoise; color: white; padding-left: 5pt; padding-right: 5pt"
+    		style: "background-color: royalblue; color: white; padding-left: 5pt; padding-right: 5pt"
     	}).appendTo(beginTimeRow);
     	var beginTime = $("<td>", {
     		text: activity.beginTime,
-    		style: "background-color: DarkTurquoise; color: white; padding-left: 8pt; padding-right: 5pt"
+    		style: "background-color: steelblue; color: white; padding-left: 8pt; padding-right: 5pt"
     	}).appendTo(beginTimeRow);
 
 	if (activity.hasBegun()) {
@@ -238,9 +238,9 @@ function attachStatusIndicator(par, activity) {
 	if(activity.status != g_statusCreated && activity.status != g_statusRejected) return;
 	var btnWrapper = $("<span>").appendTo(par);
 	var btnEdit = $('<button>', {
-		class: "btn-edit",
-		text: 'Edit'
+		style: "background-color: white; width: 30px; height: 30px; margin-left: 10px"
 	}).appendTo(btnWrapper);
+	setBackgroundImageDefault(btnEdit, "/assets/icons/edit.png");
 	var dEdit = {};
 	dEdit[g_keyActivity] = activity;
 	btnEdit.click(dEdit, onBtnEditClicked);
