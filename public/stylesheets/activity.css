@@ -102,6 +102,17 @@
 	text-decoration: underline;
 }
 
+.indicator-relation-container
+{
+
+	display: inline;
+	position: relative;
+	float: right;
+	width: 20%;
+	height: 95%;
+	
+}
+
 .indicator-status
 {
 	display: inline;

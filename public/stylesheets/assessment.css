@@ -14,11 +14,13 @@
     background-color: green;
     color: white;
     text-align: center;
+    vertical-align: middle;
     width: 50%;
 }
 
 .assessments-viewer-row > td {
-    color: white;
+    color: black;
     text-align: center;
+    vertical-align: middle;
     width: 50%;
 }

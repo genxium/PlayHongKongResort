@@ -15,7 +15,7 @@ function listCommentsAndRefresh(activity) {
 }
 
 function listComments(page, onSuccess, onError){
-	// prototypes: onSuccess(data), onError
+	// prototypes: onSuccess(data), onError(err)
 	var params = generateCommentsListParams(g_tabComments, page);
 	$.ajax({
 		type: "GET",
@@ -25,7 +25,7 @@ function listComments(page, onSuccess, onError){
 			onSuccess(data);
 		},
 		error: function(xhr, status, err) {
-			onError();
+			onError(err);
 		}
 	});
 }
@@ -86,7 +86,7 @@ function onListCommentsSuccess(data){
         g_tabComments.refreshBar();
 }
 
-function onListCommentsError(){
+function onListCommentsError(err){
 
 }
 

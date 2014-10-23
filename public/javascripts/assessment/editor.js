@@ -171,7 +171,7 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 		refreshBatchEditor(activity);
 	}
 
-	var onSuccess = function(data, status, xhr){	    
+	var onSuccess = function(data){	    
 		g_updatingAttendance = false;
 
 		// update activity.relation by returned value
@@ -187,7 +187,7 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 		refreshBatchEditor(activity);
 	};
 
-	var onError = function(xhr, status, err){
+	var onError = function(err){
 		g_updatingAttendance = false;
 		// reset switch status if updating attendance fails
 		var value = getBinarySwitchState(attendanceSwitch);
@@ -216,6 +216,7 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 }
 
 function updateAttendance(activityId, attendance, onSuccess, onError){
+	// prototypes: onSuccess(data), onError(err)
 	if(g_updatingAttendance) return;
 	var token = $.cookie(g_keyToken);
 	if(token == null) return; 
@@ -228,8 +229,12 @@ function updateAttendance(activityId, attendance, onSuccess, onError){
 		type: "PUT",
 		url: "/activity/mark",
 		data: params,
-		success: onSuccess,
-		error: onError
+		success: function(data, status, xhr) {
+			onSuccess(data);
+		},
+		error: function(xhr, status, err) {
+			onError(err);
+		}
 	});
 }
 

@@ -163,49 +163,9 @@ function onParticipantsSelectionFormSubmission(formEvt){
 // Assistive Event Handlers
 function onBtnSubmitClicked(evt){
 	evt.preventDefault();
-	var selectionForm=$(this).parent();	
+	var selectionForm = $(this).parent();	
 	selectionForm.submit(onParticipantsSelectionFormSubmission);
 	selectionForm.submit();
-}
-
-function onBtnJoinClicked(evt){
-
-	var btnJoin = $(this);
-
-	evt.preventDefault();
-	var data = evt.data;
-	var activity = data[g_keyActivity];
-
-	if (activity == null) return;
-
-	if (activity.isDeadlineExpired()) {
-		alert("Application deadline has expired!");
-		return;
-	}
-
-	var token = $.cookie(g_keyToken).toString();
-
-	var params={};
-	params[g_keyActivityId] = activity.id;
-	params[g_keyToken] = token;
-
-	$.ajax({
-		type: "POST",
-		url: "/activity/join",
-		data: params,
-		success: function(data, status, xhr){
-			activity.relation |= applied;
-			var barButtons = $("#bar-buttons");	
-			barButtons.empty();
-			var buttonContainer = $("<span>", {
-				style: "float: right; width: 10%; height: 10%;"
-			}).appendTo(barButtons);
-			attachRelationIndicator(buttonContainer, activity);
-		},
-		error: function(xhr, status, errThrown){
-
-		}
-	});
 }
 
 // execute on start

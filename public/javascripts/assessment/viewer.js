@@ -78,7 +78,7 @@ function generateAssessmentsViewer(assessments) {
 	return ret;
 } 
 
-function onQueryAssessmentsSuccess(data, status, xhr) {
+function onQueryAssessmentsSuccess(data) {
 	var jsonResponse = JSON.parse(data);
 	if(jsonResponse == null || Object.keys(jsonResponse).length == 0) return;
 	var assessments = new Array();
@@ -92,7 +92,7 @@ function onQueryAssessmentsSuccess(data, status, xhr) {
 	
 }
 
-function onQueryAssessmentsError(xhr, status, err) {
+function onQueryAssessmentsError(err) {
 
 }
 
@@ -100,7 +100,7 @@ function queryAssessments(refIndex, numItems, direction, to, activityId) {
 	
 	var params = {};	
 
-	if(refIndex != null) params[g_keyRefIndex] = refIndex.toString();
+	if(refIndex != null) params[g_keyRefIndex] = refIndex;
 	if(numItems != null) params[g_keyNumItems] = numItems;
 	if(direction != null) params[g_keyDirection] = parseInt(direction);
 
@@ -113,8 +113,12 @@ function queryAssessments(refIndex, numItems, direction, to, activityId) {
 		type: "GET",
 		url: "/assessment/query",
 		data: params,
-		success: onQueryAssessmentsSuccess,
-		error: onQueryAssessmentsError
+		success: function(data, status, xhr) {
+			onQueryAssessmentsSuccess(data);
+		},
+		error: function(xhr, status, err) {
+			onQueryAssessmentsError(err);
+		}
 	});
 }
 

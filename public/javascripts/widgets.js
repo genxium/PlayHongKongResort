@@ -224,7 +224,7 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 	// prototype: paramsGenerator(Pager, page)
 	this.paramsGenerator = paramsGenerator;
 
-	// prototypes: onSuccess(data), onError()
+	// prototypes: onSuccess(data), onError(err)
 	this.onSuccess = onSuccess;
 	this.onError = onError;
 		
@@ -268,7 +268,7 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 				    },
 				    error: function(xhr, status, err) {
 					enableField(indicator);
-					pager.onError();
+					pager.onError(err);
 				    }
 				});
 			});
@@ -303,7 +303,7 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 			    },
 			    error: function(xhr, status, err) {
 				enableField(selector);
-				pager.onError();
+				pager.onError(err);
 			    }
 			});
 		});	

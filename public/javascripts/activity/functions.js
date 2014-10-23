@@ -9,7 +9,7 @@ function onBtnEditClicked(evt){
 }
 
 function listActivities(page, onSuccess, onError) {
-	// prototypes: onSuccess(data), onError
+	// prototypes: onSuccess(data), onError(err)
 	var params = generateActivitiesListParams(g_pager, page);
 
 	$.ajax({
@@ -20,7 +20,7 @@ function listActivities(page, onSuccess, onError) {
 		    onSuccess(data);
 		},
 		error: function(xhr, status, err) {
-		    onError();
+		    onError(err);
 		}
 	});
 }
@@ -90,7 +90,7 @@ function onListActivitiesSuccess(data){
 	g_pager.refreshBar();
 } 
 
-function onListActivitiesError(xhr){
+function onListActivitiesError(err){
 
 }
 
@@ -175,13 +175,10 @@ function onBtnJoinClicked(evt){
 		url: "/activity/join",
 		data: params,
 		success: function(data, status, xhr){
+			activity.relation |= applied;
 			var par = btnJoin.parent();
 			btnJoin.remove();
-			activity.relation |= selected;
-			$('<div>', {
-				class: "indicator-relation",
-				text: 'applied'
-			}).appendTo(par);
+			attachRelationIndicator(par, activity);
 		},
 		error: function(xhr, status, errThrown){
 
@@ -196,7 +193,6 @@ function attachJoinButton(par, activity) {
 			class: "btn-join",
 			text: 'Join'
 		}).appendTo(par);
-                setDimensions(btnJoin, "33%", null);
 		var dJoin = {};
 		dJoin[g_keyActivity] = activity;
 		btnJoin.click(dJoin, onBtnJoinClicked);
@@ -219,7 +215,7 @@ function attachRelationIndicator(par, activity) {
 	mapRelationName[hosted] = "";
 		
 	var relationIndicator = $('<span>', {
-		style: "color: violet; margin-left: 10pt; font-size: 12pt; text-align: right; vertical-align: middle;",
+		style: "color: violet; font-size: 13pt;",
 		text: mapRelationName[getPriorRelation(activity)]
 	}).appendTo(par);
 

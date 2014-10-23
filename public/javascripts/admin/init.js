@@ -131,7 +131,7 @@ function onListActivitiesSuccessAdmin(data){
         g_pager.refreshBar();
 } 
 
-function onListActivitiesErrorAdmin(){
+function onListActivitiesErrorAdmin(error){
 
 }
 

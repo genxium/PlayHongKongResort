@@ -44,7 +44,7 @@ function generateActivityCell(par, activity){
 		style: "margin-bottom: 5pt"
 	}).appendTo(middle);
 	var title = $("<span>", {
-		style: "color: blue; font-size: 15pt;",
+		style: "color: blue; font-size: 15pt; margin-right: 5pt;",
 		text: activity.title
 	}).appendTo(midTop);
 	attachRelationIndicator(midTop, activity);
