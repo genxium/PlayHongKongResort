@@ -30,7 +30,10 @@ function queryActivityDetail(activityId){
     		g_activity = new Activity(activityJson);
 		var barButtons = $("#bar-buttons");	
 		barButtons.empty();
-		attachJoinButton(barButtons, g_activity);
+		var buttonContainer = $("<span>", {
+			style: "float: right; width: 20%; height: 10%;"
+		}).appendTo(barButtons);
+		attachJoinButton(buttonContainer, g_activity);
                 displayActivityDetail(g_sectionActivity);
             },
             error: function(xhr, status, err){
@@ -191,13 +194,13 @@ function onBtnJoinClicked(evt){
 		url: "/activity/join",
 		data: params,
 		success: function(data, status, xhr){
-			var cell = btnJoin.parent();
-			btnJoin.remove();
 			activity.relation |= applied;
-			$('<div>', {
-				class: g_classCellRelationIndicator,
-				text: 'Applied'
-			}).appendTo(cell);
+			var barButtons = $("#bar-buttons");	
+			barButtons.empty();
+			var buttonContainer = $("<span>", {
+				style: "float: right; width: 10%; height: 10%;"
+			}).appendTo(barButtons);
+			attachRelationIndicator(buttonContainer, activity);
 		},
 		error: function(xhr, status, errThrown){
 

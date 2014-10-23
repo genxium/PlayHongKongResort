@@ -219,7 +219,7 @@ function attachRelationIndicator(par, activity) {
 	mapRelationName[hosted] = "";
 		
 	var relationIndicator = $('<span>', {
-		style: "color: violet; margin-left: 10pt; font-size: 12pt; text-align: right; vertical-align: center;",
+		style: "color: violet; margin-left: 10pt; font-size: 12pt; text-align: right; vertical-align: middle;",
 		text: mapRelationName[getPriorRelation(activity)]
 	}).appendTo(par);
 
@@ -231,7 +231,7 @@ function attachStatusIndicator(par, activity) {
 	var arrayStatusName = ["created", "pending", "rejected", "accepted", "expired"];
 
 	var statusIndicator = $('<span>',{
-		style: "color: red; margin-left: 10pt; font-size: 12pt; text-align: right; vertical-align: center;",
+		style: "color: red; margin-left: 10pt; font-size: 13pt; vertical-align: center;",
 		text: arrayStatusName[activity.status]
 	}).appendTo(par);
 

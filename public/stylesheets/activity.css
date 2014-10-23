@@ -87,8 +87,7 @@
 {
 	display: inline;
 	position: relative;
-	float: right;
-	vertical-align: bottom;
+	vertical-align: middle;
 	background-color:	#ccccff;
 	font-size:	12pt;
 	color:	blue;
