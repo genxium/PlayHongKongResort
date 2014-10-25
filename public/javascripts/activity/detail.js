@@ -112,7 +112,7 @@ function displayActivityDetail(par){
 	// Comment editor
 	generateCommentEditor(ret, g_activity);
 	g_onCommentSubmitSuccess = function() {
-	    queryCommentsAndRefresh(g_activity);
+	    listCommentsAndRefresh(g_activity);
 	}
 
 	return ret;

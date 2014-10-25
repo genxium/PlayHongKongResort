@@ -11,8 +11,8 @@ public class Websocket {
             // Called when the Websocket Handshake is done.
             public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out){
 
-                // Join the chat room.
                 try {
+		    System.out.println("Connection trial received.");	
                     JsonNode res = Json.newObject();
                     out.write(res);
                 } catch (Exception ex) {
