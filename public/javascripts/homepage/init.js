@@ -31,7 +31,6 @@ function requestHome() {
 
 	g_onRegisterSuccess = function(){
 		alert("Registered successfully!");
-		refreshOnEnter();
 		listActivitiesAndRefresh();
 	}
 

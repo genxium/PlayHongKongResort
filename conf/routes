@@ -66,5 +66,8 @@ GET /comment/view controllers.CommentController.view()
 POST /assessment/submit controllers.AssessmentController.submit
 GET /assessment/query controllers.AssessmentController.query(ref_index: String ?=null, num_items: Integer ?=null, direction: Integer ?=null, token: String ?=null, to: Integer ?=null, activity_id: Integer ?=null)
 
+# Websocket
+GET /ws/connect controllers.Websocket.connect(token: String ?=null)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

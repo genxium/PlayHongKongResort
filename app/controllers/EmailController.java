@@ -1,7 +1,6 @@
 package controllers;
 
 import dao.EasyPreparedStatementBuilder;
-import dao.SQLHelper;
 import exception.UserNotFoundException;
 import models.User;
 import org.json.simple.JSONObject;
