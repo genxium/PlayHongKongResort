@@ -33,16 +33,6 @@ public class UserController extends Controller {
 
     public static final String TAG = UserController.class.getName();
 
-    public static Result profile() {
-        try {
-            Content html = views.html.profile.render();
-            return ok(html);
-        } catch (Exception e) {
-            DataUtils.log(TAG, "profile", e);
-        }
-        return badRequest();
-    }
-
     protected static void sendVerificationEmail(String name, String recipient, String code) {
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);

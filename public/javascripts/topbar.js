@@ -8,8 +8,7 @@ function initTopbar(par){
 		text: "Hong Kong Resort"
 	}).appendTo(g_topbar);
 	topbarTitle.click(function(){
-		var homepagePath = "/";
-		window.open(homepagePath);
+		requestHome();
 	});	
 	g_sectionLogin = $("<span>", {
 		style: "height: 95%; float: right; margin-right: 10pt"

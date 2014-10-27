@@ -25,6 +25,11 @@ function listActivities(page, onSuccess, onError) {
 	});
 }
 
+function listActivitiesAndRefresh() {
+	var page = 1;
+	listActivities(page, onListActivitiesSuccess, onListActivitiesError);
+}
+
 function generateActivitiesListParams(pager, page) {
 	if (page == null) return null;
 

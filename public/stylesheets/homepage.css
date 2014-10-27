@@ -1,12 +1,13 @@
-.section-avatar{
-	display: table-column-group;
+#section-user
+{
 	position: relative;
-	float: left;
-	width: 50pt;
-	height: 50pt;
 }
 
-/* Activity Cells */
+#section-register
+{
+	position: relative;
+}
+
 #pager-screen-activities
 {
 	display: block;
@@ -17,5 +18,5 @@
 
 #pager-bar-activities
 {
-
+	position: relative;
 }

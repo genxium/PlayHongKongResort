@@ -65,6 +65,7 @@ function onBtnLogoutClicked(evt){
 		url: "/user/logout",
 		data: params,
 		success: function(data, status, xhr){
+			g_loggedInUser = null;
 			$.removeCookie(g_keyToken, {path: '/'});
 			wsDisconnect();
 			if(g_sectionLogin == null) return;
@@ -83,21 +84,12 @@ function onBtnLogoutClicked(evt){
 }
 
 function onBtnProfileClicked(evt) {
-	var profilePath = "/user/profile/show?" + g_keyVieweeId + "=" + g_loggedInUser.id;
-	var profilePage = window.open(profilePath);
+	requestProfile(g_loggedInUser.id);
 }
 
 function onBtnCreateClicked(evt) {
 	evt.preventDefault();
-	g_onEditorCancelled=function(){
-		g_sectionActivityEditor.modal("hide");
-	};
-	g_activityEditor = generateActivityEditor(null);
-	g_modalActivityEditor.empty();
-	g_modalActivityEditor.append(g_activityEditor);
-	g_sectionActivityEditor.modal({
-		show: true
-	});
+	showActivityEditor(null);
 }
 
 function onBtnNotificationClicked(evt) {

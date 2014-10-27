@@ -1,10 +1,32 @@
-function listActivitiesAndRefresh() {
-	var page = 1;
-	listActivities(page, onListActivitiesSuccess, onListActivitiesError);
+var g_registerWidget = null;
+
+function emptySectionRegister() {
+	setDimensions(g_sectionRegister, "100%", 0);
 }
-	
+
+function initSectionRegister() {
+	setDimensions(g_sectionRegister, "100%", "auto");
+}
+
+function clearHome() {
+	$("#pager-filters").empty();
+	$("#pager-screen-activities").empty();
+	$("#pager-bar-activities").empty();
+	setDimensions(g_sectionRegister, "100%", 0);
+	g_sectionRegister.empty();
+}
+
 function requestHome() {
-	initRegisterWidget($("#section-register"));
+	clearProfile();
+	initSectionRegister();
+	g_registerWidget = generateRegisterWidget($("#section-register"), 
+			function(data) {
+				alert("Registered successfully!");
+				listActivitiesAndRefresh();
+			},
+			function(err) {
+				
+			});
 
 	var selector = createSelector($("#pager-filters"), ["時間倒序", "時間順序"], [g_orderDescend, g_orderAscend], null, null, null, null);
 	var filter = new PagerFilter(g_keyOrientation, selector);
@@ -16,41 +38,30 @@ function requestHome() {
 	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
 
 	g_onLoginSuccess = function(){
-		hideRegisterSection();
+		emptySectionRegister();
+		g_registerWidget.hide();
 		listActivitiesAndRefresh();
 	};
 
 	g_onLoginError = null;
 
 	g_onEnter = function(){
-		showRegisterSection();
-		emptyRegisterFields();
+		initSectionRegister();
+		g_registerWidget.show();
 		g_pager.screen.show();
 		listActivitiesAndRefresh();
 	};
 
-	g_onRegisterSuccess = function(){
-		alert("Registered successfully!");
-		listActivitiesAndRefresh();
-	}
-
-	g_onRegisterError = null;
 	g_onActivitySaveSuccess = null;
 	checkLoginStatus();
 }
 	
-function displayHome() {
-
-}
-
-function requestProfile() {
-
-}
-
 $(document).ready(function(){
 
 	initTopbar($("#topbar"));
 	initActivityEditor($("#wrap"), null);
+	g_sectionUser = $("#section-user");
+	g_sectionRegister = $("#section-register");
 	
 	requestHome();
 });

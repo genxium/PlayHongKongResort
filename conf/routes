@@ -36,7 +36,6 @@ GET /activity/detail controllers.ActivityController.detail(activity_id: Integer 
 PUT /activity/mark controllers.ActivityController.mark()
 
 # Profile
-GET /user/profile/show controllers.UserController.profile()
 GET /user/detail controllers.UserController.detail(viewee_id: Integer ?=null, token : String ?=null)
 
 POST /user/avatar/upload controllers.AvatarController.upload()

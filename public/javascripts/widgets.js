@@ -6,6 +6,12 @@ function ExplorerTrigger(node, pic, btn) {
 	this.node = node;
 	this.pic = pic;
 	this.btn = btn;
+	this.disable = function() {
+		disableField(btn);
+	};
+	this.enable = function() {
+		enableField(btn);
+	};
 	this.getFile = function() {
 		if (this.btn == null) return null;	
 		var files = btn[0].files;
@@ -66,7 +72,7 @@ function generateExplorerTriggerSpan(par, onChange, imgSrc, nodeW, nodeH, picW, 
 		style: "position: absolute;"
 	}).appendTo(par);
 	setDimensions(node, nodeW, nodeH);
-	setOffset(node, 0, null); 	
+	setOffset(node, 0, 0); 	
 	
 	var pic = $("<img>", {
 		style: "position: absolute; left: 0; top:0; right: 0; bottom:0; margin: auto;",

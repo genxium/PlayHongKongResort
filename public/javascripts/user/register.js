@@ -1,227 +1,215 @@
-var g_sectionRegister = null;
+function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswConfirm, pswConfirmCheck, btn, onSuccess, onError) {
+	// prototypes: onSuccess(data), onError(err)		
+	this.name = name;
+	this.nameCheck = nameCheck;
+	this.email = email;
+	this.emailCheck = emailCheck;
+	this.psw = psw;
+	this.pswCheck = pswCheck;
+	this.pswConfirm = pswConfirm;
+	this.pswConfirmCheck = pswConfirmCheck;
+	this.btn = btn;
+	this.onSuccess = onSuccess;
+	this.onError = onError;
+	this.hide = function() {
+		this.name.hide();	
+		this.nameCheck.hide();
+		this.email.hide();
+		this.emailCheck.hide();
+		this.psw.hide();
+		this.pswCheck.hide();
+		this.pswConfirm.hide();
+		this.pswConfirmCheck.hide();
+		this.btn.hide();
+	};
+	this.show = function() {
+		this.name.show();	
+		this.nameCheck.show();
+		this.email.show();
+		this.emailCheck.show();
+		this.psw.show();
+		this.pswCheck.show();
+		this.pswConfirm.show();
+		this.pswConfirmCheck.show();
+		this.btn.show();
+	}; 
+	this.empty = function() {
+		this.name.val("");	
+		this.nameCheck.text("");
+		this.email.val("");
+		this.emailCheck.text("");
+		this.psw.val("");
+		this.pswCheck.text("");
+		this.pswConfirm.val("");
+		this.pswConfirmCheck.text("");
+	};
 
-var g_registerUsername = null;
-var g_registerEmail = null;
-var g_registerPassword = null;
-var g_registerPasswordConfirm = null;
+	this.btn.click(this, function(evt) {
+		var widget = evt.data;
+		var username = widget.name.val();
+		var email = widget.email.val();
+		var password = widget.psw.val();
+		var passwordConfirm = widget.pswConfirm.val();
 
-var g_spanCheckUsername = null;
-var g_spanCheckEmail = null;
-var g_spanCheckPassword = null;
-var g_spanCheckPasswordConfirm = null;
+		if(username == null || username.length == 0 || !validateName(username)
+		    || email == null || email.length == 0 || !validateEmail(email)
+		    || password == null || password.length == 0 || !validatePassword(password) || !validatePasswordConfirm(passwordConfirm)) return;
 
-var g_onRegisterSuccess = null;
-var g_onRegisterError = null;
+		var params = {};
+		params[g_keyName] = username;
+		params[g_keyEmail] = email;
+		params[g_keyPassword] = password;
 
-function initRegisterWidget(par){	
-	g_sectionRegister = par;
-	var registerForm = generateRegisterForm();
-    	g_sectionRegister.append(registerForm);
-}
-
-function showRegisterSection(){
-	if(g_sectionRegister == null)	return;
-	g_sectionRegister.show();
-}
-
-function hideRegisterSection(){
-	if(g_sectionRegister == null)	return;
-	g_sectionRegister.hide();
-}
-
-function removeRegisterSection(){
-	if(g_sectionRegister == null)	return;
-	g_sectionRegister.remove();
-}
-
-function emptyRegisterFields(){
-	if(g_registerUsername){
-		g_registerUsername.empty();
-		g_registerUsername.val("");
-	}
-	if(g_registerEmail){
-		g_registerEmail.empty();
-		g_registerEmail.val("");
-	}
-	if(g_registerPassword){
-		g_registerPassword.empty();
-		g_registerPassword.val("");
-	}
-	if(g_registerPasswordConfirm){
-		g_registerPasswordConfirm.empty();
-		g_registerPasswordConfirm.val("");
-	}
-	if(g_spanCheckUsername){
-		g_spanCheckUsername.empty();
-	}
-	if(g_spanCheckEmail){
-		g_spanCheckEmail.empty();
-	}
-	if(g_spanCheckPassword){
-		g_spanCheckPassword.empty();
-	}
-	if(g_spanCheckPasswordConfirm){
-		g_spanCheckPasswordConfirm.empty();
-	}
-}
-
-function onBtnRegisterClicked(evt){
-        var username = g_registerUsername.val();
-        var email = g_registerEmail.val();
-        var password = g_registerPassword.val();
-
-        if(username == null || username.length == 0 || !validateName(username)
-            || email == null || email.length == 0 || !validateEmail(email)
-            || password == null || password.length == 0 || !validatePassword(password) || !validatePasswordConfirm()) return;
-
-        var params = {};
-        params[g_keyName] = username;
-        params[g_keyEmail] = email;
-        params[g_keyPassword] = password;
-
-        $.ajax({
-            type: "POST",
-            url: "/user/register",
-            data: params,
-            success: function(data, status, xhr){
-                if(g_onRegisterSuccess == null) return;
-                g_onRegisterSuccess();
-            },
-            error: function(xhr, status, err){
-                if(g_onRegisterError == null) return;
-                g_onRegisterError();
-            }
-        });
-}
-
-function generateRegisterForm(){
-	var ret=$('<table>', {
-		style: "border-collapse:separate; border-spacing:5pt; margin-bottom: 2pt"
+		$.ajax({
+		    type: "POST",
+		    url: "/user/register",
+		    data: params,
+		    success: function(data, status, xhr){
+			if (widget.onSuccess == null) return;
+			widget.onSuccess(data);
+		    },
+		    error: function(xhr, status, err){
+			if (widget.onError == null) return;
+			widget.onError(err);
+		    }
+		});
 	});
 
-	var row1=$('<tr>').appendTo(ret);
-	var cell11=$('<td>').appendTo(row1);
-	g_registerUsername=$('<input>', {
-		type: "text",
-		style: "font-size: 15pt",
-		placeHolder: "Username"	
-	}).appendTo(cell11);
-	var cell12=$('<td>').appendTo(row1);
-	g_spanCheckUsername=$('<span>').appendTo(cell12);
-
-	var row2=$('<tr>').appendTo(ret);
-	var cell21=$('<td>').appendTo(row2);
-	g_registerEmail=$('<input>', {
-		type: "text",
-		style: "font-size: 15pt",
-		placeHolder: "Email"
-	}).appendTo(cell21);
-	var cell22=$('<td>').appendTo(row2);
-	g_spanCheckEmail=$('<span>').appendTo(cell22);
-
-	var row3=$('<tr>').appendTo(ret);
-	var cell31=$('<td>').appendTo(row3);
-	var cell32=$('<td>').appendTo(row3);
-	g_registerPassword=$('<input>', {
-		type: "password",
-		style: "font-size: 15pt",
-		placeHolder: "Password"	
-	}).appendTo(cell31);
-	g_spanCheckPassword=$('<span>').appendTo(cell32);
-
-	var row4=$('<tr>').appendTo(ret);
-	var cell41=$('<td>').appendTo(row4);
-	var cell42=$('<td>').appendTo(row4);
-	g_registerPasswordConfirm=$('<input>', {
-		type: "password",
-		style: "font-size: 15pt",
-		placeHolder: "Confirm Password"	
-	}).appendTo(cell41);
-	g_spanCheckPasswordConfirm=$('<span>').appendTo(cell42);
-
-	g_registerUsername.on("input keyup paste", function(evt){
+	this.name.on("input keyup paste", this.nameCheck, function(evt){
 		evt.preventDefault();
-		g_spanCheckUsername.empty();
-		g_spanCheckUsername.text("");
-		var name=$(this).val();
-		if(name == null || name.length == 0) return;
-		if(!validateName(name)) {
-			g_spanCheckUsername.text(" Username can only contain 6~20 alphabet letters and numbers");
+		var nameCheck = evt.data;
+		nameCheck.empty();
+		nameCheck.text("");
+		var nameVal = $(this).val();
+		if(nameVal == null || nameVal.length == 0) return;
+		if(!validateName(nameVal)) {
+			nameCheck.text(" Username can only contain 6~20 alphabet letters and numbers");
 			return;
 		}
 
 		var params={};
-		params[g_keyName]=name;
+		params[g_keyName] = nameVal;
 		$.ajax({
 			type: "GET",
 			url: "/user/name/duplicate",
 			data: params,
 			success: function(data, status, xhr){
-			    g_spanCheckUsername.text(" This username can be used :)");        
+			    nameCheck.text(" This username can be used :)");        
 			},
 			error: function(xhr, status, err){
-			    g_spanCheckUsername.text(" This username cannot be used :(");        
+			    nameCheck.text(" This username cannot be used :(");        
 			}
 		});
 	});	
 
-	g_registerEmail.on("input keyup paste", function(evt){
+	this.email.on("input keyup paste", this.emailCheck, function(evt){
 		evt.preventDefault();
-		g_spanCheckEmail.empty();
-		g_spanCheckEmail.text("");
-		var email = $(this).val();
-		if(email == null || email.length == 0) return;
-		if(!validateEmail(email)) {
-			 g_spanCheckEmail.text(" Not valid email format");
+		var emailCheck = evt.data;
+		emailCheck.empty();
+		emailCheck.text("");
+		var emailval = $(this).val();
+		if(emailVal == null || emailVal.length == 0) return;
+		if(!validateEmail(emailVal)) {
+			 emailCheck.text(" Not valid email format");
 			 return;
 		}
-		var params={};
-		params[g_keyEmail] = email;
+		var params = {};
+		params[g_keyEmail] = emailVal;
 		$.ajax({
 			type: "GET",
 			url: "/user/email/duplicate",
 			data: params,
 			success: function(data, status, xhr){
-				g_spanCheckEmail.text(" This email can be used :)");        
+				emailCheck.text(" This email can be used :)");        
 			},
 			error: function(xhr, status, err){
-				g_spanCheckEmail.text(" This email cannot be used :(");        
+				emailCheck.text(" This email cannot be used :(");        
 			}
 		});
 	});	
 
-	g_registerPassword.on("input keyup paste", function(evt){
+	this.psw.on("input keyup paste", this.pswCheck, function(evt){
 		evt.preventDefault();
-		g_spanCheckPassword.empty();
-		g_spanCheckPassword.text("");
-		var password = $(this).val();
-		if(password == null || password.length ==0 ) return;
-		if(validatePassword(password))	return;
-		g_spanCheckPassword.text(" Password can only contain 6~20 alphabet letters and numbers");
+		var pswCheck = evt.data;
+		pswCheck.empty();
+		pswCheck.text("");
+		var pswVal = $(this).val();
+		if(pswVal == null || pswVal.length ==0 ) return;
+		if(validatePassword(pswVal))	return;
+		pswCheck.text(" Password can only contain 6~20 alphabet letters and numbers");
 	});	
  
-	g_registerPasswordConfirm.on("input keyup paste", function(evt){
+	this.pswConfirm.on("input keyup paste", {0: this.pswConfirmCheck, 1: this.psw}, function(evt){
 		evt.preventDefault();
-		g_spanCheckPasswordConfirm.empty();
-		g_spanCheckPasswordConfirm.text("");
-		if(validatePasswordConfirm())	return;
-		g_spanCheckPasswordConfirm.text(" Doesn't match! ");
+		var pswConfirmCheck = evt.data[0];
+		var pswConfirmVal = $(this).val();
+		var pswVal = evt.data[1].val();
+		pswConfirmCheck.empty();
+		pswConfirmCheck.text("");
+		if(validatePasswordConfirm(pswVal, pswConfirmVal))	return;
+		pswConfirmCheck.text(" Doesn't match! ");
 	});	
+}
 
-	var row5=$('<tr>').appendTo(ret);
-	var cell51=$('<td>').appendTo(row5);
+function generateRegisterWidget(par, onSuccess, onError){	
+	par.empty();
+	var tbl = $('<table>', {
+		style: "border-collapse:separate; border-spacing:5pt; margin-bottom: 2pt"
+	}).appendTo(par);
+
+	var row1 = $('<tr>').appendTo(tbl);
+	var cell11=$('<td>').appendTo(row1);
+	var fieldName = $('<input>', {
+		type: "text",
+		style: "font-size: 15pt",
+		placeHolder: "Username"	
+	}).appendTo(cell11);
+
+	var cell12=$('<td>').appendTo(row1);
+	var spName = $('<span>').appendTo(cell12);
+
+	var row2 = $('<tr>').appendTo(tbl);
+	var cell21 = $('<td>').appendTo(row2);
+	var fieldEmail = $('<input>', {
+		type: "text",
+		style: "font-size: 15pt",
+		placeHolder: "Email"
+	}).appendTo(cell21);
+	var cell22=$('<td>').appendTo(row2);
+	var spEmail = $('<span>').appendTo(cell22);
+
+	var row3=$('<tr>').appendTo(tbl);
+	var cell31=$('<td>').appendTo(row3);
+	var cell32=$('<td>').appendTo(row3);
+	var fieldPsw = $('<input>', {
+		type: "password",
+		style: "font-size: 15pt",
+		placeHolder: "Password"	
+	}).appendTo(cell31);
+	var spanPsw = $('<span>').appendTo(cell32);
+
+	var row4 = $('<tr>').appendTo(tbl);
+	var cell41 = $('<td>').appendTo(row4);
+	var cell42 = $('<td>').appendTo(row4);
+	var fieldPswConfirm = $('<input>', {
+		type: "password",
+		style: "font-size: 15pt",
+		placeHolder: "Confirm Password"	
+	}).appendTo(cell41);
+	var spPswConfirm = $('<span>').appendTo(cell42);
+
+	var row5 = $('<tr>').appendTo(tbl);
+	var cell51 = $('<td>').appendTo(row5);
 	var btnRegister = $('<button>', {
 		style: "font-family: Serif; font-size: 15pt; background-color: Teal; color: white",
 		text: "Register"	
 	}).appendTo(cell51);
-	btnRegister.on("click", onBtnRegisterClicked);
-	return ret;
+
+	return new RegisterWidget(fieldName, spName, fieldEmail, spEmail, fieldPsw, spanPsw, fieldPswConfirm, spPswConfirm, btnRegister, onSuccess, onError);
 }
 
-function validatePasswordConfirm(){
-	var password = g_registerPassword.val();		
-	var passwordConfirm = g_registerPasswordConfirm.val();
-	if(password == null || passwordConfirm == null) return false;
-	if(password != passwordConfirm) return false;
+function validatePasswordConfirm(psw, pswConfirm){
+	if(psw == null || pswConfirm == null) return false;
+	if(psw != pswConfirm) return false;
 	return true;
 } 
