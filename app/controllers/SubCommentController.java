@@ -13,6 +13,7 @@ import play.libs.Json;
 import play.mvc.Result;
 import utilities.Converter;
 import utilities.DataUtils;
+import utilities.Logger;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -38,7 +39,7 @@ public class SubCommentController extends CommentController {
             result.put(Comment.SUB_COMMENTS, commentsNode);
             return ok(result);
         } catch (Exception e) {
-            DataUtils.log(TAG, "query", e);
+            Logger.e(TAG, "query", e);
         }
         return badRequest();
     }
@@ -57,7 +58,7 @@ public class SubCommentController extends CommentController {
 	    result.put(Comment.SUB_COMMENTS, commentsNode);
             return ok(result);
         } catch (Exception e) {
-            DataUtils.log(TAG, "query", e);
+            Logger.e(TAG, "query", e);
         }
         return badRequest();
     }
@@ -117,7 +118,7 @@ public class SubCommentController extends CommentController {
         } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-            DataUtils.log(TAG, "submit", e);
+            Logger.e(TAG, "submit", e);
         }
         return badRequest();
     }

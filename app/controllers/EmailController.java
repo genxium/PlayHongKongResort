@@ -8,6 +8,7 @@ import play.mvc.Content;
 import play.mvc.Result;
 import utilities.DataUtils;
 import utilities.General;
+import utilities.Logger;
 import views.html.email_verification;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class EmailController extends UserController {
             if (userJsons != null && userJsons.size() > 0) throw new UserNotFoundException();
             return ok();
         } catch (Exception e) {
-            DataUtils.log(TAG, "duplicate", e);
+            Logger.e(TAG, "duplicate", e);
         }
         return badRequest();
     }
@@ -51,7 +52,7 @@ public class EmailController extends UserController {
             Content html = email_verification.render(res, user.getName(), user.getEmail());
             return ok(html);
         } catch (Exception e) {
-            DataUtils.log(TAG, "verify", e);
+            Logger.e(TAG, "verify", e);
         }
         return badRequest();
     }

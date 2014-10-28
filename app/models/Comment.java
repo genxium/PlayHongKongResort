@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import play.libs.Json;
 import utilities.Converter;
 import utilities.DataUtils;
+import utilities.Logger;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -109,7 +110,7 @@ public class Comment {
 		    ret.put(TO_NAME, SQLCommander.queryUser(m_to).getName());
 		    ret.put(GENERATED_TIME, m_generatedTime.toString());
 	    } catch (Exception e) {
-		    DataUtils.log(TAG, "toSubCommentObjectNode", e);
+		    Logger.e(TAG, "toSubCommentObjectNode", e);
 	    }
 	    return ret;
     }
@@ -135,7 +136,7 @@ public class Comment {
 		    }
 		    ret.put(SUB_COMMENTS, subCommentsNode);
 	    } catch (Exception e) {
-		    DataUtils.log(TAG, "toObjectNode", e);
+		    Logger.e(TAG, "toObjectNode", e);
 	    }
 	    return ret;
     }

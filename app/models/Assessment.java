@@ -5,10 +5,13 @@ import controllers.SQLCommander;
 import org.json.simple.JSONObject;
 import play.libs.Json;
 import utilities.Converter;
+import utilities.Logger;
 
 import java.sql.Timestamp;
 
 public class Assessment {
+
+    public static final String TAG = Assessment.class.getName();
 
     public static final Integer MIN_CONTENT_LENGTH = 5;
 
@@ -106,7 +109,7 @@ public class Assessment {
             ret.put(FROM_NAME, fromUser.getName());
             ret.put(TO_NAME, toUser.getName());
         } catch (Exception e) {
-            System.out.println(Assessment.class.getName() + ".toObjectNodeWithNames, " + e.getMessage());
+            Logger.e(TAG, "toObjectNodeWithNames", e);
         }
         return ret;
     }

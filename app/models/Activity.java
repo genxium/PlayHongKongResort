@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 import play.libs.Json;
 import utilities.DataUtils;
 import utilities.Converter;
+import utilities.Logger;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -24,7 +25,6 @@ public class Activity {
     public static final int PENDING = 1;
     public static final int REJECTED = 2;
     public static final int ACCEPTED = 3;
-    public static final int EXPIRED = 4;
 
     public static final String TABLE = "activity";
     public static final String ID = "id";
@@ -206,7 +206,7 @@ public class Activity {
 	    if (viewerId.equals(m_host.getId()))	ret.put(STATUS, String.valueOf(m_status));
 	    if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	ret.put(STATUS, String.valueOf(m_status));
         } catch (Exception e) {
-            DataUtils.log(TAG, "toObjectNode", e);
+            Logger.e(TAG, "toObjectNode", e);
         }
         return ret;
     }
@@ -220,7 +220,7 @@ public class Activity {
 		    for (Image image : images)	imagesNode.add(image.toObjectNode());
 		    ret.put(ActivityDetail.IMAGES, imagesNode);
 	    } catch (Exception e) {
-		    DataUtils.log(TAG, "toObjectNodeWithImages", e);
+		    Logger.e(TAG, "toObjectNodeWithImages", e);
 	    }
 	    return ret;
     }

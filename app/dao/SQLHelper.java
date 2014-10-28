@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 import utilities.DataUtils;
+import utilities.Logger;
 
 public class SQLHelper {
 
@@ -60,7 +61,7 @@ public class SQLHelper {
 		    s_useUnicode = attributes.get(USE_UNICODE);
 		    ret = true;
 	    } catch (Exception e) {
-		    DataUtils.log(TAG, "readMySQLConfig", e);
+		    Logger.e(TAG, "readMySQLConfig", e);
 	    }
 	    return ret;
     }
@@ -81,7 +82,7 @@ public class SQLHelper {
 		    if (s_useUnicode != null) builder.append("&" + s_useUnicode);
 		    ret = builder.toString();
 	    } catch (Exception e) {
-		    DataUtils.log(TAG, "getConnectionURI", e);
+		    Logger.e(TAG, "getConnectionURI", e);
 	    }
 	    return ret;
 
@@ -96,7 +97,7 @@ public class SQLHelper {
             poolableConnectionFactory.setPool(connectionPool);
             ret = new PoolingDataSource<PoolableConnection>(connectionPool);
         } catch (Exception e) {
-            DataUtils.log(TAG, "setupDataSource", e);
+            Logger.e(TAG, "setupDataSource", e);
             ret = null;
         }
         return ret;
@@ -109,10 +110,10 @@ public class SQLHelper {
                 String connectURI = getConnectionURI();
                 s_dataSource = setupDataSource(connectURI);
             }
-            if (s_dataSource == null) System.out.println("s_dataSource is null");
+            if (s_dataSource == null) System.out.println("Data source is null");
             connection = s_dataSource.getConnection();
         } catch (Exception e) {
-            DataUtils.log(TAG, "getConnection", e);
+            Logger.e(TAG, "getConnection", e);
             connection = null;
         }
         return connection;
@@ -123,7 +124,7 @@ public class SQLHelper {
             if (connection == null)	return;
 	        connection.close();
         } catch (Exception e) {
-            DataUtils.log(TAG, "closeConnection", e);
+            Logger.e(TAG, "closeConnection", e);
         }
     }
 
@@ -139,7 +140,7 @@ public class SQLHelper {
             statement.close();
             closeConnection(connection);
         } catch (Exception e) {
-            DataUtils.log(TAG, "select", e);
+            Logger.e(TAG, "select", e);
         }
         return ret;
     }
@@ -158,7 +159,7 @@ public class SQLHelper {
             closeConnection(connection);
         } catch (Exception e) {
             // return the INVALID value for exceptions
-            DataUtils.log(TAG, "insert", e);
+            Logger.e(TAG, "insert", e);
         }
         return lastId;
     }
@@ -172,7 +173,7 @@ public class SQLHelper {
             closeConnection(connection);
             bRet = true;
         } catch (Exception e) {
-            DataUtils.log(TAG, "update", e);
+            Logger.e(TAG, "update", e);
         }
         return bRet;
     }
@@ -186,7 +187,7 @@ public class SQLHelper {
             closeConnection(connection);
             bRet = true;
         } catch (Exception e) {
-            DataUtils.log(TAG, "delete", e);
+            Logger.e(TAG, "delete", e);
         }
         return bRet;
     }
@@ -196,4 +197,4 @@ public class SQLHelper {
         else if (order == (-1)) return DESCEND;
         else return null;
     }
-};
+}

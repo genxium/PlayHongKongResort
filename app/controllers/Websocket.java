@@ -12,7 +12,9 @@ public class Websocket {
             public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out){
 
                 try {
-		    System.out.println("Connection trial received.");	
+                    String output = "Connection trial received.";
+                    if (token != null) output += (" token: " + token);
+		            System.out.println(output);
                     JsonNode res = Json.newObject();
                     out.write(res);
                 } catch (Exception ex) {

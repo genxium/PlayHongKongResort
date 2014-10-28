@@ -11,6 +11,7 @@ import play.mvc.Http.Request;
 import utilities.Converter;
 import utilities.DataUtils;
 import utilities.General;
+import utilities.Logger;
 import views.html.password_index;
 import views.html.password_reset;
 
@@ -32,7 +33,7 @@ public class PasswordController extends UserController {
             Content html = password_index.render("hongkongresort@126.com");
             return ok(html);
         } catch (Exception e) {
-            DataUtils.log(TAG, "index", e);
+            Logger.e(TAG, "index", e);
         }
         return badRequest();
     }
@@ -49,7 +50,7 @@ public class PasswordController extends UserController {
             sendResetEmail(user.getName(), user.getEmail(), code);
             return ok();
         } catch (Exception e) {
-            DataUtils.log(TAG, "request", e);
+            Logger.e(TAG, "request", e);
         }
         return badRequest();
     }
@@ -67,7 +68,7 @@ public class PasswordController extends UserController {
             msg.setText("Dear " + name + ", you can now click the following link to reset your password: " + link);
             Transport.send(msg);
         } catch (Exception e) {
-            DataUtils.log(TAG, "sendResetEmail", e);
+            Logger.e(TAG, "sendResetEmail", e);
         }
     }
 
@@ -77,7 +78,7 @@ public class PasswordController extends UserController {
             Content html = password_reset.render();
             return ok(html);
         } catch (Exception e) {
-            DataUtils.log(TAG, "reset", e);
+            Logger.e(TAG, "reset", e);
         }
         return badRequest();
     }
@@ -102,7 +103,7 @@ public class PasswordController extends UserController {
             if (!builder.execUpdate()) throw new NullPointerException();
             return ok();
         } catch (Exception e) {
-            DataUtils.log(TAG, "confirm", e);
+            Logger.e(TAG, "confirm", e);
         }
         return badRequest();
     }

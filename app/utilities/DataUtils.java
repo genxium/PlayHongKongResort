@@ -62,10 +62,6 @@ public class DataUtils {
         }
         return ret;
     }
-
-    public static void log(String tag, String method, Exception e) {
-        System.out.println(tag + "." + method + ", " + e.getMessage());
-    }
 	
     public static String encryptByTime(String seed) {
 	try {
@@ -76,7 +72,7 @@ public class DataUtils {
 	    int length = tmp.length();
 	    return tmp.substring(0, length / 2);
 	} catch (Exception e) {
-	    log(TAG, "encryptByTime", e);
+	    Logger.e(TAG, "encryptByTime", e);
 	}
 	return null;
     } 

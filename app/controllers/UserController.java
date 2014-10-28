@@ -19,6 +19,7 @@ import play.mvc.Result;
 import utilities.Converter;
 import utilities.DataUtils;
 import utilities.General;
+import utilities.Logger;
 
 import javax.mail.Message;
 import javax.mail.Session;
@@ -46,7 +47,7 @@ public class UserController extends Controller {
             msg.setText("Dear " + name + ", you're our member now! Please click the following link to complete email verification: " + link);
             Transport.send(msg);
         } catch (Exception e) {
-            DataUtils.log(TAG, "sendVerificationEmail", e);
+            Logger.e(TAG, "sendVerificationEmail", e);
         }
     }
 
@@ -78,7 +79,7 @@ public class UserController extends Controller {
             result.put(User.TOKEN, token);
             return ok(result);
         } catch (Exception e) {
-            DataUtils.log(TAG, "login", e);
+            Logger.e(TAG, "login", e);
         }
 
         return badRequest();
@@ -112,7 +113,7 @@ public class UserController extends Controller {
             sendVerificationEmail(user.getName(), user.getEmail(), code);
             return ok();
         } catch (Exception e) {
-            DataUtils.log(TAG, "register", e);
+            Logger.e(TAG, "register", e);
         }
         return badRequest();
     }
@@ -128,7 +129,7 @@ public class UserController extends Controller {
             if (user == null) throw new UserNotFoundException();
             return ok(user.toObjectNode(userId));
         } catch (Exception e) {
-            DataUtils.log(TAG, "status", e);
+            Logger.e(TAG, "status", e);
         }
         return badRequest("User doesn't exist or not logged in");
     }
@@ -146,7 +147,7 @@ public class UserController extends Controller {
             ret.put(UserActivityRelation.RELATION, String.valueOf(relation));
             return ok(ret);
         } catch (Exception e) {
-            DataUtils.log(TAG, "relation", e);
+            Logger.e(TAG, "relation", e);
         }
         return badRequest();
     }
@@ -163,7 +164,7 @@ public class UserController extends Controller {
             if (!builder.execDelete()) throw new NullPointerException();
             return ok();
         } catch (Exception e) {
-            DataUtils.log(TAG, "logout", e);
+            Logger.e(TAG, "logout", e);
         }
         return badRequest();
     }
@@ -178,7 +179,7 @@ public class UserController extends Controller {
             if (userJsons != null && userJsons.size() > 0) throw new UserNotFoundException();
             return ok();
         } catch (Exception e) {
-            DataUtils.log(TAG, "duplicate", e);
+            Logger.e(TAG, "duplicate", e);
         }
         return badRequest();
     }
@@ -191,7 +192,7 @@ public class UserController extends Controller {
             User viewee = SQLCommander.queryUser(vieweeId);
             return ok(viewee.toObjectNode(viewerId));
         } catch (Exception e) {
-            DataUtils.log(TAG, "detail", e);
+            Logger.e(TAG, "detail", e);
         }
         return badRequest();
     }

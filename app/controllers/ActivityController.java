@@ -15,6 +15,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.DataUtils;
+import utilities.Logger;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
@@ -86,7 +87,7 @@ public class ActivityController extends Controller {
         } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-            DataUtils.log(TAG, "list", e);
+            Logger.e(TAG, "list", e);
         }
         return badRequest();
     }
@@ -142,7 +143,7 @@ public class ActivityController extends Controller {
 		} catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-			DataUtils.log(TAG, "query", e);
+			Logger.e(TAG, "query", e);
 		}
 		return badRequest();
 	}
@@ -156,7 +157,7 @@ public class ActivityController extends Controller {
 			if (token != null) userId = SQLCommander.queryUserId(token);
 			return ok(activityDetail.toObjectNode(userId));
 		} catch (Exception e) {
-			DataUtils.log(TAG, "detail", e);
+			Logger.e(TAG, "detail", e);
 		}
 		return badRequest();
 	}
@@ -170,7 +171,7 @@ public class ActivityController extends Controller {
 			ret.put(Activity.HOST, String.valueOf(ownerId));
 			return ok(ret);
 		} catch (Exception e) {
-			DataUtils.log(TAG, "ownership", e);
+			Logger.e(TAG, "ownership", e);
 		}
 		return ok();
 	}
@@ -261,7 +262,7 @@ public class ActivityController extends Controller {
 		} catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-			DataUtils.log(TAG, "save", e);
+			Logger.e(TAG, "save", e);
 		}
 		return badRequest();
 	}
@@ -299,7 +300,7 @@ public class ActivityController extends Controller {
         } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
 		} catch (Exception e) {
-			DataUtils.log(TAG, "submit", e);
+			Logger.e(TAG, "submit", e);
 		}
 
 		return badRequest();
@@ -328,7 +329,7 @@ public class ActivityController extends Controller {
 		} catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-            DataUtils.log(TAG, "delete", e);
+            Logger.e(TAG, "delete", e);
 		}
 		return badRequest();
 	}
@@ -362,7 +363,7 @@ public class ActivityController extends Controller {
 		} catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-			DataUtils.log(TAG, "join", e);
+			Logger.e(TAG, "join", e);
 		}
         return badRequest();
 	}
@@ -403,7 +404,7 @@ public class ActivityController extends Controller {
 		} catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-            DataUtils.log(TAG, "mark", e);
+            Logger.e(TAG, "mark", e);
 		}
         return badRequest();
 	}

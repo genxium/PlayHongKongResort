@@ -17,6 +17,7 @@ import play.mvc.Content;
 import play.mvc.Controller;
 import play.mvc.Result;
 import utilities.DataUtils;
+import utilities.Logger;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class CommentController extends Controller {
 		    Comment comment = SQLCommander.queryComment(commentId);
 		    return ok(comment.toObjectNode(true));
 	    } catch (Exception e) {
-		    DataUtils.log(TAG, "query", e);
+		    Logger.e(TAG, "query", e);
 	    }
 	    return badRequest();
 	
@@ -54,7 +55,7 @@ public class CommentController extends Controller {
             result.put(Comment.COMMENTS, commentsNode);
             return ok(result);
         } catch (Exception e) {
-            DataUtils.log(TAG, "query", e);
+            Logger.e(TAG, "query", e);
         }
         return badRequest();
     }
@@ -74,7 +75,7 @@ public class CommentController extends Controller {
 	 	    result.put(Comment.COMMENTS, commentsNode);
 		    return ok(result);
 	    } catch (Exception e) {
-		    DataUtils.log(TAG, "query", e);
+		    Logger.e(TAG, "query", e);
 	    }
 	    return badRequest();
     }
@@ -116,7 +117,7 @@ public class CommentController extends Controller {
 	    } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-		    DataUtils.log(TAG, "submit", e);
+		    Logger.e(TAG, "submit", e);
 	    }
 	    return badRequest();
     }
@@ -126,7 +127,7 @@ public class CommentController extends Controller {
 		    Content html = views.html.comment.render();
 		    return ok(html);
 	    } catch (Exception e) {
-		    DataUtils.log(TAG, "view", e);
+		    Logger.e(TAG, "view", e);
             }
 	    return badRequest();	
     }

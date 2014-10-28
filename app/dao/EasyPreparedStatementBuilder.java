@@ -9,6 +9,7 @@ import java.util.List;
 
 import utilities.DataUtils;
 import org.json.simple.JSONObject;
+import utilities.Logger;
 
 public class EasyPreparedStatementBuilder {
 
@@ -531,7 +532,7 @@ public class EasyPreparedStatementBuilder {
             statement.close();
             SQLHelper.closeConnection(connection);
         } catch (Exception e) {
-            DataUtils.log(TAG, "select", e);
+            Logger.e(TAG, "select", e);
         }
         return ret;
     }
@@ -552,7 +553,7 @@ public class EasyPreparedStatementBuilder {
             SQLHelper.closeConnection(connection);
         } catch (Exception e) {
             // return the INVALID value for exceptions
-            DataUtils.log(TAG, "insert", e);
+            Logger.e(TAG, "insert", e);
         }
         return lastId;
     }
@@ -568,7 +569,7 @@ public class EasyPreparedStatementBuilder {
             SQLHelper.closeConnection(connection);
             bRet = true;
         } catch (Exception e) {
-            DataUtils.log(TAG, "update", e);
+            Logger.e(TAG, "update", e);
         }
         return bRet;
     }
@@ -584,7 +585,7 @@ public class EasyPreparedStatementBuilder {
             SQLHelper.closeConnection(connection);
             bRet = true;
         } catch (Exception e) {
-            DataUtils.log(TAG, "delete", e);
+            Logger.e(TAG, "delete", e);
         }
         return bRet;
     }

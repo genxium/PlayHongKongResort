@@ -7,6 +7,7 @@ import models.UserActivityRelation;
 import play.mvc.Controller;
 import play.mvc.Result;
 import utilities.DataUtils;
+import utilities.Logger;
 
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class AdminController extends Controller {
 	    } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-		    DataUtils.log(TAG, "accept", e);
+		    Logger.e(TAG, "accept", e);
 	    }
 	    return badRequest("Activity not accepted!");
     }
@@ -64,7 +65,7 @@ public class AdminController extends Controller {
         } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-            DataUtils.log(TAG, "reject", e);
+            Logger.e(TAG, "reject", e);
         }
 	    return badRequest("Activity not accepted!");
     }
@@ -90,7 +91,7 @@ public class AdminController extends Controller {
 	    } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-            DataUtils.log(TAG, "delete", e);
+            Logger.e(TAG, "delete", e);
 	    }
 	    return badRequest();
     }

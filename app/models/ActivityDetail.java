@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import utilities.DataUtils;
+import utilities.Logger;
 
 public class ActivityDetail extends Activity {
 
@@ -91,7 +92,7 @@ public class ActivityDetail extends Activity {
             if (m_viewer != null) ret.put(VIEWER, m_viewer.toObjectNode(m_viewer.getId()));
 
         } catch (Exception e) {
-            DataUtils.log(TAG, "toObjectNode", e);
+            Logger.e(TAG, "toObjectNode", e);
         }
         return ret;
     }

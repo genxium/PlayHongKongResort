@@ -11,6 +11,7 @@ import org.json.simple.JSONValue;
 import play.mvc.Result;
 import utilities.Converter;
 import utilities.DataUtils;
+import utilities.Logger;
 
 import java.util.Map;
 
@@ -56,7 +57,7 @@ public class ParticipantController extends UserController {
 
 			return ok();
 		} catch (Exception e) {
-			DataUtils.log(TAG, "update", e);
+			Logger.e(TAG, "update", e);
 		}
 
 		return badRequest();
