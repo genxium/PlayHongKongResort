@@ -44,6 +44,7 @@ function queryActivityDetail(activityId){
 
 function displayActivityDetail(par){
 	par.empty();
+	createDropdown(par, "Dropdown");	
 	var ret = $("<div>").appendTo(par);
         var row1 = $("<p>").appendTo(ret);
 

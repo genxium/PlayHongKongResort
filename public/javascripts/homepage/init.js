@@ -37,21 +37,24 @@ function requestHome() {
 	// initialize pager widgets
 	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
 
-	g_onLoginSuccess = function(){
+	var onLoginSuccess = function(){
 		emptySectionRegister();
 		g_registerWidget.hide();
 		listActivitiesAndRefresh();
 	};
 
-	g_onLoginError = null;
+	var onLoginError = null;
 
-	g_onEnter = function(){
+	var onLogoutSuccess = function(){
 		initSectionRegister();
 		g_registerWidget.show();
 		g_pager.screen.show();
 		listActivitiesAndRefresh();
 	};
 
+	var onLogoutError = null;
+
+	g_preLoginForm = generatePreLoginForm(g_sectionLogin, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
 	g_onActivitySaveSuccess = null;
 	checkLoginStatus();
 }

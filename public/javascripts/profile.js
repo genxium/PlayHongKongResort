@@ -163,20 +163,25 @@ function requestProfile(vieweeId) {
 	// initialize pager widgets
 	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
 	
-	g_onLoginSuccess = function() {
+	var onLoginSuccess = function() {
 		initSectionUser();
 		queryUserDetail();
 		listActivitiesAndRefresh();
 	};
 
-	g_onLoginError = null;
-	g_onEnter = function() {
+	var onLoginError = null;
+
+	var onLogoutSuccess = function() {
 		initSectionUser();
 		queryUserDetail();
 		listActivitiesAndRefresh();
 		if (g_avatarUploader == null) return;
 		g_avatarUploader.hideBtn();
 	};
+	
+	var onLogoutError = null;
+
+	g_preLoginForm = generatePreLoginForm(g_sectionLogin, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
 
 	g_onActivitySaveSuccess = listActivitiesAndRefresh;
 	checkLoginStatus();

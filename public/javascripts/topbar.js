@@ -13,5 +13,4 @@ function initTopbar(par){
 	g_sectionLogin = $("<span>", {
 		style: "height: 95%; float: right; margin-right: 10pt"
 	}).appendTo(g_topbar);
-	initLoginWidget();
 }
