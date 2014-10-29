@@ -396,10 +396,10 @@ function disableBinarySwitch(container){
 function createDropdown(par, id) {
 	var container = $("<div class='dropdown'>").appendTo(par);
 	var toggle = $("<button id='" + id + "' class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>", {
-		text: Dropdown
+		text: "Dropdown"
 	}).appendTo(container);
 	var sp = $("<span class='caret'>").appendTo(toggle);	
-	var ul = $("<ul  aria-labelledby='" + id "' class='dropdown-menu' role = 'menu'>").appendTo(container);
+	var ul = $("<ul  aria-labelledby='" + id + "' class='dropdown-menu' role = 'menu'>").appendTo(container);
 	var texts = ["Action", "Another Action", "Something else here"];
 	for (var i = 0; i < texts.length; i++) {
 		var li = $("<li role='presentation'>").appendTo(ul);
