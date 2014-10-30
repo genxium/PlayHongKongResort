@@ -439,8 +439,8 @@ function createNavTab(par, refs, titles, preactiveRef, sectionPanes, contents) {
 	var length = refs.length;
 	for (var i = 0; i < length; i++) {
 		var li = null;
-		if (refs[i] == preactiveRef)	li = $("<li class='active'>").appendTo(ul);
-		else li = $("<li>").appendTo(ul);
+		if (refs[i] == preactiveRef)	li = $("<li role='presentation' class='active'>").appendTo(ul);
+		else li = $("<li role='presentation'>").appendTo(ul);
 		var href = $("<a href='#" + refs[i] + "' role='tab' data-toggle='tab'>").appendTo(li);
 		href.text(titles[i]);	
 	}
@@ -455,8 +455,8 @@ function createNavTab(par, refs, titles, preactiveRef, sectionPanes, contents) {
 
 function createNavTabPane(par, ref, isPreactive, content) {
 	var pane = null;	
-	if (isPreactive) pane = $("<div class='tab-pane active' id='" + ref + "' style='padding-left: 5pt; padding-right:5pt'>").appendTo(par);
-	else pane = $("<div class='tab-pane' id='" + ref + "' style='padding-left: 5pt; padding-right:5pt'>").appendTo(par);
+	if (isPreactive) pane = $("<div role ='tabpanel' class='tab-pane fade in active' id='" + ref + "' style='padding-left: 5pt; padding-right:5pt'>").appendTo(par);
+	else pane = $("<div role='tabpanel' class='tab-pane' fade id='" + ref + "' style='padding-left: 5pt; padding-right:5pt'>").appendTo(par);
 	if (content == null) return pane;
 	pane.append(content);
 	return pane;	

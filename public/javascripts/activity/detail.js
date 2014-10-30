@@ -180,7 +180,7 @@ function requestActivityDetail(activityId) {
 	g_sectionPanes = $("#section-panes");
 	g_barButtons = $("#bar-buttons");
 
-	var refs = ["tab-comments", "#tab-participants", "tab-assessments"];
+	var refs = ["tab-comments", "tab-participants", "tab-assessments"];
 	var titles = ["Q & A", "參與者", "評價"];
 	var preactiveRef = refs[0];	
 		
