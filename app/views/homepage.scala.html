@@ -29,9 +29,13 @@
 		<!-- models -->
 		<script src="@routes.Assets.at("javascripts/models.js")" type="text/javascript"></script>
 
+		<script src="@routes.Assets.at("javascripts/comment/editor.js")" type="text/javascript"></script>
+		<script src="@routes.Assets.at("javascripts/assessment/editor.js")" type="text/javascript"></script>
+		<script src="@routes.Assets.at("javascripts/assessment/viewer.js")" type="text/javascript"></script>
 		<script src="@routes.Assets.at("javascripts/activity/functions.js")" type="text/javascript"></script>
 		<script src="@routes.Assets.at("javascripts/activity/editor.js")" type="text/javascript"></script>
 		<script src="@routes.Assets.at("javascripts/activity/cell.js")" type="text/javascript"></script>
+		<script src="@routes.Assets.at("javascripts/activity/detail.js")" type="text/javascript"></script>
 
 		<script src="@routes.Assets.at("javascripts/profile.js")" type="text/javascript"></script>
 
@@ -49,11 +53,24 @@
 			<p id="topbar" />
 			<div id="section-register"></div>
 			<div id="section-user"></div>
+			<p id="bar-buttons"></p>
+			<div id="section-activity" style="width: 80%;" ></div>
 
 			<p id="pager-filters"></p>
 			<p id="pager-bar-activities" style="margin-top: 5pt"></p>
 			<div id="pager-screen-activities"></div>
-
+			
+			<!-- nav tabs -->
+			<div id="section-nav"></div>
+			<!-- tab panes -->
+			<div id="section-panes">
+				<div class="tab-pane active" id="tab-comments" style="padding-left: 5pt; padding-right:5pt">
+					<p id="pager-bar-comments" style="margin-top: 5pt"></p>
+					<div id="pager-screen-comments"></div>
+				</div>
+				<div class="tab-pane" id="tab-participants" style="padding-left: 5pt; padding-right:5pt; margin-top: 5pt"></div>
+				<div class="tab-pane" id="tab-assessments" style="padding-left: 5pt; padding-right:5pt; margin-top: 5pt"></div>
+			</div>
 		</div>
 
 	</body>

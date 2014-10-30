@@ -1,9 +1,19 @@
 // general dom elements
 var g_sectionActivity = null;
+var g_sectionNav = null;
+var g_sectionPanes = null;
+var g_barButtons = null;
 
-// local variables
+var g_navTab = null;
 var g_activityId = null;
 var g_activity = null;
+
+function clearDetail() {
+	if (g_sectionActivity != null) g_sectionActivity.empty();
+	if (g_sectionNav != null) g_sectionNav.empty();
+	if (g_sectionPanes != null) g_sectionPanes.empty();
+	if (g_barButtons != null) g_barButtons.empty();
+}
 
 function queryActivityDetail(activityId){
 
@@ -13,23 +23,22 @@ function queryActivityDetail(activityId){
         if(token != null)	params[g_keyToken] = token;
 
         $.ajax({
-            type: "GET",
-            url: "/activity/detail",
-            data: params,
-            success: function(data, status, xhr){
-                var activityJson = JSON.parse(data);
-    		g_activity = new Activity(activityJson);
-		var barButtons = $("#bar-buttons");	
-		barButtons.empty();
-		var buttonContainer = $("<span>", {
-			style: "float: right; width: 20%; height: 10%;"
-		}).appendTo(barButtons);
-		attachJoinButton(buttonContainer, g_activity);
-                displayActivityDetail(g_sectionActivity);
-            },
-            error: function(xhr, status, err){
+		type: "GET",
+		url: "/activity/detail",
+		data: params,
+		success: function(data, status, xhr){
+			var activityJson = JSON.parse(data);
+			g_activity = new Activity(activityJson);
+			g_barButtons.empty();
+			var buttonContainer = $("<span>", {
+				style: "float: right; width: 20%; height: 10%;"
+			}).appendTo(g_barButtons);
+			attachJoinButton(buttonContainer, g_activity);
+			displayActivityDetail(g_sectionActivity);
+		},
+		error: function(xhr, status, err){
 
-            }
+		}
         });
 }
 
@@ -64,7 +73,7 @@ function displayActivityDetail(par){
         displayTimesTable(ret, g_activity);
 
 	var content = $('<div>',{
-		text: g_activity.content.toString(),
+		text: g_activity.content,
 		style: "margin-top: 10px; font-size: 15pt"
 	}).appendTo(ret);
 
@@ -74,8 +83,8 @@ function displayActivityDetail(par){
 		var imagesNode = $('<p>').appendTo(ret);
 		for(var i=0;i<g_activity.images.length;++i){
 			$('<img>',{
-                            src: g_activity.images[i].url,
-			    style: "width: auto; height: " + constantHeight.toString() + "px;"
+				src: g_activity.images[i].url,
+				style: "width: auto; height: " + constantHeight.toString() + "px;"
 			}).appendTo(imagesNode);
 		}
 	}	
@@ -105,7 +114,7 @@ function displayActivityDetail(par){
 	// Comment editor
 	generateCommentEditor(ret, g_activity);
 	g_onCommentSubmitSuccess = function() {
-	    listCommentsAndRefresh(g_activity);
+		listCommentsAndRefresh(g_activity);
 	}
 
 	return ret;
@@ -154,34 +163,42 @@ function onParticipantsSelectionFormSubmission(formEvt){
 }
 
 // Assistive Event Handlers
-function onBtnSubmitClicked(evt){
+function onBtnSubmitClicked(evt) {
 	evt.preventDefault();
 	var selectionForm = $(this).parent();	
 	selectionForm.submit(onParticipantsSelectionFormSubmission);
 	selectionForm.submit();
 }
 
-// execute on start
-$(document).ready(function(){
-
-	initTopbar($("#topbar"));
-	initActivityEditor($("#wrap"), null);
-
+function requestActivityDetail(activityId) {
+	clearProfile();
+	clearHome();
+	g_activityId = activityId;
 	g_sectionActivity = $("#section-activity");
-	var commentsCache = new PagerCache(5);
-	g_tabComments = new Pager($("#pager-screen-comments"), $("#pager-bar-comments"), 5, "/comment/list", generateCommentsListParams, commentsCache, null, onListCommentsSuccess, onListCommentsError);
-	g_tabParticipants = $("#tab-participants");
-	g_tabAssessments = $("#tab-assessments");
+	g_sectionNav = $("#section-nav")
+	g_sectionPanes = $("#section-panes");
+	g_barButtons = $("#bar-buttons");
 
-	var params = extractParams(window.location.href);
-	for(var i = 0; i < params.length; i++){
-		var param = params[i];
-		var pair = param.split("=");
-		if(pair[0] == g_keyActivityId){
-			g_activityId = pair[1];
-			break;
-		}
-	}
+	var refs = ["tab-comments", "#tab-participants", "tab-assessments"];
+	var titles = ["Q & A", "參與者", "評價"];
+	var preactiveRef = refs[0];	
+		
+	var tabCommentContent = $("<div>");
+	var commentPagerBar = $("<p>", {
+		style: "margin-top: 5pt;"
+	}).appendTo(tabCommentContent);
+	var commentPagerScreen = $("<div>").appendTo(tabCommentContent);
+	
+	var contents = [tabCommentContent, null, null];
+
+	g_navTab = createNavTab(g_sectionNav, refs, titles, preactiveRef, g_sectionPanes, contents);
+
+	g_tabComments = g_navTab.panes[0];
+	g_tabParticipants = g_navTab.panes[1];
+	g_tabAssessments = g_navTab.panes[2];
+
+	var commentsCache = new PagerCache(5);
+	g_pagerComments = new Pager(commentPagerScreen, commentPagerBar, 5, "/comment/list", generateCommentsListParams, commentsCache, null, onListCommentsSuccess, onListCommentsError);
 
 	var onLoginSuccess = function(data) {
 		queryActivityDetail(g_activityId);
@@ -200,4 +217,4 @@ $(document).ready(function(){
 	g_preLoginForm = generatePreLoginForm(g_sectionLogin, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
 
 	checkLoginStatus();
-});
+}

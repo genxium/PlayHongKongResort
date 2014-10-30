@@ -425,3 +425,40 @@ function createDropdownMenu(par, id, menuTitle, icons, titles, reactions) {
 	}
 	return new DropdownMenu(toggle, lis, reactions);
 }
+
+/*
+ * Navigation tabs and tab panes
+ * */
+
+function NavTab(panes) {
+	this.panes = panes;
+}
+
+function createNavTab(par, refs, titles, preactiveRef, sectionPanes, contents) {
+	var ul = $("<ul class='nav nav-tabs' role='tablist'>").appendTo(par);
+	var length = refs.length;
+	for (var i = 0; i < length; i++) {
+		var li = null;
+		if (refs[i] == preactiveRef)	li = $("<li class='active'>").appendTo(ul);
+		else li = $("<li>").appendTo(ul);
+		var href = $("<a href='#" + refs[i] + "' role='tab' data-toggle='tab'>").appendTo(li);
+		href.text(titles[i]);	
+	}
+	var panes = [];
+	for (var i = 0; i < length; i++) {
+		var isPreactive = (refs[i] == preactiveRef); 
+		var pane = createNavTabPane(sectionPanes, refs[i], isPreactive, contents[i]);
+		panes.push(pane);
+	}
+	return new NavTab(panes);
+}
+
+function createNavTabPane(par, ref, isPreactive, content) {
+	var pane = null;	
+	if (isPreactive) pane = $("<div class='tab-pane active' id='" + ref + "' style='padding-left: 5pt; padding-right:5pt'>").appendTo(par);
+	else pane = $("<div class='tab-pane' id='" + ref + "' style='padding-left: 5pt; padding-right:5pt'>").appendTo(par);
+	if (content == null) return pane;
+	pane.append(content);
+	return pane;	
+}
+

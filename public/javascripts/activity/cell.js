@@ -1,20 +1,3 @@
-/*
- * variables
- */
-
-// Assistant Handlers
-
-function onBtnDetailClicked(evt){
-        evt.preventDefault();
-        var data = evt.data;
-        var activityId = data[g_keyActivityId];
-
-	var detailPagePath = "/activity/detail/show?" + g_keyActivityId + "=" + activityId;
-	window.open(detailPagePath);
-}
-
-// Generators
-
 function generateActivityCell(par, activity){
 
 	var coverImageUrl = null;
@@ -64,8 +47,9 @@ function generateActivityCell(par, activity){
 		text: 'Go >'
 	}).appendTo(rtTop);
 	var dDetail = {};
-	dDetail[g_keyActivityId] = activity.id;
-	btnDetail.click(dDetail, onBtnDetailClicked);
+	btnDetail.click(activity, function(evt){
+		var act = evt.data;
+		requestActivityDetail(act.id);
+	});
 	attachStatusIndicator(rtTop, activity);
-
 }

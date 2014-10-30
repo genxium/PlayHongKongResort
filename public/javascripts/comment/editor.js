@@ -15,7 +15,6 @@ function listCommentsAndRefresh(activity) {
 }
 
 function listComments(page, onSuccess, onError){
-	// prototypes: onSuccess(data), onError(err)
 	var params = generateCommentsListParams(g_tabComments, page);
 	$.ajax({
 		type: "GET",
@@ -31,7 +30,6 @@ function listComments(page, onSuccess, onError){
 }
 
 function generateCommentsListParams(pager, page) {
-
 	var params = {};
 	if (g_commentId != null)	params[g_keyParentId] = g_commentId;
 	if (g_activity != null)		params[g_keyActivityId] = g_activity.id;
@@ -45,10 +43,9 @@ function generateCommentsListParams(pager, page) {
 	params[g_keyNumItems] = pager.nItems;
 	params[g_keyOrientation] = g_orderDescend;
 	return params;
-
 }
 
-// Tab Q&A a.k.a comments
+// Tab Q & A a.k.a comments
 function onListCommentsSuccess(data){
 	// this function is only valid in detail's page
 	if(g_activity == null) return;

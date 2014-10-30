@@ -46,7 +46,6 @@ PUT /admin/reject controllers.AdminController.reject()
 PUT /admin/delete controllers.AdminController.delete()
 
 # Activity Detail
-GET /activity/detail/show controllers.ActivityController.showDetail()
 POST /activity/participants/update controllers.ParticipantController.update()
 GET /activity/ownership controllers.ActivityController.ownership(token: String ?=null, activity_id: Integer ?=null)
 

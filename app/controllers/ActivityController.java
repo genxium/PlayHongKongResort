@@ -29,15 +29,6 @@ public class ActivityController extends Controller {
 
 	public static final String OLD_IMAGE = "old_image";
 
-	public static Result showDetail() {
-		try {
-		    Content html = views.html.detail.render();
-		    return ok(html);
-		} catch (Exception e) {
-		    return badRequest();
-		}
-	}
-
     public static Result list(Integer page_st, Integer page_ed, Integer numItems, Integer orientation, String token, Integer vieweeId, Integer relation, Integer status) {
         response().setContentType("text/plain");
         try {
