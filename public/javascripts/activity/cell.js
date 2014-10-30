@@ -48,8 +48,9 @@ function generateActivityCell(par, activity){
 	}).appendTo(rtTop);
 	var dDetail = {};
 	btnDetail.click(activity, function(evt){
+		evt.preventDefault();
 		var act = evt.data;
-		requestActivityDetail(act.id);
+		window.location.hash = (g_keyActivityId + "=" + act.id.toString());
 	});
 	attachStatusIndicator(rtTop, activity);
 }

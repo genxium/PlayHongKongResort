@@ -44,7 +44,8 @@ function generateAssessmentEditor(par, participant, activity, batchEditor){
 		style: "margin-left: 5pt; display: inline; cursor: pointer; color: BlueViolet"
 	}).appendTo(row);
 	name.click(function(evt) {
-		requestProfile(participant.id);	
+		evt.preventDefault();
+		window.location.hash = (g_keyVieweeId + "=" + participant.id.toString());	
 	});
 	singleEditor.participantId = participant.id;
 	singleEditor.name = participant.name;
@@ -139,7 +140,7 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 	g_batchAssessmentEditor = new BatchAssessmentEditor();
 
 	if(activity == null) return g_batchAssessmentEditor;
-	var editors = new Array();
+	var editors = [];
 	var sectionAll = $('<div>').appendTo(par);
 	
 	var initVal = false;

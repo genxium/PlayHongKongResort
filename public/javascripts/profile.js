@@ -4,11 +4,16 @@ var g_viewee = null;
 var g_avatarUploader = null;
 
 function emptySectionUser() {
+	if (g_sectionUser == null) return;
 	setDimensions(g_sectionUser, "100%", 0);
+	g_sectionUser.empty();
 }
 
-function initSectionUser() {
-	// deliberately remained blank
+function clearProfile() {
+	$("#pager-filters").empty();
+	$("#pager-screen-activities").empty();
+	$("#pager-bar-activities").empty();
+	emptySectionUser();
 }
 
 function AvatarUploader(title, trigger, btn, responseBar) {
@@ -75,7 +80,7 @@ function generateAvatarUploader(par) {
                 evt.preventDefault();
                 previewAvatar(g_avatarUploader);
 	};
-	var avatar = (g_viewee == null) ? "assets/icons/add.png" : g_viewee.avatar;
+	var avatar = (g_viewee == null) ? "assets/icons/anonymous.png" : g_viewee.avatar;
 	var trigger = generateExplorerTriggerSpan(par, onChange, avatar, 64, 64, 64, 64);
 	setOffset(trigger.node, 128, 0);
 
@@ -137,18 +142,12 @@ function queryUserDetail(){
 	});
 } 
 
-function clearProfile() {
-	$("#pager-filters").empty();
-	$("#pager-screen-activities").empty();
-	$("#pager-bar-activities").empty();
-	setDimensions(g_sectionUser, "100%", 0);	
-	g_sectionUser.empty();
-}
-
 function requestProfile(vieweeId) {
-	initSectionUser();
-	g_vieweeId = vieweeId;
+	clearHome();
+	clearDetail();	
 	
+	g_vieweeId = vieweeId;
+	g_sectionUser = $("#section-user");
 	if (g_registerWidget != null) g_registerWidget.hide();
 	g_avatarUploader = generateAvatarUploader(g_sectionUser);
 	g_avatarUploader.hideBtn();
@@ -164,13 +163,11 @@ function requestProfile(vieweeId) {
 	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
 	
 	var onLoginSuccess = function(data) {
-		initSectionUser();
 		queryUserDetail();
 		listActivitiesAndRefresh();
 	};
 
 	var onLoginError = function(err) {
-		initSectionUser();
 		queryUserDetail();
 		listActivitiesAndRefresh();
 		if (g_avatarUploader == null) return;
@@ -178,7 +175,6 @@ function requestProfile(vieweeId) {
 	};
 
 	var onLogoutSuccess = function(data) {
-		initSectionUser();
 		queryUserDetail();
 		listActivitiesAndRefresh();
 		if (g_avatarUploader == null) return;

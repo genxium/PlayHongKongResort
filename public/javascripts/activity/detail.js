@@ -66,7 +66,8 @@ function displayActivityDetail(par){
                         style: "font-size: 14pt; font-weight: bold;"
                 }).appendTo(sp2);
 		host.click(function(evt){
-			requestProfile(g_activity.host.id);		
+			evt.preventDefault();
+			window.location.hash = (g_keyVieweeId + "=" + g_activity.host.id.toString());	
 		});
         }
 

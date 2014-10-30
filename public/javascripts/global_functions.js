@@ -151,22 +151,27 @@ function compareYmdhisDate(foo, bar) {
 }
 
 function checkField(field) {
+	if (field == null) return;
 	field.prop("checked", true);
 }
 
 function uncheckField(field) {
+	if (field == null) return;
 	field.prop("checked", false);
 }
 
 function disableField(field) {
+	if (field == null) return;
 	field.prop('disabled', true);
 }
 
 function enableField(field) {
+	if (field == null) return;
 	field.prop('disabled', false);
 }
 
 function setMargin(field, left, top, right, bottom) {
+	if (field == null) return;
 	if (left != null)	field.css("margin-left", left);
 	if (top != null)	field.css("margin-top", top);
 	if (right != null)	field.css("margin-right", right);
@@ -174,10 +179,12 @@ function setMargin(field, left, top, right, bottom) {
 }
 
 function setBackgroundImageDefault(field, url) {
+	if (field == null) return;
 	setBackgroundImage(field, url, "contain", "no-repeat", "center")
 }
 
 function setBackgroundImage(field, url, size, repeat, position) {
+	if (field == null) return;
 	
 	field.css("background-image", "url(" + url + ")");	
 
@@ -192,6 +199,7 @@ function setBackgroundImage(field, url, size, repeat, position) {
 }
 
 function setDimensions(field, width, height) {
+	if (field == null) return;
 	if (width != null)	field.css("width", width);
 	else field.css("width", "auto");
 
@@ -200,6 +208,8 @@ function setDimensions(field, width, height) {
 }
 
 function setOffset(field, left, top) {
+	if (field == null) return;
+
 	if (left != null)	field.css("left", left);
 	else field.css("left", "auto");
 	
@@ -211,6 +221,10 @@ function setOffset(field, left, top) {
 }
 
 function getOffset(field) {
+	if (field == null) return {
+		left: "0px",
+		top: "0px"
+	};
 	return {
 		left: parseFloat(field.css("left")),
 		top: parseFloat(field.css("top"))
@@ -218,6 +232,7 @@ function getOffset(field) {
 }
 
 function stencilize(field) {
+	if (field == null) return;
 	field.css("background-color", "DimGray");
 	field.css("color", "Gainsboro");
 }

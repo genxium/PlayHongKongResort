@@ -1,10 +1,13 @@
 var g_registerWidget = null;
 
 function emptySectionRegister() {
+	if (g_sectionRegister == null) return;
 	setDimensions(g_sectionRegister, "100%", 0);
+	g_sectionRegister.empty();
 }
 
 function initSectionRegister() {
+	if (g_sectionRegister == null) return;
 	setDimensions(g_sectionRegister, "100%", "auto");
 }
 
@@ -12,13 +15,17 @@ function clearHome() {
 	$("#pager-filters").empty();
 	$("#pager-screen-activities").empty();
 	$("#pager-bar-activities").empty();
-	setDimensions(g_sectionRegister, "100%", 0);
-	g_sectionRegister.empty();
+	emptySectionRegister();
 }
 
 function requestHome() {
 	clearProfile();
+	clearDetail();
+	window.location.hash = "";
+
 	initSectionRegister();
+	g_sectionUser = $("#section-user");
+	g_sectionRegister = $("#section-register");
 	g_registerWidget = generateRegisterWidget($("#section-register"), 
 			function(data) {
 				alert("Registered successfully!");
@@ -63,13 +70,25 @@ function requestHome() {
 	g_onActivitySaveSuccess = null;
 	checkLoginStatus();
 }
+
+function routeByHash() {
+	var hash = window.location.hash;
+	if (hash == null || hash == "") {
+		requestHome();
+		return;
+	}
+	var parts = hash.split("=");		
+	if (parts[0] == ("#" + g_keyVieweeId)) requestProfile(parseInt(parts[1]));
+	else requestActivityDetail(parseInt(parts[1]));
+}
 	
 $(document).ready(function(){
 
 	initTopbar($("#topbar"));
 	initActivityEditor($("#wrap"), null);
-	g_sectionUser = $("#section-user");
-	g_sectionRegister = $("#section-register");
-	
-	requestHome();
+
+	$(window).on("hashchange", function(evt) {
+		routeByHash();
+	});
+	routeByHash();
 });

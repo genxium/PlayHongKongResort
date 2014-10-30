@@ -79,6 +79,7 @@ function PostLoginMenu(dropdownMenu, onLoginSuccess, onLoginError, onLogoutSucce
 
 function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
 	if (par == null) return null;
+	par.empty();
 	var tbl = $('<table>', {
 		style: "border-collapse:separate; border-spacing:5pt; margin: auto"
 	}).appendTo(par);
@@ -114,7 +115,9 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 }
 
 function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError){
+	if (par == null) return null;
 	if (g_loggedInUser == null) return null;
+	par.empty();
 
 	var notiReact = function(evt){
 		
@@ -173,7 +176,14 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 
 }
 
-function checkLoginStatus(){
+function checkLoginStatus(onLoginSuccess){
+	if (g_loggedInUser != null) {
+		if (g_preLoginForm == null) return;
+		g_postLoginMenu = generatePostLoginMenu(g_sectionLogin, g_preLoginForm.onLoginSuccess, g_preLoginForm.onLoginError, g_preLoginForm.onLogoutSuccess, g_preLoginForm.onLogoutError);
+		if (g_preLoginForm.onLoginSuccess == null)	return;
+		g_preLoginForm.onLoginSuccess(null);
+		return;
+	}
 	var token = $.cookie(g_keyToken);
 	if(token == null) {
 		if(g_preLoginForm == null) return;
@@ -183,7 +193,7 @@ function checkLoginStatus(){
 	var params={};
 	params[g_keyToken] = token;
 	$.ajax({
-		method: "GET",
+		type: "GET",
 		url: "/user/status",
 		data: params,
 		success: function(data, status, xhr){
@@ -192,10 +202,9 @@ function checkLoginStatus(){
 			if (g_loggedInUser == null) return;
 			$.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
 			wsConnect();	
-			if(g_sectionLogin == null)	return;
-			g_sectionLogin.empty();
+			if (g_preLoginForm == null) return;
 			g_postLoginMenu = generatePostLoginMenu(g_sectionLogin, g_preLoginForm.onLoginSuccess, g_preLoginForm.onLoginError, g_preLoginForm.onLogoutSuccess, g_preLoginForm.onLogoutError);
-			if(g_preLoginForm.onLoginSuccess == null)	return;
+			if (g_preLoginForm.onLoginSuccess == null)	return;
 			g_preLoginForm.onLoginSuccess(data);
 		},
 		error: function(xhr, status, err){

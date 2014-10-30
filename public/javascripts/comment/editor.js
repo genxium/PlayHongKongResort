@@ -7,7 +7,7 @@ var g_minContentLength = 5;
 var g_replyEditor = null;
 
 var g_onCommentSubmitSuccess = null;
-var g_tabComments = null;
+var g_pagerComments = null;
 
 function listCommentsAndRefresh(activity) {
 	var page = 1;
@@ -15,7 +15,7 @@ function listCommentsAndRefresh(activity) {
 }
 
 function listComments(page, onSuccess, onError){
-	var params = generateCommentsListParams(g_tabComments, page);
+	var params = generateCommentsListParams(g_pagerComments, page);
 	$.ajax({
 		type: "GET",
 		url: "/comment/list",
@@ -60,27 +60,27 @@ function onListCommentsSuccess(data){
         var pageEd = parseInt(jsonResponse[g_keyPageEd]);
         var page = pageSt;
 
-	g_tabComments.screen.empty();
+	g_pagerComments.screen.empty();
 
 	var comments = [];
         for(var idx = 1; idx <= length; ++idx) {
                 var commentJson = commentsJson[idx - 1];
                 var comment = new Comment(commentJson);
                 comments.push(comment);
-                if (page == g_tabComments.page) {
-                    generateCommentCell(g_tabComments.screen, commentJson, g_activity, false);
+                if (page == g_pagerComments.page) {
+                    generateCommentCell(g_pagerComments.screen, commentJson, g_activity, false);
                 }
 
-                if (idx % g_tabComments.nItems != 0) continue;
-                g_tabComments.cache.putPage(page, comments);
+                if (idx % g_pagerComments.nItems != 0) continue;
+                g_pagerComments.cache.putPage(page, comments);
                 comments = [];
                 ++page;
         }
         if (comments != null && comments.length > 0) {
                 // for the last page
-                g_tabComments.cache.putPage(page, comments);
+                g_pagerComments.cache.putPage(page, comments);
         }
-        g_tabComments.refreshBar();
+        g_pagerComments.refreshBar();
 }
 
 function onListCommentsError(err){
@@ -172,7 +172,8 @@ function generateCommentCell(par, commentJson, activity, single){
 		style: "text-align: left; margin-left: 25pt; color: brown; font-size: 14pt"
         }).appendTo(spanFromName);
 	hrefFromName.click(function(evt) {
-		requestProfile(comment.from);
+		evt.preventDefault();
+		window.location.hash = (g_keyVieweeId + "=" + comment.from.toString());	
 	});
         
         var generatedTime = $('<span>', {
@@ -242,7 +243,8 @@ function generateSubCommentCell(par, commentJson, activity){
 		style: "color: blueviolet; font-size: 13pt"
 	}).appendTo(spanTo);
 	hrefTo.click(function(evt) {
-		requestProfile(comment.to);
+		evt.preventDefault();
+		window.location.hash = (g_keyVieweeId + "=" + comment.to.toString());	
 	});
 
 	var content = $('<span>', {
@@ -258,7 +260,8 @@ function generateSubCommentCell(par, commentJson, activity){
 		style: "text-align: left; margin-left: 25pt; color: brown; font-size: 13pt"
 	}).appendTo(spanFromName);
 	hrefFromName.click(function(evt) {
-		requestProfile(comment.from);
+		evt.preventDefault();
+		window.location.hash = (g_keyVieweeId + "=" + comment.from.toString());	
 	});
 
 	var generatedTime = $('<span>', {
