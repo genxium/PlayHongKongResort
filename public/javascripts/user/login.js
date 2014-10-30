@@ -131,7 +131,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	var profileReact = function(evt){
 		evt.preventDefault();
 		if (g_loggedInUser == null) return;
-		requestProfile(g_loggedInUser.id);
+		window.location.hash = (g_keyVieweeId + "=" + g_loggedInUser.id.toString());
 	};
 	
 	var logoutReact = function(evt){
