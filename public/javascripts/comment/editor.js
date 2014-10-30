@@ -169,11 +169,14 @@ function generateCommentCell(par, commentJson, activity, single){
 
         var spanFromName = $('<span>').appendTo(row);
         var hrefFromName = $('<a>', {
-            href: "/user/profile/show?" + g_keyVieweeId + "=" + comment.from,
-                text: comment.fromName,
-                target: "_blank",
-                style: "text-align: left; margin-left: 25pt; color: brown; font-size: 14pt"
+		href: "#",
+		text: comment.fromName,
+		target: "_blank",
+		style: "text-align: left; margin-left: 25pt; color: brown; font-size: 14pt"
         }).appendTo(spanFromName);
+	hrefFromName.click(function(evt) {
+		requestProfile(comment.from);
+	});
         
         var generatedTime = $('<span>', {
             text: truncateMillisec(comment.generatedTime),
@@ -227,60 +230,67 @@ function generateCommentCell(par, commentJson, activity, single){
 
 function generateSubCommentCell(par, commentJson, activity){
 
-    var comment = new Comment(commentJson);
+	var comment = new Comment(commentJson);
 
-    var ret=$('<div>', {
-        style: "margin-top: 3px; text-indent: 25pt; border-left: thick solid #000000"
-    }).appendTo(par);
+	var ret = $("<div>", {
+		style: "margin-top: 3px; text-indent: 25pt; border-left: thick solid #000000"
+	}).appendTo(par);
 
-    var row=$('<p>').appendTo(ret);
-    var spanTo=$('<span>').appendTo(row);
-    var hrefTo=$('<a>', {
-            href: "/user/profile/show?" + g_keyVieweeId + "=" + comment.to,
-            text: "to @" + comment.toName + ": ",
-            target: "_blank",
-            style: "color: BlueViolet; font-size: 13pt"
-    }).appendTo(spanTo);
-    var content=$('<span>', {
-        text: comment.content,
-        style: "text-align: left; margin-left: 25pt; font-size: 13pt"
-    }).appendTo(row);
+	var row = $("<p>").appendTo(ret);
+	var spanTo = $('<span>').appendTo(row);
+	var hrefTo = $('<a>', {
+		href: "#",
+		text: "to @" + comment.toName + ": ",
+		target: "_blank",
+		style: "color: blueviolet; font-size: 13pt"
+	}).appendTo(spanTo);
+	hrefTo.click(function(evt) {
+		requestProfile(comment.to);
+	});
 
-    var spanFromName = $('<span>').appendTo(row);
-    var hrefFromName = $('<a>', {
-            href: "/user/profile/show?" + g_keyVieweeId + "=" + comment.from,
-            text: comment.fromName,
-            target: "_blank",
-            style: "text-align: left; margin-left: 25pt; color: brown; font-size: 13pt"
-    }).appendTo(spanFromName);
+	var content = $('<span>', {
+		text: comment.content,
+		style: "text-align: left; margin-left: 25pt; font-size: 13pt"
+	}).appendTo(row);
 
-    var generatedTime = $('<span>', {
-        text: truncateMillisec(comment.generatedTime),
-        style: "text-align: left; margin-left:  25pt; color: blue; font-size: 13pt"
-    }).appendTo(row);
+	var spanFromName = $('<span>').appendTo(row);
+	var hrefFromName = $('<a>', {
+		href: "#",
+		text: comment.fromName,
+		target: "_blank",
+		style: "text-align: left; margin-left: 25pt; color: brown; font-size: 13pt"
+	}).appendTo(spanFromName);
+	hrefFromName.click(function(evt) {
+		requestProfile(comment.from);
+	});
 
-    var token = $.cookie(g_keyToken);
-    if(token == null || activity.hasBegun()) return ret;
+	var generatedTime = $('<span>', {
+		text: truncateMillisec(comment.generatedTime),
+		style: "text-align: left; margin-left:  25pt; color: blue; font-size: 13pt"
+	}).appendTo(row);
 
-    var operations=$('<span>',{
-            style: "margin-left: 20pt"
-    }).appendTo(row);
+	var token = $.cookie(g_keyToken);
+	if(token == null || activity.hasBegun()) return ret;
 
-    var btnReply=$('<button>',{
-        text: "reply",
-        style: "color: white; background-color: black; border: none"
-    }).appendTo(operations);
+	var operations = $('<span>',{
+		style: "margin-left: 20pt"
+	}).appendTo(row);
 
-    var dBtnReply = {};
-    dBtnReply[g_keyCell] = ret;
+	var btnReply = $('<button>',{
+		text: "reply",
+		style: "color: white; background-color: black; border: none"
+	}).appendTo(operations);
 
-    btnReply.on("click", dBtnReply, function(evt){
-            evt.preventDefault();
-            var data=evt.data;
-            removeReplyEditor();
-            g_replyEditor = generateReplyEditor(activity, comment);
-            data[g_keyCell].append(g_replyEditor);
-    });
+	var dBtnReply = {};
+	dBtnReply[g_keyCell] = ret;
+
+	btnReply.click(dBtnReply, function(evt){
+		evt.preventDefault();
+		var data=evt.data;
+		removeReplyEditor();
+		g_replyEditor = generateReplyEditor(activity, comment);
+		data[g_keyCell].append(g_replyEditor);
+	});
 }
 
 function generateCommentEditor(par, activity){

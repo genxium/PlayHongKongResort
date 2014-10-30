@@ -38,11 +38,14 @@ function generateAssessmentEditor(par, participant, activity, batchEditor){
 	var singleEditor = new SingleAssessmentEditor();
 	var row = $('<p>').appendTo(par);
 	var name = $('<a>', {
-		href: "/user/profile/show?" + g_keyVieweeId + "=" + participant.id,
+		href: "#",
 		text: "@" + participant.name,
 		target: "_blank",
 		style: "margin-left: 5pt; display: inline; cursor: pointer; color: BlueViolet"
 	}).appendTo(row);
+	name.click(function(evt) {
+		requestProfile(participant.id);	
+	});
 	singleEditor.participantId = participant.id;
 	singleEditor.name = participant.name;
 	if((activity.relation & assessed) == 0)	generateUnassessedView(row, singleEditor, batchEditor);

@@ -5,15 +5,6 @@ var g_sectionActivity = null;
 var g_activityId = null;
 var g_activity = null;
 
-// Assistive Functions
-function refreshOnEnter(){
-	queryActivityDetail(g_activityId);
-}
-
-function refreshOnLoggedIn(){
-	queryActivityDetail(g_activityId);
-}
-
 function queryActivityDetail(activityId){
 
         var token = $.cookie(g_keyToken);
@@ -61,11 +52,13 @@ function displayActivityDetail(par){
                         style: "margin-left: 5pt"
                 }).appendTo(row1);
                 var host = $('<a>', {
-                        href: "/user/profile/show?" + g_keyVieweeId + "=" + g_activity.host.id.toString(),
-                        text: "@"+g_activity.host.name,
-                        target: "_blank",
+			href: "#", 
+                        text: "@" + g_activity.host.name,
                         style: "font-size: 14pt; font-weight: bold;"
                 }).appendTo(sp2);
+		host.click(function(evt){
+			requestProfile(g_activity.host.id);		
+		});
         }
 
         displayTimesTable(ret, g_activity);
@@ -190,10 +183,21 @@ $(document).ready(function(){
 		}
 	}
 
-	g_onLoginSuccess = refreshOnLoggedIn;
-	g_onLoginError = null;
+	var onLoginSuccess = function(data) {
+		queryActivityDetail(g_activityId);
+	};
 
-	g_onEnter = refreshOnEnter;
+	var onLoginError = function(err) {
+		queryActivityDetail(g_activityId);
+	};
+
+	var onLogoutSuccess = function(data) {
+		queryActivityDetail(g_activityId);
+	};
+	
+	var onLogoutError = null;
+
+	g_preLoginForm = generatePreLoginForm(g_sectionLogin, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
 
 	checkLoginStatus();
 });
