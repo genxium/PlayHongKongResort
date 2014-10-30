@@ -21,6 +21,7 @@ var g_indexNewImage = "new_image";
 
 var g_wImageCell = 200;
 var g_hImageCell = 200;
+var g_hDelete = 30;
 
 // general variables
 var g_imagesLimit = 3;
@@ -355,7 +356,7 @@ function previewImage(par, editor) {
 		var node = $('<span>', {
 			style: "position: absolute; padding: 2pt"
 		}).appendTo(par);
-		setDimensions(node, g_wImageCell, g_hImageCell);
+		setDimensions(node, g_wImageCell, g_hImageCell + g_hDelete);
 		setOffset(node, offset * g_wImageCell, null);
 		editor.newImageNodes[key] = node; // add new image node to view map		
 
@@ -366,9 +367,9 @@ function previewImage(par, editor) {
 
 		var btnDelete = $("<button>", {
 			text: "delete",
-			style: "color: white; background-color: red;"
+			style: "font-size: 12pt; color: white; background-color: red;"
 		}).appendTo(node);
-		setDimensions(btnDelete, g_wImageCell, null);
+		setDimensions(btnDelete, g_wImageCell, g_hDelete);
 		
 		editor.explorerTrigger.shift(+1, g_wImageCell);
 		
@@ -494,14 +495,14 @@ function generateActivityEditor(activity){
 	var imageSelectors = new Array();
 
 	var newImagesRow = $("<p>", {
-		style: "overflow-x: auto;"
+		style: "position: relative; overflow-x: auto; overflow-y: hidden"
 	});
 
-	setDimensions(newImagesRow, null, g_hImageCell + 5);
+	setDimensions(newImagesRow, null, g_hImageCell + g_hDelete + 5);
 
 	if(activity != null && activity.images != null) {
 		var oldImagesRow = $("<p>", {
-			style: "overflow-x: auto;"	
+			style: "position: relative; overflow-x: auto;"	
 		}).appendTo(ret);
 		setDimensions(oldImagesRow, null, g_hImageCell + 5);
 

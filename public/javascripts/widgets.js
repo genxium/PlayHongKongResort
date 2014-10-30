@@ -393,16 +393,35 @@ function disableBinarySwitch(container){
  * Dropdown widget
  * */
 
-function createDropdown(par, id) {
+function DropdownMenu(toggle, items, reactions) {
+	this.toggle = toggle; // toggle is button element
+	this.items = items; // items are <li> elements
+	this.reactions = reactions; // reactions are onClick(evt) functions
+	this.reactionParams = null;
+	this.setReactionParams = function(params) {
+		this.reactionParams = params;	
+		var length = params.length;
+		// assign reactions to items
+		for (var i = 0; i < length; i++) {
+			this.items[i].click(params[i], reactions[i]);
+		}
+	};
+}
+
+function createDropdownMenu(par, id, menuTitle, icons, titles, reactions) {
+	var length = titles.length;
+	if (length != icons.length) return; 
 	var container = $("<div class='dropdown'>").appendTo(par);
 	var toggle = $("<button id='" + id + "' class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>").appendTo(container);
-	toggle.text("Menu");;
+	toggle.text(menuTitle);
 	var sp = $("<span class='caret'>").appendTo(toggle);	
 	var ul = $("<ul  aria-labelledby='" + id + "' class='dropdown-menu' role = 'menu'>").appendTo(container);
-	var texts = ["Action", "Another Action", "Something else here"];
-	for (var i = 0; i < texts.length; i++) {
+	var lis = [];
+	for (var i = 0; i < titles.length; i++) {
 		var li = $("<li role='presentation'>").appendTo(ul);
 		var action = $("<a role='menuitem' tabindex='-1' href='#'>").appendTo(li);
-		action.text(texts[i]);
+		action.text(titles[i]);
+		lis.push(li);
 	}
+	return new DropdownMenu(toggle, lis, reactions);
 }

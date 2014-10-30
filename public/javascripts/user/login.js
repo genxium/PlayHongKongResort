@@ -69,60 +69,12 @@ function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, on
 	});
 } 
 
-function PostLoginMenu(toggle, notification, create, profile, logout, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
-	this.toggle = toggle;
-	this.notification = notification;
-	this.create = create;
-	this.profile = profile;
-	this.logout = logout;
+function PostLoginMenu(dropdownMenu, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
+	this.dropdownMenu = dropdownMenu;
 	this.onLoginSuccess = onLoginSuccess;
 	this.onLoginError = onLoginError;
 	this.onLogoutSuccess = onLogoutSuccess;
 	this.onLogoutError = onLogoutError;
-
-	this.notification.click(this, function(evt){
-		
-	});
-
-	this.create.click(function(evt){
-		evt.preventDefault();
-		showActivityEditor(null);
-	});
-
-	this.profile.click(function(evt){
-		evt.preventDefault();
-		if (g_loggedInUser == null) return;
-		requestProfile(g_loggedInUser.id);
-	});
-	
-	this.logout.click(this, function(evt){
-		var menu = this;
-		var token = $.cookie(g_keyToken);
-		var params = {};
-		params[g_keyToken] = token;
-		$.ajax({
-			type: "POST",
-			url: "/user/logout",
-			data: params,
-			success: function(data, status, xhr){
-				g_loggedInUser = null;
-				$.removeCookie(g_keyToken, {path: '/'});
-				wsDisconnect();
-				if (g_sectionLogin == null) return;
-				g_sectionLogin.empty();
-				g_preLoginForm = generatePreLoginForm(g_sectionLogin, menu.onLoginSuccess, menu.onLoginError, menu.onLogoutSuccess, menu.onLogoutError);
-				if (menu.onLogoutSuccess == null) return;
-				menu.onLogoutSuccess(data);
-			},
-			error: function(xhr, status, err){
-				// reload the whole page if exception occurs
-				wsDisconnect();
-				$.removeCookie(g_keyToken, {path: '/'});
-				if (menu.onLogoutError == null) return;
-				menu.onLogoutError(error);
-			}	
-		});
-	});
 }
 
 function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
@@ -148,7 +100,7 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 	var row2 = $('<tr>').appendTo(tbl);
 	var cell21 = $('<td>').appendTo(row2);
         var btn = $('<button>', {
-                style: "font-size: 14pt; margin-left: 2pt; background-color: IndianRed; color: white",
+                style: "font-size: 12pt; margin-left: 2pt; background-color: IndianRed; color: white",
                 text: "Login"
         }).appendTo(cell21);
 
@@ -163,56 +115,61 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 
 function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError){
 	if (g_loggedInUser == null) return null;
-	var container = $("<div>", {
-		style: "height: 100%"
-	}).appendTo(par);
+
+	var notiReact = function(evt){
+		
+	};
+
+	var createReact = function(evt){
+		evt.preventDefault();
+		showActivityEditor(null);
+	};
+
+	var profileReact = function(evt){
+		evt.preventDefault();
+		if (g_loggedInUser == null) return;
+		requestProfile(g_loggedInUser.id);
+	};
 	
-	var rightHalf = $('<div>',{
-		style: "width: auto; height: 100%; margin-left: 5pt; float: right;"	
-	}).appendTo(container);
+	var logoutReact = function(evt){
+		var menu = evt.data;
+		if (menu == null) return;
+		var token = $.cookie(g_keyToken);
+		var params = {};
+		params[g_keyToken] = token;
+		$.ajax({
+			type: "POST",
+			url: "/user/logout",
+			data: params,
+			success: function(data, status, xhr){
+				g_loggedInUser = null;
+				$.removeCookie(g_keyToken, {path: '/'});
+				wsDisconnect();
+				if (g_sectionLogin == null) return;
+				g_sectionLogin.empty();
+				g_preLoginForm = generatePreLoginForm(g_sectionLogin, menu.onLoginSuccess, menu.onLoginError, menu.onLogoutSuccess, menu.onLogoutError);
+				if (menu.onLogoutSuccess == null) return;
+				menu.onLogoutSuccess(data);
+			},
+			error: function(xhr, status, err){
+				// reload the whole page if exception occurs
+				wsDisconnect();
+				$.removeCookie(g_keyToken, {path: '/'});
+				if (menu.onLogoutError == null) return;
+				menu.onLogoutError(error);
+			}	
+		});
+	};
 
-	var greetingText = g_loggedInUser.name;
-	var row1 = $("<p>", {
-		style: "width: auto; height: 40%;"
-	}).appendTo(rightHalf);
-	var greeting = $("<span>" ,{
-		style: "font-size: 13pt; color: white",
-		text: greetingText	
-	}).appendTo(row1);
-	var logout = $('<button>', {
-		style: "clear: both; margin-left: 10pt; font-size: 13pt; color: white; background-color: crimson",
-		text: 'Logout'
-	}).appendTo(row1);
+	var icons = ["/assets/icons/notification.png", "/assets/icons/new_activity.png", "/assets/icons/profile.png", ""];
+	var titles = ["notification", "create", "profile", "logout"];
+	var reactions = [notiReact, createReact, profileReact, logoutReact]; 
 
-	var row2 = $("<p>", {
-		style: "width: auto; height: 40%;"
-	}).appendTo(rightHalf);
-
-	var notification = $("<button>", {
-		style: "width: 30%; height: 90%;"
-	}).appendTo(row2);
-	setBackgroundImageDefault(notification, "/assets/icons/notification.png");
-
-	var profile = $("<button>", {
-		style: "width: 30%; height: 90%; margin-left: 5pt"
-	}).appendTo(row2);
-	setBackgroundImageDefault(profile, "/assets/icons/profile.png");
-
-	var create = $("<button>", {
-		style: "width: 30%; height: 90%; margin-left: 5pt"
-	}).appendTo(row2);
-	setBackgroundImageDefault(create, "/assets/icons/new_activity.png");
-
-	var leftHalf = $("<div>", {
-		style: "height: 100%; float: right;"
-	}).appendTo(container);
-
-	var avatar = $('<img>',{
-		src: g_loggedInUser.avatar,
-		style: "width: 50pt; height: auto;"	
-	}).appendTo(leftHalf);
-
-	return new PostLoginMenu(toggle, notification, create, profile, logout, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError); 
+	var dropdownMenu = createDropdownMenu(par, "menu-post-login", g_loggedInUser.name, icons, titles, reactions);
+	var menu = new PostLoginMenu(dropdownMenu, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
+	var params = [menu, menu, menu, menu];
+	dropdownMenu.setReactionParams(params);
+	return menu;
 
 }
 
