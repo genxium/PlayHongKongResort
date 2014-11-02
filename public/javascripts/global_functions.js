@@ -207,6 +207,17 @@ function setDimensions(field, width, height) {
 	else field.css("height", "auto");
 }
 
+function getDimensions(field) {
+	if (field == null) return {
+		width: "0px",
+		height: "0px"
+	};
+	return {
+		width: field.css("width"),
+		height: field.css("height")
+	};
+}
+
 function setOffset(field, left, top) {
 	if (field == null) return;
 

@@ -115,7 +115,8 @@ function displayActivityDetail(par){
 	// Comment editor
 	generateCommentEditor(ret, g_activity);
 	g_onCommentSubmitSuccess = function() {
-		listCommentsAndRefresh(g_activity);
+		if (g_commentId == null)	listCommentsAndRefresh(g_activity);
+		else listSubCommentsAndRefresh(g_commentId); 
 	}
 
 	return ret;
@@ -188,14 +189,28 @@ function requestActivityDetail(activityId) {
 		style: "margin-top: 5pt; width: 100%; position: relative;"
 	});
 	var commentsContainer = $("<div>", {
-		style: "position: absolute; width: 60%; height: auto; left: 0px; top: 0px;"
+		style: "position: absolute; width: 100%; height: auto; left: 0px; top: 0px;"
 	}).appendTo(tabCommentContent); 
 	var commentPagerBar = $("<p>").appendTo(commentsContainer);
 	var commentPagerScreen = $("<div>").appendTo(commentsContainer);
 
+	// sub-comments' container is initially invisible 
 	var subCommentsContainer = $("<div>", {
-		style: "position: absolute; width: 40%; height: auto; left: 50%; top 0px;"
+		style: "position: absolute; width: 0%; height: auto; left: 100%; top 0px;"
 	}).appendTo(tabCommentContent);
+	var btnBack = $("<button>", {
+		text: "< BACK",
+		style: "border: none; background-color: white; color: crimson; cursor: pointer; margin-top: 5px; margin-bottom: 5px;"
+	}).appendTo(subCommentsContainer);
+	// note that the back button in sub-comments' container takes both pagers as input
+	btnBack.click(function(evt) {
+		evt.preventDefault();
+		g_commentId = null;
+		g_pagerComments.expand(null);
+		setOffset(g_pagerComments.screen.parent(), "0%", null);
+		g_pagerSubComments.squeeze();
+		setOffset(g_pagerSubComments.screen.parent(), "100%", null);
+	});
 	var subCommentPagerBar = $("<p>").appendTo(subCommentsContainer);
 	var subCommentPagerScreen = $("<div>").appendTo(subCommentsContainer);
 
@@ -212,7 +227,10 @@ function requestActivityDetail(activityId) {
 
 	var subCommentsCache = new PagerCache(20);	
 
-	g_pagerSubComments = new Pager(subCommentPagerScreen, subCommentPagerBar, 5, "/comment/sub/list", generateCommentsListParams, subCommentsCache, null, onListSubCommentsSuccess, onListSubCommentsError);
+	g_pagerSubComments = new Pager(subCommentPagerScreen, subCommentPagerBar, 20, "/comment/sub/list", generateCommentsListParams, subCommentsCache, null, onListSubCommentsSuccess, onListSubCommentsError);
+	
+	// squeeze the sub-comments' container
+	g_pagerSubComments.squeeze();
 
 	var onLoginSuccess = function(data) {
 		queryActivityDetail(g_activityId);

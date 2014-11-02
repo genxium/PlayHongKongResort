@@ -204,9 +204,13 @@ function generateCommentCell(par, commentJson, activity, single){
 		}).appendTo(spanView);
 		viewAll.click(comment.id, function(evt) {
 			evt.preventDefault();
+			g_pagerComments.squeeze();
+			setOffset(g_pagerComments.screen.parent(), "-100%", null);
+			g_pagerSubComments.expand(null);
+			setOffset(g_pagerSubComments.screen.parent(), "0%", null);
 			var commentId = evt.data;	
 			listSubCommentsAndRefresh(commentId);
-		})
+		});
 	}
 
 

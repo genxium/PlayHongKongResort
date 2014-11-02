@@ -247,13 +247,22 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 		// display pager bar 
 		pager.bar.empty();
 		var length = Object.keys(pagerCache.map).length;
+		if (length <= 1) return;
 		for(var key in pagerCache.map) {
 
 			var index = parseInt(key);
 			var indicator = $("<button>", {
 				text: index,
-				style: "display: inline; color: cadetblue; font-size: 14pt; margin-left: 2px; margin-right: 2px;"
+				style: "display: inline; border: none; color: white; background-color: gray; font-size: 14pt; margin-left: 2px; margin-right: 2px;"
 			}).appendTo(pager.bar);
+			indicator.hover(
+				function(evt){
+					$(this).css("background-color", "cornflowerblue");
+				}, 
+				function(evt){
+					$(this).css("background-color", "gray");
+				}
+			);
 		
 			var pagerButton = new PagerButton(pager, index);
 			indicator.click(pagerButton, function(evt) {
@@ -280,12 +289,25 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 			});
 			
 			if (index != page) continue;
+			indicator.off("mouseenter mouseleave"); // unbind hovering
+			indicator.css("background-color", "blue");
 			indicator.css("font-weight", "bold");
-			indicator.css("color", "black");
-				
 		}	
 	};	
 
+	this.squeeze = function() {
+		// encapsulated for convenience
+		setDimensions(this.screen.parent(), "0px", null);
+		this.screen.parent().hide();
+	};
+
+	this.expand = function(width) {
+		// encapsulated for convenience
+		if (width == null) width = "100%";
+		setDimensions(this.screen.parent(), width, null);
+		this.screen.parent().show();
+	};
+	
 	// multi-level filters
 	this.filters = filters;
 	
