@@ -184,12 +184,21 @@ function requestActivityDetail(activityId) {
 	var titles = ["Q & A", "參與者", "評價"];
 	var preactiveRef = refs[0];	
 		
-	var tabCommentContent = $("<div>");
-	var commentPagerBar = $("<p>", {
-		style: "margin-top: 5pt;"
+	var tabCommentContent = $("<div>", {
+		style: "margin-top: 5pt; width: 100%; position: relative;"
+	});
+	var commentsContainer = $("<div>", {
+		style: "position: absolute; width: 60%; height: auto; left: 0px; top: 0px;"
+	}).appendTo(tabCommentContent); 
+	var commentPagerBar = $("<p>").appendTo(commentsContainer);
+	var commentPagerScreen = $("<div>").appendTo(commentsContainer);
+
+	var subCommentsContainer = $("<div>", {
+		style: "position: absolute; width: 40%; height: auto; left: 50%; top 0px;"
 	}).appendTo(tabCommentContent);
-	var commentPagerScreen = $("<div>").appendTo(tabCommentContent);
-	
+	var subCommentPagerBar = $("<p>").appendTo(subCommentsContainer);
+	var subCommentPagerScreen = $("<div>").appendTo(subCommentsContainer);
+
 	var contents = [tabCommentContent, null, null];
 
 	g_navTab = createNavTab(g_sectionNav, refs, titles, preactiveRef, g_sectionPanes, contents);
@@ -200,6 +209,10 @@ function requestActivityDetail(activityId) {
 
 	var commentsCache = new PagerCache(5);
 	g_pagerComments = new Pager(commentPagerScreen, commentPagerBar, 5, "/comment/list", generateCommentsListParams, commentsCache, null, onListCommentsSuccess, onListCommentsError);
+
+	var subCommentsCache = new PagerCache(20);	
+
+	g_pagerSubComments = new Pager(subCommentPagerScreen, subCommentPagerBar, 5, "/comment/sub/list", generateCommentsListParams, subCommentsCache, null, onListSubCommentsSuccess, onListSubCommentsError);
 
 	var onLoginSuccess = function(data) {
 		queryActivityDetail(g_activityId);

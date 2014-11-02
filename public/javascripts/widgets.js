@@ -252,7 +252,7 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 			var index = parseInt(key);
 			var indicator = $("<button>", {
 				text: index,
-				style: "color: cadetblue; font-size: 14pt; margin-left: 5px; margin-right: 5px;"
+				style: "display: inline; color: cadetblue; font-size: 14pt; margin-left: 2px; margin-right: 2px;"
 			}).appendTo(pager.bar);
 		
 			var pagerButton = new PagerButton(pager, index);

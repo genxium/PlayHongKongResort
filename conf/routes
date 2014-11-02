@@ -58,7 +58,6 @@ GET /comment/single/query controllers.CommentController.querySingle(comment_id: 
 POST /comment/sub/submit controllers.SubCommentController.submit()
 GET /comment/sub/query controllers.SubCommentController.query(parent_id: Integer ?=null, ref_index: String ?=null, page: Integer ?=null, num_items: Integer ?=null, direction: Integer ?=null)
 GET /comment/sub/list controllers.SubCommentController.list(parent_id: Integer ?=null, page_st: Integer ?=null, page_ed: Integer ?=null, num_items: Integer ?=null)
-GET /comment/view controllers.CommentController.view()
 
 # Assessment
 POST /assessment/submit controllers.AssessmentController.submit

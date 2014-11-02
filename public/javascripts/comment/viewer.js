@@ -1,24 +1,25 @@
-var g_sectionComment = null;
+var g_commentId = null; // a global g_commentId is set for the convenience of uniformed paramGenerator(pager, page) prototype in class Pager 
+var g_pagerSubComments = null;
 
-function listSubCommentsAndRefresh() {
+function listSubCommentsAndRefresh(parentId) {
 	var page = 1;
-	listSubComments(page, onListSubCommentsSuccess, onListSubCommentsError);
+	listSubComments(page, parentId, onListSubCommentsSuccess, onListSubCommentsError);
 }
 
-function listSubComments(page, onSuccess, onError){
-    // prototypes: onSuccess(data), onError
-    var params = generateCommentsListParams(g_pager, page);
-    $.ajax({
-        type: "GET",
-        url: "/comment/sub/list",
-        data: params,
-        success: function(data, status, xhr) {
-            onSuccess(data);
-        },
-        error: function(xhr, status, err) {
-            onError();
-        }
-    });
+function listSubComments(page, parentId, onSuccess, onError){
+	g_commentId = parentId;
+	var params = generateCommentsListParams(g_pagerSubComments, page);
+	$.ajax({
+		type: "GET",
+		url: "/comment/sub/list",
+		data: params,
+		success: function(data, status, xhr) {
+		    onSuccess(data);
+		},
+		error: function(xhr, status, err) {
+		    onError(err);
+		}
+	});
 }
 
 // Tab Q&A a.k.a comments
@@ -36,109 +37,28 @@ function onListSubCommentsSuccess(data){
         var pageEd = parseInt(jsonResponse[g_keyPageEd]);
         var page = pageSt;
 
-	g_pager.screen.empty();
+	g_pagerSubComments.screen.empty();
 	var comments = [];
 	for(var idx = 1; idx <= length; ++idx){
 		var commentJson = subCommentsJson[idx - 1];
 		var comment = new Comment(commentJson);
 		comments.push(comment);
-		if (page == g_pager.page) {
-                    generateSubCommentCell(g_pager.screen, commentJson, g_activity);
+		if (page == g_pagerSubComments.page) {
+                    generateSubCommentCell(g_pagerSubComments.screen, commentJson, g_activity);
                 }
 
-                if (idx % g_pager.nItems != 0) continue;
-                g_pager.cache.putPage(page, comments);
+                if (idx % g_pagerSubComments.nItems != 0) continue;
+                g_pagerSubComments.cache.putPage(page, comments);
                 comments = [];
                 ++page;
 	}
 	if (comments != null && comments.length > 0) {
                 // for the last page
-                g_pager.cache.putPage(page, comments);
+                g_pagerSubComments.cache.putPage(page, comments);
         }
-        g_pager.refreshBar();
+        g_pagerSubComments.refreshBar();
 }
 
-function onListSubCommentsError(){
+function onListSubCommentsError(err){
 	
 }
-
-function querySingleComment() {
-	if (g_commentId == null) return;
-	var params = {};
-	params[g_keyCommentId] = g_commentId;
-	$.ajax({
-		type: "GET",
-		url: "/comment/single/query?" + g_keyCommentId + "=" + g_commentId,
-		success: function(data, status, xhr) {
-			var commentJson = JSON.parse(data);
-			g_comment = new Comment(commentJson);
-			g_sectionComment = $("#section-comment");
-			generateCommentCell(g_sectionComment, commentJson, g_activity, true);
-			g_onCommentSubmitSuccess = listSubCommentsAndRefresh;
-			postInit();
-		},
-		error: function(xhr, status, err) {
-
-		}
-	});
-}
-
-function postInit() {
-
-	var pagerCache = new PagerCache(20);	
-
-	g_pager = new Pager($("#pager-screen-sub-comments"), $("#pager-bar-sub-comments"), 5, "/comment/sub/list", generateCommentsListParams, pagerCache, null, onListSubCommentsSuccess, onListSubCommentsError);
-
-	g_onLoginSuccess = function() {
-		listSubCommentsAndRefresh();
-	};
-
-	g_onLoginError = null;
-
-	g_onEnter = function() {
-		listSubCommentsAndRefresh();
-	};
-
-	initActivityEditor();
-
-	checkLoginStatus();
-}
-
-// execute on start
-$(document).ready(function(){
-
-	var params = extractParams(window.location.href);
-	for(var i = 0; i < params.length; i++){
-		var param = params[i];
-		var pair = param.split("=");
-		if(pair[0] == g_keyCommentId) {
-			g_commentId = parseInt(pair[1]);
-		}
-		if(pair[0] == g_keyActivityId) {
-			g_activityId = parseInt(pair[1]);
-		} 
-	}
-	
-	initTopbar();
-
-        var token = $.cookie(g_keyToken);
-    	var params = {};
-    	params[g_keyActivityId] = g_activityId;
-        if(token != null)	params[g_keyToken] = token;
-
-        $.ajax({
-            type: "GET",
-            url: "/activity/detail",
-            data: params,
-            success: function(data, status, xhr){
-                var activityJson = JSON.parse(data);
-    		g_activity = new Activity(activityJson);
-		if (g_activity == null) return;
-		querySingleComment();
-            },
-            error: function(xhr, status, err){
-
-            }
-        });
-
-});

@@ -121,14 +121,4 @@ public class CommentController extends Controller {
 	    }
 	    return badRequest();
     }
-
-    public static Result view() {
-	    try {
-		    Content html = views.html.comment.render();
-		    return ok(html);
-	    } catch (Exception e) {
-		    Logger.e(TAG, "view", e);
-            }
-	    return badRequest();	
-    }
 }

@@ -1,4 +1,3 @@
-var g_commentId = null;
 var g_comment = null;
 var g_activityId = null;
 var g_activity = null;
@@ -8,6 +7,18 @@ var g_replyEditor = null;
 
 var g_onCommentSubmitSuccess = null;
 var g_pagerComments = null;
+
+function CommentReplyEditor(input, submit, collapse) {
+	this.input = input;
+	this.submit = submit;
+	this.collapse = collapse;
+	this.focus = function() {
+		this.input.focus();
+	};
+	this.remove = function() {
+		this.input.parent().remove();
+	};
+}
 
 function listCommentsAndRefresh(activity) {
 	var page = 1;
@@ -93,8 +104,8 @@ function removeReplyEditor(){
     g_replyEditor = null;
 }
 
-function generateReplyEditor(activity, comment){
-    var ret = $('<p>');
+function generateReplyEditor(par, activity, comment){
+    var ret = $('<p>').appendTo(par);
     var input = $('<input>', {
         placeholder: "to @" + comment.fromName + ":"
     }).appendTo(ret);
@@ -144,11 +155,13 @@ function generateReplyEditor(activity, comment){
         text: "COLLAPSE",
         style: "color: red; text-decoration: underline; background-color: none; border: none"
     }).appendTo(ret);
-    btnCollapse.on("click", function(evt){
+
+    btnCollapse.click(function(evt){
         evt.preventDefault();
         removeReplyEditor();
     });
-    return ret;
+	
+    return new CommentReplyEditor(input, btnSubmit, btnCollapse);
 }
 
 function generateCommentCell(par, commentJson, activity, single){
@@ -181,17 +194,21 @@ function generateCommentCell(par, commentJson, activity, single){
             style: "text-align: left; margin-left:  25pt; color: blue; font-size: 14pt"
         }).appendTo(row);
 
-	if (!single && comment.numChildren > 0) {
+	if (!single && comment.numChildren > 3) {
 		var spanView = $("<span>", {
 			style: "margin-left: 5px"
 		}).appendTo(row);
-		$("<a>", {
+		var viewAll = $("<a>", {
 			text: "view all replies(" + comment.numChildren + ")",
-			href: "/comment/view?" + g_keyCommentId + "=" + comment.id.toString() + "&" + g_keyActivityId + "=" + activity.id.toString(),
-			target: "_blank",
 			style: "cursor: pointer"
 		}).appendTo(spanView);
+		viewAll.click(comment.id, function(evt) {
+			evt.preventDefault();
+			var commentId = evt.data;	
+			listSubCommentsAndRefresh(commentId);
+		})
 	}
+
 
 	if (!single) {
 		// Sub-Comments
@@ -214,15 +231,12 @@ function generateCommentCell(par, commentJson, activity, single){
             style: "color: white; background-color: black; border: none"
         }).appendTo(operations);
 
-        var dBtnReply = {};
-        dBtnReply[g_keyCell] = ret;
-
-        btnReply.on("click", dBtnReply, function(evt){
+        btnReply.click(ret, function(evt){
             evt.preventDefault();
-            var data = evt.data;
+            var cell = evt.data;
             removeReplyEditor();
-            g_replyEditor = generateReplyEditor(activity, comment);
-            data.cell.append(g_replyEditor);
+            g_replyEditor = generateReplyEditor(cell, activity, comment);
+            g_replyEditor.focus();
         });
 }
 
@@ -281,15 +295,12 @@ function generateSubCommentCell(par, commentJson, activity){
 		style: "color: white; background-color: black; border: none"
 	}).appendTo(operations);
 
-	var dBtnReply = {};
-	dBtnReply[g_keyCell] = ret;
-
-	btnReply.click(dBtnReply, function(evt){
+	btnReply.click(ret, function(evt){
 		evt.preventDefault();
-		var data=evt.data;
+		var cell = evt.data;
 		removeReplyEditor();
-		g_replyEditor = generateReplyEditor(activity, comment);
-		data[g_keyCell].append(g_replyEditor);
+		g_replyEditor = generateReplyEditor(cell, activity, comment);
+		g_replyEditor.focus();
 	});
 }
 
