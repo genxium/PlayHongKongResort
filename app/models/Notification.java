@@ -1,21 +1,44 @@
 package models;
 
+import org.json.simple.JSONObject;
+import utilities.Converter;
+
 public class Notification {
 
     public static int INVALID = (-1);
 
-    public static String ID = "id";
-    public static String IS_READ = "is_read";
-    public static String FROM = "from";
-    public static String TO = "to";
-    public static String CONTENT = "content";
-    public static String ACTIVITY_ID = "activity_id";
+    public static final String IS_READ = "is_read";
+    public static final String FROM = "from";
+    public static final String TO = "to";
+    public static final String CONTENT = "content";
+    public static final String ACTIVITY_ID = "activity_id";
+    public static final String COMMENT_ID = "comment_id";
+    public static final String ASSESSMENT_ID = "assessment_id";
+    public static final String CMD = "cmd";
+    public static final String RELATION = "relation";
+    public static final String STATUS = "status";
 
-    protected String m_id = null;
     protected boolean m_isRead = false;
     protected int m_from = INVALID;
     protected int m_to = INVALID;
     protected String m_content = null;
     protected int m_activityId = INVALID;
+    protected int m_commentId = INVALID;
+    protected int m_assessmentId = INVALID;
+    protected int m_cmd = INVALID;
+    protected int m_relation = UserActivityRelation.INVALID;
+    protected int m_status = INVALID;
 
+    public Notification(JSONObject notificationJson) {
+        if (notificationJson.containsKey(IS_READ)) m_isRead = (Boolean) notificationJson.get(IS_READ);
+        if (notificationJson.containsKey(FROM)) m_from = Converter.toInteger(notificationJson.get(FROM));
+        if (notificationJson.containsKey(TO)) m_to = Converter.toInteger(notificationJson.get(TO));
+        if (notificationJson.containsKey(CONTENT)) m_content = (String) notificationJson.get(CONTENT);
+        if (notificationJson.containsKey(ACTIVITY_ID)) m_activityId =  Converter.toInteger(notificationJson.get(ACTIVITY_ID));
+        if (notificationJson.containsKey(COMMENT_ID)) m_commentId = Converter.toInteger(notificationJson.get(COMMENT_ID));
+        if (notificationJson.containsKey(ASSESSMENT_ID)) m_assessmentId = Converter.toInteger(notificationJson.get(ASSESSMENT_ID));
+        if (notificationJson.containsKey(CMD)) m_cmd = Converter.toInteger(notificationJson.get(CMD));
+        if (notificationJson.containsKey(RELATION)) m_relation = Converter.toInteger(notificationJson.get(RELATION));
+        if (notificationJson.containsKey(STATUS)) m_status = Converter.toInteger(notificationJson.get(STATUS));
+    }
 }

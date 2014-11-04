@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.20, for Linux (i686)
+-- MySQL dump 10.13  Distrib 5.6.14, for osx10.7 (x86_64)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
--- Server version	5.6.20
+-- Server version	5.6.14
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -23,7 +23,6 @@ DROP TABLE IF EXISTS `notification`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `notification` (
-  `id` int(32) NOT NULL AUTO_INCREMENT,
   `is_read` int(2) NOT NULL DEFAULT '0',
   `from` int(32) DEFAULT NULL,
   `to` int(32) NOT NULL,
@@ -34,7 +33,6 @@ CREATE TABLE `notification` (
   `cmd` int(32) NOT NULL,
   `relation` int(3) DEFAULT NULL,
   `status` int(3) DEFAULT NULL,
-  PRIMARY KEY (`id`),
   KEY `notification_ibfk_1` (`activity_id`) USING BTREE,
   KEY `notification_ibfk_2` (`comment_id`) USING BTREE,
   KEY `notification_ibfk_3` (`assessment_id`) USING BTREE,
@@ -53,4 +51,4 @@ CREATE TABLE `notification` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-10-19 12:32:35
+-- Dump completed on 2014-11-04 23:22:24
