@@ -326,6 +326,8 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 			    url: pager.url,
 			    data: params,
 			    success: function(data, status, xhr) {
+				var size = pager.cache.size;
+				pager.cache = new PagerCache(size);
 				enableField(selector);
 				pager.onSuccess(data);
 			    },
