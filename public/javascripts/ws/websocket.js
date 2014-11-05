@@ -11,8 +11,9 @@ function wsConnect() {
 	};
 
 	g_ws.onmessage = function(evt) {
-		var msg = evt.data;
-		alert("Message received: " + msg);
+		var msg = JSON.parse(evt.data);
+		if (g_postLoginMenu == null) return;
+		g_postLoginMenu.bubble.increase(1);
 	};
 
 	g_ws.onclose = function() {

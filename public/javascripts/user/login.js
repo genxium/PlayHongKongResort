@@ -69,7 +69,25 @@ function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, on
 	});
 } 
 
-function PostLoginMenu(dropdownMenu, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
+function NotiBubble(num, view) {
+	this.num = num;
+	this.view = view;
+	this.increase = function(n) {
+		this.num += n;
+		this.view.text(this.num.toString());
+	};
+	this.decrease = function(n) {
+		this.num -= n;
+		this.view.text(this.num.toString());
+	};
+	this.update = function(n) {
+		this.num = n;
+		this.view.text(this.num.toString());
+	};
+}
+
+function PostLoginMenu(bubble, dropdownMenu, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
+	this.bubble = bubble;
 	this.dropdownMenu = dropdownMenu;
 	this.onLoginSuccess = onLoginSuccess;
 	this.onLoginError = onLoginError;
@@ -164,13 +182,21 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 		});
 	};
 
-	var icons = ["/assets/icons/notification.png", "/assets/icons/new_activity.png", "/assets/icons/profile.png", ""];
-	var titles = ["notification", "create", "profile", "logout"];
-	var reactions = [notiReact, createReact, profileReact, logoutReact]; 
+	var spBubble = $("<span>", {
+		style: "font-size: 12pt; color: red",
+		text: "0"
+	}).appendTo(par);
+	var bubble = new NotiBubble(0, spBubble);
 
-	var dropdownMenu = createDropdownMenu(par, "menu-post-login", g_loggedInUser.name, icons, titles, reactions);
-	var menu = new PostLoginMenu(dropdownMenu, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
-	var params = [menu, menu, menu, menu];
+	var spDropdown = $("<span>").appendTo(par);
+
+	var icons = ["/assets/icons/new_activity.png", "/assets/icons/profile.png", ""];
+	var titles = ["create", "profile", "logout"];
+	var reactions = [createReact, profileReact, logoutReact]; 
+
+	var dropdownMenu = createDropdownMenu(spDropdown, "menu-post-login", g_loggedInUser.name, icons, titles, reactions);
+	var menu = new PostLoginMenu(bubble, dropdownMenu, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
+	var params = [menu, menu, menu];
 	dropdownMenu.setReactionParams(params);
 	return menu;
 

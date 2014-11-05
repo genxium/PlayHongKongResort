@@ -337,7 +337,7 @@ function generateCommentEditor(par, activity){
 
 		$.ajax({
 			type: "POST",
-			url: "/comment/submit",
+			url: "/el/comment/submit",
 			data: params,
 			success: function(data, status, xhr){
 			        input.val("");
