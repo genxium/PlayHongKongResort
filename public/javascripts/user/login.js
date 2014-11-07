@@ -138,7 +138,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	par.empty();
 
 	var notiReact = function(evt){
-		
+		evt.preventDefault();		
 	};
 
 	var createReact = function(evt){
@@ -153,6 +153,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	};
 	
 	var logoutReact = function(evt){
+		evt.preventDefault();
 		var menu = evt.data;
 		if (menu == null) return;
 		var token = $.cookie(g_keyToken);
