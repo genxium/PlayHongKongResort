@@ -85,7 +85,7 @@ function routeByHash() {
 $(document).ready(function(){
 
 	initTopbar($("#topbar"));
-	initActivityEditor($("#wrap"), null);
+	initActivityEditor($("#wrap"), listActivitiesAndRefresh);
 
 	$(window).on("hashchange", function(evt) {
 		routeByHash();

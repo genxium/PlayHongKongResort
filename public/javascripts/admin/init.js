@@ -92,7 +92,7 @@ function onBtnDeleteClicked(evt){
 	}
 }
 
-function listActivitiesAndRefresh() {
+function listActivitiesAndRefreshAdmin() {
 	var page = 1;
 	listActivities(page, onListActivitiesSuccessAdmin, onListActivitiesErrorAdmin);
 }
@@ -233,7 +233,7 @@ function requestAdmin() {
 	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, pagerCache, filters, onListActivitiesSuccessAdmin, onListActivitiesErrorAdmin);
 
 	var onLoginSuccess = function(data) {
-		listActivitiesAndRefresh();
+		listActivitiesAndRefreshAdmin();
 	};
 
 	var onLoginError = function(err) {
@@ -255,7 +255,7 @@ function requestAdmin() {
 $(document).ready(function(){
 
 	initTopbar($("#topbar"));
-	initActivityEditor($("#wrap"), null);
+	initActivityEditor($("#wrap"), listActivitiesAndRefreshAdmin);
 
 	requestAdmin();
 });

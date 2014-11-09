@@ -137,7 +137,7 @@ function generateReplyEditor(par, activity, comment){
 
                 $.ajax({
                         type: "POST",
-                        url: "/comment/sub/submit",
+                        url: "/el/comment/sub/submit",
                         data: params,
                         success: function(data, status, xhr){
                                 removeReplyEditor();
