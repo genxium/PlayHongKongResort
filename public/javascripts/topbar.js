@@ -11,6 +11,6 @@ function initTopbar(par){
 		requestHome();
 	});	
 	g_sectionLogin = $("<span>", {
-		style: "height: 95%; float: right; margin-top: 3pt; margin-right: 10pt"
+		style: "position: absolute; width: 33%; height: 95%; left: 67%;"
 	}).appendTo(g_topbar);
 }

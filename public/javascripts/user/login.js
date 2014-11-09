@@ -184,12 +184,14 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	};
 
 	var spBubble = $("<span>", {
-		style: "font-size: 12pt; color: red",
+		style: "position: absolute; width: 10%; height: 80%; left: 60%; top: 10%; vertical-align: middle; font-size: 14pt; color: red",
 		text: "0"
 	}).appendTo(par);
 	var bubble = new NotiBubble(0, spBubble);
 
-	var spDropdown = $("<span>").appendTo(par);
+	var spDropdown = $("<span>", {
+		style: "position: absolute; width: 30%; height: 80%; left: 70%; top: 10%;"
+	}).appendTo(par);
 
 	var icons = ["/assets/icons/new_activity.png", "/assets/icons/profile.png", ""];
 	var titles = ["create", "profile", "logout"];
