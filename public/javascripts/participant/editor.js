@@ -35,7 +35,7 @@ function generateParticipantsSelectionForm(par, activity) {
 		var participant = activity.appliedParticipants[i];
 		participantsId.push(participant.id);
 		participantsStatus.push(g_aliasApplied);
-		var label=$('<label>', {
+		var label = $('<label>', {
 			text: participant.email,
 			style: "background-color: pink"
 		}).appendTo(form);
@@ -60,6 +60,8 @@ function generateParticipantsSelectionForm(par, activity) {
 		if(participantsStatus[i] == g_aliasSelected) checkbox.hide();
 	}
 	ret.setBoxes(boxes);
+	if (boxes.length <= 1) return ret; // no submit button is needed	
+
 	var btnSubmit=$('<button>',{
 		text: 'Confirm Selection',
 		style: 'color: white; background-color:black; font-size: 13pt'

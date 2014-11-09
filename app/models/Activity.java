@@ -6,15 +6,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.SQLCommander;
 import org.json.simple.JSONObject;
 import play.libs.Json;
+import utilities.General;
 import utilities.Converter;
 import utilities.Logger;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
 
 public class Activity {
 
@@ -158,14 +156,12 @@ public class Activity {
     protected User m_viewer = null;
 
     public boolean isDeadlineExpired() {
-	    Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+8")); // should match mysql setting `/etc/my.cnf`
-        long milisecs = calendar.getTimeInMillis();
+	    long milisecs = General.localCalendar().getTimeInMillis();
 	    return  milisecs > m_deadline.getTime();
     }
 
     public boolean hasBegun() {
-	    Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+8")); // should match mysql setting `/etc/my.cnf`
-        long milisecs = calendar.getTimeInMillis();
+	    long milisecs = General.localCalendar().getTimeInMillis();
 	    return milisecs > m_beginTime.getTime();
     }
 

@@ -151,7 +151,7 @@ function initActivityEditor(par, onRemove){
 		Note: ALL attributes, especially the `class` attribute MUST be written INSIDE the div tag, bootstrap is NOT totally compatible with jQuery!!!
 	*/
 	g_sectionActivityEditor = $("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='Create an activity!' aria-hidden='true'>", {
-		style: "height: 80%; position: absolute"
+		style: "position: fixed; height: 90%; padding: 5pt;"
 	}).appendTo(par);
 	var dialog = $("<div>", {
 		class: "modal-dialog modal-lg"
@@ -171,9 +171,6 @@ function showActivityEditor(activity) {
 
 	refreshActivityEditor(activity);
 
-        g_sectionActivityEditor.css("position", "absolute");
-        g_sectionActivityEditor.css("height", "90%");
-        g_sectionActivityEditor.css("padding", "5pt");
         g_sectionActivityEditor.modal({
                 show: true
         });
