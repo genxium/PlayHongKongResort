@@ -28,8 +28,7 @@ CREATE TABLE `user_activity_relation` (
   `relation` int(3) NOT NULL,
   `generated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `last_applying_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_accepted_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_rejected_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_selected_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY `UA_UNI_ID` (`user_id`,`activity_id`),
   KEY `user_activity_relation_ibfk_1` (`user_id`),
   KEY `user_activity_relation_ibfk_2` (`activity_id`),
@@ -46,4 +45,4 @@ CREATE TABLE `user_activity_relation` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-10-05 13:21:19
+-- Dump completed on 2014-11-09 12:05:06
