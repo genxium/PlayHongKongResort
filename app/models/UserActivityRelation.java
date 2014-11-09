@@ -16,8 +16,7 @@ public class UserActivityRelation {
     public static String RELATION = "relation";
     public static String GENERATED_TIME = "generated_time";
     public static String LAST_APPLYING_TIME = "last_applying_time";
-    public static String LAST_ACCEPTED_TIME = "last_accepted_time";
-    public static String LAST_REJECTED_TIME = "last_rejected_time";
+    public static String LAST_SELECTED_TIME = "last_selected_time";
 
     public static int maskRelation(int relation, Integer originalRelation) {
         int ret = INVALID;

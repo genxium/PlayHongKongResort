@@ -5,12 +5,11 @@ import dao.SQLHelper;
 import exception.*;
 import models.*;
 import org.json.simple.JSONObject;
-import utilities.DataUtils;
+import utilities.General;
 import utilities.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.Timestamp;
 import java.util.*;
 
 /*
@@ -614,7 +613,11 @@ public class SQLCommander {
 	    if (activity == null) return false;
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    return builder.update(Activity.TABLE).set(Activity.STATUS, Activity.ACCEPTED).where(Activity.ID, "=", activity.getId()).execUpdate();
+		    return builder.update(Activity.TABLE)
+                        .set(Activity.STATUS, Activity.ACCEPTED)
+                        .set(Activity.LAST_ACCEPTED_TIME, General.now())
+                        .where(Activity.ID, "=", activity.getId())
+                        .execUpdate();
 	    } catch (Exception e) {
 		    Logger.e(TAG, "acceptActivity", e);
 	    }
@@ -626,7 +629,11 @@ public class SQLCommander {
 	    if (activity == null) return false;
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    return builder.update(Activity.TABLE).set(Activity.STATUS, Activity.REJECTED).where(Activity.ID, "=", activity.getId()).execUpdate();
+		    return builder.update(Activity.TABLE)
+                        .set(Activity.STATUS, Activity.REJECTED)
+                        .set(Activity.LAST_REJECTED_TIME, General.now())
+                        .where(Activity.ID, "=", activity.getId())
+                        .execUpdate();
 	    } catch (Exception e) {
 		    Logger.e(TAG, "rejectActivity", e);
 	    }
@@ -774,26 +781,15 @@ public class SQLCommander {
 
     public static boolean updateUserActivityRelation(Integer userId, Integer activityId, int relation) {
 	    try {
-		    java.util.Date date = new java.util.Date();
-		    Timestamp currentTime = new Timestamp(date.getTime());
-		    String timeStr = currentTime.toString();
-
-		    String timestampFieldName = null;
-		    if ((relation & UserActivityRelation.SELECTED) > 0) {
-			    timestampFieldName = UserActivityRelation.LAST_ACCEPTED_TIME;
-		    } else {
-			    timestampFieldName = UserActivityRelation.LAST_REJECTED_TIME;
-		    }
-
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    builder.update(UserActivityRelation.TABLE)
                     .set(UserActivityRelation.RELATION, relation)
-                    .set(timestampFieldName, timeStr)
                     .where(UserActivityRelation.ACTIVITY_ID, "=", activityId)
                     .where(UserActivityRelation.USER_ID, "=", userId);
-		    if (!builder.execUpdate()) throw new Exception();
 
-		    return true;
+            if ((relation & UserActivityRelation.SELECTED) > 0) builder.set(UserActivityRelation.LAST_SELECTED_TIME, General.now());
+		    return builder.execUpdate();
+
 	    } catch (Exception e) {
 		    return false;
 	    }

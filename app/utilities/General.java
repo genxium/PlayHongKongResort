@@ -1,5 +1,8 @@
 package utilities;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
+
 public class General {
 
     public static boolean validateEmail(String email) {
@@ -35,5 +38,17 @@ public class General {
 	    return false;
         }
 
+    }
+
+    public static Timestamp now() {
+        // 1) create a java calendar instance
+        Calendar calendar = Calendar.getInstance();
+
+        // 2) get a java.util.Date from the calendar instance.
+        //    this date will represent the current instant, or "now".
+        java.util.Date now = calendar.getTime();
+
+        // 3) a java current time (now) instance
+        return new java.sql.Timestamp(now.getTime());
     }
 }

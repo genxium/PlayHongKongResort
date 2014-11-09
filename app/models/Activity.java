@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.SQLCommander;
 import org.json.simple.JSONObject;
 import play.libs.Json;
-import utilities.DataUtils;
 import utilities.Converter;
 import utilities.Logger;
 
@@ -14,8 +13,8 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
 import java.util.List;
+import java.util.TimeZone;
 
 public class Activity {
 
@@ -40,6 +39,9 @@ public class Activity {
     public static final String HOST_ID = "host_id";
     public static final String HOST = "host";
     public static final String VIEWER = "viewer";
+
+    public static final String LAST_ACCEPTED_TIME = "last_accepted_time";
+    public static final String LAST_REJECTED_TIME = "last_rejected_time";
 
     public static final String COUNT = "count";
     public static final String PAGE = "page";
@@ -101,6 +103,18 @@ public class Activity {
 
     public void setDeadline(Timestamp deadline) {
 	    m_deadline = deadline;
+    }
+
+    protected Timestamp m_lastAcceptedTime = null;
+
+    public Timestamp getLastAcceptedTime() {
+        return m_lastAcceptedTime;
+    }
+
+    protected Timestamp m_lastRejectedTime = null;
+
+    public Timestamp getLastRejectedTime() {
+        return m_lastRejectedTime;
     }
 
     protected int m_capacity = 0;
@@ -177,9 +191,15 @@ public class Activity {
 	    if (activityJson.containsKey(NUM_APPLIED))
 		    m_numApplied = Converter.toInteger(activityJson.get(NUM_APPLIED));
 	    if (activityJson.containsKey(NUM_SELECTED))
-	            m_numSelected = Converter.toInteger(activityJson.get(NUM_SELECTED));
+	        m_numSelected = Converter.toInteger(activityJson.get(NUM_SELECTED));
 	    if (activityJson.containsKey(STATUS))
 		    m_status = Converter.toInteger(activityJson.get(STATUS));
+        if (activityJson.containsKey(LAST_ACCEPTED_TIME)) {
+            m_lastAcceptedTime = (Timestamp) activityJson.get(LAST_ACCEPTED_TIME);
+        }
+        if (activityJson.containsKey(LAST_REJECTED_TIME)) {
+            m_lastRejectedTime = (Timestamp) activityJson.get(LAST_REJECTED_TIME);
+        }
 	    if (host != null)
 		    m_host = host;
     }

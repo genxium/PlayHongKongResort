@@ -5,7 +5,7 @@ mysqldump -uroot -d hongkongresort comment>create_table_comment.sql
 mysqldump -uroot -d hongkongresort image>create_table_image.sql
 mysqldump -uroot -d hongkongresort login>create_table_login.sql
 mysqldump -uroot -d hongkongresort notification>create_table_notification.sql 
-mysqldump -uroot -d hongkongresort user>create_table_user.sql
 mysqldump -uroot -d hongkongresort user_activity_relation>create_table_user_activity_relation.sql
+mysqldump -uroot hongkongresort user>create_table_user.sql
  
 
