@@ -221,14 +221,7 @@ function generateActivityCellForAdmin(par, activity){
 	return ret;
 }
 
-$(document).ready(function(){
-
-	initTopbar($("#topbar"));
-	initActivityEditor($("#wrap"), null);
-
-	g_onLoginSuccess = listActivitiesAndRefresh;
-	g_onLoginError = null;
-	g_onEnter = listActivitiesAndRefresh;
+function requestAdmin() {
 
 	var selector = createSelector($("#pager-filters"), ["pending", "accepted", "rejected"], [g_statusPending, g_statusAccepted, g_statusRejected], null, null, null, null);
 	var filter = new PagerFilter(g_keyStatus, selector);
@@ -239,5 +232,30 @@ $(document).ready(function(){
 	// initialize pager widgets
 	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, pagerCache, filters, onListActivitiesSuccessAdmin, onListActivitiesErrorAdmin);
 
+	var onLoginSuccess = function(data) {
+		listActivitiesAndRefresh();
+	};
+
+	var onLoginError = function(err) {
+
+	};
+
+	var onLogoutSuccess = function(data) {
+
+	}; 
+
+	var onLogoutError = null;
+
+	g_preLoginForm = generatePreLoginForm(g_sectionLogin, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
+
 	checkLoginStatus();
+
+}
+
+$(document).ready(function(){
+
+	initTopbar($("#topbar"));
+	initActivityEditor($("#wrap"), null);
+
+	requestAdmin();
 });
