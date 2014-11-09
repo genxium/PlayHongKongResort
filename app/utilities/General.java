@@ -43,11 +43,7 @@ public class General {
     }
 
     public static Timestamp now() {
-        //    this date will represent the current instant, or "now".
-        java.util.Date now = localCalendar().getTime();
-
-        // 3) a java current time (now) instance
-        return new java.sql.Timestamp(now.getTime());
+        return new java.sql.Timestamp(localCalendar().getTimeInMillis());
     }
 
     public static Calendar localCalendar() {
