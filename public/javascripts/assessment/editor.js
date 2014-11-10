@@ -289,6 +289,7 @@ function refreshBatchEditor(activity) {
 	if(g_batchAssessmentEditor == null || g_sectionAssessmentEditors == null || g_sectionAssessmentButtons == null) return;
 	var editors = generateAssessmentEditors(g_sectionAssessmentEditors, activity, g_batchAssessmentEditor);
 	g_batchAssessmentEditor.editors = editors;
+	g_sectionAssessmentButtons.empty();
 	if((activity.relation & assessed) > 0 || g_batchAssessmentEditor.editors.length <= 1) return;
 	generateAssessmentButtons(g_sectionAssessmentButtons, activity, g_batchAssessmentEditor);
 

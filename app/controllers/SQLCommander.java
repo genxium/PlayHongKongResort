@@ -100,7 +100,7 @@ public class SQLCommander {
 
 	    values.add(lastActivityId);
 	    values.add(userId);
-	    values.add(UserActivityRelation.maskRelation(UserActivityRelation.SELECTED, null));
+	    values.add(UserActivityRelation.SELECTED|UserActivityRelation.PRESENT);
 
 	    EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
 	    builderRelation.insert(names, values).into(UserActivityRelation.TABLE).execInsert();
