@@ -155,7 +155,32 @@ public class SQLCommander {
 	    return activityDetail;
     }
 
-    public static List<Activity> queryActivities(Integer vieweeId, int relation) {
+    public static List<Activity> queryActivities(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, Integer vieweeId, int relation) {
+        List<Activity> ret = new ArrayList<Activity>();
+        try {
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, Activity.NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
+            String[] onCols = {UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.ACTIVITY_ID};
+            Object[] onVals = {vieweeId, relation, Activity.TABLE + "." + Activity.ID};
+
+            builder.select(names)
+                .from(Activity.TABLE)
+                .join(UserActivityRelation.TABLE, onCols, onVals);
+
+            List<JSONObject> activityJsons = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
+
+            if (activityJsons == null)	return null;
+            for (JSONObject activityJson : activityJsons) {
+                User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+                ret.add(new Activity(activityJson, host));
+            }
+        } catch (Exception e) {
+            Logger.e(TAG, "queryActivities", e);
+        }
+        return ret;
+    }
+
+    public static List<Activity> queryActivities(Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems, Integer vieweeId, int relation) {
 	    List<Activity> ret = new ArrayList<Activity>();
 	    try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -165,8 +190,9 @@ public class SQLCommander {
 
             List<JSONObject> activityJsons = builder.select(names)
                                                     .from(Activity.TABLE)
-                                                    .join(UserActivityRelation.TABLE, onCols, onVals).execSelect();
-
+                                                    .join(UserActivityRelation.TABLE, onCols, onVals)
+                                                    .order(orderKey, orientation)
+                                                    .limit((page_st - 1) * numItems, page_ed * numItems).execSelect();
 		    if (activityJsons == null) return null;
 		    for (JSONObject activityJson : activityJsons) {
 			    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
@@ -183,8 +209,11 @@ public class SQLCommander {
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, Activity.NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
-		    builder.select(names).from(Activity.TABLE).where(Activity.STATUS, "=", status);
-            List<JSONObject> activityJsons = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
+		    builder.select(names)
+                   .from(Activity.TABLE)
+                   .where(Activity.STATUS, "=", status);
+
+            List<JSONObject> activityJsons = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
 
 		    if (activityJsons == null)	return null;
 		    for (JSONObject activityJson : activityJsons) {
@@ -230,7 +259,7 @@ public class SQLCommander {
             builder.where(Activity.HOST_ID, "=", hostId);
             if(viewerId == null || !hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
 
-            List<JSONObject> activityJsons = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
+            List<JSONObject> activityJsons = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
 
             if (activityJsons == null) return null;
             for (JSONObject activityJson : activityJsons) {
@@ -320,7 +349,7 @@ public class SQLCommander {
 
 		    builder.select(names).from(Comment.TABLE).where(whereCols, whereOps, whereVals);
 
-		    List<JSONObject> commentsJson = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
+		    List<JSONObject> commentsJson = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
 
 		    if (commentsJson == null) throw new NullPointerException();
 		    for (JSONObject commentJson : commentsJson)	ret.add(new Comment(commentJson));
@@ -365,7 +394,7 @@ public class SQLCommander {
 
 		    String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
 		    builder.select(names).from(Comment.TABLE).where(Comment.PARENT_ID, "=", parentId);
-            List<JSONObject> commentsJson = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
+            List<JSONObject> commentsJson = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
 
 		    if (commentsJson == null) throw new NullPointerException();
 		    for (JSONObject commentJson : commentsJson)	ret.add(new Comment(commentJson));
@@ -425,7 +454,7 @@ public class SQLCommander {
 		    if(from != null) builder.where(Assessment.FROM, "=", from);
 		    if(to != null) builder.where(Assessment.TO, "=", to);
 
-            List<JSONObject> assessmentJsons = processOrientationAndDirection(builder, refIndex, orderKey, orientation, direction, numItems);
+            List<JSONObject> assessmentJsons = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
 
 		    if (assessmentJsons == null) return ret;
 		    for (JSONObject assessmentJson : assessmentJsons)	ret.add(new Assessment(assessmentJson));
@@ -853,7 +882,7 @@ public class SQLCommander {
 	    return ret;
     }
 
-    static List<JSONObject> processOrientationAndDirection(EasyPreparedStatementBuilder builder, String refIndex, String orderKey, String orientation, Integer direction, Integer nItems) {
+    static List<JSONObject> processAdvancedQuery(EasyPreparedStatementBuilder builder, String refIndex, String orderKey, String orientation, Integer direction, Integer nItems) {
         if (refIndex.equals(INITIAL_REF_INDEX)) {
             builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
             builder.order(orderKey, orientation);

@@ -206,7 +206,7 @@ public class EasyPreparedStatementBuilder {
         if (table == null || keys == null || vals == null) return this;
         if (keys.length != vals.length) return this;
         int length = keys.length;
-        if (m_join == null) m_join = new HashMap<>();
+        if (m_join == null) m_join = new HashMap<String, List<OnCondition>>();
         List<OnCondition> conditionList = new ArrayList<OnCondition>();
         for (int i = 0; i < length; ++i)    conditionList.add(new OnCondition(keys[i], vals[i]));
         m_join.put(table, conditionList);
