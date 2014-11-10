@@ -43,7 +43,9 @@ public class General {
     }
 
     public static Timestamp now() {
-        return new java.sql.Timestamp(localCalendar().getTimeInMillis());
+	Calendar localCld = localCalendar();
+	long localTime = (localCld.getTimeInMillis() + localCld.getTimeZone().getRawOffset());
+	return new java.sql.Timestamp(localTime);
     }
 
     public static Calendar localCalendar() {
