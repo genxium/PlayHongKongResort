@@ -158,23 +158,15 @@ public class SQLCommander {
     public static List<Activity> queryActivities(Integer vieweeId, int relation) {
 	    List<Activity> ret = new ArrayList<Activity>();
 	    try {
-		    String query = "SELECT ";
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, Activity.NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
+            String[] onCols = {UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.ACTIVITY_ID};
+            Object[] onVals = {vieweeId, relation, Activity.TABLE + "." + Activity.ID};
 
-		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, Activity.NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
-		    for (int i = 0; i < names.length; i++) {
-			    query += names[i];
-			    if (i < names.length - 1) query += ", ";
-		    }
+            List<JSONObject> activityJsons = builder.select(names)
+                                                    .from(Activity.TABLE)
+                                                    .join(UserActivityRelation.TABLE, onCols, onVals).execSelect();
 
-		    query += " FROM " + Activity.TABLE + " WHERE EXISTS (SELECT NULL FROM " + UserActivityRelation.TABLE + " WHERE "
-			    + UserActivityRelation.USER_ID + "=? AND "
-			    + UserActivityRelation.RELATION + "=? AND "
-			    + UserActivityRelation.TABLE + "." + UserActivityRelation.ACTIVITY_ID + "=" + Activity.TABLE + "." + Activity.ID + ")";
-		    Connection connection = SQLHelper.getConnection();
-		    PreparedStatement statement = connection.prepareStatement(query);
-		    statement.setInt(1, vieweeId);
-		    statement.setInt(2, relation);
-		    List<JSONObject> activityJsons = SQLHelper.select(statement);
 		    if (activityJsons == null) return null;
 		    for (JSONObject activityJson : activityJsons) {
 			    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
