@@ -1,19 +1,28 @@
 package dao;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.LinkedList;
-import java.util.List;
-
-import utilities.DataUtils;
 import org.json.simple.JSONObject;
 import utilities.Logger;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.*;
 
 public class EasyPreparedStatementBuilder {
 
     public static final String TAG = EasyPreparedStatementBuilder.class.getName();
+    public static final String ALIAS_PREFIX = "bsajkfhoi";
+
+    public static class OnCondition {
+        public String black; // the key bound to the joining table
+        public String white; // the key bound to the primary table a.k.a m_table
+
+        public OnCondition(String aBlack, String aWhite) {
+            black = aBlack;
+            white = aWhite;
+        }
+    }
 
     protected String m_table = null;
     protected List<String> m_selectCols = null;
@@ -25,6 +34,7 @@ public class EasyPreparedStatementBuilder {
     protected List<Object> m_increaseVals = null;
     protected List<String> m_decreaseCols = null;
     protected List<Object> m_decreaseVals = null;
+    protected Map<String, OnCondition> m_join = null;
     protected List<String> m_whereCols = null;
     protected List<String> m_whereOps = null;
     protected List<Object> m_whereVals = null;
@@ -192,10 +202,17 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
+    public EasyPreparedStatementBuilder join(String table, String black, String white) {
+        if (table == null || black == null || white == null) return this;
+        if (m_join == null) m_join = new HashMap<>();
+        m_join.put(table, new OnCondition(black, white));
+        return this;
+    }
+
     public EasyPreparedStatementBuilder where(String col, String op, Object val) {
-        if (m_whereCols == null) m_whereCols = new LinkedList<String>();
-        if (m_whereOps == null) m_whereOps = new LinkedList<String>();
-        if (m_whereVals == null) m_whereVals = new LinkedList<Object>();
+        if (m_whereCols == null) m_whereCols = new LinkedList<>();
+        if (m_whereOps == null) m_whereOps = new LinkedList<>();
+        if (m_whereVals == null) m_whereVals = new LinkedList<>();
         m_whereCols.add(col);
         m_whereOps.add(op);
         m_whereVals.add(val);
@@ -297,57 +314,64 @@ public class EasyPreparedStatementBuilder {
     }
 
     protected String appendFromTable(String query) {
-        String ret = query + " FROM " + m_table;
-        return ret;
+        return query + " FROM " + m_table;
     }
 
     protected String appendIntoTable(String query) {
-        String ret = query + " INTO " + m_table;
-        return ret;
+        return query + " INTO " + m_table;
+    }
+
+    protected String appendJoin(String query) {
+        if (m_join == null) return query;
+        int index = 0;
+        for (Map.Entry<String, OnCondition> entry : m_join.entrySet()) {
+            String table = entry.getKey();
+            OnCondition condition = entry.getValue();
+            String tableAlias = ALIAS_PREFIX + String.valueOf(index);
+            query += (" JOIN " + table + " AS " + tableAlias + " ON " + tableAlias + "." + condition.black + "=" + m_table + "." + condition.white);
+            ++index;
+        }
+        return query;
     }
 
     protected String appendWhere(String query) {
-	if (m_whereCols == null) return query; 
-        String ret = query;
-	ret += " WHERE ";
-	for (int i = 0; i < m_whereCols.size(); i++) {
-		String col = m_whereCols.get(i);
-		String op = m_whereOps.get(i);
-		ret += ("`" + col + "`" + op + "?");
-		if (i < m_whereCols.size() - 1) {
-			if (m_whereLink == null) ret += " AND ";
-			else ret += (" " + m_whereLink + " ");
-		}
-	}
-        return ret;
+        if (m_whereCols == null) return query;
+        query += " WHERE ";
+        for (int i = 0; i < m_whereCols.size(); i++) {
+            String col = m_whereCols.get(i);
+            String op = m_whereOps.get(i);
+            query += ("`" + col + "`" + op + "?");
+            if (i < m_whereCols.size() - 1) {
+                if (m_whereLink == null) query += " AND ";
+                else query += (" " + m_whereLink + " ");
+            }
+        }
+        return query;
     }
 
     protected String appendOrder(String query) {
         if (m_orderBy == null) return query;
-        String ret = query;
-	ret += " ORDER BY ";
-	for (int i = 0; i < m_orderBy.size(); i++) {
-		String col = m_orderBy.get(i);
-		ret += ("`" + col + "`");
-		if (m_orientations.size() > i) {
-			String orientation = m_orientations.get(i);
-			ret += " " + orientation;
-		}
-		if (i < m_orderBy.size() - 1) ret += ", ";
-	}
-        return ret;
+        query += " ORDER BY ";
+        for (int i = 0; i < m_orderBy.size(); i++) {
+            String col = m_orderBy.get(i);
+            query += ("`" + col + "`");
+            if (m_orientations.size() > i) {
+                String orientation = m_orientations.get(i);
+                query += " " + orientation;
+            }
+            if (i < m_orderBy.size() - 1) query += ", ";
+        }
+        return query;
     }
 
     protected String appendLimit(String query) {
-        String ret = query;
-        if (m_limits != null) {
-            ret += " LIMIT ";
-            for (int i = 0; i < m_limits.size(); i++) {
-                ret += "?";
-                if (i < m_limits.size() - 1) ret += ", ";
-            }
+        if (m_limits == null) return query;
+        query += " LIMIT ";
+        for (int i = 0; i < m_limits.size(); i++) {
+            query += "?";
+            if (i < m_limits.size() - 1) query += ", ";
         }
-        return ret;
+        return query;
     }
 
     public PreparedStatement toSelect(Connection connection) {
@@ -364,6 +388,7 @@ public class EasyPreparedStatementBuilder {
 
             query = appendFromTable(query);
             query = appendWhere(query);
+            query = appendJoin(query);
             query = appendOrder(query);
             query = appendLimit(query);
 
