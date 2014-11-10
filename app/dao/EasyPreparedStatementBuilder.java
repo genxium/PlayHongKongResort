@@ -15,12 +15,12 @@ public class EasyPreparedStatementBuilder {
     public static final String ALIAS_PREFIX = "bsajkfhoi";
 
     public static class OnCondition {
-        public String black; // the key bound to the joining table
-        public String white; // the key bound to the primary table a.k.a m_table
+        public String key; // the key bound to the joining table
+        public Object val;
 
-        public OnCondition(String aBlack, String aWhite) {
-            black = aBlack;
-            white = aWhite;
+        public OnCondition(String aKey, Object aVal) {
+            key = aKey;
+            val = aVal;
         }
     }
 
@@ -34,7 +34,7 @@ public class EasyPreparedStatementBuilder {
     protected List<Object> m_increaseVals = null;
     protected List<String> m_decreaseCols = null;
     protected List<Object> m_decreaseVals = null;
-    protected Map<String, OnCondition> m_join = null;
+    protected Map<String, List<OnCondition>> m_join = null;
     protected List<String> m_whereCols = null;
     protected List<String> m_whereOps = null;
     protected List<Object> m_whereVals = null;
@@ -202,17 +202,21 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder join(String table, String black, String white) {
-        if (table == null || black == null || white == null) return this;
+    public EasyPreparedStatementBuilder join(String table, String[] keys, Object[] vals) {
+        if (table == null || keys == null || vals == null) return this;
+        if (keys.length != vals.length) return this;
+        int length = keys.length;
         if (m_join == null) m_join = new HashMap<>();
-        m_join.put(table, new OnCondition(black, white));
+        List<OnCondition> conditionList = new ArrayList<OnCondition>();
+        for (int i = 0; i < length; ++i)    conditionList.add(new OnCondition(keys[i], vals[i]));
+        m_join.put(table, conditionList);
         return this;
     }
 
     public EasyPreparedStatementBuilder where(String col, String op, Object val) {
-        if (m_whereCols == null) m_whereCols = new LinkedList<>();
-        if (m_whereOps == null) m_whereOps = new LinkedList<>();
-        if (m_whereVals == null) m_whereVals = new LinkedList<>();
+        if (m_whereCols == null) m_whereCols = new LinkedList<String>();
+        if (m_whereOps == null) m_whereOps = new LinkedList<String>();
+        if (m_whereVals == null) m_whereVals = new LinkedList<Object>();
         m_whereCols.add(col);
         m_whereOps.add(op);
         m_whereVals.add(val);
@@ -324,11 +328,17 @@ public class EasyPreparedStatementBuilder {
     protected String appendJoin(String query) {
         if (m_join == null) return query;
         int index = 0;
-        for (Map.Entry<String, OnCondition> entry : m_join.entrySet()) {
+        for (Map.Entry<String, List<OnCondition>> entry : m_join.entrySet()) {
             String table = entry.getKey();
-            OnCondition condition = entry.getValue();
+            List<OnCondition> conditionList = entry.getValue();
+            int length = conditionList.size();
             String tableAlias = ALIAS_PREFIX + String.valueOf(index);
-            query += (" JOIN " + table + " AS " + tableAlias + " ON " + tableAlias + "." + condition.black + "=" + m_table + "." + condition.white);
+            query += (" JOIN " + table + " AS " + tableAlias + " ON ");
+            for (int i = 0; i < length; ++i) {
+                OnCondition condition = conditionList.get(i);
+                query += (tableAlias + "." + condition.key + "=? ");
+                if (i < length - 1) query += " AND ";
+            }
             ++index;
         }
         return query;
@@ -387,14 +397,22 @@ public class EasyPreparedStatementBuilder {
             }
 
             query = appendFromTable(query);
-            query = appendWhere(query);
             query = appendJoin(query);
+            query = appendWhere(query);
             query = appendOrder(query);
             query = appendLimit(query);
 
             int index = 1;
 
             statement = connection.prepareStatement(query);
+            if (m_join != null) {
+                for (Map.Entry<String, List<OnCondition>> entry : m_join.entrySet()) {
+                    List<OnCondition> conditionList = entry.getValue();
+                    for (OnCondition condition : conditionList) {
+                        statement.setObject(index++, condition.val);
+                    }
+                }
+            }
             if (m_whereVals != null) {
                 for (Object val : m_whereVals) {
                     statement.setObject(index++, val);
