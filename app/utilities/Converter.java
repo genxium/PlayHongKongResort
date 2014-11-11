@@ -51,6 +51,6 @@ public class Converter {
     }
 
     public static long localDateToGmtMillisec(String dateStr) throws ParseException {
-        return getDateFormat().parse(dateStr).getTime();
+        return getDateFormat().parse(dateStr).getTime() - General.localCalendar().getTimeZone().getRawOffset();
     }
 }

@@ -149,8 +149,10 @@ function initActivityEditor(par, onRemove){
 	g_onEditorRemoved = onRemove;
 	/*
 		Note: ALL attributes, especially the `class` attribute MUST be written INSIDE the div tag, bootstrap is NOT totally compatible with jQuery!!!
+		backdrop being 'static' prevents modal from closing on losing focus
+		keyboard being 'false' prevents modal from closing on pressing `esc`
 	*/
-	g_sectionActivityEditor = $("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='Create an activity!' aria-hidden='true'>", {
+	g_sectionActivityEditor = $("<div class='modal fade' data-keyboard='false' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='Create an activity!' aria-hidden='true'>", {
 		style: "position: fixed; height: 90%; padding: 5pt;"
 	}).appendTo(par);
 	var dialog = $("<div>", {
@@ -172,8 +174,6 @@ function showActivityEditor(activity) {
 	refreshActivityEditor(activity);
 
         g_sectionActivityEditor.modal({
-		backdrop: "static", // prevents modal from closing on losing focus
-		keyboard: false, // prevents modal from closing on pressing `esc`
                 show: true
         });
 }
