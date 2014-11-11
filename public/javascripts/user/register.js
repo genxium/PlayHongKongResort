@@ -53,7 +53,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 
 		if(username == null || username.length == 0 || !validateName(username)
 		    || email == null || email.length == 0 || !validateEmail(email)
-		    || password == null || password.length == 0 || !validatePassword(password) || !validatePasswordConfirm(passwordConfirm)) return;
+		    || password == null || password.length == 0 || !validatePassword(password) || !validatePasswordConfirm(password, passwordConfirm)) return;
 
 		var params = {};
 		params[g_keyName] = username;
@@ -65,6 +65,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		    url: "/user/register",
 		    data: params,
 		    success: function(data, status, xhr){
+			widget.empty();
 			if (widget.onSuccess == null) return;
 			widget.onSuccess(data);
 		    },
@@ -107,7 +108,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var emailCheck = evt.data;
 		emailCheck.empty();
 		emailCheck.text("");
-		var emailval = $(this).val();
+		var emailVal = $(this).val();
 		if(emailVal == null || emailVal.length == 0) return;
 		if(!validateEmail(emailVal)) {
 			 emailCheck.text(" Not valid email format");
