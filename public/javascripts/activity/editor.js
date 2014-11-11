@@ -172,6 +172,8 @@ function showActivityEditor(activity) {
 	refreshActivityEditor(activity);
 
         g_sectionActivityEditor.modal({
+		backdrop: "static", // prevents modal from closing on losing focus
+		keyboard: false, // prevents modal from closing on pressing `esc`
                 show: true
         });
 }
