@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.6.20, for Linux (i686)
+-- MySQL dump 10.13  Distrib 5.6.20, for osx10.6 (x86_64)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
@@ -39,4 +39,4 @@ CREATE TABLE `image` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-11-10 22:56:05
+-- Dump completed on 2014-11-11 12:37:14

@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.6.20, for Linux (i686)
+-- MySQL dump 10.13  Distrib 5.6.20, for osx10.6 (x86_64)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
@@ -32,13 +32,11 @@ CREATE TABLE `user` (
   `authentication_status` int(2) NOT NULL DEFAULT '0',
   `gender` int(1) NOT NULL DEFAULT '0',
   `avatar` int(32) NOT NULL DEFAULT '0',
-  `last_logged_in_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_logged_out_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_exit_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_time` int(32) DEFAULT NULL,
   `verification_code` varchar(32) DEFAULT NULL,
   `unread_count` int(32) NOT NULL DEFAULT '0',
   `password_reset_code` varchar(32) DEFAULT NULL,
+  `salt` varchar(16) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `name` (`name`)
@@ -51,7 +49,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (10,'genxium',NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',1,0,0,0,'2014-09-29 17:44:36','2014-09-29 17:44:36','2014-09-29 17:44:36','2014-09-29 17:44:36','',0,'3ad92a25ea707b34'),(11,'adminsam',NULL,'c33367701511b4f6020ec61ded352059','admin@hongkongresort.com',3,0,0,0,'2014-09-29 17:48:57','2014-09-29 17:48:57','2014-09-29 17:48:57','2014-09-29 17:48:57','3d17adadbcb2beff',0,NULL),(12,'genxium1988',NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',0,0,0,0,'2014-09-29 18:08:06','2014-09-29 18:08:06','2014-09-29 18:08:06','2014-09-29 18:08:06','59b6bf402cbee126',0,NULL),(13,'genxium0430',NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@yahoo.com',0,0,0,0,'2014-09-29 18:08:40','2014-09-29 18:08:40','2014-09-29 18:08:40','2014-09-29 18:08:40','523b59ae1c79ce50',0,NULL),(14,'raychen',NULL,'e10adc3949ba59abbe56e057f20f883e','saichanjiawei@126.com',0,0,0,0,'2014-09-30 09:35:09','2014-09-30 09:35:09','2014-09-30 09:35:09','2014-09-30 09:35:09','e39df49da99cbea3',0,NULL),(15,'rayc33',NULL,'e10adc3949ba59abbe56e057f20f883e','saichanjiawei@gmail.com',0,0,0,0,'2014-10-01 12:36:58','2014-10-01 12:36:58','2014-10-01 12:36:58','2014-10-01 12:36:58','33d6b0100208e1f5',0,NULL),(16,'lafaxiu123',NULL,'e922cfdac77e24bf76c46708b5940195','lafaxiu@126.com',1,0,0,0,'2014-10-16 08:45:25','2014-10-16 08:45:25','2014-10-16 08:45:25','2014-10-16 08:45:25','',0,NULL),(17,'raychan',NULL,'e10adc3949ba59abbe56e057f20f883e','523027315@qq.com',0,0,0,0,'2014-10-16 09:05:21','2014-10-16 09:05:21','2014-10-16 09:05:21','2014-10-16 09:05:21','6e6e234913378390',0,NULL);
+INSERT INTO `user` VALUES (10,'genxium',NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',1,0,0,0,2147483647,'',0,'3ad92a25ea707b34',NULL),(11,'adminsam',NULL,'c33367701511b4f6020ec61ded352059','admin@hongkongresort.com',3,0,0,0,2147483647,'3d17adadbcb2beff',0,NULL,NULL),(12,'genxium1988',NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',0,0,0,0,2147483647,'59b6bf402cbee126',0,NULL,NULL),(13,'genxium0430',NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@yahoo.com',0,0,0,0,2147483647,'523b59ae1c79ce50',0,NULL,NULL),(14,'raychen',NULL,'e10adc3949ba59abbe56e057f20f883e','saichanjiawei@126.com',0,0,0,0,2147483647,'e39df49da99cbea3',0,NULL,NULL),(15,'rayc33',NULL,'e10adc3949ba59abbe56e057f20f883e','saichanjiawei@gmail.com',0,0,0,0,2147483647,'33d6b0100208e1f5',0,NULL,NULL),(16,'lafaxiu123',NULL,'e922cfdac77e24bf76c46708b5940195','lafaxiu@126.com',1,0,0,0,2147483647,'',0,NULL,NULL),(17,'raychan',NULL,'e10adc3949ba59abbe56e057f20f883e','523027315@qq.com',0,0,0,0,2147483647,'6e6e234913378390',0,NULL,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -64,4 +62,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-11-10 22:56:05
+-- Dump completed on 2014-11-11 12:37:14
