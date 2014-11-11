@@ -544,6 +544,8 @@ function generateActivityEditor(activity){
 
         var onChange = function(evt) {
                 evt.preventDefault();
+		if (g_editor == null) return;
+		if (countImages(g_editor) >= g_imagesLimit) return;
                 g_editor.setSavable();
                 g_editor.setNonSubmittable();
                 previewImage(newImagesRow, g_editor);
