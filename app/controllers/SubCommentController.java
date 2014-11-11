@@ -12,11 +12,9 @@ import models.User;
 import play.libs.Json;
 import play.mvc.Result;
 import utilities.Converter;
-import utilities.DataUtils;
+import utilities.General;
 import utilities.Logger;
 
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -91,22 +89,16 @@ public class SubCommentController extends CommentController {
             Integer to = Converter.toInteger(formData.get(Comment.TO)[0]);
             if (to == null) throw new InvalidCommentParamsException();
 
+            Integer predecessorId = Converter.toInteger(formData.get(Comment.PREDECESSOR_ID)[0]);
+            if (predecessorId == null) throw new InvalidCommentParamsException();
+
+            Integer parentId = Converter.toInteger(formData.get(Comment.PARENT_ID)[0]);
+            if (parentId == null) throw new InvalidCommentParamsException();
+
+            String[] cols = {Comment.CONTENT, Comment.ACTIVITY_ID, Comment.FROM, Comment.TO, Comment.GENERATED_TIME, Comment.PREDECESSOR_ID, Comment.PARENT_ID};
+            Object[] vals = {content, activityId, from, to, General.millisec(), predecessorId, parentId};
+
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-
-            String[] columnNames = {Comment.CONTENT, Comment.ACTIVITY_ID, Comment.FROM, Comment.TO};
-            List<String> cols = new LinkedList<String>(Arrays.asList(columnNames));
-
-            Object[] columnValues = {content, activityId, from, to};
-            List<Object> vals = new LinkedList<Object>(Arrays.asList(columnValues));
-
-            Integer predecessorId = Integer.valueOf(formData.get(Comment.PREDECESSOR_ID)[0]);
-            cols.add(Comment.PREDECESSOR_ID);
-            vals.add(predecessorId);
-
-            Integer parentId = Integer.valueOf(formData.get(Comment.PARENT_ID)[0]);
-            cols.add(Comment.PARENT_ID);
-            vals.add(parentId);
-
             int lastId = builder.insert(cols, vals).into(Comment.TABLE).execInsert();
             if (lastId == SQLHelper.INVALID) throw new NullPointerException();
 

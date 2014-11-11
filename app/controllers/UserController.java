@@ -11,7 +11,6 @@ import models.User;
 import models.UserActivityRelation;
 import org.json.simple.JSONObject;
 import play.libs.Json;
-import play.mvc.Content;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Http.RequestBody;
@@ -63,17 +62,18 @@ public class UserController extends Controller {
 
             if ((email == null || !General.validateEmail(email)) || (password == null || !General.validatePassword(password)))  throw new InvalidLoginParamsException();
 
-            String passwordDigest = Converter.md5(password);
             User user = SQLCommander.queryUserByEmail(email);
+            if (user == null) throw new UserNotFoundException();
 
-            if (user == null || !user.getPassword().equals(passwordDigest)) throw new UserNotFoundException();
+            String passwordDigest = Converter.md5(password + user.getSalt());
+            if (!user.getPassword().equals(passwordDigest)) throw new UserNotFoundException();
 
             String token = Converter.generateToken(email, password);
             Integer userId = user.getId();
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] cols = {Login.USER_ID, Login.TOKEN};
-            Object[] vals = {userId, token};
+            String[] cols = {Login.USER_ID, Login.TOKEN, Login.TIMESTAMP};
+            Object[] vals = {userId, token, General.millisec()};
             builder.insert(cols, vals).into(Login.TABLE).execInsert();
             ObjectNode result = user.toObjectNode(userId);
             result.put(User.TOKEN, token);
@@ -98,18 +98,13 @@ public class UserController extends Controller {
             if ((name == null || !General.validateName(name)) || (email == null || !General.validateEmail(email)) || (password == null || !General.validatePassword(password)))  throw new InvalidRegistrationParamsException();
             String passwordDigest = Converter.md5(password);
             User user = new User(email, passwordDigest, name);
-            int lastId = SQLCommander.registerUser(user);
-            if (lastId == SQLCommander.INVALID) throw new NullPointerException();
-
             String code = generateVerificationCode(user);
+            String salt = generateSalt(user);
+            user.setVerificationCode(code);
+            user.setSalt(salt);
 
-            String[] columnNames = {User.VERIFICATION_CODE};
-            Object[] columnValues = {code};
+            if (SQLCommander.registerUser(user) == SQLCommander.INVALID) throw new NullPointerException();
 
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            builder.update(User.TABLE).set(columnNames, columnValues).where(User.ID, "=", lastId);
-
-            if(!builder.execUpdate()) throw new NullPointerException();
             sendVerificationEmail(user.getName(), user.getEmail(), code);
             return ok();
         } catch (Exception e) {
@@ -201,4 +196,7 @@ public class UserController extends Controller {
 	    return DataUtils.encryptByTime(user.getName());
     }
 
+    public static String generateSalt(User user) {
+        return DataUtils.encryptByTime(user.getEmail() + user.getPassword());
+    }
 }

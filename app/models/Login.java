@@ -29,7 +29,7 @@ public class Login {
 
     public boolean hasExpired() {
         /*
-        * TODO: check expiry by current time (UTF+8) and User.TOKEN_LIFE
+        * TODO: check expiry by current time and User.TOKEN_LIFE
         * TODO: if token has expired, delete the entry in table `login`
         * */
         return false;

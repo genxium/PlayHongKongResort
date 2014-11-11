@@ -1,16 +1,10 @@
 package utilities;
 
-import dao.EasyPreparedStatementBuilder;
-import dao.SQLHelper;
-import models.Login;
 import models.User;
-import org.json.simple.JSONObject;
-import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
 
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Map;
 
 public class DataUtils {
@@ -70,7 +64,7 @@ public class DataUtils {
 	    Long epochTime = currentTime.getTime();
 	    String tmp = Converter.md5(epochTime.toString() + seed);
 	    int length = tmp.length();
-	    return tmp.substring(0, length / 2);
+	    return tmp.substring(0, (length >> 1));
 	} catch (Exception e) {
 	    Logger.e(TAG, "encryptByTime", e);
 	}

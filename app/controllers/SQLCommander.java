@@ -29,7 +29,7 @@ public class SQLCommander {
 
 	    User user = null;
 	    try {
-		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
+		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.AVATAR};
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             List<JSONObject> results = builder.select(names).from(User.TABLE).where(User.ID, "=", userId).execSelect();
 		    if (results == null || results.size() <= 0) return null;
@@ -46,7 +46,7 @@ public class SQLCommander {
     public static User queryUserByEmail(String email) {
 	    User user = null;
 	    try {
-		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
+		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.SALT, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.AVATAR};
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             List<JSONObject> results = builder.select(names).from(User.TABLE).where(User.EMAIL, "=", email).execSelect();
 		    if (results == null || results.size() <= 0) return null;
@@ -64,13 +64,13 @@ public class SQLCommander {
     public static int registerUser(User user) {
 	    int ret = INVALID;
 	    try {
-		    String[] cols = {User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID};
-		    Object[] values = {user.getEmail(), user.getPassword(), user.getName(), user.getGroupId()};
+		    String[] cols = {User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.VERIFICATION_CODE, User.SALT};
+		    Object[] values = {user.getEmail(), user.getPassword(), user.getName(), user.getGroupId(), user.getVerificationCode(), user.getSalt()};
 
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    ret = builder.insert(cols, values).into(User.TABLE).execInsert();
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".registerUser, " + e.getMessage());
+		    Logger.e(TAG, "registerUser", e);
 	    }
 	    return ret;
     }
@@ -78,15 +78,19 @@ public class SQLCommander {
     public static Integer createActivity(String title, String content, Integer userId) {
 	    Integer lastActivityId = null;
 
+        long now = General.millisec();
+
 	    List<String> names = new LinkedList<String>();
 	    names.add(Activity.TITLE);
 	    names.add(Activity.CONTENT);
 	    names.add(Activity.HOST_ID);
+        names.add(Activity.CREATED_TIME);
 
 	    List<Object> values = new LinkedList<Object>();
 	    values.add(title);
 	    values.add(content);
 	    values.add(userId);
+        values.add(now);
 
 	    EasyPreparedStatementBuilder builderActivity = new EasyPreparedStatementBuilder();
         lastActivityId = builderActivity.insert(names, values).into(Activity.TABLE).execInsert();
@@ -97,10 +101,12 @@ public class SQLCommander {
 	    names.add(UserActivityRelation.ACTIVITY_ID);
 	    names.add(UserActivityRelation.USER_ID);
 	    names.add(UserActivityRelation.RELATION);
+        names.add(UserActivityRelation.GENERATED_TIME);
 
 	    values.add(lastActivityId);
 	    values.add(userId);
 	    values.add(UserActivityRelation.SELECTED|UserActivityRelation.PRESENT);
+        values.add(now);
 
 	    EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
 	    builderRelation.insert(names, values).into(UserActivityRelation.TABLE).execInsert();
@@ -111,8 +117,8 @@ public class SQLCommander {
     public static boolean updateActivity(Activity activity) {
 	    int activityId = activity.getId();
 	    try {
-		    String[] cols = {Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
-		    Object[] values = {activity.getTitle(), activity.getContent(), activity.getCreatedTime().toString(), activity.getBeginTime().toString(), activity.getDeadline().toString(), activity.getCapacity()};
+		    String[] cols = {Activity.TITLE, Activity.CONTENT, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
+		    Object[] values = {activity.getTitle(), activity.getContent(), activity.getBeginTime(), activity.getDeadline(), activity.getCapacity()};
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    return builder.update(Activity.TABLE).set(cols, values).where(Activity.ID, "=", activityId).execUpdate();
 	    } catch (Exception e) {
@@ -481,13 +487,13 @@ public class SQLCommander {
     public static int createAssessment(Integer activityId, Integer from, Integer to, String content) {
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    String[] cols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO, Assessment.CONTENT};
-		    Object[] vals = {activityId, from, to, content};
+		    String[] cols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO, Assessment.CONTENT, Assessment.GENERATED_TIME};
+		    Object[] vals = {activityId, from, to, content, General.millisec()};
 		    return builder.insert(cols, vals).into(Assessment.TABLE).execInsert();
 	    } catch (Exception e) {
-
+            Logger.e(TAG, "createAssessment", e);
+            return SQLHelper.INVALID;
 	    }
-	    return SQLHelper.INVALID;
     }
 
     public static boolean validateOwnership(int userId, int activityId) {
@@ -636,7 +642,7 @@ public class SQLCommander {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    return builder.update(Activity.TABLE)
                         .set(Activity.STATUS, Activity.ACCEPTED)
-                        .set(Activity.LAST_ACCEPTED_TIME, General.now())
+                        .set(Activity.LAST_ACCEPTED_TIME, General.millisec())
                         .where(Activity.ID, "=", activity.getId())
                         .execUpdate();
 	    } catch (Exception e) {
@@ -652,7 +658,7 @@ public class SQLCommander {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    return builder.update(Activity.TABLE)
                         .set(Activity.STATUS, Activity.REJECTED)
-                        .set(Activity.LAST_REJECTED_TIME, General.now())
+                        .set(Activity.LAST_REJECTED_TIME, General.millisec())
                         .where(Activity.ID, "=", activity.getId())
                         .execUpdate();
 	    } catch (Exception e) {
@@ -772,7 +778,7 @@ public class SQLCommander {
     public static List<BasicUser> queryUsers(int activityId, int maskedRelation) {
 	    List<BasicUser> users = new ArrayList<BasicUser>();
 	    try {
-		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.LAST_LOGGED_IN_TIME, User.AVATAR};
+		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.AVATAR};
 		    String query = "SELECT ";
 		    for (int i = 0; i < names.length; i++) {
 			    query += ("`" + names[i] + "`");
@@ -808,7 +814,7 @@ public class SQLCommander {
                     .where(UserActivityRelation.ACTIVITY_ID, "=", activityId)
                     .where(UserActivityRelation.USER_ID, "=", userId);
 
-            if ((relation & UserActivityRelation.SELECTED) > 0) builder.set(UserActivityRelation.LAST_SELECTED_TIME, General.now());
+            if ((relation & UserActivityRelation.SELECTED) > 0) builder.set(UserActivityRelation.LAST_SELECTED_TIME, General.millisec());
 		    return builder.execUpdate();
 
 	    } catch (Exception e) {

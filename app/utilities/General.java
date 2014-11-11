@@ -1,11 +1,16 @@
 package utilities;
 
-import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 public class General {
+
+    protected static Calendar s_localCalendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+8"));
+
+    public static Calendar localCalendar() {
+        return s_localCalendar;
+    }
 
     public static boolean validateEmail(String email) {
 
@@ -42,25 +47,13 @@ public class General {
 
     }
 
-    public static Timestamp now() {
-	    return new java.sql.Timestamp(millisec());
-    }
-
     public static long millisec() {
 	    Calendar localCld = localCalendar();
 	    return localCld.getTimeInMillis();
     }
 
-    public static Timestamp localNow() {
-	    return new java.sql.Timestamp(localMillisec());
-    }
-
     public static long localMillisec() {
 	    Calendar localCld = localCalendar();
 	    return (localCld.getTimeInMillis() + localCld.getTimeZone().getRawOffset());
-    }
-
-    public static Calendar localCalendar() {
-	    return new GregorianCalendar(TimeZone.getTimeZone("GMT+8"));
     }
 }

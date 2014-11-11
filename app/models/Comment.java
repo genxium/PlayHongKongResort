@@ -8,10 +8,8 @@ import dao.SQLHelper;
 import org.json.simple.JSONObject;
 import play.libs.Json;
 import utilities.Converter;
-import utilities.DataUtils;
 import utilities.Logger;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 public class Comment {
@@ -49,8 +47,8 @@ public class Comment {
     protected Integer m_activityId = null;
     protected Integer m_parentId = null;
     protected Integer m_predecessorId = null;
-    protected Timestamp m_generatedTime = null;
     protected Integer m_numChildren = null;
+    protected long m_generatedTime;
 
     public Integer getId() {
         return m_id;
@@ -60,28 +58,8 @@ public class Comment {
         return m_content;
     }
 
-    public Integer getCommenterId() {
-        return m_from;
-    }
-
     public Integer getActivityId() {
         return m_activityId;
-    }
-
-    public Integer getParentId() {
-        return m_parentId;
-    }
-
-    public Integer getPredecessorId() {
-        return m_predecessorId;
-    }
-
-    public Timestamp getGeneratedTime() {
-        return m_generatedTime;
-    }
-
-    public Integer getNumChildren() {
-        return m_numChildren;
     }
 
     public Comment(JSONObject commentJson) {
@@ -93,7 +71,7 @@ public class Comment {
         if (commentJson.containsKey(ACTIVITY_ID))   m_activityId = Converter.toInteger(commentJson.get(ACTIVITY_ID));
         if (commentJson.containsKey(PARENT_ID)) m_parentId = Converter.toInteger(commentJson.get(PARENT_ID));
         if (commentJson.containsKey(PREDECESSOR_ID))    m_predecessorId = Converter.toInteger(commentJson.get(PREDECESSOR_ID));
-        if (commentJson.containsKey(GENERATED_TIME))    m_generatedTime = (Timestamp) commentJson.get(GENERATED_TIME);
+        if (commentJson.containsKey(GENERATED_TIME))    m_generatedTime = (Long) commentJson.get(GENERATED_TIME);
         if (commentJson.containsKey(NUM_CHILDREN))  m_numChildren = Converter.toInteger(commentJson.get(NUM_CHILDREN));
 
     }
@@ -108,7 +86,7 @@ public class Comment {
 		    ret.put(FROM_NAME, SQLCommander.queryUser(m_from).getName());
 		    ret.put(TO, m_to);
 		    ret.put(TO_NAME, SQLCommander.queryUser(m_to).getName());
-		    ret.put(GENERATED_TIME, m_generatedTime.toString());
+		    ret.put(GENERATED_TIME, Converter.gmtMillisecToLocalTime(m_generatedTime));
 	    } catch (Exception e) {
 		    Logger.e(TAG, "toSubCommentObjectNode", e);
 	    }
@@ -123,12 +101,11 @@ public class Comment {
 		    ret.put(CONTENT, m_content);
 		    ret.put(FROM, m_from);
 		    ret.put(FROM_NAME, SQLCommander.queryUser(m_from).getName());
-		    ret.put(GENERATED_TIME, m_generatedTime.toString());
+		    ret.put(GENERATED_TIME, Converter.gmtMillisecToLocalTime(m_generatedTime));
 		    ret.put(NUM_CHILDREN, m_numChildren.toString());
 
 		    if (single) return ret;
-		    int limit = 3;
-		    List<Comment> subComments = SQLCommander.querySubComments(m_id, SQLCommander.INITIAL_REF_INDEX, ID, SQLHelper.DESCEND, 3, SQLCommander.DIRECTION_FORWARD);
+            List<Comment> subComments = SQLCommander.querySubComments(m_id, SQLCommander.INITIAL_REF_INDEX, ID, SQLHelper.DESCEND, 3, SQLCommander.DIRECTION_FORWARD);
 
 		    ArrayNode subCommentsNode = new ArrayNode(JsonNodeFactory.instance);
 		    for (Comment subComment : subComments) {

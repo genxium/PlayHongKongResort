@@ -6,12 +6,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.SQLCommander;
 import org.json.simple.JSONObject;
 import play.libs.Json;
-import utilities.General;
 import utilities.Converter;
+import utilities.General;
 import utilities.Logger;
 
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class Activity {
@@ -77,42 +75,42 @@ public class Activity {
 	    m_content = content;
     }
 
-    protected Timestamp m_createdTime = null;
+    protected Long m_createdTime = null;
 
-    public Timestamp getCreatedTime() {
+    public long getCreatedTime() {
 	    return m_createdTime;
     }
 
-    protected Timestamp m_beginTime = null;
+    protected Long m_beginTime = null;
 
-    public Timestamp getBeginTime() {
+    public long getBeginTime() {
 	    return m_beginTime;
     }
 
-    public void setBeginTime(Timestamp beginTime) {
+    public void setBeginTime(long beginTime) {
 	    m_beginTime = beginTime;
     }
 
-    protected Timestamp m_deadline = null;
+    protected Long m_deadline = null;
 
-    public Timestamp getDeadline() {
+    public long getDeadline() {
 	    return m_deadline;
     }
 
-    public void setDeadline(Timestamp deadline) {
+    public void setDeadline(long deadline) {
 	    m_deadline = deadline;
     }
 
-    protected Timestamp m_lastAcceptedTime = null;
+    protected Long m_lastAcceptedTime = null;
 
-    public Timestamp getLastAcceptedTime() {
-        return m_lastAcceptedTime;
+    public void setLastAcceptedTime(long time) {
+        m_lastAcceptedTime = time;
     }
 
-    protected Timestamp m_lastRejectedTime = null;
+    protected Long m_lastRejectedTime = null;
 
-    public Timestamp getLastRejectedTime() {
-        return m_lastRejectedTime;
+    public void setLastRejectedTime(long time) {
+        m_lastRejectedTime = time;
     }
 
     protected int m_capacity = 0;
@@ -156,13 +154,11 @@ public class Activity {
     protected User m_viewer = null;
 
     public boolean isDeadlineExpired() {
-	    return  General.millisec() > m_deadline.getTime();
+	    return  General.millisec() > m_deadline;
     }
 
     public boolean hasBegun() {
-	    long now = General.millisec(), beginTime = m_beginTime.getTime();
-	    System.out.println("Activity id " + m_id + ", now is " + now + ", the begin time is " + beginTime);	
-	    return General.millisec() > m_beginTime.getTime();
+	    return General.millisec() > m_beginTime;
     }
 
     protected Activity() {
@@ -170,34 +166,46 @@ public class Activity {
     }
 
     public Activity(JSONObject activityJson, User host) {
-	    if (activityJson.containsKey(ID))
+
+        if (activityJson.containsKey(ID))
 		    m_id = Converter.toInteger(activityJson.get(ID));
-	    if (activityJson.containsKey(TITLE))
+
+        if (activityJson.containsKey(TITLE))
 		    m_title = (String) activityJson.get(TITLE);
-	    if (activityJson.containsKey(CONTENT))
+
+        if (activityJson.containsKey(CONTENT))
 		    m_content = (String) activityJson.get(CONTENT);
-	    if (activityJson.containsKey(CREATED_TIME))
-		    m_createdTime = (Timestamp) activityJson.get(CREATED_TIME);
-	    if (activityJson.containsKey(BEGIN_TIME))
-		    m_beginTime = (Timestamp) activityJson.get(BEGIN_TIME);
-	    if (activityJson.containsKey(DEADLINE))
-		    m_deadline = (Timestamp) activityJson.get(DEADLINE);
-	    if (activityJson.containsKey(CAPACITY))
+
+        if (activityJson.containsKey(CREATED_TIME))
+		    m_createdTime = (Long) activityJson.get(CREATED_TIME);
+
+        if (activityJson.containsKey(BEGIN_TIME))
+		    m_beginTime = (Long) activityJson.get(BEGIN_TIME);
+
+        if (activityJson.containsKey(DEADLINE))
+		    m_deadline = (Long) activityJson.get(DEADLINE);
+
+        if (activityJson.containsKey(CAPACITY))
 		    m_capacity = Converter.toInteger(activityJson.get(CAPACITY));
-	    if (activityJson.containsKey(NUM_APPLIED))
+
+        if (activityJson.containsKey(NUM_APPLIED))
 		    m_numApplied = Converter.toInteger(activityJson.get(NUM_APPLIED));
-	    if (activityJson.containsKey(NUM_SELECTED))
+
+        if (activityJson.containsKey(NUM_SELECTED))
 	        m_numSelected = Converter.toInteger(activityJson.get(NUM_SELECTED));
+
 	    if (activityJson.containsKey(STATUS))
 		    m_status = Converter.toInteger(activityJson.get(STATUS));
-        if (activityJson.containsKey(LAST_ACCEPTED_TIME)) {
-            m_lastAcceptedTime = (Timestamp) activityJson.get(LAST_ACCEPTED_TIME);
-        }
-        if (activityJson.containsKey(LAST_REJECTED_TIME)) {
-            m_lastRejectedTime = (Timestamp) activityJson.get(LAST_REJECTED_TIME);
-        }
+
+        if (activityJson.containsKey(LAST_ACCEPTED_TIME))
+            m_lastAcceptedTime = (Long) activityJson.get(LAST_ACCEPTED_TIME);
+
+        if (activityJson.containsKey(LAST_REJECTED_TIME))
+            m_lastRejectedTime = (Long) activityJson.get(LAST_REJECTED_TIME);
+
 	    if (host != null)
 		    m_host = host;
+
     }
 
     public ObjectNode toObjectNode(Integer viewerId) {
@@ -206,21 +214,22 @@ public class Activity {
             ret.put(ID, String.valueOf(m_id));
             ret.put(TITLE, m_title);
             ret.put(CONTENT, m_content);
-            SimpleDateFormat splfmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            ret.put(CREATED_TIME, splfmt.format(m_createdTime));
-            ret.put(BEGIN_TIME, splfmt.format(m_beginTime));
-            ret.put(DEADLINE, splfmt.format(m_deadline));
+
+            ret.put(CREATED_TIME, Converter.gmtMillisecToLocalTime(m_createdTime));
+            ret.put(BEGIN_TIME, Converter.gmtMillisecToLocalTime(m_beginTime));
+            ret.put(DEADLINE, Converter.gmtMillisecToLocalTime(m_deadline));
+
             ret.put(CAPACITY, String.valueOf(m_capacity));
-	    ret.put(NUM_APPLIED, String.valueOf(m_numApplied));
-	    ret.put(NUM_SELECTED, String.valueOf(m_numSelected));
+            ret.put(NUM_APPLIED, String.valueOf(m_numApplied));
+            ret.put(NUM_SELECTED, String.valueOf(m_numSelected));
             ret.put(HOST, m_host.toObjectNode(viewerId));
             
             if (viewerId == null) return ret;
-	    int relation = SQLCommander.queryUserActivityRelation(viewerId, m_id);
-	    if (relation != UserActivityRelation.INVALID)	ret.put(UserActivityRelation.RELATION, relation);
-	    m_viewer = SQLCommander.queryUser(viewerId);
-	    if (viewerId.equals(m_host.getId()))	ret.put(STATUS, String.valueOf(m_status));
-	    if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	ret.put(STATUS, String.valueOf(m_status));
+            int relation = SQLCommander.queryUserActivityRelation(viewerId, m_id);
+            if (relation != UserActivityRelation.INVALID)	ret.put(UserActivityRelation.RELATION, relation);
+            m_viewer = SQLCommander.queryUser(viewerId);
+            if (viewerId.equals(m_host.getId()))	ret.put(STATUS, String.valueOf(m_status));
+            if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	ret.put(STATUS, String.valueOf(m_status));
         } catch (Exception e) {
             Logger.e(TAG, "toObjectNode", e);
         }
@@ -240,4 +249,4 @@ public class Activity {
 	    }
 	    return ret;
     }
-};
+}

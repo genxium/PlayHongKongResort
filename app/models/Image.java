@@ -58,24 +58,14 @@ public class Image {
     }
 
     public Image(JSONObject imageJson) {
-        try {
-            if (imageJson.containsKey(ID)) {
-                m_imageId = (Integer) imageJson.get(Image.ID);
-            }
-            m_imageURL = (String) imageJson.get(Image.URL);
-        } catch (Exception e) {
-
-        }
+        if (imageJson.containsKey(ID))  m_imageId = (Integer) imageJson.get(Image.ID);
+        m_imageURL = (String) imageJson.get(Image.URL);
     }
 
     public ObjectNode toObjectNode() {
         ObjectNode ret = Json.newObject();
-        try {
-            ret.put(ID, m_imageId);
-            ret.put(URL, m_imageURL);
-        } catch (Exception e) {
-
-        }
+        ret.put(ID, m_imageId);
+        ret.put(URL, m_imageURL);
         return ret;
     }
 }

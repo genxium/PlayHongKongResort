@@ -17,12 +17,10 @@ public class User extends BasicUser {
 
     public static final String TABLE = "user";
     public static final String PASSWORD = "password";
+    public static final String SALT = "salt";
     public static final String GROUP_ID = "group_id";
     public static final String AUTHENTICATION_STATUS = "authentication_status";
     public static final String GENDER = "gender";
-    public static final String LAST_LOGGED_IN_TIME = "last_logged_in_time";
-    public static final String LAST_LOGGED_OUT_TIME = "last_logged_out_time";
-    public static final String LAST_EXIT_TIME = "last_exit_time";
 
     public static final String TOKEN = "token";
     public static final String VERIFICATION_CODE = "verification_code";
@@ -38,6 +36,16 @@ public class User extends BasicUser {
         m_password = password;
     }
 
+    protected String m_salt = null;
+
+    public String getSalt() {
+        return m_salt;
+    }
+
+    public void setSalt(String salt) {
+        m_salt = salt;
+    }
+
     protected int m_groupId = 0;
 
     public int getGroupId() {
@@ -45,6 +53,14 @@ public class User extends BasicUser {
     }
 
     protected String m_verificationCode = null;
+
+    public String getVerificationCode() {
+        return m_verificationCode;
+    }
+
+    public void setVerificationCode(String code) {
+        m_verificationCode = code;
+    }
 
     public User(String email, String password, String name) {
         super(email, name);
@@ -55,6 +71,7 @@ public class User extends BasicUser {
     public User(JSONObject userJson) {
         super(userJson);
         if (userJson.containsKey(PASSWORD)) m_password = (String) userJson.get(PASSWORD);
+        if (userJson.containsKey(SALT)) m_salt = (String) userJson.get(SALT);
         if (userJson.containsKey(GROUP_ID)) m_groupId = (Integer) userJson.get(GROUP_ID);
     }
 }

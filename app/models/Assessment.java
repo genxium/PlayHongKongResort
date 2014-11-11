@@ -7,8 +7,6 @@ import play.libs.Json;
 import utilities.Converter;
 import utilities.Logger;
 
-import java.sql.Timestamp;
-
 public class Assessment {
 
     public static final String TAG = Assessment.class.getName();
@@ -32,7 +30,7 @@ public class Assessment {
     protected Integer m_from = null;
     protected Integer m_to = null;
     protected Integer m_activityId = null;
-    protected Timestamp m_generatedTime = null;
+    protected long m_generatedTime;
 
     public Integer getId() {
         return m_id;
@@ -54,10 +52,6 @@ public class Assessment {
         return m_to;
     }
 
-    public Timestamp getGeneratedTime() {
-        return m_generatedTime;
-    }
-
     public void setActivityId(int activityId) {
         m_activityId = activityId;
     }
@@ -67,24 +61,23 @@ public class Assessment {
     }
 
     public Assessment(JSONObject assessmentJson) {
-        if (assessmentJson.containsKey(ID)) {
+        if (assessmentJson.containsKey(ID))
             m_id = Converter.toInteger(assessmentJson.get(ID));
-        }
-        if (assessmentJson.containsKey(CONTENT)) {
+
+        if (assessmentJson.containsKey(CONTENT))
             m_content = (String) assessmentJson.get(CONTENT);
-        }
-        if (assessmentJson.containsKey(FROM)) {
+
+        if (assessmentJson.containsKey(FROM))
             m_from = Converter.toInteger(assessmentJson.get(FROM));
-        }
-        if (assessmentJson.containsKey(TO)) {
+
+        if (assessmentJson.containsKey(TO))
             m_to = Converter.toInteger(assessmentJson.get(TO));
-        }
-        if (assessmentJson.containsKey(ACTIVITY_ID)) {
+
+        if (assessmentJson.containsKey(ACTIVITY_ID))
             m_activityId = Converter.toInteger(assessmentJson.get(ACTIVITY_ID));
-        }
-        if (assessmentJson.containsKey(GENERATED_TIME)) {
-            m_generatedTime = (Timestamp) assessmentJson.get(GENERATED_TIME);
-        }
+
+        if (assessmentJson.containsKey(GENERATED_TIME))
+            m_generatedTime = (Long) assessmentJson.get(GENERATED_TIME);
     }
 
     public ObjectNode toObjectNode() {
@@ -94,9 +87,9 @@ public class Assessment {
             ret.put(FROM, m_from);
             ret.put(TO, m_to);
             ret.put(CONTENT, m_content);
-            ret.put(GENERATED_TIME, m_generatedTime.toString());
+            ret.put(GENERATED_TIME, Converter.gmtMillisecToLocalTime(m_generatedTime));
         } catch (Exception e) {
-            System.out.println(Assessment.class.getName() + ".toObjectNode, " + e.getMessage());
+            Logger.e(TAG, "toObjectNode", e);
         }
         return ret;
     }

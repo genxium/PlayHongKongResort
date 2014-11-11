@@ -10,14 +10,14 @@ import models.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import play.libs.Json;
-import play.mvc.Content;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.Converter;
 import utilities.DataUtils;
+import utilities.General;
 import utilities.Logger;
 
-import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -198,10 +198,10 @@ public class ActivityController extends Controller {
 			String activityBeginTime = formData.get(Activity.BEGIN_TIME)[0];
 			String activityDeadline = formData.get(Activity.DEADLINE)[0];
 
-			Timestamp beginTime = Timestamp.valueOf(activityBeginTime);
-			Timestamp deadline = Timestamp.valueOf(activityDeadline);
+			long beginTime = Converter.localDateToGmtMillisec(activityBeginTime);
+			long deadline = Converter.localDateToGmtMillisec(activityDeadline);
 			
-			if(deadline.after(beginTime)) throw new DeadlineAfterBeginTimeException();
+			if(deadline > beginTime) throw new DeadlineAfterBeginTimeException();
 
 			String token = formData.get(User.TOKEN)[0];
 			if (token == null) throw new NullPointerException();
@@ -356,8 +356,9 @@ public class ActivityController extends Controller {
 			boolean joinable = SQLCommander.isActivityJoinable(userId, activity);
 			if (!joinable) throw new Exception();
 
-			String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION};
-			Object[] values = {activityId, userId, UserActivityRelation.maskRelation(UserActivityRelation.APPLIED, null)};
+            long now = General.millisec();
+            String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME, UserActivityRelation.LAST_APPLYING_TIME};
+			Object[] values = {activityId, userId, UserActivityRelation.maskRelation(UserActivityRelation.APPLIED, null), now, now};
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 			builder.insert(names, values).into(UserActivityRelation.TABLE).execInsert();
 
@@ -381,7 +382,7 @@ public class ActivityController extends Controller {
 			Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 			String token = formData.get(User.TOKEN)[0];
 			if (token == null) throw new NullPointerException();
-			Integer relation = Integer.parseInt(formData.get(UserActivityRelation.RELATION)[0]);
+			Integer relation = Converter.toInteger(formData.get(UserActivityRelation.RELATION)[0]);
 			Integer userId = SQLCommander.queryUserId(token);
 			if (userId == null) throw new UserNotFoundException();
 

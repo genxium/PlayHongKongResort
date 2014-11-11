@@ -3,26 +3,21 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import play.libs.Json;
-
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
-
+import exception.*;
 import models.Activity;
 import models.Comment;
 import models.User;
-import exception.*;
-
-import play.mvc.Content;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
-import utilities.DataUtils;
+import utilities.Converter;
+import utilities.General;
 import utilities.Logger;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Arrays;
 
 public class CommentController extends Controller {
 
@@ -91,7 +86,7 @@ public class CommentController extends Controller {
 		    String token = formData.get(User.TOKEN)[0];
 		    if (token == null) throw new InvalidCommentParamsException();
 
-		    Integer activityId = Integer.valueOf(formData.get(Comment.ACTIVITY_ID)[0]);
+		    Integer activityId = Converter.toInteger(formData.get(Comment.ACTIVITY_ID)[0]);
 		    Activity activity = SQLCommander.queryActivity(activityId);
 
 		    if (activity == null) throw new ActivityNotFoundException();
@@ -103,11 +98,8 @@ public class CommentController extends Controller {
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-		    String[] columnNames = {Comment.CONTENT, Comment.ACTIVITY_ID, Comment.FROM};
-		    List<String> cols = new LinkedList<String>(Arrays.asList(columnNames));
-
-		    Object[] columnValues = {content, activityId, from};
-		    List<Object> vals = new LinkedList<Object>(Arrays.asList(columnValues));
+		    String[] cols = {Comment.CONTENT, Comment.ACTIVITY_ID, Comment.FROM, Comment.GENERATED_TIME};
+		    Object[] vals = {content, activityId, from, General.millisec()};
 
 		    builder.insert(cols, vals).into(Comment.TABLE);
 		    if (SQLHelper.INVALID == builder.execInsert()) throw new NullPointerException();

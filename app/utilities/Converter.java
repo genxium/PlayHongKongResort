@@ -1,8 +1,18 @@
 package utilities;
 
 import java.security.MessageDigest;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class Converter {
+
+    protected static SimpleDateFormat s_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static SimpleDateFormat getDateFormat() {
+        return s_dateFormat;
+    }
+
     public static String md5(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -32,5 +42,15 @@ public class Converter {
         else if (obj instanceof Long) return ((Long) obj).intValue();
         else if (obj instanceof String) return Integer.valueOf((String) obj);
         else return null;
+    }
+
+    public static String gmtMillisecToLocalTime(long millisecs) {
+        Calendar localCld = General.localCalendar();
+        Timestamp ts = new Timestamp(millisecs + (long)localCld.getTimeZone().getRawOffset());
+        return getDateFormat().format(ts);
+    }
+
+    public static long localDateToGmtMillisec(String dateStr) throws ParseException {
+        return getDateFormat().parse(dateStr).getTime();
     }
 }
