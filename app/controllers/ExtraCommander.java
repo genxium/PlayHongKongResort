@@ -94,7 +94,7 @@ public class ExtraCommander extends SQLCommander {
 
 			String imageAbsolutePath = Image.getFolderPath() + newImageName;
 
-			int imageId = SQLCommander.uploadUserAvatar(user, imageURL);
+			int imageId = SQLCommander.uploadAvatar(user, imageURL);
 			if (imageId == INVALID) throw new NullPointerException();
 
 			try {

@@ -667,7 +667,7 @@ public class SQLCommander {
 	    return false;
     }
 
-    public static int uploadUserAvatar(User user, String imageURL) {
+    public static int uploadAvatar(User user, String imageURL) {
 	    int ret = INVALID;
 	    try {
 		    EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
@@ -682,7 +682,7 @@ public class SQLCommander {
 		    }
 		    ret = lastImageId;
 	    } catch (Exception e){
-		    System.out.println(SQLCommander.class.getName() + ".uploadUserAvatar, " + e.getMessage());
+		    Logger.e(TAG, "uploadAvatar", e);
 	    }
 	    return ret;
     }
@@ -764,8 +764,8 @@ public class SQLCommander {
 		    int lastImageId = builderImage.insert(Image.URL, imageURL).into(Image.TABLE).execInsert();
 		    if (lastImageId == INVALID) throw new NullPointerException();
 
-		    String[] cols = {ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID};
-		    Object[] vals = {activity.getId(), lastImageId};
+		    String[] cols = {ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID, ActivityImageRelation.GENERATED_TIME};
+		    Object[] vals = {activity.getId(), lastImageId, General.millisec()};
 		    EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
 		    builderRelation.insert(cols, vals).into(ActivityImageRelation.TABLE).execInsert();
             return lastImageId;
