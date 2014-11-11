@@ -43,7 +43,7 @@ public class PasswordController extends UserController {
         try {
             User user = SQLCommander.queryUserByEmail(email);
             if(user == null) throw new UserNotFoundException();
-            String code = generateVerificationCode(user);
+            String code = SQLCommander.generateVerificationCode(email);
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.update(User.TABLE).set(User.PASSWORD_RESET_CODE, code).where(User.EMAIL, "=", email);
             if(!builder.execUpdate()) throw new NullPointerException();
@@ -90,8 +90,12 @@ public class PasswordController extends UserController {
             String code = formData.get(User.PASSWORD_RESET_CODE)[0];
             String password = formData.get(User.PASSWORD)[0];
 
-            if(!General.validatePassword(password)) throw new InvalidPasswordException(); 
-            String passwordDigest = Converter.md5(password);
+            if(!General.validatePassword(password)) throw new InvalidPasswordException();
+
+            User user = SQLCommander.queryUserByEmail(email);
+            if (user == null) throw new UserNotFoundException();
+
+            String passwordDigest = Converter.md5(password + user.getSalt());
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.update(User.TABLE)
@@ -104,11 +108,8 @@ public class PasswordController extends UserController {
             return ok();
         } catch (Exception e) {
             Logger.e(TAG, "confirm", e);
+            return badRequest();
         }
-        return badRequest();
     }
 
-    protected static String generateResetCode(User user) {
-	return DataUtils.encryptByTime(user.getEmail());
-    }
 }

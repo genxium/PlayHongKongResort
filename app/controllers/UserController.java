@@ -2,10 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.EasyPreparedStatementBuilder;
-import exception.InvalidLoginParamsException;
-import exception.InvalidRegistrationParamsException;
-import exception.InvalidUserActivityRelationException;
-import exception.UserNotFoundException;
+import exception.*;
 import models.Login;
 import models.User;
 import models.UserActivityRelation;
@@ -53,7 +50,6 @@ public class UserController extends Controller {
     public static Result login() {
         // define response attributes
         response().setContentType("text/plain");
-
         try {
             Http.RequestBody body = request().body();
             Map<String, String[]> formData = body.asFormUrlEncoded();
@@ -96,10 +92,10 @@ public class UserController extends Controller {
             String password = formData.get(User.PASSWORD)[0];
 
             if ((name == null || !General.validateName(name)) || (email == null || !General.validateEmail(email)) || (password == null || !General.validatePassword(password)))  throw new InvalidRegistrationParamsException();
-            String passwordDigest = Converter.md5(password);
+            String code = SQLCommander.generateVerificationCode(name);
+            String salt = SQLCommander.generateSalt(email, password);
+            String passwordDigest = Converter.md5(password + salt);
             User user = new User(email, passwordDigest, name);
-            String code = generateVerificationCode(user);
-            String salt = generateSalt(user);
             user.setVerificationCode(code);
             user.setSalt(salt);
 
@@ -119,14 +115,16 @@ public class UserController extends Controller {
         try {
             if (token == null) throw new NullPointerException();
             Integer userId = SQLCommander.queryUserId(token);
+            if (userId == null) throw new UserNotFoundException();
             User user = SQLCommander.queryUser(userId);
-
             if (user == null) throw new UserNotFoundException();
             return ok(user.toObjectNode(userId));
+        } catch (TokenExpiredException e) {
+            Logger.e(TAG, "status", e);
         } catch (Exception e) {
             Logger.e(TAG, "status", e);
         }
-        return badRequest("User doesn't exist or not logged in");
+        return badRequest();
     }
 
     public static Result relation(Integer activityId, String token) {
@@ -136,11 +134,12 @@ public class UserController extends Controller {
         try {
             Integer userId = SQLCommander.queryUserId(token);
             int relation = SQLCommander.queryUserActivityRelation(userId, activityId);
-
             if (relation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
             ObjectNode ret = Json.newObject();
             ret.put(UserActivityRelation.RELATION, String.valueOf(relation));
             return ok(ret);
+        } catch (TokenExpiredException e) {
+            Logger.e(TAG, "relation", e);
         } catch (Exception e) {
             Logger.e(TAG, "relation", e);
         }
@@ -186,17 +185,11 @@ public class UserController extends Controller {
             if (token != null)  viewerId = SQLCommander.queryUserId(token);
             User viewee = SQLCommander.queryUser(vieweeId);
             return ok(viewee.toObjectNode(viewerId));
+        } catch (TokenExpiredException e) {
+            Logger.e(TAG, "detail", e);
         } catch (Exception e) {
             Logger.e(TAG, "detail", e);
         }
         return badRequest();
-    }
-
-    protected static String generateVerificationCode(User user) {
-	    return DataUtils.encryptByTime(user.getName());
-    }
-
-    public static String generateSalt(User user) {
-        return DataUtils.encryptByTime(user.getEmail() + user.getPassword());
     }
 }

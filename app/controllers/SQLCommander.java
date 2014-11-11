@@ -5,6 +5,7 @@ import dao.SQLHelper;
 import exception.*;
 import models.*;
 import org.json.simple.JSONObject;
+import utilities.DataUtils;
 import utilities.General;
 import utilities.Logger;
 
@@ -926,5 +927,13 @@ public class SQLCommander {
 
     public static boolean validateAdminAccess(User user) {
         return (user != null && user.getGroupId() == User.ADMIN);
+    }
+
+    protected static String generateVerificationCode(String email) {
+        return DataUtils.encryptByTime(email);
+    }
+
+    public static String generateSalt(String email, String password) {
+        return DataUtils.encryptByTime(email + password);
     }
 }

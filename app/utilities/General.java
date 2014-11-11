@@ -6,6 +6,9 @@ import java.util.TimeZone;
 
 public class General {
 
+    public static final String RET = "ret";
+    public static final String DATA = "data";
+
     protected static Calendar s_localCalendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+8"));
 
     public static Calendar localCalendar() {
