@@ -43,12 +43,24 @@ public class General {
     }
 
     public static Timestamp now() {
+	    return new java.sql.Timestamp(millisec());
+    }
+
+    public static long millisec() {
 	    Calendar localCld = localCalendar();
-	    long localTime = (localCld.getTimeInMillis() + localCld.getTimeZone().getRawOffset());
-	    return new java.sql.Timestamp(localTime);
+	    return localCld.getTimeInMillis();
+    }
+
+    public static Timestamp localNow() {
+	    return new java.sql.Timestamp(localMillisec());
+    }
+
+    public static long localMillisec() {
+	    Calendar localCld = localCalendar();
+	    return (localCld.getTimeInMillis() + localCld.getTimeZone().getRawOffset());
     }
 
     public static Calendar localCalendar() {
-	    return new GregorianCalendar(TimeZone.getTimeZone("GMT+8")); // should match mysql setting `/etc/my.cnf`
+	    return new GregorianCalendar(TimeZone.getTimeZone("GMT+8"));
     }
 }

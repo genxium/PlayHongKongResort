@@ -156,13 +156,13 @@ public class Activity {
     protected User m_viewer = null;
 
     public boolean isDeadlineExpired() {
-	    long milisecs = General.localCalendar().getTimeInMillis();
-	    return  milisecs > m_deadline.getTime();
+	    return  General.millisec() > m_deadline.getTime();
     }
 
     public boolean hasBegun() {
-	    long milisecs = General.localCalendar().getTimeInMillis();
-	    return milisecs > m_beginTime.getTime();
+	    long now = General.millisec(), beginTime = m_beginTime.getTime();
+	    System.out.println("Activity id " + m_id + ", now is " + now + ", the begin time is " + beginTime);	
+	    return General.millisec() > m_beginTime.getTime();
     }
 
     protected Activity() {
