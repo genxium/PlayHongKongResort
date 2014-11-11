@@ -32,7 +32,7 @@ CREATE TABLE `user` (
   `authentication_status` int(2) NOT NULL DEFAULT '0',
   `gender` int(1) NOT NULL DEFAULT '0',
   `avatar` int(32) NOT NULL DEFAULT '0',
-  `created_time` int(32) DEFAULT NULL,
+  `created_time` bigint(20) DEFAULT NULL,
   `verification_code` varchar(32) DEFAULT NULL,
   `unread_count` int(32) NOT NULL DEFAULT '0',
   `password_reset_code` varchar(32) DEFAULT NULL,
@@ -62,4 +62,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-11-11 12:37:14
+-- Dump completed on 2014-11-11 15:57:01

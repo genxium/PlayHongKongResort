@@ -29,7 +29,7 @@ CREATE TABLE `comment` (
   `to` int(32) DEFAULT NULL,
   `activity_id` int(32) NOT NULL,
   `predecessor_id` int(32) NOT NULL DEFAULT '-1',
-  `generated_time` int(32) DEFAULT NULL,
+  `generated_time` bigint(20) DEFAULT NULL,
   `parent_id` int(32) NOT NULL DEFAULT '-1',
   `num_children` int(32) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -50,4 +50,4 @@ CREATE TABLE `comment` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-11-11 12:37:14
+-- Dump completed on 2014-11-11 15:57:01

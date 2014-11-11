@@ -3,7 +3,6 @@ var g_registerWidget = null;
 function emptySectionRegister() {
 	if (g_sectionRegister == null) return;
 	setDimensions(g_sectionRegister, "100%", 0);
-	g_sectionRegister.empty();
 }
 
 function initSectionRegister() {

@@ -26,16 +26,16 @@ CREATE TABLE `activity` (
   `id` int(32) NOT NULL AUTO_INCREMENT,
   `title` varchar(32) NOT NULL,
   `content` mediumtext,
-  `created_time` int(32) DEFAULT NULL,
-  `begin_time` int(32) DEFAULT NULL,
-  `application_deadline` int(32) DEFAULT NULL,
+  `created_time` bigint(20) DEFAULT NULL,
+  `begin_time` bigint(20) DEFAULT NULL,
+  `application_deadline` bigint(20) DEFAULT NULL,
   `capacity` int(32) NOT NULL DEFAULT '0',
   `status` int(3) NOT NULL DEFAULT '0',
   `host_id` int(32) NOT NULL,
   `num_applied` int(32) DEFAULT '0',
   `num_selected` int(32) DEFAULT '0',
-  `last_accepted_time` int(32) DEFAULT NULL,
-  `last_rejected_time` int(32) DEFAULT NULL,
+  `last_accepted_time` bigint(20) DEFAULT NULL,
+  `last_rejected_time` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `activity_ibfk_1` (`host_id`),
   KEY `status_index` (`status`)
@@ -51,4 +51,4 @@ CREATE TABLE `activity` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-11-11 12:37:14
+-- Dump completed on 2014-11-11 15:57:01

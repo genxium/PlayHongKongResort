@@ -28,7 +28,7 @@ CREATE TABLE `assessment` (
   `to` int(32) NOT NULL,
   `content` varchar(128) NOT NULL,
   `activity_id` int(32) NOT NULL,
-  `generated_time` int(32) DEFAULT NULL,
+  `generated_time` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `assessment_ibfk_1` (`from`),
   KEY `assessment_ibfk_2` (`to`),
@@ -45,4 +45,4 @@ CREATE TABLE `assessment` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-11-11 12:37:14
+-- Dump completed on 2014-11-11 15:57:01

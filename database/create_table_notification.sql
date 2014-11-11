@@ -33,7 +33,7 @@ CREATE TABLE `notification` (
   `cmd` int(32) NOT NULL,
   `relation` int(3) DEFAULT NULL,
   `status` int(3) DEFAULT NULL,
-  `generated_time` int(32) DEFAULT NULL,
+  `generated_time` bigint(20) DEFAULT NULL,
   KEY `notification_ibfk_1` (`activity_id`) USING BTREE,
   KEY `notification_ibfk_2` (`comment_id`) USING BTREE,
   KEY `notification_ibfk_3` (`assessment_id`) USING BTREE,
@@ -52,4 +52,4 @@ CREATE TABLE `notification` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-11-11 12:37:14
+-- Dump completed on 2014-11-11 15:57:01

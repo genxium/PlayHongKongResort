@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `login`;
 CREATE TABLE `login` (
   `user_id` int(32) NOT NULL,
   `token` varchar(32) NOT NULL,
-  `timestamp` int(32) DEFAULT NULL,
+  `timestamp` bigint(20) DEFAULT NULL,
   UNIQUE KEY `token` (`token`),
   KEY `login_ibfk_1` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -40,4 +40,4 @@ CREATE TABLE `login` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-11-11 12:37:14
+-- Dump completed on 2014-11-11 15:57:01

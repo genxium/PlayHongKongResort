@@ -39,7 +39,7 @@ public class User extends BasicUser {
     protected String m_salt = null;
 
     public String getSalt() {
-        return m_salt;
+        return (m_salt == null) ? "" : m_salt;
     }
 
     public void setSalt(String salt) {
