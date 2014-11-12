@@ -51,12 +51,11 @@ public class General {
     }
 
     public static long millisec() {
-	    Calendar localCld = localCalendar();
-	    return localCld.getTimeInMillis();
+	    return System.currentTimeMillis();
     }
 
     public static long localMillisec() {
 	    Calendar localCld = localCalendar();
-	    return (localCld.getTimeInMillis() + localCld.getTimeZone().getRawOffset());
+	    return (millisec() + localCld.getTimeZone().getRawOffset());
     }
 }

@@ -640,14 +640,15 @@ public class SQLCommander {
 	    if (user == null) return false;
 	    if (activity == null) return false;
 	    try {
-		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    return builder.update(Activity.TABLE)
-                        .set(Activity.STATUS, Activity.ACCEPTED)
-                        .set(Activity.LAST_ACCEPTED_TIME, General.millisec())
-                        .where(Activity.ID, "=", activity.getId())
-                        .execUpdate();
+		long now = General.millisec();
+		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		return builder.update(Activity.TABLE)
+		    .set(Activity.STATUS, Activity.ACCEPTED)
+		    .set(Activity.LAST_ACCEPTED_TIME, now)
+		    .where(Activity.ID, "=", activity.getId())
+		    .execUpdate();
 	    } catch (Exception e) {
-		    Logger.e(TAG, "acceptActivity", e);
+		Logger.e(TAG, "acceptActivity", e);
 	    }
 	    return false;
     }
@@ -656,14 +657,15 @@ public class SQLCommander {
 	    if (user == null) return false;
 	    if (activity == null) return false;
 	    try {
-		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    return builder.update(Activity.TABLE)
-                        .set(Activity.STATUS, Activity.REJECTED)
-                        .set(Activity.LAST_REJECTED_TIME, General.millisec())
-                        .where(Activity.ID, "=", activity.getId())
-                        .execUpdate();
+		long now = General.millisec();
+		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		return builder.update(Activity.TABLE)
+		    .set(Activity.STATUS, Activity.REJECTED)
+		    .set(Activity.LAST_REJECTED_TIME, now)
+		    .where(Activity.ID, "=", activity.getId())
+		    .execUpdate();
 	    } catch (Exception e) {
-		    Logger.e(TAG, "rejectActivity", e);
+		Logger.e(TAG, "rejectActivity", e);
 	    }
 	    return false;
     }
