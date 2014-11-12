@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.6.20, for osx10.6 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.20, for Linux (i686)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
@@ -40,7 +40,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -49,7 +49,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (10,'genxium',NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',1,0,0,0,2147483647,'',0,'3ad92a25ea707b34',NULL),(11,'adminsam',NULL,'c33367701511b4f6020ec61ded352059','admin@hongkongresort.com',3,0,0,0,2147483647,'3d17adadbcb2beff',0,NULL,NULL),(12,'genxium1988',NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',0,0,0,0,2147483647,'59b6bf402cbee126',0,NULL,NULL),(13,'genxium0430',NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@yahoo.com',0,0,0,0,2147483647,'523b59ae1c79ce50',0,NULL,NULL),(14,'raychen',NULL,'e10adc3949ba59abbe56e057f20f883e','saichanjiawei@126.com',0,0,0,0,2147483647,'e39df49da99cbea3',0,NULL,NULL),(15,'rayc33',NULL,'e10adc3949ba59abbe56e057f20f883e','saichanjiawei@gmail.com',0,0,0,0,2147483647,'33d6b0100208e1f5',0,NULL,NULL),(16,'lafaxiu123',NULL,'e922cfdac77e24bf76c46708b5940195','lafaxiu@126.com',1,0,0,0,2147483647,'',0,NULL,NULL),(17,'raychan',NULL,'e10adc3949ba59abbe56e057f20f883e','523027315@qq.com',0,0,0,0,2147483647,'6e6e234913378390',0,NULL,NULL),(18,'genxium126',NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@126.com',0,0,0,0,NULL,'499ca4d9d6349425',0,NULL,'9e59eb729a7b3d99');
+INSERT INTO `user` VALUES (10,'genxium',NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@gmail.com',1,0,0,0,2147483647,'',0,'3ad92a25ea707b34',NULL),(11,'adminsam',NULL,'c33367701511b4f6020ec61ded352059','admin@hongkongresort.com',3,0,0,0,2147483647,'3d17adadbcb2beff',0,NULL,NULL),(12,'genxium1988',NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@hotmail.com',0,0,0,0,2147483647,'59b6bf402cbee126',0,NULL,NULL),(13,'genxium0430',NULL,'e10adc3949ba59abbe56e057f20f883e','genxium@yahoo.com',0,0,0,0,2147483647,'523b59ae1c79ce50',0,NULL,NULL),(14,'raychen',NULL,'e10adc3949ba59abbe56e057f20f883e','saichanjiawei@126.com',0,0,0,0,2147483647,'e39df49da99cbea3',0,NULL,NULL),(15,'rayc33',NULL,'e10adc3949ba59abbe56e057f20f883e','saichanjiawei@gmail.com',0,0,0,0,2147483647,'33d6b0100208e1f5',0,NULL,NULL),(16,'lafaxiu123',NULL,'e922cfdac77e24bf76c46708b5940195','lafaxiu@126.com',1,0,0,0,2147483647,'',0,NULL,NULL),(17,'raychan',NULL,'e10adc3949ba59abbe56e057f20f883e','523027315@qq.com',0,0,0,0,2147483647,'6e6e234913378390',0,NULL,NULL),(19,'genxium126',NULL,'b5c936dc0838baeff6db21bc6cd49388','genxium@126.com',1,0,0,0,NULL,'',0,'','c576b41286e9f0e8');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -62,4 +62,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-11-11 17:28:26
+-- Dump completed on 2014-11-12  5:27:22

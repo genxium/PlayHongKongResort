@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.6.20, for osx10.6 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.20, for Linux (i686)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
@@ -50,4 +50,4 @@ CREATE TABLE `comment` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-11-11 17:28:26
+-- Dump completed on 2014-11-12  5:27:22
