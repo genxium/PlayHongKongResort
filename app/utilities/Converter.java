@@ -48,6 +48,13 @@ public class Converter {
         else return null;
     }
 
+    public static Long toLong(Object obj) {
+        if (obj instanceof Integer) return ((Integer) obj).longValue();
+        else if (obj instanceof Long) return (Long) obj;
+        else if (obj instanceof String) return Long.valueOf((String) obj);
+        else return null;
+    }
+
     public static String gmtMillisecToLocalTime(long millisecs) {
         Timestamp ts = new Timestamp(millisecs);
         return getDateFormat().format(ts);
