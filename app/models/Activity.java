@@ -154,7 +154,7 @@ public class Activity {
     protected User m_viewer = null;
 
     public boolean isDeadlineExpired() {
-	    return  General.millisec() > m_deadline;
+	    return General.millisec() > m_deadline;
     }
 
     public boolean hasBegun() {

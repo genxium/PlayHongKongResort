@@ -195,12 +195,9 @@ public class ActivityController extends Controller {
 
 			String activityTitle = formData.get(Activity.TITLE)[0];
 			String activityContent = formData.get(Activity.CONTENT)[0];
-			String activityBeginTime = formData.get(Activity.BEGIN_TIME)[0];
-			String activityDeadline = formData.get(Activity.DEADLINE)[0];
+			long beginTime = Converter.toLong(formData.get(Activity.BEGIN_TIME)[0]);
+			long deadline = Converter.toLong(formData.get(Activity.DEADLINE)[0]);
 
-			long beginTime = Converter.localDateToGmtMillisec(activityBeginTime);
-			long deadline = Converter.localDateToGmtMillisec(activityDeadline);
-			
 			if(deadline > beginTime) throw new DeadlineAfterBeginTimeException();
 
 			String token = formData.get(User.TOKEN)[0];

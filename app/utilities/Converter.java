@@ -8,8 +8,12 @@ import java.util.Calendar;
 
 public class Converter {
 
-    protected static SimpleDateFormat s_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    protected static SimpleDateFormat s_dateFormat = null;
     public static SimpleDateFormat getDateFormat() {
+	if (s_dateFormat == null) {
+		s_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		s_dateFormat.setTimeZone(General.localCalendar().getTimeZone());
+	}
         return s_dateFormat;
     }
 
@@ -44,13 +48,19 @@ public class Converter {
         else return null;
     }
 
+    public static Long toLong(Object obj) {
+        if (obj instanceof Integer) return ((Integer) obj).longValue();
+        else if (obj instanceof Long) return (Long) obj;
+        else if (obj instanceof String) return Long.valueOf((String) obj);
+        else return null;
+    }
+
     public static String gmtMillisecToLocalTime(long millisecs) {
-        Calendar localCld = General.localCalendar();
-        Timestamp ts = new Timestamp(millisecs + (long)localCld.getTimeZone().getRawOffset());
+        Timestamp ts = new Timestamp(millisecs);
         return getDateFormat().format(ts);
     }
 
     public static long localDateToGmtMillisec(String dateStr) throws ParseException {
-        return getDateFormat().parse(dateStr).getTime() - General.localCalendar().getTimeZone().getRawOffset();
+        return getDateFormat().parse(dateStr).getTime();
     }
 }

@@ -248,10 +248,10 @@ function onSave(evt){
         formData.append(g_keyContent, content);
 
         // append activity begin time and deadline
-        var beginTime = getDateTime(g_editor.beginTimePicker);
-        var deadline = getDateTime(g_editor.deadlinePicker);
+        var beginTime = localYmdhisToGmtMillisec(getDateTime(g_editor.beginTimePicker));
+        var deadline = localYmdhisToGmtMillisec(getDateTime(g_editor.deadlinePicker));
 		
-	if(compareYmdhisDate(deadline, beginTime) > 0) {
+	if(deadline > beginTime) {
 		alert("Deadline can not be after the begin time of an activity.");
 		return;
 	}
