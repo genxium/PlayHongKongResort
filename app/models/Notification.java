@@ -7,6 +7,7 @@ public class Notification {
 
     public static int INVALID = (-1);
 
+    public static final String ID = "ID";
     public static final String IS_READ = "is_read";
     public static final String FROM = "from";
     public static final String TO = "to";
@@ -18,6 +19,7 @@ public class Notification {
     public static final String RELATION = "relation";
     public static final String STATUS = "status";
 
+    protected long m_id = 0;
     protected boolean m_isRead = false;
     protected int m_from = INVALID;
     protected int m_to = INVALID;
@@ -30,6 +32,7 @@ public class Notification {
     protected int m_status = INVALID;
 
     public Notification(JSONObject notificationJson) {
+	if (notificationJson.containsKey(ID)) m_id = Converter.toLong(notificationJson.get(ID));
         if (notificationJson.containsKey(IS_READ)) m_isRead = (Boolean) notificationJson.get(IS_READ);
         if (notificationJson.containsKey(FROM)) m_from = Converter.toInteger(notificationJson.get(FROM));
         if (notificationJson.containsKey(TO)) m_to = Converter.toInteger(notificationJson.get(TO));

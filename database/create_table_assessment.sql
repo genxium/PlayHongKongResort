@@ -33,7 +33,7 @@ CREATE TABLE `assessment` (
   KEY `assessment_ibfk_1` (`from`),
   KEY `assessment_ibfk_2` (`to`),
   KEY `assessment_ibfk_3` (`activity_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -45,4 +45,4 @@ CREATE TABLE `assessment` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-11-12  5:27:22
+-- Dump completed on 2014-11-12 21:29:48
