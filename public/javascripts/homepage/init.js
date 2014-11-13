@@ -15,6 +15,8 @@ function clearHome() {
 	$("#pager-screen-activities").empty();
 	$("#pager-bar-activities").empty();
 	emptySectionRegister();
+	if (g_sectionRegister == null) return;
+	g_sectionRegister.empty();
 }
 
 function requestHome() {
