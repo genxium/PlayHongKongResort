@@ -215,9 +215,9 @@ public class Activity {
             ret.put(TITLE, m_title);
             ret.put(CONTENT, m_content);
 
-            ret.put(CREATED_TIME, Converter.gmtMillisecToLocalTime(m_createdTime));
-            ret.put(BEGIN_TIME, Converter.gmtMillisecToLocalTime(m_beginTime));
-            ret.put(DEADLINE, Converter.gmtMillisecToLocalTime(m_deadline));
+            ret.put(CREATED_TIME, String.valueOf(m_createdTime));
+            ret.put(BEGIN_TIME, String.valueOf(m_beginTime));
+            ret.put(DEADLINE, String.valueOf(m_deadline));
 
             ret.put(CAPACITY, String.valueOf(m_capacity));
             ret.put(NUM_APPLIED, String.valueOf(m_numApplied));

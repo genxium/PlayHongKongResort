@@ -112,7 +112,7 @@ function displayTimesTable(par, activity) {
     		style: "background-color: orangered; color: white; padding-left: 5pt; padding-right: 5pt"
     	}).appendTo(deadlineRow);
     	var deadline = $("<td>", {
-    		text: activity.applicationDeadline,
+    		text: gmtMiilisecToLocalYmdhis(activity.applicationDeadline),
     		style: "background-color: indianred; color: white; padding-left: 8pt; padding-right: 5pt"
     	}).appendTo(deadlineRow);
 	if (activity.isDeadlineExpired()) {
@@ -128,7 +128,7 @@ function displayTimesTable(par, activity) {
     		style: "background-color: royalblue; color: white; padding-left: 5pt; padding-right: 5pt"
     	}).appendTo(beginTimeRow);
     	var beginTime = $("<td>", {
-    		text: activity.beginTime,
+    		text: gmtMiilisecToLocalYmdhis(activity.beginTime),
     		style: "background-color: steelblue; color: white; padding-left: 8pt; padding-right: 5pt"
     	}).appendTo(beginTimeRow);
 

@@ -23,6 +23,7 @@ DROP TABLE IF EXISTS `notification`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `notification` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `is_read` int(2) NOT NULL DEFAULT '0',
   `from` int(32) DEFAULT NULL,
   `to` int(32) NOT NULL,
@@ -34,7 +35,6 @@ CREATE TABLE `notification` (
   `relation` int(3) DEFAULT NULL,
   `status` int(3) DEFAULT NULL,
   `generated_time` bigint(20) DEFAULT NULL,
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`),
   KEY `notification_ibfk_1` (`activity_id`) USING BTREE,
   KEY `notification_ibfk_2` (`comment_id`) USING BTREE,
@@ -42,7 +42,7 @@ CREATE TABLE `notification` (
   KEY `notification_ibfk_4` (`from`) USING BTREE,
   KEY `notification_ibfk_5` (`to`) USING BTREE,
   KEY `cmd_index` (`cmd`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -54,4 +54,4 @@ CREATE TABLE `notification` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-11-12 21:29:48
+-- Dump completed on 2014-11-13 23:56:42

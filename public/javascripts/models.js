@@ -22,18 +22,18 @@ function Activity(activityJson){
 	this.id = parseInt(activityJson["id"]);
 	this.title = activityJson["title"];
 	this.content = activityJson["content"];
-	this.createdTime = activityJson["created_time"];
-	this.applicationDeadline = activityJson["application_deadline"];
+	this.createdTime = parseInt(activityJson["created_time"]);
+	this.applicationDeadline = parseInt(activityJson["application_deadline"]);
 	this.isDeadlineExpired = function() {
-            var now = getCurrentYmdhisDate();
-            if(compareYmdhisDate(now, this.applicationDeadline) >= 0) return true;
-            else return false;
+	    var date = new Date();
+	    var localNow = 1000 * moment().zone(date.getTimezoneOffset()).unix(); 
+	    return localNow > this.applicationDeadline;
 	};
-	this.beginTime = activityJson["begin_time"];
+	this.beginTime = parseInt(activityJson["begin_time"]);
 	this.hasBegun = function() {
-            var now = getCurrentYmdhisDate();
-            if(compareYmdhisDate(now, this.beginTime) >= 0) return true;
-            else return false;
+	    var date = new Date();
+	    var localNow = 1000 * moment().zone(date.getTimezoneOffset()).unix(); 
+	    return localNow > this.beginTime;
 	};
 
 	if (activityJson.hasOwnProperty("capacity")) this.capacity = parseInt(activityJson["capacity"]);
