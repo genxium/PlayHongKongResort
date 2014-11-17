@@ -101,7 +101,7 @@ public class Comment {
 		    ret.put(CONTENT, m_content);
 		    ret.put(FROM, m_from);
 		    ret.put(FROM_NAME, SQLCommander.queryUser(m_from).getName());
-		    ret.put(GENERATED_TIME, Converter.gmtMillisecToLocalTime(m_generatedTime));
+		    ret.put(GENERATED_TIME, String.valueOf(m_generatedTime));
 		    ret.put(NUM_CHILDREN, m_numChildren.toString());
 
 		    if (single) return ret;

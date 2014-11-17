@@ -190,7 +190,7 @@ function generateCommentCell(par, commentJson, activity, single){
 	});
         
         var generatedTime = $('<span>', {
-            text: truncateMillisec(comment.generatedTime),
+            text: gmtMiilisecToLocalYmdhis(comment.generatedTime),
             style: "text-align: left; margin-left:  25pt; color: blue; font-size: 14pt"
         }).appendTo(row);
 
@@ -283,7 +283,7 @@ function generateSubCommentCell(par, commentJson, activity){
 	});
 
 	var generatedTime = $('<span>', {
-		text: truncateMillisec(comment.generatedTime),
+		text: gmtMiilisecToLocalYmdhis(comment.generatedTime),
 		style: "text-align: left; margin-left:  25pt; color: blue; font-size: 13pt"
 	}).appendTo(row);
 

@@ -87,7 +87,7 @@ public class Assessment {
             ret.put(FROM, m_from);
             ret.put(TO, m_to);
             ret.put(CONTENT, m_content);
-            ret.put(GENERATED_TIME, Converter.gmtMillisecToLocalTime(m_generatedTime));
+            ret.put(GENERATED_TIME, String.valueOf(m_generatedTime));
         } catch (Exception e) {
             Logger.e(TAG, "toObjectNode", e);
         }
