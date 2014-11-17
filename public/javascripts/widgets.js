@@ -436,6 +436,10 @@ function createDropdownMenu(par, id, menuTitle, icons, titles, reactions) {
 	var length = titles.length;
 	if (length != icons.length) return; 
 	var container = $("<div class='dropdown'>").appendTo(par);
+	container.css("position: absolute");
+	container.css("left", "50%");
+	container.css("top", "50%");
+	container.css("transform", "translate(-50%, -50%)");
 	var toggle = $("<button id='" + id + "' class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>").appendTo(container);
 	toggle.text(menuTitle);
 	var sp = $("<span class='caret'>").appendTo(toggle);	

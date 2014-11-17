@@ -184,11 +184,11 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	};
 
 	var noti = $("<span>", {
-		style: "position: absolute; width: 10%; height: 80%; left: 50%; top: 20px;"
+		style: "position: absolute; width: 10%; height: 80%; left: 55%; top: 20px;"
 	}).appendTo(par);
-	setBackgroundImage(noti, "/assets/icons/notification.png", "contain", "no-repeat", "left top");
+	setBackgroundImage(noti, "/assets/icons/notification.png", "contain", "no-repeat", "center");
 	var spBubble = $("<span>", {
-		style: "position: absolute; width: 20px; height: 20px; left: 70%; top: -5%; border-radius: 50%; background-color: indianred; text-align: center; vertical-align: middle; font-size: auto; color: white",
+		style: "position: absolute; width: 20px; height: 20px; left: 70%; top: 10%; border-radius: 50%; background-color: indianred; text-align: center; vertical-align: middle; font-size: auto; color: white",
 		text: "0"
 	}).appendTo(noti);
 	var bubble = new NotiBubble(0, spBubble);
