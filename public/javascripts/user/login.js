@@ -126,7 +126,7 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 	var cell22 = $('<td>').appendTo(row2);
 	var forgot = $("<button>", {
 		text: "Forgot Password",
-		style: "background: none; border: none; color: white; font-size: 12pt; vertical-align: middle; text-align: center; cursor: pointer; text-decoration: underline;"	
+		style: "background: none; border: none; color: black; font-size: 12pt; vertical-align: middle; text-align: center; cursor: pointer; text-decoration: underline;"	
 	}).appendTo(cell22);	
 	
 	return new PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
