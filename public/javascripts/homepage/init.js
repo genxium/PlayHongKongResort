@@ -12,8 +12,8 @@ function initSectionRegister() {
 
 function clearHome() {
 	$("#pager-filters").empty();
-	$("#pager-screen-activities").empty();
 	$("#pager-bar-activities").empty();
+	$("#pager-screen-activities").empty();
 	emptySectionRegister();
 	if (g_sectionRegister == null) return;
 	g_sectionRegister.empty();
@@ -22,6 +22,8 @@ function clearHome() {
 function requestHome() {
 	clearProfile();
 	clearDetail();
+	clearNotifications();
+
 	window.location.hash = "";
 
 	initSectionRegister();

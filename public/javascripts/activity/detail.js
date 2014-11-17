@@ -175,6 +175,8 @@ function onBtnSubmitClicked(evt) {
 function requestActivityDetail(activityId) {
 	clearProfile();
 	clearHome();
+	clearNotifications();
+
 	g_activityId = activityId;
 	g_sectionActivity = $("#section-activity");
 	g_sectionNav = $("#section-nav")

@@ -27,6 +27,11 @@ var g_keyId = "id";
 var g_keyRelation = "relation";
 var g_keyBundle = "bundle";
 
+// extra response keys
+var g_keyRet = "ret";
+var g_keyCount = "count";
+var g_keyData = "data";
+
 // structured data keys (should be consistent with server-side in a protocol manner)
 var g_keyUser = "user";
 var g_keyCode = "code";
@@ -41,7 +46,6 @@ var g_keyPasswordResetCode = "password_reset_code";
 
 var g_keyButton = "button";
 
-var g_keyCount = "count";
 var g_keyActivities = "activities";
 
 var g_keyActivity = "activity";
@@ -78,6 +82,9 @@ var g_keyFrom = "from";
 var g_keyFromName = "from_name";
 var g_keyTo = "to";
 var g_keyToName = "to_name";
+
+var g_keyNotifications = "notifications";
+var g_keyIsRead = "is_read";
 
 // general keys
 var g_keyPage = "page";

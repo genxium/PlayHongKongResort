@@ -11,8 +11,8 @@ function emptySectionUser() {
 
 function clearProfile() {
 	$("#pager-filters").empty();
-	$("#pager-screen-activities").empty();
 	$("#pager-bar-activities").empty();
+	$("#pager-screen-activities").empty();
 	emptySectionUser();
 }
 
@@ -145,6 +145,7 @@ function queryUserDetail(){
 function requestProfile(vieweeId) {
 	clearHome();
 	clearDetail();	
+	clearNotifications();
 	
 	g_vieweeId = vieweeId;
 	g_sectionUser = $("#section-user");

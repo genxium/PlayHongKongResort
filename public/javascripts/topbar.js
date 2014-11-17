@@ -7,7 +7,8 @@ function initTopbar(par){
 		style: "float: left; margin-left: 5pt; margin-top: 10pt",
 		text: "Hong Kong Resort"
 	}).appendTo(g_topbar);
-	topbarTitle.click(function(){
+	topbarTitle.click(function(evt){
+		evt.preventDefault();
 		requestHome();
 	});	
 	g_sectionLogin = $("<span>", {

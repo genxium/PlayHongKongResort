@@ -121,3 +121,19 @@ function Assessment(assessmentJson) {
 	if(assessmentJson.hasOwnProperty("to_name")) this.to_name = assessmentJson["to_name"];
 
 }
+
+function Notification(notificationJson) {
+
+	if(notificationJson.hasOwnProperty("id")) this.id = parseInt(notificationJson["id"]);
+	if(notificationJson.hasOwnProperty("is_read")) this.isRead = parseInt(notificationJson["is_read"]);
+	if(notificationJson.hasOwnProperty("from")) this.from = parseInt(notificationJson["from"]);
+	if(notificationJson.hasOwnProperty("to")) this.to = parseInt(notificationJson["to"]);
+	if(notificationJson.hasOwnProperty("content")) this.content = notificationJson["content"];
+	if(notificationJson.hasOwnProperty("activit_id")) this.activityId = parseInt(notificationJson["activity_id"]);
+	if(notificationJson.hasOwnProperty("comment_id")) this.commentId = parseInt(notificationJson["comment_id"]);
+	if(notificationJson.hasOwnProperty("assessment_id")) this.assessmentId = parseInt(notificationJson["assessment_id"]);
+	if(notificationJson.hasOwnProperty("cmd")) this.cmd = parseInt(notificationJson["cmd"]);
+	if(notificationJson.hasOwnProperty("relation")) this.relation = parseInt(notificationJson["relation"]);
+	if(notificationJson.hasOwnProperty("status")) this.status = parseInt(notificationJson["status"]);
+
+} 
