@@ -18,6 +18,7 @@ public class Notification {
     public static final String CMD = "cmd";
     public static final String RELATION = "relation";
     public static final String STATUS = "status";
+    public static final String GENERATED_TIME = "generated_time";
 
     protected long m_id = 0;
     protected boolean m_isRead = false;
@@ -30,6 +31,7 @@ public class Notification {
     protected int m_cmd = INVALID;
     protected int m_relation = UserActivityRelation.INVALID;
     protected int m_status = INVALID;
+    protected long m_generatedTime;
 
     public Notification(JSONObject notificationJson) {
 	if (notificationJson.containsKey(ID)) m_id = Converter.toLong(notificationJson.get(ID));
@@ -43,5 +45,6 @@ public class Notification {
         if (notificationJson.containsKey(CMD)) m_cmd = Converter.toInteger(notificationJson.get(CMD));
         if (notificationJson.containsKey(RELATION)) m_relation = Converter.toInteger(notificationJson.get(RELATION));
         if (notificationJson.containsKey(STATUS)) m_status = Converter.toInteger(notificationJson.get(STATUS));
+	if (notificationJson.containsKey(GENERATED_TIME)) m_generatedTime = Converter.toLong(notificationJson.get(GENERATED_TIME));
     }
 }

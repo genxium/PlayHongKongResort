@@ -183,14 +183,18 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 		});
 	};
 
-	var spBubble = $("<span>", {
-		style: "position: absolute; width: 10%; height: 80%; left: 60%; top: 10%; vertical-align: middle; font-size: 14pt; color: red",
-		text: "0"
+	var noti = $("<span>", {
+		style: "position: absolute; width: 10%; height: 80%; left: 50%; top: 20px;"
 	}).appendTo(par);
+	setBackgroundImage(noti, "/assets/icons/notification.png", "contain", "no-repeat", "left top");
+	var spBubble = $("<span>", {
+		style: "position: absolute; width: 20px; height: 20px; left: 70%; top: -5%; border-radius: 50%; background-color: indianred; text-align: center; vertical-align: middle; font-size: auto; color: white",
+		text: "0"
+	}).appendTo(noti);
 	var bubble = new NotiBubble(0, spBubble);
 
 	var spDropdown = $("<span>", {
-		style: "position: absolute; width: 30%; height: 80%; left: 70%; top: 10%;"
+		style: "position: absolute; width: 30%; height: 80%; left: 70%; top: 20px;"
 	}).appendTo(par);
 
 	var icons = ["/assets/icons/new_activity.png", "/assets/icons/profile.png", ""];

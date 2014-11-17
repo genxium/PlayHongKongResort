@@ -64,15 +64,27 @@ function onListNotificationsSuccess(data){
         for(var idx = 1; idx <= length; ++idx) {
 		var notificationJson = notificationsJson[idx - 1];
 		var notification = new Notification(notificationJson);
-		if (page == g_pagerNotifications.page) {
-			generateNotificationCell(g_pagerNotifications.screen, notification);
-		}
+		if (page != g_pagerNotifications.page)	continue;
+		generateNotificationCell(g_pagerNotifications.screen, notification);
         }
         g_pagerNotifications.refreshBar();
+
 }
 
 function onListNotificationsError(err){
 
+}
+
+function generateNotificationCell(par, notification) {
+	var cell = $("<p>").appendTo(par);
+	var content = $("<span>", {
+		style: "position: relative; font-size: 14pt; vertical-align: middle;",
+		text: notification.content
+	}).appendTo(cell);
+	var timestamp = $("<span>", {
+		style: "position: relative; font-size: 12pt; margin-left: 10pt; color: blue; vertical-align: bottom;",
+		text: gmtMiilisecToLocalYmdhis(notification.generatedTime) 
+	}).appendTo(cell); 
 }
 
 function requestNotifications() {

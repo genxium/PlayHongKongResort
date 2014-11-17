@@ -104,7 +104,7 @@ function Comment(commentJson) {
         if(commentJson.hasOwnProperty("activity_id")) this.activityId = parseInt(commentJson["activity_id"]);
         if(commentJson.hasOwnProperty("parent_id")) this.parentId = parseInt(commentJson["parent_id"]);
         if(commentJson.hasOwnProperty("predecessor_id")) this.predecessorId = parseInt(commentJson["predecessor_id"]);
-        if(commentJson.hasOwnProperty("generated_time")) this.generatedTime = commentJson["generated_time"];
+        if(commentJson.hasOwnProperty("generated_time")) this.generatedTime = parseInt(commentJson["generated_time"]);
         if(commentJson.hasOwnProperty("num_children")) this.numChildren = parseInt(commentJson["num_children"]);
 
         if(commentJson.hasOwnProperty("to")) this.to = parseInt(commentJson["to"]);
@@ -135,5 +135,6 @@ function Notification(notificationJson) {
 	if(notificationJson.hasOwnProperty("cmd")) this.cmd = parseInt(notificationJson["cmd"]);
 	if(notificationJson.hasOwnProperty("relation")) this.relation = parseInt(notificationJson["relation"]);
 	if(notificationJson.hasOwnProperty("status")) this.status = parseInt(notificationJson["status"]);
+	if(notificationJson.hasOwnProperty("generated_time")) this.generatedTime = parseInt(notificationJson["generated_time"]);
 
 } 

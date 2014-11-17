@@ -4,7 +4,6 @@ function initTopbar(par){
 	g_topbar = par;
 	var topbarTitle = $("<span>", {
 		id: "topbar-title",
-		style: "float: left; margin-left: 5pt; margin-top: 10pt",
 		text: "Hong Kong Resort"
 	}).appendTo(g_topbar);
 	topbarTitle.click(function(evt){

@@ -10,18 +10,23 @@
 #topbar
 {
 	position: relative;
-	background: #1d2124;
+	background: #00000000;
 	width: 100%;
 	height: 64pt;
+	border-bottom: thin solid black;
 }
 
 #topbar-title
 {
+	float: left;
 	display: table-row;
  	position: relative;
  	text-align: center;
  	font-family: Georgia;
 	font-size: 24pt;
 	cursor: pointer;
-	color: #ADD8E6;
+	color: CornflowerBlue;
+	margin-left: 5pt;
+	top: 20px;
+	height: 95%;
 }
