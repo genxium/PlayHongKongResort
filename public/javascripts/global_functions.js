@@ -180,7 +180,7 @@ function setMargin(field, left, top, right, bottom) {
 
 function setBackgroundImageDefault(field, url) {
 	if (field == null) return;
-	setBackgroundImage(field, url, "contain", "no-repeat", "center")
+	setBackgroundImage(field, url, "contain", "no-repeat", "center");
 }
 
 function setBackgroundImage(field, url, size, repeat, position) {

@@ -444,7 +444,12 @@ function createDropdownMenu(par, id, menuTitle, icons, titles, reactions) {
 	for (var i = 0; i < titles.length; i++) {
 		var li = $("<li role='presentation'>").appendTo(ul);
 		var action = $("<a role='menuitem' tabindex='-1' href='#'>").appendTo(li);
+		action.css("font-size", "13pt");
+		action.css("padding", "10px 2px 10px 2px");
+		action.css("text-align", "center");
+		action.css("vertical-align", "middle");
 		action.text(titles[i]);
+		setBackgroundImage(action, icons[i], "contain", "no-repeat", "left center");
 		lis.push(li);
 	}
 	return new DropdownMenu(toggle, lis, reactions);
