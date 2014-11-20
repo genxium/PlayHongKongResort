@@ -46,19 +46,19 @@ public class ActivityController extends Controller {
                 viewer = SQLCommander.queryUser(viewerId);
             }
             List<Activity> activities = null;
-            String orientationKey = Activity.ID;
+            String orderKey = Activity.ID;
             if (status != null && status.equals(Activity.ACCEPTED)) {
-                orientationKey = Activity.LAST_ACCEPTED_TIME;
+                orderKey = Activity.LAST_ACCEPTED_TIME;
             }
             if (status != null && status.equals(Activity.REJECTED)) {
-                orientationKey = Activity.LAST_REJECTED_TIME;
+                orderKey = Activity.LAST_REJECTED_TIME;
             }
             if (relation != null && relation != UserActivityRelation.HOSTED && vieweeId != null) {
-                activities = SQLCommander.queryActivities(page_st, page_ed, orientationKey, orientationStr, numItems, vieweeId, UserActivityRelation.maskRelation(relation, null));
+                activities = SQLCommander.queryActivities(page_st, page_ed, orderKey, orientationStr, numItems, vieweeId, UserActivityRelation.maskRelation(relation, null));
             } else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
                 activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, page_st, page_ed, Activity.ID, orientationStr, numItems);
             } else if (status != null){
-                activities = SQLCommander.queryActivities(page_st, page_ed, orientationKey, orientationStr, numItems, status);
+                activities = SQLCommander.queryActivities(page_st, page_ed, orderKey, orientationStr, numItems, status);
             } else {
                 activities = null;
             }
@@ -109,20 +109,20 @@ public class ActivityController extends Controller {
                 viewerId = SQLCommander.queryUserId(token);
                 viewer = SQLCommander.queryUser(viewerId);
             }
-            String orientationKey = Activity.ID;
+            String orderKey = Activity.ID;
             if (status != null && status.equals(Activity.ACCEPTED)) {
-                orientationKey = Activity.LAST_ACCEPTED_TIME;
+                orderKey = Activity.LAST_ACCEPTED_TIME;
             }
             if (status != null && status.equals(Activity.REJECTED)) {
-                orientationKey = Activity.LAST_REJECTED_TIME;
+                orderKey = Activity.LAST_REJECTED_TIME;
             }
 			List<Activity> activities = null;
 			if (relation != null && relation != UserActivityRelation.HOSTED && vieweeId != null) {
-				activities = SQLCommander.queryActivities(refIndex, orientationKey, orientationStr, numItems, direction, vieweeId, UserActivityRelation.maskRelation(relation, null));
+				activities = SQLCommander.queryActivities(refIndex, orderKey, orientationStr, numItems, direction, vieweeId, UserActivityRelation.maskRelation(relation, null));
 			} else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
 				activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, refIndex, Activity.ID, orientationStr, numItems, direction);
 			} else if (status != null) {
-				activities = SQLCommander.queryActivities(refIndex, orientationKey, orientationStr, numItems, direction, status);
+				activities = SQLCommander.queryActivities(refIndex, orderKey, orientationStr, numItems, direction, status);
 			} else {
                 activities = null;
             }

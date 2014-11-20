@@ -497,6 +497,25 @@ public class SQLCommander {
 	    }
     }
 
+	public static List<Notification> queryNotifications(Integer to, Integer isRead, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
+		List<Notification> ret = new ArrayList<Notification>();
+			
+		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+
+		String[] names = {Notification.ID, Notification.CONTENT, Notification.FROM, Notification.TO, Notification.CMD, Notification.GENERATED_TIME};
+		builder.select(names)
+			.from(Notification.TABLE)
+			.where(Notification.TO, "=", to)
+			.limit((page_st - 1) * numItems, page_ed * numItems);
+	
+		if (isRead != null) builder.where(Notification.IS_READ, "=", isRead);
+
+		List<JSONObject> notificationsJson = builder.execSelect();
+		if (notificationsJson == null)	return ret;
+		for (JSONObject notificationJson : notificationsJson) ret.add(new Notification(notificationJson));
+		return ret;
+	}
+
     public static boolean validateOwnership(int userId, int activityId) {
 	    Activity activity = queryActivity(activityId);
         return activity != null && validateOwnership(userId, activity);

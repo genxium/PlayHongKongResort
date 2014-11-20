@@ -1,9 +1,19 @@
 package models;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.simple.JSONObject;
+import play.libs.Json;
 import utilities.Converter;
+import utilities.General;
+import utilities.Logger;
+
+import java.util.List;
 
 public class Notification {
+
+	public static String TAG = Notification.class.getName();
 
     public static int INVALID = (-1);
 
@@ -20,6 +30,12 @@ public class Notification {
     public static final String STATUS = "status";
     public static final String GENERATED_TIME = "generated_time";
 
+	public static final String TABLE = "notification";
+	public static final String NOTIFICATIONS = "notifications";
+    public static final String COUNT = "count"; 
+	public static final String PAGE_ST = "page_st";
+	public static final String PAGE_ED = "page_ed";
+
     protected long m_id = 0;
     protected boolean m_isRead = false;
     protected int m_from = INVALID;
@@ -34,7 +50,7 @@ public class Notification {
     protected long m_generatedTime;
 
     public Notification(JSONObject notificationJson) {
-	if (notificationJson.containsKey(ID)) m_id = Converter.toLong(notificationJson.get(ID));
+		if (notificationJson.containsKey(ID)) m_id = Converter.toLong(notificationJson.get(ID));
         if (notificationJson.containsKey(IS_READ)) m_isRead = (Boolean) notificationJson.get(IS_READ);
         if (notificationJson.containsKey(FROM)) m_from = Converter.toInteger(notificationJson.get(FROM));
         if (notificationJson.containsKey(TO)) m_to = Converter.toInteger(notificationJson.get(TO));
@@ -45,6 +61,18 @@ public class Notification {
         if (notificationJson.containsKey(CMD)) m_cmd = Converter.toInteger(notificationJson.get(CMD));
         if (notificationJson.containsKey(RELATION)) m_relation = Converter.toInteger(notificationJson.get(RELATION));
         if (notificationJson.containsKey(STATUS)) m_status = Converter.toInteger(notificationJson.get(STATUS));
-	if (notificationJson.containsKey(GENERATED_TIME)) m_generatedTime = Converter.toLong(notificationJson.get(GENERATED_TIME));
+		if (notificationJson.containsKey(GENERATED_TIME)) m_generatedTime = Converter.toLong(notificationJson.get(GENERATED_TIME));
     }
+	
+	public ObjectNode toObjectNode() {
+	
+        ObjectNode ret = Json.newObject();
+        try {
+            ret.put(ID, String.valueOf(m_id));
+            ret.put(CONTENT, m_content);
+        } catch (Exception e) {
+            Logger.e(TAG, "toObjectNode", e);
+        }
+        return ret;
+	}
 }

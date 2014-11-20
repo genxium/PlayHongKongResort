@@ -49,7 +49,6 @@ POST /activity/participants/update controllers.ParticipantController.update()
 GET /activity/ownership controllers.ActivityController.ownership(token: String ?=null, activity_id: Integer ?=null)
 
 # Comment
-
 POST /comment/submit controllers.CommentController.submit()
 GET /comment/query controllers.CommentController.query(activity_id: Integer ?=null, ref_index: String ?=null, page: Integer ?=null, num_items: Integer ?=null, direction: Integer ?=null)
 GET /comment/list controllers.CommentController.list(activity_id: Integer ?=null, page_st: Integer ?=null, page_ed: Integer ?=null, num_items: Integer ?=null)
@@ -61,8 +60,8 @@ GET /comment/sub/list controllers.SubCommentController.list(parent_id: Integer ?
 POST /assessment/submit controllers.AssessmentController.submit
 GET /assessment/query controllers.AssessmentController.query(ref_index: String ?=null, num_items: Integer ?=null, direction: Integer ?=null, token: String ?=null, to: Integer ?=null, activity_id: Integer ?=null)
 
-# Websocket
-GET /ws/connect controllers.Websocket.connect(token: String ?=null)
+# Notification
+GET /notification/list controllers.NotificationController.list(page_st: Integer ?=null, page_ed: Integer ?=null, num_items: Integer ?=null, orientation: Integer ?=null, token: String ?= null, is_read: Integer ?=null)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
