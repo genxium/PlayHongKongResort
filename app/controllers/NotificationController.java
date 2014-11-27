@@ -68,7 +68,7 @@ public class NotificationController extends Controller {
 
 			if (notifications == null) throw new NullPointerException();
 			ObjectNode result = Json.newObject();
-			result.put(Notification.COUNT, 0);
+			result.put(Notification.COUNT, notifications.size());
 			result.put(Notification.PAGE_ST, page_st);
 			result.put(Notification.PAGE_ED, page_ed);
 
