@@ -8,6 +8,7 @@ import dao.SQLHelper;
 import exception.*;
 import models.*;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -26,6 +27,28 @@ import java.util.Set;
 public class NotificationController extends Controller {
 	
 	public static String TAG = NotificationController.class.getName();
+
+    public static Result count(String token, Integer isRead) {
+        response().setContentType("text/plain");
+        try {
+            if (token == null) throw new InvalidQueryParamsException();
+            Integer userId = SQLCommander.queryUserId(token);
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            List<JSONObject> idJsonList = builder.select(Notification.ID)
+                    .from(Notification.TABLE)
+                    .where(Notification.TO, "=", userId)
+                    .where(Notification.IS_READ, "=", isRead).execSelect();
+            ObjectNode result = Json.newObject();
+            if (idJsonList == null) throw new NullPointerException();
+            result.put(Notification.COUNT, idJsonList.size());
+            return ok(result);
+        } catch (TokenExpiredException e) {
+            return badRequest(TokenExpiredResult.get());
+        } catch (Exception e) {
+            Logger.e(TAG, "count", e);
+        }
+        return badRequest();
+    }
 	
 	public static Result list(Integer page_st, Integer page_ed, Integer numItems, Integer orientation, String token, Integer isRead) {
 		response().setContentType("text/plain");
@@ -38,8 +61,7 @@ public class NotificationController extends Controller {
 
 			// anti=cracking by param token
 			if (token == null) throw new InvalidQueryParamsException(); 
-			Integer to = null;
-			to = SQLCommander.queryUserId(token);
+			Integer to = SQLCommander.queryUserId(token);
 
 			List<Notification> notifications = null;
 			notifications = SQLCommander.queryNotifications(to, isRead, page_st, page_ed, Notification.ID, orientationStr, numItems);
@@ -50,11 +72,11 @@ public class NotificationController extends Controller {
 			result.put(Notification.PAGE_ST, page_st);
 			result.put(Notification.PAGE_ED, page_ed);
 
-			ArrayNode notificationsNode = new ArrayNode(JsonNodeFactory.instance);
+			ArrayNode notificationArrayNode = new ArrayNode(JsonNodeFactory.instance);
 			for (Notification notification : notifications) {
-				notificationsNode.add(notification.toObjectNode());
+				notificationArrayNode.add(notification.toObjectNode());
 			}
-			result.put(Notification.NOTIFICATIONS, notificationsNode);
+			result.put(Notification.NOTIFICATIONS, notificationArrayNode);
 			return ok(result);
 		} catch (TokenExpiredException e) {
 			return badRequest(TokenExpiredResult.get());

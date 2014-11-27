@@ -563,7 +563,7 @@ public class EasyPreparedStatementBuilder {
     }
 
     public List<JSONObject> execSelect() {
-        List<JSONObject> ret = null;
+        List<JSONObject> ret = new ArrayList<JSONObject>();
         try {
             Connection connection = SQLHelper.getConnection();
             PreparedStatement statement = this.toSelect(connection);

@@ -174,10 +174,10 @@ public class SQLCommander {
                 .from(Activity.TABLE)
                 .join(UserActivityRelation.TABLE, onCols, onVals);
 
-            List<JSONObject> activityJsons = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
+            List<JSONObject> activityJsonList = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
 
-            if (activityJsons == null)	return null;
-            for (JSONObject activityJson : activityJsons) {
+            if (activityJsonList == null)	return null;
+            for (JSONObject activityJson : activityJsonList) {
                 User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
                 ret.add(new Activity(activityJson, host));
             }
@@ -195,13 +195,13 @@ public class SQLCommander {
             String[] onCols = {UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.ACTIVITY_ID};
             Object[] onVals = {vieweeId, relation, Activity.TABLE + "." + Activity.ID};
 
-            List<JSONObject> activityJsons = builder.select(names)
+            List<JSONObject> activityJsonList = builder.select(names)
                                                     .from(Activity.TABLE)
                                                     .join(UserActivityRelation.TABLE, onCols, onVals)
                                                     .order(orderKey, orientation)
                                                     .limit((page_st - 1) * numItems, page_ed * numItems).execSelect();
-		    if (activityJsons == null) return null;
-		    for (JSONObject activityJson : activityJsons) {
+		    if (activityJsonList == null) return null;
+		    for (JSONObject activityJson : activityJsonList) {
 			    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
 			    ret.add(new Activity(activityJson, host));
 		    }
@@ -220,10 +220,10 @@ public class SQLCommander {
                    .from(Activity.TABLE)
                    .where(Activity.STATUS, "=", status);
 
-            List<JSONObject> activityJsons = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
+            List<JSONObject> activityJsonList = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
 
-		    if (activityJsons == null)	return null;
-		    for (JSONObject activityJson : activityJsons) {
+		    if (activityJsonList == null)	return null;
+		    for (JSONObject activityJson : activityJsonList) {
 			    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
 			    ret.add(new Activity(activityJson, host));
 		    }
@@ -244,9 +244,9 @@ public class SQLCommander {
                     .order(orderKey, orientation)
                     .where(Activity.STATUS, "=", status)
                     .limit((page_st - 1) * numItems, page_ed * numItems);
-            List<JSONObject> activityJsons = builder.execSelect();
-            if (activityJsons == null)	return null;
-            for (JSONObject activityJson : activityJsons) {
+            List<JSONObject> activityJsonList = builder.execSelect();
+            if (activityJsonList == null)	return null;
+            for (JSONObject activityJson : activityJsonList) {
                 User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
                 ret.add(new Activity(activityJson, host));
             }
@@ -266,10 +266,10 @@ public class SQLCommander {
             builder.where(Activity.HOST_ID, "=", hostId);
             if(viewerId == null || !hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
 
-            List<JSONObject> activityJsons = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
+            List<JSONObject> activityJsonList = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
 
-            if (activityJsons == null) return null;
-            for (JSONObject activityJson : activityJsons) {
+            if (activityJsonList == null) return null;
+            for (JSONObject activityJson : activityJsonList) {
                 User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
                 Activity activity = new Activity(activityJson, host);
                 ret.add(activity);
@@ -294,10 +294,10 @@ public class SQLCommander {
 
             if(viewerId == null || !hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
 
-            List<JSONObject> activityJsons = builder.execSelect();
+            List<JSONObject> activityJsonList = builder.execSelect();
 
-            if (activityJsons == null) return null;
-            for (JSONObject activityJson : activityJsons) {
+            if (activityJsonList == null) return null;
+            for (JSONObject activityJson : activityJsonList) {
                 User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
                 Activity activity = new Activity(activityJson, host);
                 ret.add(activity);
@@ -334,9 +334,9 @@ public class SQLCommander {
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.NUM_CHILDREN, Comment.GENERATED_TIME};
-            List<JSONObject> commentsJson = builder.select(names).from(Comment.TABLE).where(Comment.ID, "=", commentId).execSelect();
-            if (commentsJson == null || commentsJson.size() <= 0) throw new NullPointerException();
-            return new Comment(commentsJson.get(0));
+            List<JSONObject> commentJsonList = builder.select(names).from(Comment.TABLE).where(Comment.ID, "=", commentId).execSelect();
+            if (commentJsonList == null || commentJsonList.size() <= 0) throw new NullPointerException();
+            return new Comment(commentJsonList.get(0));
         } catch (Exception e) {
             Logger.e(TAG, "queryComment", e);
         }
@@ -356,10 +356,10 @@ public class SQLCommander {
 
 		    builder.select(names).from(Comment.TABLE).where(whereCols, whereOps, whereVals);
 
-		    List<JSONObject> commentsJson = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
+		    List<JSONObject> commentJsonList = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
 
-		    if (commentsJson == null) throw new NullPointerException();
-		    for (JSONObject commentJson : commentsJson)	ret.add(new Comment(commentJson));
+		    if (commentJsonList == null) throw new NullPointerException();
+		    for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
 
 	    } catch (Exception e) {
 		    Logger.e(TAG, "queryTopLevelComments", e);
@@ -383,10 +383,10 @@ public class SQLCommander {
                     .where(whereCols, whereOps, whereVals)
                     .limit((page_st - 1) * numItems, page_ed * numItems);
 
-            List<JSONObject> commentsJson = builder.execSelect();
+            List<JSONObject> commentJsonList = builder.execSelect();
 
-            if (commentsJson == null) throw new NullPointerException();
-            for (JSONObject commentJson : commentsJson)	ret.add(new Comment(commentJson));
+            if (commentJsonList == null) throw new NullPointerException();
+            for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
 
         } catch (Exception e) {
             Logger.e(TAG, "queryTopLevelComments", e);
@@ -401,10 +401,10 @@ public class SQLCommander {
 
 		    String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
 		    builder.select(names).from(Comment.TABLE).where(Comment.PARENT_ID, "=", parentId);
-            List<JSONObject> commentsJson = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
+            List<JSONObject> commentJsonList = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
 
-		    if (commentsJson == null) throw new NullPointerException();
-		    for (JSONObject commentJson : commentsJson)	ret.add(new Comment(commentJson));
+		    if (commentJsonList == null) throw new NullPointerException();
+		    for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
 
 	    } catch (Exception e) {
 		    Logger.e(TAG, "querySubComments", e);
@@ -423,10 +423,10 @@ public class SQLCommander {
                     .where(Comment.PARENT_ID, "=", parentId)
                     .limit((page_st - 1) * numItems, page_ed * numItems);
 
-            List<JSONObject> commentsJson = builder.execSelect();
+            List<JSONObject> commentJsonList = builder.execSelect();
 
-            if (commentsJson == null) throw new NullPointerException();
-            for (JSONObject commentJson : commentsJson)	ret.add(new Comment(commentJson));
+            if (commentJsonList == null) throw new NullPointerException();
+            for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
 
         } catch (Exception e) {
             Logger.e(TAG, "querySubComments", e);
@@ -441,9 +441,9 @@ public class SQLCommander {
 		    String[] whereCols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO};
 		    String[] whereOps = {"=", "=", "="};
 		    Object[] whereVals = {activityId, from, to};
-            List<JSONObject> assessmentJsons = builder.select(names).where(whereCols, whereOps, whereVals).from(Assessment.TABLE).execSelect();
-		    if (assessmentJsons == null || assessmentJsons.size() != 1) return null;
-            return new Assessment(assessmentJsons.get(0));
+            List<JSONObject> assessmentJsonList = builder.select(names).where(whereCols, whereOps, whereVals).from(Assessment.TABLE).execSelect();
+		    if (assessmentJsonList == null || assessmentJsonList.size() != 1) return null;
+            return new Assessment(assessmentJsonList.get(0));
 	    } catch (Exception e) {
 		    Logger.e(TAG, "queryAssessment", e);
 	    }
@@ -461,10 +461,10 @@ public class SQLCommander {
 		    if(from != null) builder.where(Assessment.FROM, "=", from);
 		    if(to != null) builder.where(Assessment.TO, "=", to);
 
-            List<JSONObject> assessmentJsons = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
+            List<JSONObject> assessmentJsonList = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
 
-		    if (assessmentJsons == null) return ret;
-		    for (JSONObject assessmentJson : assessmentJsons)	ret.add(new Assessment(assessmentJson));
+		    if (assessmentJsonList == null) return ret;
+		    for (JSONObject assessmentJson : assessmentJsonList)	ret.add(new Assessment(assessmentJson));
 
 	    } catch (Exception e) {
 		    Logger.e(TAG, "queryAssessments", e);
@@ -510,9 +510,9 @@ public class SQLCommander {
 	
 		if (isRead != null) builder.where(Notification.IS_READ, "=", isRead);
 
-		List<JSONObject> notificationsJson = builder.execSelect();
-		if (notificationsJson == null)	return ret;
-		for (JSONObject notificationJson : notificationsJson) ret.add(new Notification(notificationJson));
+		List<JSONObject> notificationJsonList = builder.execSelect();
+		if (notificationJsonList == null)	return ret;
+		for (JSONObject notificationJson : notificationJsonList) ret.add(new Notification(notificationJson));
 		return ret;
 	}
 
@@ -766,8 +766,8 @@ public class SQLCommander {
 			    ")";
 		    PreparedStatement statement = SQLHelper.getConnection().prepareStatement(query);
 		    statement.setInt(1, activityId);
-		    List<JSONObject> imageRecords = SQLHelper.select(statement);
-		    for (JSONObject imageRecord : imageRecords) {
+		    List<JSONObject> imageRecordList = SQLHelper.select(statement);
+		    for (JSONObject imageRecord : imageRecordList) {
 			    Image image = new Image(imageRecord);
 			    images.add(image);
 		    }

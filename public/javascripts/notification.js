@@ -16,14 +16,14 @@ function clearNotifications() {
  
 function listNotificationsAndRefresh() {
 	var page = 1;
-        listNotifications(page, onListNotificationsSuccess, onListNotificationsError);
+	listNotifications(page, onListNotificationsSuccess, onListNotificationsError);
 }
 
 function listNotifications(page, onSuccess, onError){
 	var params = generateNotificationsListParams(g_pagerNotifications, page);
 	$.ajax({
 		type: "GET",
-		url: "/el/notification/query",
+		url: "/notification/list",
 		data: params,
 		success: function(data, status, xhr) {
 			onSuccess(data);
@@ -36,8 +36,19 @@ function listNotifications(page, onSuccess, onError){
 
 function generateNotificationsListParams(pager, page) {
 	var params = {};
-	if (g_loggedInUser != null)	params[g_keyUserId] = g_loggedInUser.id;
-        params[g_keyPage] = page;
+	if (g_loggedInUser == null) return null;
+	var token = $.cookie(g_keyToken);
+	params[g_keyToken] = token;
+	var pageSt = page - 2;
+        var pageEd = page + 2;
+        var offset = pageSt < 1 ? (pageSt - 1) : 0;
+        pageSt -= offset;
+        pageEd -= offset;
+        params[g_keyPageSt] = pageSt;
+        params[g_keyPageEd] = pageEd;
+        params[g_keyNumItems] = pager.nItems;
+        params[g_keyOrientation] = g_orderDescend;
+
 	params[g_keyNumItems] = pager.nItems;
 	if (pager.filters != null) {
 		for (var i = 0; i < pager.filters.length; ++i) {
@@ -61,13 +72,13 @@ function onListNotificationsSuccess(data){
 
 	g_pagerNotifications.screen.empty();
 
-        for(var idx = 1; idx <= length; ++idx) {
+	for(var idx = 1; idx <= length; ++idx) {
 		var notificationJson = notificationsJson[idx - 1];
 		var notification = new Notification(notificationJson);
 		if (page != g_pagerNotifications.page)	continue;
 		generateNotificationCell(g_pagerNotifications.screen, notification);
-        }
-        g_pagerNotifications.refreshBar();
+	}
+	g_pagerNotifications.refreshBar();
 
 }
 
@@ -99,7 +110,7 @@ function requestNotifications() {
 	var pagerCache = new PagerCache(1); 
 
 	// initialize pager widgets
-	g_pagerNotifications = new Pager($("#pager-screen-notifications"), $("#pager-bar-notifications"), 10, "/el/notification/query", generateActivitiesListParams, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
+	g_pagerNotifications = new Pager($("#pager-screen-notifications"), $("#pager-bar-notifications"), 10, "/notification/list", generateActivitiesListParams, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
 
 	var onLoginSuccess = function(data) {
 		listNotificationsAndRefresh();

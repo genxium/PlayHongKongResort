@@ -44,21 +44,21 @@ function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, on
 		    url: "/user/login",
 		    data: params,
 		    success: function(data, status, xhr){
-			var userJson = JSON.parse(data);
-			g_loggedInUser = new User(userJson);
-			if (g_loggedInUser == null) return;
-			// store token in cookie iff query succeeds
-			$.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
-			wsConnect();	
-			if(g_sectionLogin == null) return;
-			g_sectionLogin.empty();
-			g_postLoginMenu = generatePostLoginMenu(g_sectionLogin, form.onLoginSuccess, form.onLoginError, form.onLogoutSuccess, form.onLogoutError);
-			if(form.onLoginSuccess == null) return;
-			form.onLoginSuccess(data);
+				var userJson = JSON.parse(data);
+				g_loggedInUser = new User(userJson);
+				if (g_loggedInUser == null) return;
+				// store token in cookie iff query succeeds
+				$.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
+				wsConnect();	
+				if(g_sectionLogin == null) return;
+				g_sectionLogin.empty();
+				g_postLoginMenu = generatePostLoginMenu(g_sectionLogin, form.onLoginSuccess, form.onLoginError, form.onLogoutSuccess, form.onLogoutError);
+				if(form.onLoginSuccess == null) return;
+				form.onLoginSuccess(data);
 		    },
 		    error: function(xhr, status, err){
-			if(form.onLoginError == null) return;
-			form.onLoginError(err);
+				if(form.onLoginError == null) return;
+				form.onLoginError(err);
 		    }
 		});
 	});
@@ -137,10 +137,6 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	if (g_loggedInUser == null) return null;
 	par.empty();
 
-	var notiReact = function(evt){
-		evt.preventDefault();		
-	};
-
 	var createReact = function(evt){
 		evt.preventDefault();
 		showActivityEditor(null);
@@ -184,20 +180,42 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	};
 
 	var noti = $("<span>", {
-		style: "position: absolute; width: 10%; height: 80%; left: 55%; top: 20px;"
+		style: "cursor: pointer; position: absolute; width: 10%; height: 80%; left: 55%; top: 20px;"
 	}).appendTo(par);
+
+	noti.click(function(evt){
+		evt.preventDefault();		
+		if (g_loggedInUser == null) return;
+		window.location.hash = "notifications";
+	}); 
+
 	setBackgroundImage(noti, "/assets/icons/notification.png", "contain", "no-repeat", "center");
 	var spBubble = $("<span>", {
 		style: "position: absolute; width: 20px; height: 20px; left: 70%; top: 10%; border-radius: 50%; background-color: indianred; text-align: center; vertical-align: middle; font-size: auto; color: white",
 		text: "0"
 	}).appendTo(noti);
 	var bubble = new NotiBubble(0, spBubble);
-
+	var paramsBubble = {};
+	var token = $.cookie(g_keyToken);
+	paramsBubble[g_keyToken] = token;
+	$.ajax({
+		type: "GET",
+		url: "/notification/count",
+		data: paramsBubble,
+		success: function(data, status, xhr) {
+			var jsonResponse = JSON.parse(data);
+			var count = parseInt(jsonResponse[g_keyCount]);
+			bubble.update(count);
+		}, 
+		error: function(xhr, status, err) {
+	
+		}
+	});
 	var spDropdown = $("<span>", {
 		style: "position: absolute; width: 30%; height: 80%; left: 70%; top: 20px;"
 	}).appendTo(par);
 
-	var icons = ["/assets/icons/new_activity.png", "/assets/icons/profile.png", ""];
+	var icons = ["/assets/icons/new_activity.png", "/assets/icons/profile.png", "/assets/icons/logout.png"];
 	var titles = ["create", "profile", "logout"];
 	var reactions = [createReact, profileReact, logoutReact]; 
 

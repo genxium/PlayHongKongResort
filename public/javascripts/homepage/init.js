@@ -80,6 +80,10 @@ function routeByHash() {
 		requestHome();
 		return;
 	}
+	if (hash == "#notifications") {
+		requestNotifications();
+		return;
+	}
 	var parts = hash.split("=");		
 	if (parts[0] == ("#" + g_keyVieweeId)) requestProfile(parseInt(parts[1]));
 	else requestActivityDetail(parseInt(parts[1]));
