@@ -7,7 +7,7 @@ import models.*;
 import org.json.simple.JSONObject;
 import utilities.DataUtils;
 import utilities.General;
-import utilities.Logger;
+import utilities.Loggy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -71,7 +71,7 @@ public class SQLCommander {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    ret = builder.insert(cols, values).into(User.TABLE).execInsert();
 	    } catch (Exception e) {
-		    Logger.e(TAG, "registerUser", e);
+		    Loggy.e(TAG, "registerUser", e);
 	    }
 	    return ret;
     }
@@ -123,7 +123,7 @@ public class SQLCommander {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    return builder.update(Activity.TABLE).set(cols, values).where(Activity.ID, "=", activityId).execUpdate();
 	    } catch (Exception e) {
-		    Logger.e(TAG, "updateActivity", e);
+		    Loggy.e(TAG, "updateActivity", e);
 	    }
 	    return false;
     }
@@ -141,7 +141,7 @@ public class SQLCommander {
 		    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
 		    activity = new Activity(activityJson, host);
 	    } catch (Exception e) {
-		    Logger.e(TAG, "queryActivity", e);
+		    Loggy.e(TAG, "queryActivity", e);
 	    }
 	    return activity;
 
@@ -157,7 +157,7 @@ public class SQLCommander {
 		    List<BasicUser> presentParticipants = queryPresentParticipants(activityId);
 		    activityDetail = new ActivityDetail(activity, images, appliedParticipants, selectedParticipants, presentParticipants);
 	    } catch (Exception e) {
-		    Logger.e(TAG, "queryActivityDetail", e);
+		    Loggy.e(TAG, "queryActivityDetail", e);
 	    }
 	    return activityDetail;
     }
@@ -182,7 +182,7 @@ public class SQLCommander {
                 ret.add(new Activity(activityJson, host));
             }
         } catch (Exception e) {
-            Logger.e(TAG, "queryActivities", e);
+            Loggy.e(TAG, "queryActivities", e);
         }
         return ret;
     }
@@ -206,7 +206,7 @@ public class SQLCommander {
 			    ret.add(new Activity(activityJson, host));
 		    }
 	    } catch (Exception e) {
-		    Logger.e(TAG, "queryActivities", e);
+		    Loggy.e(TAG, "queryActivities", e);
 	    }
 	    return ret;
     }
@@ -229,7 +229,7 @@ public class SQLCommander {
 		    }
 
 	    } catch (Exception e) {
-		    Logger.e(TAG, "queryActivities", e);
+		    Loggy.e(TAG, "queryActivities", e);
 	    }
 	    return ret;
     }
@@ -251,7 +251,7 @@ public class SQLCommander {
                 ret.add(new Activity(activityJson, host));
             }
         } catch (Exception e) {
-            Logger.e(TAG, "queryActivities", e);
+            Loggy.e(TAG, "queryActivities", e);
         }
         return ret;
     }
@@ -276,7 +276,7 @@ public class SQLCommander {
             }
 
         } catch (Exception e) {
-            Logger.e(TAG, "queryHostedActivities", e);
+            Loggy.e(TAG, "queryHostedActivities", e);
         }
         return ret;
     }
@@ -304,7 +304,7 @@ public class SQLCommander {
             }
 
         } catch (Exception e) {
-            Logger.e(TAG, "queryHostedActivities", e);
+            Loggy.e(TAG, "queryHostedActivities", e);
         }
         return ret;
     }
@@ -325,7 +325,7 @@ public class SQLCommander {
 		    JSONObject record = records.get(0);
 		    return (Integer) record.get(UserActivityRelation.RELATION);
 	    } catch (Exception e) {
-		    Logger.e(TAG, "queryUserActivityRelation", e);
+		    Loggy.e(TAG, "queryUserActivityRelation", e);
 	    }
 	    return UserActivityRelation.INVALID;
     }
@@ -338,7 +338,7 @@ public class SQLCommander {
             if (commentJsonList == null || commentJsonList.size() <= 0) throw new NullPointerException();
             return new Comment(commentJsonList.get(0));
         } catch (Exception e) {
-            Logger.e(TAG, "queryComment", e);
+            Loggy.e(TAG, "queryComment", e);
         }
 	    return null;
     }
@@ -362,7 +362,7 @@ public class SQLCommander {
 		    for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
 
 	    } catch (Exception e) {
-		    Logger.e(TAG, "queryTopLevelComments", e);
+		    Loggy.e(TAG, "queryTopLevelComments", e);
 	    }
 	    return ret;
     }
@@ -389,7 +389,7 @@ public class SQLCommander {
             for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
 
         } catch (Exception e) {
-            Logger.e(TAG, "queryTopLevelComments", e);
+            Loggy.e(TAG, "queryTopLevelComments", e);
         }
         return ret;
     }
@@ -407,7 +407,7 @@ public class SQLCommander {
 		    for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
 
 	    } catch (Exception e) {
-		    Logger.e(TAG, "querySubComments", e);
+		    Loggy.e(TAG, "querySubComments", e);
 	    }
 	    return ret;
     }
@@ -429,7 +429,7 @@ public class SQLCommander {
             for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
 
         } catch (Exception e) {
-            Logger.e(TAG, "querySubComments", e);
+            Loggy.e(TAG, "querySubComments", e);
         }
         return ret;
     }
@@ -445,7 +445,7 @@ public class SQLCommander {
 		    if (assessmentJsonList == null || assessmentJsonList.size() != 1) return null;
             return new Assessment(assessmentJsonList.get(0));
 	    } catch (Exception e) {
-		    Logger.e(TAG, "queryAssessment", e);
+		    Loggy.e(TAG, "queryAssessment", e);
 	    }
 	    return null;
     }
@@ -467,7 +467,7 @@ public class SQLCommander {
 		    for (JSONObject assessmentJson : assessmentJsonList)	ret.add(new Assessment(assessmentJson));
 
 	    } catch (Exception e) {
-		    Logger.e(TAG, "queryAssessments", e);
+		    Loggy.e(TAG, "queryAssessments", e);
 	    }
 	    return ret;
     }
@@ -492,7 +492,7 @@ public class SQLCommander {
 		    Object[] vals = {activityId, from, to, content, General.millisec()};
 		    return builder.insert(cols, vals).into(Assessment.TABLE).execInsert();
 	    } catch (Exception e) {
-            Logger.e(TAG, "createAssessment", e);
+            Loggy.e(TAG, "createAssessment", e);
             return SQLHelper.INVALID;
 	    }
     }
@@ -633,7 +633,7 @@ public class SQLCommander {
 		    if (activity == null) throw new ActivityNotFoundException();
 		    ret = isActivityMarkable(userId, activity, relation);
 	    } catch (Exception e) {
-		    Logger.e(TAG, "isActivityMarkable", e);
+		    Loggy.e(TAG, "isActivityMarkable", e);
 	    }
 	    return ret;
     }
@@ -650,7 +650,7 @@ public class SQLCommander {
 		    if ((originalRelation & relation) > 0) throw new InvalidUserActivityRelationException();
 		    ret = originalRelation;
 	    } catch (Exception e) {
-		    Logger.e(TAG, "isActivityMarkable", e);
+		    Loggy.e(TAG, "isActivityMarkable", e);
 	    }
 	    return ret;
     }
@@ -667,7 +667,7 @@ public class SQLCommander {
 		    .where(Activity.ID, "=", activity.getId())
 		    .execUpdate();
 	    } catch (Exception e) {
-		Logger.e(TAG, "acceptActivity", e);
+		Loggy.e(TAG, "acceptActivity", e);
 	    }
 	    return false;
     }
@@ -684,7 +684,7 @@ public class SQLCommander {
 		    .where(Activity.ID, "=", activity.getId())
 		    .execUpdate();
 	    } catch (Exception e) {
-		Logger.e(TAG, "rejectActivity", e);
+		Loggy.e(TAG, "rejectActivity", e);
 	    }
 	    return false;
     }
@@ -704,7 +704,7 @@ public class SQLCommander {
 		    }
 		    ret = lastImageId;
 	    } catch (Exception e){
-		    Logger.e(TAG, "uploadAvatar", e);
+		    Loggy.e(TAG, "uploadAvatar", e);
 	    }
 	    return ret;
     }
@@ -752,7 +752,7 @@ public class SQLCommander {
 		    EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
 		    return builderImage.from(Image.TABLE).where(Image.ID, "=", imageId).execDelete();
 	    } catch (Exception e) {
-		    Logger.e(TAG, "deleteImageRecord", e);
+		    Loggy.e(TAG, "deleteImageRecord", e);
 	    }
 
 	    return false;
@@ -773,7 +773,7 @@ public class SQLCommander {
 		    }
 
 	    } catch (Exception e) {
-		    Logger.e(TAG, "queryImages", e);
+		    Loggy.e(TAG, "queryImages", e);
 	    }
 	    return images;
     }
@@ -792,7 +792,7 @@ public class SQLCommander {
 		    builderRelation.insert(cols, vals).into(ActivityImageRelation.TABLE).execInsert();
             return lastImageId;
 	    } catch (Exception e) {
-		    Logger.e(TAG, "createImage", e);
+		    Loggy.e(TAG, "createImage", e);
 	    } 
 	    return INVALID;
     }
@@ -823,7 +823,7 @@ public class SQLCommander {
 		    }
 
 	    } catch (Exception e) {
-		    Logger.e(TAG, "queryUsers", e);
+		    Loggy.e(TAG, "queryUsers", e);
 	    }
 	    return users;
     }

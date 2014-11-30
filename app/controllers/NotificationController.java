@@ -17,7 +17,7 @@ import play.mvc.Result;
 import utilities.Converter;
 import utilities.DataUtils;
 import utilities.General;
-import utilities.Logger;
+import utilities.Loggy;
 
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +45,7 @@ public class NotificationController extends Controller {
         } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-            Logger.e(TAG, "count", e);
+            Loggy.e(TAG, "count", e);
         }
         return badRequest();
     }
@@ -81,7 +81,7 @@ public class NotificationController extends Controller {
 		} catch (TokenExpiredException e) {
 			return badRequest(TokenExpiredResult.get());
 		} catch (Exception e) {
-			Logger.e(TAG, "list", e);
+			Loggy.e(TAG, "list", e);
 		}
 		return badRequest();
 	}

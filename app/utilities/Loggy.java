@@ -1,6 +1,6 @@
 package utilities;
 
-public class Logger {
+public class Loggy {
 
     public static void e(String tag, String method, Exception e) {
         System.out.println(tag + "." + method + ", " + e.getMessage());

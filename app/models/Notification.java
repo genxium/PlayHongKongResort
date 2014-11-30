@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import play.libs.Json;
 import utilities.Converter;
 import utilities.General;
-import utilities.Logger;
+import utilities.Loggy;
 
 import java.util.List;
 
@@ -69,9 +69,11 @@ public class Notification {
         ObjectNode ret = Json.newObject();
         try {
             ret.put(ID, String.valueOf(m_id));
+			ret.put(CMD, String.valueOf(m_cmd));
             ret.put(CONTENT, m_content);
+			ret.put(GENERATED_TIME, String.valueOf(m_generatedTime));
         } catch (Exception e) {
-            Logger.e(TAG, "toObjectNode", e);
+            Loggy.e(TAG, "toObjectNode", e);
         }
         return ret;
 	}

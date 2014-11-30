@@ -5,7 +5,7 @@ import controllers.SQLCommander;
 import org.json.simple.JSONObject;
 import play.libs.Json;
 import utilities.Converter;
-import utilities.Logger;
+import utilities.Loggy;
 
 public class Assessment {
 
@@ -89,7 +89,7 @@ public class Assessment {
             ret.put(CONTENT, m_content);
             ret.put(GENERATED_TIME, String.valueOf(m_generatedTime));
         } catch (Exception e) {
-            Logger.e(TAG, "toObjectNode", e);
+            Loggy.e(TAG, "toObjectNode", e);
         }
         return ret;
     }
@@ -102,7 +102,7 @@ public class Assessment {
             ret.put(FROM_NAME, fromUser.getName());
             ret.put(TO_NAME, toUser.getName());
         } catch (Exception e) {
-            Logger.e(TAG, "toObjectNodeWithNames", e);
+            Loggy.e(TAG, "toObjectNodeWithNames", e);
         }
         return ret;
     }

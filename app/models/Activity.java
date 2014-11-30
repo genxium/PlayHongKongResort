@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 import play.libs.Json;
 import utilities.Converter;
 import utilities.General;
-import utilities.Logger;
+import utilities.Loggy;
 
 import java.util.List;
 
@@ -231,7 +231,7 @@ public class Activity {
             if (viewerId.equals(m_host.getId()))	ret.put(STATUS, String.valueOf(m_status));
             if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	ret.put(STATUS, String.valueOf(m_status));
         } catch (Exception e) {
-            Logger.e(TAG, "toObjectNode", e);
+            Loggy.e(TAG, "toObjectNode", e);
         }
         return ret;
     }
@@ -245,7 +245,7 @@ public class Activity {
 		    for (Image image : images)	imagesNode.add(image.toObjectNode());
 		    ret.put(ActivityDetail.IMAGES, imagesNode);
 	    } catch (Exception e) {
-		    Logger.e(TAG, "toObjectNodeWithImages", e);
+		    Loggy.e(TAG, "toObjectNodeWithImages", e);
 	    }
 	    return ret;
     }

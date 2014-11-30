@@ -7,7 +7,7 @@ import exception.*;
 import org.apache.commons.io.FileUtils;
 import play.mvc.Http.MultipartFormData.FilePart;
 import utilities.DataUtils;
-import utilities.Logger;
+import utilities.Loggy;
 
 import java.io.File;
 import java.util.Iterator;
@@ -40,7 +40,7 @@ public class ExtraCommander extends SQLCommander {
             ret = builderActivity.from(Activity.TABLE).where(Activity.ID, "=", activityId).execDelete();
 
 		} catch (Exception e) {
-			Logger.e(TAG, "deleteActivity", e);
+			Loggy.e(TAG, "deleteActivity", e);
 		}
 
 		return ret;
@@ -58,7 +58,7 @@ public class ExtraCommander extends SQLCommander {
 			if (!isFileDeleted || !isRecordDeleted) throw new NullPointerException();
 			ret = true;
 		} catch (Exception e) {
-			Logger.e(TAG, "deleteImageRecordAndFile", e);
+			Loggy.e(TAG, "deleteImageRecordAndFile", e);
 		}
 		return ret;
 	}
@@ -75,7 +75,7 @@ public class ExtraCommander extends SQLCommander {
 			if (!isFileDeleted || !isRecordDeleted) throw new NullPointerException();
 			ret = true;
 		} catch (Exception e) {
-			Logger.e(TAG, "deleteImageRecordAndFile", e);
+			Loggy.e(TAG, "deleteImageRecordAndFile", e);
 		}
 		return ret;
 	}
@@ -107,7 +107,7 @@ public class ExtraCommander extends SQLCommander {
 			}
 			ret = imageId;
 		} catch (Exception e) {
-			Logger.e(TAG, "saveAvatar", e);
+			Loggy.e(TAG, "saveAvatar", e);
 		}
 
 		return ret;
@@ -136,14 +136,14 @@ public class ExtraCommander extends SQLCommander {
 				// Save renamed file to server storage at the final step
 				FileUtils.moveFile(file, new File(imageAbsolutePath));
 			} catch (Exception err) {
-                Logger.e(TAG, "saveImageOfActivity", err);
+                Loggy.e(TAG, "saveImageOfActivity", err);
                 imageId = INVALID;
                 if(deleteImageRecord(imageId))	System.out.println(TAG + ".saveImageOfActivity, " + newImageName + " has been reverted");
 			}
 
 			ret = imageId;
 		} catch (Exception e) {
-			Logger.e(TAG, "saveImageOfActivity", e);
+			Loggy.e(TAG, "saveImageOfActivity", e);
 		}
 
 		return ret;
@@ -157,7 +157,7 @@ public class ExtraCommander extends SQLCommander {
             if(!builder.execDelete()) throw new NullPointerException();
             return true;
         } catch (Exception e) {
-            Logger.e(TAG, "deleteComments", e);
+            Loggy.e(TAG, "deleteComments", e);
         }
         return false;
     }
@@ -170,7 +170,7 @@ public class ExtraCommander extends SQLCommander {
             if(!builder.execDelete()) throw new NullPointerException();
             return true;
         } catch (Exception e) {
-            Logger.e(TAG, "deleteAssessments", e);
+            Loggy.e(TAG, "deleteAssessments", e);
         }
         return false;
     }

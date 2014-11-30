@@ -16,7 +16,7 @@ import play.mvc.Result;
 import utilities.Converter;
 import utilities.DataUtils;
 import utilities.General;
-import utilities.Logger;
+import utilities.Loggy;
 
 import java.util.HashSet;
 import java.util.List;
@@ -85,7 +85,7 @@ public class ActivityController extends Controller {
         } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-            Logger.e(TAG, "list", e);
+            Loggy.e(TAG, "list", e);
         }
         return badRequest();
     }
@@ -148,7 +148,7 @@ public class ActivityController extends Controller {
 		} catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-			Logger.e(TAG, "query", e);
+			Loggy.e(TAG, "query", e);
 		}
 		return badRequest();
 	}
@@ -162,7 +162,7 @@ public class ActivityController extends Controller {
 			if (token != null) userId = SQLCommander.queryUserId(token);
 			return ok(activityDetail.toObjectNode(userId));
 		} catch (Exception e) {
-			Logger.e(TAG, "detail", e);
+			Loggy.e(TAG, "detail", e);
 		}
 		return badRequest();
 	}
@@ -176,7 +176,7 @@ public class ActivityController extends Controller {
 			ret.put(Activity.HOST, String.valueOf(ownerId));
 			return ok(ret);
 		} catch (Exception e) {
-			Logger.e(TAG, "ownership", e);
+			Loggy.e(TAG, "ownership", e);
 		}
 		return ok();
 	}
@@ -264,7 +264,7 @@ public class ActivityController extends Controller {
 		} catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-			Logger.e(TAG, "save", e);
+			Loggy.e(TAG, "save", e);
 		}
 		return badRequest();
 	}
@@ -302,7 +302,7 @@ public class ActivityController extends Controller {
         } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
 		} catch (Exception e) {
-			Logger.e(TAG, "submit", e);
+			Loggy.e(TAG, "submit", e);
 		}
 
 		return badRequest();
@@ -331,7 +331,7 @@ public class ActivityController extends Controller {
 		} catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-            Logger.e(TAG, "delete", e);
+            Loggy.e(TAG, "delete", e);
 		}
 		return badRequest();
 	}
@@ -366,7 +366,7 @@ public class ActivityController extends Controller {
 		} catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-			Logger.e(TAG, "join", e);
+			Loggy.e(TAG, "join", e);
 		}
         return badRequest();
 	}
@@ -407,7 +407,7 @@ public class ActivityController extends Controller {
 		} catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-            Logger.e(TAG, "mark", e);
+            Loggy.e(TAG, "mark", e);
 		}
         return badRequest();
 	}

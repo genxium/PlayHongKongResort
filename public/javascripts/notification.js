@@ -100,7 +100,12 @@ function onListNotificationsError(err){
 }
 
 function generateNotificationCell(par, notification) {
-	var cell = $("<p>").appendTo(par);
+	var cell = $("<p>", {
+		style: "border-bottom: thin solid gray;"
+	}).appendTo(par);
+	var idColumn = $("<span>", {
+		text: notification.id
+	}).appendTo(cell);
 	var content = $("<span>", {
 		style: "position: relative; font-size: 14pt; vertical-align: middle;",
 		text: notification.content

@@ -54,8 +54,4 @@ public class General {
 	    return System.currentTimeMillis();
     }
 
-    public static long localMillisec() {
-	    Calendar localCld = localCalendar();
-	    return (millisec() + localCld.getTimeZone().getRawOffset());
-    }
 }

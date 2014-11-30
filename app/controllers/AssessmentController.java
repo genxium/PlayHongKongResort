@@ -13,7 +13,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.DataUtils;
-import utilities.Logger;
+import utilities.Loggy;
 
 import java.util.*;
 
@@ -95,7 +95,7 @@ public class AssessmentController extends Controller {
         } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-		    Logger.e(TAG, "submit", e);
+		    Loggy.e(TAG, "submit", e);
         }
 	return badRequest();
     }

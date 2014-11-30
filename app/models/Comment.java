@@ -8,7 +8,7 @@ import dao.SQLHelper;
 import org.json.simple.JSONObject;
 import play.libs.Json;
 import utilities.Converter;
-import utilities.Logger;
+import utilities.Loggy;
 
 import java.util.List;
 
@@ -88,7 +88,7 @@ public class Comment {
 		    ret.put(TO_NAME, SQLCommander.queryUser(m_to).getName());
 		    ret.put(GENERATED_TIME, Converter.gmtMillisecToLocalTime(m_generatedTime));
 	    } catch (Exception e) {
-		    Logger.e(TAG, "toSubCommentObjectNode", e);
+		    Loggy.e(TAG, "toSubCommentObjectNode", e);
 	    }
 	    return ret;
     }
@@ -113,7 +113,7 @@ public class Comment {
 		    }
 		    ret.put(SUB_COMMENTS, subCommentsNode);
 	    } catch (Exception e) {
-		    Logger.e(TAG, "toObjectNode", e);
+		    Loggy.e(TAG, "toObjectNode", e);
 	    }
 	    return ret;
     }

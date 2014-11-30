@@ -6,7 +6,7 @@ import models.User;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.DataUtils;
-import utilities.Logger;
+import utilities.Loggy;
 
 public class AvatarController extends ImageController {
 
@@ -45,7 +45,7 @@ public class AvatarController extends ImageController {
             return ok();
 
         } catch (Exception e) {
-            Logger.e(TAG, "upload", e);
+            Loggy.e(TAG, "upload", e);
         }
         return badRequest();
 

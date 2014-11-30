@@ -1,7 +1,7 @@
 package dao;
 
 import org.json.simple.JSONObject;
-import utilities.Logger;
+import utilities.Loggy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -575,7 +575,7 @@ public class EasyPreparedStatementBuilder {
             statement.close();
             SQLHelper.closeConnection(connection);
         } catch (Exception e) {
-            Logger.e(TAG, "select", e);
+            Loggy.e(TAG, "select", e);
         }
         return ret;
     }
@@ -596,7 +596,7 @@ public class EasyPreparedStatementBuilder {
             SQLHelper.closeConnection(connection);
         } catch (Exception e) {
             // return the INVALID value for exceptions
-            Logger.e(TAG, "insert", e);
+            Loggy.e(TAG, "insert", e);
         }
         return lastId;
     }
@@ -612,7 +612,7 @@ public class EasyPreparedStatementBuilder {
             SQLHelper.closeConnection(connection);
             bRet = true;
         } catch (Exception e) {
-            Logger.e(TAG, "update", e);
+            Loggy.e(TAG, "update", e);
         }
         return bRet;
     }
@@ -628,7 +628,7 @@ public class EasyPreparedStatementBuilder {
             SQLHelper.closeConnection(connection);
             bRet = true;
         } catch (Exception e) {
-            Logger.e(TAG, "delete", e);
+            Loggy.e(TAG, "delete", e);
         }
         return bRet;
     }

@@ -14,7 +14,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import utilities.Converter;
 import utilities.General;
-import utilities.Logger;
+import utilities.Loggy;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +29,7 @@ public class CommentController extends Controller {
 		    Comment comment = SQLCommander.queryComment(commentId);
 		    return ok(comment.toObjectNode(true));
 	    } catch (Exception e) {
-		    Logger.e(TAG, "query", e);
+		    Loggy.e(TAG, "query", e);
 	    }
 	    return badRequest();
 	
@@ -50,7 +50,7 @@ public class CommentController extends Controller {
             result.put(Comment.COMMENTS, commentsNode);
             return ok(result);
         } catch (Exception e) {
-            Logger.e(TAG, "query", e);
+            Loggy.e(TAG, "query", e);
         }
         return badRequest();
     }
@@ -70,7 +70,7 @@ public class CommentController extends Controller {
 	 	    result.put(Comment.COMMENTS, commentsNode);
 		    return ok(result);
 	    } catch (Exception e) {
-		    Logger.e(TAG, "query", e);
+		    Loggy.e(TAG, "query", e);
 	    }
 	    return badRequest();
     }
@@ -109,7 +109,7 @@ public class CommentController extends Controller {
 	    } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
-		    Logger.e(TAG, "submit", e);
+		    Loggy.e(TAG, "submit", e);
 	    }
 	    return badRequest();
     }

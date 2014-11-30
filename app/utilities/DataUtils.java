@@ -66,7 +66,7 @@ public class DataUtils {
 	    int length = tmp.length();
 	    return tmp.substring(0, (length >> 1));
 	} catch (Exception e) {
-	    Logger.e(TAG, "encryptByTime", e);
+	    Loggy.e(TAG, "encryptByTime", e);
 	}
 	return null;
     } 

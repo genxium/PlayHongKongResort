@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.simple.JSONObject;
 import play.libs.Json;
 import utilities.DataUtils;
-import utilities.Logger;
+import utilities.Loggy;
 
 public class BasicUser {
 
@@ -79,7 +79,7 @@ public class BasicUser {
                 ret.put(AVATAR, image.getImageURL());
             }
         } catch (Exception e) {
-            Logger.e(TAG, "toObjectNode", e);
+            Loggy.e(TAG, "toObjectNode", e);
         }
         return ret;
     }
