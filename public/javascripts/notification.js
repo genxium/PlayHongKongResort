@@ -101,31 +101,40 @@ function onListNotificationsError(err){
 
 function generateNotificationCell(par, notification) {
 	var cell = $("<p>", {
-		style: "border-bottom: 1px solid gray;"
+		style: "position: relative; width: 100%; height: 50px; border-bottom: 1px solid gray; cursor: pointer;"
 	}).appendTo(par);
 	var idColumn = $("<span>", {
-		style: "postion: relative; font-size: 11pt; vertical-align: middle;"
+		style: "postion: relative; height: 100%; margin-right: 5pt; font-size: 11pt; vertical-align: middle;",
 		text: notification.id
 	}).appendTo(cell);
 	var content = $("<span>", {
-		style: "position: relative; font-size: 14pt; vertical-align: middle;",
+		style: "position: relative; height: 100%; font-size: 14pt; vertical-align: middle;",
 		text: notification.content
 	}).appendTo(cell);
 	var timestamp = $("<span>", {
-		style: "position: relative; font-size: 11pt; margin-left: 10pt; color: blue; vertical-align: bottom;",
+		style: "position: relative; height: 100%; font-size: 11pt; margin-left: 10pt; color: blue; vertical-align: middle;",
 		text: gmtMiilisecToLocalYmdhis(notification.generatedTime) 
 	}).appendTo(cell); 
 	if (notification.isRead == 0) {
-		idColumn.css("font-weight: bold;");
-		content.css("font-weight: bold;");
-		timestamp.css("font-weight: bold;");
-		cell.click(notification, function(evt) {
+
+		var unreadIndicator = $("<img>", {
+			style: "position: relative; margin-left: 5pt;",
+			src: "/assets/icons/notification.png"
+		}).appendTo(cell)
+		unreadIndicator.width("50px");
+		unreadIndicator.height("50px");
+
+		var dCell = {};
+		dCell[g_keyNotification] = notification;
+		dCell["indicator"] = unreadIndicator;
+		cell.click(dCell, function(evt) {
 			evt.preventDefault();
-			var aNotification = evt.data;
-			$(this).children().css("font-weight: normal;");
+			var aNotification = evt.data[g_keyNotification];
+			var aIndicator = evt.data["indicator"];
 			if (g_loggedInUser == null) return;
 			var token = $.cookie(g_keyToken);
 			if (token == null) return;
+			aIndicator.remove();
 			var params = {};
 			params[g_keyToken] = token;
 			params[g_keyId] = aNotification.id;

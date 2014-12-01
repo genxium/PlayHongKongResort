@@ -381,6 +381,7 @@ public class SQLCommander {
             builder.select(names)
                     .from(Comment.TABLE)
                     .where(whereCols, whereOps, whereVals)
+					.order(orderKey, orientation)
                     .limit((page_st - 1) * numItems, page_ed * numItems);
 
             List<JSONObject> commentJsonList = builder.execSelect();
@@ -421,6 +422,7 @@ public class SQLCommander {
             builder.select(names)
                     .from(Comment.TABLE)
                     .where(Comment.PARENT_ID, "=", parentId)
+					.order(orderKey, orientation)
                     .limit((page_st - 1) * numItems, page_ed * numItems);
 
             List<JSONObject> commentJsonList = builder.execSelect();
@@ -502,10 +504,11 @@ public class SQLCommander {
 			
 		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-		String[] names = {Notification.ID, Notification.CONTENT, Notification.FROM, Notification.TO, Notification.CMD, Notification.GENERATED_TIME};
+		String[] names = {Notification.ID, Notification.IS_READ, Notification.ACTIVITY_ID, Notification.CONTENT, Notification.FROM, Notification.TO, Notification.CMD, Notification.GENERATED_TIME};
 		builder.select(names)
 			.from(Notification.TABLE)
 			.where(Notification.TO, "=", to)
+			.order(orderKey, orientation)
 			.limit((page_st - 1) * numItems, page_ed * numItems);
 	
 		if (isRead != null) builder.where(Notification.IS_READ, "=", isRead);

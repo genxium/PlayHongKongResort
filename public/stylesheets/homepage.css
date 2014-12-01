@@ -20,3 +20,16 @@
 {
 	position: relative;
 }
+
+#pager-screen-notifications
+{
+	display: block;
+	position: relative;
+	width: 720pt;
+	clear: both;
+}
+
+#pager-bar-notifications
+{
+	position: relative;
+}

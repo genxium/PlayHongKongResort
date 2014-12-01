@@ -17,7 +17,7 @@ public class Notification {
 
     public static int INVALID = (-1);
 
-    public static final String ID = "ID";
+    public static final String ID = "id";
     public static final String IS_READ = "is_read";
     public static final String FROM = "from";
     public static final String TO = "to";
@@ -37,7 +37,7 @@ public class Notification {
 	public static final String PAGE_ED = "page_ed";
 
     protected long m_id = 0;
-    protected boolean m_isRead = false;
+    protected int m_isRead = 0;
     protected int m_from = INVALID;
     protected int m_to = INVALID;
     protected String m_content = null;
@@ -51,7 +51,7 @@ public class Notification {
 
     public Notification(JSONObject notificationJson) {
 		if (notificationJson.containsKey(ID)) m_id = Converter.toLong(notificationJson.get(ID));
-        if (notificationJson.containsKey(IS_READ)) m_isRead = (Boolean) notificationJson.get(IS_READ);
+        if (notificationJson.containsKey(IS_READ)) m_isRead = Converter.toInteger(notificationJson.get(IS_READ));
         if (notificationJson.containsKey(FROM)) m_from = Converter.toInteger(notificationJson.get(FROM));
         if (notificationJson.containsKey(TO)) m_to = Converter.toInteger(notificationJson.get(TO));
         if (notificationJson.containsKey(CONTENT)) m_content = (String) notificationJson.get(CONTENT);
