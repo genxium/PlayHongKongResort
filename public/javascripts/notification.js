@@ -101,9 +101,10 @@ function onListNotificationsError(err){
 
 function generateNotificationCell(par, notification) {
 	var cell = $("<p>", {
-		style: "border-bottom: thin solid gray;"
+		style: "border-bottom: 1px solid gray;"
 	}).appendTo(par);
 	var idColumn = $("<span>", {
+		style: "postion: relative; font-size: 11pt; vertical-align: middle;"
 		text: notification.id
 	}).appendTo(cell);
 	var content = $("<span>", {
@@ -111,9 +112,38 @@ function generateNotificationCell(par, notification) {
 		text: notification.content
 	}).appendTo(cell);
 	var timestamp = $("<span>", {
-		style: "position: relative; font-size: 12pt; margin-left: 10pt; color: blue; vertical-align: bottom;",
+		style: "position: relative; font-size: 11pt; margin-left: 10pt; color: blue; vertical-align: bottom;",
 		text: gmtMiilisecToLocalYmdhis(notification.generatedTime) 
 	}).appendTo(cell); 
+	if (notification.isRead == 0) {
+		idColumn.css("font-weight: bold;");
+		content.css("font-weight: bold;");
+		timestamp.css("font-weight: bold;");
+		cell.click(notification, function(evt) {
+			evt.preventDefault();
+			var aNotification = evt.data;
+			$(this).children().css("font-weight: normal;");
+			if (g_loggedInUser == null) return;
+			var token = $.cookie(g_keyToken);
+			if (token == null) return;
+			var params = {};
+			params[g_keyToken] = token;
+			params[g_keyId] = aNotification.id;
+			params[g_keyIsRead] = 1;
+			$.ajax({
+				type: "POST",
+				url: "/el/notification/mark",
+				data: params,
+				success: function(data, status, xhr) {
+					
+				},
+				error: function(xhr, status, err) {
+
+				}
+			});	
+			$(this).off("click");
+		});
+	}
 }
 
 function requestNotifications() {

@@ -70,6 +70,7 @@ public class Notification {
         try {
             ret.put(ID, String.valueOf(m_id));
 			ret.put(CMD, String.valueOf(m_cmd));
+			ret.put(IS_READ, String.valueOf(m_isRead));
             ret.put(CONTENT, m_content);
 			ret.put(GENERATED_TIME, String.valueOf(m_generatedTime));
         } catch (Exception e) {

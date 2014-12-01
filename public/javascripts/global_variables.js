@@ -83,6 +83,7 @@ var g_keyFromName = "from_name";
 var g_keyTo = "to";
 var g_keyToName = "to_name";
 
+var g_keyNotification = "notification";
 var g_keyNotifications = "notifications";
 var g_keyIsRead = "is_read";
 
