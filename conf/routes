@@ -61,7 +61,7 @@ POST /assessment/submit controllers.AssessmentController.submit
 GET /assessment/query controllers.AssessmentController.query(ref_index: String ?=null, num_items: Integer ?=null, direction: Integer ?=null, token: String ?=null, to: Integer ?=null, activity_id: Integer ?=null)
 
 # Notification
-GET /notification/count controllers.NotificationController.count(token: String ?=null, is_read: Integer ?=null)
+GET /notification/count controllers.NotificationController.count(token: String ?=null, is_read: Integer ?=0)
 GET /notification/list controllers.NotificationController.list(page_st: Integer ?=null, page_ed: Integer ?=null, num_items: Integer ?=null, orientation: Integer ?=null, token: String ?=null, is_read: Integer ?=null)
 
 # Map static resources from the /public folder to the /assets URL path
