@@ -1,6 +1,7 @@
 package exception;
 
 public class TokenExpiredException extends Exception {
+
     public TokenExpiredException() {
         super("Token expired.");
     }
@@ -8,4 +9,5 @@ public class TokenExpiredException extends Exception {
     public TokenExpiredException(String controllerName) {
         super("Token expired in " + controllerName + ".");
     }
+
 }

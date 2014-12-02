@@ -5,6 +5,7 @@ import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.json.simple.JSONObject;
 import play.Play;
+import utilities.Loggy;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -12,8 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
-import utilities.DataUtils;
-import utilities.Loggy;
 
 public class SQLHelper {
 
@@ -49,7 +48,9 @@ public class SQLHelper {
     public static boolean readMySQLConfig() {
 	    boolean ret = false;
 	    try {
-		    String fullPath = Play.application().path() + "/conf/" + "database_config.xml";
+		    String fullPath = Play.application().path() + "/conf/";
+			if (Play.application().isProd()) fullPath += "database_config.xml";
+			else fullPath += "devel_database_config.xml";
 		    Map<String, String> attributes = XMLHelper.readDatabaseConfig(fullPath);
 		    s_databaseName = attributes.get(DATABASE_NAME);
 		    s_host = attributes.get(HOST);
