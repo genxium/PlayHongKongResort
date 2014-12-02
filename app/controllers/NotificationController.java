@@ -34,10 +34,11 @@ public class NotificationController extends Controller {
             if (token == null) throw new InvalidQueryParamsException();
             Integer userId = SQLCommander.queryUserId(token);
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            List<JSONObject> idJsonList = builder.select(Notification.ID)
-                    .from(Notification.TABLE)
-                    .where(Notification.TO, "=", userId)
-                    .where(Notification.IS_READ, "=", isRead).execSelect();
+			builder.select(Notification.ID)
+				.from(Notification.TABLE)
+				.where(Notification.TO, "=", userId);
+			if (isRead != null)	builder.where(Notification.IS_READ, "=", isRead);
+            List<JSONObject> idJsonList = builder.execSelect();
             ObjectNode result = Json.newObject();
             if (idJsonList == null) throw new NullPointerException();
             result.put(Notification.COUNT, idJsonList.size());
