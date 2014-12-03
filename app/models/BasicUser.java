@@ -4,6 +4,7 @@ import controllers.SQLCommander;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.simple.JSONObject;
 import play.libs.Json;
+import utilities.Converter;
 import utilities.DataUtils;
 import utilities.Loggy;
 
@@ -62,10 +63,10 @@ public class BasicUser {
     }
 
     public BasicUser(JSONObject userJson) {
-        if (userJson.containsKey(ID)) m_id = (Integer) userJson.get(ID);
+        if (userJson.containsKey(ID)) m_id = Converter.toInteger(userJson.get(ID));
         if (userJson.containsKey(NAME)) m_name = (String) userJson.get(NAME);
         if (userJson.containsKey(EMAIL)) m_email = (String) userJson.get(EMAIL);
-        if (userJson.containsKey(AVATAR)) m_avatar = (Integer) userJson.get(AVATAR);
+        if (userJson.containsKey(AVATAR)) m_avatar = Converter.toInteger(userJson.get(AVATAR));
     }
 
     public ObjectNode toObjectNode(Integer viewerId) {

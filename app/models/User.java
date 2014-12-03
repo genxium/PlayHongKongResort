@@ -5,6 +5,9 @@
 package models;
 
 import org.json.simple.JSONObject;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import utilities.Converter;
+import utilities.Loggy;
 
 public class User extends BasicUser {
 
@@ -25,6 +28,9 @@ public class User extends BasicUser {
     public static final String TOKEN = "token";
     public static final String VERIFICATION_CODE = "verification_code";
     public static final String PASSWORD_RESET_CODE = "password_reset_code";  
+
+	public static final String UNREAD_COUNT = "unread_count";
+	public static final String UNASSESSED_COUNT = "unassessed_count";
 
     protected String m_password = null;
 
@@ -62,6 +68,18 @@ public class User extends BasicUser {
         m_verificationCode = code;
     }
 
+	protected int m_unreadCount = 0;
+
+	public int getUnreadCount() {
+		return m_unreadCount;
+	}
+
+	protected int m_unassessedCount = 0;
+	
+	public int getUnassessedCount() {
+		return m_unassessedCount;
+	}	
+
     public User(String email, String password, String name) {
         super(email, name);
         m_password = password;
@@ -72,6 +90,19 @@ public class User extends BasicUser {
         super(userJson);
         if (userJson.containsKey(PASSWORD)) m_password = (String) userJson.get(PASSWORD);
         if (userJson.containsKey(SALT)) m_salt = (String) userJson.get(SALT);
-        if (userJson.containsKey(GROUP_ID)) m_groupId = (Integer) userJson.get(GROUP_ID);
+        if (userJson.containsKey(GROUP_ID)) m_groupId = Converter.toInteger(userJson.get(GROUP_ID));
+		if (userJson.containsKey(UNREAD_COUNT)) m_unreadCount = Converter.toInteger(userJson.get(UNREAD_COUNT));
+		if (userJson.containsKey(UNASSESSED_COUNT)) m_unassessedCount = Converter.toInteger(userJson.get(UNASSESSED_COUNT));
+    }
+
+    public ObjectNode toObjectNode(Integer viewerId) {
+        ObjectNode ret = super.toObjectNode(viewerId);
+        try {
+            ret.put(UNREAD_COUNT, String.valueOf(m_unreadCount));
+			ret.put(UNASSESSED_COUNT, String.valueOf(m_unassessedCount));
+        } catch (Exception e) {
+            Loggy.e(TAG, "toObjectNode", e);
+        }
+        return ret;
     }
 }
