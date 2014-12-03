@@ -183,7 +183,6 @@ public class ActivityController extends Controller {
 
 	public static Result save() {
 		// define response attributes
-		response().setContentType("text/plain");
 		try {
 			Http.RequestBody body = request().body();
 
@@ -202,18 +201,26 @@ public class ActivityController extends Controller {
 
 			String token = formData.get(User.TOKEN)[0];
 			if (token == null) throw new NullPointerException();
+
+			boolean isNewActivity = true;
+			Integer activityId = null;
+			if (formData.containsKey(UserActivityRelation.ACTIVITY_ID)) {
+				activityId = Converter.toInteger(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+				isNewActivity = false;
+			}
+			if (isNewActivity) {
+				String sid = formData.get(UserActivityRelation.SID)[0];
+				String captcha = formData.get(UserActivityRelation.CAPTCHA)[0];  
+				if (sid == null || captcha == null) throw new CaptchaNotMatchedException(); 
+				if (session(sid) == null || !captcha.equalsIgnoreCase(session(sid))) throw new CaptchaNotMatchedException(); 
+			}
+
 			Integer userId = SQLCommander.queryUserId(token);
 			if (userId == null) throw new NullPointerException();
 			User user = SQLCommander.queryUser(userId);
 			if (user == null) throw new NullPointerException();
 
 			if (!DataUtils.validateTitle(activityTitle) || !DataUtils.validateContent(activityContent)) throw new NullPointerException();
-			boolean isNewActivity = true;
-			Integer activityId = null;
-			if (formData.containsKey(UserActivityRelation.ACTIVITY_ID)) {
-				activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-				isNewActivity = false;
-			}
 			Activity activity = null;
 
 			if (isNewActivity)	activityId = SQLCommander.createActivity(activityTitle, activityContent, userId);
@@ -260,10 +267,12 @@ public class ActivityController extends Controller {
 			}
 
 			activity = SQLCommander.queryActivity(activityId);
-			return ok(activity.toObjectNodeWithImages(userId));
+			return ok(activity.toObjectNodeWithImages(userId)).as("text/plain");
 		} catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
-        } catch (Exception e) {
+        } catch (CaptchaNotMatchedException e) {
+			return badRequest(CaptchaNotMatchedResult.get());
+		} catch (Exception e) {
 			Loggy.e(TAG, "save", e);
 		}
 		return badRequest();

@@ -18,6 +18,9 @@ public class UserActivityRelation {
     public static String LAST_APPLYING_TIME = "last_applying_time";
     public static String LAST_SELECTED_TIME = "last_selected_time";
 
+	public static String SID = "sid"; 
+	public static String CAPTCHA = "captcha";
+
     public static int maskRelation(int relation, Integer originalRelation) {
         int ret = INVALID;
         if(originalRelation != null) ret = originalRelation;

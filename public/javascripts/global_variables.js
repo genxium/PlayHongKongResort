@@ -99,6 +99,8 @@ var g_keyOrientation = "orientation";
 var g_keyDirection = "direction";
 
 var g_keyCell = "cell";
+var g_keySid = "sid";
+var g_keyCaptcha = "captcha";
 
 // constants
 var g_statusCreated = 0;

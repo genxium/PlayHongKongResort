@@ -65,9 +65,10 @@
 	padding-top: 3pt;
 	width: auto;
 	height: 36pt;
-	font-size: 15pt;
+	font-size: 13pt;
 	margin-left: 50pt;
 	border: 0;
+	background-color: black;
 	color: white;
 }
 

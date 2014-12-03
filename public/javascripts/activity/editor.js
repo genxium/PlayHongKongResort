@@ -42,7 +42,7 @@ function ImageSelector(id, image, indicator) {
 	this.checked = true;
 }
 
-function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint) {
+function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, sid, captcha) {
 	if (id != null) this.id = id;
 	this.titleField = titleField;
 	this.contentField = contentField;
@@ -56,6 +56,8 @@ function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNod
 	if (btnDelete != null) this.btnDelete = btnDelete; 
 	this.explorerTrigger = explorerTrigger;
 	this.hint = hint;
+	this.sid = sid;
+	this.captcha = captcha;
 	this.savable = false;
 	this.submittable = true;
 
@@ -116,7 +118,7 @@ function formatDigits(value, numberOfDigits){
 }
 
 function formatDate(time){
-	time=time.replace(/-/g,"/");
+	time = time.replace(/-/g,"/");
 	var date = new Date(Date.parse(time));
 	var year = date.getFullYear();
 	var month = date.getMonth() + 1;
@@ -136,13 +138,13 @@ function reformatDate(date){
 }
 
 function removeActivityEditor(){
-        if(g_sectionActivityEditor == null) return;
-        g_sectionActivityEditor.hide();
-        g_sectionActivityEditor.modal("hide");
-        if(g_modalActivityEditor == null) return;
-        g_modalActivityEditor.empty();
-        if(g_activityEditor == null) return;
-        g_activityEditor.remove();
+	if(g_sectionActivityEditor == null) return;
+	g_sectionActivityEditor.hide();
+	g_sectionActivityEditor.modal("hide");
+	if(g_modalActivityEditor == null) return;
+	g_modalActivityEditor.empty();
+	if(g_activityEditor == null) return;
+	g_activityEditor.remove();
 }
 
 function initActivityEditor(par, onRemove){
@@ -162,26 +164,24 @@ function initActivityEditor(par, onRemove){
 		class: "modal-content"
 	}).appendTo(dialog);
 
-        g_onEditorCancelled = function(){
-                g_sectionActivityEditor.modal("hide");
-        };
+	g_onEditorCancelled = function(){
+			g_sectionActivityEditor.modal("hide");
+	};
 
 	removeActivityEditor();
 }
 
 function showActivityEditor(activity) {
-
 	refreshActivityEditor(activity);
-
-        g_sectionActivityEditor.modal({
-                show: true
-        });
+	g_sectionActivityEditor.modal({
+			show: true
+	});
 }
 
 function refreshActivityEditor(activity) {
-        g_activityEditor = generateActivityEditor(activity);
-        g_modalActivityEditor.empty();
-        g_modalActivityEditor.append(g_activityEditor);
+	g_activityEditor = generateActivityEditor(activity);
+	g_modalActivityEditor.empty();
+	g_modalActivityEditor.append(g_activityEditor);
 }
 
 function countImages(editor){
@@ -199,26 +199,26 @@ function onSave(evt){
 	evt.preventDefault();
 	
 	if (g_editor == null || !g_editor.savable) return;
-        var formData = new FormData();
+	var formData = new FormData();
 
-        // append user token and activity id for identity
-        var token = $.cookie(g_keyToken.toString());
+	// append user token and activity id for identity
+	var token = $.cookie(g_keyToken.toString());
 	if (token == null) {
 		alert("Are you logged out?");
 		return;
 	}
-        formData.append(g_keyToken, token);
+	formData.append(g_keyToken, token);
 
 	var countImages = 0;
 	
 	// check files
-        for (var key in g_editor.newImageFiles) {
-            var file = g_editor.newImageFiles[key];
-	    if (!validateImage(file)) {
-		formData = null;
-		return;
-	    } 
-            formData.append(g_indexNewImage + "-" + key.toString(), file);
+	for (var key in g_editor.newImageFiles) {
+		var file = g_editor.newImageFiles[key];
+		if (!validateImage(file)) {
+			formData = null;
+			return;
+		} 
+		formData.append(g_indexNewImage + "-" + key.toString(), file);
 	}
 	
 	countImages = Object.keys(g_editor.newImageFiles).length;
@@ -237,66 +237,72 @@ function onSave(evt){
 		return;
 	}
 
-        // append activity title and content
-        var title = g_editor.titleField.val();
+	// append activity title and content
+	var title = g_editor.titleField.val();
 	var content = g_editor.contentField.val();
 	if(title == null || content == null || title == "" || content == "") {
 		alert("Neither title nor content could be empty.");
 		return;
 	}
-        formData.append(g_keyTitle, title);
-        formData.append(g_keyContent, content);
+	formData.append(g_keyTitle, title);
+	formData.append(g_keyContent, content);
 
-        // append activity begin time and deadline
-        var beginTime = localYmdhisToGmtMillisec(getDateTime(g_editor.beginTimePicker));
-        var deadline = localYmdhisToGmtMillisec(getDateTime(g_editor.deadlinePicker));
+	// append activity begin time and deadline
+	var beginTime = localYmdhisToGmtMillisec(getDateTime(g_editor.beginTimePicker));
+	var deadline = localYmdhisToGmtMillisec(getDateTime(g_editor.deadlinePicker));
 		
 	if(deadline > beginTime) {
 		alert("Deadline can not be after the begin time of an activity.");
 		return;
 	}
-        formData.append(g_keyBeginTime, beginTime);
-        formData.append(g_keyDeadline, deadline);
 
-        var isNewActivity = false;
+	formData.append(g_keyBeginTime, beginTime);
+	formData.append(g_keyDeadline, deadline);
+
+	var isNewActivity = false;
 	var activityId = g_editor.id; 
-        if(activityId == null) isNewActivity = true;
+	if(activityId == null) isNewActivity = true;
 
-        if(!isNewActivity)	formData.append(g_keyActivityId, activityId);
+	if(!isNewActivity)	formData.append(g_keyActivityId, activityId);
+	else {
+		formData.append(g_keySid, g_editor.sid);
+		var captchaVal = g_editor.captcha.val();
+		formData.append(g_keyCaptcha, captchaVal);
+	}
 
 	g_editor.disableEditorButtons();
-        g_editor.setNonSavable();
-        g_editor.setNonSubmittable();
+	g_editor.setNonSavable();
+	g_editor.setNonSubmittable();
 	g_editor.hint.text("Saving...");
 
-        $.ajax({
-                method: "POST",
-                url: "/activity/save",
-                data: formData,
-                mimeType: "mutltipart/form-data",
-                contentType: false, // tell jQuery not to set contentType
-                processData: false, // tell jQuery not to process the data
-                success: function(data, status, xhr){
-			g_editor.setSubmittable();
-			g_editor.enableEditorButtons();
-			var activityJson = JSON.parse(data);
-			var activity = new Activity(activityJson);
-			if (g_editor.id == null) {
-				g_editor.hint.text("Activity created.");
-			} else {
-				g_editor.hint.text("Changes saved.");
+	$.ajax({
+			method: "POST",
+			url: "/activity/save",
+			data: formData,
+			mimeType: "mutltipart/form-data",
+			contentType: false, // tell jQuery not to set contentType
+			processData: false, // tell jQuery not to process the data
+			success: function(data, status, xhr){
+				var activityJson = JSON.parse(data);
+				g_editor.setSubmittable();
+				g_editor.enableEditorButtons();
+				var activity = new Activity(activityJson);
+				if (g_editor.id == null) {
+					g_editor.hint.text("Activity created.");
+				} else {
+					g_editor.hint.text("Changes saved.");
+				}
+				g_editor.id = activity.id;
+				refreshActivityEditor(activity);	
+				if(g_onActivitySaveSuccess == null) return;
+				g_onActivitySaveSuccess();
+			},
+			error: function(xhr, status, err){
+				g_editor.setSavable();
+				g_editor.enableEditorButtons();
+				g_editor.hint.text("Activity not saved!");
 			}
-			g_editor.id = activity.id;
-			refreshActivityEditor(activity);	
-			if(g_onActivitySaveSuccess == null) return;
-			g_onActivitySaveSuccess();
-                },
-                error: function(xhr, status, err){
-                        g_editor.setSavable();
-			g_editor.enableEditorButtons();
-			g_editor.hint.text("Activity not saved!");
-                }
-        });
+	});
 }
 
 function onSubmit(evt){
@@ -558,7 +564,7 @@ function generateActivityEditor(activity){
 	// Schedules
 	var deadline = reformatDate(new Date());
 	if(activity != null && activity.applicationDeadline != null) deadline = activity.applicationDeadline;
-	var deadlinePicker = generateDateSelection(formatDate(deadline));
+	var deadlinePicker = generateDateSelection(gmtMiilisecToLocalYmdhis(deadline));
         deadlinePicker.on("input keyup change", function(evt){
             evt.preventDefault();
             g_editor.setSavable();
@@ -567,7 +573,7 @@ function generateActivityEditor(activity){
 
 	var beginTime = reformatDate(new Date());
 	if(activity != null && activity.beginTime != null) beginTime = activity.beginTime;
-	var beginTimePicker = generateDateSelection(formatDate(beginTime));
+	var beginTimePicker = generateDateSelection(gmtMiilisecToLocalYmdhis(beginTime));
         beginTimePicker.on("input keyup change", function(evt){
             evt.preventDefault();
             g_editor.setSavable();
@@ -596,6 +602,20 @@ function generateActivityEditor(activity){
 
 	}).appendTo(scheduleRow2);
 	scheduleCell22.append(beginTimePicker);	
+
+	var sid = null;
+	var captcha = null;
+	if (isNewActivity) {
+		sid = generateUuid();  
+		var captchaRow = $("<p>").appendTo(ret);
+		var captchaImage = $("<img>", {
+			style: "display: inline;",
+			src: "/captcha?" + g_keySid + "=" + sid
+		}).appendTo(captchaRow);
+		captcha = $("<input>", {
+			style: "display: inline; margin-left: 10px;"
+		}).appendTo(captchaRow);
+	}
 
 	var buttons = $("<p>", {
 		style: "display: block; clear: both; margin-top: 5pt"
@@ -637,7 +657,7 @@ function generateActivityEditor(activity){
 		style: "color: blue"
 	}).appendTo(ret);
 
-	g_editor = new ActivityEditor(activityId, titleInput, contentInput, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint);	
+	g_editor = new ActivityEditor(activityId, titleInput, contentInput, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, sid, captcha);	
 	g_editor.setNonSavable();
 	g_editor.setSubmittable();
 
