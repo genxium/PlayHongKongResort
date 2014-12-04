@@ -102,7 +102,7 @@ public class SQLCommander {
 	    names.add(UserActivityRelation.ACTIVITY_ID);
 	    names.add(UserActivityRelation.USER_ID);
 	    names.add(UserActivityRelation.RELATION);
-        names.add(UserActivityRelation.GENERATED_TIME);
+        names.add(AbstractMessage.GENERATED_TIME);
 
 	    values.add(lastActivityId);
 	    values.add(userId);

@@ -5,12 +5,11 @@
 package models;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import play.Play;
-import play.libs.Json;
-import org.json.simple.JSONObject;
 import org.apache.commons.io.FilenameUtils;
+import org.json.simple.JSONObject;
+import play.Play;
 
-public class Image {
+public class Image extends AbstractModel {
 
     public static String PROD_URL_PREFIX = "/images/";
     public static String DEV_URL_PREFIX = "/assets/images/";
@@ -18,27 +17,12 @@ public class Image {
     public static String DEV_FOLDER_PATH = Play.application().path().getAbsolutePath() + "/public/images/";
 
     public static String TABLE = "image";
-    public static String ID = "id";
     public static String URL = "url";
 
-    private int m_imageId = 0;
+    private String m_url = null;
 
-    public int getImageId() {
-        return m_imageId;
-    }
-
-    public void setImageId(int imageId) {
-        m_imageId = imageId;
-    }
-
-    private String m_imageURL = null;
-
-    public String getImageURL() {
-        return m_imageURL;
-    }
-
-    public void setImageURL(String imageURL) {
-        m_imageURL = imageURL;
+    public String getUrl() {
+        return m_url;
     }
 
     public static String getUrlPrefix() {
@@ -52,20 +36,19 @@ public class Image {
     }
 
     public String getAbsolutePath() {
-        String baseName = FilenameUtils.getBaseName(m_imageURL);
-        String extension = FilenameUtils.getExtension(m_imageURL);
+        String baseName = FilenameUtils.getBaseName(m_url);
+        String extension = FilenameUtils.getExtension(m_url);
         return getFolderPath() + baseName + "." + extension;
     }
 
     public Image(JSONObject imageJson) {
-        if (imageJson.containsKey(ID))  m_imageId = (Integer) imageJson.get(Image.ID);
-        m_imageURL = (String) imageJson.get(Image.URL);
+        super(imageJson);
+        m_url = (String) imageJson.get(Image.URL);
     }
 
     public ObjectNode toObjectNode() {
-        ObjectNode ret = Json.newObject();
-        ret.put(ID, m_imageId);
-        ret.put(URL, m_imageURL);
+        ObjectNode ret = super.toObjectNode();
+        ret.put(URL, m_url);
         return ret;
     }
 }

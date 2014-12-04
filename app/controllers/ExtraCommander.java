@@ -1,16 +1,14 @@
 package controllers;
 
 import dao.EasyPreparedStatementBuilder;
-import dao.SQLHelper;
-import models.*;
 import exception.*;
+import models.*;
 import org.apache.commons.io.FileUtils;
 import play.mvc.Http.MultipartFormData.FilePart;
 import utilities.DataUtils;
 import utilities.Loggy;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 
 public class ExtraCommander extends SQLCommander {
@@ -50,7 +48,7 @@ public class ExtraCommander extends SQLCommander {
 		boolean ret = false;
 		try {
 			if (image == null) throw new ImageNotFoundException();
-			int imageId = image.getImageId();
+			int imageId = image.getId();
 			String imageAbsolutePath = image.getAbsolutePath();
 			File imageFile = new File(imageAbsolutePath);
 			boolean isFileDeleted = imageFile.delete();
@@ -67,7 +65,7 @@ public class ExtraCommander extends SQLCommander {
 		boolean ret = false;
 		try {
 			if (image == null) throw new ImageNotFoundException();
-			int imageId = image.getImageId();
+			int imageId = image.getId();
 			String imageAbsolutePath = image.getAbsolutePath();
 			File imageFile = new File(imageAbsolutePath);
 			boolean isFileDeleted = imageFile.delete();

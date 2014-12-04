@@ -1,6 +1,7 @@
 package models;
 
-public class UserActivityRelation {
+public class UserActivityRelation extends AbstractModel {
+
     public static final int FULLMASK = ((1 << 16) - 1);
     public static final int INVALID = 0;
     public static final int APPLIED = (1 << 0);
@@ -14,9 +15,11 @@ public class UserActivityRelation {
     public static String USER_ID = "user_id";
     public static String ACTIVITY_ID = "activity_id";
     public static String RELATION = "relation";
-    public static String GENERATED_TIME = "generated_time";
     public static String LAST_APPLYING_TIME = "last_applying_time";
     public static String LAST_SELECTED_TIME = "last_selected_time";
+    public static String GENERATED_TIME = "generated_time";
+
+    public static String VIEWEE_ID = "viewee_id";
 
 	public static String SID = "sid"; 
 	public static String CAPTCHA = "captcha";

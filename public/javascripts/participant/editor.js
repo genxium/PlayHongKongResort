@@ -46,8 +46,7 @@ function generateParticipantsSelectionForm(par, activity) {
 	var ret = new ParticipantsForm(labels, participantsId, participantsStatus); 
 	if(g_loggedInUser == null) return ret;
 	if(g_loggedInUser.id != activity.host.id) return ret; 
-	var currentYmdhis = getCurrentYmdhisDate(); 
-	if(compareYmdhisDate(currentYmdhis, activity.beginTime) > 0) return ret;
+	if(currentMillis() > activity.beginTime) return ret;
 
 	var boxes = new Array();
 	for(var i = 0; i < labels.length; i++){

@@ -1,31 +1,18 @@
 package models;
 
-import controllers.SQLCommander;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import controllers.SQLCommander;
 import org.json.simple.JSONObject;
-import play.libs.Json;
 import utilities.Converter;
-import utilities.DataUtils;
 import utilities.Loggy;
 
-public class BasicUser {
+public class BasicUser extends AbstractModel {
 
     public static String TAG = BasicUser.class.getName();
 
-    public static String ID = "id";
     public static String EMAIL = "email";
     public static String NAME = "name";
     public static String AVATAR = "avatar";
-
-    protected int m_id = 0;
-
-    public int getId() {
-        return m_id;
-    }
-
-    public void setId(int id) {
-        m_id = id;
-    }
 
     protected String m_email = null;
 
@@ -63,22 +50,19 @@ public class BasicUser {
     }
 
     public BasicUser(JSONObject userJson) {
-        if (userJson.containsKey(ID)) m_id = Converter.toInteger(userJson.get(ID));
+        super(userJson);
         if (userJson.containsKey(NAME)) m_name = (String) userJson.get(NAME);
         if (userJson.containsKey(EMAIL)) m_email = (String) userJson.get(EMAIL);
         if (userJson.containsKey(AVATAR)) m_avatar = Converter.toInteger(userJson.get(AVATAR));
     }
 
     public ObjectNode toObjectNode(Integer viewerId) {
-        ObjectNode ret = Json.newObject();
+        ObjectNode ret = super.toObjectNode();
         try {
-            ret.put(ID, String.valueOf(m_id));
             ret.put(EMAIL, m_email);
             ret.put(NAME, m_name);
             Image image = SQLCommander.queryImage(m_avatar);
-            if (image != null) {
-                ret.put(AVATAR, image.getImageURL());
-            }
+            if (image != null)  ret.put(AVATAR, image.getUrl());
         } catch (Exception e) {
             Loggy.e(TAG, "toObjectNode", e);
         }

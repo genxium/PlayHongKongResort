@@ -3,12 +3,10 @@ package models;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import utilities.Loggy;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import utilities.DataUtils;
-import utilities.Loggy;
 
 public class ActivityDetail extends Activity {
 
@@ -24,14 +22,9 @@ public class ActivityDetail extends Activity {
     }
 
     public void setImages(List<Image> images) {
-        if (m_images != null) {
-            m_images.clear();
-        } else {
-            m_images = new ArrayList<Image>();
-        }
-        for (Image image : images) {
-            m_images.add(image);
-        }
+        if (m_images != null)   m_images.clear();
+        else m_images = new ArrayList<Image>();
+        for (Image image : images)  m_images.add(image);
     }
 
     protected List<BasicUser> m_appliedParticipants = null;
@@ -47,8 +40,8 @@ public class ActivityDetail extends Activity {
         m_beginTime = activity.getBeginTime();
         m_deadline = activity.getDeadline();
         m_capacity = activity.getCapacity();
-	m_numApplied = activity.getNumApplied();
-	m_numSelected = activity.getNumSelected();
+        m_numApplied = activity.getNumApplied();
+        m_numSelected = activity.getNumSelected();
         m_status = activity.getStatus();
         m_host = activity.getHost();
         m_images = images;
@@ -58,10 +51,8 @@ public class ActivityDetail extends Activity {
     }
 
     public ObjectNode toObjectNode(Integer viewerId) {
-        ObjectNode ret = null;
+        ObjectNode ret = super.toObjectNode(viewerId);
         try {
-            ret = super.toObjectNode(viewerId);
-
             if (m_images != null) {
                 ArrayNode imagesNode = new ArrayNode(JsonNodeFactory.instance);
                 for (Image image : m_images) {

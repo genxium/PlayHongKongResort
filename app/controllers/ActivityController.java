@@ -53,6 +53,7 @@ public class ActivityController extends Controller {
             if (status != null && status.equals(Activity.REJECTED)) {
                 orderKey = Activity.LAST_REJECTED_TIME;
             }
+
             if (relation != null && relation != UserActivityRelation.HOSTED && vieweeId != null) {
                 activities = SQLCommander.queryActivities(page_st, page_ed, orderKey, orientationStr, numItems, vieweeId, UserActivityRelation.maskRelation(relation, null));
             } else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
@@ -64,9 +65,9 @@ public class ActivityController extends Controller {
             }
             if (activities == null) throw new NullPointerException();
             ObjectNode result = Json.newObject();
-            result.put(Activity.COUNT, 0);
-            result.put(Activity.PAGE_ST, page_st);
-            result.put(Activity.PAGE_ED, page_ed);
+            result.put(AbstractModel.COUNT, 0);
+            result.put(AbstractModel.PAGE_ST, page_st);
+            result.put(AbstractModel.PAGE_ED, page_ed);
 
             boolean isAdmin = false;
             if (viewer != null && SQLCommander.validateAdminAccess(viewer)) isAdmin = true;
@@ -128,8 +129,8 @@ public class ActivityController extends Controller {
             }
 			if (activities == null) throw new NullPointerException();
 			ObjectNode result = Json.newObject();
-			result.put(Activity.COUNT, 0);
-			result.put(Activity.PAGE, page.toString());
+			result.put(AbstractModel.COUNT, 0);
+			result.put(AbstractModel.PAGE, page.toString());
 
             boolean isAdmin = false;
             if (viewer != null && SQLCommander.validateAdminAccess(viewer)) isAdmin = true;
@@ -260,7 +261,7 @@ public class ActivityController extends Controller {
 			// delete previous images
 			if (previousImages != null && previousImages.size() > 0) {
 				for (Image previousImage : previousImages) {
-				    if (selectedOldImagesSet.contains(previousImage.getImageId())) continue;
+				    if (selectedOldImagesSet.contains(previousImage.getId())) continue;
 				    boolean isDeleted = ExtraCommander.deleteImageRecordAndFile(previousImage, activityId);
 				    if (!isDeleted) break;
 				}

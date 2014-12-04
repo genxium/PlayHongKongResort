@@ -6,13 +6,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import exception.*;
-import models.Activity;
-import models.Comment;
-import models.User;
+import models.*;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import utilities.Converter;
+import utilities.DataUtils;
 import utilities.General;
 import utilities.Loggy;
 
@@ -35,14 +34,27 @@ public class CommentController extends Controller {
 	
     }
 
-    public static Result list(Integer activityId, Integer page_st, Integer page_ed, Integer numItems) {
+    @SuppressWarnings("unchecked")
+    public static Result list(Integer activityId, Integer pageSt, Integer pageEd, Integer numItems) {
         response().setContentType("text/plain");
         try {
-            List<Comment> comments = SQLCommander.queryTopLevelComments(activityId, page_st, page_ed, Comment.ID, SQLHelper.DESCEND, numItems);
+            if (activityId == null || pageSt == null || pageEd == null || numItems == null) throw new InvalidQueryParamsException();
 
+            String cacheKey = "CommentController";
+            cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractActivityMessage.ACTIVITY_ID, activityId);
+            cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.PAGE_ST, pageSt);
+            cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.PAGE_ED, pageEd);
+            cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.NUM_ITEMS, numItems);
+
+            List<Comment> comments = (List<Comment>)play.cache.Cache.get(cacheKey);
+            if (comments == null) {
+                comments = SQLCommander.queryTopLevelComments(activityId, pageSt, pageEd, Comment.ID, SQLHelper.DESCEND, numItems);
+                play.cache.Cache.set(cacheKey, comments, DataUtils.CACHE_DURATION);
+            }
             ObjectNode result = Json.newObject();
             result.put(Comment.COUNT, 0);
-            result.put(Comment.PAGE_ST, page_st);
+            result.put(Comment.PAGE_ST, pageSt);
+            result.put(Comment.PAGE_ED, pageEd);
 
             ArrayNode commentsNode = new ArrayNode(JsonNodeFactory.instance);
             for (Comment comment : comments)	commentsNode.add(comment.toObjectNode(false));

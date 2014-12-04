@@ -5,14 +5,13 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.SQLCommander;
 import org.json.simple.JSONObject;
-import play.libs.Json;
 import utilities.Converter;
 import utilities.General;
 import utilities.Loggy;
 
 import java.util.List;
 
-public class Activity {
+public class Activity extends AbstractSimpleMessage {
 
     public static final String TAG = Activity.class.getName();
 
@@ -22,9 +21,7 @@ public class Activity {
     public static final int ACCEPTED = 3;
 
     public static final String TABLE = "activity";
-    public static final String ID = "id";
     public static final String TITLE = "title";
-    public static final String CONTENT = "content";
     public static final String CREATED_TIME = "created_time";
     public static final String BEGIN_TIME = "begin_time";
     public static final String DEADLINE = "application_deadline";
@@ -39,21 +36,7 @@ public class Activity {
     public static final String LAST_ACCEPTED_TIME = "last_accepted_time";
     public static final String LAST_REJECTED_TIME = "last_rejected_time";
 
-    public static final String COUNT = "count";
-    public static final String PAGE = "page";
-    public static final String PAGE_ST = "page_st";
-    public static final String PAGE_ED = "page_ed";
     public static final String ACTIVITIES = "activities";
-
-    protected int m_id = 0;
-
-    public int getId() {
-	    return m_id;
-    }
-
-    public void setId(int id) {
-	    m_id = id;
-    }
 
     protected String m_title = null;
 
@@ -162,19 +145,14 @@ public class Activity {
     }
 
     protected Activity() {
-
+        super();
     }
 
     public Activity(JSONObject activityJson, User host) {
-
-        if (activityJson.containsKey(ID))
-		    m_id = Converter.toInteger(activityJson.get(ID));
+        super(activityJson);
 
         if (activityJson.containsKey(TITLE))
 		    m_title = (String) activityJson.get(TITLE);
-
-        if (activityJson.containsKey(CONTENT))
-		    m_content = (String) activityJson.get(CONTENT);
 
         if (activityJson.containsKey(CREATED_TIME))
 		    m_createdTime = (Long) activityJson.get(CREATED_TIME);
@@ -209,11 +187,9 @@ public class Activity {
     }
 
     public ObjectNode toObjectNode(Integer viewerId) {
-        ObjectNode ret = Json.newObject();
+        ObjectNode ret = super.toObjectNode();
         try {
-            ret.put(ID, String.valueOf(m_id));
             ret.put(TITLE, m_title);
-            ret.put(CONTENT, m_content);
 
             ret.put(CREATED_TIME, String.valueOf(m_createdTime));
             ret.put(BEGIN_TIME, String.valueOf(m_beginTime));

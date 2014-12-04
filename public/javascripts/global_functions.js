@@ -270,6 +270,11 @@ function validateImage(file){
 	return true;
 }
 
+function currentMillis() {
+    var date = new Date();
+    return 1000 * moment().zone(date.getTimezoneOffset()).unix(); 
+}
+
 function gmtMiilisecToLocalYmdhis(millis) {
     var date = new Date();
     return moment(millis).zone(date.getTimezoneOffset()).format("YYYY-MM-DD HH:mm:ss"); 

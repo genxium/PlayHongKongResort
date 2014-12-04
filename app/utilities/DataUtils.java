@@ -10,6 +10,7 @@ import java.util.Map;
 public class DataUtils {
 
     public static final String TAG = DataUtils.class.getName();
+    public static final int CACHE_DURATION = 300;
 
     public static String getFileExt(String fileName) {
         int dotPos = fileName.lastIndexOf('.');
@@ -58,16 +59,20 @@ public class DataUtils {
     }
 	
     public static String encryptByTime(String seed) {
-	try {
-	    java.util.Date date = new java.util.Date();
-	    Timestamp currentTime = new Timestamp(date.getTime());
-	    Long epochTime = currentTime.getTime();
-	    String tmp = Converter.md5(epochTime.toString() + seed);
-	    int length = tmp.length();
-	    return tmp.substring(0, (length >> 1));
-	} catch (Exception e) {
-	    Loggy.e(TAG, "encryptByTime", e);
-	}
-	return null;
+		try {
+			java.util.Date date = new java.util.Date();
+			Timestamp currentTime = new Timestamp(date.getTime());
+			Long epochTime = currentTime.getTime();
+			String tmp = Converter.md5(epochTime.toString() + seed);
+			int length = tmp.length();
+			return tmp.substring(0, (length >> 1));
+		} catch (Exception e) {
+			Loggy.e(TAG, "encryptByTime", e);
+		}
+		return null;
     } 
+
+    public static String appendCacheKey(String cacheKey, String key, Object val) {
+        return cacheKey + "|" + key + ":" + String.valueOf(val);
+    }
 }

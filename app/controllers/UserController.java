@@ -13,7 +13,6 @@ import play.mvc.Http;
 import play.mvc.Http.RequestBody;
 import play.mvc.Result;
 import utilities.Converter;
-import utilities.DataUtils;
 import utilities.General;
 import utilities.Loggy;
 
@@ -186,8 +185,6 @@ public class UserController extends Controller {
             User viewee = SQLCommander.queryUser(vieweeId);
             return ok(viewee.toObjectNode(viewerId));
         } catch (TokenExpiredException e) {
-            Loggy.e(TAG, "detail", e);
-        } catch (Exception e) {
             Loggy.e(TAG, "detail", e);
         }
         return badRequest();
