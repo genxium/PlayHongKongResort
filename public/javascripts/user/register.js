@@ -22,6 +22,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		this.pswConfirm.hide();
 		this.pswConfirmCheck.hide();
 		this.btn.hide();
+		this.captcha.hide();
 	};
 	this.show = function() {
 		this.name.show();	
@@ -33,6 +34,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		this.pswConfirm.show();
 		this.pswConfirmCheck.show();
 		this.btn.show();
+		this.captcha.show();
 	}; 
 	this.empty = function() {
 		this.name.val("");	

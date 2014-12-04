@@ -503,6 +503,16 @@ function Captcha(sid) {
 	this.sid = sid;
 	this.input = null;
 	this.img = null;
+	this.hide = function() {
+		this.input.hide();
+		this.img.hide();
+		this.input.parent().hide();
+	};
+	this.show = function() {
+		this.input.parent().show();
+		this.input.show();
+		this.img.show();
+	};
 	this.appendCaptcha = function(par) {
 		var row = $("<p>").appendTo(par);
 		this.img = $("<img>", {
