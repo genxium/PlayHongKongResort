@@ -15,6 +15,8 @@ public abstract class AbstractModel {
     public static final String PAGE_ST = "page_st";
     public static final String PAGE_ED = "page_ed";
     public static final String NUM_ITEMS = "num_items";
+    public static final String ORDER = "order";
+    public static final String ORIENTATION = "orientation";
 
     public static final String ID = "id";
 

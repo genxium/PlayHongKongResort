@@ -32,11 +32,12 @@ public class ActivityController extends Controller {
     public static Result list(Integer pageSt, Integer pageEd, Integer numItems, Integer orientation, String token, Integer vieweeId, Integer relation, Integer status) {
         response().setContentType("text/plain");
         try {
+            if (pageSt == null || pageEd == null || numItems == null) throw new InvalidQueryParamsException();
 
             // anti-cracking by param order
-            if (orientation == null)  throw new NullPointerException();
+            if (orientation == null)  throw new InvalidQueryParamsException();
             String orientationStr = SQLHelper.convertOrientation(orientation);
-            if (orientationStr == null)   throw new NullPointerException();
+            if (orientationStr == null)   throw new InvalidQueryParamsException();
 
             // anti=cracking by param token
             Integer viewerId = null;
@@ -54,16 +55,41 @@ public class ActivityController extends Controller {
                 orderKey = Activity.LAST_REJECTED_TIME;
             }
 
+            String cacheKey = "ActivityController";
+            cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.PAGE_ST, pageSt);
+            cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.PAGE_ED, pageEd);
+            cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.NUM_ITEMS, numItems);
+            cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORIENTATION, orientation);
+            if (relation != null)   cacheKey = DataUtils.appendCacheKey(cacheKey, UserActivityRelation.RELATION, relation);
+            if (vieweeId != null)   cacheKey = DataUtils.appendCacheKey(cacheKey, UserActivityRelation.VIEWEE_ID, vieweeId);
+            if (status != null)     cacheKey = DataUtils.appendCacheKey(cacheKey, Activity.STATUS, status);
+
             if (relation != null && relation != UserActivityRelation.HOSTED && vieweeId != null) {
-                activities = SQLCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, vieweeId, UserActivityRelation.maskRelation(relation, null));
+                cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, orderKey);
+                activities = (List<Activity>) play.cache.Cache.get(cacheKey);
+                if (activities == null) {
+                    activities = SQLCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, vieweeId, UserActivityRelation.maskRelation(relation, null));
+                    if (activities != null && activities.size() > 0) play.cache.Cache.set(cacheKey, activities);
+                }
             } else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
-                activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, pageSt, pageEd, Activity.ID, orientationStr, numItems);
-            } else if (status != null){
-                activities = SQLCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, status);
+                cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, Activity.ID);
+                activities = (List<Activity>) play.cache.Cache.get(cacheKey);
+                if (activities == null) {
+                    activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, pageSt, pageEd, Activity.ID, orientationStr, numItems);
+                    if (activities != null && activities.size() > 0) play.cache.Cache.set(cacheKey, activities);
+                }
+            } else if (status != null) {
+                cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, orderKey);
+                activities = (List<Activity>) play.cache.Cache.get(cacheKey);
+                if (activities == null) {
+                    activities = SQLCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, status);
+                    if (activities != null && activities.size() > 0) play.cache.Cache.set(cacheKey, activities);
+                }
             } else {
                 activities = null;
             }
             if (activities == null) throw new NullPointerException();
+
             ObjectNode result = Json.newObject();
             result.put(AbstractModel.COUNT, 0);
             result.put(AbstractModel.PAGE_ST, pageSt);
