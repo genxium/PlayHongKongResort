@@ -42,7 +42,7 @@ function ImageSelector(id, image, indicator) {
 	this.checked = true;
 }
 
-function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, sid, captcha) {
+function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, captcha) {
 	if (id != null) this.id = id;
 	this.titleField = titleField;
 	this.contentField = contentField;
@@ -56,7 +56,6 @@ function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNod
 	if (btnDelete != null) this.btnDelete = btnDelete; 
 	this.explorerTrigger = explorerTrigger;
 	this.hint = hint;
-	this.sid = sid;
 	this.captcha = captcha;
 	this.savable = false;
 	this.submittable = true;
@@ -223,14 +222,14 @@ function onSave(evt){
 	
 	countImages = Object.keys(g_editor.newImageFiles).length;
 
-        var selectedOldImages = new Array();
-        for(var i = 0; i < g_editor.imageSelectors.length; i++){
-            var selector = g_editor.imageSelectors[i];
-            if(!selector.checked) continue;
-            selectedOldImages.push(selector.id);
-	    ++countImages;
-        }
-        formData.append(g_indexOldImage, JSON.stringify(selectedOldImages));
+	var selectedOldImages = new Array();
+	for(var i = 0; i < g_editor.imageSelectors.length; i++){
+		var selector = g_editor.imageSelectors[i];
+		if(!selector.checked) continue;
+		selectedOldImages.push(selector.id);
+		++countImages;
+	}
+	formData.append(g_indexOldImage, JSON.stringify(selectedOldImages));
 	
 	if(countImages > g_imagesLimit) {
 		alert("No more than 3 images! Don't cheat!");
@@ -265,9 +264,8 @@ function onSave(evt){
 
 	if(!isNewActivity)	formData.append(g_keyActivityId, activityId);
 	else {
-		formData.append(g_keySid, g_editor.sid);
-		var captchaVal = g_editor.captcha.val();
-		formData.append(g_keyCaptcha, captchaVal);
+		formData.append(g_keySid, g_editor.captcha.sid);
+		formData.append(g_keyCaptcha, g_editor.captcha.input.val());
 	}
 
 	g_editor.disableEditorButtons();
@@ -607,14 +605,8 @@ function generateActivityEditor(activity){
 	var captcha = null;
 	if (isNewActivity) {
 		sid = generateUuid();  
-		var captchaRow = $("<p>").appendTo(ret);
-		var captchaImage = $("<img>", {
-			style: "display: inline;",
-			src: "/captcha?" + g_keySid + "=" + sid
-		}).appendTo(captchaRow);
-		captcha = $("<input>", {
-			style: "display: inline; margin-left: 10px;"
-		}).appendTo(captchaRow);
+		var captcha = new Captcha(sid);
+		captcha.appendCaptcha(ret);
 	}
 
 	var buttons = $("<p>", {
@@ -657,7 +649,7 @@ function generateActivityEditor(activity){
 		style: "color: blue"
 	}).appendTo(ret);
 
-	g_editor = new ActivityEditor(activityId, titleInput, contentInput, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, sid, captcha);	
+	g_editor = new ActivityEditor(activityId, titleInput, contentInput, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, captcha);	
 	g_editor.setNonSavable();
 	g_editor.setSubmittable();
 

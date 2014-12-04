@@ -495,3 +495,32 @@ function createNavTabPane(par, ref, isPreactive, content) {
 	return pane;	
 }
 
+/*
+ * Captcha Widget
+ * */
+
+function Captcha(sid) {
+	this.sid = sid;
+	this.input = null;
+	this.img = null;
+	this.appendCaptcha = function(par) {
+		var row = $("<p>").appendTo(par);
+		this.img = $("<img>", {
+			style: "display: inline;",
+			src: "/captcha?" + g_keySid + "=" + this.sid
+		}).appendTo(row);
+		this.input = $("<input>", {
+			style: "display: inline; margin-left: 10px;"
+		}).appendTo(row);
+		var btnChange = $("<button>", {
+			style: "display: inline; margin-left: 10px",
+			text: "can't read!"
+		}).appendTo(row);
+
+		btnChange.click(this, function(evt) {
+			evt.preventDefault();
+			var captcha = evt.data;	
+			captcha.img.attr("src", "/captcha?" + g_keySid + "=" + captcha.sid + "&ts=" + new Date().getTime());
+		});
+	}
+}
