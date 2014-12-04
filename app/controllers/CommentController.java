@@ -49,7 +49,7 @@ public class CommentController extends Controller {
             List<Comment> comments = (List<Comment>)play.cache.Cache.get(cacheKey);
             if (comments == null) {
                 comments = SQLCommander.queryTopLevelComments(activityId, pageSt, pageEd, Comment.ID, SQLHelper.DESCEND, numItems);
-                play.cache.Cache.set(cacheKey, comments, DataUtils.CACHE_DURATION);
+                if (comments != null)	play.cache.Cache.set(cacheKey, comments, DataUtils.CACHE_DURATION);
             } else {
 				Loggy.i(TAG, "list", "cache hit for key " + cacheKey);
 			}

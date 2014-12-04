@@ -69,26 +69,30 @@ public class ActivityController extends Controller {
                 activities = (List<Activity>) play.cache.Cache.get(cacheKey);
                 if (activities == null) {
                     activities = SQLCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, vieweeId, UserActivityRelation.maskRelation(relation, null));
-                    if (activities != null && activities.size() > 0) play.cache.Cache.set(cacheKey, activities);
-                }
+                } else {
+					Loggy.i(TAG, "list", "cache hit for key " + cacheKey);
+				}
             } else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
                 cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, Activity.ID);
                 activities = (List<Activity>) play.cache.Cache.get(cacheKey);
                 if (activities == null) {
                     activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, pageSt, pageEd, Activity.ID, orientationStr, numItems);
-                    if (activities != null && activities.size() > 0) play.cache.Cache.set(cacheKey, activities);
-                }
+                } else {
+					Loggy.i(TAG, "list", "cache hit for key " + cacheKey);
+				}
             } else if (status != null) {
                 cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, orderKey);
                 activities = (List<Activity>) play.cache.Cache.get(cacheKey);
                 if (activities == null) {
                     activities = SQLCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, status);
-                    if (activities != null && activities.size() > 0) play.cache.Cache.set(cacheKey, activities);
-                }
+                } else {
+					Loggy.i(TAG, "list", "cache hit for key " + cacheKey);
+				}
             } else {
                 activities = null;
             }
             if (activities == null) throw new NullPointerException();
+			play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
 
             ObjectNode result = Json.newObject();
             result.put(AbstractModel.COUNT, 0);
