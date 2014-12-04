@@ -90,6 +90,11 @@ public class UserController extends Controller {
             String email = formData.get(User.EMAIL)[0];
             String password = formData.get(User.PASSWORD)[0];
 
+			String sid = formData.get(UserActivityRelation.SID)[0];
+			String captcha = formData.get(UserActivityRelation.CAPTCHA)[0];  
+			if (sid == null || captcha == null) throw new CaptchaNotMatchedException(); 
+			if (session(sid) == null || !captcha.equalsIgnoreCase(session(sid))) throw new CaptchaNotMatchedException(); 
+
             if ((name == null || !General.validateName(name)) || (email == null || !General.validateEmail(email)) || (password == null || !General.validatePassword(password)))  throw new InvalidRegistrationParamsException();
             String code = SQLCommander.generateVerificationCode(name);
             String salt = SQLCommander.generateSalt(email, password);
@@ -102,9 +107,11 @@ public class UserController extends Controller {
 
             sendVerificationEmail(user.getName(), user.getEmail(), code);
             return ok();
-        } catch (Exception e) {
+        } catch (CaptchaNotMatchedException e) {
+			return badRequest(CaptchaNotMatchedResult.get());
+		} catch (Exception e) {
             Loggy.e(TAG, "register", e);
-        }
+        }  
         return badRequest();
     }
 

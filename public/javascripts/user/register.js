@@ -1,4 +1,4 @@
-function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswConfirm, pswConfirmCheck, btn, onSuccess, onError) {
+function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswConfirm, pswConfirmCheck, btn, onSuccess, onError, captcha) {
 	// prototypes: onSuccess(data), onError(err)		
 	this.name = name;
 	this.nameCheck = nameCheck;
@@ -11,6 +11,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 	this.btn = btn;
 	this.onSuccess = onSuccess;
 	this.onError = onError;
+	this.captcha = captcha;
 	this.hide = function() {
 		this.name.hide();	
 		this.nameCheck.hide();
@@ -42,6 +43,8 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		this.pswCheck.text("");
 		this.pswConfirm.val("");
 		this.pswConfirmCheck.text("");
+		this.captcha.input.val("");
+		this.captcha.img.attr("src", "/captcha?" + g_keySid + "=" + this.captcha.sid + "&ts=" + new Date().getTime());
 	};
 
 	this.btn.click(this, function(evt) {
@@ -59,19 +62,22 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		params[g_keyName] = username;
 		params[g_keyEmail] = email;
 		params[g_keyPassword] = password;
+		params[g_keySid] = widget.captcha.sid;
+		params[g_keyCaptcha] = widget.captcha.input.val();
 
 		$.ajax({
 		    type: "POST",
 		    url: "/user/register",
 		    data: params,
 		    success: function(data, status, xhr){
-			widget.empty();
-			if (widget.onSuccess == null) return;
-			widget.onSuccess(data);
+				widget.empty();
+				if (widget.onSuccess == null) return;
+				widget.onSuccess(data);
 		    },
 		    error: function(xhr, status, err){
-			if (widget.onError == null) return;
-			widget.onError(err);
+				alert("Oops! Not registered...");
+				if (widget.onError == null) return;
+				widget.onError(err);
 		    }
 		});
 	});
@@ -199,14 +205,17 @@ function generateRegisterWidget(par, onSuccess, onError){
 	}).appendTo(cell41);
 	var spPswConfirm = $('<span>').appendTo(cell42);
 
-	var row5 = $('<tr>').appendTo(tbl);
-	var cell51 = $('<td>').appendTo(row5);
+	var sid = generateUuid();
+	var captcha = new Captcha(sid);
+	captcha.appendCaptcha(par);
+
+	var btnRow = $('<p>').appendTo(par);
 	var btnRegister = $('<button>', {
 		style: "font-family: Serif; font-size: 15pt; background-color: Teal; color: white",
 		text: "Register"	
-	}).appendTo(cell51);
+	}).appendTo(btnRow);
 
-	return new RegisterWidget(fieldName, spName, fieldEmail, spEmail, fieldPsw, spanPsw, fieldPswConfirm, spPswConfirm, btnRegister, onSuccess, onError);
+	return new RegisterWidget(fieldName, spName, fieldEmail, spEmail, fieldPsw, spanPsw, fieldPswConfirm, spPswConfirm, btnRegister, onSuccess, onError, captcha);
 }
 
 function validatePasswordConfirm(psw, pswConfirm){
