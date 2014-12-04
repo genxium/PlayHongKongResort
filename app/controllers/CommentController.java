@@ -50,7 +50,9 @@ public class CommentController extends Controller {
             if (comments == null) {
                 comments = SQLCommander.queryTopLevelComments(activityId, pageSt, pageEd, Comment.ID, SQLHelper.DESCEND, numItems);
                 play.cache.Cache.set(cacheKey, comments, DataUtils.CACHE_DURATION);
-            }
+            } else {
+				Loggy.i(TAG, "list", "cache hit for key " + cacheKey);
+			}
             ObjectNode result = Json.newObject();
             result.put(Comment.COUNT, 0);
             result.put(Comment.PAGE_ST, pageSt);

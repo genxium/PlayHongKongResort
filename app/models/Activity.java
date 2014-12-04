@@ -213,7 +213,7 @@ public class Activity extends AbstractSimpleMessage {
     }
 
     public ObjectNode toObjectNodeWithImages(Integer viewerId) {
-	    ObjectNode ret = toObjectNode(viewerId);
+	    ObjectNode ret = this.toObjectNode(viewerId);
 	    try {
 		    List<Image> images = SQLCommander.queryImages(m_id);
 		    if (images == null || images.size() <= 0) return ret;

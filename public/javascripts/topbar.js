@@ -8,7 +8,7 @@ function initTopbar(par){
 	}).appendTo(g_topbar);
 	topbarTitle.click(function(evt){
 		evt.preventDefault();
-		requestHome();
+		window.location.href = "/";
 	});	
 	g_sectionLogin = $("<span>", {
 		style: "position: absolute; width: 33%; height: 95%; left: 67%;"

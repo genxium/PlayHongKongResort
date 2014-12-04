@@ -29,7 +29,7 @@ public class ActivityController extends Controller {
 
 	public static final String OLD_IMAGE = "old_image";
 
-    public static Result list(Integer page_st, Integer page_ed, Integer numItems, Integer orientation, String token, Integer vieweeId, Integer relation, Integer status) {
+    public static Result list(Integer pageSt, Integer pageEd, Integer numItems, Integer orientation, String token, Integer vieweeId, Integer relation, Integer status) {
         response().setContentType("text/plain");
         try {
 
@@ -55,19 +55,19 @@ public class ActivityController extends Controller {
             }
 
             if (relation != null && relation != UserActivityRelation.HOSTED && vieweeId != null) {
-                activities = SQLCommander.queryActivities(page_st, page_ed, orderKey, orientationStr, numItems, vieweeId, UserActivityRelation.maskRelation(relation, null));
+                activities = SQLCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, vieweeId, UserActivityRelation.maskRelation(relation, null));
             } else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
-                activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, page_st, page_ed, Activity.ID, orientationStr, numItems);
+                activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, pageSt, pageEd, Activity.ID, orientationStr, numItems);
             } else if (status != null){
-                activities = SQLCommander.queryActivities(page_st, page_ed, orderKey, orientationStr, numItems, status);
+                activities = SQLCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, status);
             } else {
                 activities = null;
             }
             if (activities == null) throw new NullPointerException();
             ObjectNode result = Json.newObject();
             result.put(AbstractModel.COUNT, 0);
-            result.put(AbstractModel.PAGE_ST, page_st);
-            result.put(AbstractModel.PAGE_ED, page_ed);
+            result.put(AbstractModel.PAGE_ST, pageSt);
+            result.put(AbstractModel.PAGE_ED, pageEd);
 
             boolean isAdmin = false;
             if (viewer != null && SQLCommander.validateAdminAccess(viewer)) isAdmin = true;
