@@ -42,6 +42,7 @@ public class EasyPreparedStatementBuilder {
     protected List<String> m_orderBy = null;
     protected List<String> m_orientations = null;
     protected List<Integer> m_limits = null;
+	protected boolean m_ignore = false;
 
     public EasyPreparedStatementBuilder() {
 
@@ -111,6 +112,11 @@ public class EasyPreparedStatementBuilder {
         }
         return this;
     }
+
+	public EasyPreparedStatementBuilder ignore() {
+		m_ignore = true;
+		return this;
+	}
 
     public EasyPreparedStatementBuilder set(String col, Object val) {
         if (m_updateCols == null) m_updateCols = new LinkedList<String>();
@@ -435,6 +441,7 @@ public class EasyPreparedStatementBuilder {
         PreparedStatement statement = null;
         try {
             String query = "INSERT";
+			if (m_ignore) query += " IGNORE";
             query = appendIntoTable(query);
 
             query += "(";

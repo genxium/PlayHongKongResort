@@ -492,7 +492,7 @@ public class SQLCommander {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    String[] cols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO, Assessment.CONTENT, Assessment.GENERATED_TIME};
 		    Object[] vals = {activityId, from, to, content, General.millisec()};
-		    return builder.insert(cols, vals).into(Assessment.TABLE).execInsert();
+		    return builder.insert(cols, vals).ignore().into(Assessment.TABLE).execInsert();
 	    } catch (Exception e) {
             Loggy.e(TAG, "createAssessment", e);
             return SQLHelper.INVALID;

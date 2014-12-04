@@ -32,7 +32,7 @@ public class AssessmentController extends Controller {
             for (Assessment assessment : assessments)   result.put(String.valueOf(assessment.getId()), assessment.toObjectNodeWithNames());
             return ok(result);
         } catch (Exception e) {
-		    System.out.println(AssessmentController.class.getName() + ".query, " + e.getMessage());
+		    Loggy.e(TAG, "query", e);
         }
         return badRequest();
     }
@@ -61,10 +61,10 @@ public class AssessmentController extends Controller {
             if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
             if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
 
-            Integer relation = SQLCommander.queryUserActivityRelation(userId, activityId);
-
+            int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
+            if(originalRelation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
             // Only PRESENT participants and host can submit assessments
-            if ((relation & UserActivityRelation.PRESENT) == 0 && activity.getHost().getId() != userId) throw new InvalidUserActivityRelationException();
+            if ((originalRelation & UserActivityRelation.PRESENT) == 0 && activity.getHost().getId() != userId) throw new InvalidUserActivityRelationException();
 
             String bundle = formData.get(BUNDLE)[0];
             JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
@@ -72,14 +72,9 @@ public class AssessmentController extends Controller {
                 Assessment assessment = new Assessment((JSONObject) obj);
                 assessment.setActivityId(activityId);
                 assessment.setFrom(userId);
-                Assessment existingAssessment = SQLCommander.queryAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo());
-                if (existingAssessment != null) continue;
                 if (!SQLCommander.isUserAssessable(assessment.getFrom(), assessment.getTo(), assessment.getActivityId()))   continue;
                 SQLCommander.createAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo(), assessment.getContent());
             }
-
-            int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
-            if(originalRelation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
 
             int newRelation = UserActivityRelation.maskRelation(UserActivityRelation.ASSESSED, originalRelation);
 
@@ -97,6 +92,6 @@ public class AssessmentController extends Controller {
         } catch (Exception e) {
 		    Loggy.e(TAG, "submit", e);
         }
-	return badRequest();
+		return badRequest();
     }
 }
