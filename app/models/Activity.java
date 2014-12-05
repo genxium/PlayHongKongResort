@@ -144,7 +144,7 @@ public class Activity extends AbstractSimpleMessage {
 	    return General.millisec() > m_beginTime;
     }
 
-    protected Activity() {
+    public Activity() {
         super();
     }
 

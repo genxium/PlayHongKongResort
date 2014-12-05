@@ -1,10 +1,13 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import dao.SQLHelper;
 import dao.EasyPreparedStatementBuilder;
-import models.*;
+import dao.SQLHelper;
 import exception.*;
+import models.Activity;
+import models.Assessment;
+import models.User;
+import models.UserActivityRelation;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -12,10 +15,11 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import utilities.DataUtils;
 import utilities.Loggy;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class AssessmentController extends Controller {
 
@@ -63,18 +67,33 @@ public class AssessmentController extends Controller {
 
             int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
             if(originalRelation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
-            // Only PRESENT participants and host can submit assessments
-            if ((originalRelation & UserActivityRelation.PRESENT) == 0 && activity.getHost().getId() != userId) throw new InvalidUserActivityRelationException();
+
+            // Only PRESENT participants can submit assessments (host must be present)
+            if ( (originalRelation & UserActivityRelation.PRESENT) == 0) throw new InvalidUserActivityRelationException();
 
             String bundle = formData.get(BUNDLE)[0];
             JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
+            List<Integer> userIdList = new LinkedList<Integer>();
+            List<Assessment> assessmentList = new LinkedList<Assessment>();
+            userIdList.add(userId);
+
             for (Object obj : assessmentJsons) {
                 Assessment assessment = new Assessment((JSONObject) obj);
                 assessment.setActivityId(activityId);
                 assessment.setFrom(userId);
-                if (!SQLCommander.isUserAssessable(assessment.getFrom(), assessment.getTo(), assessment.getActivityId()))   continue;
-                SQLCommander.createAssessment(assessment.getActivityId(), assessment.getFrom(), assessment.getTo(), assessment.getContent());
+                assessmentList.add(assessment);
+                userIdList.add(assessment.getTo());
             }
+
+            List<Integer> relations = SQLCommander.queryUserActivityRelations(userIdList, activityId);
+
+            // validation loop
+            for (Integer relation : relations) {
+                if (relation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
+                if ((relation & UserActivityRelation.SELECTED) == 0) throw new InvalidUserActivityRelationException();
+            }
+
+            SQLCommander.createAssessments(assessmentList);
 
             int newRelation = UserActivityRelation.maskRelation(UserActivityRelation.ASSESSED, originalRelation);
 

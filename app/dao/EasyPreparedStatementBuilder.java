@@ -26,21 +26,28 @@ public class EasyPreparedStatementBuilder {
 
     protected String m_table = null;
     protected List<String> m_selectCols = null;
+
     protected List<String> m_insertCols = null;
-    protected List<Object> m_insertVals = null;
+    protected List< List<Object> > m_insertVals = null;
+
     protected List<String> m_updateCols = null;
     protected List<Object> m_updateVals = null;
+
     protected List<String> m_increaseCols = null;
     protected List<Object> m_increaseVals = null;
     protected List<String> m_decreaseCols = null;
     protected List<Object> m_decreaseVals = null;
+
     protected Map<String, List<OnCondition>> m_join = null;
+
     protected List<String> m_whereCols = null;
     protected List<String> m_whereOps = null;
     protected List<Object> m_whereVals = null;
     protected String m_whereLink = null;
+
     protected List<String> m_orderBy = null;
     protected List<String> m_orientations = null;
+
     protected List<Integer> m_limits = null;
 	protected boolean m_ignore = false;
 
@@ -83,38 +90,21 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder insert(String col, Object val) {
-        if (m_insertCols == null) m_insertCols = new LinkedList<String>();
-        if (m_insertVals == null) m_insertVals = new LinkedList<Object>();
-        m_insertCols.add(col);
-        m_insertVals.add(val);
-        return this;
-    }
-
-    public EasyPreparedStatementBuilder insert(List<String> cols, List<Object> vals) {
-        if (cols == null || vals == null) return this;
-        if (cols.size() != vals.size()) return this;
-        int n = cols.size();
-        for (int i = 0; i < n; i++) {
-            String col = cols.get(i);
-            Object val = vals.get(i);
-            insert(col, val);
-        }
-        return this;
-    }
-
     public EasyPreparedStatementBuilder insert(String[] cols, Object[] vals) {
-        if (cols == null || vals == null) return this;
-        if (cols.length != vals.length) return this;
-        int n = cols.length;
-        for (int i = 0; i < n; i++) {
-            insert(cols[i], vals[i]);
+        if (cols == null || vals == null || cols.length != vals.length) return this;
+        if (m_insertCols == null) {
+            m_insertCols = new ArrayList<>(); // lazy init
+            Collections.addAll(m_insertCols, cols);
         }
+        if (m_insertVals == null) m_insertVals = new ArrayList<List<Object>>(); // lazy init
+        List<Object> tmp = new ArrayList<Object>();
+        Collections.addAll(tmp, vals);
+        m_insertVals.add(tmp);
         return this;
     }
 
-	public EasyPreparedStatementBuilder ignore() {
-		m_ignore = true;
+	public EasyPreparedStatementBuilder ignore(boolean val) {
+		m_ignore = val;
 		return this;
 	}
 
@@ -252,11 +242,6 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder where(String whereLink) {
-        m_whereLink = whereLink;
-        return this;
-    }
-
     public EasyPreparedStatementBuilder order(String col, String orientation) {
         if (m_orderBy == null) m_orderBy = new LinkedList<String>();
         m_orderBy.add(col);
@@ -356,7 +341,16 @@ public class EasyPreparedStatementBuilder {
         for (int i = 0; i < m_whereCols.size(); i++) {
             String col = m_whereCols.get(i);
             String op = m_whereOps.get(i);
-            query += ("`" + col + "`" + op + "?");
+            if (op.equalsIgnoreCase("IN")) {
+                query += ("`" + col + "` " + op + " ("); // mind the space
+                List<?> castedVals = (List<?>)(m_whereVals.get(i));
+                for (int j = 0; j < castedVals.size(); ++j) {
+                    query += "?";
+                    if (j < castedVals.size() - 1) query += ", ";
+                }
+                query += ")";
+            }
+            else query += ("`" + col + "`" + op + "?");
             if (i < m_whereCols.size() - 1) {
                 if (m_whereLink == null) query += " AND ";
                 else query += (" " + m_whereLink + " ");
@@ -421,7 +415,13 @@ public class EasyPreparedStatementBuilder {
             }
             if (m_whereVals != null) {
                 for (Object val : m_whereVals) {
-                    statement.setObject(index++, val);
+                    if (val instanceof List) {
+                        List<?> castedVals = (List<?>) val;
+                        for (Object castedVal : castedVals) {
+                            statement.setObject(index++, castedVal);
+                        }
+                    }
+                    else statement.setObject(index++, val);
                 }
             }
             if (m_limits != null) {
@@ -451,19 +451,25 @@ public class EasyPreparedStatementBuilder {
             }
             query += ") ";
 
-            query += " VALUES(";
+            query += " VALUES ";
             for (int i = 0; i < m_insertVals.size(); i++) {
-                query += "?";
+                query += "(";
+                for (int j = 0; j < m_insertVals.get(i).size(); ++j) {
+                    query += "?";
+                    if (j < m_insertVals.get(i).size() - 1) query += ", ";
+                }
+                query += ")";
                 if (i < m_insertVals.size() - 1) query += ", ";
             }
-            query += ") ";
 
             int index = 1;
 
             statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             if (m_insertVals != null) {
-                for (Object val : m_insertVals) {
-                    statement.setObject(index++, val);
+                for (List<Object> list : m_insertVals) {
+                    for (Object val : list) {
+                        statement.setObject(index++, val);
+                    }
                 }
             }
 
@@ -486,7 +492,13 @@ public class EasyPreparedStatementBuilder {
             statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             if (m_whereVals != null) {
                 for (Object val : m_whereVals) {
-                    statement.setObject(index++, val);
+                    if (val instanceof List) {
+                        List<?> castedVals = (List<?>) val;
+                        for (Object castedVal : castedVals) {
+                            statement.setObject(index++, castedVal);
+                        }
+                    }
+                    else statement.setObject(index++, val);
                 }
             }
 
@@ -554,7 +566,13 @@ public class EasyPreparedStatementBuilder {
 
             if (m_whereVals != null) {
                 for (Object val : m_whereVals) {
-                    statement.setObject(index++, val);
+                    if (val instanceof List) {
+                        List<?> castedVals = (List<?>) val;
+                        for (Object castedVal : castedVals) {
+                            statement.setObject(index++, castedVal);
+                        }
+                    }
+                    else statement.setObject(index++, val);
                 }
             }
 

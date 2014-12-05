@@ -5,6 +5,7 @@ import dao.SQLHelper;
 import exception.*;
 import models.*;
 import org.json.simple.JSONObject;
+import utilities.Converter;
 import utilities.DataUtils;
 import utilities.General;
 import utilities.Loggy;
@@ -77,40 +78,23 @@ public class SQLCommander {
     }
 
     public static Integer createActivity(String title, String content, Integer userId) {
+
 	    Integer lastActivityId = null;
 
         long now = General.millisec();
 
-	    List<String> names = new LinkedList<String>();
-	    names.add(Activity.TITLE);
-	    names.add(Activity.CONTENT);
-	    names.add(Activity.HOST_ID);
-        names.add(Activity.CREATED_TIME);
-
-	    List<Object> values = new LinkedList<Object>();
-	    values.add(title);
-	    values.add(content);
-	    values.add(userId);
-        values.add(now);
+        String[] names = {Activity.TITLE, Activity.CONTENT, Activity.HOST_ID, Activity.CREATED_TIME};
+	    Object[] values = {title, content, userId, now};
 
 	    EasyPreparedStatementBuilder builderActivity = new EasyPreparedStatementBuilder();
         lastActivityId = builderActivity.insert(names, values).into(Activity.TABLE).execInsert();
 	    if (lastActivityId.equals(SQLHelper.INVALID)) return SQLHelper.INVALID;
-	    names.clear();
-	    values.clear();
 
-	    names.add(UserActivityRelation.ACTIVITY_ID);
-	    names.add(UserActivityRelation.USER_ID);
-	    names.add(UserActivityRelation.RELATION);
-        names.add(AbstractMessage.GENERATED_TIME);
-
-	    values.add(lastActivityId);
-	    values.add(userId);
-	    values.add(UserActivityRelation.SELECTED|UserActivityRelation.PRESENT);
-        values.add(now);
+        String[] names2 = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME};
+        Object[] values2 = {lastActivityId, userId, UserActivityRelation.SELECTED | UserActivityRelation.PRESENT, now};
 
 	    EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
-	    builderRelation.insert(names, values).into(UserActivityRelation.TABLE).execInsert();
+	    builderRelation.insert(names2, values2).into(UserActivityRelation.TABLE).execInsert();
 
         return lastActivityId;
     }
@@ -330,6 +314,28 @@ public class SQLCommander {
 	    return UserActivityRelation.INVALID;
     }
 
+    public static List<Integer> queryUserActivityRelations(List<Integer> userIdList, Integer activityId) {
+        try {
+            if (userIdList == null) throw new UserNotFoundException();
+            if (activityId == null) throw new ActivityNotFoundException();
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+
+            List<JSONObject> records = builder.select(UserActivityRelation.RELATION).from(UserActivityRelation.TABLE)
+                    .where(UserActivityRelation.USER_ID, "IN", userIdList)
+                    .where(UserActivityRelation.ACTIVITY_ID, "=", activityId)
+                    .execSelect();
+
+            if (records == null) return null;
+
+            List<Integer> ret = new ArrayList<Integer>();
+            for (JSONObject record : records) ret.add(Converter.toInteger(record));
+            return ret;
+        } catch (Exception e) {
+            Loggy.e(TAG, "queryUserActivityRelation", e);
+        }
+        return null;
+    }
+
     public static Comment queryComment(Integer commentId) {
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -487,15 +493,18 @@ public class SQLCommander {
 	    return false;
     }
 
-    public static int createAssessment(Integer activityId, Integer from, Integer to, String content) {
+    public static void createAssessments(List<Assessment> assessmentList) {
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            long now = General.millisec();
 		    String[] cols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO, Assessment.CONTENT, Assessment.GENERATED_TIME};
-		    Object[] vals = {activityId, from, to, content, General.millisec()};
-		    return builder.insert(cols, vals).ignore().into(Assessment.TABLE).execInsert();
+            for (Assessment assessment : assessmentList) {
+                Object[] vals = {assessment.getActivityId(), assessment.getFrom(), assessment.getTo(), assessment.getContent(), now};
+                builder.insert(cols, vals);
+            }
+            builder.ignore(true).into(Assessment.TABLE).execInsert();
 	    } catch (Exception e) {
             Loggy.e(TAG, "createAssessment", e);
-            return SQLHelper.INVALID;
 	    }
     }
 
@@ -696,7 +705,9 @@ public class SQLCommander {
 	    int ret = INVALID;
 	    try {
 		    EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
-		    int lastImageId = builderImage.insert(Image.URL, imageURL).into(Image.TABLE).execInsert();
+            String[] names = {Image.URL};
+            Object[] vals = {imageURL};
+		    int lastImageId = builderImage.insert(names, vals).into(Image.TABLE).execInsert();
 		    if (lastImageId == SQLHelper.INVALID) throw new Exception();
 
 		    EasyPreparedStatementBuilder builderUser = new EasyPreparedStatementBuilder();
@@ -786,7 +797,9 @@ public class SQLCommander {
 		    if (user == null) throw new UserNotFoundException();
 		    if (activity == null) throw new ActivityNotFoundException();
 		    EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
-		    int lastImageId = builderImage.insert(Image.URL, imageURL).into(Image.TABLE).execInsert();
+            String[] columns = {Image.URL};
+            Object[] values = {imageURL};
+		    int lastImageId = builderImage.insert(columns, values).into(Image.TABLE).execInsert();
 		    if (lastImageId == INVALID) throw new NullPointerException();
 
 		    String[] cols = {ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID, ActivityImageRelation.GENERATED_TIME};
