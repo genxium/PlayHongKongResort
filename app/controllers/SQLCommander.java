@@ -328,7 +328,7 @@ public class SQLCommander {
             if (records == null) return null;
 
             List<Integer> ret = new ArrayList<Integer>();
-            for (JSONObject record : records) ret.add(Converter.toInteger(record));
+            for (JSONObject record : records) ret.add(Converter.toInteger(record.get(UserActivityRelation.RELATION)));
             return ret;
         } catch (Exception e) {
             Loggy.e(TAG, "queryUserActivityRelation", e);

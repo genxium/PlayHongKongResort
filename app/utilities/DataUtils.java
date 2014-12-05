@@ -10,7 +10,7 @@ import java.util.Map;
 public class DataUtils {
 
     public static final String TAG = DataUtils.class.getName();
-    public static final int CACHE_DURATION = 300;
+    public static final int CACHE_DURATION = 180;
 
     public static String getFileExt(String fileName) {
         int dotPos = fileName.lastIndexOf('.');
