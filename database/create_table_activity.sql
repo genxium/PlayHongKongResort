@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.6.20, for osx10.6 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.20, for Linux (i686)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
@@ -39,7 +39,7 @@ CREATE TABLE `activity` (
   PRIMARY KEY (`id`),
   KEY `activity_ibfk_1` (`host_id`),
   KEY `status_index` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -51,4 +51,4 @@ CREATE TABLE `activity` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-12-03 11:37:28
+-- Dump completed on 2014-12-07  3:16:32

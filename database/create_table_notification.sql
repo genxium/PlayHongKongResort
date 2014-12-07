@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.6.20, for osx10.6 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.20, for Linux (i686)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `notification`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `notification` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `is_read` int(2) NOT NULL DEFAULT '0',
   `from` int(32) DEFAULT NULL,
   `to` int(32) NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE `notification` (
   `activity_id` int(32) NOT NULL,
   `comment_id` int(32) DEFAULT NULL,
   `assessment_id` int(32) DEFAULT NULL,
-  `cmd` int(32) NOT NULL,
+  `cmd` bigint(20) unsigned NOT NULL,
   `relation` int(3) DEFAULT NULL,
   `status` int(3) DEFAULT NULL,
   `generated_time` bigint(20) DEFAULT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE `notification` (
   KEY `notification_ibfk_4` (`from`) USING BTREE,
   KEY `notification_ibfk_5` (`to`) USING BTREE,
   KEY `cmd_index` (`cmd`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -54,4 +54,4 @@ CREATE TABLE `notification` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-12-03 11:37:28
+-- Dump completed on 2014-12-07  3:16:32
