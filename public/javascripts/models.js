@@ -130,7 +130,7 @@ function Notification(notificationJson) {
 	if(notificationJson.hasOwnProperty("from")) this.from = parseInt(notificationJson["from"]);
 	if(notificationJson.hasOwnProperty("to")) this.to = parseInt(notificationJson["to"]);
 	if(notificationJson.hasOwnProperty("content")) this.content = notificationJson["content"];
-	if(notificationJson.hasOwnProperty("activit_id")) this.activityId = parseInt(notificationJson["activity_id"]);
+	if(notificationJson.hasOwnProperty("activity_id")) this.activityId = parseInt(notificationJson["activity_id"]);
 	if(notificationJson.hasOwnProperty("comment_id")) this.commentId = parseInt(notificationJson["comment_id"]);
 	if(notificationJson.hasOwnProperty("assessment_id")) this.assessmentId = parseInt(notificationJson["assessment_id"]);
 	if(notificationJson.hasOwnProperty("cmd")) this.cmd = parseInt(notificationJson["cmd"]);

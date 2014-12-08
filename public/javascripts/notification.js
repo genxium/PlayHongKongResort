@@ -136,6 +136,34 @@ function generateNotificationCell(par, notification) {
 
 			if (g_postLoginMenu == null) return;
 
+			var aNotification = evt.data[g_keyNotification];
+			var aIndicator = evt.data["indicator"];
+			aIndicator.remove();
+
+			var params = {};
+			params[g_keyToken] = token;
+			params[g_keyId] = aNotification.id;
+			params[g_keyIsRead] = 1;
+			$.ajax({
+				type: "POST",
+				url: "/el/notification/mark",
+				data: params,
+				async: false,
+				success: function(data, status, xhr) {
+					
+				},
+				error: function(xhr, status, err) {
+
+				}
+			});	
+
+			$(this).off("click");
+			$(this).click(aNotification, function(evt) {
+					evt.preventDefault();
+					var aaNotification = evt.data;
+					window.location.hash = (g_keyActivityId + "=" + aaNotification.activityId);
+			});
+
 			var paramsBubble = {};
 			paramsBubble[g_keyToken] = token;
 
@@ -153,26 +181,12 @@ function generateNotificationCell(par, notification) {
 				}
 			});
 
-			var aNotification = evt.data[g_keyNotification];
-			var aIndicator = evt.data["indicator"];
-			aIndicator.remove();
-
-			var params = {};
-			params[g_keyToken] = token;
-			params[g_keyId] = aNotification.id;
-			params[g_keyIsRead] = 1;
-			$.ajax({
-				type: "POST",
-				url: "/el/notification/mark",
-				data: params,
-				success: function(data, status, xhr) {
-					
-				},
-				error: function(xhr, status, err) {
-
-				}
-			});	
-			$(this).off("click");
+		});
+	} else {
+		cell.click(notification, function(evt) {
+				evt.preventDefault();
+				var aNotification = evt.data;
+				window.location.hash = (g_keyActivityId + "=" + aNotification.activityId);
 		});
 	}
 }
