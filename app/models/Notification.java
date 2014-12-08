@@ -22,7 +22,7 @@ public class Notification extends AbstractActivityMessage {
     protected int m_isRead = 0;
     protected int m_commentId = INVALID;
     protected int m_assessmentId = INVALID;
-    protected int m_cmd = INVALID;
+    protected long m_cmd = INVALID;
     protected int m_relation = UserActivityRelation.INVALID;
     protected int m_status = INVALID;
 
@@ -31,7 +31,7 @@ public class Notification extends AbstractActivityMessage {
         if (notificationJson.containsKey(IS_READ)) m_isRead = Converter.toInteger(notificationJson.get(IS_READ));
         if (notificationJson.containsKey(COMMENT_ID)) m_commentId = Converter.toInteger(notificationJson.get(COMMENT_ID));
         if (notificationJson.containsKey(ASSESSMENT_ID)) m_assessmentId = Converter.toInteger(notificationJson.get(ASSESSMENT_ID));
-        if (notificationJson.containsKey(CMD)) m_cmd = Converter.toInteger(notificationJson.get(CMD));
+        if (notificationJson.containsKey(CMD)) m_cmd = Converter.toLong(notificationJson.get(CMD));
         if (notificationJson.containsKey(RELATION)) m_relation = Converter.toInteger(notificationJson.get(RELATION));
         if (notificationJson.containsKey(STATUS)) m_status = Converter.toInteger(notificationJson.get(STATUS));
 	}

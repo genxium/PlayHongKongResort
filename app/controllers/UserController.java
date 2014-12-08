@@ -2,6 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.EasyPreparedStatementBuilder;
+import dao.SQLHelper;
 import exception.*;
 import models.Login;
 import models.User;
@@ -64,7 +65,7 @@ public class UserController extends Controller {
             if (!user.getPassword().equals(passwordDigest)) throw new UserNotFoundException();
 
             String token = Converter.generateToken(email, password);
-            Integer userId = user.getId();
+            Long userId = user.getId();
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             String[] cols = {Login.USER_ID, Login.TOKEN, Login.TIMESTAMP};
@@ -81,8 +82,6 @@ public class UserController extends Controller {
     }
 
     public static Result register() {
-        // define response attributes
-        response().setContentType("text/plain");
         try {
             RequestBody body = request().body();
             Map<String, String[]> formData = body.asFormUrlEncoded();
@@ -103,10 +102,10 @@ public class UserController extends Controller {
             user.setVerificationCode(code);
             user.setSalt(salt);
 
-            if (SQLCommander.registerUser(user) == SQLCommander.INVALID) throw new NullPointerException();
+            if (SQLCommander.registerUser(user) == SQLHelper.INVALID) throw new NullPointerException();
 
             sendVerificationEmail(user.getName(), user.getEmail(), code);
-            return ok();
+            return ok().as("text/plain");
         } catch (CaptchaNotMatchedException e) {
 			return badRequest(CaptchaNotMatchedResult.get());
 		} catch (Exception e) {
@@ -116,15 +115,13 @@ public class UserController extends Controller {
     }
 
     public static Result status(String token) {
-        // define response attributes
-        response().setContentType("text/plain");
         try {
             if (token == null) throw new NullPointerException();
-            Integer userId = SQLCommander.queryUserId(token);
+            Long userId = SQLCommander.queryUserId(token);
             if (userId == null) throw new UserNotFoundException();
             User user = SQLCommander.queryUser(userId);
             if (user == null) throw new UserNotFoundException();
-            return ok(user.toObjectNode(userId));
+            return ok(user.toObjectNode(userId)).as("text/plain");
         } catch (TokenExpiredException e) {
             Loggy.e(TAG, "status", e);
         } catch (Exception e) {
@@ -133,17 +130,14 @@ public class UserController extends Controller {
         return badRequest();
     }
 
-    public static Result relation(Integer activityId, String token) {
-        // define response attributes
-        response().setContentType("text/plain");
-
+    public static Result relation(Long activityId, String token) {
         try {
-            Integer userId = SQLCommander.queryUserId(token);
+            Long userId = SQLCommander.queryUserId(token);
             int relation = SQLCommander.queryUserActivityRelation(userId, activityId);
             if (relation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
             ObjectNode ret = Json.newObject();
             ret.put(UserActivityRelation.RELATION, String.valueOf(relation));
-            return ok(ret);
+            return ok(ret).as("text/plain");
         } catch (TokenExpiredException e) {
             Loggy.e(TAG, "relation", e);
         } catch (Exception e) {
@@ -153,8 +147,6 @@ public class UserController extends Controller {
     }
 
     public static Result logout() {
-        // define response attributes
-        response().setContentType("text/plain");
 
         try {
             Map<String, String[]> formData = request().body().asFormUrlEncoded();
@@ -162,7 +154,7 @@ public class UserController extends Controller {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.from(Login.TABLE).where(Login.TOKEN, "=", token);
             if (!builder.execDelete()) throw new NullPointerException();
-            return ok();
+            return ok().as("text/plain");
         } catch (Exception e) {
             Loggy.e(TAG, "logout", e);
         }
@@ -170,27 +162,25 @@ public class UserController extends Controller {
     }
 
     public static Result duplicate(String name) {
-        // define response attributes
-        response().setContentType("text/plain");
         try {
             if (name == null) throw new NullPointerException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             List<JSONObject> userJsons = builder.select(User.ID).from(User.TABLE).where(User.NAME, "=", name).execSelect();
             if (userJsons != null && userJsons.size() > 0) throw new UserNotFoundException();
-            return ok();
+            return ok().as("text/plain");
         } catch (Exception e) {
             Loggy.e(TAG, "duplicate", e);
         }
         return badRequest();
     }
 
-    public static Result detail(Integer vieweeId, String token) {
+    public static Result detail(Long vieweeId, String token) {
         try {
-            response().setContentType("text/plain");
-            Integer viewerId = null;
+            if (vieweeId.equals(0L)) vieweeId = null;
+            Long viewerId = null;
             if (token != null)  viewerId = SQLCommander.queryUserId(token);
             User viewee = SQLCommander.queryUser(vieweeId);
-            return ok(viewee.toObjectNode(viewerId));
+            return ok(viewee.toObjectNode(viewerId)).as("text/plain");
         } catch (TokenExpiredException e) {
             Loggy.e(TAG, "detail", e);
         }

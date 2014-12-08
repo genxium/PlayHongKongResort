@@ -22,12 +22,11 @@ public class SQLCommander {
 
     public static final String TAG = SQLCommander.class.getName();
 
-    public static final int INVALID = (-1);
     public static final String INITIAL_REF_INDEX = "0";
     public static final int DIRECTION_FORWARD = (+1);
     public static final int DIRECTION_BACKWARD = (-1);
 
-    public static User queryUser(Integer userId) {
+    public static User queryUser(Long userId) {
 
 	    User user = null;
 	    try {
@@ -63,8 +62,8 @@ public class SQLCommander {
 	    return user;
     }
 
-    public static int registerUser(User user) {
-	    int ret = INVALID;
+    public static long registerUser(User user) {
+	    long ret = SQLHelper.INVALID;
 	    try {
 		    String[] cols = {User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.VERIFICATION_CODE, User.SALT};
 		    Object[] values = {user.getEmail(), user.getPassword(), user.getName(), user.getGroupId(), user.getVerificationCode(), user.getSalt()};
@@ -77,9 +76,9 @@ public class SQLCommander {
 	    return ret;
     }
 
-    public static Integer createActivity(String title, String content, Integer userId) {
+    public static Long createActivity(String title, String content, Long userId) {
 
-	    Integer lastActivityId = null;
+        Long lastActivityId = null;
 
         long now = General.millisec();
 
@@ -87,7 +86,7 @@ public class SQLCommander {
 	    Object[] values = {title, content, userId, now};
 
 	    EasyPreparedStatementBuilder builderActivity = new EasyPreparedStatementBuilder();
-        lastActivityId = builderActivity.insert(names, values).into(Activity.TABLE).execInsert();
+        lastActivityId = Converter.toLong(builderActivity.insert(names, values).into(Activity.TABLE).execInsert());
 	    if (lastActivityId.equals(SQLHelper.INVALID)) return SQLHelper.INVALID;
 
         String[] names2 = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME};
@@ -100,12 +99,11 @@ public class SQLCommander {
     }
 
     public static boolean updateActivity(Activity activity) {
-	    int activityId = activity.getId();
 	    try {
 		    String[] cols = {Activity.TITLE, Activity.CONTENT, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
 		    Object[] values = {activity.getTitle(), activity.getContent(), activity.getBeginTime(), activity.getDeadline(), activity.getCapacity()};
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    return builder.update(Activity.TABLE).set(cols, values).where(Activity.ID, "=", activityId).execUpdate();
+		    return builder.update(Activity.TABLE).set(cols, values).where(Activity.ID, "=", activity.getId()).execUpdate();
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "updateActivity", e);
 	    }
@@ -113,7 +111,7 @@ public class SQLCommander {
     }
 
     /* querying activities */
-    public static Activity queryActivity(int activityId) {
+    public static Activity queryActivity(long activityId) {
 
 	    Activity activity = null;
 	    try {
@@ -122,7 +120,7 @@ public class SQLCommander {
             List<JSONObject> results = builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId).execSelect();
 		    if (results == null || results.size() != 1) throw new ActivityNotFoundException();
 		    JSONObject activityJson = results.get(0);
-		    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+		    User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
 		    activity = new Activity(activityJson, host);
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "queryActivity", e);
@@ -131,7 +129,7 @@ public class SQLCommander {
 
     }
 
-    public static ActivityDetail queryActivityDetail(int activityId) {
+    public static ActivityDetail queryActivityDetail(Long activityId) {
 	    ActivityDetail activityDetail = null;
 	    try {
 		    Activity activity = queryActivity(activityId);
@@ -146,7 +144,7 @@ public class SQLCommander {
 	    return activityDetail;
     }
 
-    public static List<Activity> queryActivities(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, Integer vieweeId, int relation) {
+    public static List<Activity> queryActivities(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, Long vieweeId, int relation) {
         List<Activity> ret = new ArrayList<Activity>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -162,7 +160,7 @@ public class SQLCommander {
 
             if (activityJsonList == null)	return null;
             for (JSONObject activityJson : activityJsonList) {
-                User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+                User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
                 ret.add(new Activity(activityJson, host));
             }
         } catch (Exception e) {
@@ -171,7 +169,7 @@ public class SQLCommander {
         return ret;
     }
 
-    public static List<Activity> queryActivities(Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems, Integer vieweeId, int relation) {
+    public static List<Activity> queryActivities(Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems, Long vieweeId, int relation) {
 	    List<Activity> ret = new ArrayList<Activity>();
 	    try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -186,7 +184,7 @@ public class SQLCommander {
                                                     .limit((page_st - 1) * numItems, page_ed * numItems).execSelect();
 		    if (activityJsonList == null) return null;
 		    for (JSONObject activityJson : activityJsonList) {
-			    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+			    User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
 			    ret.add(new Activity(activityJson, host));
 		    }
 	    } catch (Exception e) {
@@ -208,7 +206,7 @@ public class SQLCommander {
 
 		    if (activityJsonList == null)	return null;
 		    for (JSONObject activityJson : activityJsonList) {
-			    User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+			    User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
 			    ret.add(new Activity(activityJson, host));
 		    }
 
@@ -231,7 +229,7 @@ public class SQLCommander {
             List<JSONObject> activityJsonList = builder.execSelect();
             if (activityJsonList == null)	return null;
             for (JSONObject activityJson : activityJsonList) {
-                User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+                User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
                 ret.add(new Activity(activityJson, host));
             }
         } catch (Exception e) {
@@ -240,7 +238,7 @@ public class SQLCommander {
         return ret;
     }
 
-    public static List<Activity> queryHostedActivities(Integer hostId, Integer viewerId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction){
+    public static List<Activity> queryHostedActivities(Long hostId, Long viewerId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction){
         List<Activity> ret = new ArrayList<Activity>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -254,7 +252,7 @@ public class SQLCommander {
 
             if (activityJsonList == null) return null;
             for (JSONObject activityJson : activityJsonList) {
-                User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+                User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
                 Activity activity = new Activity(activityJson, host);
                 ret.add(activity);
             }
@@ -265,7 +263,7 @@ public class SQLCommander {
         return ret;
     }
 
-    public static List<Activity> queryHostedActivities(Integer hostId, Integer viewerId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems){
+    public static List<Activity> queryHostedActivities(Long hostId, Long viewerId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems){
         List<Activity> ret = new ArrayList<Activity>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -282,7 +280,7 @@ public class SQLCommander {
 
             if (activityJsonList == null) return null;
             for (JSONObject activityJson : activityJsonList) {
-                User host = queryUser((Integer) (activityJson.get(Activity.HOST_ID)));
+                User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
                 Activity activity = new Activity(activityJson, host);
                 ret.add(activity);
             }
@@ -293,7 +291,7 @@ public class SQLCommander {
         return ret;
     }
 
-    public static int queryUserActivityRelation(Integer userId, Integer activityId) {
+    public static int queryUserActivityRelation(Long userId, Long activityId) {
 	    try {
 		    if (userId == null) throw new UserNotFoundException();
 		    if (activityId == null) throw new ActivityNotFoundException();
@@ -314,7 +312,7 @@ public class SQLCommander {
 	    return UserActivityRelation.INVALID;
     }
 
-    public static List<Integer> queryUserActivityRelations(List<Integer> userIdList, Integer activityId) {
+    public static List<Integer> queryUserActivityRelations(List<Long> userIdList, Long activityId) {
         try {
             if (userIdList == null) throw new UserNotFoundException();
             if (activityId == null) throw new ActivityNotFoundException();
@@ -349,7 +347,7 @@ public class SQLCommander {
 	    return null;
     }
 
-    public static List<Comment> queryTopLevelComments(Integer activityId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction) {
+    public static List<Comment> queryTopLevelComments(Long activityId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction) {
 	    List<Comment> ret = new ArrayList<Comment>();
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -358,7 +356,7 @@ public class SQLCommander {
 		    String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.NUM_CHILDREN, Comment.GENERATED_TIME};
 		    String[] whereCols = {Comment.ACTIVITY_ID, Comment.PARENT_ID};
 		    String[] whereOps = {"=", "="};
-		    Object[] whereVals = {activityId, INVALID};
+		    Object[] whereVals = {activityId, SQLHelper.INVALID};
 
 		    builder.select(names).from(Comment.TABLE).where(whereCols, whereOps, whereVals);
 
@@ -373,7 +371,7 @@ public class SQLCommander {
 	    return ret;
     }
 
-    public static List<Comment> queryTopLevelComments(Integer activityId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
+    public static List<Comment> queryTopLevelComments(Long activityId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
         List<Comment> ret = new ArrayList<Comment>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -382,7 +380,7 @@ public class SQLCommander {
             String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.NUM_CHILDREN, Comment.GENERATED_TIME};
             String[] whereCols = {Comment.ACTIVITY_ID, Comment.PARENT_ID};
             String[] whereOps = {"=", "="};
-            Object[] whereVals = {activityId, INVALID};
+            Object[] whereVals = {activityId, SQLHelper.INVALID};
 
             builder.select(names)
                     .from(Comment.TABLE)
@@ -401,7 +399,7 @@ public class SQLCommander {
         return ret;
     }
 
-    public static List<Comment> querySubComments(Integer parentId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction) {
+    public static List<Comment> querySubComments(Long parentId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction) {
 	    List<Comment> ret = new ArrayList<Comment>();
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -419,7 +417,7 @@ public class SQLCommander {
 	    return ret;
     }
 
-    public static List<Comment> querySubComments(Integer parentId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
+    public static List<Comment> querySubComments(Long parentId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
         List<Comment> ret = new ArrayList<Comment>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -458,7 +456,7 @@ public class SQLCommander {
 	    return null;
     }
 
-    public static List<Assessment> queryAssessments(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, Integer from, Integer to, Integer activityId) {
+    public static List<Assessment> queryAssessments(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, Long from, Long to, Long activityId) {
 	    List<Assessment> ret = new ArrayList<Assessment>();
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -508,7 +506,7 @@ public class SQLCommander {
 	    }
     }
 
-	public static List<Notification> queryNotifications(Integer to, Integer isRead, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
+	public static List<Notification> queryNotifications(Long to, Integer isRead, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
 		List<Notification> ret = new ArrayList<Notification>();
 			
 		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -524,27 +522,30 @@ public class SQLCommander {
 
 		List<JSONObject> notificationJsonList = builder.execSelect();
 		if (notificationJsonList == null)	return ret;
-		for (JSONObject notificationJson : notificationJsonList) ret.add(new Notification(notificationJson));
+		for (JSONObject notificationJson : notificationJsonList) {
+            Notification notification = new Notification(notificationJson);
+            ret.add(notification);
+        }
 		return ret;
 	}
 
-    public static boolean validateOwnership(int userId, int activityId) {
+    public static boolean validateOwnership(long userId, long activityId) {
 	    Activity activity = queryActivity(activityId);
         return activity != null && validateOwnership(userId, activity);
     }
 
-    public static boolean validateOwnership(int userId, Activity activity) {
+    public static boolean validateOwnership(long userId, Activity activity) {
 	    return (activity != null && activity.getHost().getId() == userId);
     }
 
-    public static boolean isActivityEditable(Integer userId, Integer activityId) throws UserNotFoundException, ActivityNotFoundException, AccessDeniedException, InvalidActivityStatusException {
+    public static boolean isActivityEditable(Long userId, Long activityId) throws UserNotFoundException, ActivityNotFoundException, AccessDeniedException, InvalidActivityStatusException {
         if (userId == null) throw new UserNotFoundException();
         if (activityId == null) throw new ActivityNotFoundException();
         Activity activity = SQLCommander.queryActivity(activityId);
         return isActivityEditable(userId, activity);
     }
 
-    public static boolean isActivityEditable(Integer userId, Activity activity) throws UserNotFoundException, ActivityNotFoundException, AccessDeniedException, InvalidActivityStatusException {
+    public static boolean isActivityEditable(Long userId, Activity activity) throws UserNotFoundException, ActivityNotFoundException, AccessDeniedException, InvalidActivityStatusException {
         if (userId == null) throw new UserNotFoundException();
         if (activity == null) throw new ActivityNotFoundException();
         if (!validateOwnership(userId, activity)) throw new AccessDeniedException();
@@ -552,7 +553,7 @@ public class SQLCommander {
         return true;
     }
 
-    public static boolean isActivityJoinable(Integer userId, int activityId) throws UserNotFoundException, ActivityNotFoundException, InvalidActivityStatusException, InvalidUserActivityRelationException, DeadlineHasPassedException {
+    public static boolean isActivityJoinable(Long userId, int activityId) throws UserNotFoundException, ActivityNotFoundException, InvalidActivityStatusException, InvalidUserActivityRelationException, DeadlineHasPassedException {
         if (userId == null) throw new UserNotFoundException();
         Activity activity = queryActivity(activityId);
         if (activity == null) throw new ActivityNotFoundException();
@@ -561,22 +562,20 @@ public class SQLCommander {
 
     public static boolean isActivityJoinable(User user, Activity activity) throws UserNotFoundException, InvalidUserActivityRelationException, InvalidActivityStatusException, ActivityNotFoundException, DeadlineHasPassedException {
         if (user == null) throw new UserNotFoundException();
-        int userId = user.getId();
-        return isActivityJoinable(userId, activity);
+        return isActivityJoinable(user.getId(), activity);
     }
 
-    public static boolean isActivityJoinable(Integer userId, Activity activity) throws UserNotFoundException, ActivityNotFoundException, InvalidActivityStatusException, DeadlineHasPassedException, InvalidUserActivityRelationException {
+    public static boolean isActivityJoinable(Long userId, Activity activity) throws UserNotFoundException, ActivityNotFoundException, InvalidActivityStatusException, DeadlineHasPassedException, InvalidUserActivityRelationException {
         if (userId == null) throw new UserNotFoundException();
         if (activity == null) throw new ActivityNotFoundException();
         if (activity.getStatus() != Activity.ACCEPTED) throw new InvalidActivityStatusException();
         if (activity.isDeadlineExpired()) throw new DeadlineHasPassedException();
-        int activityId = activity.getId();
-        int relation = queryUserActivityRelation(userId, activityId);
+        int relation = queryUserActivityRelation(userId, activity.getId());
         if (relation != UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
         return true;
     }
 
-    public static boolean isActivityCommentable(Integer from, Integer activityId) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException {
+    public static boolean isActivityCommentable(Long from, Long activityId) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException {
         if (from == null) throw new UserNotFoundException();
         if (activityId == null) throw new ActivityNotFoundException();
         Activity activity = queryActivity(activityId);
@@ -584,7 +583,7 @@ public class SQLCommander {
         return isActivityCommentable(from, activity);
     }
 
-    public static boolean isActivityCommentable(Integer from, Activity activity) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException {
+    public static boolean isActivityCommentable(Long from, Activity activity) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException {
         if (from == null) throw new UserNotFoundException();
         if (activity == null) throw new ActivityNotFoundException();
         if (activity.hasBegun()) throw new ActivityHasNotBegunException();
@@ -592,7 +591,7 @@ public class SQLCommander {
         return true;
     }
 
-    public static boolean isActivityCommentable(Integer from, Integer to, Integer activityId) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException {
+    public static boolean isActivityCommentable(Long from, Long to, Long activityId) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException {
         if (from == null) throw new UserNotFoundException();
         if (to == null) throw new UserNotFoundException();
         if (activityId == null) throw new ActivityNotFoundException();
@@ -601,7 +600,7 @@ public class SQLCommander {
         return isActivityCommentable(from, to, activity);
     }
 
-    public static boolean isActivityCommentable(Integer from, Integer to, Activity activity) throws UserNotFoundException, ActivityHasNotBegunException, ActivityNotFoundException, ActivityNotAcceptedException {
+    public static boolean isActivityCommentable(Long from, Long to, Activity activity) throws UserNotFoundException, ActivityHasNotBegunException, ActivityNotFoundException, ActivityNotAcceptedException {
         if (from == null) throw new UserNotFoundException();
         if (to == null) throw new UserNotFoundException();
         if (activity == null) throw new ActivityNotFoundException();
@@ -610,7 +609,7 @@ public class SQLCommander {
         return true;
     }
 
-    public static boolean isUserAssessable(Integer from, Integer to, Integer activityId) throws UserNotFoundException, InvalidAssessmentBehaviourException, ActivityNotFoundException, ActivityHasNotBegunException, InvalidUserActivityRelationException {
+    public static boolean isUserAssessable(Long from, Long to, Long activityId) throws UserNotFoundException, InvalidAssessmentBehaviourException, ActivityNotFoundException, ActivityHasNotBegunException, InvalidUserActivityRelationException {
         if (from == null) throw new UserNotFoundException();
         if (to == null) throw new UserNotFoundException();
         if (from.equals(to)) throw new InvalidAssessmentBehaviourException();
@@ -620,7 +619,7 @@ public class SQLCommander {
         return isUserAssessable(from, to, activity);
     }
 
-    public static boolean isUserAssessable(Integer from, Integer to, Activity activity) throws UserNotFoundException, InvalidAssessmentBehaviourException, ActivityNotFoundException, ActivityHasNotBegunException, InvalidUserActivityRelationException {
+    public static boolean isUserAssessable(Long from, Long to, Activity activity) throws UserNotFoundException, InvalidAssessmentBehaviourException, ActivityNotFoundException, ActivityHasNotBegunException, InvalidUserActivityRelationException {
         if (from == null) throw new UserNotFoundException();
         if (to == null) throw new UserNotFoundException();
         if (from.equals(to)) throw new InvalidAssessmentBehaviourException();
@@ -636,7 +635,7 @@ public class SQLCommander {
        Method isActivityMarkable(...) returns UserActivityRelation.INVALID if the activity is not markable by
        specified user, or the original relation otherwise.
     */
-    public static int isActivityMarkable(Integer userId, Integer activityId, int relation) {
+    public static int isActivityMarkable(Long userId, Long activityId, int relation) {
 	    int ret = UserActivityRelation.INVALID;
 	    try {
 		    if (userId == null) throw new UserNotFoundException();
@@ -650,7 +649,7 @@ public class SQLCommander {
 	    return ret;
     }
 
-    public static int isActivityMarkable(Integer userId, Activity activity, int relation) {
+    public static int isActivityMarkable(Long userId, Activity activity, int relation) {
 	    int ret = UserActivityRelation.INVALID;
 	    try {
 		    if (userId == null) throw new UserNotFoundException();
@@ -701,13 +700,13 @@ public class SQLCommander {
 	    return false;
     }
 
-    public static int uploadAvatar(User user, String imageURL) {
-	    int ret = INVALID;
+    public static long uploadAvatar(User user, String imageURL) {
+	    long ret = SQLHelper.INVALID;
 	    try {
 		    EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
             String[] names = {Image.URL};
             Object[] vals = {imageURL};
-		    int lastImageId = builderImage.insert(names, vals).into(Image.TABLE).execInsert();
+		    long lastImageId = builderImage.insert(names, vals).into(Image.TABLE).execInsert();
 		    if (lastImageId == SQLHelper.INVALID) throw new Exception();
 
 		    EasyPreparedStatementBuilder builderUser = new EasyPreparedStatementBuilder();
@@ -741,18 +740,12 @@ public class SQLCommander {
 	    return image;
     }
 
-    public static boolean deleteImageRecord(int imageId) {
-	    boolean ret = false;
-	    try {
-		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    return builder.from(Image.TABLE).where(Image.ID, "=", imageId).execDelete();
-	    } catch (Exception e) {
-
-	    }
-	    return ret;
+    public static boolean deleteImageRecord(long imageId) {
+        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+        return builder.from(Image.TABLE).where(Image.ID, "=", imageId).execDelete();
     }
 
-    public static boolean deleteImageRecord(int imageId, int activityId) {
+    public static boolean deleteImageRecord(long imageId, long activityId) {
 	    try {
 		    String[] whereCols = {ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID};
 		    String[] whereOps = {"=", "="};
@@ -772,14 +765,14 @@ public class SQLCommander {
 	    return false;
     }
 
-    public static List<Image> queryImages(int activityId) {
+    public static List<Image> queryImages(Long activityId) {
 	    List<Image> images = new LinkedList<Image>();
 	    try {
 		    String query = "SELECT " + Image.ID + ", " + Image.URL + " FROM " + Image.TABLE + " WHERE EXISTS (SELECT NULL FROM " + ActivityImageRelation.TABLE + " WHERE "
 			    + ActivityImageRelation.ACTIVITY_ID + "=? AND " + ActivityImageRelation.TABLE + "." + ActivityImageRelation.IMAGE_ID + "=" + Image.TABLE + "." + Image.ID +
 			    ")";
 		    PreparedStatement statement = SQLHelper.getConnection().prepareStatement(query);
-		    statement.setInt(1, activityId);
+		    statement.setLong(1, activityId);
 		    List<JSONObject> imageRecordList = SQLHelper.select(statement);
 		    for (JSONObject imageRecord : imageRecordList) {
 			    Image image = new Image(imageRecord);
@@ -792,15 +785,15 @@ public class SQLCommander {
 	    return images;
     }
 
-    public static int createImage(User user, final Activity activity, final String imageURL) {
+    public static long createImage(User user, final Activity activity, final String imageURL) {
 	    try {
 		    if (user == null) throw new UserNotFoundException();
 		    if (activity == null) throw new ActivityNotFoundException();
 		    EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
             String[] columns = {Image.URL};
             Object[] values = {imageURL};
-		    int lastImageId = builderImage.insert(columns, values).into(Image.TABLE).execInsert();
-		    if (lastImageId == INVALID) throw new NullPointerException();
+		    long lastImageId = builderImage.insert(columns, values).into(Image.TABLE).execInsert();
+		    if (lastImageId == SQLHelper.INVALID) throw new NullPointerException();
 
 		    String[] cols = {ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID, ActivityImageRelation.GENERATED_TIME};
 		    Object[] vals = {activity.getId(), lastImageId, General.millisec()};
@@ -810,10 +803,10 @@ public class SQLCommander {
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "createImage", e);
 	    } 
-	    return INVALID;
+	    return SQLHelper.INVALID;
     }
 
-    public static List<BasicUser> queryUsers(int activityId, int maskedRelation) {
+    public static List<BasicUser> queryUsers(long activityId, int maskedRelation) {
 	    List<BasicUser> users = new ArrayList<BasicUser>();
 	    try {
 		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.AVATAR};
@@ -828,7 +821,7 @@ public class SQLCommander {
 			    + (UserActivityRelation.TABLE + "." + "`" + UserActivityRelation.USER_ID + "`") + "=" + (User.TABLE + "." + "`" + User.ID + "`") + ")";
 		    Connection connection = SQLHelper.getConnection();
 		    PreparedStatement statement = connection.prepareStatement(query);
-		    statement.setInt(1, activityId);
+		    statement.setLong(1, activityId);
 		    statement.setInt(2, maskedRelation);
 		    List<JSONObject> records = SQLHelper.select(statement);
 		    if (records == null) throw new NullPointerException();
@@ -844,7 +837,7 @@ public class SQLCommander {
 	    return users;
     }
 
-    public static boolean updateUserActivityRelation(Integer userId, Integer activityId, int relation) {
+    public static boolean updateUserActivityRelation(Long userId, Long activityId, int relation) {
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    builder.update(UserActivityRelation.TABLE)
@@ -860,7 +853,7 @@ public class SQLCommander {
 	    }
     }
 
-    public static List<BasicUser> querySelectedParticipants(int activityId) {
+    public static List<BasicUser> querySelectedParticipants(long activityId) {
 	    List<BasicUser> ret = new LinkedList<BasicUser>();
 
 	    int possibleRelation1 = UserActivityRelation.SELECTED;
@@ -887,7 +880,7 @@ public class SQLCommander {
 	    return ret;
     }
 
-    public static List<BasicUser> queryPresentParticipants(int activityId) {
+    public static List<BasicUser> queryPresentParticipants(long activityId) {
 	    List<BasicUser> ret = new LinkedList<BasicUser>();
 
 	    int baseRelation1 = UserActivityRelation.SELECTED;
@@ -905,7 +898,7 @@ public class SQLCommander {
 	    return ret;
     }
 
-    public static List<BasicUser> queryAssessedParticipants(int activityId) {
+    public static List<BasicUser> queryAssessedParticipants(long activityId) {
 	    List<BasicUser> ret = new LinkedList<BasicUser>();
 
 	    int baseRelation1 = UserActivityRelation.SELECTED;
@@ -950,7 +943,7 @@ public class SQLCommander {
         return ret;
     }
 
-    static Integer queryUserId(String token) throws TokenExpiredException {
+    static Long queryUserId(String token) throws TokenExpiredException {
 
         EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
         List<JSONObject> allJson = builder.select(Login.USER_ID).from(Login.TABLE).where(Login.TOKEN, "=", token).execSelect();

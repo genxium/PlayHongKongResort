@@ -29,7 +29,7 @@ public class ActivityController extends Controller {
 
 	public static final String OLD_IMAGE = "old_image";
 
-    public static Result list(Integer pageSt, Integer pageEd, Integer numItems, Integer orientation, String token, Integer vieweeId, Integer relation, Integer status) {
+    public static Result list(Integer pageSt, Integer pageEd, Integer numItems, Integer orientation, String token, Long vieweeId, Integer relation, Integer status) {
         response().setContentType("text/plain");
         try {
             if (pageSt == null || pageEd == null || numItems == null) throw new InvalidQueryParamsException();
@@ -40,12 +40,14 @@ public class ActivityController extends Controller {
             if (orientationStr == null)   throw new InvalidQueryParamsException();
 
             // anti=cracking by param token
-            Integer viewerId = null;
+            Long viewerId = null;
             User viewer = null;
             if (token != null) {
                 viewerId = SQLCommander.queryUserId(token);
                 viewer = SQLCommander.queryUser(viewerId);
             }
+            if (vieweeId.equals(0L)) vieweeId = null;
+
             List<Activity> activities = null;
             String orderKey = Activity.ID;
             if (status != null && status.equals(Activity.ACCEPTED)) {
@@ -93,7 +95,7 @@ public class ActivityController extends Controller {
 
             ArrayNode activitiesNode = new ArrayNode(JsonNodeFactory.instance);
             for (Activity activity : activities) {
-                boolean isHost = (viewerId != null && viewer != null && activity.getHost().getId() == viewerId);
+                boolean isHost = (viewerId != null && viewer != null && activity.getHost().getId().equals(viewerId));
                 // only hosts and admins can view non-accepted activities
                 if (activity.getStatus() != Activity.ACCEPTED
                         &&
@@ -110,75 +112,12 @@ public class ActivityController extends Controller {
         return badRequest();
     }
 
-	public static Result query(String refIndex, Integer page, Integer numItems, Integer orientation, Integer direction, String token, Integer vieweeId, Integer relation, Integer status) {
-		response().setContentType("text/plain");
-		try {
-			// anti-cracking by param direction
-			if (direction == null) throw new InvalidQueryParamsException();
-			if (!direction.equals(SQLCommander.DIRECTION_FORWARD) && !direction.equals(SQLCommander.DIRECTION_BACKWARD))    throw new NullPointerException();
-
-			// anti-cracking by param order
-			if (orientation == null)  throw new InvalidQueryParamsException();
-			String orientationStr = SQLHelper.convertOrientation(orientation);
-			if (orientationStr == null)   throw new InvalidQueryParamsException();
-
-			// anti=cracking by param token
-			Integer viewerId = null;
-            User viewer = null;
-			if (token != null) {
-                viewerId = SQLCommander.queryUserId(token);
-                viewer = SQLCommander.queryUser(viewerId);
-            }
-            String orderKey = Activity.ID;
-            if (status != null && status.equals(Activity.ACCEPTED)) {
-                orderKey = Activity.LAST_ACCEPTED_TIME;
-            }
-            if (status != null && status.equals(Activity.REJECTED)) {
-                orderKey = Activity.LAST_REJECTED_TIME;
-            }
-			List<Activity> activities = null;
-			if (relation != null && relation != UserActivityRelation.HOSTED && vieweeId != null) {
-				activities = SQLCommander.queryActivities(refIndex, orderKey, orientationStr, numItems, direction, vieweeId, UserActivityRelation.maskRelation(relation, null));
-			} else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
-				activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, refIndex, Activity.ID, orientationStr, numItems, direction);
-			} else if (status != null) {
-				activities = SQLCommander.queryActivities(refIndex, orderKey, orientationStr, numItems, direction, status);
-			} else {
-                activities = null;
-            }
-			if (activities == null) throw new NullPointerException();
-			ObjectNode result = Json.newObject();
-			result.put(AbstractModel.COUNT, 0);
-			result.put(AbstractModel.PAGE, page.toString());
-
-            boolean isAdmin = false;
-            if (viewer != null && SQLCommander.validateAdminAccess(viewer)) isAdmin = true;
-
-			ArrayNode activitiesNode = new ArrayNode(JsonNodeFactory.instance);
-			for (Activity activity : activities) {
-				boolean isHost = (viewerId != null && viewer != null && activity.getHost().getId() == viewerId);
-                // only hosts and admins can view non-accepted activities
-				if (activity.getStatus() != Activity.ACCEPTED
-                        &&
-                    (!isHost && !isAdmin))	continue;
-				activitiesNode.add(activity.toObjectNodeWithImages(viewerId));
-			}
-			result.put(Activity.ACTIVITIES, activitiesNode);
-			return ok(result);
-		} catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
-        } catch (Exception e) {
-			Loggy.e(TAG, "query", e);
-		}
-		return badRequest();
-	}
-
-	public static Result detail(Integer activityId, String token) {
+	public static Result detail(Long activityId, String token) {
 		response().setContentType("text/plain");
 		try {
 			ActivityDetail activityDetail = SQLCommander.queryActivityDetail(activityId);
 			if (activityDetail == null) throw new ActivityNotFoundException();
-			Integer userId = null;
+			Long userId = null;
 			if (token != null) userId = SQLCommander.queryUserId(token);
 			return ok(activityDetail.toObjectNode(userId));
 		} catch (Exception e) {
@@ -187,9 +126,9 @@ public class ActivityController extends Controller {
 		return badRequest();
 	}
 
-	public static Result ownership(String token, Integer activityId) {
+	public static Result ownership(String token, Long activityId) {
 		try {
-			Integer ownerId = SQLCommander.queryUserId(token);
+			Long ownerId = SQLCommander.queryUserId(token);
 			if (ownerId == null) throw new UserNotFoundException();
 			if (!SQLCommander.validateOwnership(ownerId, activityId)) throw new AccessDeniedException();
 			ObjectNode ret = Json.newObject();
@@ -223,9 +162,9 @@ public class ActivityController extends Controller {
 			if (token == null) throw new NullPointerException();
 
 			boolean isNewActivity = true;
-			Integer activityId = null;
+            Long activityId = null;
 			if (formData.containsKey(UserActivityRelation.ACTIVITY_ID)) {
-				activityId = Converter.toInteger(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+				activityId = Converter.toLong(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 				isNewActivity = false;
 			}
 			if (isNewActivity) {
@@ -235,7 +174,7 @@ public class ActivityController extends Controller {
 				if (session(sid) == null || !captcha.equalsIgnoreCase(session(sid))) throw new CaptchaNotMatchedException(); 
 			}
 
-			Integer userId = SQLCommander.queryUserId(token);
+            Long userId = SQLCommander.queryUserId(token);
 			if (userId == null) throw new NullPointerException();
 			User user = SQLCommander.queryUser(userId);
 			if (user == null) throw new NullPointerException();
@@ -262,7 +201,7 @@ public class ActivityController extends Controller {
 			List<Image> previousImages = SQLCommander.queryImages(activityId);
 			if (imageFiles != null && imageFiles.size() > 0) {
 				for (Http.MultipartFormData.FilePart imageFile : imageFiles) {
-				    if (ExtraCommander.INVALID == ExtraCommander.saveImageOfActivity(imageFile, user, activity)) break;
+				    if (SQLHelper.INVALID == ExtraCommander.saveImageOfActivity(imageFile, user, activity)) break;
 				}
 			}
 
@@ -311,7 +250,7 @@ public class ActivityController extends Controller {
             String token = formData.get(User.TOKEN)[0];
             Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 
-            Integer userId = SQLCommander.queryUserId(token);
+            Long userId = SQLCommander.queryUserId(token);
             if (userId == null) throw new Exception();
             User user = SQLCommander.queryUser(userId);
             if (user == null) throw new Exception();
@@ -349,7 +288,7 @@ public class ActivityController extends Controller {
 			Integer activityId = Integer.parseInt(ids[0]);
 			String token = tokens[0];
 
-			Integer userId = SQLCommander.queryUserId(token);
+			Long userId = SQLCommander.queryUserId(token);
 			if (userId == null) throw new NullPointerException();
 
 			Activity activity = SQLCommander.queryActivity(activityId);
@@ -374,7 +313,7 @@ public class ActivityController extends Controller {
 			Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 			String token = formData.get(User.TOKEN)[0];
 			if (token == null) throw new Exception();
-			Integer userId = SQLCommander.queryUserId(token);
+			Long userId = SQLCommander.queryUserId(token);
 			if (userId == null) throw new Exception();
 
 			Activity activity = SQLCommander.queryActivity(activityId);
@@ -409,7 +348,7 @@ public class ActivityController extends Controller {
 			String token = formData.get(User.TOKEN)[0];
 			if (token == null) throw new NullPointerException();
 			Integer relation = Converter.toInteger(formData.get(UserActivityRelation.RELATION)[0]);
-			Integer userId = SQLCommander.queryUserId(token);
+			Long userId = SQLCommander.queryUserId(token);
 			if (userId == null) throw new UserNotFoundException();
 
 			Activity activity = SQLCommander.queryActivity(activityId);

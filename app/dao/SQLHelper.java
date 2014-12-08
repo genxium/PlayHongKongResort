@@ -29,7 +29,7 @@ public class SQLHelper {
     public static String CHARSET_ENCODING = "CharsetEncoding";
     public static String USE_UNICODE = "UseUnicode";
 
-    public static int INVALID = (-1);
+    public static long INVALID = (-1);
     public static String AND = "AND";
     public static String OR = "OR";
 
@@ -146,8 +146,8 @@ public class SQLHelper {
         return ret;
     }
 
-    public static Integer insert(PreparedStatement statement) {
-        Integer lastId = INVALID;
+    public static Long insert(PreparedStatement statement) {
+        long lastId = INVALID;
         try {
             statement.executeUpdate();
             ResultSet rs = statement.getGeneratedKeys();

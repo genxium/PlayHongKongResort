@@ -1,5 +1,6 @@
 package controllers;
 
+import dao.SQLHelper;
 import exception.UserNotFoundException;
 import models.Image;
 import models.User;
@@ -25,15 +26,15 @@ public class AvatarController extends ImageController {
 
             // get user token from request body stream
             String token = DataUtils.getUserToken(data);
-            Integer userId = SQLCommander.queryUserId(token);
+            Long userId = SQLCommander.queryUserId(token);
             if (userId == null) throw new UserNotFoundException();
             User user = SQLCommander.queryUser(userId);
             if (user == null) throw new UserNotFoundException();
 
             if (avatarFile == null) throw new NullPointerException();
             int previousAvatarId = user.getAvatar();
-            int newAvatarId = ExtraCommander.saveAvatar(avatarFile, user);
-            if (newAvatarId == ExtraCommander.INVALID) throw new NullPointerException();
+            long newAvatarId = ExtraCommander.saveAvatar(avatarFile, user);
+            if (newAvatarId == SQLHelper.INVALID) throw new NullPointerException();
 
             // delete previous avatar record and file
             Image previousAvatar = SQLCommander.queryImage(previousAvatarId);

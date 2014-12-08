@@ -50,7 +50,7 @@ public class ActivityDetail extends Activity {
         m_presentParticipants = presentParticipants;
     }
 
-    public ObjectNode toObjectNode(Integer viewerId) {
+    public ObjectNode toObjectNode(Long viewerId) {
         ObjectNode ret = super.toObjectNode(viewerId);
         try {
             if (m_images != null) {

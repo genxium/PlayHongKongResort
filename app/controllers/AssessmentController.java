@@ -15,6 +15,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.Converter;
 import utilities.Loggy;
 
 import java.util.LinkedList;
@@ -26,10 +27,11 @@ public class AssessmentController extends Controller {
     public static final String TAG = AssessmentController.class.getName();
     public static final String BUNDLE = "bundle";
 
-    public static Result query(String refIndex, Integer numItems, Integer direction, String token, Integer to, Integer activityId) {
+    public static Result query(String refIndex, Integer numItems, Integer direction, String token, Long to, Long activityId) {
         response().setContentType("text/plain");
         try {
-		    Integer from = SQLCommander.queryUserId(token);
+            if (to.equals(0L)) to = null;
+		    Long from = SQLCommander.queryUserId(token);
 		    if(from.equals(to)) throw new AccessDeniedException();
 		    List<Assessment> assessments = SQLCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, null, to, activityId);
             ObjectNode result = Json.newObject();
@@ -53,11 +55,11 @@ public class AssessmentController extends Controller {
 
             String token = formData.get(User.TOKEN)[0];
             if (token == null) throw new NullPointerException();
-            Integer userId = SQLCommander.queryUserId(token);
+            Long userId = SQLCommander.queryUserId(token);
             if (userId == null) throw new UserNotFoundException();
             User user = SQLCommander.queryUser(userId);
             if (user == null) throw new UserNotFoundException();
-            Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+            Long activityId = Converter.toLong(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
             if (activityId == null) throw new ActivityNotFoundException();
 
             Activity activity = SQLCommander.queryActivity(activityId);
@@ -73,7 +75,7 @@ public class AssessmentController extends Controller {
 
             String bundle = formData.get(BUNDLE)[0];
             JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
-            List<Integer> userIdList = new LinkedList<Integer>();
+            List<Long> userIdList = new LinkedList<Long>();
             List<Assessment> assessmentList = new LinkedList<Assessment>();
             userIdList.add(userId);
 

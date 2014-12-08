@@ -22,9 +22,10 @@ public class SubCommentController extends CommentController {
 
     public static final String TAG = SubCommentController.class.getName();
 
-    public static Result list(Integer parentId, Integer page_st, Integer page_ed, Integer numItems) {
+    public static Result list(Long parentId, Integer page_st, Integer page_ed, Integer numItems) {
         response().setContentType("text/plain");
         try {
+            if (parentId.equals(0L)) parentId = null;
             List<Comment> comments = SQLCommander.querySubComments(parentId, page_st, page_ed, Comment.ID, SQLHelper.DESCEND, numItems);
 
             ObjectNode result = Json.newObject();
@@ -42,9 +43,10 @@ public class SubCommentController extends CommentController {
         return badRequest();
     }
 
-    public static Result query(Integer parentId, String refIndex, Integer page, Integer numItems, Integer direction) {
+    public static Result query(Long parentId, String refIndex, Integer page, Integer numItems, Integer direction) {
         response().setContentType("text/plain");
         try {
+            if (parentId.equals(0L)) parentId = null;
             List<Comment> comments = SQLCommander.querySubComments(parentId, refIndex, Comment.ID, SQLHelper.DESCEND, numItems, direction);
 
             ObjectNode result = Json.newObject();
@@ -83,10 +85,10 @@ public class SubCommentController extends CommentController {
             if(activity.hasBegun()) throw new ActivityHasBegunException();
             if(activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
 
-            Integer from = SQLCommander.queryUserId(token);
+            Long from = SQLCommander.queryUserId(token);
             if (from == null) throw new UserNotFoundException();
 
-            Integer to = Converter.toInteger(formData.get(Comment.TO)[0]);
+            Long to = Converter.toLong(formData.get(Comment.TO)[0]);
             if (to == null) throw new InvalidCommentParamsException();
 
             Integer predecessorId = Converter.toInteger(formData.get(Comment.PREDECESSOR_ID)[0]);
@@ -99,7 +101,7 @@ public class SubCommentController extends CommentController {
             Object[] vals = {content, activityId, from, to, General.millisec(), predecessorId, parentId};
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            int lastId = builder.insert(cols, vals).into(Comment.TABLE).execInsert();
+            long lastId = builder.insert(cols, vals).into(Comment.TABLE).execInsert();
             if (lastId == SQLHelper.INVALID) throw new NullPointerException();
 
             EasyPreparedStatementBuilder increment = new EasyPreparedStatementBuilder();

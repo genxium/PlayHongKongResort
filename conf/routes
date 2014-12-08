@@ -13,7 +13,7 @@ POST /user/register controllers.UserController.register()
 GET /user/status controllers.UserController.status(token: String ?=null)
 GET /user/name/duplicate controllers.UserController.duplicate(name: String ?=null)
 
-GET /user/relation controllers.UserController.relation(activity_id: Integer ?=null, token: String ?=null)
+GET /user/relation controllers.UserController.relation(activity_id: Long ?=0, token: String ?=null)
 POST /user/logout controllers.UserController.logout()
 
 GET /user/password/index controllers.PasswordController.index()
@@ -30,12 +30,12 @@ POST /activity/delete controllers.ActivityController.delete()
 POST /activity/join controllers.ActivityController.join()
 POST /activity/save controllers.ActivityController.save()
 PUT /activity/submit controllers.ActivityController.submit()
-GET /activity/list controllers.ActivityController.list(page_st: Integer ?=null, page_ed: Integer ?=null, num_items: Integer ?=null, orientation: Integer ?=null, token: String ?= null, viewee_id: Integer ?=null, relation: Integer ?=null, status: Integer ?=null)
-GET /activity/detail controllers.ActivityController.detail(activity_id: Integer ?=null, token: String ?=null)
+GET /activity/list controllers.ActivityController.list(page_st: Integer ?=null, page_ed: Integer ?=null, num_items: Integer ?=null, orientation: Integer ?=null, token: String ?= null, viewee_id: Long ?=0, relation: Integer ?=null, status: Integer ?=null)
+GET /activity/detail controllers.ActivityController.detail(activity_id: Long ?=0, token: String ?=null)
 PUT /activity/mark controllers.ActivityController.mark()
 
 # Profile
-GET /user/detail controllers.UserController.detail(viewee_id: Integer ?=null, token : String ?=null)
+GET /user/detail controllers.UserController.detail(viewee_id: Long ?=0, token : String ?=null)
 
 POST /user/avatar/upload controllers.AvatarController.upload()
 
@@ -46,18 +46,18 @@ PUT /admin/delete controllers.AdminController.delete()
 
 # Activity Detail
 POST /activity/participants/update controllers.ParticipantController.update()
-GET /activity/ownership controllers.ActivityController.ownership(token: String ?=null, activity_id: Integer ?=null)
+GET /activity/ownership controllers.ActivityController.ownership(token: String ?=null, activity_id: Long ?=0)
 
 # Comment
 POST /comment/submit controllers.CommentController.submit()
-GET /comment/list controllers.CommentController.list(activity_id: Integer ?=null, page_st: Integer ?=null, page_ed: Integer ?=null, num_items: Integer ?=null)
+GET /comment/list controllers.CommentController.list(activity_id: Long ?=0, page_st: Integer ?=null, page_ed: Integer ?=null, num_items: Integer ?=null)
 GET /comment/single/query controllers.CommentController.querySingle(comment_id: Integer ?=null)
 POST /comment/sub/submit controllers.SubCommentController.submit()
-GET /comment/sub/list controllers.SubCommentController.list(parent_id: Integer ?=null, page_st: Integer ?=null, page_ed: Integer ?=null, num_items: Integer ?=null)
+GET /comment/sub/list controllers.SubCommentController.list(parent_id: Long ?=0, page_st: Integer ?=null, page_ed: Integer ?=null, num_items: Integer ?=null)
 
 # Assessment
 POST /assessment/submit controllers.AssessmentController.submit
-GET /assessment/query controllers.AssessmentController.query(ref_index: String ?=null, num_items: Integer ?=null, direction: Integer ?=null, token: String ?=null, to: Integer ?=null, activity_id: Integer ?=null)
+GET /assessment/query controllers.AssessmentController.query(ref_index: String ?=null, num_items: Integer ?=null, direction: Integer ?=null, token: String ?=null, to: Long ?=0, activity_id: Long ?=0)
 
 # Notification
 GET /notification/count controllers.NotificationController.count(token: String ?=null, is_read: Integer ?=0)

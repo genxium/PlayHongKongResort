@@ -13,16 +13,16 @@ public class Login {
     public static final String TOKEN = "token";
     public static final String TIMESTAMP = "timestamp";
 
-    protected Integer m_userId = null;
+    protected Long m_userId = null;
     protected String m_token = null;
     protected Timestamp m_timestamp = null;
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return m_userId;
     }
 
     public Login(JSONObject loginJson) {
-        if(loginJson.containsKey(USER_ID)) m_userId = Converter.toInteger(loginJson.get(USER_ID));
+        if(loginJson.containsKey(USER_ID)) m_userId = Converter.toLong(loginJson.get(USER_ID));
         if(loginJson.containsKey(TOKEN)) m_token = (String)loginJson.get(TOKEN);
         if(loginJson.containsKey(TIMESTAMP)) m_timestamp = (Timestamp) loginJson.get(TIMESTAMP);
     }

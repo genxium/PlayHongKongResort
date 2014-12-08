@@ -1,6 +1,7 @@
 package controllers;
 
 import dao.EasyPreparedStatementBuilder;
+import dao.SQLHelper;
 import exception.*;
 import models.*;
 import org.apache.commons.io.FileUtils;
@@ -15,7 +16,7 @@ public class ExtraCommander extends SQLCommander {
 
     public static final String TAG = ExtraCommander.class.getName();
 
-	public static boolean deleteActivity(int activityId) {
+	public static boolean deleteActivity(long activityId) {
 		boolean ret = false;
 		try {
 			// delete records in tables activity_image_relation and image,
@@ -48,7 +49,7 @@ public class ExtraCommander extends SQLCommander {
 		boolean ret = false;
 		try {
 			if (image == null) throw new ImageNotFoundException();
-			int imageId = image.getId();
+			long imageId = image.getId();
 			String imageAbsolutePath = image.getAbsolutePath();
 			File imageFile = new File(imageAbsolutePath);
 			boolean isFileDeleted = imageFile.delete();
@@ -61,11 +62,11 @@ public class ExtraCommander extends SQLCommander {
 		return ret;
 	}
 
-	public static boolean deleteImageRecordAndFile(Image image, int activityId) {
+	public static boolean deleteImageRecordAndFile(Image image, long activityId) {
 		boolean ret = false;
 		try {
 			if (image == null) throw new ImageNotFoundException();
-			int imageId = image.getId();
+			long imageId = image.getId();
 			String imageAbsolutePath = image.getAbsolutePath();
 			File imageFile = new File(imageAbsolutePath);
 			boolean isFileDeleted = imageFile.delete();
@@ -78,30 +79,30 @@ public class ExtraCommander extends SQLCommander {
 		return ret;
 	}
 
-	public static int saveAvatar(FilePart imageFile, User user) {
-		int ret = INVALID;
+	public static long saveAvatar(FilePart imageFile, User user) {
+        long ret = SQLHelper.INVALID;
 		String fileName = imageFile.getFilename();
 		File file = imageFile.getFile();
 		try {
 			if (!DataUtils.validateImage(imageFile)) throw new NullPointerException();
 			if (user == null) throw new UserNotFoundException();
 
-			Integer userId = user.getId();
+			Long userId = user.getId();
 			String newImageName = DataUtils.generateUploadedImageName(fileName, userId);
 			String imageURL = Image.getUrlPrefix() + newImageName;
 
 			String imageAbsolutePath = Image.getFolderPath() + newImageName;
 
-			int imageId = SQLCommander.uploadAvatar(user, imageURL);
-			if (imageId == INVALID) throw new NullPointerException();
+			long imageId = SQLCommander.uploadAvatar(user, imageURL);
+			if (imageId == SQLHelper.INVALID) throw new NullPointerException();
 
 			try {
 				// Save renamed file to server storage at the final step
 				FileUtils.moveFile(file, new File(imageAbsolutePath));
 			} catch (Exception err) {
-				imageId = INVALID;
-				System.out.println(ExtraCommander.class.getName() + ".saveAvatar, " + newImageName + " could not be saved.");
-				if(SQLCommander.deleteImageRecord(imageId))	System.out.println(ExtraCommander.class.getName() + ".saveAvatar, " + newImageName + " has been reverted");
+				imageId = SQLHelper.INVALID;
+				Loggy.i(TAG, "saveAvatar", newImageName + " could not be saved.");
+				if(SQLCommander.deleteImageRecord(imageId))	Loggy.i(TAG, "saveAvatar", newImageName + " has been reverted");
 			}
 			ret = imageId;
 		} catch (Exception e) {
@@ -111,8 +112,8 @@ public class ExtraCommander extends SQLCommander {
 		return ret;
 	}
 
-	public static int saveImageOfActivity(FilePart imageFile, User user, Activity activity) {
-		int ret = INVALID;
+	public static long saveImageOfActivity(FilePart imageFile, User user, Activity activity) {
+		long ret = SQLHelper.INVALID;
 		String fileName = imageFile.getFilename();
 		File file = imageFile.getFile();
 		try {
@@ -120,23 +121,21 @@ public class ExtraCommander extends SQLCommander {
 			if (user == null) throw new UserNotFoundException();
 			if (activity == null) throw new ActivityNotFoundException();
 
-			Integer userId = user.getId();
-
-			String newImageName = DataUtils.generateUploadedImageName(fileName, userId);
+			String newImageName = DataUtils.generateUploadedImageName(fileName, user.getId());
 			String imageURL = Image.getUrlPrefix() + newImageName;
 
 			String imageAbsolutePath = Image.getFolderPath() + newImageName;
 
-			int imageId = SQLCommander.createImage(user, activity, imageURL);
-			if (imageId == SQLCommander.INVALID) throw new FileIOException();
+			long imageId = SQLCommander.createImage(user, activity, imageURL);
+			if (imageId == SQLHelper.INVALID) throw new FileIOException();
 
 			try {
 				// Save renamed file to server storage at the final step
 				FileUtils.moveFile(file, new File(imageAbsolutePath));
 			} catch (Exception err) {
                 Loggy.e(TAG, "saveImageOfActivity", err);
-                imageId = INVALID;
-                if(deleteImageRecord(imageId))	System.out.println(TAG + ".saveImageOfActivity, " + newImageName + " has been reverted");
+                imageId = SQLHelper.INVALID;
+                if(deleteImageRecord(imageId))	Loggy.i(TAG, "saveImageOfActivity", newImageName + " has been reverted");
 			}
 
 			ret = imageId;
@@ -147,7 +146,7 @@ public class ExtraCommander extends SQLCommander {
 		return ret;
 	}
 
-    public static boolean deleteComments(Integer activityId) {
+    public static boolean deleteComments(Long activityId) {
         try {
             if(activityId == null) throw new NullPointerException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -160,7 +159,7 @@ public class ExtraCommander extends SQLCommander {
         return false;
     }
 
-    public static boolean deleteAssessments(Integer activityId) {
+    public static boolean deleteAssessments(Long activityId) {
         try {
             if(activityId == null) throw new NullPointerException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();

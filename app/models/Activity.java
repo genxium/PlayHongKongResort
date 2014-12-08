@@ -186,7 +186,7 @@ public class Activity extends AbstractSimpleMessage {
 
     }
 
-    public ObjectNode toObjectNode(Integer viewerId) {
+    public ObjectNode toObjectNode(Long viewerId) {
         ObjectNode ret = super.toObjectNode();
         try {
             ret.put(TITLE, m_title);
@@ -212,7 +212,7 @@ public class Activity extends AbstractSimpleMessage {
         return ret;
     }
 
-    public ObjectNode toObjectNodeWithImages(Integer viewerId) {
+    public ObjectNode toObjectNodeWithImages(Long viewerId) {
 	    ObjectNode ret = this.toObjectNode(viewerId);
 	    try {
 		    List<Image> images = SQLCommander.queryImages(m_id);

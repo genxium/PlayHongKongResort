@@ -24,7 +24,7 @@ public class NotificationController extends Controller {
         response().setContentType("text/plain");
         try {
             if (token == null) throw new InvalidQueryParamsException();
-            Integer userId = SQLCommander.queryUserId(token);
+            Long userId = SQLCommander.queryUserId(token);
             User user = SQLCommander.queryUser(userId);
             ObjectNode result = Json.newObject();
             result.put(Notification.COUNT, user.getUnreadCount());
@@ -48,7 +48,7 @@ public class NotificationController extends Controller {
 
 			// anti=cracking by param token
 			if (token == null) throw new InvalidQueryParamsException(); 
-			Integer to = SQLCommander.queryUserId(token);
+			Long to = SQLCommander.queryUserId(token);
 
 			List<Notification> notifications = null;
 			notifications = SQLCommander.queryNotifications(to, isRead, page_st, page_ed, Notification.ID, orientationStr, numItems);

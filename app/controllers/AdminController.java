@@ -6,7 +6,6 @@ import models.User;
 import models.UserActivityRelation;
 import play.mvc.Controller;
 import play.mvc.Result;
-import utilities.DataUtils;
 import utilities.Loggy;
 
 import java.util.Map;
@@ -23,7 +22,7 @@ public class AdminController extends Controller {
 		    Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 		    String token = formData.get(User.TOKEN)[0];
 
-		    Integer userId = SQLCommander.queryUserId(token);
+		    Long userId = SQLCommander.queryUserId(token);
 		    if (userId == null) throw new UserNotFoundException();
 		    User user = SQLCommander.queryUser(userId);
 		    if (user == null) throw new UserNotFoundException();
@@ -51,7 +50,7 @@ public class AdminController extends Controller {
             Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
             String token = formData.get(User.TOKEN)[0];
 
-            Integer userId = SQLCommander.queryUserId(token);
+            Long userId = SQLCommander.queryUserId(token);
             if (userId == null) throw new UserNotFoundException();
             User user = SQLCommander.queryUser(userId);
             if (user == null) throw new UserNotFoundException();
@@ -78,7 +77,7 @@ public class AdminController extends Controller {
 		    Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 		    String token = formData.get(User.TOKEN)[0];
 
-		    Integer userId = SQLCommander.queryUserId(token);
+		    Long userId = SQLCommander.queryUserId(token);
 		    if (userId == null) throw new UserNotFoundException();
 
 		    User user = SQLCommander.queryUser(userId);

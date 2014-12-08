@@ -605,8 +605,8 @@ public class EasyPreparedStatementBuilder {
         return ret;
     }
 
-    public Integer execInsert() {
-        Integer lastId = SQLHelper.INVALID;
+    public Long execInsert() {
+        Long lastId = SQLHelper.INVALID;
         try {
             Connection connection = SQLHelper.getConnection();
             PreparedStatement statement = this.toInsert(connection);
@@ -614,7 +614,7 @@ public class EasyPreparedStatementBuilder {
             statement.executeUpdate();
             ResultSet rs = statement.getGeneratedKeys();
             if (rs != null && rs.next()) {
-                lastId = (int) rs.getLong(1);
+                lastId = rs.getLong(1);
                 rs.close();
             }
             statement.close();

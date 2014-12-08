@@ -20,13 +20,13 @@ public abstract class AbstractModel {
 
     public static final String ID = "id";
 
-    protected Integer m_id = null;
+    protected Long m_id = null;
 
-    public Integer getId() {
+    public Long getId() {
         return m_id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         m_id = id;
     }
 
@@ -35,7 +35,7 @@ public abstract class AbstractModel {
     }
 
     public AbstractModel(JSONObject json) {
-        if (json.containsKey(ID)) m_id = Converter.toInteger(json.get(ID));
+        if (json.containsKey(ID)) m_id = Converter.toLong(json.get(ID));
     }
 
     public ObjectNode toObjectNode() {

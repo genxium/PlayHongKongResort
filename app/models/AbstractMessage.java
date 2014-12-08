@@ -14,19 +14,19 @@ public abstract class AbstractMessage extends AbstractSimpleMessage {
 
     public static final String GENERATED_TIME = "generated_time";
 
-    protected Integer m_from = null;
-    protected Integer m_to = null;
+    protected Long m_from = null;
+    protected Long m_to = null;
     protected Long m_generatedTime = null;
 
-    public Integer getFrom() {
+    public Long getFrom() {
         return m_from;
     }
 
-    public void setFrom(int from) {
+    public void setFrom(long from) {
         m_from = from;
     }
 
-    public Integer getTo() {
+    public Long getTo() {
         return m_to;
     }
 
@@ -36,8 +36,8 @@ public abstract class AbstractMessage extends AbstractSimpleMessage {
 
     public AbstractMessage(JSONObject json) {
         super(json);
-        if (json.containsKey(FROM)) m_from = Converter.toInteger(json.get(FROM));
-        if (json.containsKey(TO)) m_to = Converter.toInteger(json.get(TO));
+        if (json.containsKey(FROM)) m_from = Converter.toLong(json.get(FROM));
+        if (json.containsKey(TO)) m_to = Converter.toLong(json.get(TO));
         if (json.containsKey(GENERATED_TIME)) m_generatedTime = Converter.toLong(json.get(GENERATED_TIME));
     }
 

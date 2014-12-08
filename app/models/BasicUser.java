@@ -56,7 +56,7 @@ public class BasicUser extends AbstractModel {
         if (userJson.containsKey(AVATAR)) m_avatar = Converter.toInteger(userJson.get(AVATAR));
     }
 
-    public ObjectNode toObjectNode(Integer viewerId) {
+    public ObjectNode toObjectNode(Long viewerId) {
         ObjectNode ret = super.toObjectNode();
         try {
             if (viewerId != null && viewerId.equals(m_id)) ret.put(EMAIL, m_email);

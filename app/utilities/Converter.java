@@ -1,10 +1,10 @@
 package utilities;
 
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 public class Converter {
 
@@ -52,6 +52,7 @@ public class Converter {
         if (obj instanceof Integer) return ((Integer) obj).longValue();
         else if (obj instanceof Long) return (Long) obj;
         else if (obj instanceof String) return Long.valueOf((String) obj);
+        else if (obj instanceof BigInteger) return ((BigInteger) obj).longValue();
         else return null;
     }
 

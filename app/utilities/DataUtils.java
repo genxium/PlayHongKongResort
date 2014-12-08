@@ -42,7 +42,7 @@ public class DataUtils {
         return content.length() >= 0;
     }
 
-    public static String generateUploadedImageName(String originalName, Integer userId) {
+    public static String generateUploadedImageName(String originalName, Long userId) {
         String ret = null;
         try {
             java.util.Date date = new java.util.Date();

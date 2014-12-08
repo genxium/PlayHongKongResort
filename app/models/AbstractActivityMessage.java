@@ -9,13 +9,13 @@ public class AbstractActivityMessage extends AbstractMessage {
 
     public static final String ACTIVITY_ID = "activity_id";
 
-    protected Integer m_activityId = null;
+    protected Long m_activityId = null;
 
-    public Integer getActivityId() {
+    public Long getActivityId() {
         return m_activityId;
     }
 
-    public void setActivityId(int activityId) {
+    public void setActivityId(long activityId) {
         m_activityId = activityId;
     }
 
@@ -25,7 +25,7 @@ public class AbstractActivityMessage extends AbstractMessage {
 
     public AbstractActivityMessage(JSONObject json) {
         super(json);
-        if (json.containsKey(ACTIVITY_ID)) m_activityId = Converter.toInteger(json.get(ACTIVITY_ID));
+        if (json.containsKey(ACTIVITY_ID)) m_activityId = Converter.toLong(json.get(ACTIVITY_ID));
     }
 
     public ObjectNode toObjectNode() {

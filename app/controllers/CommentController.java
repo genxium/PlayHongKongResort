@@ -35,7 +35,7 @@ public class CommentController extends Controller {
     }
 
     @SuppressWarnings("unchecked")
-    public static Result list(Integer activityId, Integer pageSt, Integer pageEd, Integer numItems) {
+    public static Result list(Long activityId, Integer pageSt, Integer pageEd, Integer numItems) {
         response().setContentType("text/plain");
         try {
             if (activityId == null || pageSt == null || pageEd == null || numItems == null) throw new InvalidQueryParamsException();
@@ -68,26 +68,6 @@ public class CommentController extends Controller {
         return badRequest();
     }
 
-    public static Result query(Integer activityId, String refIndex, Integer page, Integer numItems, Integer direction) {
-	    response().setContentType("text/plain");
-	    try {
-		    List<Comment> comments = SQLCommander.queryTopLevelComments(activityId, refIndex, Comment.ID, SQLHelper.DESCEND, numItems, direction);
-
-		    ObjectNode result = Json.newObject();
-		    result.put(Comment.COUNT, 0);
-		    result.put(Comment.PAGE, page);
-
-		    ArrayNode commentsNode = new ArrayNode(JsonNodeFactory.instance);
-		    for (Comment comment : comments)	commentsNode.add(comment.toObjectNode(false));
-			
-	 	    result.put(Comment.COMMENTS, commentsNode);
-		    return ok(result);
-	    } catch (Exception e) {
-		    Loggy.e(TAG, "query", e);
-	    }
-	    return badRequest();
-    }
-
     public static Result submit() {
 	    // define response attributes
 	    response().setContentType("text/plain");
@@ -104,7 +84,7 @@ public class CommentController extends Controller {
 
 		    if (activity == null) throw new ActivityNotFoundException();
 
-		    Integer from = SQLCommander.queryUserId(token);
+		    Long from = SQLCommander.queryUserId(token);
 		    if (from == null) throw new UserNotFoundException();
 
             SQLCommander.isActivityCommentable(from, activity);

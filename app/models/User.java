@@ -95,7 +95,7 @@ public class User extends BasicUser {
 		if (userJson.containsKey(UNASSESSED_COUNT)) m_unassessedCount = Converter.toInteger(userJson.get(UNASSESSED_COUNT));
     }
 
-    public ObjectNode toObjectNode(Integer viewerId) {
+    public ObjectNode toObjectNode(Long viewerId) {
         ObjectNode ret = super.toObjectNode(viewerId);
         try {
             ret.put(UNREAD_COUNT, String.valueOf(m_unreadCount));
