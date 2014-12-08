@@ -43,6 +43,8 @@ var g_keyEmail = "email";
 var g_keyPassword = "password";
 var g_keyAvatar = "avatar";
 var g_keyPasswordResetCode = "password_reset_code";
+var g_keyUnreadCount = "unread_count";
+var g_keyUnassessedCount = "unassessed_count";
 
 var g_keyButton = "button";
 

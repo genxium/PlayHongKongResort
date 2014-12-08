@@ -31,7 +31,7 @@ public class SQLCommander {
 
 	    User user = null;
 	    try {
-		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.AVATAR};
+		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.AVATAR, User.UNREAD_COUNT, User.UNASSESSED_COUNT};
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             List<JSONObject> results = builder.select(names).from(User.TABLE).where(User.ID, "=", userId).execSelect();
 		    if (results == null || results.size() <= 0) return null;

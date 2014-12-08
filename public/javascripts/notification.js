@@ -129,12 +129,34 @@ function generateNotificationCell(par, notification) {
 		dCell["indicator"] = unreadIndicator;
 		cell.click(dCell, function(evt) {
 			evt.preventDefault();
-			var aNotification = evt.data[g_keyNotification];
-			var aIndicator = evt.data["indicator"];
+
 			if (g_loggedInUser == null) return;
 			var token = $.cookie(g_keyToken);
 			if (token == null) return;
+
+			if (g_postLoginMenu == null) return;
+
+			var paramsBubble = {};
+			paramsBubble[g_keyToken] = token;
+
+			$.ajax({
+				type: "GET",
+				url: "/notification/count",
+				data: paramsBubble,
+				success: function(data, status, xhr) {
+					var jsonResponse = JSON.parse(data);
+					var count = parseInt(jsonResponse[g_keyCount]);
+					g_postLoginMenu.bubble.update(count);
+				}, 
+				error: function(xhr, status, err) {
+
+				}
+			});
+
+			var aNotification = evt.data[g_keyNotification];
+			var aIndicator = evt.data["indicator"];
 			aIndicator.remove();
+
 			var params = {};
 			params[g_keyToken] = token;
 			params[g_keyId] = aNotification.id;

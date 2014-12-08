@@ -3,26 +3,18 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
-import exception.*;
-import models.*;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
+import exception.InvalidQueryParamsException;
+import exception.TokenExpiredException;
+import exception.TokenExpiredResult;
+import models.Notification;
+import models.User;
 import play.libs.Json;
 import play.mvc.Controller;
-import play.mvc.Http;
 import play.mvc.Result;
-import utilities.Converter;
-import utilities.DataUtils;
-import utilities.General;
 import utilities.Loggy;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class NotificationController extends Controller {
 	
@@ -33,15 +25,9 @@ public class NotificationController extends Controller {
         try {
             if (token == null) throw new InvalidQueryParamsException();
             Integer userId = SQLCommander.queryUserId(token);
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-			builder.select(Notification.ID)
-				.from(Notification.TABLE)
-				.where(Notification.TO, "=", userId);
-			if (isRead != null)	builder.where(Notification.IS_READ, "=", isRead);
-            List<JSONObject> idJsonList = builder.execSelect();
+            User user = SQLCommander.queryUser(userId);
             ObjectNode result = Json.newObject();
-            if (idJsonList == null) throw new NullPointerException();
-            result.put(Notification.COUNT, idJsonList.size());
+            result.put(Notification.COUNT, user.getUnreadCount());
             return ok(result);
         } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());

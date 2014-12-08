@@ -195,22 +195,8 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 		text: "0"
 	}).appendTo(noti);
 	var bubble = new NotiBubble(0, spBubble);
-	var paramsBubble = {};
-	var token = $.cookie(g_keyToken);
-	paramsBubble[g_keyToken] = token;
-	$.ajax({
-		type: "GET",
-		url: "/notification/count",
-		data: paramsBubble,
-		success: function(data, status, xhr) {
-			var jsonResponse = JSON.parse(data);
-			var count = parseInt(jsonResponse[g_keyCount]);
-			bubble.update(count);
-		}, 
-		error: function(xhr, status, err) {
-	
-		}
-	});
+	bubble.update(g_loggedInUser.unreadCount);
+
 	var spDropdown = $("<span>", {
 		style: "position: absolute; width: 30%; height: 80%; left: 70%; top: 20px;"
 	}).appendTo(par);

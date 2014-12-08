@@ -14,7 +14,7 @@ function onBtnAcceptClicked(evt){
 
 	$.ajax({
 		type: "PUT",
-		url: "/admin/accept",
+		url: "/el/admin/activity/accept",
 		data: params,
 		success: function(data, status, xhr) {
 			var buttonsWrap = btnAccept.parent();
@@ -42,7 +42,7 @@ function onBtnRejectClicked(evt){
 	try{
 		$.ajax({
 			type: "PUT",
-			url: "/admin/reject", 
+			url: "/el/admin/activity/reject", 
 			data: params,
 			success: function(data, status, xhr){
 				var buttonsWrap = btnReject.parent(); 

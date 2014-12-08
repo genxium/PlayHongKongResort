@@ -8,9 +8,10 @@ var hosted = (1<<5);
 
 function User(userJson){
 	this.id = parseInt(userJson["id"]);
-	this.email = userJson["email"];
+	if (userJson.hasOwnProperty("email"))	this.email = userJson["email"];
 	this.name = userJson["name"];
 	this.avatar = userJson["avatar"];
+	if (userJson.hasOwnProperty("unread_count"))	this.unreadCount = parseInt(userJson["unread_count"]);
 }
 
 function Image(imageJson){

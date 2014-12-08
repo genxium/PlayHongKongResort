@@ -24,7 +24,7 @@ function generateParticipantsSelectionForm(par, activity) {
 		participantsId.push(participant.id);
 		participantsStatus.push(g_aliasSelected);
 		var label = $('<label>', {
-			text: participant.email,
+			text: participant.name,
 			style: "background-color: aquamarine"
 		}).appendTo(form);
 		labels.push(label);
