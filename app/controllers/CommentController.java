@@ -47,10 +47,11 @@ public class CommentController extends Controller {
             cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.NUM_ITEMS, numItems);
 
             List<Comment> comments = (List<Comment>)play.cache.Cache.get(cacheKey);
-            if (comments == null)   comments = SQLCommander.queryTopLevelComments(activityId, pageSt, pageEd, Comment.ID, SQLHelper.DESCEND, numItems);
+            if (comments == null)   {
+				comments = SQLCommander.queryTopLevelComments(activityId, pageSt, pageEd, Comment.ID, SQLHelper.DESCEND, numItems);
+				if (comments != null) play.cache.Cache.set(cacheKey, comments, DataUtils.CACHE_DURATION);
+			}
             if (comments == null)   throw new NullPointerException();
-
-            play.cache.Cache.set(cacheKey, comments, DataUtils.CACHE_DURATION);
 
             ObjectNode result = Json.newObject();
             result.put(Comment.COUNT, 0);
