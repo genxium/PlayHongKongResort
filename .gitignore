@@ -1,4 +1,5 @@
 # Project specific files
+database/all_data.sql
 .target
 .target/*
 test

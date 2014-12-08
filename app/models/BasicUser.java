@@ -59,7 +59,7 @@ public class BasicUser extends AbstractModel {
     public ObjectNode toObjectNode(Integer viewerId) {
         ObjectNode ret = super.toObjectNode();
         try {
-            if (viewerId.equals(m_id)) ret.put(EMAIL, m_email);
+            if (viewerId != null && viewerId.equals(m_id)) ret.put(EMAIL, m_email);
             ret.put(NAME, m_name);
             Image image = SQLCommander.queryImage(m_avatar);
             if (image != null)  ret.put(AVATAR, image.getUrl());
