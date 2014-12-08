@@ -1,1 +1,1 @@
-mysqldump -uroot -d hongkongresort>all_data.sql
+mysqldump -uroot --default-character-set=utf8 hongkongresort -r all_data.sql
