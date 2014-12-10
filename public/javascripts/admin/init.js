@@ -13,7 +13,7 @@ function onBtnAcceptClicked(evt){
 	params[g_keyToken] = token;
 
 	$.ajax({
-		type: "PUT",
+		type: "POST",
 		url: "/el/admin/activity/accept",
 		data: params,
 		success: function(data, status, xhr) {
@@ -41,7 +41,7 @@ function onBtnRejectClicked(evt){
 
 	try{
 		$.ajax({
-			type: "PUT",
+			type: "POST",
 			url: "/el/admin/activity/reject", 
 			data: params,
 			success: function(data, status, xhr){

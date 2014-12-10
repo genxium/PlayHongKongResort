@@ -226,6 +226,10 @@ public class SQLCommander {
                     .order(orderKey, orientation)
                     .where(Activity.STATUS, "=", status)
                     .limit((page_st - 1) * numItems, page_ed * numItems);
+			if (status == Activity.PENDING) {
+				// ONLY admin queries should be accessing this closure	
+				builder.where(Activity.DEADLINE, ">", General.millisec());
+			}
             List<JSONObject> activityJsonList = builder.execSelect();
             if (activityJsonList == null)	return null;
             for (JSONObject activityJson : activityJsonList) {
