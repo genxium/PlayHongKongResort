@@ -1,5 +1,6 @@
 var g_vieweeId = null; // should always be null except in profile's page
 var g_pager = null;
+var g_onJoined = null;
 
 function onBtnEditClicked(evt){
     	evt.preventDefault();
@@ -180,10 +181,8 @@ function onBtnJoinClicked(evt){
 		url: "/activity/join",
 		data: params,
 		success: function(data, status, xhr){
-			activity.relation |= applied;
-			var par = btnJoin.parent();
-			btnJoin.remove();
-			attachRelationIndicator(par, activity);
+			if (g_onJoined == null) return;
+			g_onJoined(activity.id);
 		},
 		error: function(xhr, status, errThrown){
 

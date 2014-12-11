@@ -43,6 +43,9 @@ function queryActivityDetail(activityId){
 }
 
 function displayActivityDetail(par){
+
+	g_onJoined = queryActivityDetail;
+
 	par.empty();
 	var ret = $("<div>").appendTo(par);
         var row1 = $("<p>").appendTo(ret);
