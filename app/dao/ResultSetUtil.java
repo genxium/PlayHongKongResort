@@ -1,12 +1,10 @@
 package dao;
 
+import org.json.simple.JSONObject;
+
 import java.sql.ResultSet;
-
-import org.json.simple.*;
-
-import java.util.Iterator;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ResultSetUtil {
 

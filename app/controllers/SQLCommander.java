@@ -947,7 +947,7 @@ public class SQLCommander {
         return ret;
     }
 
-    static Long queryUserId(String token) throws TokenExpiredException {
+    public static Long queryUserId(String token) throws TokenExpiredException {
 
         EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
         List<JSONObject> allJson = builder.select(Login.USER_ID).from(Login.TABLE).where(Login.TOKEN, "=", token).execSelect();

@@ -1,20 +1,26 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
+
 import exception.*;
+
 import models.Activity;
 import models.Assessment;
 import models.User;
 import models.UserActivityRelation;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+
 import utilities.Converter;
 import utilities.Loggy;
 
@@ -44,8 +50,6 @@ public class AssessmentController extends Controller {
     }
 
     public static Result submit() {
-        // define response attributes
-        response().setContentType("text/plain");
 
         try {
             Http.RequestBody body = request().body();
@@ -74,12 +78,12 @@ public class AssessmentController extends Controller {
             if ( (originalRelation & UserActivityRelation.PRESENT) == 0) throw new InvalidUserActivityRelationException();
 
             String bundle = formData.get(BUNDLE)[0];
-            JSONArray assessmentJsons = (JSONArray) JSONValue.parse(bundle);
+            JSONArray assessmentListJson = (JSONArray) JSONValue.parse(bundle);
             List<Long> userIdList = new LinkedList<Long>();
             List<Assessment> assessmentList = new LinkedList<Assessment>();
             userIdList.add(userId);
 
-            for (Object obj : assessmentJsons) {
+            for (Object obj : assessmentListJson) {
                 Assessment assessment = new Assessment((JSONObject) obj);
                 assessment.setActivityId(activityId);
                 assessment.setFrom(userId);
@@ -107,7 +111,7 @@ public class AssessmentController extends Controller {
 
             ObjectNode ret = Json.newObject();
             ret.put(UserActivityRelation.RELATION, newRelation);
-            return ok(ret);
+            return ok(ret).as("text/plain");
         } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
