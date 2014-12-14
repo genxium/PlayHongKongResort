@@ -213,7 +213,15 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 
 }
 
-function checkLoginStatus(onLoginSuccess){
+function checkLoginStatus(){
+
+	var token = $.cookie(g_keyToken);
+	if(token == null) {
+		if(g_preLoginForm == null) return;
+		g_preLoginForm.onLoginError(null);
+		return;
+	}
+
 	if (g_loggedInUser != null) {
 		if (g_preLoginForm == null) return;
 		g_postLoginMenu = generatePostLoginMenu(g_sectionLogin, g_preLoginForm.onLoginSuccess, g_preLoginForm.onLoginError, g_preLoginForm.onLogoutSuccess, g_preLoginForm.onLogoutError);
@@ -221,12 +229,7 @@ function checkLoginStatus(onLoginSuccess){
 		g_preLoginForm.onLoginSuccess(null);
 		return;
 	}
-	var token = $.cookie(g_keyToken);
-	if(token == null) {
-		if(g_preLoginForm == null) return;
-		g_preLoginForm.onLoginError(null);
-		return;
-	}
+
 	var params={};
 	params[g_keyToken] = token;
 	$.ajax({

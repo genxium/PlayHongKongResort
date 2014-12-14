@@ -238,6 +238,7 @@ function requestActivityDetail(activityId) {
 	g_pagerSubComments.squeeze();
 
 	var onLoginSuccess = function(data) {
+		countNotifications();
 		queryActivityDetail(g_activityId);
 	};
 

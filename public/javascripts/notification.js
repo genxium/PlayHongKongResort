@@ -13,6 +13,29 @@ function clearNotifications() {
 	$("#pager-screen-notifications").empty();
 	emptySectionNotifications();
 }
+
+function countNotifications() {
+	var token = $.cookie(g_keyToken);
+	if (token == null) return;
+	var paramsBubble = {};
+	paramsBubble[g_keyToken] = token;
+	
+	$.ajax({
+		type: "GET",
+		url: "/notification/count",
+		data: paramsBubble,
+		success: function(data, status, xhr) {
+			if (g_loggedInUser == null) return;
+			var jsonResponse = JSON.parse(data);
+			var count = parseInt(jsonResponse[g_keyCount]);
+			g_loggedInUser.unreadCount = count;
+			g_postLoginMenu.bubble.update(count);
+		}, 
+		error: function(xhr, status, err) {
+
+		}
+	});
+}
  
 function listNotificationsAndRefresh() {
 	var page = 1;
@@ -138,7 +161,6 @@ function generateNotificationCell(par, notification) {
 
 			var aNotification = evt.data[g_keyNotification];
 			var aIndicator = evt.data["indicator"];
-			aIndicator.remove();
 
 			var params = {};
 			params[g_keyToken] = token;
@@ -148,39 +170,14 @@ function generateNotificationCell(par, notification) {
 				type: "POST",
 				url: "/el/notification/mark",
 				data: params,
-				async: false,
 				success: function(data, status, xhr) {
-					
+					aIndicator.remove();
+					window.location.hash = (g_keyActivityId + "=" + aNotification.activityId);
 				},
 				error: function(xhr, status, err) {
 
 				}
 			});	
-
-			$(this).off("click");
-			$(this).click(aNotification, function(evt) {
-					evt.preventDefault();
-					var aaNotification = evt.data;
-					window.location.hash = (g_keyActivityId + "=" + aaNotification.activityId);
-			});
-
-			var paramsBubble = {};
-			paramsBubble[g_keyToken] = token;
-
-			$.ajax({
-				type: "GET",
-				url: "/notification/count",
-				data: paramsBubble,
-				success: function(data, status, xhr) {
-					var jsonResponse = JSON.parse(data);
-					var count = parseInt(jsonResponse[g_keyCount]);
-					g_postLoginMenu.bubble.update(count);
-				}, 
-				error: function(xhr, status, err) {
-
-				}
-			});
-
 		});
 	} else {
 		cell.click(notification, function(evt) {
@@ -206,6 +203,7 @@ function requestNotifications() {
 	g_pagerNotifications = new Pager($("#pager-screen-notifications"), $("#pager-bar-notifications"), 10, "/notification/list", generateNotificationsListParams, pagerCache, filters, onListNotificationsSuccess, onListNotificationsError);
 
 	var onLoginSuccess = function(data) {
+		countNotifications();
 		listNotificationsAndRefresh();
 	};
 
