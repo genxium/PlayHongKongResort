@@ -437,23 +437,33 @@ function createDropdownMenu(par, id, menuTitle, icons, titles, reactions) {
 	if (length != icons.length) return; 
 	var container = $("<div class='dropdown'>").appendTo(par);
 	container.css("position: absolute");
-	container.css("left", "50%");
-	container.css("top", "50%");
+	container.css("width", "60%")
+	container.css("left", "20%")
+	container.css("height", "60%");
+	container.css("top", "20%")
+	
+	/*
 	container.css("transform", "translate(-50%, -50%)");
+	*/
+
 	var toggle = $("<button id='" + id + "' class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>").appendTo(container);
+	toggle.css("width", "100%")
+	toggle.css("height", "100%");
+	
 	toggle.text(menuTitle);
 	var sp = $("<span class='caret'>").appendTo(toggle);	
 	var ul = $("<ul  aria-labelledby='" + id + "' class='dropdown-menu' role = 'menu'>").appendTo(container);
 	var lis = [];
 	for (var i = 0; i < titles.length; i++) {
-		var li = $("<li role='presentation'>").appendTo(ul);
-		var action = $("<a role='menuitem' tabindex='-1' href='#'>").appendTo(li);
-		action.css("font-size", "13pt");
-		action.css("padding", "10px 2px 10px 2px");
+		var li = $("<li>").appendTo(ul);
+		var action = $("<a tabindex='-1' href='#'>").appendTo(li);
+		action.css("font-size", "15pt");
+		action.css("display", "block"); // increase the size of the link target, ref: http://css-tricks.com/keep-margins-out-of-link-lists/
+		action.css("padding", "5px");
 		action.css("text-align", "center");
 		action.css("vertical-align", "middle");
-		action.text(titles[i]);
 		setBackgroundImage(action, icons[i], "contain", "no-repeat", "left center");
+		action.text(titles[i]);
 		lis.push(li);
 	}
 	return new DropdownMenu(toggle, lis, reactions);
@@ -468,7 +478,7 @@ function NavTab(panes) {
 }
 
 function createNavTab(par, refs, titles, preactiveRef, sectionPanes, contents) {
-	var ul = $("<ul class='nav nav-tabs' role='tablist'>").appendTo(par);
+	var ul = $("<ul class='nav nav-pills' role='tablist'>").appendTo(par);
 	var length = refs.length;
 	for (var i = 0; i < length; i++) {
 		var li = null;
