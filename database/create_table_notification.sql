@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.6.20, for Linux (i686)
+-- MySQL dump 10.13  Distrib 5.6.20, for osx10.6 (x86_64)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
@@ -54,4 +54,4 @@ CREATE TABLE `notification` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-12-07  3:16:32
+-- Dump completed on 2014-12-22 16:46:30

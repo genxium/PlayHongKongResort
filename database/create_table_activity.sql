@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.6.20, for Linux (i686)
+-- MySQL dump 10.13  Distrib 5.6.20, for osx10.6 (x86_64)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
@@ -36,6 +36,7 @@ CREATE TABLE `activity` (
   `num_selected` int(32) DEFAULT '0',
   `last_accepted_time` bigint(20) DEFAULT NULL,
   `last_rejected_time` bigint(20) DEFAULT NULL,
+  `address` varchar(512) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `activity_ibfk_1` (`host_id`),
   KEY `status_index` (`status`)
@@ -51,4 +52,4 @@ CREATE TABLE `activity` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-12-07  3:16:32
+-- Dump completed on 2014-12-22 16:46:30

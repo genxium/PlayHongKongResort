@@ -36,6 +36,8 @@ public class Activity extends AbstractSimpleMessage {
     public static final String LAST_ACCEPTED_TIME = "last_accepted_time";
     public static final String LAST_REJECTED_TIME = "last_rejected_time";
 
+	public static final String ADDRESS = "address";
+
     public static final String ACTIVITIES = "activities";
 
     protected String m_title = null;
@@ -124,6 +126,11 @@ public class Activity extends AbstractSimpleMessage {
 	    m_status = status;
     }
 
+	protected String m_address = null;	
+	public String getAddress() {
+		return m_address;
+	}
+
     protected User m_host = null;
 
     public User getHost() {
@@ -155,13 +162,13 @@ public class Activity extends AbstractSimpleMessage {
 		    m_title = (String) activityJson.get(TITLE);
 
         if (activityJson.containsKey(CREATED_TIME))
-		    m_createdTime = (Long) activityJson.get(CREATED_TIME);
+		    m_createdTime = Converter.toLong(activityJson.get(CREATED_TIME));
 
         if (activityJson.containsKey(BEGIN_TIME))
-		    m_beginTime = (Long) activityJson.get(BEGIN_TIME);
+		    m_beginTime = Converter.toLong(activityJson.get(BEGIN_TIME));
 
         if (activityJson.containsKey(DEADLINE))
-		    m_deadline = (Long) activityJson.get(DEADLINE);
+		    m_deadline = Converter.toLong(activityJson.get(DEADLINE));
 
         if (activityJson.containsKey(CAPACITY))
 		    m_capacity = Converter.toInteger(activityJson.get(CAPACITY));
@@ -176,10 +183,13 @@ public class Activity extends AbstractSimpleMessage {
 		    m_status = Converter.toInteger(activityJson.get(STATUS));
 
         if (activityJson.containsKey(LAST_ACCEPTED_TIME))
-            m_lastAcceptedTime = (Long) activityJson.get(LAST_ACCEPTED_TIME);
+            m_lastAcceptedTime = Converter.toLong(activityJson.get(LAST_ACCEPTED_TIME));
 
         if (activityJson.containsKey(LAST_REJECTED_TIME))
-            m_lastRejectedTime = (Long) activityJson.get(LAST_REJECTED_TIME);
+            m_lastRejectedTime = Converter.toLong(activityJson.get(LAST_REJECTED_TIME));
+
+		if (activityJson.containsKey(ADDRESS)) 
+			m_address = (String) activityJson.get(ADDRESS);
 
 	    if (host != null)
 		    m_host = host;
