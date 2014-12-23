@@ -42,9 +42,15 @@ function ImageSelector(id, image, indicator) {
 	this.checked = true;
 }
 
-function ActivityEditor(id, titleField, contentField, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, captcha) {
+function AddressField(input, map) {
+	this.input = input;
+	this.map = map;
+}
+
+function ActivityEditor(id, titleField, addressField, contentField, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, captcha) {
 	if (id != null) this.id = id;
 	this.titleField = titleField;
+	this.addressField = addressField;
 	this.contentField = contentField;
 	this.newImageFiles = newImageFiles;
 	this.newImageNodes = newImageNodes;
@@ -473,12 +479,23 @@ function generateActivityEditor(activity){
 		g_editor.setNonSubmittable();
 	});
 
-	var contentText = $('<p>', {
+	var addressText = $('<p>', {
+		text: "Address",
+		style: "margin-top: 5pt"
+	}).appendTo(ret);
+
+	var addressInput = $("<input>", {
+		style: ""
+	}).appendTo(ret);
+
+	var addressField = new AddressField(addressInput, null);
+
+	var contentText = $("<p>", {
 		text: "Content",
 		style: "margin-top: 5pt"
 	}).appendTo(ret);
 
-	var contentInput = $('<textarea>',	{
+	var contentInput = $("<textarea>",	{
 		class: "input-content" 
 	}).appendTo(ret);
 	contentInput.val(activityContent);
@@ -649,7 +666,7 @@ function generateActivityEditor(activity){
 		style: "color: blue"
 	}).appendTo(ret);
 
-	g_editor = new ActivityEditor(activityId, titleInput, contentInput, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, captcha);	
+	g_editor = new ActivityEditor(activityId, titleInput, addressField, contentInput, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, captcha);	
 	g_editor.setNonSavable();
 	g_editor.setSubmittable();
 

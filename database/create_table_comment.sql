@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.20, for osx10.6 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.14, for osx10.7 (x86_64)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
--- Server version	5.6.20
+-- Server version	5.6.14
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -38,7 +38,7 @@ CREATE TABLE `comment` (
   KEY `comment_ibfk_3` (`to`),
   KEY `comment_ibfk_4` (`parent_id`),
   KEY `comment_ibfk_5` (`predecessor_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=122 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -50,4 +50,4 @@ CREATE TABLE `comment` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-12-22 16:46:30
+-- Dump completed on 2014-12-23 22:25:25
