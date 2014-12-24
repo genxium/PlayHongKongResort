@@ -158,6 +158,7 @@ public class ActivityController extends Controller {
 			Map<String, String[]> formData = data.asFormUrlEncoded();
 
 			String activityTitle = formData.get(Activity.TITLE)[0];
+			String activityAddress = formData.get(Activity.ADDRESS)[0];
 			String activityContent = formData.get(Activity.CONTENT)[0];
 			long beginTime = Converter.toLong(formData.get(Activity.BEGIN_TIME)[0]);
 			long deadline = Converter.toLong(formData.get(Activity.DEADLINE)[0]);
@@ -197,6 +198,7 @@ public class ActivityController extends Controller {
 			if (!SQLCommander.isActivityEditable(userId, activity)) throw new AccessDeniedException();
 
 			activity.setTitle(activityTitle);
+			activity.setAddress(activityAddress);
 			activity.setContent(activityContent);
 			activity.setBeginTime(beginTime);
 			activity.setDeadline(deadline);

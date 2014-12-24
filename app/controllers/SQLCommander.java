@@ -100,8 +100,8 @@ public class SQLCommander {
 
     public static boolean updateActivity(Activity activity) {
 	    try {
-		    String[] cols = {Activity.TITLE, Activity.CONTENT, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
-		    Object[] values = {activity.getTitle(), activity.getContent(), activity.getBeginTime(), activity.getDeadline(), activity.getCapacity()};
+		    String[] cols = {Activity.TITLE, Activity.ADDRESS, Activity.CONTENT, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
+		    Object[] values = {activity.getTitle(), activity.getAddress(), activity.getContent(), activity.getBeginTime(), activity.getDeadline(), activity.getCapacity()};
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    return builder.update(Activity.TABLE).set(cols, values).where(Activity.ID, "=", activity.getId()).execUpdate();
 	    } catch (Exception e) {
@@ -115,7 +115,7 @@ public class SQLCommander {
 
 	    Activity activity = null;
 	    try {
-		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, Activity.NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
+		    String[] names = Activity.QUERY_FIELDS;
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             List<JSONObject> results = builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId).execSelect();
 		    if (results == null || results.size() != 1) throw new ActivityNotFoundException();
@@ -148,7 +148,7 @@ public class SQLCommander {
         List<Activity> ret = new ArrayList<Activity>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, Activity.NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
+            String[] names = Activity.QUERY_FIELDS;
             String[] onCols = {UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.ACTIVITY_ID};
             Object[] onVals = {vieweeId, relation, Activity.TABLE + "." + Activity.ID};
 
@@ -170,10 +170,10 @@ public class SQLCommander {
     }
 
     public static List<Activity> queryActivities(Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems, Long vieweeId, int relation) {
-	    List<Activity> ret = new ArrayList<Activity>();
+	    List<Activity> ret = new ArrayList<>();
 	    try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, Activity.NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
+            String[] names = Activity.QUERY_FIELDS;
             String[] onCols = {UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.ACTIVITY_ID};
             Object[] onVals = {vieweeId, relation, Activity.TABLE + "." + Activity.ID};
 
@@ -194,10 +194,10 @@ public class SQLCommander {
     }
 
     public static List<Activity> queryActivities(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, int status) {
-	    List<Activity> ret = new ArrayList<Activity>();
+	    List<Activity> ret = new ArrayList<>();
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, Activity.NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
+		    String[] names = Activity.QUERY_FIELDS;
 		    builder.select(names)
                    .from(Activity.TABLE)
                    .where(Activity.STATUS, "=", status);
@@ -217,10 +217,10 @@ public class SQLCommander {
     }
 
     public static List<Activity> queryActivities(Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems, int status) {
-        List<Activity> ret = new ArrayList<Activity>();
+        List<Activity> ret = new ArrayList<>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, Activity.NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
+            String[] names = Activity.QUERY_FIELDS;
             builder.select(names)
                     .from(Activity.TABLE)
                     .order(orderKey, orientation)
@@ -243,10 +243,10 @@ public class SQLCommander {
     }
 
     public static List<Activity> queryHostedActivities(Long hostId, Long viewerId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction){
-        List<Activity> ret = new ArrayList<Activity>();
+        List<Activity> ret = new ArrayList<>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+            String[] names = Activity.QUERY_FIELDS;
             builder.select(names).from(Activity.TABLE);
             // extra where criterion
             builder.where(Activity.HOST_ID, "=", hostId);
@@ -271,7 +271,7 @@ public class SQLCommander {
         List<Activity> ret = new ArrayList<Activity>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] names = {Activity.ID, Activity.TITLE, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+            String[] names = Activity.QUERY_FIELDS;
             builder.select(names)
                     .from(Activity.TABLE)
                     .order(orderKey, orientation)

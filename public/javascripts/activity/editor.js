@@ -199,7 +199,6 @@ function countImages(editor){
 	return ret;
 }
 
-// Assistive Callback Functions
 function onSave(evt){
 	evt.preventDefault();
 	
@@ -244,12 +243,14 @@ function onSave(evt){
 
 	// append activity title and content
 	var title = g_editor.titleField.val();
+	var address = g_editor.addressField.input.val();
 	var content = g_editor.contentField.val();
-	if(title == null || content == null || title == "" || content == "") {
-		alert("Neither title nor content could be empty.");
+	if(title == null || address == null || content == null || title == "" || address == "" || content == "") {
+		alert("All text fields (title, address and content) should be filled.");
 		return;
 	}
 	formData.append(g_keyTitle, title);
+	formData.append(g_keyAddress, address);
 	formData.append(g_keyContent, content);
 
 	// append activity begin time and deadline

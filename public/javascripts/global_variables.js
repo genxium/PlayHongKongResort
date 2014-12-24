@@ -53,6 +53,7 @@ var g_keyActivities = "activities";
 var g_keyActivity = "activity";
 var g_keyActivityId = "activity_id";
 var g_keyTitle = "title";
+var g_keyAddress = "address";
 var g_keyContent = "content";
 var g_keyStatus = "status";
 var g_keyCreatedTime = "created_time";

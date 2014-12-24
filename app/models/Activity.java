@@ -40,6 +40,8 @@ public class Activity extends AbstractSimpleMessage {
 
     public static final String ACTIVITIES = "activities";
 
+    public static String[] QUERY_FIELDS = {Activity.ID, Activity.TITLE, Activity.ADDRESS, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+
     protected String m_title = null;
 
     public String getTitle() {
@@ -117,9 +119,14 @@ public class Activity extends AbstractSimpleMessage {
     }
 
 	protected String m_address = null;	
-	public String getAddress() {
+
+    public String getAddress() {
 		return m_address;
 	}
+
+    public void setAddress(final String address) {
+        m_address = address;
+    }
 
     protected User m_host = null;
 
