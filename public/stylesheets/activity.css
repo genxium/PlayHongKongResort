@@ -12,6 +12,20 @@
 	margin-bottom: 2pt;
 }
 
+.input-address
+{
+	display: block;
+	position: relative;
+	background-color: transparent;
+	height: 25pt;
+	width: 400pt;
+	max-height: 50pt;
+	max-width:	400pt;
+	font-size: 15pt;
+	margin-top: 5pt;
+	margin-bottom: 2pt;
+}
+
 .input-content
 {
 	display: block;

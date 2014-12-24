@@ -46,20 +46,10 @@ public class Activity extends AbstractSimpleMessage {
 	    return m_title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
 	    m_title = title;
     }
-
-    protected String m_content = null;
-
-    public String getContent() {
-	    return m_content;
-    }
-
-    public void setContent(String content) {
-	    m_content = content;
-    }
-
+	
     protected Long m_createdTime = null;
 
     public long getCreatedTime() {
@@ -200,6 +190,7 @@ public class Activity extends AbstractSimpleMessage {
         ObjectNode ret = super.toObjectNode();
         try {
             ret.put(TITLE, m_title);
+			ret.put(ADDRESS, m_address);
 
             ret.put(CREATED_TIME, String.valueOf(m_createdTime));
             ret.put(BEGIN_TIME, String.valueOf(m_beginTime));

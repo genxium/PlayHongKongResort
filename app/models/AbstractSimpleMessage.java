@@ -14,6 +14,10 @@ public abstract class AbstractSimpleMessage extends AbstractModel {
         return m_content;
     }
 
+	public void setContent(final String content) {
+		m_content = content;
+	}
+
     public AbstractSimpleMessage() {
         super();
     }

@@ -450,11 +450,13 @@ function generateActivityEditor(activity){
 
 	var activityId = null;
 	var activityTitle = "";
+	var activityAddress = "";
 	var activityContent = "";
 
 	if(!isNewActivity) {
 		activityId = activity.id;
 		activityTitle = activity.title;
+		activityAddress = activity.address;
 		activityContent = activity.content;
 	}
 
@@ -474,9 +476,9 @@ function generateActivityEditor(activity){
 	}).appendTo(ret);
 
 	titleInput.on("input paste keyup", function(evt){
-	        evt.preventDefault();
-		g_editor.setSavable();
-		g_editor.setNonSubmittable();
+			evt.preventDefault();
+			g_editor.setSavable();
+			g_editor.setNonSubmittable();
 	});
 
 	var addressText = $('<p>', {
@@ -485,7 +487,9 @@ function generateActivityEditor(activity){
 	}).appendTo(ret);
 
 	var addressInput = $("<input>", {
-		style: ""
+		class: "input-address",
+		type: 'text',
+		value: activityAddress
 	}).appendTo(ret);
 
 	var addressField = new AddressField(addressInput, null);
