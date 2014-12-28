@@ -68,21 +68,21 @@ public class ActivityController extends Controller {
 
             if (relation != null && relation != UserActivityRelation.HOSTED && vieweeId != null) {
                 cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, orderKey);
-                activities = (List<Activity>) play.cache.Cache.get(cacheKey);
+                // activities = (List<Activity>) play.cache.Cache.get(cacheKey);
                 if (activities == null) {
 					activities = SQLCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, vieweeId, UserActivityRelation.maskRelation(relation, null));
 					if (activities != null) play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
 				}
             } else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
                 cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, Activity.ID);
-                activities = (List<Activity>) play.cache.Cache.get(cacheKey);
+                // activities = (List<Activity>) play.cache.Cache.get(cacheKey);
                 if (activities == null) {
 					activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, pageSt, pageEd, Activity.ID, orientationStr, numItems);
 					if (activities != null) play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
 				}
             } else if (status != null) {
                 cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, orderKey);
-                activities = (List<Activity>) play.cache.Cache.get(cacheKey);
+                // activities = (List<Activity>) play.cache.Cache.get(cacheKey);
                 if (activities == null) {
 					activities = SQLCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, status);
 					if (activities != null) play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
