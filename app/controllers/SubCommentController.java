@@ -23,7 +23,6 @@ public class SubCommentController extends CommentController {
     public static final String TAG = SubCommentController.class.getName();
 
     public static Result list(Long parentId, Integer page_st, Integer page_ed, Integer numItems) {
-        response().setContentType("text/plain");
         try {
             if (parentId.equals(0L)) parentId = null;
             List<Comment> comments = SQLCommander.querySubComments(parentId, page_st, page_ed, Comment.ID, SQLHelper.DESCEND, numItems);
@@ -36,7 +35,7 @@ public class SubCommentController extends CommentController {
             ArrayNode commentsNode = new ArrayNode(JsonNodeFactory.instance);
             for (Comment comment : comments)	commentsNode.add(comment.toSubCommentObjectNode());
             result.put(Comment.SUB_COMMENTS, commentsNode);
-            return ok(result);
+            return ok(result).as("text/plain");
         } catch (Exception e) {
             Loggy.e(TAG, "query", e);
         }
@@ -44,7 +43,6 @@ public class SubCommentController extends CommentController {
     }
 
     public static Result query(Long parentId, String refIndex, Integer page, Integer numItems, Integer direction) {
-        response().setContentType("text/plain");
         try {
             if (parentId.equals(0L)) parentId = null;
             List<Comment> comments = SQLCommander.querySubComments(parentId, refIndex, Comment.ID, SQLHelper.DESCEND, numItems, direction);
@@ -56,7 +54,7 @@ public class SubCommentController extends CommentController {
             ArrayNode commentsNode = new ArrayNode(JsonNodeFactory.instance);
             for (Comment comment : comments)	commentsNode.add(comment.toSubCommentObjectNode());
 	    result.put(Comment.SUB_COMMENTS, commentsNode);
-            return ok(result);
+            return ok(result).as("text/plain");
         } catch (Exception e) {
             Loggy.e(TAG, "query", e);
         }
@@ -65,12 +63,13 @@ public class SubCommentController extends CommentController {
 
     public static Result submit() {
         // define response attributes
-        response().setContentType("text/plain");
         try {
             Map<String, String[]> formData = request().body().asFormUrlEncoded();
+			if (!formData.containsKey(Comment.CONTENT)) throw new InvalidCommentParamsException();
             if (!formData.containsKey(Comment.PREDECESSOR_ID)) throw new InvalidCommentParamsException();
             if (!formData.containsKey(Comment.PARENT_ID)) throw new InvalidCommentParamsException();
 	        if (!formData.containsKey(Comment.TO)) throw new InvalidCommentParamsException();
+			if (!formData.containsKey(User.TOKEN)) throw new InvalidCommentParamsException();
 
             String content = formData.get(Comment.CONTENT)[0];
             if (content == null || content.length() <= Comment.MIN_CONTENT_LENGTH) throw new NullPointerException();
@@ -78,15 +77,15 @@ public class SubCommentController extends CommentController {
             String token = formData.get(User.TOKEN)[0];
             if (token == null) throw new InvalidCommentParamsException();
 
+            Long from = SQLCommander.queryUserId(token);
+            if (from == null) throw new UserNotFoundException();
+
             Integer activityId = Integer.valueOf(formData.get(Comment.ACTIVITY_ID)[0]);
             Activity activity = SQLCommander.queryActivity(activityId);
 
             if(activity == null) throw new ActivityNotFoundException();
             if(activity.hasBegun()) throw new ActivityHasBegunException();
             if(activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
-
-            Long from = SQLCommander.queryUserId(token);
-            if (from == null) throw new UserNotFoundException();
 
             Long to = Converter.toLong(formData.get(Comment.TO)[0]);
             if (to == null) throw new InvalidCommentParamsException();
@@ -107,8 +106,7 @@ public class SubCommentController extends CommentController {
             EasyPreparedStatementBuilder increment = new EasyPreparedStatementBuilder();
             increment.update(Comment.TABLE).increase(Comment.NUM_CHILDREN, 1).where(Comment.ID, "=", parentId);
             if (!increment.execUpdate()) throw new NullPointerException();
-            return ok();
-
+            return ok().as("text/plain");
         } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
