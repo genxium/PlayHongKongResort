@@ -23,10 +23,9 @@ public class CommentController extends Controller {
     public static final String TAG = CommentController.class.getName();
 
     public static Result querySingle(Integer commentId) {
-	    response().setContentType("text/plain");
 	    try {
 		    Comment comment = SQLCommander.queryComment(commentId);
-		    return ok(comment.toObjectNode(true));
+		    return ok(comment.toObjectNode(true)).as("text/plain");
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "query", e);
 	    }
@@ -36,7 +35,6 @@ public class CommentController extends Controller {
 
     @SuppressWarnings("unchecked")
     public static Result list(Long activityId, Integer pageSt, Integer pageEd, Integer numItems) {
-        response().setContentType("text/plain");
         try {
             if (activityId == null || pageSt == null || pageEd == null || numItems == null) throw new InvalidQueryParamsException();
 
@@ -63,7 +61,7 @@ public class CommentController extends Controller {
             for (Comment comment : comments)	commentsNode.add(comment.toObjectNode(false));
 
             result.put(Comment.COMMENTS, commentsNode);
-            return ok(result);
+            return ok(result).as("text/plain");
         } catch (Exception e) {
             Loggy.e(TAG, "query", e);
         }
@@ -71,23 +69,24 @@ public class CommentController extends Controller {
     }
 
     public static Result submit() {
-	    // define response attributes
-	    response().setContentType("text/plain");
 	    try {
 		    Map<String, String[]> formData = request().body().asFormUrlEncoded();
+			if (!formData.containsKey(Comment.CONTENT)) throw new InvalidCommentParamsException();
+			if (!formData.containsKey(User.TOKEN)) throw new InvalidCommentParamsException();
+
 		    String content = formData.get(Comment.CONTENT)[0];
 		    if (content == null || content.length() <= Comment.MIN_CONTENT_LENGTH) throw new NullPointerException();
 
 		    String token = formData.get(User.TOKEN)[0];
 		    if (token == null) throw new InvalidCommentParamsException();
 
+		    Long from = SQLCommander.queryUserId(token);
+		    if (from == null) throw new UserNotFoundException();
+
 		    Integer activityId = Converter.toInteger(formData.get(Comment.ACTIVITY_ID)[0]);
 		    Activity activity = SQLCommander.queryActivity(activityId);
 
 		    if (activity == null) throw new ActivityNotFoundException();
-
-		    Long from = SQLCommander.queryUserId(token);
-		    if (from == null) throw new UserNotFoundException();
 
             SQLCommander.isActivityCommentable(from, activity);
 
@@ -98,9 +97,7 @@ public class CommentController extends Controller {
 
 		    builder.insert(cols, vals).into(Comment.TABLE);
 		    if (SQLHelper.INVALID == builder.execInsert()) throw new NullPointerException();
-
 		    return ok();
-
 	    } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
