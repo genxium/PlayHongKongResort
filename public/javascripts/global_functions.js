@@ -280,6 +280,11 @@ function gmtMiilisecToLocalYmdhis(millis) {
     return moment(millis).zone(date.getTimezoneOffset()).format("YYYY-MM-DD HH:mm:ss"); 
 }
 
+function gmtMiilisecToLocalYmdhi(millis) {
+    var date = new Date();
+    return moment(millis).zone(date.getTimezoneOffset()).format("YYYY-MM-DD HH:mm"); 
+}
+
 function localYmdhisToGmtMillisec(dateStr) {
     var date = new Date();
     return 1000 * moment(dateStr, "YYYY-MM-DD HH:mm:ss").zone(date.getTimezoneOffset()).unix(); 

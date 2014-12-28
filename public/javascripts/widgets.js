@@ -94,11 +94,11 @@ function generateExplorerTriggerSpan(par, onChange, imgSrc, nodeW, nodeH, picW, 
 /*
  * Datetime Picker
  */
-function generateDatePicker(time) {
+function generateDatePicker(par, time, onEdit) {
     
 	var ret=$('<div>', {
 		class: 'col-sm-6'    
-	});
+	}).appendTo(par);
 
 	var formGroup=$('<div>', {
 		class: 'form-group'    
@@ -129,6 +129,8 @@ function generateDatePicker(time) {
 		pickSeconds: false,
 		pick12HourFormat: false  
 	});
+
+	ret.on("input change keyup", onEdit);
 	return ret;
 }
 

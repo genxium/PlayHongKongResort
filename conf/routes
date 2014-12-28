@@ -40,9 +40,9 @@ GET /user/detail controllers.UserController.detail(viewee_id: Long ?=0, token : 
 POST /user/avatar/upload controllers.AvatarController.upload()
 
 # Admin
-PUT /admin/accept controllers.AdminController.accept()
-PUT /admin/reject controllers.AdminController.reject()
-PUT /admin/delete controllers.AdminController.delete()
+POST /admin/accept controllers.AdminController.accept()
+POST /admin/reject controllers.AdminController.reject()
+POST /admin/delete controllers.AdminController.delete()
 
 # Activity Detail
 POST /activity/participants/update controllers.ParticipantController.update()

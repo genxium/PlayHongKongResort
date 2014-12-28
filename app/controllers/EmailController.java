@@ -18,14 +18,12 @@ public class EmailController extends UserController {
     public static final String TAG = EmailController.class.getName();
 
     public static Result duplicate(String email) {
-        // define response attributes
-        response().setContentType("text/plain");
         try {
             if (email == null || !General.validateEmail(email)) throw new NullPointerException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             List<JSONObject> userJsons = builder.select(User.ID).from(User.TABLE).where(User.EMAIL, "=", email).execSelect();
             if (userJsons != null && userJsons.size() > 0) throw new UserNotFoundException();
-            return ok();
+            return ok().as("text/plain");
         } catch (Exception e) {
             Loggy.e(TAG, "duplicate", e);
         }
@@ -33,7 +31,6 @@ public class EmailController extends UserController {
     }
 
     public static Result verify(String email, String code) {
-        response().setContentType("text/html");
         try {
             EasyPreparedStatementBuilder builderUpdate = new EasyPreparedStatementBuilder();
             boolean res = builderUpdate.update(User.TABLE)

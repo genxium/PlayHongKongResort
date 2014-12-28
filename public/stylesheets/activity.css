@@ -1,89 +1,69 @@
-.input-title
-{
+.input-title, .input-address, .input-content {
 	display: block;
 	position: relative;
-	background-color: transparent;
+	font-size: 15pt;
+	margin-top: 5pt;
+	margin-bottom: 2pt;
+}
+
+.input-title
+{
 	height: 25pt;
 	width: 400pt;
 	max-height: 50pt;
 	max-width:	400pt;
-	font-size: 15pt;
-	margin-top: 5pt;
-	margin-bottom: 2pt;
 }
 
 .input-address
 {
-	display: block;
-	position: relative;
-	background-color: transparent;
 	height: 25pt;
 	width: 400pt;
 	max-height: 50pt;
 	max-width:	400pt;
-	font-size: 15pt;
-	margin-top: 5pt;
-	margin-bottom: 2pt;
 }
 
 .input-content
 {
-	display: block;
-	position: relative;
-	background-color: transparent;
 	height: 200pt;
 	width: 400pt;
 	max-height: 400pt;
 	max-width:	400pt;
+	resize: none;
+}
+
+.btn-save, .btn-submit, .btn-cancel, .btn-delete {
+	position: relative;
+	top: 0;
+	padding: 3pt;
+	width: auto;
+	height: 36pt;
 	font-size: 15pt;
-	margin-top: 5pt;
-	margin-bottom: 2pt;
+	border: 0;
 }
 
 .btn-save
 {
-	display: inline-block;
-	padding-top: 3pt;
-	width: auto;
-	height: 36pt;
-	font-size: 15pt;
+	left: 0;
 	background-color: indianred;
-	border: 0;
-}
-
-.btn-delete
-{
-	display: inline-block;
-	padding-top: 3pt;
-	width: auto;
-	height: 36pt;
-	font-size: 15pt;
-	background-color: #ff0000;
-	border: 0;
 }
 
 .btn-submit
 {
-	display: inline-block;
-	padding-top: 3pt;
-	width: auto;
-	height: 36pt;
-	font-size: 15pt;
+	left: 100px;
 	background-color: #0000ee;
-	border: 0;
 }
 
 .btn-cancel
 {
-	display: inline-block;
-	padding-top: 3pt;
-	width: auto;
-	height: 36pt;
-	font-size: 13pt;
-	margin-left: 50pt;
-	border: 0;
+	left: 200px;
 	background-color: black;
 	color: white;
+}
+
+.btn-delete
+{
+	left: 300px;
+	background-color: #ff0000;
 }
 
 /* Activity Cells */

@@ -84,7 +84,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		});
 	});
 
-	this.name.on("input keyup paste", this.nameCheck, function(evt){
+	this.name.on("focusin focusout", this.nameCheck, function(evt){
 		evt.preventDefault();
 		var nameCheck = evt.data;
 		nameCheck.empty();
@@ -111,7 +111,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		});
 	});	
 
-	this.email.on("input keyup paste", this.emailCheck, function(evt){
+	this.email.on("focusin focusout", this.emailCheck, function(evt){
 		evt.preventDefault();
 		var emailCheck = evt.data;
 		emailCheck.empty();
