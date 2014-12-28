@@ -66,10 +66,11 @@ public class SubCommentController extends CommentController {
         try {
             Map<String, String[]> formData = request().body().asFormUrlEncoded();
 			if (!formData.containsKey(Comment.CONTENT)) throw new InvalidCommentParamsException();
+			if (!formData.containsKey(Comment.ACTIVITY_ID)) throw new InvalidCommentParamsException();
+			if (!formData.containsKey(User.TOKEN)) throw new InvalidCommentParamsException();
             if (!formData.containsKey(Comment.PREDECESSOR_ID)) throw new InvalidCommentParamsException();
             if (!formData.containsKey(Comment.PARENT_ID)) throw new InvalidCommentParamsException();
 	        if (!formData.containsKey(Comment.TO)) throw new InvalidCommentParamsException();
-			if (!formData.containsKey(User.TOKEN)) throw new InvalidCommentParamsException();
 
             String content = formData.get(Comment.CONTENT)[0];
             if (content == null || content.length() <= Comment.MIN_CONTENT_LENGTH) throw new NullPointerException();

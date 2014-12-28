@@ -72,6 +72,7 @@ public class CommentController extends Controller {
 	    try {
 		    Map<String, String[]> formData = request().body().asFormUrlEncoded();
 			if (!formData.containsKey(Comment.CONTENT)) throw new InvalidCommentParamsException();
+			if (!formData.containsKey(Comment.ACTIVITY_ID)) throw new InvalidCommentParamsException();
 			if (!formData.containsKey(User.TOKEN)) throw new InvalidCommentParamsException();
 
 		    String content = formData.get(Comment.CONTENT)[0];
