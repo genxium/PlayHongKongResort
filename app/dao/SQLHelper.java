@@ -78,6 +78,10 @@ public class SQLHelper {
 		    builder.append(s_host + ":");
 		    builder.append(s_port.toString() + "/");
 		    builder.append(s_databaseName);
+			/**
+			 * avoid auto-disconnection from MySQL server after 8 hours' idle time
+			 * */
+			builder.append("?autoReconnect=true&amp;autoReconnectForPools=true");
 		    if (s_charsetResult != null) builder.append("?" + s_charsetResult);
 		    if (s_charsetEncoding != null) builder.append("&" + s_charsetEncoding);
 		    if (s_useUnicode != null) builder.append("&" + s_useUnicode);
@@ -90,34 +94,29 @@ public class SQLHelper {
     }
 
     public static DataSource setupDataSource(String connectURI) {
-        PoolingDataSource<PoolableConnection> ret = null;
         try {
             ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI, s_user, s_password);
             PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
             ObjectPool<PoolableConnection> connectionPool = new GenericObjectPool<PoolableConnection>(poolableConnectionFactory);
             poolableConnectionFactory.setPool(connectionPool);
-            ret = new PoolingDataSource<PoolableConnection>(connectionPool);
+            return new PoolingDataSource<PoolableConnection>(connectionPool);
         } catch (Exception e) {
             Loggy.e(TAG, "setupDataSource", e);
-            ret = null;
         }
-        return ret;
+		return null;
     }
 
     public static Connection getConnection() {
-        Connection connection = null;
         try {
             if (s_dataSource == null) {
                 String connectURI = getConnectionURI();
                 s_dataSource = setupDataSource(connectURI);
             }
-            if (s_dataSource == null) System.out.println("Data source is null");
-            connection = s_dataSource.getConnection();
+            return s_dataSource.getConnection();
         } catch (Exception e) {
             Loggy.e(TAG, "getConnection", e);
-            connection = null;
         }
-        return connection;
+        return null;
     }
 
     public static void closeConnection(Connection connection) {
