@@ -22,6 +22,7 @@ public class Activity extends AbstractSimpleMessage {
 
     public static final String TABLE = "activity";
     public static final String TITLE = "title";
+	public static final String ADDRESS = "address";
     public static final String CREATED_TIME = "created_time";
     public static final String BEGIN_TIME = "begin_time";
     public static final String DEADLINE = "application_deadline";
@@ -36,11 +37,9 @@ public class Activity extends AbstractSimpleMessage {
     public static final String LAST_ACCEPTED_TIME = "last_accepted_time";
     public static final String LAST_REJECTED_TIME = "last_rejected_time";
 
-	public static final String ADDRESS = "address";
-
     public static final String ACTIVITIES = "activities";
 
-    public static String[] QUERY_FIELDS = {Activity.ID, Activity.TITLE, Activity.ADDRESS, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.STATUS, Activity.HOST_ID};
+    public static String[] QUERY_FIELDS = {Activity.ID, Activity.TITLE, Activity.ADDRESS, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
 
     protected String m_title = null;
 
