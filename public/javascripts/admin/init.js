@@ -92,8 +92,7 @@ function listActivitiesAndRefreshAdmin() {
 }
 
 function onListActivitiesSuccessAdmin(data){
-	var jsonResponse = JSON.parse(data);
-	if(jsonResponse == null) return;
+	var jsonResponse = data;
 
 	var pageSt = parseInt(jsonResponse[g_keyPageSt]);
 	var pageEd = parseInt(jsonResponse[g_keyPageEd]);
@@ -125,7 +124,7 @@ function onListActivitiesSuccessAdmin(data){
 	g_pager.refreshBar();
 } 
 
-function onListActivitiesErrorAdmin(error){
+function onListActivitiesErrorAdmin(err){
 
 }
 

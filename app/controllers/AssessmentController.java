@@ -1,27 +1,18 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
+import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
-
 import exception.*;
-
-import models.AbstractMessage;
-import models.Activity;
-import models.Assessment;
-import models.User;
-import models.UserActivityRelation;
-
+import models.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-
 import utilities.Converter;
 import utilities.Loggy;
 

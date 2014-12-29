@@ -297,3 +297,17 @@ function generateUuid() {
 	return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
 		s4() + '-' + s4() + s4() + s4();
 }
+
+function isStandardSuccess(data) {
+	if (data == null) return false;
+	if (!data.hasOwnProperty(g_keyRet)) return false;
+	var ret = parseInt(data[g_keyRet]);
+	return ret == 0;
+}
+
+function isStandardFailure(data) {
+	if (data == null) return false;
+	if (!data.hasOwnProperty(g_keyRet)) return false;
+	var ret = parseInt(data[g_keyRet]);
+	return ret == 1;
+}

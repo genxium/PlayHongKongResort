@@ -185,7 +185,7 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 		g_updatingAttendance = false;
 
 		// update activity.relation by returned value
-		var relationJson = JSON.parse(data);
+		var relationJson = data;
 		activity.relation = parseInt(relationJson[g_keyRelation]);
 
 		g_sectionAssessmentEditors.empty();

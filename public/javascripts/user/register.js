@@ -103,10 +103,10 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 			url: "/user/name/duplicate",
 			data: params,
 			success: function(data, status, xhr){
-			    nameCheck.text(" This username can be used :)");        
+				if (isStandardSuccess(data))	nameCheck.text(" This username can be used :)");        
+			    else	nameCheck.text(" This username cannot be used :(");        
 			},
 			error: function(xhr, status, err){
-			    nameCheck.text(" This username cannot be used :(");        
 			}
 		});
 	});	
@@ -122,6 +122,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 			 emailCheck.text(" Not valid email format");
 			 return;
 		}
+
 		var params = {};
 		params[g_keyEmail] = emailVal;
 		$.ajax({
@@ -129,10 +130,10 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 			url: "/user/email/duplicate",
 			data: params,
 			success: function(data, status, xhr){
-				emailCheck.text(" This email can be used :)");        
+				if (isStandardSuccess(data))	emailCheck.text(" This email can be used :)");        
+				else	emailCheck.text(" This email cannot be used :(");        
 			},
 			error: function(xhr, status, err){
-				emailCheck.text(" This email cannot be used :(");        
 			}
 		});
 	});	

@@ -63,8 +63,7 @@ function generateActivitiesListParams(pager, page) {
 }
 
 function onListActivitiesSuccess(data){
-	var jsonResponse = JSON.parse(data);
-	if(jsonResponse == null) return;
+	var jsonResponse = data;
 
 	var pageSt = parseInt(jsonResponse[g_keyPageSt]);
 	var pageEd = parseInt(jsonResponse[g_keyPageEd]);
@@ -162,8 +161,7 @@ function onBtnJoinClicked(evt){
 	var btnJoin = $(this);
 
 	evt.preventDefault();
-	var data = evt.data;
-	var activity = data[g_keyActivity];
+	var activity = evt.data;
 
 	if(activity.isDeadlineExpired()) {
 		alert("Application deadline has expired!");
@@ -181,6 +179,7 @@ function onBtnJoinClicked(evt){
 		url: "/activity/join",
 		data: params,
 		success: function(data, status, xhr){
+			if (!isStandardSuccess(data)) return;
 			if (g_onJoined == null) return;
 			g_onJoined(activity.id);
 		},
@@ -197,9 +196,7 @@ function attachJoinButton(par, activity) {
 			class: "btn-join",
 			text: 'Join'
 		}).appendTo(par);
-		var dJoin = {};
-		dJoin[g_keyActivity] = activity;
-		btnJoin.click(dJoin, onBtnJoinClicked);
+		btnJoin.click(activity, onBtnJoinClicked);
 	} else {
 		attachRelationIndicator(par, activity);
 	}

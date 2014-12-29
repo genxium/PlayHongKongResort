@@ -1,12 +1,14 @@
 package controllers;
 
+import components.StandardFailureResult;
+import components.StandardSuccessResult;
 import dao.EasyPreparedStatementBuilder;
+import exception.DuplicateException;
 import exception.UserNotFoundException;
 import models.User;
 import org.json.simple.JSONObject;
 import play.mvc.Content;
 import play.mvc.Result;
-import utilities.DataUtils;
 import utilities.General;
 import utilities.Loggy;
 import views.html.email_verification;
@@ -22,12 +24,14 @@ public class EmailController extends UserController {
             if (email == null || !General.validateEmail(email)) throw new NullPointerException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             List<JSONObject> userJsons = builder.select(User.ID).from(User.TABLE).where(User.EMAIL, "=", email).execSelect();
-            if (userJsons != null && userJsons.size() > 0) throw new UserNotFoundException();
-            return ok().as("text/plain");
+            if (userJsons != null && userJsons.size() > 0) throw new DuplicateException();
+            return ok(StandardSuccessResult.get());
+        } catch (DuplicateException e) {
+            return ok(StandardFailureResult.get());
         } catch (Exception e) {
             Loggy.e(TAG, "duplicate", e);
         }
-        return badRequest();
+        return ok(StandardFailureResult.get());
     }
 
     public static Result verify(String email, String code) {

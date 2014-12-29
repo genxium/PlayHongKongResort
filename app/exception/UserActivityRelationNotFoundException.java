@@ -1,7 +1,5 @@
 package exception;
 
-import java.lang.Exception;
-
 public class UserActivityRelationNotFoundException extends Exception {
 
 	public UserActivityRelationNotFoundException() {

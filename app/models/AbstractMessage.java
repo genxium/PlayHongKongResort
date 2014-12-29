@@ -8,6 +8,8 @@ import utilities.Loggy;
 public abstract class AbstractMessage extends AbstractSimpleMessage {
 
     public static final String BUNDLE = "bundle";
+    public static final String RET = "ret";
+
     public static final String FROM = "from";
     public static final String FROM_NAME = "from_name";
     public static final String TO = "to";

@@ -363,7 +363,7 @@ function onSubmit(evt){
         g_activityEditor.setNonSubmittable();
 
         $.ajax({
-                method: "PUT",
+                method: "POST",
                 url: "/activity/submit",
                 data: params,
                 success: function(data, status, xhr){

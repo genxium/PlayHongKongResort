@@ -1,15 +1,12 @@
 package controllers;
 
 import dao.EasyPreparedStatementBuilder;
-import dao.SQLHelper;
-import exception.UserNotFoundException;
 import exception.InvalidPasswordException;
+import exception.UserNotFoundException;
 import models.User;
 import play.mvc.Content;
 import play.mvc.Result;
-import play.mvc.Http.Request;
 import utilities.Converter;
-import utilities.DataUtils;
 import utilities.General;
 import utilities.Loggy;
 import views.html.password_index;

@@ -3,6 +3,10 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import components.CaptchaNotMatchedResult;
+import components.StandardFailureResult;
+import components.StandardSuccessResult;
+import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import exception.*;
@@ -30,7 +34,6 @@ public class ActivityController extends Controller {
 	public static final String OLD_IMAGE = "old_image";
 
     public static Result list(Integer pageSt, Integer pageEd, Integer numItems, Integer orientation, String token, Long vieweeId, Integer relation, Integer status) {
-        response().setContentType("text/plain");
         try {
             if (pageSt == null || pageEd == null || numItems == null) throw new InvalidQueryParamsException();
 
@@ -119,7 +122,6 @@ public class ActivityController extends Controller {
     }
 
 	public static Result detail(Long activityId, String token) {
-		response().setContentType("text/plain");
 		try {
 			ActivityDetail activityDetail = SQLCommander.queryActivityDetail(activityId);
 			if (activityDetail == null) throw new ActivityNotFoundException();
@@ -132,22 +134,7 @@ public class ActivityController extends Controller {
 		return badRequest();
 	}
 
-	public static Result ownership(String token, Long activityId) {
-		try {
-			Long ownerId = SQLCommander.queryUserId(token);
-			if (ownerId == null) throw new UserNotFoundException();
-			if (!SQLCommander.validateOwnership(ownerId, activityId)) throw new AccessDeniedException();
-			ObjectNode ret = Json.newObject();
-			ret.put(Activity.HOST, String.valueOf(ownerId));
-			return ok(ret);
-		} catch (Exception e) {
-			Loggy.e(TAG, "ownership", e);
-		}
-		return ok();
-	}
-
 	public static Result save() {
-		// define response attributes
 		try {
 			Http.RequestBody body = request().body();
 
@@ -214,12 +201,12 @@ public class ActivityController extends Controller {
 			}
 
 			// selected old images
-			Set<Integer> selectedOldImagesSet = new HashSet<Integer>();
+			Set<Long> selectedOldImagesSet = new HashSet<>();
 
 			if (formData.containsKey(OLD_IMAGE)) {
 				JSONArray selectedOldImagesJson = (JSONArray) JSONValue.parse(formData.get(OLD_IMAGE)[0]);
 				for (Object selectedOldImageJson : selectedOldImagesJson) {
-					Integer imageId = ((Long) selectedOldImageJson).intValue();
+					Long imageId = Converter.toLong(selectedOldImageJson);
 					selectedOldImagesSet.add(imageId);
 				}
 			}
@@ -234,7 +221,7 @@ public class ActivityController extends Controller {
 			}
 
 			activity = SQLCommander.queryActivity(activityId);
-			return ok(activity.toObjectNodeWithImages(userId)).as("text/plain");
+			return ok(activity.toObjectNodeWithImages(userId));
 		} catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (CaptchaNotMatchedException e) {
@@ -246,9 +233,6 @@ public class ActivityController extends Controller {
 	}
 
 	public static Result submit() {
-		// define response attributes
-		response().setContentType("text/plain");
-
 		try {
             Http.RequestBody body = request().body();
 
@@ -286,8 +270,6 @@ public class ActivityController extends Controller {
 
 
 	public static Result delete() {
-		// define response attributes
-		response().setContentType("text/plain");
 		try {
 			Map<String, String[]> formData = request().body().asFormUrlEncoded();
 			String[] ids = formData.get(UserActivityRelation.ACTIVITY_ID);
@@ -297,7 +279,7 @@ public class ActivityController extends Controller {
 			String token = tokens[0];
 
 			Long userId = SQLCommander.queryUserId(token);
-			if (userId == null) throw new NullPointerException();
+			if (userId == null) throw new UserNotFoundException();
 
 			Activity activity = SQLCommander.queryActivity(activityId);
 			if (!SQLCommander.isActivityEditable(userId, activity)) throw new NullPointerException();
@@ -313,9 +295,6 @@ public class ActivityController extends Controller {
 	}
 
 	public static Result join() {
-		// define response attributes
-		response().setContentType("text/plain");
-
 		try {
 			Map<String, String[]> formData = request().body().asFormUrlEncoded();
 			Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
@@ -326,8 +305,7 @@ public class ActivityController extends Controller {
 
 			Activity activity = SQLCommander.queryActivity(activityId);
 			if (activity == null) throw new ActivityNotFoundException();
-			boolean joinable = SQLCommander.isActivityJoinable(userId, activity);
-			if (!joinable) throw new Exception();
+			if (!SQLCommander.isActivityJoinable(userId, activity))	throw new NullPointerException();
 
             long now = General.millisec();
             String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME, UserActivityRelation.LAST_APPLYING_TIME};
@@ -338,18 +316,16 @@ public class ActivityController extends Controller {
 			EasyPreparedStatementBuilder increment = new EasyPreparedStatementBuilder();
 			increment.update(Activity.TABLE).increase(Activity.NUM_APPLIED, 1).where(Activity.ID, "=", activityId);
 			if (!increment.execUpdate()) throw new NullPointerException();
-			return ok();
+			return ok(StandardSuccessResult.get());
 		} catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
 			Loggy.e(TAG, "join", e);
 		}
-        return badRequest();
+        return ok(StandardFailureResult.get());
 	}
 
 	public static Result mark() {
-		// define response attributes
-		response().setContentType("text/plain");
 		try {
 			Map<String, String[]> formData = request().body().asFormUrlEncoded();
 			Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);

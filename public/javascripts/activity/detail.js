@@ -27,7 +27,7 @@ function queryActivityDetail(activityId){
 		url: "/activity/detail",
 		data: params,
 		success: function(data, status, xhr){
-			var activityJson = JSON.parse(data);
+			var activityJson = data;
 			g_activity = new Activity(activityJson);
 			g_barButtons.empty();
 			var buttonContainer = $("<span>", {

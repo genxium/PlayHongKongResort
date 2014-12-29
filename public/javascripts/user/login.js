@@ -237,6 +237,13 @@ function checkLoginStatus(){
 		url: "/user/status",
 		data: params,
 		success: function(data, status, xhr){
+			if (isStandardFailure(data)) {
+				wsDisconnect();	
+				$.removeCookie(g_keyToken, {path: '/'});
+				if(g_preLoginForm.onLoginError == null) return;
+				g_preLoginForm.onLoginError(err);		
+				return;
+			}
 			var userJson = JSON.parse(data);
 			g_loggedInUser = new User(userJson);
 			if (g_loggedInUser == null) return;
@@ -248,10 +255,6 @@ function checkLoginStatus(){
 			g_preLoginForm.onLoginSuccess(data);
 		},
 		error: function(xhr, status, err){
-			wsDisconnect();	
-			$.removeCookie(g_keyToken, {path: '/'});
-			if(g_preLoginForm.onLoginError == null) return;
-			g_preLoginForm.onLoginError(err);		
 		}
 	});
 

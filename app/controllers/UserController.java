@@ -1,6 +1,10 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import components.CaptchaNotMatchedResult;
+import components.StandardFailureResult;
+import components.StandardSuccessResult;
+import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import exception.*;
@@ -122,12 +126,10 @@ public class UserController extends Controller {
             User user = SQLCommander.queryUser(userId);
             if (user == null) throw new UserNotFoundException();
             return ok(user.toObjectNode(userId)).as("text/plain");
-        } catch (TokenExpiredException e) {
-            Loggy.e(TAG, "status", e);
         } catch (Exception e) {
             Loggy.e(TAG, "status", e);
         }
-        return badRequest();
+        return ok(StandardFailureResult.get());
     }
 
     public static Result relation(Long activityId, String token) {
@@ -137,9 +139,9 @@ public class UserController extends Controller {
             if (relation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
             ObjectNode ret = Json.newObject();
             ret.put(UserActivityRelation.RELATION, String.valueOf(relation));
-            return ok(ret).as("text/plain");
+            return ok(ret);
         } catch (TokenExpiredException e) {
-            Loggy.e(TAG, "relation", e);
+            return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {
             Loggy.e(TAG, "relation", e);
         }
@@ -154,7 +156,7 @@ public class UserController extends Controller {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.from(Login.TABLE).where(Login.TOKEN, "=", token);
             if (!builder.execDelete()) throw new NullPointerException();
-            return ok().as("text/plain");
+            return ok();
         } catch (Exception e) {
             Loggy.e(TAG, "logout", e);
         }
@@ -166,12 +168,14 @@ public class UserController extends Controller {
             if (name == null) throw new NullPointerException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             List<JSONObject> userJsons = builder.select(User.ID).from(User.TABLE).where(User.NAME, "=", name).execSelect();
-            if (userJsons != null && userJsons.size() > 0) throw new UserNotFoundException();
-            return ok().as("text/plain");
+            if (userJsons != null && userJsons.size() > 0) throw new DuplicateException();
+            return ok(StandardSuccessResult.get());
+        } catch (DuplicateException e) {
+            ok(StandardFailureResult.get());
         } catch (Exception e) {
             Loggy.e(TAG, "duplicate", e);
         }
-        return badRequest();
+        return ok(StandardFailureResult.get());
     }
 
     public static Result detail(Long vieweeId, String token) {

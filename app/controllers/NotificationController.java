@@ -3,30 +3,26 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
+import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
-
-import exception.*;
-
+import exception.InvalidQueryParamsException;
+import exception.TokenExpiredException;
+import exception.UserNotFoundException;
 import models.AbstractMessage;
 import models.Notification;
 import models.User;
-
+import org.json.simple.JSONArray;
+import org.json.simple.JSONValue;
 import play.libs.Json;
 import play.mvc.Controller;
-import play.mvc.Result;
 import play.mvc.Http;
-
-import utilities.Loggy;
+import play.mvc.Result;
 import utilities.Converter;
+import utilities.Loggy;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class NotificationController extends Controller {

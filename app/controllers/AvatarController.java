@@ -14,9 +14,6 @@ public class AvatarController extends ImageController {
     public static final String TAG = AvatarController.class.getName();
 
     public static Result upload() {
-
-        // define response attributes
-        response().setContentType("text/plain");
         try {
             Http.RequestBody body = request().body();
 
@@ -40,7 +37,7 @@ public class AvatarController extends ImageController {
             Image previousAvatar = SQLCommander.queryImage(previousAvatarId);
             boolean isPreviousAvatarDeleted = ExtraCommander.deleteImageRecordAndFile(previousAvatar);
             if (isPreviousAvatarDeleted) {
-                System.out.println(TAG + ".upload, previous avatar file and record deleted.");
+                Loggy.d(TAG, "upload", "previous avatar file and record deleted.");
             }
 
             return ok();

@@ -95,6 +95,7 @@ function generateParticipantsSelectionForm(par, activity) {
 			url: "/activity/participants/update",
 			data: params,
 			success: function(data, status, xhr){
+				if (!isStandardSuccess(data)) return;
 				for(var i = 0; i < aForm.labels.length; ++i){
 					var label = aForm.labels[i];
 					// ignore selected participants

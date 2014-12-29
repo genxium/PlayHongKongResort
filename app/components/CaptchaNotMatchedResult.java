@@ -1,4 +1,4 @@
-package exception;
+package components;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import play.libs.Json;
@@ -6,7 +6,7 @@ import play.libs.Json;
 public class CaptchaNotMatchedResult {
 
     public static final String CAPTCHA_NOT_MATCHED = "captcha_not_matched";
-    protected static ObjectNode s_result = null;
+    private static ObjectNode s_result = null;
 
     public static ObjectNode get() {
         if (s_result == null) {

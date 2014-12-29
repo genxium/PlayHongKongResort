@@ -1,6 +1,10 @@
 package controllers;
 
-import exception.*;
+import components.TokenExpiredResult;
+import exception.AccessDeniedException;
+import exception.ActivityNotFoundException;
+import exception.TokenExpiredException;
+import exception.UserNotFoundException;
 import models.Activity;
 import models.User;
 import models.UserActivityRelation;
@@ -15,8 +19,6 @@ public class AdminController extends Controller {
     public static final String TAG = AdminController.class.getName();
 
     public static Result accept() {
-	    // define response attributes
-	    response().setContentType("text/plain");
 	    try {
 		    Map<String, String[]> formData = request().body().asFormUrlEncoded();
 		    Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
@@ -43,9 +45,7 @@ public class AdminController extends Controller {
     }
 
     public static Result reject() {
-	    // define response attributes
-	    response().setContentType("text/plain");
-        try {
+	    try {
             Map<String, String[]> formData = request().body().asFormUrlEncoded();
             Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
             String token = formData.get(User.TOKEN)[0];
@@ -70,8 +70,6 @@ public class AdminController extends Controller {
     }
 
     public static Result delete() {
-	    // define response attributes
-	    response().setContentType("text/plain");
 	    try {
 		    Map<String, String[]> formData = request().body().asFormUrlEncoded();
 		    Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
