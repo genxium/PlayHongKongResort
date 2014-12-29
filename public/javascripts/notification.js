@@ -9,7 +9,9 @@ function emptySectionNotifications() {
 }
 
 function clearNotifications() {
-	$("#tool-bar").empty();
+	var toolbar = $("#toolbar");
+	toolbar.empty();
+	setDimensions(toolbar, "100%", 0);
 	$("#pager-filters").empty();
 	$("#pager-bar-notifications").empty();
 	$("#pager-screen-notifications").empty();
@@ -39,9 +41,12 @@ function countNotifications() {
 	});
 }
  
-function NotificationTrash(btnDelete) {
+function NotificationTrash(toolbar) {
 	this.notificationIdSet = {};
-	this.btnDelete = btnDelete;
+	this.toolbar = toolbar;
+	this.btnTrash = null;
+	this.btnDelete = null;
+	this.btnBack = null;
 	this.cells = [];
 	this.isActive = false;
 
@@ -50,6 +55,9 @@ function NotificationTrash(btnDelete) {
 		for (var cell in this.cells) {
 			cell.prependCheckbox();
 		}
+		this.btnTrash.hide();
+		this.btnBack.show();
+		this.btnDelete.show();
 	};
 	this.deactivate = function() {
 		this.isActive = false;
@@ -58,6 +66,9 @@ function NotificationTrash(btnDelete) {
 			cell.removeCheckbox();
 		}
 		this.cells = [];
+		this.btnTrash.show();
+		this.btnBack.hide();
+		this.btnDelete.hide();
 	};
 	
 	this.select = function(notificationId) {
@@ -75,40 +86,79 @@ function NotificationTrash(btnDelete) {
 		this.cells = cells;	
 	}
 
-	this.btnDelete.click(this, function(evt){
-		evt.preventDefault();
+	// init buttons
+	this.init = function() {
+		setDimensions(this.toolbar, "100%", "30px"); 
+		this.btnTrash = $("<button>", {
+			style: "position: absolute;"
+		}).appendTo(this.toolbar);
+		this.btnTrash.width("25px");
+		this.btnTrash.height("25px");
+		setOffset(this.btnTrash, "0px", null);
+		setBackgroundImageDefault(this.btnTrash, "/assets/icons/trash.png");
 
-		var aTrash = evt.data;
-		if (!aTrash.isActive) {
+		this.btnTrash.click(this, function(evt){
+			evt.preventDefault();
+			var aTrash = evt.data;
+			if (aTrash.isActive)	return;
 			aTrash.activate();
-			return;
-		} 		
-
-		if (aTrash.notifications.length == 0) return;
-	
-		var notificationIdArray = [];
-		for (var key in aTrash.notificationIdSet) {
-			notificationIdArray.push(key);
-		} 
-
-		var params = {};
-		var token = $.cookie(g_keyToken);
-		if (token == null) return;
-		params[g_keyToken] = token;
-		params[g_keyBundle] = JSON.stringify(notificationIdArray) ;
-			
-		$.ajax({
-			type: "POST",
-			data: params,
-			url: "/notification/delete",
-			success: function(data, status, xhr) {
-				listNotificationsAndRefresh();			
-			},
-			error: function(xhr, status, err) {
-				alert("Error occurs!");
-			}
 		});
-	});
+
+		this.btnBack = $("<button>", {
+			style: "position: absolute;"
+		}).appendTo(this.toolbar);
+		this.btnBack.width("25px");
+		this.btnBack.height("25px");
+		this.btnBack.hide();
+		setOffset(this.btnBack, "0px", null);
+		setBackgroundImageDefault(this.btnBack, "/assets/icons/back.png");
+
+		this.btnBack.click(this, function(evt) {
+			evt.preventDefault();
+			var aTrash = evt.data;
+			aTrash.deactivate();
+		});
+
+		this.btnDelete = $("<button>", {
+			style: "position: absolute;"
+		}).appendTo(this.toolbar);
+		this.btnDelete.width("25px");
+		this.btnDelete.height("25px");
+		this.btnDelete.hide();
+		setOffset(this.btnDelete, "50px", null);
+		setBackgroundImageDefault(this.btnDelete, "/assets/icons/delete.png");
+
+		this.btnDelete.click(this, function(evt){
+			evt.preventDefault();
+
+			var aTrash = evt.data;
+			if (aTrash.notifications.length == 0) return;
+		
+			var notificationIdArray = [];
+			for (var key in aTrash.notificationIdSet) {
+				notificationIdArray.push(key);
+			} 
+
+			var params = {};
+			var token = $.cookie(g_keyToken);
+			if (token == null) return;
+			params[g_keyToken] = token;
+			params[g_keyBundle] = JSON.stringify(notificationIdArray) ;
+				
+			$.ajax({
+				type: "POST",
+				data: params,
+				url: "/notification/delete",
+				success: function(data, status, xhr) {
+					listNotificationsAndRefresh();			
+				},
+				error: function(xhr, status, err) {
+					alert("Error occurs!");
+				}
+			});
+		});
+	
+	}
 }
 
 function listNotificationsAndRefresh() {
@@ -316,13 +366,8 @@ function requestNotifications() {
 	clearProfile();
 	clearDetail();
 
-	var toolbar = $("#toolbar"); 
-	var btnDelete = $("<button>").appendTo(toolbar);
-	btnDelete.width("25px");
-	btnDelete.height("25px");
-
-	setBackgroundImageDefault(btnDelete, "/assets/icons/delete.png");
-	g_notificationTrash = new NotificationTrash(btnDelete);
+	g_notificationTrash = new NotificationTrash($("#toolbar"));
+	g_notificationTrash.init();
 
 	var selector = createSelector($("#pager-filters"), ["全部", "未讀", "已讀"], ["", 0, 1], null, null, null, null);
 	var filter = new PagerFilter(g_keyIsRead, selector);

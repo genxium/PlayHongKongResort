@@ -226,9 +226,6 @@ function setOffset(field, left, top) {
 	
 	if (top != null)	field.css("top", top);
 	else field.css("top", "auto"); 
-	
-	field.css("right", "auto");
-	field.css("bottom", "auto");
 }
 
 function getOffset(field) {

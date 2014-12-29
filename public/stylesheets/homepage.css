@@ -1,35 +1,11 @@
-#section-user
-{
-	position: relative;
-}
-
-#section-register
-{
-	position: relative;
-}
-
-#pager-screen-activities
+#toolbar, #pager-filters, #pager-bar-notifications, #pager-screen-notifications, #pager-bar-activities, #pager-screen-activities, #section-user, #section-register
 {
 	display: block;
 	position: relative;
+}
+
+#pager-screen-activities, #pager-screen-notifications
+{
 	width: 720pt;
 	clear: both;
-}
-
-#pager-bar-activities
-{
-	position: relative;
-}
-
-#pager-screen-notifications
-{
-	display: block;
-	position: relative;
-	width: 720pt;
-	clear: both;
-}
-
-#pager-bar-notifications
-{
-	position: relative;
 }
