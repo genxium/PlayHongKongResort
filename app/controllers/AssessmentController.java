@@ -7,6 +7,7 @@ import dao.SQLHelper;
 
 import exception.*;
 
+import models.AbstractMessage;
 import models.Activity;
 import models.Assessment;
 import models.User;
@@ -31,7 +32,6 @@ import java.util.Map;
 public class AssessmentController extends Controller {
 
     public static final String TAG = AssessmentController.class.getName();
-    public static final String BUNDLE = "bundle";
 
     public static Result query(String refIndex, Integer numItems, Integer direction, String token, Long to, Long activityId) {
         response().setContentType("text/plain");
@@ -60,9 +60,12 @@ public class AssessmentController extends Controller {
             String token = formData.get(User.TOKEN)[0];
             if (token == null) throw new NullPointerException();
             Long userId = SQLCommander.queryUserId(token);
+
             if (userId == null) throw new UserNotFoundException();
             User user = SQLCommander.queryUser(userId);
+
             if (user == null) throw new UserNotFoundException();
+
             Long activityId = Converter.toLong(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
             if (activityId == null) throw new ActivityNotFoundException();
 
@@ -77,13 +80,12 @@ public class AssessmentController extends Controller {
             // Only PRESENT participants can submit assessments (host must be present)
             if ( (originalRelation & UserActivityRelation.PRESENT) == 0) throw new InvalidUserActivityRelationException();
 
-            String bundle = formData.get(BUNDLE)[0];
-            JSONArray assessmentListJson = (JSONArray) JSONValue.parse(bundle);
             List<Long> userIdList = new LinkedList<Long>();
             List<Assessment> assessmentList = new LinkedList<Assessment>();
             userIdList.add(userId);
 
-            for (Object obj : assessmentListJson) {
+            JSONArray bundle= (JSONArray) JSONValue.parse(formData.get(AbstractMessage.BUNDLE)[0]);
+            for (Object obj : bundle) {
                 Assessment assessment = new Assessment((JSONObject) obj);
                 assessment.setActivityId(activityId);
                 assessment.setFrom(userId);

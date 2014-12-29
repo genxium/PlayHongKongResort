@@ -5,10 +5,13 @@ import exception.AccessDeniedException;
 import exception.ActivityHasBegunException;
 import exception.ActivityNotFoundException;
 import exception.UserNotFoundException;
+
+import models.AbstractMessage;
 import models.Activity;
 import models.ActivityDetail;
 import models.User;
 import models.UserActivityRelation;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import play.mvc.Result;
@@ -31,17 +34,15 @@ public class ParticipantController extends UserController {
 			Activity activity = SQLCommander.queryActivity(activityId);
 			if(activity == null) throw new ActivityNotFoundException();
 			if(activity.hasBegun()) throw new ActivityHasBegunException();
-			String[] selectedParticipantsJsonStrs = formData.get(ActivityDetail.SELECTED_PARTICIPANTS);
-			String selectedParticipantsJsonStr = (selectedParticipantsJsonStrs.length > 0) ? selectedParticipantsJsonStrs[0] : "[]";
 
-			JSONArray selectedParticipantsJson = (JSONArray) JSONValue.parse(selectedParticipantsJsonStr);
 
 			Long viewerId = SQLCommander.queryUserId(token);
 			if (viewerId == null) throw new UserNotFoundException();
 			if (!SQLCommander.validateOwnership(viewerId, activityId)) throw new AccessDeniedException();
 
 			int count = 0;
-			for (Object selectedParticipantJson : selectedParticipantsJson) {
+			JSONArray bundle = (JSONArray) JSONValue.parse(formData.get(AbstractMessage.BUNDLE)[0]);
+			for (Object selectedParticipantJson : bundle) {
 				Long userId = Converter.toLong(selectedParticipantJson);
 				if (userId.equals(viewerId)) continue; // anti-cracking by selecting the host of an activity
 				int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);

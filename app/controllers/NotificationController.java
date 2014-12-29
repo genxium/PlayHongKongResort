@@ -9,6 +9,7 @@ import dao.SQLHelper;
 
 import exception.*;
 
+import models.AbstractMessage;
 import models.Notification;
 import models.User;
 
@@ -31,7 +32,6 @@ import java.util.Map;
 public class NotificationController extends Controller {
 	
 	public static String TAG = NotificationController.class.getName();
-    public static final String BUNDLE = "bundle";
 
     public static Result count(String token, Integer isRead) {
         try {
@@ -98,11 +98,10 @@ public class NotificationController extends Controller {
 			User user = SQLCommander.queryUser(userId);
 			if (user == null) throw new UserNotFoundException();
 			
-			String bundle = formData.get(BUNDLE)[0];
-			JSONArray notificationIdListJson = (JSONArray) JSONValue.parse(bundle);
 			List<Long> notificationIdList = new LinkedList<Long>();
 			
-			for (Object obj : notificationIdListJson) {
+            JSONArray bundle= (JSONArray) JSONValue.parse(formData.get(AbstractMessage.BUNDLE)[0]);
+			for (Object obj : bundle) {
 				Long notificationId = Converter.toLong((JSONObject) obj);
 				notificationIdList.add(notificationId);
 			}

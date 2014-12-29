@@ -126,47 +126,6 @@ function displayActivityDetail(par){
 }
 
 // Callback Functions
-function onParticipantsSelectionFormSubmission(formEvt){
-	
-	formEvt.preventDefault(); // prevent default action.
-	var selectedParticipants = new Array();
-	for(var i = 0; i < g_participantsForm.labels.length; i++) {
-		var box = g_participantsForm.boxes[i];
-		if (box == null || !box.is(":checked")) continue;
-		var participantId = g_participantsForm.participantsId[i];
-		if(participantId == g_activity.host.id) continue;
-		selectedParticipants.push(participantId);
-	}
-	// append user token and activity id for identity
-	var token = $.cookie(g_keyToken);
-	if(token == null) return;
-
-	var params={};
-	params[g_keyToken] = token;
-	params[g_keyActivityId] = g_activityId;
-	params[g_keySelectedParticipants] = JSON.stringify(selectedParticipants);
-
-	$.ajax({
-		type: "POST",
-		url: "/activity/participants/update",
-		data: params,
-		success: function(data, status, xhr){
-			for(var i = 0; i < g_participantsForm.labels.length; ++i){
-			    var label = g_participantsForm.labels[i];
-			    // ignore selected participants
-			    if(g_participantsForm.participantsStatus[i] == g_aliasSelected) continue;
-			    var box = g_participantsForm.boxes[i];
-			    if(!box.is(":checked")) continue;
-                            label.css("background-color", "aquamarine");
-                            box.hide();
-			}
-		},
-		error: function(xhr, status, err) {
-
-		}
-	});
-}
-
 // Assistive Event Handlers
 function onBtnSubmitClicked(evt) {
 	evt.preventDefault();
