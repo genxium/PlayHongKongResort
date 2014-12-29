@@ -42,7 +42,6 @@ function countNotifications() {
 }
  
 function NotificationTrash(toolbar) {
-	this.notificationIdSet = {};
 	this.toolbar = toolbar;
 	this.btnTrash = null;
 	this.btnDelete = null;
@@ -51,39 +50,31 @@ function NotificationTrash(toolbar) {
 	this.isActive = false;
 
 	this.activate = function() {
-		this.isActive = true;
-		for (var cell in this.cells) {
+		for (var i = 0; i < this.cells.length; ++i) {
+			var cell = this.cells[i];
 			cell.prependCheckbox();
 		}
 		this.btnTrash.hide();
 		this.btnBack.show();
 		this.btnDelete.show();
+		this.isActive = true;
 	};
+
 	this.deactivate = function() {
-		this.isActive = false;
-		this.notificationIdSet = {};
-		for (var cell in this.cells) {
+		for (var i = 0; i < this.cells.length; ++i) {
+			var cell = this.cells[i];
 			cell.removeCheckbox();
 		}
-		this.cells = [];
 		this.btnTrash.show();
 		this.btnBack.hide();
 		this.btnDelete.hide();
-	};
-	
-	this.select = function(notificationId) {
-		if (!this.isActive) return;
-		this.notificationIdSet[notificationId] = 1;
-	}; 
-
-	this.unselect = function(notificationId) {
-		if (!this.isActive) return;
-		if (!this.notificationIdSet.hasOwnProperty(notificationId)) return;
-		delete this.notificationIdSet.notificationId;
+		this.isActive = false;
 	};
 	
 	this.updateCells = function(cells) {
 		this.cells = cells;	
+		if (this.isActive) this.activate();
+		else this.deactivate();
 	}
 
 	// init buttons
@@ -132,11 +123,13 @@ function NotificationTrash(toolbar) {
 			evt.preventDefault();
 
 			var aTrash = evt.data;
-			if (aTrash.notifications.length == 0) return;
+			if (aTrash.cells.length == 0) return;
 		
 			var notificationIdArray = [];
-			for (var key in aTrash.notificationIdSet) {
-				notificationIdArray.push(key);
+			for (var i = 0; i < aTrash.cells.length; ++i) {
+				var cell = aTrash.cells[i];
+				if (cell.checkbox == null || !cell.checkbox.is(":checked")) continue;
+				notificationIdArray.push(cell.notification.id);
 			} 
 
 			var params = {};
@@ -219,7 +212,7 @@ function onListNotificationsSuccess(data){
 	var page = pageSt;
 
 	g_pagerNotifications.screen.empty();
-
+	var tbl = $("<table class='notifications-viewer'>").appendTo(g_pagerNotifications.screen);
 	var notifications = [];
 	var cells = [];
 	for(var idx = 1; idx <= length; ++idx) {
@@ -227,7 +220,7 @@ function onListNotificationsSuccess(data){
 		var notification = new Notification(notificationJson);
 		notifications.push(notification);
 		if (page == g_pagerNotifications.page) {
-			var cell = generateNotificationCell(g_pagerNotifications.screen, notification);
+			var cell = generateNotificationCell(tbl, notification);
 			cells.push(cell);
 		}
 
@@ -258,46 +251,24 @@ function NotificationCell(container, notification, indicator) {
 	this.isSelected = false;
 	this.checkbox = null;
 
-	this.select = function() {
-		this.isSelected = true;	
-		g_notificationTrash.select(aNotification.id);
-	};
-
-	this.unselect = function() {
-		this.isSelected = false;
-		g_notificationTrash.unselect(aNotification.id);
-	};
-
-	this.toggle = function() {
-		if (this.isSelected) this.unselect();
-		else this.select();
-	};
-
 	this.prependCheckbox = function() {
 		var boxCell = $("<td>").prependTo(this.container);
-		this.checkbox = $("<checkbox>").appendTo(boxCell);
-		this.checkbox.change(this, function(evt) {
-			evt.preventDefault();
-			var aCell = evt.data;
-			aCell.toggle();
-		});	
-		this.unselect();
+		this.checkbox = $("<input>", {
+			type: "checkbox"
+		}).appendTo(boxCell);
 	};
 
 	this.removeCheckbox = function() {
+		if (this.checkbox == null) return;
 		this.checkbox.parent().remove();
 		this.checkbox.remove();
 		this.checkbox = null;
-		this.unselect();
 	};
 
 	this.container.click(this.notification, function(evt) {
+		if (g_notificationTrash.isActive)	return;
 		evt.preventDefault();
 		var aNotification = evt.data;
-		if (g_notificationTrash.isActive) {
-			this.toggle();
-			return;
-		}
 		window.location.hash = (g_keyActivityId + "=" + aNotification.activityId);
 	});
 
@@ -311,13 +282,10 @@ function NotificationCell(container, notification, indicator) {
 	unreadIndicator.height("50px");
 
 	this.container.click(this, function(evt) {
+		if (g_notificationTrash.isActive)	return;
 		evt.preventDefault();
 		var aCell = evt.data;
 		var aNotification = aCell.notification;
-		if (g_notificationTrash.isActive) {
-			aCell.toggle();
-			return;
-		}
 		var token = $.cookie(g_keyToken);
 		if (token == null) return;
 
@@ -341,7 +309,7 @@ function NotificationCell(container, notification, indicator) {
 }
 
 function generateNotificationCell(par, notification) {
-	var container = $("<tr>", {
+	var container = $("<tr class = 'notifications-viewer-row'>", {
 		style: "position: relative; height: 50px; border-bottom: 1px solid gray; cursor: pointer;"
 	}).appendTo(par);
 	var idColumn = $("<td>", {

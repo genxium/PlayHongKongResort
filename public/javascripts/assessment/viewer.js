@@ -33,47 +33,41 @@ function initAssessmentsViewer(){
 
 function showAssessmentsViewer(assessments) {
 		
-	g_assessmentsViewer = generateAssessmentsViewer(assessments);
-        g_modalAssessmentsViewer.empty();
-        g_modalAssessmentsViewer.append(g_assessmentsViewer);
-
-        g_sectionAssessmentsViewer.modal({
-                show: true
-        });
+	g_modalAssessmentsViewer.empty();
+	g_assessmentsViewer = generateAssessmentsViewer(g_modalAssessmentsViewer, assessments);
+	g_sectionAssessmentsViewer.modal({
+		show: true
+	});
 
 }
 
-function generateAssessmentsViewer(assessments) {
-        var ret = $("<div>", {
-            style: "padding: 10%"
-        });
+function generateAssessmentsViewer(par, assessments) {
+	if (assessments == null) return null;
+
+	var ret = $("<div>", {
+		style: "padding: 10%"
+	}).appendTo(par);
 
 	var tbl = $("<table class='assessments-viewer'>").appendTo(ret);
+	var head = $("<tr class='assessments-viewer-row'>").appendTo(tbl);
 
-	try {
-		if (assessments == null) throw new NullPointerException();
-                var head = $("<tr class='assessments-viewer-row'>").appendTo(tbl);
+	$('<th>', {
+		text: "Content"
+	}).appendTo(head);
 
-                $('<th>', {
-                    text: "Content"
-                }).appendTo(head);
+	$('<th>', {
+		text: "From"
+	}).appendTo(head);
 
-                $('<th>', {
-                    text: "From"
-                }).appendTo(head);
-
-		for(var i = 0; i < assessments.length; i++) {
-		        var assessment = assessments[i];
-			var row = $("<tr class='assessments-viewer-row'>").appendTo(tbl);
-                        $('<td>', {
-                            text: assessment.content
-                        }).appendTo(row);
-                        $('<td>', {
-                            text: assessment.from_name
-                        }).appendTo(row);
-		}
-	} catch (e) {
-		alert(e.message);
+	for(var i = 0; i < assessments.length; i++) {
+		var assessment = assessments[i];
+		var row = $("<tr class='assessments-viewer-row'>").appendTo(tbl);
+		$('<td>', {
+			text: assessment.content
+		}).appendTo(row);
+		$('<td>', {
+			text: assessment.from_name
+		}).appendTo(row);
 	}
 	return ret;
 } 

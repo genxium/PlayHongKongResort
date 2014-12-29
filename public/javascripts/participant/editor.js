@@ -53,7 +53,7 @@ function generateParticipantsSelectionForm(par, activity) {
 	for(var i = 0; i < labels.length; i++){
 		var label = labels[i];
 		var participantId = idList[i];
-		var checkbox = $('<input>',{
+		var checkbox = $("<input>",{
 			type: "checkbox"
 		}).appendTo(label);
 		boxes.push(checkbox);
@@ -62,7 +62,7 @@ function generateParticipantsSelectionForm(par, activity) {
 	ret.setBoxes(boxes);
 	if (boxes.length <= 1) return ret; // no submit button is needed	
 
-	var btnSubmit=$('<button>',{
+	var btnSubmit = $("<button>",{
 		text: 'Confirm Selection',
 		style: 'color: white; background-color:black; font-size: 13pt'
 	}).appendTo(form);

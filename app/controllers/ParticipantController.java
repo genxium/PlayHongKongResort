@@ -25,8 +25,6 @@ public class ParticipantController extends UserController {
 	public static final String TAG = ParticipantController.class.getName();
 
 	public static Result update() {
-		// define response attributes
-		response().setContentType("text/plain");
 		try {
 			Map<String, String[]> formData = request().body().asFormUrlEncoded();
 			String token = formData.get(User.TOKEN)[0];

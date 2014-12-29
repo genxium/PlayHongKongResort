@@ -1,0 +1,25 @@
+.notifications-viewer th td {
+    border: 1px solid blue;
+}
+
+.notifications-viewer {
+    width: 100%;
+}
+
+.notifications-viewer-row {
+    width: 100%;
+}
+
+.notifications-viewer-row > th {
+    background-color: blue;
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.notifications-viewer-row > td {
+	padding: 2px;
+    color: black;
+    text-align: center;
+    vertical-align: middle;
+}

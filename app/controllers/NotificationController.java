@@ -102,7 +102,7 @@ public class NotificationController extends Controller {
 			
             JSONArray bundle= (JSONArray) JSONValue.parse(formData.get(AbstractMessage.BUNDLE)[0]);
 			for (Object obj : bundle) {
-				Long notificationId = Converter.toLong((JSONObject) obj);
+				Long notificationId = Converter.toLong(obj);
 				notificationIdList.add(notificationId);
 			}
 
