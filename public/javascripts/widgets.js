@@ -449,6 +449,7 @@ function createDropdownMenu(par, id, menuTitle, icons, titles, reactions) {
 	*/
 
 	var toggle = $("<button id='" + id + "' class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>").appendTo(container);
+	toggle.css("font-size", "1em");
 	toggle.css("width", "100%")
 	toggle.css("height", "100%");
 	

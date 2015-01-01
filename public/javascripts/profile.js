@@ -133,7 +133,7 @@ function queryUserDetail(){
 			g_avatarUploader.trigger.changePic(g_viewee.avatar);
 			$("<span>", {
 				text: username,
-				style: "clear: both; color: blue; font-size: 14pt"
+				style: "clear: both; color: dodgerblue; font: Serif; font-size: 2em"
 			}).appendTo(g_avatarUploader.title);
 			if (g_loggedInUser == null || g_viewee == null || g_loggedInUser.id != g_viewee.id) return;
 			g_avatarUploader.showBtn();
