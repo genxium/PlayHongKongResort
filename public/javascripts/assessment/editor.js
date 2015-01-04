@@ -251,7 +251,7 @@ function updateAttendance(activityId, attendance, onSuccess, onError){
 
 function generateAssessedView(row, participant, activity) {
 	var btnView = $('<span>', {
-		text: "View assessments on " + participant.email +" >>",
+		text: "View assessments >>",
 		style: "display: inline; color: blue; margin-left: 5pt; cursor: pointer"
 	}).appendTo(row);					
 	btnView.on("click", function(evt){

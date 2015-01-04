@@ -176,7 +176,7 @@ function onBtnJoinClicked(evt){
 
 	$.ajax({
 		type: "POST",
-		url: "/activity/join",
+		url: "/el/activity/join",
 		data: params,
 		success: function(data, status, xhr){
 			if (!isStandardSuccess(data)) return;
