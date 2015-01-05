@@ -7,7 +7,8 @@
 		<!-- style sheets -->
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")" type="text/css">
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap-datetimepicker.min.css")" type="text/css">
-		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/topbar.css")" type="text/css">
+		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/header.css")" type="text/css">
+		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/footer.css")" type="text/css">
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/widgets.css")" type="text/css">
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/activity.css")" type="text/css">
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/assessment.css")" type="text/css">
@@ -52,29 +53,28 @@
 
 	</head>
 	<body>
-		<div id="wrap">
-			<p id="topbar" ></p>
-			<p id="topbar-border-bottom" class="left-to-right"></p>
-			<p id="toolbar"></p>
+		<div id="header">
+			<div id="topbar"></div>
+		</div>
+		<div class="clear"></div>
+		<div id="content">
 			<div id="section-register"></div>
 			<div id="section-user"></div>
 			<p id="bar-buttons"></p>
 			<div id="section-activity" style="width: 80%;"></div>
-
 			<p id="pager-filters"></p>
-
 			<p id="pager-bar-activities" style="margin-top: 5pt"></p>
 			<div id="pager-screen-activities"></div>
-			
 			<p id="pager-bar-notifications" style="margin-top: 5pt"></p>
 			<div id="pager-screen-notifications"></div>
-
 			<!-- nav tabs -->
 			<div id="section-nav"></div>
 			<!-- tab panes -->
 			<div id="section-panes" class="tab-content"></div>
 		</div>
-
+		<div id="footer">
+			<div id="footer-content"></div>
+		</div>
 	</body>
 
 </html>

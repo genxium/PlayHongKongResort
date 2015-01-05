@@ -51,7 +51,6 @@ function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, on
 				$.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
 				wsConnect();	
 				if(g_sectionLogin == null) return;
-				g_sectionLogin.empty();
 				g_postLoginMenu = generatePostLoginMenu(g_sectionLogin, form.onLoginSuccess, form.onLoginError, form.onLogoutSuccess, form.onLogoutError);
 				if(form.onLoginSuccess == null) return;
 				form.onLoginSuccess(data);
@@ -98,36 +97,33 @@ function PostLoginMenu(bubble, dropdownMenu, onLoginSuccess, onLoginError, onLog
 function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
 	if (par == null) return null;
 	par.empty();
-	var tbl = $('<table>', {
-		style: "border-collapse:separate; border-spacing:5pt; margin: auto"
+	var container = $('<div>', {
+		id: "login-box"
 	}).appendTo(par);
-	var row1 = $('<tr>').appendTo(tbl);
-	var cell11 = $('<td>').appendTo(row1);
+	var row1 = $('<div>', {
+		class: "login-row1"
+	}).appendTo(container);
+	var inputs = $('<div>', {
+		class: "login-inputs"
+	}).appendTo(row1);
 	var handle = $('<input>', {
 		placeHolder: "Email",
-		type: "text",	
-		style: "font-family: Serif; font-size: 14pt; margin-left: 2pt"
-	}).appendTo(cell11);
-
-	var cell12 = $("<td>").appendTo(row1);
+		type: "text",
+		class: "login-email"
+	}).appendTo(inputs);
 	var psw = $('<input>', {
-                placeHolder: "Password",
-                type: "password",
-                style: "font-family: Serif; font-size: 14pt; margin-left: 2pt"
-        }).appendTo(cell12);
-
-	var row2 = $('<tr>').appendTo(tbl);
-	var cell21 = $('<td>').appendTo(row2);
-        var btn = $('<button>', {
-                style: "font-size: 12pt; margin-left: 2pt; background-color: IndianRed; color: white",
-                text: "Login"
-        }).appendTo(cell21);
-
-	var cell22 = $('<td>').appendTo(row2);
+        placeHolder: "Password",
+        type: "password",
+		class: "login-pw"
+    }).appendTo(inputs);
+    var btn = $('<button>',{
+        text: "Login",
+		class: "login-btn"
+    }).appendTo(row1);
 	var forgot = $("<button>", {
 		text: "Forgot Password",
-		style: "background: none; border: none; color: black; font-size: 12pt; vertical-align: middle; text-align: center; cursor: pointer; text-decoration: underline;"	
-	}).appendTo(cell22);	
+		class: "login-fotgot"
+	}).appendTo(container);	
 	
 	return new PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
 }
@@ -164,8 +160,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 				$.removeCookie(g_keyToken, {path: '/'});
 				wsDisconnect();
 				if (g_sectionLogin == null) return;
-				g_sectionLogin.empty();
-				g_preLoginForm = generatePreLoginForm(g_sectionLogin, menu.onLoginSuccess, menu.onLoginError, menu.onLogoutSuccess, menu.onLogoutError);
+				g_preLoginForm = generatePreLoginForm(par, menu.onLoginSuccess, menu.onLoginError, menu.onLogoutSuccess, menu.onLogoutError);
 				if (menu.onLogoutSuccess == null) return;
 				menu.onLogoutSuccess(data);
 			},
@@ -180,7 +175,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	};
 
 	var noti = $("<span>", {
-		style: "cursor: pointer; position: absolute; width: 10%; height: 80%; left: 55%; top: 20px;"
+		style: "cursor: pointer; position: absolute; width: 20%; height: 80%; left: 45%; top: 20px;"
 	}).appendTo(par);
 
 	noti.click(function(evt){

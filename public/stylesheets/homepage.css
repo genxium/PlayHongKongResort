@@ -1,11 +1,11 @@
-#toolbar, #pager-filters, #pager-bar-notifications, #pager-screen-notifications, #pager-bar-activities, #pager-screen-activities, #section-user, #section-register
-{
-	display: block;
-	position: relative;
-}
+@import "common.css";
 
-#pager-screen-activities, #pager-screen-notifications
-{
-	width: 720pt;
-	clear: both;
+body{
+	background-color: #efda73;
+}
+#content{
+	margin: 0 auto;
+	width: 100%;
+	max-width: 1024px;
+	background-color: #fff;
 }

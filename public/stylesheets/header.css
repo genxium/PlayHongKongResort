@@ -1,0 +1,65 @@
+#header{
+	background-color: #3090a6;
+}
+#topbar{
+	margin: 0 auto;
+	width: 100%;
+	max-width: 1024px;
+	min-height: 100px;
+}
+#topbar-title{
+	height: 100px;
+	width: 320px;
+	background-color: #e21e61;
+	color: #fff;
+	font-size: 45px;
+	font-weight: bold;
+	color: #fff;
+	float: left;
+	padding: 15px 20px;
+}
+#topbar-title:hover{
+	cursor: pointer;
+	color: #e2e185;
+	background-color: #f41d3e;
+}
+#login-section{
+	position: relative;
+	float: right;
+	width: 320px;
+	min-height: 100px;
+}
+#login-box{
+	background-color: #3babc2;
+	width: 320px;
+	padding: 10px;
+}
+.login-inputs{
+	width: 200px;
+	float: left;
+}
+.login-inputs input{
+	width: 200px;
+	height: 28px;
+}
+.login-btn{
+	width: 100px;
+	background-color: #81246e;
+	color: #fff;
+	float: left;
+	border: none;
+	height: 57px;
+	font-size: 24px;
+}
+.login-btn:hover{
+	color: #e2e185;
+	background-color: #ad4497;
+}
+.login-fotgot{
+	background-color: #3ba8c2;
+	color: #fff;
+	border: none;
+}
+.login-fotgot:hover{
+	color: #e2e185;
+}

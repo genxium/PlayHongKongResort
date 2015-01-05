@@ -2,15 +2,18 @@ var g_topbar = null;
 
 function initTopbar(par){
 	g_topbar = par;
-	var topbarTitle = $("<span>", {
+	g_topbar.empty();
+	var topbarTitle = $("<div>", {
 		id: "topbar-title",
 		text: "Let's Date"
 	}).appendTo(g_topbar);
+
+	g_sectionLogin = $("<span>", {
+		id: "login-section"	
+	}).appendTo(g_topbar);
+
 	topbarTitle.click(function(evt){
 		evt.preventDefault();
 		window.location.href = "/";
-	});	
-	g_sectionLogin = $("<span>", {
-		style: "position: absolute; width: 33%; height: 95%; left: 67%;"
-	}).appendTo(g_topbar);
+	});
 }

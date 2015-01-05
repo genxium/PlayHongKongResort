@@ -438,9 +438,10 @@ function createDropdownMenu(par, id, menuTitle, icons, titles, reactions) {
 	var length = titles.length;
 	if (length != icons.length) return; 
 	var container = $("<div class='dropdown'>").appendTo(par);
+	// these params indicate that the container is centred
 	container.css("position: absolute");
-	container.css("width", "60%")
-	container.css("left", "20%")
+	container.css("width", "90%")
+	container.css("left", "5%")
 	container.css("height", "60%");
 	container.css("top", "20%")
 	
