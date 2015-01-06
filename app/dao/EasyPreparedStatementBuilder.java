@@ -30,6 +30,9 @@ public class EasyPreparedStatementBuilder {
     protected List<String> m_insertCols = null;
     protected List< List<Object> > m_insertVals = null;
 
+    protected List<String> m_replaceCols = null;
+    protected List< List<Object> > m_replaceVals = null;
+
     protected List<String> m_updateCols = null;
     protected List<Object> m_updateVals = null;
 
@@ -103,10 +106,23 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-	public EasyPreparedStatementBuilder ignore(boolean val) {
-		m_ignore = val;
-		return this;
-	}
+    public EasyPreparedStatementBuilder replace(String[] cols, Object[] vals) {
+        if (cols == null || vals == null || cols.length != vals.length) return this;
+        if (m_replaceCols == null) {
+            m_replaceCols = new ArrayList<>(); // lazy init
+            Collections.addAll(m_replaceCols, cols);
+        }
+        if (m_replaceVals == null) m_replaceVals = new ArrayList<List<Object>>(); // lazy init
+        List<Object> tmp = new ArrayList<Object>();
+        Collections.addAll(tmp, vals);
+        m_replaceVals.add(tmp);
+        return this;
+    }
+
+    public EasyPreparedStatementBuilder ignore(boolean val) {
+	    m_ignore = val;
+	    return this;
+    }
 
     public EasyPreparedStatementBuilder set(String col, Object val) {
         if (m_updateCols == null) m_updateCols = new LinkedList<String>();
@@ -441,7 +457,7 @@ public class EasyPreparedStatementBuilder {
         PreparedStatement statement = null;
         try {
             String query = "INSERT";
-			if (m_ignore) query += " IGNORE";
+	    if (m_ignore) query += " IGNORE";
             query = appendIntoTable(query);
 
             query += "(";
@@ -467,6 +483,48 @@ public class EasyPreparedStatementBuilder {
             statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             if (m_insertVals != null) {
                 for (List<Object> list : m_insertVals) {
+                    for (Object val : list) {
+                        statement.setObject(index++, val);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+
+        }
+        return statement;
+    }
+
+    public PreparedStatement toReplace(Connection connection) {
+        if (connection == null) return null;
+        PreparedStatement statement = null;
+        try {
+            String query = "REPLACE";
+            query = appendIntoTable(query);
+
+            query += "(";
+            for (int i = 0; i < m_replaceCols.size(); i++) {
+                query += ("`" + m_replaceCols.get(i) + "`");
+                if (i < m_replaceCols.size() - 1) query += ", ";
+            }
+            query += ") ";
+
+            query += " VALUES ";
+            for (int i = 0; i < m_replaceVals.size(); i++) {
+                query += "(";
+                for (int j = 0; j < m_replaceVals.get(i).size(); ++j) {
+                    query += "?";
+                    if (j < m_replaceVals.get(i).size() - 1) query += ", ";
+                }
+                query += ")";
+                if (i < m_replaceVals.size() - 1) query += ", ";
+            }
+
+            int index = 1;
+
+            statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            if (m_replaceVals != null) {
+                for (List<Object> list : m_replaceVals) {
                     for (Object val : list) {
                         statement.setObject(index++, val);
                     }
@@ -610,6 +668,27 @@ public class EasyPreparedStatementBuilder {
         try {
             Connection connection = SQLHelper.getConnection();
             PreparedStatement statement = this.toInsert(connection);
+            // the following command returns the last inserted row id for the auto incremented key
+            statement.executeUpdate();
+            ResultSet rs = statement.getGeneratedKeys();
+            if (rs != null && rs.next()) {
+                lastId = rs.getLong(1);
+                rs.close();
+            }
+            statement.close();
+            SQLHelper.closeConnection(connection);
+        } catch (Exception e) {
+            // return the INVALID value for exceptions
+            Loggy.e(TAG, "insert", e);
+        }
+        return lastId;
+    }
+
+    public Long execReplace() {
+        Long lastId = SQLHelper.INVALID;
+        try {
+            Connection connection = SQLHelper.getConnection();
+            PreparedStatement statement = this.toReplace(connection);
             // the following command returns the last inserted row id for the auto incremented key
             statement.executeUpdate();
             ResultSet rs = statement.getGeneratedKeys();
