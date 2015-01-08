@@ -4,7 +4,7 @@ function initTopbar(par){
 	g_topbar = par;
 	var topbarTitle = $("<span>", {
 		id: "topbar-title",
-		text: "Hong Kong Resort"
+		text: "Let's Date"
 	}).appendTo(g_topbar);
 	topbarTitle.click(function(evt){
 		evt.preventDefault();

@@ -73,9 +73,12 @@
 	width: 98%;
 	height: 144px;
 	padding: 3pt;
-	margin: 5pt 5pt;
-	border: 2pt solid #00ccff;
-	border-radius: 8pt;
+	margin-top: 0;
+	margin-bottom: 0;
+	border-top: none;
+	border-left: none;
+	border-right: none;
+	border-bottom: thin solid lightgray;
 }
 
 .btn-join

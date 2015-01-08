@@ -92,7 +92,7 @@ function generateParticipantsSelectionForm(par, activity) {
 
 		$.ajax({
 			type: "POST",
-			url: "/activity/participants/update",
+			url: "/el/activity/participants/update",
 			data: params,
 			success: function(data, status, xhr){
 				if (!isStandardSuccess(data)) return;
