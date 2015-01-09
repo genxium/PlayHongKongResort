@@ -89,10 +89,12 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var nameCheck = evt.data;
 		nameCheck.empty();
 		nameCheck.text("");
+		nameCheck.removeClass("warn");
 		var nameVal = $(this).val();
 		if(nameVal == null || nameVal.length == 0) return;
 		if(!validateName(nameVal)) {
 			nameCheck.text(" Username can only contain 6~20 alphabet letters and numbers");
+			nameCheck.addClass("warn");
 			return;
 		}
 
@@ -103,8 +105,12 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 			url: "/user/name/duplicate",
 			data: params,
 			success: function(data, status, xhr){
-				if (isStandardSuccess(data))	nameCheck.text(" This username can be used :)");        
-			    else	nameCheck.text(" This username cannot be used :(");        
+				if (isStandardSuccess(data)){
+					nameCheck.text(" This username can be used :)");        
+			    }else{
+					nameCheck.addClass("warn");
+					nameCheck.text(" This username cannot be used :(");
+				}        
 			},
 			error: function(xhr, status, err){
 			}
@@ -116,11 +122,13 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var emailCheck = evt.data;
 		emailCheck.empty();
 		emailCheck.text("");
+		emailCheck.removeClass("warn");
 		var emailVal = $(this).val();
 		if(emailVal == null || emailVal.length == 0) return;
 		if(!validateEmail(emailVal)) {
-			 emailCheck.text(" Not valid email format");
-			 return;
+			emailCheck.addClass("warn");
+			emailCheck.text(" Not valid email format");
+			return;
 		}
 
 		var params = {};
@@ -130,8 +138,12 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 			url: "/user/email/duplicate",
 			data: params,
 			success: function(data, status, xhr){
-				if (isStandardSuccess(data))	emailCheck.text(" This email can be used :)");        
-				else	emailCheck.text(" This email cannot be used :(");        
+				if (isStandardSuccess(data)){
+					emailCheck.text(" This email can be used :)");        
+				}else{
+					emailCheck.addClass("warn");
+					emailCheck.text(" This email cannot be used :(");
+				}        
 			},
 			error: function(xhr, status, err){
 			}
@@ -143,9 +155,11 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var pswCheck = evt.data;
 		pswCheck.empty();
 		pswCheck.text("");
+		pswCheck.removeClass("warn");
 		var pswVal = $(this).val();
 		if(pswVal == null || pswVal.length ==0 ) return;
 		if(validatePassword(pswVal))	return;
+		pswCheck.addClass("warn");
 		pswCheck.text(" Password can only contain 6~20 alphabet letters and numbers");
 	});	
  
@@ -156,67 +170,73 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var pswVal = evt.data[1].val();
 		pswConfirmCheck.empty();
 		pswConfirmCheck.text("");
+		pswConfirmCheck.removeClass("warn");
 		if(validatePasswordConfirm(pswVal, pswConfirmVal))	return;
+		pswConfirmCheck.addClass("warn");
 		pswConfirmCheck.text(" Doesn't match! ");
 	});	
 }
 
 function generateRegisterWidget(par, onSuccess, onError){	
 	par.empty();
-	var tbl = $('<table>', {
-		style: "border-collapse:separate; border-spacing:5pt; margin-bottom: 2pt"
+	var register_box = $('<div>', {
+		id: "register-box"
 	}).appendTo(par);
 
-	var row1 = $('<tr>').appendTo(tbl);
-	var cell11=$('<td>').appendTo(row1);
+	var rowName = $('<div>', {
+		class: "register-name"
+	}).appendTo(register_box);
 	var fieldName = $('<input>', {
 		type: "text",
-		style: "font-size: 15pt",
-		placeHolder: "Username"	
-	}).appendTo(cell11);
+		placeHolder: "Username",	
+	}).appendTo(rowName);
+	var spName = $('<div>', {
+		class: "message"
+	}).appendTo(rowName);
 
-	var cell12=$('<td>').appendTo(row1);
-	var spName = $('<span>').appendTo(cell12);
-
-	var row2 = $('<tr>').appendTo(tbl);
-	var cell21 = $('<td>').appendTo(row2);
+	var rowEmail = $('<div>', {
+		class: "register-email"
+	}).appendTo(register_box);
 	var fieldEmail = $('<input>', {
 		type: "text",
-		style: "font-size: 15pt",
-		placeHolder: "Email"
-	}).appendTo(cell21);
-	var cell22=$('<td>').appendTo(row2);
-	var spEmail = $('<span>').appendTo(cell22);
-
-	var row3=$('<tr>').appendTo(tbl);
-	var cell31=$('<td>').appendTo(row3);
-	var cell32=$('<td>').appendTo(row3);
+		placeHolder: "Email",
+	}).appendTo(rowEmail);
+	var spEmail = $('<div>', {
+		class: "message"
+	}).appendTo(rowEmail);
+	
+	var rowPsw = $('<div>', {
+		class: "register-password"
+	}).appendTo(register_box);
 	var fieldPsw = $('<input>', {
 		type: "password",
-		style: "font-size: 15pt",
 		placeHolder: "Password"	
-	}).appendTo(cell31);
-	var spanPsw = $('<span>').appendTo(cell32);
+	}).appendTo(rowPsw);
+	var spanPsw = $('<div>', {
+		class: "message"
+	}).appendTo(rowPsw);
 
-	var row4 = $('<tr>').appendTo(tbl);
-	var cell41 = $('<td>').appendTo(row4);
-	var cell42 = $('<td>').appendTo(row4);
+	var rowPswConfirm = $('<div>', {
+		class: "register-pswconfirm"
+	}).appendTo(register_box);
 	var fieldPswConfirm = $('<input>', {
 		type: "password",
-		style: "font-size: 15pt",
 		placeHolder: "Confirm Password"	
-	}).appendTo(cell41);
-	var spPswConfirm = $('<span>').appendTo(cell42);
+	}).appendTo(rowPswConfirm);
+	var spPswConfirm = $('<div>', {
+		class: "message"
+	}).appendTo(rowPswConfirm);
 
 	var sid = generateUuid();
 	var captcha = new Captcha(sid);
-	captcha.appendCaptcha(par);
+	captcha.appendCaptcha(register_box);
 
-	var btnRow = $('<p>').appendTo(par);
+	var rowButton = $('<div>', {
+		class: "register-button"
+	}).appendTo(register_box);
 	var btnRegister = $('<button>', {
-		style: "font-family: Serif; font-size: 15pt; background-color: Teal; color: white",
-		text: "Register"	
-	}).appendTo(btnRow);
+		text: "Register"
+	}).appendTo(rowButton);
 
 	return new RegisterWidget(fieldName, spName, fieldEmail, spEmail, fieldPsw, spanPsw, fieldPswConfirm, spPswConfirm, btnRegister, onSuccess, onError, captcha);
 }

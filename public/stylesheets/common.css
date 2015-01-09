@@ -1,3 +1,18 @@
 .clear{
 	clear: both;
 }
+body{
+	background-color: #efda73;
+	margin: 0;
+}
+#content{
+	margin: 0 auto;
+	width: 100%;
+	max-width: 1024px;
+	min-height: 500px;
+	background-color: #fff;
+}
+#register-box{
+	background-color: #eee;
+	padding: 10px;
+}

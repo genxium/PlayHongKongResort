@@ -1,13 +1,13 @@
-#header{
+#header {
 	background-color: #3090a6;
 }
-#topbar{
+#topbar {
 	margin: 0 auto;
 	width: 100%;
 	max-width: 1024px;
 	min-height: 100px;
 }
-#topbar-title{
+#topbar-title {
 	height: 100px;
 	width: 320px;
 	background-color: #e21e61;
@@ -16,50 +16,70 @@
 	font-weight: bold;
 	color: #fff;
 	float: left;
-	padding: 15px 20px;
+	padding-left: 15px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
-#topbar-title:hover{
+#topbar-title:hover {
 	cursor: pointer;
 	color: #e2e185;
 	background-color: #f41d3e;
 }
-#login-section{
-	position: relative;
+#login-section {
+	position: relative; /* to be anchored by siblings */
 	float: right;
-	width: 320px;
-	min-height: 100px;
+	width: 320px; /* to limit width and height of sibings, please modify them to fit your needs but don't leave them blank~ */
+	height: 100px; 
 }
-#login-box{
+#login-box {
 	background-color: #3babc2;
 	width: 320px;
+	height: 100px;
 	padding: 10px;
 }
-.login-inputs{
+.login-inputs {
 	width: 200px;
 	float: left;
 }
-.login-inputs input{
+.login-inputs input {
 	width: 200px;
 	height: 28px;
 }
-.login-btn{
+.login-btn {
 	width: 100px;
 	background-color: #81246e;
 	color: #fff;
 	float: left;
 	border: none;
-	height: 57px;
+	height: 56px;
 	font-size: 24px;
 }
-.login-btn:hover{
+.login-btn:hover {
 	color: #e2e185;
 	background-color: #ad4497;
 }
-.login-fotgot{
+.login-fotgot {
 	background-color: #3ba8c2;
 	color: #fff;
 	border: none;
 }
-.login-fotgot:hover{
+.login-fotgot:hover {
 	color: #e2e185;
+}
+.noti-container {
+	cursor: pointer;
+	position: absolute;
+	width: 20%;
+	height: 100px;
+	left: 45%;
+}
+.post-login-menu-container {
+	cursor: pointer;
+	position: absolute;
+	width: 30%;
+	height: 100px;
+	left: 70%;
+}
+.noti-container:hover, .post-login-menu-container:hover {
+	background-color: #f41d3e;
 }

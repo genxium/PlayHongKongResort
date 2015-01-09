@@ -439,16 +439,12 @@ function createDropdownMenu(par, id, menuTitle, icons, titles, reactions) {
 	if (length != icons.length) return; 
 	var container = $("<div class='dropdown'>").appendTo(par);
 	// these params indicate that the container is centred
-	container.css("position: absolute");
+	container.css("position", "absolute");
 	container.css("width", "90%")
 	container.css("left", "5%")
 	container.css("height", "60%");
 	container.css("top", "20%")
 	
-	/*
-	container.css("transform", "translate(-50%, -50%)");
-	*/
-
 	var toggle = $("<button id='" + id + "' class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>").appendTo(container);
 	toggle.css("font-size", "1em");
 	toggle.css("width", "100%")
@@ -528,17 +524,17 @@ function Captcha(sid) {
 		this.img.show();
 	};
 	this.appendCaptcha = function(par) {
-		var row = $("<p>").appendTo(par);
+		var row = $("<div>", {
+			class: "captcha"
+		}).appendTo(par);
+		this.input = $("<input>", {
+			placeHolder: "Captcha"
+		}).appendTo(row);
 		this.img = $("<img>", {
-			style: "display: inline;",
 			src: "/captcha?" + g_keySid + "=" + this.sid
 		}).appendTo(row);
-		this.input = $("<input>", {
-			style: "display: inline; margin-left: 10px;"
-		}).appendTo(row);
 		var btnChange = $("<button>", {
-			style: "display: inline; margin-left: 10px",
-			text: "can't read!"
+			class: "change"
 		}).appendTo(row);
 
 		btnChange.click(this, function(evt) {

@@ -8,7 +8,7 @@ function initTopbar(par){
 		text: "Let's Date"
 	}).appendTo(g_topbar);
 
-	g_sectionLogin = $("<span>", {
+	g_sectionLogin = $("<div>", {
 		id: "login-section"	
 	}).appendTo(g_topbar);
 

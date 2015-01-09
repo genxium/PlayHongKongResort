@@ -175,7 +175,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	};
 
 	var noti = $("<span>", {
-		style: "cursor: pointer; position: absolute; width: 20%; height: 80%; left: 45%; top: 20px;"
+		class: "noti-container"
 	}).appendTo(par);
 
 	noti.click(function(evt){
@@ -186,14 +186,14 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 
 	setBackgroundImage(noti, "/assets/icons/notification.png", "contain", "no-repeat", "center");
 	var spBubble = $("<span>", {
-		style: "position: absolute; width: 20px; height: 20px; left: 70%; top: 10%; border-radius: 50%; background-color: indianred; text-align: center; vertical-align: middle; font-size: auto; color: white",
+		style: "position: absolute; width: 20px; height: 20px; left: 70%; top: 20%; border-radius: 50%; background-color: indianred; text-align: center; vertical-align: middle; font-size: auto; color: white",
 		text: "0"
 	}).appendTo(noti);
 	var bubble = new NotiBubble(0, spBubble);
 	bubble.update(g_loggedInUser.unreadCount);
 
 	var spDropdown = $("<span>", {
-		style: "position: absolute; width: 30%; height: 80%; left: 70%; top: 20px;"
+		class: "post-login-menu-container"
 	}).appendTo(par);
 
 	var icons = ["/assets/icons/new_activity.png", "/assets/icons/profile.png", "/assets/icons/logout.png"];
