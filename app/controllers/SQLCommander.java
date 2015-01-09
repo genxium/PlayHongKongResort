@@ -2,6 +2,7 @@ package controllers;
 
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
+import dao.ResultSetUtil;
 import exception.*;
 import models.*;
 import org.json.simple.JSONObject;
@@ -12,6 +13,8 @@ import utilities.Loggy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.*;
 
 /*
@@ -187,6 +190,45 @@ public class SQLCommander {
 			    User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
 			    ret.add(new Activity(activityJson, host));
 		    }
+	    } catch (Exception e) {
+		    Loggy.e(TAG, "queryActivities", e);
+	    }
+	    return ret;
+    }
+
+    public static List<Activity> queryActivitiesWithUnmaskedRelation(Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems, Long vieweeId, int relation) {
+	    List<Activity> ret = new ArrayList<>();
+	    try {
+            Connection connection = SQLHelper.getConnection();
+			String query = "SELECT ";
+			boolean first = true;
+			for (String name : Activity.QUERY_FIELDS) {
+				if (first) {
+					query += name;
+					first = false;
+				} else {
+					query += ("," + name);
+				}
+			}
+			query += " FROM `activity` AS `t1`JOIN `user_activity_relation` AS `t2` ON `t2`.`user_id`=? AND `t2`.`relation`&?>0 AND `t2`.`activity_id`=`t1`.`id` ORDER BY " + orderKey + " " + orientation + " LIMIT ?, ?";
+			PreparedStatement pstmt = connection.prepareStatement(query); 
+			pstmt.setLong(1, vieweeId);
+			pstmt.setInt(2, relation);
+			pstmt.setInt(3, (page_st - 1) * numItems);
+			pstmt.setInt(4, page_ed * numItems);
+            List<JSONObject> activityJsonList = new LinkedList<JSONObject>(); 
+            ResultSet rs = pstmt.executeQuery();
+            if (rs != null) {
+                activityJsonList = ResultSetUtil.convertToJSON(rs);
+                rs.close();
+            }
+		    if (activityJsonList == null) return null;
+		    for (JSONObject activityJson : activityJsonList) {
+			    User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
+			    ret.add(new Activity(activityJson, host));
+		    }
+			pstmt.close();
+            SQLHelper.closeConnection(connection);
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "queryActivities", e);
 	    }

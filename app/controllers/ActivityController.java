@@ -73,7 +73,10 @@ public class ActivityController extends Controller {
                 cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, orderKey);
                 // activities = (List<Activity>) play.cache.Cache.get(cacheKey);
                 if (activities == null) {
-					activities = SQLCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, vieweeId, UserActivityRelation.maskRelation(relation, null));
+					/**
+					 * TODO: normalize aggregation, query and caching mechanism here!
+					 * */
+					activities = SQLCommander.queryActivitiesWithUnmaskedRelation(pageSt, pageEd, orderKey, orientationStr, numItems, vieweeId, relation);
 					if (activities != null) play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
 				}
             } else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
