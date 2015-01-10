@@ -147,42 +147,19 @@ public class SQLCommander {
 	    return activityDetail;
     }
 
-    public static List<Activity> queryActivities(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, Long vieweeId, int relation) {
-        List<Activity> ret = new ArrayList<Activity>();
-        try {
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] names = Activity.QUERY_FIELDS;
-            String[] onCols = {UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.ACTIVITY_ID};
-            Object[] onVals = {vieweeId, relation, Activity.TABLE + "." + Activity.ID};
-
-            builder.select(names)
-                .from(Activity.TABLE)
-                .join(UserActivityRelation.TABLE, onCols, onVals);
-
-            List<JSONObject> activityJsonList = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
-
-            if (activityJsonList == null)	return null;
-            for (JSONObject activityJson : activityJsonList) {
-                User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
-                ret.add(new Activity(activityJson, host));
-            }
-        } catch (Exception e) {
-            Loggy.e(TAG, "queryActivities", e);
-        }
-        return ret;
-    }
-
-    public static List<Activity> queryActivities(Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems, Long vieweeId, int relation) {
+    public static List<Activity> queryActivities(Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems, Long vieweeId, List<Integer> maskedRelationList) {
 	    List<Activity> ret = new ArrayList<>();
 	    try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             String[] names = Activity.QUERY_FIELDS;
-            String[] onCols = {UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.ACTIVITY_ID};
-            Object[] onVals = {vieweeId, relation, Activity.TABLE + "." + Activity.ID};
+            String[] onCols = {UserActivityRelation.USER_ID, UserActivityRelation.ACTIVITY_ID, UserActivityRelation.RELATION};
+            String[] onOps = {"=", "=", "IN"};
+
+            Object[] onVals = {vieweeId, Activity.TABLE + "." + Activity.ID, maskedRelationList};
 
             List<JSONObject> activityJsonList = builder.select(names)
                                                     .from(Activity.TABLE)
-                                                    .join(UserActivityRelation.TABLE, onCols, onVals)
+                                                    .join(UserActivityRelation.TABLE, onCols, onOps, onVals)
                                                     .order(orderKey, orientation)
                                                     .limit((page_st - 1) * numItems, page_ed * numItems).execSelect();
 		    if (activityJsonList == null) return null;

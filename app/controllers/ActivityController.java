@@ -22,10 +22,7 @@ import utilities.DataUtils;
 import utilities.General;
 import utilities.Loggy;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ActivityController extends Controller {
 
@@ -41,6 +38,12 @@ public class ActivityController extends Controller {
             if (orientation == null)  throw new InvalidQueryParamsException();
             String orientationStr = SQLHelper.convertOrientation(orientation);
             if (orientationStr == null)   throw new InvalidQueryParamsException();
+            Set<Integer> validRelations = new HashSet<>();
+            validRelations.add(UserActivityRelation.PRESENT);
+            validRelations.add(UserActivityRelation.ABSENT);
+            validRelations.add(UserActivityRelation.PRESENT);
+
+            if (relation != null && !validRelations.contains(relation)) throw new InvalidQueryParamsException();
 
             // anti=cracking by param token
             Long viewerId = null;
@@ -73,10 +76,23 @@ public class ActivityController extends Controller {
                 cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, orderKey);
                 // activities = (List<Activity>) play.cache.Cache.get(cacheKey);
                 if (activities == null) {
-					/**
-					 * TODO: normalize aggregation, query and caching mechanism here!
-					 * */
-					activities = SQLCommander.queryActivitiesWithUnmaskedRelation(pageSt, pageEd, orderKey, orientationStr, numItems, vieweeId, relation);
+					List<Integer> maskedRelationList = new LinkedList<>();
+                    if (relation == UserActivityRelation.PRESENT) {
+                        for (int aRelation : UserActivityRelation.PRESENT_STATES) {
+                            maskedRelationList.add(aRelation);
+                        }
+                    }
+                    if (relation == UserActivityRelation.ABSENT) {
+                        for (int aRelation : UserActivityRelation.ABSENT_STATES) {
+                            maskedRelationList.add(aRelation);
+                        }
+                    }
+                    if (relation == UserActivityRelation.PRESENT) {
+                        for (int aRelation : UserActivityRelation.PRESENT_STATES) {
+                            maskedRelationList.add(aRelation);
+                        }
+                    }
+                    activities = SQLCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, vieweeId, maskedRelationList);
 					if (activities != null) play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
 				}
             } else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
@@ -93,7 +109,7 @@ public class ActivityController extends Controller {
 					activities = SQLCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, status);
 					if (activities != null) play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
 				}
-            } else;
+            } else throw new InvalidQueryParamsException();
 
             if (activities == null) throw new NullPointerException();
 

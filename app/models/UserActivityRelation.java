@@ -11,6 +11,10 @@ public class UserActivityRelation extends AbstractModel {
     public static final int ASSESSED = (1 << 4);
     public static final int HOSTED = (1 << 5);
 
+    public static final int[] PRESENT_STATES = {SELECTED|PRESENT, SELECTED|PRESENT|ASSESSED};
+    public static final int[] ABSENT_STATES = {SELECTED|ABSENT, SELECTED|ABSENT|ASSESSED};
+    public static final int[] SELECTED_STATES = {SELECTED, SELECTED|PRESENT, SELECTED|ABSENT, SELECTED|PRESENT|ASSESSED, SELECTED|ABSENT|ASSESSED};
+
     public static String TABLE = "user_activity_relation";
     public static String USER_ID = "user_id";
     public static String ACTIVITY_ID = "activity_id";
