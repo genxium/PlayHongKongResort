@@ -3,10 +3,12 @@ var g_topbar = null;
 function initTopbar(par){
 	g_topbar = par;
 	g_topbar.empty();
-	var topbarTitle = $("<div>", {
+	var topbarBanner = $("<div>", {
 		id: "topbar-title",
-		text: "Let's Date"
 	}).appendTo(g_topbar);
+	var topbarTitle = $("<p>", {
+		text: "Let's Date"
+	}).appendTo(topbarBanner);
 
 	g_sectionLogin = $("<div>", {
 		id: "login-section"	

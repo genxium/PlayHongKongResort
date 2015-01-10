@@ -1,6 +1,3 @@
-#header {
-	background-color: #3090a6;
-}
 #topbar {
 	margin: 0 auto;
 	width: 100%;
@@ -8,17 +5,12 @@
 	min-height: 100px;
 }
 #topbar-title {
-	height: 100px;
 	width: 320px;
 	background-color: #e21e61;
 	color: #fff;
 	font-size: 45px;
 	font-weight: bold;
 	color: #fff;
-	float: left;
-	padding-left: 15px;
-	padding-top: 10px;
-	padding-bottom: 10px;
 }
 #topbar-title:hover {
 	cursor: pointer;
@@ -26,20 +18,12 @@
 	background-color: #f41d3e;
 }
 #login-section {
-	position: relative; /* to be anchored by siblings */
-	float: right;
-	width: 320px; /* to limit width and height of sibings, please modify them to fit your needs but don't leave them blank~ */
-	height: 100px; 
+	width: 320px; 
 }
 #login-box {
 	background-color: #3babc2;
-	width: 320px;
-	height: 100px;
-	padding: 10px;
 }
 .login-inputs {
-	width: 200px;
-	float: left;
 }
 .login-inputs input {
 	width: 200px;
@@ -58,28 +42,11 @@
 	color: #e2e185;
 	background-color: #ad4497;
 }
-.login-fotgot {
+.login-forgot {
 	background-color: #3ba8c2;
 	color: #fff;
 	border: none;
 }
-.login-fotgot:hover {
+.login-forgot:hover {
 	color: #e2e185;
-}
-.noti-container {
-	cursor: pointer;
-	position: absolute;
-	width: 20%;
-	height: 100px;
-	left: 45%;
-}
-.post-login-menu-container {
-	cursor: pointer;
-	position: absolute;
-	width: 30%;
-	height: 100px;
-	left: 70%;
-}
-.noti-container:hover, .post-login-menu-container:hover {
-	background-color: #f41d3e;
 }
