@@ -39,6 +39,7 @@ public class ActivityController extends Controller {
             String orientationStr = SQLHelper.convertOrientation(orientation);
             if (orientationStr == null)   throw new InvalidQueryParamsException();
             Set<Integer> validRelations = new HashSet<>();
+			validRelations.add(UserActivityRelation.HOSTED);
             validRelations.add(UserActivityRelation.PRESENT);
             validRelations.add(UserActivityRelation.ABSENT);
             validRelations.add(UserActivityRelation.PRESENT);

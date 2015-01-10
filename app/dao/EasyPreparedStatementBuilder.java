@@ -14,6 +14,13 @@ public class EasyPreparedStatementBuilder {
     public static final String TAG = EasyPreparedStatementBuilder.class.getName();
     public static final String ALIAS_PREFIX = "bsajkfhoi";
 
+	public static class PrimaryTableField {
+		public String name;
+		public PrimaryTableField(final String aName) {
+			name = aName;
+		}
+	} 
+
     public static class OnCondition {
         public String key; // the key bound to the joining table
         public String op; // the operator
@@ -192,6 +199,12 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
+	/**
+	 * Note that `appendJoin` always translates the `ON` conditions as 
+	 * <`secondary_table_alias`.`secondary_table_field`> <operator> <value>.
+	 * If <value> is to be filled in with associative field name, it could ONLY
+	 * be a primary table (i.e. m_table) field.
+	 * */
     public EasyPreparedStatementBuilder join(String table, String[] keys, String[] ops, Object[] vals) {
         if (table == null || keys == null || ops == null || vals == null) return this;
         if (keys.length != vals.length || ops.length != vals.length) return this;
@@ -290,11 +303,11 @@ public class EasyPreparedStatementBuilder {
     }
 
     protected String appendFromTable(String query) {
-        return query + " FROM " + m_table;
+        return query + " FROM `" + m_table + "`";
     }
 
     protected String appendIntoTable(String query) {
-        return query + " INTO " + m_table;
+        return query + " INTO `" + m_table + "`";
     }
 
     protected String appendJoin(String query) {
@@ -313,11 +326,13 @@ public class EasyPreparedStatementBuilder {
                     List<?> castedVals = (List<?>) condition.val;
                     query += "(";
                     for (int j = 0; j < castedVals.size(); ++j) {
-                        query += "?";
+						query += "?";
                         if (j < castedVals.size() - 1) query += ", ";
                     }
                     query += ")";
-                } else {
+                } else if (condition.val instanceof PrimaryTableField) {
+					query += ("`" + m_table + "`.`" + ((PrimaryTableField) condition.val).name + "`"); // special case for joining
+				} else {
                     query += "?";
                 }
                 if (i < length - 1) query += " AND ";
@@ -397,7 +412,6 @@ public class EasyPreparedStatementBuilder {
             query = appendLimit(query);
 
             int index = 1;
-
             statement = connection.prepareStatement(query);
             if (m_join != null) {
                 for (Map.Entry<String, List<OnCondition>> entry : m_join.entrySet()) {
@@ -405,10 +419,10 @@ public class EasyPreparedStatementBuilder {
                     for (OnCondition condition : conditionList) {
                         if (condition.val instanceof List) {
                             List<?> castedVals = (List<?>) condition.val;
-                            for (Object castedVal : castedVals) {
-                                statement.setObject(index++, castedVal);
-                            }
-                        } else {
+                            for (Object castedVal : castedVals)	statement.setObject(index++, castedVal);
+                        } else if (condition.val instanceof PrimaryTableField) {
+							continue; // special case for joining
+						} else {
                             statement.setObject(index++, condition.val);
                         }
                     }
@@ -635,6 +649,7 @@ public class EasyPreparedStatementBuilder {
         try {
             Connection connection = SQLHelper.getConnection();
             PreparedStatement statement = this.toSelect(connection);
+			Loggy.i(TAG, "execSelect", statement.toString());
             ResultSet rs = statement.executeQuery();
             if (rs != null) {
                 ret = ResultSetUtil.convertToJSON(rs);

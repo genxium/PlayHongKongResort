@@ -155,7 +155,7 @@ public class SQLCommander {
             String[] onCols = {UserActivityRelation.USER_ID, UserActivityRelation.ACTIVITY_ID, UserActivityRelation.RELATION};
             String[] onOps = {"=", "=", "IN"};
 
-            Object[] onVals = {vieweeId, Activity.TABLE + "." + Activity.ID, maskedRelationList};
+            Object[] onVals = {vieweeId, new EasyPreparedStatementBuilder.PrimaryTableField(Activity.ID), maskedRelationList};
 
             List<JSONObject> activityJsonList = builder.select(names)
                                                     .from(Activity.TABLE)
