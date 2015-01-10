@@ -649,7 +649,6 @@ public class EasyPreparedStatementBuilder {
         try {
             Connection connection = SQLHelper.getConnection();
             PreparedStatement statement = this.toSelect(connection);
-			Loggy.i(TAG, "execSelect", statement.toString());
             ResultSet rs = statement.executeQuery();
             if (rs != null) {
                 ret = ResultSetUtil.convertToJSON(rs);
