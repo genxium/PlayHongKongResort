@@ -14,12 +14,21 @@ public class EasyPreparedStatementBuilder {
     public static final String TAG = EasyPreparedStatementBuilder.class.getName();
     public static final String ALIAS_PREFIX = "bsajkfhoi";
 
+	public static class PrimaryTableField {
+		public String name;
+		public PrimaryTableField(final String aName) {
+			name = aName;
+		}
+	} 
+
     public static class OnCondition {
         public String key; // the key bound to the joining table
+        public String op; // the operator
         public Object val;
 
-        public OnCondition(String aKey, Object aVal) {
+        public OnCondition(final String aKey, final String aOp, final Object aVal) {
             key = aKey;
+            op = aOp;
             val = aVal;
         }
     }
@@ -162,18 +171,6 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder increase(List<String> cols, List<Object> vals) {
-        if (cols == null || vals == null) return this;
-        if (cols.size() != vals.size()) return this;
-        int n = cols.size();
-        for (int i = 0; i < n; i++) {
-            String col = cols.get(i);
-            Object val = vals.get(i);
-            increase(col, val);
-        }
-        return this;
-    }
-
     public EasyPreparedStatementBuilder increase(String[] cols, Object[] vals) {
         if (cols == null || vals == null) return this;
         if (cols.length != vals.length) return this;
@@ -192,18 +189,6 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder decrease(List<String> cols, List<Object> vals) {
-        if (cols == null || vals == null) return this;
-        if (cols.size() != vals.size()) return this;
-        int n = cols.size();
-        for (int i = 0; i < n; i++) {
-            String col = cols.get(i);
-            Object val = vals.get(i);
-            decrease(col, val);
-        }
-        return this;
-    }
-
     public EasyPreparedStatementBuilder decrease(String[] cols, Object[] vals) {
         if (cols == null || vals == null) return this;
         if (cols.length != vals.length) return this;
@@ -214,37 +199,30 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder join(String table, String[] keys, Object[] vals) {
-        if (table == null || keys == null || vals == null) return this;
-        if (keys.length != vals.length) return this;
+	/**
+	 * Note that `appendJoin` always translates the `ON` conditions as 
+	 * <`secondary_table_alias`.`secondary_table_field`> <operator> <value>.
+	 * If <value> is to be filled in with associative field name, it could ONLY
+	 * be a primary table (i.e. m_table) field.
+	 * */
+    public EasyPreparedStatementBuilder join(String table, String[] keys, String[] ops, Object[] vals) {
+        if (table == null || keys == null || ops == null || vals == null) return this;
+        if (keys.length != vals.length || ops.length != vals.length) return this;
         int length = keys.length;
-        if (m_join == null) m_join = new HashMap<String, List<OnCondition>>();
-        List<OnCondition> conditionList = new ArrayList<OnCondition>();
-        for (int i = 0; i < length; ++i)    conditionList.add(new OnCondition(keys[i], vals[i]));
+        if (m_join == null) m_join = new HashMap<>();
+        List<OnCondition> conditionList = new ArrayList<>();
+        for (int i = 0; i < length; ++i)    conditionList.add(new OnCondition(keys[i], ops[i], vals[i]));
         m_join.put(table, conditionList);
         return this;
     }
 
     public EasyPreparedStatementBuilder where(String col, String op, Object val) {
-        if (m_whereCols == null) m_whereCols = new LinkedList<String>();
-        if (m_whereOps == null) m_whereOps = new LinkedList<String>();
-        if (m_whereVals == null) m_whereVals = new LinkedList<Object>();
+        if (m_whereCols == null) m_whereCols = new LinkedList<>();
+        if (m_whereOps == null) m_whereOps = new LinkedList<>();
+        if (m_whereVals == null) m_whereVals = new LinkedList<>();
         m_whereCols.add(col);
         m_whereOps.add(op);
         m_whereVals.add(val);
-        return this;
-    }
-
-    public EasyPreparedStatementBuilder where(List<String> cols, List<String> ops, List<Object> vals) {
-        if (cols == null || ops == null || vals == null) return this;
-        if (cols.size() != ops.size() || cols.size() != vals.size()) return this;
-        int n = cols.size();
-        for (int i = 0; i < n; i++) {
-            String col = cols.get(i);
-            String op = ops.get(i);
-            Object val = vals.get(i);
-            where(col, op, val);
-        }
         return this;
     }
 
@@ -325,11 +303,11 @@ public class EasyPreparedStatementBuilder {
     }
 
     protected String appendFromTable(String query) {
-        return query + " FROM " + m_table;
+        return query + " FROM `" + m_table + "`";
     }
 
     protected String appendIntoTable(String query) {
-        return query + " INTO " + m_table;
+        return query + " INTO `" + m_table + "`";
     }
 
     protected String appendJoin(String query) {
@@ -340,10 +318,23 @@ public class EasyPreparedStatementBuilder {
             List<OnCondition> conditionList = entry.getValue();
             int length = conditionList.size();
             String tableAlias = ALIAS_PREFIX + String.valueOf(index);
-            query += (" JOIN " + table + " AS " + tableAlias + " ON ");
+            query += (" JOIN `" + table + "` AS `" + tableAlias + "` ON ");
             for (int i = 0; i < length; ++i) {
                 OnCondition condition = conditionList.get(i);
-                query += (tableAlias + "." + condition.key + "=? ");
+                query += ("`" + tableAlias + "`.`" + condition.key + "` " + condition.op);
+                if (condition.val instanceof List) {
+                    List<?> castedVals = (List<?>) condition.val;
+                    query += "(";
+                    for (int j = 0; j < castedVals.size(); ++j) {
+						query += "?";
+                        if (j < castedVals.size() - 1) query += ", ";
+                    }
+                    query += ")";
+                } else if (condition.val instanceof PrimaryTableField) {
+					query += ("`" + m_table + "`.`" + ((PrimaryTableField) condition.val).name + "`"); // special case for joining
+				} else {
+                    query += "?";
+                }
                 if (i < length - 1) query += " AND ";
             }
             ++index;
@@ -357,8 +348,10 @@ public class EasyPreparedStatementBuilder {
         for (int i = 0; i < m_whereCols.size(); i++) {
             String col = m_whereCols.get(i);
             String op = m_whereOps.get(i);
-            if (op.equalsIgnoreCase("IN")) {
-                query += ("`" + col + "` " + op + " ("); // mind the space
+            Object val = m_whereVals.get(i);
+            query += ("`" + col + "` " + op);
+            if (val instanceof List) {
+                query += " ("; // mind the space
                 List<?> castedVals = (List<?>)(m_whereVals.get(i));
                 for (int j = 0; j < castedVals.size(); ++j) {
                     query += "?";
@@ -366,7 +359,7 @@ public class EasyPreparedStatementBuilder {
                 }
                 query += ")";
             }
-            else query += ("`" + col + "`" + op + "?");
+            else query += "?";
             if (i < m_whereCols.size() - 1) {
                 if (m_whereLink == null) query += " AND ";
                 else query += (" " + m_whereLink + " ");
@@ -419,13 +412,19 @@ public class EasyPreparedStatementBuilder {
             query = appendLimit(query);
 
             int index = 1;
-
             statement = connection.prepareStatement(query);
             if (m_join != null) {
                 for (Map.Entry<String, List<OnCondition>> entry : m_join.entrySet()) {
                     List<OnCondition> conditionList = entry.getValue();
                     for (OnCondition condition : conditionList) {
-                        statement.setObject(index++, condition.val);
+                        if (condition.val instanceof List) {
+                            List<?> castedVals = (List<?>) condition.val;
+                            for (Object castedVal : castedVals)	statement.setObject(index++, castedVal);
+                        } else if (condition.val instanceof PrimaryTableField) {
+							continue; // special case for joining
+						} else {
+                            statement.setObject(index++, condition.val);
+                        }
                     }
                 }
             }
