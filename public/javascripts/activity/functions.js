@@ -139,12 +139,18 @@ function displayTimesTable(par, activity) {
 
 function displayParticipantStatistics(par, activity) {
 
-	var spanSelected = $("<div>", {
-		text: activity.numSelected.toString() + " selected"
+	var spanSelected = $("<span>", {
+		text: activity.numSelected.toString() + " selected",
+		style: "color: PaleVioletRed"
+	}).appendTo(par);
+
+	var spanSlash = $("<span>", {
+		text: " / "
 	}).appendTo(par);
 
 	var spanApplied = $("<span>", {
-		text: (activity.numApplied + activity.numSelected).toString() + " applied" // display the total number of applied users including the selected ones
+		text: (activity.numApplied + activity.numSelected).toString() + " applied", // display the total number of applied users including the selected ones
+		style: "color: purple"
 	}).appendTo(par);
 
 }
@@ -277,6 +283,12 @@ function generateActivityCell(par, activity){
 		text: activity.title
 	}).appendTo(middle);
 	attachRelationIndicator(title, activity);
+	
+	var addr = $("<p>", {
+		class: "activity-addr",
+		text: activity.address
+	}).appendTo(middle);
+
 	displayTimesTable(middle, activity);
 	var midBottom = $("<div>", {
 		class: "activity-attend"
@@ -288,14 +300,29 @@ function generateActivityCell(par, activity){
 	}).appendTo(ret);
 
 	var btnDetail = $('<button>', {
-		class: "purple",
+		class: "activity-detail right purple",
 		text: "Go"
 	}).appendTo(right);
-	var dDetail = {};
 	btnDetail.click(activity, function(evt){
 		evt.preventDefault();
 		var act = evt.data;
 		window.location.hash = (g_keyActivityId + "=" + act.id.toString());
 	});
+	
+	var selectedSnippet = $("<div>", {
+		class: "selected-snippet"
+	}).appendTo(right);
+	if (activity.selectedParticipants != null) {
+		var count = activity.selectedParticipants.length <= 3 ? activity.selectedParticipants.length : 3;
+		for (var i = 0; i < count; ++i) {
+			var participant = activity.selectedParticipants[i];
+			var avatar = (participant.avatar == null) ? "assets/icons/anonymous.png" : participant.avatar;
+			$("<img>", {
+				src: avatar,
+				class: "selected-snippet-avatar left"
+			}).appendTo(selectedSnippet);
+		}
+	}
+
 	attachStatusIndicator(right, activity);
 }

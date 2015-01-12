@@ -22,3 +22,28 @@
 	color: #3090a6;
 	font-weight: bold;
 }
+.activity-addr {
+	font-size: 1em;
+	color: crimson;
+}
+.activity-action {
+	position: relative; /* nearest position anchor requires the position property to be set */
+	font-size: 2em;	
+}
+.activity-detail {
+	position: absolute; /* relative to activity-action */
+	top: 0px;
+	left: 0px;
+	height: 100px; 
+}
+.selected-snippet {
+	position: absolute; /* relative to activity-action */
+	top: 120px;
+	left: 0px;
+	height: 50px;
+}
+.selected-snippet-avatar {
+	position: relative;
+	width: 32px; /* randomly picked... */
+	height: 32px;
+}
