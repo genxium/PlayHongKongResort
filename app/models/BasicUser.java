@@ -14,6 +14,8 @@ public class BasicUser extends AbstractModel {
     public static String NAME = "name";
     public static String AVATAR = "avatar";
 
+    public static final String[] QUERY_FILEDS = {ID, EMAIL, NAME, AVATAR};
+
     protected String m_email = null;
 
     public String getEmail() {

@@ -13,6 +13,7 @@ public class UserActivityRelation extends AbstractModel {
 
     public static final int[] PRESENT_STATES = {SELECTED|PRESENT, SELECTED|PRESENT|ASSESSED};
     public static final int[] ABSENT_STATES = {SELECTED|ABSENT, SELECTED|ABSENT|ASSESSED};
+    public static final int[] APPLIED_STATES = {APPLIED};
     public static final int[] SELECTED_STATES = {SELECTED, SELECTED|PRESENT, SELECTED|ABSENT, SELECTED|PRESENT|ASSESSED, SELECTED|ABSENT|ASSESSED};
 
     public static String TABLE = "user_activity_relation";

@@ -37,6 +37,8 @@ public class Activity extends AbstractSimpleMessage {
     public static final String LAST_ACCEPTED_TIME = "last_accepted_time";
     public static final String LAST_REJECTED_TIME = "last_rejected_time";
 
+    public static String SELECTED_PARTICIPANTS = "selected_participants";
+
     public static final String ACTIVITIES = "activities";
 
     public static String[] QUERY_FIELDS = {Activity.ID, Activity.TITLE, Activity.ADDRESS, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
@@ -147,6 +149,8 @@ public class Activity extends AbstractSimpleMessage {
 	    return General.millisec() > m_beginTime;
     }
 
+    protected List<BasicUser> m_selectedParticipants = null;
+
     public Activity() {
         super();
     }
@@ -219,7 +223,7 @@ public class Activity extends AbstractSimpleMessage {
         return ret;
     }
 
-    public ObjectNode toObjectNodeWithImages(Long viewerId) {
+    public ObjectNode toObjectNodeWithImages(Long viewerId) {;
 	    ObjectNode ret = this.toObjectNode(viewerId);
 	    try {
 		    List<Image> images = SQLCommander.queryImages(m_id);
@@ -231,5 +235,21 @@ public class Activity extends AbstractSimpleMessage {
 		    Loggy.e(TAG, "toObjectNodeWithImages", e);
 	    }
 	    return ret;
+    }
+
+    public ObjectNode toObjectNodeWithImagesAndSelectedParticipants(Long viewerId) {
+        ObjectNode ret = this.toObjectNodeWithImages(viewerId);
+        try {
+            m_selectedParticipants = SQLCommander.querySelectedParticipants(m_id);
+            if (m_selectedParticipants == null || m_selectedParticipants.size() == 0) return ret;
+            ArrayNode selectedParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
+            for (BasicUser participant : m_selectedParticipants) {
+                selectedParticipantsNode.add(participant.toObjectNode(viewerId));
+            }
+            ret.put(SELECTED_PARTICIPANTS, selectedParticipantsNode);
+        } catch (Exception e) {
+            Loggy.e(TAG, "toObjectNodeWithImagesAndSelectedParticipants", e);
+        }
+        return ret;
     }
 }

@@ -12,7 +12,6 @@ public class ActivityDetail extends Activity {
 
     public static String IMAGES = "images";
     public static String APPLIED_PARTICIPANTS = "applied_participants";
-    public static String SELECTED_PARTICIPANTS = "selected_participants";
     public static String PRESENT_PARTICIPANTS = "present_participants";
 
     protected List<Image> m_images = null;
@@ -28,7 +27,6 @@ public class ActivityDetail extends Activity {
     }
 
     protected List<BasicUser> m_appliedParticipants = null;
-    protected List<BasicUser> m_selectedParticipants = null;
     protected List<BasicUser> m_presentParticipants = null;
 
     public ActivityDetail(Activity activity, List<Image> images, List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants, List<BasicUser> presentParticipants) {

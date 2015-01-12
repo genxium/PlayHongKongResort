@@ -129,7 +129,7 @@ public class ActivityController extends Controller {
                 if (activity.getStatus() != Activity.ACCEPTED
                         &&
                     (!isHost && !isAdmin))	continue;
-                activitiesNode.add(activity.toObjectNodeWithImages(viewerId));
+                activitiesNode.add(activity.toObjectNodeWithImagesAndSelectedParticipants(viewerId));
             }
             result.put(Activity.ACTIVITIES, activitiesNode);
             return ok(result);

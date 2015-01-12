@@ -13,6 +13,7 @@ import models.AbstractMessage;
 import models.Notification;
 import models.User;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -29,21 +30,21 @@ public class NotificationController extends Controller {
 	
 	public static String TAG = NotificationController.class.getName();
 
-    public static Result count(String token, Integer isRead) {
-        try {
-            if (token == null) throw new InvalidQueryParamsException();
-            Long userId = SQLCommander.queryUserId(token);
-            User user = SQLCommander.queryUser(userId);
-            ObjectNode result = Json.newObject();
-            result.put(Notification.COUNT, user.getUnreadCount());
-            return ok(result).as("text/plain");
-        } catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
-        } catch (Exception e) {
-            Loggy.e(TAG, "count", e);
-        }
-        return badRequest();
-    }
+	public static Result count(String token, Integer isRead) {
+		try {
+			if (token == null) throw new InvalidQueryParamsException();
+			Long userId = SQLCommander.queryUserId(token);
+			User user = SQLCommander.queryUser(userId);
+			ObjectNode result = Json.newObject();
+			result.put(Notification.COUNT, user.getUnreadCount());
+			return ok(result).as("text/plain");
+		} catch (TokenExpiredException e) {
+			return badRequest(TokenExpiredResult.get());
+		} catch (Exception e) {
+			Loggy.e(TAG, "count", e);
+		}
+		return badRequest();
+	}
 	
 	public static Result list(Integer page_st, Integer page_ed, Integer numItems, Integer orientation, String token, Integer isRead) {
 		try {
@@ -96,10 +97,27 @@ public class NotificationController extends Controller {
 			
 			List<Long> notificationIdList = new LinkedList<Long>();
 			
-            JSONArray bundle= (JSONArray) JSONValue.parse(formData.get(AbstractMessage.BUNDLE)[0]);
+			JSONArray bundle= (JSONArray) JSONValue.parse(formData.get(AbstractMessage.BUNDLE)[0]);
 			for (Object obj : bundle) {
 				Long notificationId = Converter.toLong(obj);
 				notificationIdList.add(notificationId);
+			}
+
+			/**
+			 * TODO: move the query to SQLCommander with proper wrapping
+			 * */
+			EasyPreparedStatementBuilder query = new EasyPreparedStatementBuilder();
+			List<JSONObject> results = query.select(Notification.QUERY_FIELDS)
+					.from(Notification.TABLE)
+					.where(Notification.ID, "IN", notificationIdList)
+					.where(Notification.TO, "=", userId)
+					.where(Notification.IS_READ, "=", 0)
+					.execSelect();
+			if (results == null) throw new NullPointerException();
+			if (results.size() > 0) {
+				EasyPreparedStatementBuilder decrement = new EasyPreparedStatementBuilder();
+				boolean rs = decrement.update(User.TABLE).decrease(User.UNREAD_COUNT, 1).where(User.ID, "=", userId).execUpdate();
+				if (!rs) throw new NullPointerException();
 			}
 
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
