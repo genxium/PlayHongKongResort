@@ -88,6 +88,7 @@ public class ExtraCommander extends SQLCommander {
 	}
 
 	public static Image queryImage(int imageId) {
+		if (imageId == 0) return null;
 		try {
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 			String[] names = {Image.ID, Image.URL};
@@ -108,9 +109,9 @@ public class ExtraCommander extends SQLCommander {
 		try {
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 			List<JSONObject> records = builder.select(Image.QUERY_FIELDS)
-					.from(Image.TABLE)
-					.where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
-					.where(Image.META_ID, "=", activityId).execSelect();
+											.from(Image.TABLE)
+											.where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
+											.where(Image.META_ID, "=", activityId).execSelect();
 
 			for (JSONObject record : records) {
 				Image image = new Image(record);

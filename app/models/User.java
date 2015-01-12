@@ -33,7 +33,7 @@ public class User extends BasicUser {
 	public static final String UNREAD_COUNT = "unread_count";
 	public static final String UNASSESSED_COUNT = "unassessed_count";
 
-    public static final String[] QUERY_FILEDS = {ID, EMAIL, NAME, AVATAR, PASSWORD, PASSWORD_RESET_CODE, UNREAD_COUNT, UNASSESSED_COUNT, SALT, GROUP_ID, AUTHENTICATION_STATUS, GENDER, TOKEN, VERIFICATION_CODE};
+    public static final String[] QUERY_FILEDS = {ID, EMAIL, NAME, AVATAR, PASSWORD, PASSWORD_RESET_CODE, UNREAD_COUNT, UNASSESSED_COUNT, SALT, GROUP_ID, AUTHENTICATION_STATUS, GENDER, VERIFICATION_CODE};
 
     protected String m_password = null;
 
