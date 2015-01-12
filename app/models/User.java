@@ -19,6 +19,7 @@ public class User extends BasicUser {
     public static int ADMIN = 3;
 
     public static final String TABLE = "user";
+
     public static final String PASSWORD = "password";
     public static final String SALT = "salt";
     public static final String GROUP_ID = "group_id";
@@ -31,6 +32,8 @@ public class User extends BasicUser {
 
 	public static final String UNREAD_COUNT = "unread_count";
 	public static final String UNASSESSED_COUNT = "unassessed_count";
+
+    public static final String[] QUERY_FILEDS = {ID, EMAIL, NAME, AVATAR, PASSWORD, PASSWORD_RESET_CODE, UNREAD_COUNT, UNASSESSED_COUNT, SALT, GROUP_ID, AUTHENTICATION_STATUS, GENDER, TOKEN, VERIFICATION_CODE};
 
     protected String m_password = null;
 
