@@ -143,7 +143,7 @@ public class ActivityController extends Controller {
 
 	public static Result detail(Long activityId, String token) {
 		try {
-			ActivityDetail activityDetail = SQLCommander.queryActivityDetail(activityId);
+			ActivityDetail activityDetail = ExtraCommander.queryActivityDetail(activityId);
 			if (activityDetail == null) throw new ActivityNotFoundException();
 			Long userId = null;
 			if (token != null) userId = SQLCommander.queryUserId(token);
@@ -213,7 +213,7 @@ public class ActivityController extends Controller {
 			if(!SQLCommander.updateActivity(activity))	throw new NullPointerException();
 
 			// save new images
-			List<Image> previousImages = SQLCommander.queryImages(activityId);
+			List<Image> previousImages = ExtraCommander.queryImages(activityId);
 			if (imageFiles != null && imageFiles.size() > 0) {
 				for (Http.MultipartFormData.FilePart imageFile : imageFiles) {
 				    if (SQLHelper.INVALID == ExtraCommander.saveImageOfActivity(imageFile, user, activity)) break;

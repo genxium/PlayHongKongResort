@@ -10,7 +10,6 @@ import utilities.DataUtils;
 import utilities.General;
 import utilities.Loggy;
 
-import java.sql.PreparedStatement;
 import java.util.*;
 
 /*
@@ -126,21 +125,6 @@ public class SQLCommander {
 	    }
 	    return activity;
 
-    }
-
-    public static ActivityDetail queryActivityDetail(Long activityId) {
-	    ActivityDetail activityDetail = null;
-	    try {
-		    Activity activity = queryActivity(activityId);
-		    List<Image> images = queryImages(activityId);
-		    List<BasicUser> appliedParticipants = queryAppliedParticipants(activityId);
-            List<BasicUser> selectedParticipants = querySelectedParticipants(activityId);
-		    List<BasicUser> presentParticipants = new LinkedList<>(); // not used
-		    activityDetail = new ActivityDetail(activity, images, appliedParticipants, selectedParticipants, presentParticipants);
-	    } catch (Exception e) {
-		    Loggy.e(TAG, "queryActivityDetail", e);
-	    }
-	    return activityDetail;
     }
 
     public static List<Activity> queryActivities(Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems, Long vieweeId, List<Integer> maskedRelationList) {
@@ -659,127 +643,21 @@ public class SQLCommander {
 	}
 
 	public static boolean rejectActivity(User user, Activity activity) {
-		if (user == null) return false;
-		if (activity == null) return false;
-		try {
-			long now = General.millisec();
-			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-			return builder.update(Activity.TABLE)
-				.set(Activity.STATUS, Activity.REJECTED)
-				.set(Activity.LAST_REJECTED_TIME, now)
-				.where(Activity.ID, "=", activity.getId())
-				.execUpdate();
-		} catch (Exception e) {
-			Loggy.e(TAG, "rejectActivity", e);
-		}
-		return false;
-	}
-
-	public static long uploadAvatar(User user, String imageURL) {
-		long ret = SQLHelper.INVALID;
-		try {
-			EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
-			String[] names = {Image.URL};
-			Object[] vals = {imageURL};
-			long lastImageId = builderImage.insert(names, vals).into(Image.TABLE).execInsert();
-			if (lastImageId == SQLHelper.INVALID) throw new Exception();
-
-			EasyPreparedStatementBuilder builderUser = new EasyPreparedStatementBuilder();
-			builderUser.update(User.TABLE).set(User.AVATAR, lastImageId).where(User.ID, "=", user.getId());
-			if (!builderUser.execUpdate()) {
-				deleteImageRecord(lastImageId);
-				throw new NullPointerException();
-			}
-			ret = lastImageId;
-		} catch (Exception e){
-			Loggy.e(TAG, "uploadAvatar", e);
-		}
-		return ret;
-	}
-
-	public static Image queryImage(int imageId) {
-		Image image = null;
-		try {
-			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-			String[] names = {Image.ID, Image.URL};
-			List<JSONObject> images = builder.select(names).from(Image.TABLE).where(Image.ID, "=", imageId).execSelect();
-			if (images == null) throw new ImageNotFoundException();
-			Iterator<JSONObject> itImage = images.iterator();
-			if (itImage.hasNext()) {
-				JSONObject imageJson = itImage.next();
-				image = new Image(imageJson);
-			}
-		} catch (Exception e) {
-
-		}
-		return image;
-	}
-
-	public static boolean deleteImageRecord(long imageId) {
-		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		return builder.from(Image.TABLE).where(Image.ID, "=", imageId).execDelete();
-	}
-
-	public static boolean deleteImageRecord(long imageId, long activityId) {
-		try {
-			String[] whereCols = {ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID};
-			String[] whereOps = {"=", "="};
-			Object[] whereVals = {activityId, imageId};
-
-			EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
-			builderRelation.from(ActivityImageRelation.TABLE).where(whereCols, whereOps, whereVals);
-
-			if (!builderRelation.execDelete()) throw new NullPointerException();
-
-			EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
-			return builderImage.from(Image.TABLE).where(Image.ID, "=", imageId).execDelete();
-		} catch (Exception e) {
-			Loggy.e(TAG, "deleteImageRecord", e);
-		}
-
-		return false;
-	}
-
-	public static List<Image> queryImages(Long activityId) {
-		List<Image> images = new LinkedList<Image>();
-		try {
-			String query = "SELECT " + Image.ID + ", " + Image.URL + " FROM " + Image.TABLE + " WHERE EXISTS (SELECT NULL FROM " + ActivityImageRelation.TABLE + " WHERE "
-				+ ActivityImageRelation.ACTIVITY_ID + "=? AND " + ActivityImageRelation.TABLE + "." + ActivityImageRelation.IMAGE_ID + "=" + Image.TABLE + "." + Image.ID +
-				")";
-			PreparedStatement statement = SQLHelper.getConnection().prepareStatement(query);
-			statement.setLong(1, activityId);
-			List<JSONObject> imageRecordList = SQLHelper.select(statement);
-			for (JSONObject imageRecord : imageRecordList) {
-				Image image = new Image(imageRecord);
-				images.add(image);
-			}
-
-		} catch (Exception e) {
-			Loggy.e(TAG, "queryImages", e);
-		}
-		return images;
-	}
-
-	public static long createImage(User user, final Activity activity, final String imageURL) {
-		try {
-			if (user == null) throw new UserNotFoundException();
-			if (activity == null) throw new ActivityNotFoundException();
-			EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
-			String[] columns = {Image.URL};
-			Object[] values = {imageURL};
-			long lastImageId = builderImage.insert(columns, values).into(Image.TABLE).execInsert();
-			if (lastImageId == SQLHelper.INVALID) throw new NullPointerException();
-
-			String[] cols = {ActivityImageRelation.ACTIVITY_ID, ActivityImageRelation.IMAGE_ID, ActivityImageRelation.GENERATED_TIME};
-			Object[] vals = {activity.getId(), lastImageId, General.millisec()};
-			EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
-			builderRelation.insert(cols, vals).into(ActivityImageRelation.TABLE).execInsert();
-			return lastImageId;
-		} catch (Exception e) {
-			Loggy.e(TAG, "createImage", e);
-		} 
-		return SQLHelper.INVALID;
-	}
+        if (user == null) return false;
+        if (activity == null) return false;
+        try {
+            long now = General.millisec();
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            return builder.update(Activity.TABLE)
+                    .set(Activity.STATUS, Activity.REJECTED)
+                    .set(Activity.LAST_REJECTED_TIME, now)
+                    .where(Activity.ID, "=", activity.getId())
+                    .execUpdate();
+        } catch (Exception e) {
+            Loggy.e(TAG, "rejectActivity", e);
+        }
+        return false;
+    }
 
     public static List<BasicUser> queryUsers(long activityId, List<Integer> maskedRelationList) {
         List<BasicUser> users = new ArrayList<>();

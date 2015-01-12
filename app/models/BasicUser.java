@@ -1,7 +1,7 @@
 package models;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import controllers.SQLCommander;
+import controllers.ExtraCommander;
 import org.json.simple.JSONObject;
 import utilities.Converter;
 import utilities.Loggy;
@@ -63,7 +63,7 @@ public class BasicUser extends AbstractModel {
         try {
             if (viewerId != null && viewerId.equals(m_id)) ret.put(EMAIL, m_email);
             ret.put(NAME, m_name);
-            Image image = SQLCommander.queryImage(m_avatar);
+            Image image = ExtraCommander.queryImage(m_avatar);
             if (image != null)  ret.put(AVATAR, image.getUrl());
         } catch (Exception e) {
             Loggy.e(TAG, "toObjectNode", e);

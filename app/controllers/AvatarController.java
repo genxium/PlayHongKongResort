@@ -34,7 +34,7 @@ public class AvatarController extends ImageController {
             if (newAvatarId == SQLHelper.INVALID) throw new NullPointerException();
 
             // delete previous avatar record and file
-            Image previousAvatar = SQLCommander.queryImage(previousAvatarId);
+            Image previousAvatar = ExtraCommander.queryImage(previousAvatarId);
             boolean isPreviousAvatarDeleted = ExtraCommander.deleteImageRecordAndFile(previousAvatar);
             if (isPreviousAvatarDeleted) {
                 Loggy.d(TAG, "upload", "previous avatar file and record deleted.");

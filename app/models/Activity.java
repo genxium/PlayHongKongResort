@@ -3,6 +3,7 @@ package models;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import controllers.ExtraCommander;
 import controllers.SQLCommander;
 import org.json.simple.JSONObject;
 import utilities.Converter;
@@ -226,7 +227,7 @@ public class Activity extends AbstractSimpleMessage {
     public ObjectNode toObjectNodeWithImages(Long viewerId) {;
 	    ObjectNode ret = this.toObjectNode(viewerId);
 	    try {
-		    List<Image> images = SQLCommander.queryImages(m_id);
+		    List<Image> images = ExtraCommander.queryImages(m_id);
 		    if (images == null || images.size() <= 0) return ret;
 		    ArrayNode imagesNode = new ArrayNode(JsonNodeFactory.instance);
 		    for (Image image : images)	imagesNode.add(image.toObjectNode());
