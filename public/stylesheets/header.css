@@ -2,10 +2,11 @@
 	margin: 0 auto;
 	width: 100%;
 	max-width: 1024px;
-	min-height: 100px;
+	height: 100px;
 }
 #topbar-title {
 	width: 320px;
+	height: 100%;
 	background-color: #e21e61;
 	color: #fff;
 	font-size: 45px;
@@ -17,32 +18,32 @@
 	color: #e2e185;
 	background-color: #f41d3e;
 }
+#topbar-title p {
+	padding: 25px 15px;
+}
 #login-section {
 	width: 320px; 
-}
-#login-box {
+	height: 100%;
 	background-color: #3babc2;
 }
+#login-box {
+	width: 300px;
+	height: 80px;
+	padding: 10px;
+}
 .login-inputs {
+	width: 200px;
 }
 .login-inputs input {
-	width: 200px;
-	height: 28px;
+	width: 188px;
 }
 .login-btn {
 	width: 100px;
-	background-color: #81246e;
-	color: #fff;
-	float: left;
-	border: none;
-	height: 56px;
+	height: 60px;
 	font-size: 24px;
 }
-.login-btn:hover {
-	color: #e2e185;
-	background-color: #ad4497;
-}
 .login-forgot {
+	margin-top: 5px;
 	background-color: #3ba8c2;
 	color: #fff;
 	border: none;

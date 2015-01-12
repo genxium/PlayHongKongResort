@@ -88,12 +88,12 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		evt.preventDefault();
 		var nameCheck = evt.data;
 		nameCheck.empty();
-		nameCheck.text("");
+		nameCheck.html("");
 		nameCheck.removeClass("warn");
 		var nameVal = $(this).val();
 		if(nameVal == null || nameVal.length == 0) return;
 		if(!validateName(nameVal)) {
-			nameCheck.text(" Username can only contain 6~20 alphabet letters and numbers");
+			nameCheck.html("<p>Username can only contain 6~20 alphabet letters and numbers</p>");
 			nameCheck.addClass("warn");
 			return;
 		}
@@ -106,10 +106,10 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 			data: params,
 			success: function(data, status, xhr){
 				if (isStandardSuccess(data)){
-					nameCheck.text(" This username can be used :)");        
+					nameCheck.html("<p>This username can be used :)</p>");        
 			    }else{
 					nameCheck.addClass("warn");
-					nameCheck.text(" This username cannot be used :(");
+					nameCheck.html("<p>This username cannot be used :(</p>");
 				}        
 			},
 			error: function(xhr, status, err){
@@ -121,13 +121,13 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		evt.preventDefault();
 		var emailCheck = evt.data;
 		emailCheck.empty();
-		emailCheck.text("");
+		emailCheck.html("");
 		emailCheck.removeClass("warn");
 		var emailVal = $(this).val();
 		if(emailVal == null || emailVal.length == 0) return;
 		if(!validateEmail(emailVal)) {
 			emailCheck.addClass("warn");
-			emailCheck.text(" Not valid email format");
+			emailCheck.html("<p>Not valid email format</p>");
 			return;
 		}
 
@@ -139,10 +139,10 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 			data: params,
 			success: function(data, status, xhr){
 				if (isStandardSuccess(data)){
-					emailCheck.text(" This email can be used :)");        
+					emailCheck.html("<p>This email can be used :)</p>");        
 				}else{
 					emailCheck.addClass("warn");
-					emailCheck.text(" This email cannot be used :(");
+					emailCheck.html("<p>This email cannot be used :(</p>");
 				}        
 			},
 			error: function(xhr, status, err){
@@ -154,13 +154,13 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		evt.preventDefault();
 		var pswCheck = evt.data;
 		pswCheck.empty();
-		pswCheck.text("");
+		pswCheck.html("");
 		pswCheck.removeClass("warn");
 		var pswVal = $(this).val();
 		if(pswVal == null || pswVal.length ==0 ) return;
 		if(validatePassword(pswVal))	return;
 		pswCheck.addClass("warn");
-		pswCheck.text(" Password can only contain 6~20 alphabet letters and numbers");
+		pswCheck.html("<p>Password can only contain 6~20 alphabet letters and numbers</p>");
 	});	
  
 	this.pswConfirm.on("input keyup paste", {0: this.pswConfirmCheck, 1: this.psw}, function(evt){
@@ -169,11 +169,11 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var pswConfirmVal = $(this).val();
 		var pswVal = evt.data[1].val();
 		pswConfirmCheck.empty();
-		pswConfirmCheck.text("");
+		pswConfirmCheck.html("");
 		pswConfirmCheck.removeClass("warn");
 		if(validatePasswordConfirm(pswVal, pswConfirmVal))	return;
 		pswConfirmCheck.addClass("warn");
-		pswConfirmCheck.text(" Doesn't match! ");
+		pswConfirmCheck.html("<p>Doesn't match!</p>");
 	});	
 }
 
@@ -235,7 +235,8 @@ function generateRegisterWidget(par, onSuccess, onError){
 		class: "register-button"
 	}).appendTo(register_box);
 	var btnRegister = $('<button>', {
-		text: "Register"
+		text: "Register",
+		class: "purple"
 	}).appendTo(rowButton);
 
 	return new RegisterWidget(fieldName, spName, fieldEmail, spEmail, fieldPsw, spanPsw, fieldPswConfirm, spPswConfirm, btnRegister, onSuccess, onError, captcha);

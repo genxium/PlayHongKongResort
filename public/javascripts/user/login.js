@@ -101,10 +101,10 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 		id: "login-box"
 	}).appendTo(par);
 	var row1 = $('<div>', {
-		class: "login-row1"
+		class: "login-row1 clearfix"
 	}).appendTo(container);
 	var inputs = $('<div>', {
-		class: "login-inputs"
+		class: "login-inputs left"
 	}).appendTo(row1);
 	var handle = $('<input>', {
 		placeHolder: "Email",
@@ -118,11 +118,11 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
     }).appendTo(inputs);
     var btn = $('<button>',{
         text: "Login",
-		class: "login-btn"
+		class: "login-btn right purple"
     }).appendTo(row1);
 	var forgot = $("<button>", {
 		text: "Forgot Password",
-		class: "login-fotgot"
+		class: "login-forgot"
 	}).appendTo(container);	
 	
 	return new PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);

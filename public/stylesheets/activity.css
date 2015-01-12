@@ -1,144 +1,24 @@
-.input-title, .input-address, .input-content {
+.cell-container {
+	height: 200px;
+	margin: 10px
+}
+.activity-cover {
+	background-color: #666;
+	width: 276px;
+	height: 196px;
+	padding: 2px;
+}
+.activity-cover img {
+	max-width: 100%;
+	max-height: 100%;
 	display: block;
-	position: relative;
-	font-size: 15pt;
-	margin-top: 5pt;
-	margin-bottom: 2pt;
+	margin: auto;
 }
-
-.input-title
-{
-	height: 25pt;
-	width: 400pt;
-	max-height: 50pt;
-	max-width:	400pt;
+.activity-info {
+	margin-left: 10px;
 }
-
-.input-address
-{
-	height: 25pt;
-	width: 400pt;
-	max-height: 50pt;
-	max-width:	400pt;
-}
-
-.input-content
-{
-	height: 200pt;
-	width: 400pt;
-	max-height: 400pt;
-	max-width:	400pt;
-	resize: none;
-}
-
-.btn-save, .btn-submit, .btn-cancel, .btn-delete {
-	position: relative;
-	top: 0;
-	padding: 3pt;
-	width: auto;
-	height: 36pt;
-	font-size: 15pt;
-	border: 0;
-}
-
-.btn-save
-{
-	left: 0;
-	background-color: indianred;
-}
-
-.btn-submit
-{
-	left: 100px;
-	background-color: #0000ee;
-}
-
-.btn-cancel
-{
-	left: 200px;
-	background-color: black;
-	color: white;
-}
-
-.btn-delete
-{
-	left: 300px;
-	background-color: #ff0000;
-}
-
-/* Activity Cells */
-.cell-container
-{
-	display: block;
-	width: 98%;
-	height: 144px;
-	padding: 3pt;
-	margin-top: 0;
-	margin-bottom: 0;
-	border-top: none;
-	border-left: none;
-	border-right: none;
-	border-bottom: thin solid lightgray;
-}
-
-.btn-join
-{
-	display: inline;
-	position: relative;
-	vertical-align: middle;
-	background-color:	#ccccff;
-	font-size:	12pt;
-	color:	blue;
-}
-
-.btn-detail
-{
-	background-color:	transparent;
-	border: 0;
-	font-size:	12pt;
-	color:	IndianRed;
-	text-decoration: underline;
-}
-
-.indicator-relation-container
-{
-
-	display: inline;
-	position: relative;
-	float: right;
-	width: 20%;
-	height: 95%;
-	
-}
-
-.indicator-status
-{
-	display: inline;
-	position: relative;
-	float: left;
-	margin-left: 2pt;
-	font-size: 16pt;
-	color: red;
-}
-
-.table-time, th, td {
-}
-
-.table-time {
-	border: 0; 
-	border-collapse: collapse;
-	border-spacing: 5px 5px;
-}
-
-.table-time-row {
-
-}
-
-.table-time-row > th {
-    text-align: center;
-}
-
-.table-time-row > td {
-    text-align: center;
-    border: 1px solid white;
+.activity-title {
+	font-size: 36px;
+	color: #3090a6;
+	font-weight: bold;
 }

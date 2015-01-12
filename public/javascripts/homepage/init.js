@@ -2,12 +2,12 @@ var g_registerWidget = null;
 
 function emptySectionRegister() {
 	if (g_sectionRegister == null) return;
-	setDimensions(g_sectionRegister, "100%", 0);
+	//setDimensions(g_sectionRegister, "100%", 0);
 }
 
 function initSectionRegister() {
 	if (g_sectionRegister == null) return;
-	setDimensions(g_sectionRegister, "100%", "auto");
+	//setDimensions(g_sectionRegister, "100%", "auto");
 }
 
 function clearHome() {

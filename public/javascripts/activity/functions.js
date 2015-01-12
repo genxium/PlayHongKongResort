@@ -101,57 +101,50 @@ function onListActivitiesError(err){
 
 function displayTimesTable(par, activity) {
     	// deadline and begin time
-    	var times = $("<table>", {
-		class: "table-time"
+    	var deadlineRow = $("<div>", {
+		class: "table-time-dealine"
 	}).appendTo(par);
-    	var deadlineRow = $("<tr>", {
-		class: "table-time-row"
-	}).appendTo(times);
-    	var deadlineTitle = $("<td>", {
+    	var deadlineTitle = $("<div>", {
     		text: "Application Deadline",
-    		style: "background-color: orangered; color: white; padding-left: 5pt; padding-right: 5pt"
+			class: "label"
     	}).appendTo(deadlineRow);
-    	var deadline = $("<td>", {
+    	var deadline = $("<div>", {
     		text: gmtMiilisecToLocalYmdhis(activity.applicationDeadline),
-    		style: "background-color: indianred; color: white; padding-left: 8pt; padding-right: 5pt"
+			class: "detail"
     	}).appendTo(deadlineRow);
 	if (activity.isDeadlineExpired()) {
-		stencilize(deadlineTitle);
-		stencilize(deadline);
+		//stencilize(deadlineTitle);
+		//stencilize(deadline);
+		deadlineRow.addClass("expired");
 	}
 
-    	var beginTimeRow = $("<tr>", {
-		class: "table-time-row"
-	}).appendTo(times);
-    	var beginTimeTitle = $("<td>", {
+    	var beginTimeRow = $("<div>", {
+		class: "table-time-begin"
+	}).appendTo(par);
+    	var beginTimeTitle = $("<div>", {
     		text: "Begin Time",
-    		style: "background-color: royalblue; color: white; padding-left: 5pt; padding-right: 5pt"
+    		class: "label"
     	}).appendTo(beginTimeRow);
     	var beginTime = $("<td>", {
     		text: gmtMiilisecToLocalYmdhis(activity.beginTime),
-    		style: "background-color: steelblue; color: white; padding-left: 8pt; padding-right: 5pt"
+    		class: "detail"
     	}).appendTo(beginTimeRow);
 
 	if (activity.hasBegun()) {
-		stencilize(beginTimeTitle);
-		stencilize(beginTime);
+		//stencilize(beginTimeTitle);
+		//stencilize(beginTime);
+		beginTimeRow.addClass("expired");
 	} 
 }
 
 function displayParticipantStatistics(par, activity) {
 
-	var spanSelected = $("<span>", {
-		text: activity.numSelected.toString() + " selected",
-		style: "color: PaleVioletRed"
-	}).appendTo(par);
-
-	var spanSlash = $("<span>", {
-		text: " / "
+	var spanSelected = $("<div>", {
+		text: activity.numSelected.toString() + " selected"
 	}).appendTo(par);
 
 	var spanApplied = $("<span>", {
-		text: (activity.numApplied + activity.numSelected).toString() + " applied", // display the total number of applied users including the selected ones
-		style: "color: purple"
+		text: (activity.numApplied + activity.numSelected).toString() + " applied" // display the total number of applied users including the selected ones
 	}).appendTo(par);
 
 }
@@ -262,48 +255,47 @@ function generateActivityCell(par, activity){
             }
 	}
 
-	var ret = $("<p>", {
-		class: "cell-container"
+	var ret = $("<div>", {
+		class: "cell-container clearfix"
 	}).appendTo(par);
 
-	var left = $("<span>", {
-		style: "display: inline-block; width: 25%; height: 90%;"
+	var left = $("<div>", {
+		class: "activity-cover left"
 	}).appendTo(ret);
 	if(coverImageUrl != null){
-		setBackgroundImageDefault(left, coverImageUrl);
+		//setBackgroundImageDefault(left, coverImageUrl);
+		var cover = $("<img>", {
+			src: coverImageUrl
+		}).appendTo(left);
 	}
 
-	var middle = $("<span>", {
-		style: "display: inline-block; margin-left: 10px; width: 40%; height: 90%;"
+	var middle = $("<div>", {
+		class: "activity-info left"
 	}).appendTo(ret);
-	var midTop = $("<div>", {
-		style: "margin-bottom: 5pt"
-	}).appendTo(middle);
-	var title = $("<span>", {
-		style: "color: blue; font-size: 15pt; margin-right: 5pt;",
+	var title = $("<p>", {
+		class: "activity-title",
 		text: activity.title
-	}).appendTo(midTop);
-	attachRelationIndicator(midTop, activity);
+	}).appendTo(middle);
+	attachRelationIndicator(title, activity);
 	displayTimesTable(middle, activity);
 	var midBottom = $("<div>", {
-		style: "margin-top: 5pt"
+		class: "activity-attend"
 	}).appendTo(middle);
 	displayParticipantStatistics(midBottom, activity);
 
-	var right = $("<span>", {
-		style: "display: inline-block; margin-left: 10px; width: 25%; height: 90%;"
+	var right = $("<div>", {
+		class: "activity-action left"
 	}).appendTo(ret);
 
-	var rtTop = $("<div>").appendTo(right);
 	var btnDetail = $('<button>', {
-		class: "btn-detail",
-		text: 'Go >'
-	}).appendTo(rtTop);
+		class: "purple",
+		text: "Go"
+	}).appendTo(right);
 	var dDetail = {};
 	btnDetail.click(activity, function(evt){
 		evt.preventDefault();
 		var act = evt.data;
 		window.location.hash = (g_keyActivityId + "=" + act.id.toString());
 	});
-	attachStatusIndicator(rtTop, activity);
+	attachStatusIndicator(right, activity);
 }

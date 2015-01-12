@@ -8,6 +8,8 @@
 	content: ".";
 	display: block;
 	clear: both;
+	width: 0;
+	height: 0;
 }
 .left {
 	float: left;
@@ -40,6 +42,31 @@ a:hover, a:active {
 	outline: none;
 	color: #3090a6;
 }
+p {
+	margin: 0;
+}
+input {
+	margin: 0;
+	padding: 0;
+	border: solid 1px #999;
+	height: 18px;
+	width: 288px;
+	padding: 5px;
+}
+button {
+	cursor: pointer;
+	padding: 0;
+}
+button.purple {
+	background-color: #81246e;
+	color: #fff;
+	border: none;
+	
+}
+button.purple:hover {
+	color: #e2e185;
+	background-color: #ad4497;	
+}
 #header {
 	background-color: #3090a6;
 }
@@ -51,8 +78,4 @@ a:hover, a:active {
 	background-color: #fff;
 }
 #footer{
-}
-#register-box {
-	background-color: #eee;
-	padding: 10px;
 }

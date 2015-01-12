@@ -154,9 +154,9 @@ function createSelector(par, titles, values, width, height, left, top) {
 	var length = titles.length;
 
 	var ret = $("<select>").appendTo(par);
-	setMargin(ret, "3pt", null, "3pt", null);
+	/*setMargin(ret, "3pt", null, "3pt", null);
 	setDimensions(ret, width, height); 
-	setOffset(ret, left, top);
+	setOffset(ret, left, top);*/
 	
 	for (var i = 0; i < length; ++i) {
 		var title = titles[i];

@@ -1,11 +1,15 @@
 @import "common.css";
 
-#register-box div{
+#section-register {
+	background-color: #eee;
+}
+#register-box {
 	width: 300px;
 	margin: auto;
+	padding: 10px 0;
 }
-#register-box input{
-	width: 100%;
+#register-box div.message p {
+	padding: 5px 0;
 }
 #register-box div.message{
 	color: green;
@@ -14,26 +18,21 @@
 	color: red;
 }
 #register-box .register-button button{
-	width: 300px;
+	width: 100%;
 	height: 50px;
-	background-color: #81246e;
-	color: #fff;
-	border: none;
 	font-size: 20px;
 }
-#register-box .register-button button:hover {
-	background-color: #ad4497;
-	color: #e2e185;
+.captcha {
+	height: 80px;
 }
-.captcha > .change {
+.captcha .change {
 	width: 100px;
 	height: 50px;
 	border: solid 1px #999;
-	text-index: -9999px;
 	background: url("../icons/refresh.png") 30px top no-repeat;
 }
-.captch > .change:hover {
-	background: url("../icons/refresh.png") 30px bottom no-repeat;
+.captcha .change:hover {
+	background-position: 30px bottom;
 }
 .captcha img{
 	float: left;
