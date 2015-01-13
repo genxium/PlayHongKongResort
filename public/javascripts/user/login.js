@@ -169,7 +169,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 				wsDisconnect();
 				$.removeCookie(g_keyToken, {path: '/'});
 				if (menu.onLogoutError == null) return;
-				menu.onLogoutError(error);
+				menu.onLogoutError(err);
 			}	
 		});
 	};
@@ -236,7 +236,7 @@ function checkLoginStatus(){
 				wsDisconnect();	
 				$.removeCookie(g_keyToken, {path: '/'});
 				if(g_preLoginForm.onLoginError == null) return;
-				g_preLoginForm.onLoginError(err);		
+				g_preLoginForm.onLoginError(null);		
 				return;
 			}
 			var userJson = JSON.parse(data);
