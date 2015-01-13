@@ -20,6 +20,9 @@
 .hide {
 	display: none !important;
 }
+.inline {
+	display: inline;
+}
 html, body {
 	margin: 0;
 	padding: 0;

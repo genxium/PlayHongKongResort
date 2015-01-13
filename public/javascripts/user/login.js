@@ -174,8 +174,8 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 		});
 	};
 
-	var noti = $("<span>", {
-		class: "noti-container"
+	var noti = $("<div>", {
+		class: "noti-container inline"
 	}).appendTo(par);
 
 	noti.click(function(evt){
@@ -186,21 +186,21 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 
 	setBackgroundImage(noti, "/assets/icons/notification.png", "contain", "no-repeat", "center");
 	var spBubble = $("<span>", {
-		style: "position: absolute; width: 20px; height: 20px; left: 70%; top: 20%; border-radius: 50%; background-color: indianred; text-align: center; vertical-align: middle; font-size: auto; color: white",
+		class: "noti-bubble",
 		text: "0"
 	}).appendTo(noti);
 	var bubble = new NotiBubble(0, spBubble);
 	bubble.update(g_loggedInUser.unreadCount);
 
-	var spDropdown = $("<span>", {
-		class: "post-login-menu-container"
+	var postLoginMenuContainer = $("<div>", {
+		class: "post-login-menu-container inline"
 	}).appendTo(par);
 
 	var icons = ["/assets/icons/new_activity.png", "/assets/icons/profile.png", "/assets/icons/logout.png"];
 	var titles = ["create", "profile", "logout"];
 	var reactions = [createReact, profileReact, logoutReact]; 
 
-	var dropdownMenu = createDropdownMenu(spDropdown, "menu-post-login", g_loggedInUser.name, icons, titles, reactions);
+	var dropdownMenu = createDropdownMenu(postLoginMenuContainer, "menu-post-login", g_loggedInUser.name, icons, titles, reactions);
 	var menu = new PostLoginMenu(bubble, dropdownMenu, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
 	var params = [menu, menu, menu];
 	dropdownMenu.setReactionParams(params);

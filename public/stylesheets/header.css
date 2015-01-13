@@ -23,6 +23,7 @@
 	box-sizing: border-box;
 }
 #login-section {
+	position: relative;
 	width: 320px; 
 	height: 100%;
 	background-color: #3babc2;
@@ -54,4 +55,35 @@
 }
 .login-forgot:hover {
 	color: #e2e185;
+}
+.noti-container {
+	position: absolute;
+	box-sizing: border-box;
+	top: 0px;
+	left: 0px;
+	width: 50px;
+	height: 100px;
+	padding-top: 25px;
+	padding-bottom: 25px;
+}
+.noti-bubble {
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	left: 70%;
+	top: 20%;
+	border-radius: 50%;
+	background-color: indianred;
+	text-align: center;
+	vertical-align: middle;
+	font-size: auto;
+	color: white;
+}
+.post-login-menu-container {
+	position: absolute;
+	box-sizing: border-box;
+	top: 0px;
+	left: 100px;
+	width: 200px;
+	height: 100px;
 }
