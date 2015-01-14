@@ -96,31 +96,31 @@ function generateExplorerTriggerSpan(par, onChange, imgSrc, nodeW, nodeH, picW, 
  */
 function generateDatePicker(par, time, onEdit) {
     
-	var ret=$('<div>', {
+	var ret = $('<div>', {
 		class: 'col-sm-6'    
 	}).appendTo(par);
 
-	var formGroup=$('<div>', {
+	var formGroup = $('<div>', {
 		class: 'form-group'    
 	}).appendTo(ret);
 
-	var inputGroup=$("<div>", {
+	var inputGroup = $("<div>", {
 		class: 'input-group date'    
 	}).appendTo(formGroup);
 
-	var input=$('<input>', {
+	var input = $("<input>", {
 		type: 'text',
 		value: time,
 		disabled: true,
-		class: 'form-control',
-		style: 'color: black; background-color: white; cursor: default; width: auto'    
+		class: "form-control",
+		style: "color: black; background-color: transparent; cursor: default; width: auto; border: none; outline: none; padding: 0; box-sizing: content-box;"    
 	}).appendTo(inputGroup);
 
-	var inputGroupAddon=$('<span>', {
+	var inputGroupAddon = $('<span>', {
 		class: 'input-group-addon'    
 	}).appendTo(inputGroup);
 
-	var glyphiconCalendar=$('<span>', {
+	var glyphiconCalendar = $('<span>', {
 		class: 'glyphicon glyphicon-calendar'   
 	}).appendTo(inputGroupAddon);
 
@@ -543,4 +543,40 @@ function Captcha(sid) {
 			captcha.img.attr("src", "/captcha?" + g_keySid + "=" + captcha.sid + "&ts=" + new Date().getTime());
 		});
 	}
+}
+
+/*
+ * WordCounter Widget
+ * */
+
+function WordCounter(current, min, max) {
+	this.current = current;
+	this.min = min;
+	this.max = max;
+	this.currentText = null;
+	this.maxText = null;
+	this.update = function(value) {
+		this.current = value;
+		this.currentText.text(value);
+		if (this.min <= value && value <= this.max) this.currentText.css("color", "gray");
+		else this.currentText.css("color", "red");
+	};
+	this.decrease = function(value) {
+		this.update(this.current - value);
+	};
+	this.increase = function(value) {
+		this.update(this.current + value);
+	};
+	this.appendCounter = function(par) {
+		var row = $("<p>").appendTo(par);
+		this.currentText = $("<span>", {
+			class: "word-counter-current",
+			text: this.current
+		}).appendTo(row);	
+		this.maxText = $("<span>", {
+			class: "word-counter-max",
+			text: "/" + this.max.toString()
+		}).appendTo(row);
+		this.update(this.current);
+	};
 }

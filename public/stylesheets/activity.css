@@ -32,6 +32,120 @@
 .time-table, .activity-attend, .selected-snippet {
 	margin-top: 5px;
 }
+
+.activity-editor {
+	position: fixed;
+	height: 90%;
+	padding: 5pt;
+	box-sizing: content-box;
+}
+
+.input-title, .input-address, .input-content {
+	display: block;
+	position: relative;
+	font-size: 15pt;
+	margin-top: 10pt;
+	margin-bottom: 2pt;
+}
+
+/* placeholder reference (note that this DOESN'T work with comma syntax!) : http://davidwalsh.name/html5-placeholder-css */
+.input-title::-webkit-input-placeholder {
+	font-style: italic;
+	font-size: 16pt;
+}
+.input-title:-moz-placeholder {
+	font-style: italic;
+	font-size: 16pt;
+}
+.input-title::-moz-placeholder {
+	font-style: italic;
+	font-size: 16pt;
+}
+.input-title:-ms-input-placeholder {
+	font-style: italic;
+	font-size: 16pt;
+}
+.input-address::-webkit-input-placeholder {
+	font-style: italic;
+	font-size: 15pt;
+}
+.input-address:-moz-placeholder {
+	font-style: italic;
+	font-size: 15pt;
+}
+.input-address::-moz-placeholder {
+	font-style: italic;
+	font-size: 15pt;
+}
+.input-address:-ms-input-placeholder {
+	font-style: italic;
+	font-size: 15pt;
+}
+.input-content::-webkit-input-placeholder { 
+	font-style: italic;
+	font-size: 15pt;
+}
+.input-content:-moz-placeholder {
+	font-style: italic;
+	font-size: 15pt;
+}
+.input-content::-moz-placeholder {
+	font-style: italic;
+	font-size: 15pt;
+}
+.input-content:-ms-input-placeholder {
+	font-style: italic;
+	font-size: 15pt;
+}
+
+.input-title
+{
+	height: 25pt;
+	width: 400pt;
+	max-height: 50pt;
+	max-width:	400pt;
+	font-size: 16pt;
+	border: 0;
+	border-bottom: solid 1px cadetblue;
+	outline: none;
+	color: cadetblue;
+}
+
+.input-address
+{
+	height: 25pt;
+	width: 400pt;
+	max-height: 50pt;
+	max-width:	400pt;
+	border: 0;
+	border-bottom: solid 1px indianred;
+	font-style: italic;
+	outline: none;
+	color: indianred;
+}
+
+.input-content
+{
+	height: 200pt;
+	width: 400pt;
+	max-height: 200pt;
+	max-width:	400pt;
+	border: solid 2px bisque;
+	box-sizing: content-box;
+	resize: none;
+}
+
+.btn-save, .btn-submit, .btn-cancel, .btn-delete {
+	position: relative;
+	top: 0;
+	padding: 3pt;
+	width: auto;
+	height: 36pt;
+	font-size: 15pt;
+	border: 0;
+	box-sizing: box-border;
+}
+
 .time-table {
 	padding: 2px 5px;
 }
@@ -46,9 +160,11 @@
 .time-table.expired .time-label {
 	background-color: #eee;
 }
+
 .time-table.expired div {
 	color: #888;
 }
+
 .activity-attend li {
 	width: 190px;
 }

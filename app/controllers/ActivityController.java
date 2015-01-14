@@ -167,6 +167,14 @@ public class ActivityController extends Controller {
 			String activityTitle = formData.get(Activity.TITLE)[0];
 			String activityAddress = formData.get(Activity.ADDRESS)[0];
 			String activityContent = formData.get(Activity.CONTENT)[0];
+			
+			int length = activityTitle.length();
+			if (length == 0 || length > Activity.TITLE_MAX_COUNT) throw new InvalidQueryParamsException();
+			length = activityAddress.length();
+			if (length == 0 || length > Activity.ADDR_MAX_COUNT) throw new InvalidQueryParamsException();
+			length = activityContent.length();
+			if (length == 0 || length > Activity.CONTENT_MAX_COUNT) throw new InvalidQueryParamsException();
+
 			long beginTime = Converter.toLong(formData.get(Activity.BEGIN_TIME)[0]);
 			long deadline = Converter.toLong(formData.get(Activity.DEADLINE)[0]);
 
@@ -176,7 +184,7 @@ public class ActivityController extends Controller {
 			if (token == null) throw new NullPointerException();
 
 			boolean isNewActivity = true;
-            Long activityId = null;
+			Long activityId = null;
 			if (formData.containsKey(UserActivityRelation.ACTIVITY_ID)) {
 				activityId = Converter.toLong(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 				isNewActivity = false;
@@ -188,35 +196,47 @@ public class ActivityController extends Controller {
 				if (session(sid) == null || !captcha.equalsIgnoreCase(session(sid))) throw new CaptchaNotMatchedException(); 
 			}
 
-            Long userId = SQLCommander.queryUserId(token);
-			if (userId == null) throw new NullPointerException();
+			Long userId = SQLCommander.queryUserId(token);
+			if (userId == null) throw new UserNotFoundException();
 			User user = SQLCommander.queryUser(userId);
-			if (user == null) throw new NullPointerException();
+			if (user == null) throw new UserNotFoundException();
 
-			if (!DataUtils.validateTitle(activityTitle) || !DataUtils.validateContent(activityContent)) throw new NullPointerException();
 			Activity activity = null;
-
-			if (isNewActivity)	activityId = SQLCommander.createActivity(activityTitle, activityContent, userId);
-			if (activityId == null || activityId.equals(SQLHelper.INVALID)) throw new ActivityNotFoundException();
+			long now = General.millisec();
+			if (isNewActivity) {
+				activity = SQLCommander.createActivity(user, now);
+				activityId = activity.getId();
+			}
+			if (activity == null || activityId == null || activityId.equals(SQLHelper.INVALID)) throw new ActivityNotFoundException();
+				
+			System.out.println("Created 1.");
 
 			// update activity
-			activity = SQLCommander.queryActivity(activityId);
-			if (activity == null) throw new ActivityNotFoundException();
 			if (!SQLCommander.isActivityEditable(userId, activity)) throw new AccessDeniedException();
 
-			activity.setTitle(activityTitle);
-			activity.setAddress(activityAddress);
-			activity.setContent(activityContent);
-			activity.setBeginTime(beginTime);
-			activity.setDeadline(deadline);
+			System.out.println("Created 2.");
 
-			if(!SQLCommander.updateActivity(activity))	throw new NullPointerException();
+			activity.setTitle(activityTitle);
+			System.out.println("set title.");
+			activity.setAddress(activityAddress);
+			System.out.println("set address.");
+			activity.setContent(activityContent);
+			System.out.println("set content.");
+			activity.setBeginTime(beginTime);
+			System.out.println("set begin time.");
+			activity.setDeadline(deadline);
+			System.out.println("set deadline.");
+
+			if(!SQLCommander.updateActivity(activity))	throw new SQLUpdateException();
+
+			System.out.println("Updated.");
 
 			// save new images
 			List<Image> previousImages = ExtraCommander.queryImages(activityId);
 			if (imageFiles != null && imageFiles.size() > 0) {
 				for (Http.MultipartFormData.FilePart imageFile : imageFiles) {
-				    if (SQLHelper.INVALID == ExtraCommander.saveImageOfActivity(imageFile, user, activity)) break;
+					if (!DataUtils.validateImage(imageFile)) throw new InvalidImageException();
+					if (SQLHelper.INVALID == ExtraCommander.saveImageOfActivity(imageFile, user, activity)) break;
 				}
 			}
 
@@ -240,13 +260,13 @@ public class ActivityController extends Controller {
 				}
 			}
 
-			activity = SQLCommander.queryActivity(activityId);
 			return ok(activity.toObjectNodeWithImages(userId));
 		} catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
-        } catch (CaptchaNotMatchedException e) {
+			return badRequest(TokenExpiredResult.get());
+		} catch (CaptchaNotMatchedException e) {
 			return badRequest(CaptchaNotMatchedResult.get());
 		} catch (Exception e) {
+			System.out.println("Exception on save.");
 			Loggy.e(TAG, "save", e);
 		}
 		return badRequest();
@@ -254,33 +274,31 @@ public class ActivityController extends Controller {
 
 	public static Result submit() {
 		try {
-            Http.RequestBody body = request().body();
+			Http.RequestBody body = request().body();
 
-            // get user token and activity id from request body stream
-            Map<String, String[]> formData = body.asFormUrlEncoded();
+			// get user token and activity id from request body stream
+			Map<String, String[]> formData = body.asFormUrlEncoded();
 
-            String token = formData.get(User.TOKEN)[0];
-            Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+			String token = formData.get(User.TOKEN)[0];
+			Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 
-            Long userId = SQLCommander.queryUserId(token);
-            if (userId == null) throw new Exception();
-            User user = SQLCommander.queryUser(userId);
-            if (user == null) throw new Exception();
+			Long userId = SQLCommander.queryUserId(token);
+			if (userId == null) throw new UserNotFoundException();
 
-            Activity activity = SQLCommander.queryActivity(activityId);
-            if (!SQLCommander.isActivityEditable(userId, activity)) throw new Exception();
+			Activity activity = SQLCommander.queryActivity(activityId);
+			if (!SQLCommander.isActivityEditable(userId, activity)) throw new Exception();
 
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-            String[] names = {Activity.STATUS};
-            Object[] values = {Activity.PENDING};
+			String[] names = {Activity.STATUS};
+			Object[] values = {Activity.PENDING};
 
-            builder.update(Activity.TABLE).set(names, values).where(Activity.ID, "=", activity.getId());
-            if (!builder.execUpdate()) throw new NullPointerException();
+			builder.update(Activity.TABLE).set(names, values).where(Activity.ID, "=", activity.getId());
+			if (!builder.execUpdate()) throw new NullPointerException();
 
-            return ok();
-        } catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
+			return ok();
+		} catch (TokenExpiredException e) {
+			return badRequest(TokenExpiredResult.get());
 		} catch (Exception e) {
 			Loggy.e(TAG, "submit", e);
 		}

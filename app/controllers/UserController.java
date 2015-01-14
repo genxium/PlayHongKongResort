@@ -127,6 +127,7 @@ public class UserController extends Controller {
             if (user == null) throw new UserNotFoundException();
             return ok(user.toObjectNode(userId)).as("text/plain");
         } catch (Exception e) {
+	    if (e instanceof UserNotFoundException)	return ok(StandardFailureResult.get());
             Loggy.e(TAG, "status", e);
         }
         return ok(StandardFailureResult.get());

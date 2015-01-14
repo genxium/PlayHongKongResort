@@ -34,14 +34,6 @@ public class DataUtils {
         return tokens[0];
     }
 
-    public static boolean validateTitle(String title) {
-        return title.length() >= 0;
-    }
-
-    public static boolean validateContent(String content) {
-        return content.length() >= 0;
-    }
-
     public static String generateUploadedImageName(String originalName, Long userId) {
         String ret = null;
         try {

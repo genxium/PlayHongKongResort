@@ -187,9 +187,7 @@ function initActivityEditor(par, onRemove){
 		backdrop being 'static' prevents modal from closing on losing focus
 		keyboard being 'false' prevents modal from closing on pressing `esc`
 	*/
-	g_sectionActivityEditor = $("<div class='modal fade' data-keyboard='false' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='Create an activity!' aria-hidden='true'>", {
-		style: "position: fixed; height: 90%; padding: 5pt;"
-	}).appendTo(par);
+	g_sectionActivityEditor = $("<div class='modal fade activity-editor' data-keyboard='false' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='Create an activity!' aria-hidden='true'>").appendTo(par);
 	var dialog = $("<div>", {
 		class: "modal-dialog modal-lg"
 	}).appendTo(g_sectionActivityEditor);
@@ -489,49 +487,55 @@ function generateActivityEditor(par, activity){
 		style: "padding: 5pt"
 	}).appendTo(par);
 
-	var titleText = $('<p>', {
-		text: "Title",
-		style: "margin-top: 5pt"	
-	}).appendTo(ret);
-
 	var titleInput = $('<input>', {
+		placeholder: "Title",
 		class: "input-title",
 		type: 'text',
 		value: activityTitle
 	}).appendTo(ret);
+	var titleCounter = new WordCounter(0, 1, 64);
+	titleCounter.appendCounter(ret);
 
 	titleInput.on("input paste keyup", function(evt){
 			evt.preventDefault();
 			g_activityEditor.setSavable();
 			g_activityEditor.setNonSubmittable();
+			var count = $(this).val().length;
+			titleCounter.update(count);
 	});
 
-	var addressText = $('<p>', {
-		text: "Address",
-		style: "margin-top: 5pt"
-	}).appendTo(ret);
-
 	var addressInput = $("<input>", {
+		placeholder: "Where",
 		class: "input-address",
 		type: "text",
 		value: activityAddress
 	}).appendTo(ret);
+	var addrCounter = new WordCounter(0, 1, 256);
+	addrCounter.appendCounter(ret);
+	addressInput.on("input paste keyup", function(evt){
+			evt.preventDefault();
+			g_activityEditor.setSavable();
+			g_activityEditor.setNonSubmittable();
+			var count = $(this).val().length;
+			addrCounter.update(count);
+	});
 
 	var addressField = new AddressField(addressInput, null);
 
-	var contentText = $("<p>", {
-		text: "Content",
-		style: "margin-top: 5pt"
-	}).appendTo(ret);
-
 	var contentInput = $("<textarea>",	{
+		placeholder: "What to do",
 		class: "input-content" 
 	}).appendTo(ret);
 	contentInput.val(activityContent);
+	var contentCounter = new WordCounter(0, 1, 1024);
+	contentCounter.appendCounter(ret);
+
 	contentInput.on("input paste keyup", function(evt){
-	        evt.preventDefault();
-		g_activityEditor.setSavable();
-		g_activityEditor.setNonSubmittable();
+			evt.preventDefault();
+			g_activityEditor.setSavable();
+			g_activityEditor.setNonSubmittable();
+			var count = $(this).val().length;
+			contentCounter.update(count);
 	});
 
 	$("<p>", {
@@ -617,16 +621,16 @@ function generateActivityEditor(par, activity){
 	}).appendTo(ret);
 	var scheduleRow1 = $("<tr>").appendTo(tableSchedule);
 	var scheduleCell11 = $("<td>", {
-		text: "Deadline: ",
-		style: "white-space: nowrap; vertical-align: text-top"
+		text: "Deadline ",
+		style: "font-size: 14pt; font-variant: small-caps; font-family: verdana, sans-serif; white-space: nowrap; vertical-align: text-top"
 	}).appendTo(scheduleRow1);
 	var scheduleCell12 = $("<td>").appendTo(scheduleRow1);
 	var deadlinePicker = generateDateSelection(scheduleCell12, gmtMiilisecToLocalYmdhi(deadline));
 
 	var scheduleRow2 = $("<tr>").appendTo(tableSchedule);
 	var scheduleCell21 = $("<td>", {
-		text: "Begin Time: ",
-		style: "white-space: nowrap; vertical-align: text-top"
+		text: "Begin Time ",
+		style: "font-size: 14pt; font-variant: small-caps; font-family: verdana, sans-serif; white-space: nowrap; vertical-align: text-top"
 	}).appendTo(scheduleRow2);
 	var scheduleCell22 = $("<td>").appendTo(scheduleRow2);
 	var beginTimePicker = generateDateSelection(scheduleCell22, gmtMiilisecToLocalYmdhi(beginTime));

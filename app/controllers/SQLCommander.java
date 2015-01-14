@@ -74,26 +74,29 @@ public class SQLCommander {
 	    return ret;
     }
 
-    public static Long createActivity(String title, String content, Long userId) {
+    public static Activity createActivity(final User host, final long now) {
 
-        Long lastActivityId = null;
+	    Long lastActivityId = null;
 
-        long now = General.millisec();
-
-        String[] names = {Activity.TITLE, Activity.CONTENT, Activity.HOST_ID, Activity.CREATED_TIME};
-	    Object[] values = {title, content, userId, now};
+	    String[] names = {Activity.HOST_ID, Activity.CREATED_TIME};
+	    Object[] values = {host.getId(), now};
 
 	    EasyPreparedStatementBuilder builderActivity = new EasyPreparedStatementBuilder();
-        lastActivityId = Converter.toLong(builderActivity.insert(names, values).into(Activity.TABLE).execInsert());
-	    if (lastActivityId == null || lastActivityId.equals(SQLHelper.INVALID)) return SQLHelper.INVALID;
+	    lastActivityId = Converter.toLong(builderActivity.insert(names, values).into(Activity.TABLE).execInsert());
+	    if (lastActivityId == null || lastActivityId.equals(SQLHelper.INVALID)) return null;
+		
+	    Activity activity = new Activity();
+	    activity.setId(lastActivityId); 	
+	    activity.setHost(host);
+	    activity.setCreatedTime(now);
 
-        String[] names2 = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME};
-        Object[] values2 = {lastActivityId, userId, UserActivityRelation.SELECTED | UserActivityRelation.PRESENT, now};
+	    String[] names2 = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME};
+	    Object[] values2 = {lastActivityId, host.getId(), UserActivityRelation.SELECTED | UserActivityRelation.PRESENT, now};
 
 	    EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
 	    builderRelation.insert(names2, values2).into(UserActivityRelation.TABLE).execInsert();
 
-        return lastActivityId;
+	    return activity;
     }
 
     public static boolean updateActivity(Activity activity) {
