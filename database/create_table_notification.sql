@@ -42,7 +42,7 @@ CREATE TABLE `notification` (
   KEY `notification_ibfk_4` (`from`) USING BTREE,
   KEY `notification_ibfk_5` (`to`) USING BTREE,
   KEY `cmd_index` (`cmd`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -54,4 +54,4 @@ CREATE TABLE `notification` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-01-12 12:13:56
+-- Dump completed on 2015-01-14  4:28:51
