@@ -1,3 +1,10 @@
+.activity-editor {
+	position: fixed;
+	height: 90%;
+	padding: 5pt;
+	box-sizing: content-box;
+}
+
 .input-title, .input-address, .input-content {
 	display: block;
 	position: relative;
@@ -6,12 +13,67 @@
 	margin-bottom: 2pt;
 }
 
+/* placeholder reference (note that this DOESN'T work with comma syntax!) : http://davidwalsh.name/html5-placeholder-css */
+.input-title::-webkit-input-placeholder {
+	font-style: italic;
+	font-size: 16pt;
+}
+.input-title:-moz-placeholder {
+	font-style: italic;
+	font-size: 16pt;
+}
+.input-title::-moz-placeholder {
+	font-style: italic;
+	font-size: 16pt;
+}
+.input-title:-ms-input-placeholder {
+	font-style: italic;
+	font-size: 16pt;
+}
+.input-address::-webkit-input-placeholder {
+	font-style: italic;
+	font-size: 15pt;
+}
+.input-address:-moz-placeholder {
+	font-style: italic;
+	font-size: 15pt;
+}
+.input-address::-moz-placeholder {
+	font-style: italic;
+	font-size: 15pt;
+}
+.input-address:-ms-input-placeholder {
+	font-style: italic;
+	font-size: 15pt;
+}
+.input-content::-webkit-input-placeholder { 
+	font-style: italic;
+	font-size: 15pt;
+}
+.input-content:-moz-placeholder {
+	font-style: italic;
+	font-size: 15pt;
+}
+.input-content::-moz-placeholder {
+	font-style: italic;
+	font-size: 15pt;
+}
+.input-content:-ms-input-placeholder {
+	font-style: italic;
+	font-size: 15pt;
+}
+
 .input-title
 {
 	height: 25pt;
 	width: 400pt;
 	max-height: 50pt;
 	max-width:	400pt;
+	font-size: 16pt;
+	border: 0;
+	border-bottom: solid 1px cadetblue;
+	outline: none;
+	color: blue;
 }
 
 .input-address
@@ -20,13 +82,16 @@
 	width: 400pt;
 	max-height: 50pt;
 	max-width:	400pt;
+	border: 0;
+	border-bottom: solid 1px cadetblue;
+	outline: none;
 }
 
 .input-content
 {
 	height: 200pt;
 	width: 400pt;
-	max-height: 400pt;
+	max-height: 200pt;
 	max-width:	400pt;
 	resize: none;
 }

@@ -44,6 +44,10 @@ public class Activity extends AbstractSimpleMessage {
 
     public static String[] QUERY_FIELDS = {Activity.ID, Activity.TITLE, Activity.ADDRESS, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
 
+	public static final int TITLE_MAX_COUNT = 64;
+	public static final int ADDR_MAX_COUNT = 256;
+	public static final int CONTENT_MAX_COUNT = 1024; // TEXT 
+
     protected String m_title = null;
 
     public String getTitle() {
@@ -59,6 +63,9 @@ public class Activity extends AbstractSimpleMessage {
     public long getCreatedTime() {
 	    return m_createdTime;
     }
+	public void setCreatedTime(final long createdTime) {
+		m_createdTime = createdTime;
+	}
 
     protected Long m_beginTime = null;
 

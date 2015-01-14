@@ -220,7 +220,6 @@ public class ExtraCommander extends SQLCommander {
 		String fileName = imageFile.getFilename();
 		File file = imageFile.getFile();
 		try {
-			if (!DataUtils.validateImage(imageFile)) throw new InvalidImageException();
 			if (user == null) throw new UserNotFoundException();
 			if (activity == null) throw new ActivityNotFoundException();
 
@@ -236,7 +235,7 @@ public class ExtraCommander extends SQLCommander {
 				// Save renamed file to server storage at the final step
 				FileUtils.moveFile(file, new File(imageAbsolutePath));
 			} catch (Exception err) {
-                if(deleteImageRecord(imageId))	Loggy.i(TAG, "saveImageOfActivity", newImageName + " has been reverted");
+				if(deleteImageRecord(imageId))	Loggy.i(TAG, "saveImageOfActivity", newImageName + " has been reverted");
 				File tmpFile = new File(imageAbsolutePath);
 				if (tmpFile.exists()) tmpFile.delete();
 				imageId = SQLHelper.INVALID;

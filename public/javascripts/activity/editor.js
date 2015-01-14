@@ -187,9 +187,7 @@ function initActivityEditor(par, onRemove){
 		backdrop being 'static' prevents modal from closing on losing focus
 		keyboard being 'false' prevents modal from closing on pressing `esc`
 	*/
-	g_sectionActivityEditor = $("<div class='modal fade' data-keyboard='false' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='Create an activity!' aria-hidden='true'>", {
-		style: "position: fixed; height: 90%; padding: 5pt;"
-	}).appendTo(par);
+	g_sectionActivityEditor = $("<div class='modal fade activity-editor' data-keyboard='false' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='Create an activity!' aria-hidden='true'>").appendTo(par);
 	var dialog = $("<div>", {
 		class: "modal-dialog modal-lg"
 	}).appendTo(g_sectionActivityEditor);
@@ -489,12 +487,8 @@ function generateActivityEditor(par, activity){
 		style: "padding: 5pt"
 	}).appendTo(par);
 
-	var titleText = $('<p>', {
-		text: "Title",
-		style: "margin-top: 5pt"	
-	}).appendTo(ret);
-
 	var titleInput = $('<input>', {
+		placeholder: "Title",
 		class: "input-title",
 		type: 'text',
 		value: activityTitle
@@ -506,12 +500,8 @@ function generateActivityEditor(par, activity){
 			g_activityEditor.setNonSubmittable();
 	});
 
-	var addressText = $('<p>', {
-		text: "Address",
-		style: "margin-top: 5pt"
-	}).appendTo(ret);
-
 	var addressInput = $("<input>", {
+		placeholder: "Where",
 		class: "input-address",
 		type: "text",
 		value: activityAddress
@@ -519,12 +509,8 @@ function generateActivityEditor(par, activity){
 
 	var addressField = new AddressField(addressInput, null);
 
-	var contentText = $("<p>", {
-		text: "Content",
-		style: "margin-top: 5pt"
-	}).appendTo(ret);
-
 	var contentInput = $("<textarea>",	{
+		placeholder: "What to do",
 		class: "input-content" 
 	}).appendTo(ret);
 	contentInput.val(activityContent);
