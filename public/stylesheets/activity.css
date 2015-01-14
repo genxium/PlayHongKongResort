@@ -9,7 +9,7 @@
 	display: block;
 	position: relative;
 	font-size: 15pt;
-	margin-top: 5pt;
+	margin-top: 10pt;
 	margin-bottom: 2pt;
 }
 
@@ -73,7 +73,7 @@
 	border: 0;
 	border-bottom: solid 1px cadetblue;
 	outline: none;
-	color: blue;
+	color: cadetblue;
 }
 
 .input-address
@@ -83,8 +83,10 @@
 	max-height: 50pt;
 	max-width:	400pt;
 	border: 0;
-	border-bottom: solid 1px cadetblue;
+	border-bottom: solid 1px indianred;
+	font-style: italic;
 	outline: none;
+	color: indianred;
 }
 
 .input-content
@@ -93,6 +95,8 @@
 	width: 400pt;
 	max-height: 200pt;
 	max-width:	400pt;
+	border: solid 2px bisque;
+	box-sizing: content-box;
 	resize: none;
 }
 
@@ -104,6 +108,7 @@
 	height: 36pt;
 	font-size: 15pt;
 	border: 0;
+	box-sizing: box-border;
 }
 
 .btn-save
@@ -144,6 +149,7 @@
 	border-left: none;
 	border-right: none;
 	border-bottom: thin solid lightgray;
+	box-sizing: box-border;
 }
 
 .btn-join

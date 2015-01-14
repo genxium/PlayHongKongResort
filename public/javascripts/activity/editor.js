@@ -493,11 +493,15 @@ function generateActivityEditor(par, activity){
 		type: 'text',
 		value: activityTitle
 	}).appendTo(ret);
+	var titleCounter = new WordCounter(0, 1, 64);
+	titleCounter.appendCounter(ret);
 
 	titleInput.on("input paste keyup", function(evt){
 			evt.preventDefault();
 			g_activityEditor.setSavable();
 			g_activityEditor.setNonSubmittable();
+			var count = $(this).val().length;
+			titleCounter.update(count);
 	});
 
 	var addressInput = $("<input>", {
@@ -506,6 +510,15 @@ function generateActivityEditor(par, activity){
 		type: "text",
 		value: activityAddress
 	}).appendTo(ret);
+	var addrCounter = new WordCounter(0, 1, 256);
+	addrCounter.appendCounter(ret);
+	addressInput.on("input paste keyup", function(evt){
+			evt.preventDefault();
+			g_activityEditor.setSavable();
+			g_activityEditor.setNonSubmittable();
+			var count = $(this).val().length;
+			addrCounter.update(count);
+	});
 
 	var addressField = new AddressField(addressInput, null);
 
@@ -514,10 +527,15 @@ function generateActivityEditor(par, activity){
 		class: "input-content" 
 	}).appendTo(ret);
 	contentInput.val(activityContent);
+	var contentCounter = new WordCounter(0, 1, 1024);
+	contentCounter.appendCounter(ret);
+
 	contentInput.on("input paste keyup", function(evt){
-	        evt.preventDefault();
-		g_activityEditor.setSavable();
-		g_activityEditor.setNonSubmittable();
+			evt.preventDefault();
+			g_activityEditor.setSavable();
+			g_activityEditor.setNonSubmittable();
+			var count = $(this).val().length;
+			contentCounter.update(count);
 	});
 
 	$("<p>", {
@@ -603,16 +621,16 @@ function generateActivityEditor(par, activity){
 	}).appendTo(ret);
 	var scheduleRow1 = $("<tr>").appendTo(tableSchedule);
 	var scheduleCell11 = $("<td>", {
-		text: "Deadline: ",
-		style: "white-space: nowrap; vertical-align: text-top"
+		text: "Deadline ",
+		style: "font-size: 14pt; font-variant: small-caps; font-family: verdana, sans-serif; white-space: nowrap; vertical-align: text-top"
 	}).appendTo(scheduleRow1);
 	var scheduleCell12 = $("<td>").appendTo(scheduleRow1);
 	var deadlinePicker = generateDateSelection(scheduleCell12, gmtMiilisecToLocalYmdhi(deadline));
 
 	var scheduleRow2 = $("<tr>").appendTo(tableSchedule);
 	var scheduleCell21 = $("<td>", {
-		text: "Begin Time: ",
-		style: "white-space: nowrap; vertical-align: text-top"
+		text: "Begin Time ",
+		style: "font-size: 14pt; font-variant: small-caps; font-family: verdana, sans-serif; white-space: nowrap; vertical-align: text-top"
 	}).appendTo(scheduleRow2);
 	var scheduleCell22 = $("<td>").appendTo(scheduleRow2);
 	var beginTimePicker = generateDateSelection(scheduleCell22, gmtMiilisecToLocalYmdhi(beginTime));
