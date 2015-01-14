@@ -102,15 +102,15 @@ function onListActivitiesError(err){
 function displayTimesTable(par, activity) {
     	// deadline and begin time
     	var deadlineRow = $("<div>", {
-		class: "table-time-dealine"
+		class: "time-table dealine clearfix"
 	}).appendTo(par);
     	var deadlineTitle = $("<div>", {
     		text: "Application Deadline",
-			class: "label"
+			class: "time-label left"
     	}).appendTo(deadlineRow);
     	var deadline = $("<div>", {
     		text: gmtMiilisecToLocalYmdhis(activity.applicationDeadline),
-			class: "detail"
+			class: "time-detail left"
     	}).appendTo(deadlineRow);
 	if (activity.isDeadlineExpired()) {
 		//stencilize(deadlineTitle);
@@ -119,15 +119,15 @@ function displayTimesTable(par, activity) {
 	}
 
     	var beginTimeRow = $("<div>", {
-		class: "table-time-begin"
+		class: "time-table begin clearfix"
 	}).appendTo(par);
     	var beginTimeTitle = $("<div>", {
     		text: "Begin Time",
-    		class: "label"
+    		class: "time-label left"
     	}).appendTo(beginTimeRow);
-    	var beginTime = $("<td>", {
+    	var beginTime = $("<div>", {
     		text: gmtMiilisecToLocalYmdhis(activity.beginTime),
-    		class: "detail"
+    		class: "time-detail left"
     	}).appendTo(beginTimeRow);
 
 	if (activity.hasBegun()) {
@@ -138,20 +138,18 @@ function displayTimesTable(par, activity) {
 }
 
 function displayParticipantStatistics(par, activity) {
-
-	var spanSelected = $("<span>", {
+	var attend = $("<ul>", {
+		class: "clearfix"
+	}).appendTo(par);
+	var spanSelected = $("<li>", {
 		text: activity.numSelected.toString() + " selected",
-		style: "color: PaleVioletRed"
-	}).appendTo(par);
+		class: "selected left"
+	}).appendTo(attend);
 
-	var spanSlash = $("<span>", {
-		text: " / "
-	}).appendTo(par);
-
-	var spanApplied = $("<span>", {
+	var spanApplied = $("<li>", {
 		text: (activity.numApplied + activity.numSelected).toString() + " applied", // display the total number of applied users including the selected ones
-		style: "color: purple"
-	}).appendTo(par);
+		class: "applied left"
+	}).appendTo(attend);
 
 }
 
@@ -294,6 +292,21 @@ function generateActivityCell(par, activity){
 		class: "activity-attend"
 	}).appendTo(middle);
 	displayParticipantStatistics(midBottom, activity);
+	
+	var selectedSnippet = $("<div>", {
+		class: "selected-snippet"
+	}).appendTo(middle);
+	if (activity.selectedParticipants != null) {
+		var count = activity.selectedParticipants.length <= 3 ? activity.selectedParticipants.length : 3;
+		for (var i = 0; i < count; ++i) {
+			var participant = activity.selectedParticipants[i];
+			var avatar = (participant.avatar == null) ? "assets/icons/anonymous.png" : participant.avatar;
+			$("<img>", {
+				src: avatar,
+				class: "selected-snippet-avatar left"
+			}).appendTo(selectedSnippet);
+		}
+	}
 
 	var right = $("<div>", {
 		class: "activity-action left"
@@ -308,21 +321,6 @@ function generateActivityCell(par, activity){
 		var act = evt.data;
 		window.location.hash = (g_keyActivityId + "=" + act.id.toString());
 	});
-	
-	var selectedSnippet = $("<div>", {
-		class: "selected-snippet"
-	}).appendTo(right);
-	if (activity.selectedParticipants != null) {
-		var count = activity.selectedParticipants.length <= 3 ? activity.selectedParticipants.length : 3;
-		for (var i = 0; i < count; ++i) {
-			var participant = activity.selectedParticipants[i];
-			var avatar = (participant.avatar == null) ? "assets/icons/anonymous.png" : participant.avatar;
-			$("<img>", {
-				src: avatar,
-				class: "selected-snippet-avatar left"
-			}).appendTo(selectedSnippet);
-		}
-	}
 
 	attachStatusIndicator(right, activity);
 }

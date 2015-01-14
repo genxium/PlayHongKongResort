@@ -4,14 +4,10 @@
 	max-width: 1024px;
 	padding-top: 5px;
 }
-#footer-links ul {
-	list-style-type: none;
-	padding: 0;
-}
 #footer-links ul li {
-	float: left;
 	padding: 0 10px;
 	border-left: solid 1px #666;
+	float: left;
 }
 #footer-links ul li:first-child {
 	border-left: 0 none;

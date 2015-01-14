@@ -19,8 +19,7 @@
 	background-color: #f41d3e;
 }
 #topbar-title p {
-	padding: 25px 15px;
-	box-sizing: border-box;
+	padding: 18px 15px;
 }
 #login-section {
 	position: relative;
@@ -40,7 +39,6 @@
 }
 .login-inputs input {
 	width: 188px;
-	height: 50%;
 }
 .login-btn {
 	width: 100px;

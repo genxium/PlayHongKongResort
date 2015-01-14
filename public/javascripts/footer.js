@@ -8,9 +8,12 @@ function initFooter(par){
 	// 2. if this is a local variable use aBC
 	var footerLeft = $("<div>", {
 		id: "footer-links",
+		class: "left"
 	}).appendTo(g_footer);
 
-	var links = $("<ul>").appendTo(footerLeft);
+	var links = $("<ul>", {
+		class: "clearfix"
+	}).appendTo(footerLeft);
 
 	var link1 = $("<li>").appendTo(links);
 
@@ -27,19 +30,8 @@ function initFooter(par){
 	}).appendTo(link2);
 	
 	var footerRight = $("<div>", {
-		id: "footer-copy"
+		id: "footer-copy",
+		class: "right",
+		html: "Copyright &copy; All rights reserved."
 	}).appendTo(g_footer);
-	
-	var footerRightPrefix = $("<span>", {
-		text: "Copyright"
-	}).appendTo(footerRight);
-	
-	var footerRightSymbol = $("<span>", {
-		html: " &copy; ",
-		class: "footer-copy-text" // modify the the styling parameters in footer-copy-text in BROWSER console to view the change
-	}).appendTo(footerRight);
-
-	var footerRightSuffix = $("<span>", {
-		text: "All rights reserved."
-	}).appendTo(footerRight);
 }

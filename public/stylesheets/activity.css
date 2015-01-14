@@ -5,7 +5,7 @@
 .activity-cover {
 	background-color: #666;
 	width: 276px;
-	height: 196px;
+	height: 100%;
 	padding: 2px;
 }
 .activity-cover img {
@@ -16,6 +16,9 @@
 }
 .activity-info {
 	margin-left: 10px;
+	max-height: 100%;
+	width: 550px;
+	overflow: hidden;
 }
 .activity-title {
 	font-size: 36px;
@@ -23,27 +26,49 @@
 	font-weight: bold;
 }
 .activity-addr {
-	font-size: 1em;
-	color: crimson;
+	font-size: 18px;
+	color: #e21e61;
+}
+.time-table, .activity-attend, .selected-snippet {
+	margin-top: 5px;
+}
+.time-table {
+	padding: 2px 5px;
+}
+.time-label {
+	width: 190px;
+	background-color: #a7db5a;
+	color: #002b9b;
+}
+.time-detail {
+	margin-left: 5px;
+}
+.time-table.expired .time-label {
+	background-color: #eee;
+}
+.time-table.expired div {
+	color: #888;
+}
+.activity-attend li {
+	width: 190px;
+}
+.activity-attend li.applied {
+	padding-left: 5px;
+}
+.selected-snippet img {
+	width: 36px;
+	height: 36px;
+}
+.activity-detail {
+	width: 150px;
+	height: 150px;
+	font-size: 60px;
+}
+
+#pager-filters {
+	margin: 10px;
 }
 .activity-action {
 	position: relative; /* nearest position anchor requires the position property to be set */
 	font-size: 2em;	
-}
-.activity-detail {
-	position: absolute; /* relative to activity-action */
-	top: 0px;
-	left: 0px;
-	height: 100px; 
-}
-.selected-snippet {
-	position: absolute; /* relative to activity-action */
-	top: 120px;
-	left: 0px;
-	height: 50px;
-}
-.selected-snippet-avatar {
-	position: relative;
-	width: 32px; /* randomly picked... */
-	height: 32px;
 }
