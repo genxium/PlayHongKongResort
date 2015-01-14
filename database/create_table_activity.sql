@@ -24,8 +24,8 @@ DROP TABLE IF EXISTS `activity`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `activity` (
   `id` int(32) NOT NULL AUTO_INCREMENT,
-  `title` varchar(64) NOT NULL,
-  `content` mediumtext,
+  `title` varchar(64) DEFAULT '',
+  `content` varchar(1024) DEFAULT '',
   `created_time` bigint(20) DEFAULT NULL,
   `begin_time` bigint(20) DEFAULT NULL,
   `application_deadline` bigint(20) DEFAULT NULL,
@@ -36,12 +36,12 @@ CREATE TABLE `activity` (
   `num_selected` int(32) DEFAULT '0',
   `last_accepted_time` bigint(20) DEFAULT NULL,
   `last_rejected_time` bigint(20) DEFAULT NULL,
-  `address` varchar(256) NOT NULL DEFAULT '',
+  `address` varchar(256) DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `activity_ibfk_1` (`host_id`),
   KEY `status_index` (`status`),
   KEY `begin_time_index` (`begin_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -53,4 +53,4 @@ CREATE TABLE `activity` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-01-12 12:13:56
+-- Dump completed on 2015-01-14  4:28:51
