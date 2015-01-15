@@ -12,6 +12,9 @@ function User(userJson){
 	this.name = userJson["name"];
 	this.avatar = userJson["avatar"];
 	if (userJson.hasOwnProperty("unread_count"))	this.unreadCount = parseInt(userJson["unread_count"]);
+	this.hasAvatar = function() {
+		return (this.avatar != null && this.avatar != undefined);
+	}
 }
 
 function Image(imageJson){

@@ -77,11 +77,19 @@
 	font-size: auto;
 	color: white;
 }
+.post-login-avatar {
+	position: absolute;
+	box-sizing: border-box;
+	top: 0px;
+	left: 70px;
+	width: 50px;
+	height: 100px;
+}
 .post-login-menu-container {
 	position: absolute;
 	box-sizing: border-box;
 	top: 0px;
-	left: 100px;
+	left: 120px;
 	width: 200px;
 	height: 100px;
 }

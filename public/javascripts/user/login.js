@@ -192,6 +192,12 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	var bubble = new NotiBubble(0, spBubble);
 	bubble.update(g_loggedInUser.unreadCount);
 
+	var avatarContainer = $("<div>", {
+		class: "post-login-avatar inline"
+	}).appendTo(par);
+	var avatar = (g_loggedInUser == null || !g_loggedInUser.hasAvatar()) ? "assets/icons/anonymous.png" : g_loggedInUser.avatar;
+	setBackgroundImageDefault(avatarContainer, avatar);
+
 	var postLoginMenuContainer = $("<div>", {
 		class: "post-login-menu-container inline"
 	}).appendTo(par);

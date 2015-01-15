@@ -80,7 +80,7 @@ function generateAvatarUploader(par) {
                 evt.preventDefault();
                 previewAvatar(g_avatarUploader);
 	};
-	var avatar = (g_viewee == null) ? "assets/icons/anonymous.png" : g_viewee.avatar;
+	var avatar = (g_viewee == null || !g_viewee.hasAvatar()) ? "assets/icons/anonymous.png" : g_viewee.avatar;
 	var trigger = generateExplorerTriggerSpan(par, onChange, avatar, 64, 64, 64, 64);
 	setOffset(trigger.node, 128, 0);
 
