@@ -180,6 +180,13 @@ public class ActivityController extends Controller {
 
 			if(deadline > beginTime) throw new DeadlineAfterBeginTimeException();
 
+			// check new images
+			if (imageFiles != null && imageFiles.size() > 0) {
+				for (Http.MultipartFormData.FilePart imageFile : imageFiles) {
+					if (!DataUtils.validateImage(imageFile)) throw new InvalidImageException();
+				}
+			}
+
 			String token = formData.get(User.TOKEN)[0];
 			if (token == null) throw new NullPointerException();
 
@@ -208,34 +215,20 @@ public class ActivityController extends Controller {
 				activityId = activity.getId();
 			}
 			if (activity == null || activityId == null || activityId.equals(SQLHelper.INVALID)) throw new ActivityNotFoundException();
-				
-			System.out.println("Created 1.");
-
 			// update activity
 			if (!SQLCommander.isActivityEditable(userId, activity)) throw new AccessDeniedException();
-
-			System.out.println("Created 2.");
-
 			activity.setTitle(activityTitle);
-			System.out.println("set title.");
 			activity.setAddress(activityAddress);
-			System.out.println("set address.");
 			activity.setContent(activityContent);
-			System.out.println("set content.");
 			activity.setBeginTime(beginTime);
-			System.out.println("set begin time.");
 			activity.setDeadline(deadline);
-			System.out.println("set deadline.");
 
 			if(!SQLCommander.updateActivity(activity))	throw new SQLUpdateException();
-
-			System.out.println("Updated.");
 
 			// save new images
 			List<Image> previousImages = ExtraCommander.queryImages(activityId);
 			if (imageFiles != null && imageFiles.size() > 0) {
 				for (Http.MultipartFormData.FilePart imageFile : imageFiles) {
-					if (!DataUtils.validateImage(imageFile)) throw new InvalidImageException();
 					if (SQLHelper.INVALID == ExtraCommander.saveImageOfActivity(imageFile, user, activity)) break;
 				}
 			}

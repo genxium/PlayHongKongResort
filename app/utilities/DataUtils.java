@@ -1,9 +1,11 @@
 package utilities;
 
+import models.Image;
 import models.User;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
 
+import java.io.File;
 import java.sql.Timestamp;
 import java.util.Map;
 
@@ -25,7 +27,9 @@ public class DataUtils {
     }
 
     public static boolean validateImage(FilePart imageFile) {
-        return isImage(imageFile);
+        boolean isImage = isImage(imageFile);
+        File file = imageFile.getFile();
+        return (isImage && file.length() <= Image.SINGLE_FILE_SIZE_LIMIT);
     }
 
     public static String getUserToken(MultipartFormData data) {

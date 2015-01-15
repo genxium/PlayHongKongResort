@@ -23,6 +23,8 @@ public class Image extends AbstractModel {
     public static final String META_TYPE = "meta_type";
     public static final String GENERATED_TIME = "generated_time";
 
+    public static final int SINGLE_FILE_SIZE_LIMIT = (1 << 21);
+
     public static final String[] QUERY_FIELDS = {ID, URL, META_ID};
 
     public static final int TYPE_USER = 1;

@@ -579,4 +579,7 @@ function WordCounter(current, min, max) {
 		}).appendTo(row);
 		this.update(this.current);
 	};
+	this.valid = function() {
+		return (this.current <= this.max && this.current >= this.min);
+	};
 }

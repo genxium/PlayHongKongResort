@@ -47,12 +47,15 @@ function AddressField(input, map) {
 	this.map = map;
 }
 
-function ActivityEditor(container, id, titleField, addressField, contentField, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, captcha) {
+function ActivityEditor(container, id, titleField, titleCounter, addressField, addressCounter, contentField, contentCounter, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, captcha) {
 	this.container = container;
 	if (id != null) this.id = id;
 	this.titleField = titleField;
+	this.titleCounter = titleCounter;
 	this.addressField = addressField;
+	this.addressCounter = addressCounter;
 	this.contentField = contentField;
+	this.contentCounter = contentCounter;
 	this.newImageFiles = newImageFiles;
 	this.newImageNodes = newImageNodes;
 	this.imageSelectors = imageSelectors;
@@ -270,8 +273,12 @@ function onSave(evt){
 	var title = g_activityEditor.titleField.val();
 	var address = g_activityEditor.addressField.input.val();
 	var content = g_activityEditor.contentField.val();
-	if(title == null || address == null || content == null || title == "" || address == "" || content == "") {
-		alert("All text fields (title, address and content) should be filled.");
+
+	var titleCounter = g_activityEditor.titleCounter;
+	var addressCounter = g_activityEditor.addressCounter;
+	var contentCounter = g_activityEditor.contentCounter;
+	if(!titleCounter.valid() || !addressCounter.valid || !contentCounter.valid()) {
+		alert("All text fields (title, address and content) should be filled with respect to the text limits.");
 		return;
 	}
 	formData.append(g_keyTitle, title);
@@ -495,6 +502,7 @@ function generateActivityEditor(par, activity){
 	}).appendTo(ret);
 	var titleCounter = new WordCounter(0, 1, 64);
 	titleCounter.appendCounter(ret);
+	titleCounter.update(titleInput.val().length);
 
 	titleInput.on("input paste keyup", function(evt){
 			evt.preventDefault();
@@ -512,6 +520,7 @@ function generateActivityEditor(par, activity){
 	}).appendTo(ret);
 	var addrCounter = new WordCounter(0, 1, 256);
 	addrCounter.appendCounter(ret);
+	addrCounter.update(addressInput.val().length);
 	addressInput.on("input paste keyup", function(evt){
 			evt.preventDefault();
 			g_activityEditor.setSavable();
@@ -529,7 +538,7 @@ function generateActivityEditor(par, activity){
 	contentInput.val(activityContent);
 	var contentCounter = new WordCounter(0, 1, 1024);
 	contentCounter.appendCounter(ret);
-
+	contentCounter.update(contentInput.val().length);
 	contentInput.on("input paste keyup", function(evt){
 			evt.preventDefault();
 			g_activityEditor.setSavable();
@@ -599,7 +608,11 @@ function generateActivityEditor(par, activity){
         var onChange = function(evt) {
                 evt.preventDefault();
 		if (g_activityEditor == null) return;
-		if (countImages(g_activityEditor) >= g_imagesLimit) return;
+		if (countImages(g_activityEditor) >= g_imagesLimit) {
+			alert("You can only choose up to " + g_imagesLimit.toString() + " images!");
+			return;
+		
+		}
                 g_activityEditor.setSavable();
                 g_activityEditor.setNonSubmittable();
                 previewImage(newImagesRow, g_activityEditor);
@@ -686,7 +699,7 @@ function generateActivityEditor(par, activity){
 		style: "color: blue"
 	}).appendTo(ret);
 
-	var editor = new ActivityEditor(ret, activityId, titleInput, addressField, contentInput, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, captcha);	
+	var editor = new ActivityEditor(ret, activityId, titleInput, titleCounter, addressField, addrCounter, contentInput, contentCounter, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, captcha);	
 	editor.setNonSavable();
 	editor.setSubmittable();
 
