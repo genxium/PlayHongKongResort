@@ -197,6 +197,11 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	}).appendTo(par);
 	var avatar = (g_loggedInUser == null || !g_loggedInUser.hasAvatar()) ? "assets/icons/anonymous.png" : g_loggedInUser.avatar;
 	setBackgroundImageDefault(avatarContainer, avatar);
+	avatarContainer.click(function(evt){
+		evt.preventDefault();
+		if (g_loggedInUser == null) return;
+		showAvatarEditor(g_loggedInUser);
+	});
 
 	var postLoginMenuContainer = $("<div>", {
 		class: "post-login-menu-container inline"

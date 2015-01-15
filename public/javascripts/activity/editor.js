@@ -207,9 +207,7 @@ function initActivityEditor(par, onRemove){
 
 function showActivityEditor(activity) {
 	refreshActivityEditor(activity);
-	g_sectionActivityEditor.modal({
-			show: true
-	});
+	g_sectionActivityEditor.modal("show");
 }
 
 function refreshActivityEditor(activity) {
@@ -372,13 +370,13 @@ function onSubmit(evt){
                 url: "/activity/submit",
                 data: params,
                 success: function(data, status, xhr){
-			g_activityEditor.enableEditorButtons();
+						g_activityEditor.enableEditorButtons();
                         removeActivityEditor();
                         if(g_onEditorRemoved == null) return;
-			g_onEditorRemoved();
+						g_onEditorRemoved();
                 },
                 error: function(xhr, status, err){
-			g_activityEditor.enableEditorButtons();
+						g_activityEditor.enableEditorButtons();
                         g_activityEditor.setSubmittable();
                 }
         });
@@ -491,7 +489,7 @@ function generateActivityEditor(par, activity){
 	}
 
 	var ret = $('<form>', {
-		style: "padding: 5pt"
+		class: "activity-editor-form"
 	}).appendTo(par);
 
 	var titleInput = $('<input>', {

@@ -79,6 +79,7 @@
 }
 .post-login-avatar {
 	position: absolute;
+	cursor: pointer;
 	box-sizing: border-box;
 	top: 0px;
 	left: 70px;

@@ -35,9 +35,10 @@
 
 .activity-editor {
 	position: fixed;
-	height: 90%;
-	padding: 5pt;
 	box-sizing: content-box;
+}
+.activity-editor-form {
+	padding: 10px;
 }
 
 .input-title, .input-address, .input-content {

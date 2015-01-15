@@ -75,3 +75,13 @@
 
 .date-picker-input {
 }
+
+.avatar-editor {
+	position: fixed;
+	box-sizing: content-box;
+}
+.avatar-editor-form {
+	width: 900px;
+	height: 320px;
+	padding: 50px;
+}

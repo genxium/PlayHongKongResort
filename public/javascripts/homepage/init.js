@@ -94,6 +94,7 @@ $(document).ready(function(){
 	initTopbar($("#topbar"));
 	initFooter($("#footer-content"));
 	initActivityEditor($("#content"), listActivitiesAndRefresh);
+	initAvatarEditor($("#content"));
 
 	$(window).on("hashchange", function(evt) {
 		routeByHash();

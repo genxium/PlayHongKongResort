@@ -3,6 +3,30 @@
 #section-register {
 	background-color: #eee;
 }
+#section-user {
+	position: relative;
+	height: 100px;
+	width: auto;
+	box-sizing: border-box;
+	border-bottom: solid 1px cadetblue;
+}
+.section-user-name {
+	position: absolute;
+	left: 20px;
+	top: 0px;
+	width: 80px;
+	height: 80px;
+	color: dodgerblue;
+	font: Serif;
+	font-size: 2em;
+}
+.section-user-avatar {
+	position: absolute;
+	left: 120px;
+	top: 0px;
+	width: 80px;
+	height: 80px;
+}
 #register-box {
 	width: 300px;
 	margin: auto;

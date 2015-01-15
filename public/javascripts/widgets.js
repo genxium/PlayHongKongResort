@@ -584,7 +584,11 @@ function WordCounter(current, min, max) {
 	};
 }
 
-function AvatarEditor(image, btnChoose, btnUpload, hint) {
+var g_avatarEditor = null;
+var g_sectionAvatarEditor = null;
+var g_modalAvatarEditor = null;
+function AvatarEditor(container, image, btnChoose, btnUpload, hint) {
+	this.container = container;
 	this.image = image;
 	this.btnChoose = btnChoose;
 	this.btnUpload = btnUpload;
@@ -638,33 +642,82 @@ function AvatarEditor(image, btnChoose, btnUpload, hint) {
 				editor.hint.text("Failed");
 			}
 		});
-
 	});
+
+	this.show = function() {
+		this.container.show();
+	};
+
+	this.hide = function() {
+		this.container.hide();
+	};
+
+	this.remove = function() {
+		this.container.remove();
+	};	
 }
 
-function generateAvatarEditor(par) {
-	if (g_loggedInUser == null) return null;
+function removeAvatarEditor() {
+	if(g_sectionAvatarEditor == null) return;
+	g_sectionAvatarEditor.hide();
+	g_sectionAvatarEditor.modal("hide");
+	if(g_modalAvatarEditor == null) return;
+	g_modalAvatarEditor.empty();
+	if (g_avatarEditor == null) return;
+	g_avatarEditor.remove();
+}
+
+function refreshAvatarEditor(user) {
+	g_modalAvatarEditor.empty();
+	g_avatarEditor = generateAvatarEditor(g_modalAvatarEditor, user);
+}
+
+function showAvatarEditor(user) {
+	refreshAvatarEditor(user);
+	g_sectionAvatarEditor.modal("show");
+}
+
+function initAvatarEditor(par) {
+	g_sectionAvatarEditor = $("<div class='modal fade avatar-editor' tabindex='-1' role='dialog' aria-labelledby='AvatarEditor' aria-hidden='true'>").appendTo(par);
+	 
+	var dialog = $("<div>", {
+		class: "modal-dialog modal-lg"
+	}).appendTo(g_sectionAvatarEditor);
+
+	g_modalAvatarEditor = $("<div>", {
+		class: "modal-content"
+	}).appendTo(dialog);
+		
+	removeAvatarEditor();	
+}  
+
+function generateAvatarEditor(par, user) {
+	if (user == null) return null;
 	
-	var avatar = (!g_loggedInUser.hasAvatar()) ? "assets/icons/anonymous.png" : g_loggedInUser.avatar;
+	var ret = $("<div>", {
+		class: "avatar-editor-form"
+	}).appendTo(par);
+
+	var avatar = (!user.hasAvatar()) ? "assets/icons/anonymous.png" : user.avatar;	
 	var pic = $("<img>", {
-		style: "position: absolute; left: 10px; top:10px; margin: auto;",
+		style: "position: absolute; left: 20px; top: 50px; margin: auto;",
 		src: avatar
-	}).appendTo(par); 
-	setDimensions(pic, "70px", "70px");
+	}).appendTo(ret); 
+	setDimensions(pic, "200px", "200px");
 
 	var btnChoose = $("<input>", {
 		type: "file",
 		text: "Choose a picture",
-		style: "position: absolute; left: 100px; top: 10px;"
-	}).appendTo(par);
-	setDimensions(btnChoose, "80px", "30px");
+		style: "position: absolute; left: 250px; top: 50px; padding: 0px; border: none; outline: none;"
+	}).appendTo(ret);
+	setDimensions(btnChoose, "250px", "95px");
 
 	var btnUpload = $("<button>", {
 		text: "Upload",	
-		style: "position: absolute; left: 100px; top: 50px;"
-	}).appendTo(par);	
-	setDimensions(btnUpload, "80px", "30px");
+		style: "font-size: 17pt; background-color: indianred; color: white; position: absolute; left: 250px; top: 150px;"
+	}).appendTo(ret);	
+	setDimensions(btnUpload, "250px", "95px");
 	
-	var hint = $("<p>").appendTo(par);
-	return new AvatarEditor(pic, btnChoose, btnUpload, hint); 
+	var hint = $("<p>").appendTo(ret);
+	return new AvatarEditor(par, pic, btnChoose, btnUpload, hint); 
 }
