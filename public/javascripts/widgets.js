@@ -14,7 +14,7 @@ function ExplorerTrigger(node, pic, btn) {
 	};
 	this.getFile = function() {
 		if (this.btn == null) return null;	
-		var files = btn[0].files;
+		var files = this.btn[0].files;
 		if (files == null) return null;	
 		if (files.length != 1) {
 			alert("Choose only 1 image at a time!!!");
@@ -582,4 +582,89 @@ function WordCounter(current, min, max) {
 	this.valid = function() {
 		return (this.current <= this.max && this.current >= this.min);
 	};
+}
+
+function AvatarEditor(image, btnChoose, btnUpload, hint) {
+	this.image = image;
+	this.btnChoose = btnChoose;
+	this.btnUpload = btnUpload;
+	this.hint = hint;
+	this.getFile = function() {
+		if (this.btnChoose == null) return null;	
+		var files = this.btnChoose[0].files;
+		if (files == null) return null;	
+		if (files.length != 1) {
+			alert("Choose only 1 image at a time!!!");
+			return null;
+		}
+		return files[0];
+	};
+	this.btnChoose.change(this, function(evt) {
+		evt.preventDefault();
+		var editor = evt.data;
+		var file = editor.getFile();
+		if (file == null) return;
+		if (!validateImage(file)) return;
+		var reader = new FileReader();
+		reader.onload = function (e) {
+			editor.image.attr("src", e.target.result);
+		}
+		reader.readAsDataURL(file);
+	});
+	this.btnUpload.click(this, function(evt) {
+		evt.preventDefault();
+		var editor = evt.data;	
+		var file = editor.getFile();
+		if (!validateImage(file))	return;
+
+		var token = $.cookie(g_keyToken);
+		if (token == null) return;
+
+		var formData = new FormData();
+		formData.append(g_keyAvatar, file);
+		formData.append(g_keyToken, token);
+		
+		$.ajax({
+			method: "POST",
+			url: "/user/avatar/upload", 
+			data: formData,
+			mimeType: "mutltipart/form-data",
+			contentType: false,
+			processData: false,
+			success: function(data, status, xhr){
+				editor.hint.text("Uploaded");
+			},
+			error: function(xhr, status, err){
+				editor.hint.text("Failed");
+			}
+		});
+
+	});
+}
+
+function generateAvatarEditor(par) {
+	if (g_loggedInUser == null) return null;
+	
+	var avatar = (!g_loggedInUser.hasAvatar()) ? "assets/icons/anonymous.png" : g_loggedInUser.avatar;
+	var pic = $("<img>", {
+		style: "position: absolute; left: 10px; top:10px; margin: auto;",
+		src: avatar
+	}).appendTo(par); 
+	setDimensions(pic, "70px", "70px");
+
+	var btnChoose = $("<input>", {
+		type: "file",
+		text: "Choose a picture",
+		style: "position: absolute; left: 100px; top: 10px;"
+	}).appendTo(par);
+	setDimensions(btnChoose, "80px", "30px");
+
+	var btnUpload = $("<button>", {
+		text: "Upload",	
+		style: "position: absolute; left: 100px; top: 50px;"
+	}).appendTo(par);	
+	setDimensions(btnUpload, "80px", "30px");
+	
+	var hint = $("<p>").appendTo(par);
+	return new AvatarEditor(pic, btnChoose, btnUpload, hint); 
 }
