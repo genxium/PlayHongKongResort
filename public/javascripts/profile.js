@@ -4,7 +4,7 @@ var g_viewee = null;
 
 function emptySectionUser() {
 	if (g_sectionUser == null) return;
-	setDimensions(g_sectionUser, "100%", 0);
+	setDimensions(g_sectionUser, "auto", "0px");
 	g_sectionUser.empty();
 }
 

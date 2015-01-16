@@ -190,17 +190,17 @@ function attachJoinButton(par, activity) {
 
 	if(activity.relation == null && !activity.isDeadlineExpired()){
 		var btnJoin = $('<button>', {
-			class: "btn-join",
+			class: "btn-join purple right",
 			text: 'Join'
 		}).appendTo(par);
 		btnJoin.click(activity, onBtnJoinClicked);
 	} else {
-		attachRelationIndicator(par, activity);
+		attachRelationIndicator(par, activity, false);
 	}
 
 }
 
-function attachRelationIndicator(par, activity) {
+function attachRelationIndicator(par, activity, inListCell) {
 
 	if(activity.relation == null || g_loggedInUser == null || g_loggedInUser.id == activity.host.id) return;
 
@@ -212,11 +212,17 @@ function attachRelationIndicator(par, activity) {
 	mapRelationName[assessed] = "assessed";
 	mapRelationName[hosted] = "";
 		
-	var relationIndicator = $('<span>', {
-		style: "color: violet; font-size: 13pt;",
-		text: mapRelationName[getPriorRelation(activity)]
-	}).appendTo(par);
-
+	if (inListCell) {
+		$("<span>", {
+			class: "activity-cell-relation",
+			text: mapRelationName[getPriorRelation(activity)]
+		}).appendTo(par);
+	} else {
+		$("<span>", {
+			class: "activity-detail-relation right",
+			text: mapRelationName[getPriorRelation(activity)]
+		}).appendTo(par);
+	}
 }
 
 function attachStatusIndicator(par, activity) {
@@ -225,7 +231,7 @@ function attachStatusIndicator(par, activity) {
 	var arrayStatusName = ["created", "pending", "rejected", "accepted", "expired"];
 
 	var statusIndicator = $('<span>',{
-		style: "color: red; margin-left: 10pt; font-size: 13pt; vertical-align: center;",
+		class: "activity-cell-status",
 		text: arrayStatusName[activity.status]
 	}).appendTo(par);
 
@@ -280,7 +286,7 @@ function generateActivityCell(par, activity){
 		class: "activity-title",
 		text: activity.title
 	}).appendTo(middle);
-	attachRelationIndicator(title, activity);
+	attachRelationIndicator(title, activity, true);
 	
 	var addr = $("<p>", {
 		class: "activity-addr",

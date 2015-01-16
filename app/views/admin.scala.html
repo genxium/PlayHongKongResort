@@ -5,8 +5,10 @@
 		<title>Admin</title>
 
 		<!-- style sheets -->
-		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")" type="text/css">
+		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")" type="text/css">
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap-datetimepicker.min.css")" type="text/css">
+		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/header.css")" type="text/css">
+		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/footer.css")" type="text/css">
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/widgets.css")" type="text/css">
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/activity.css")" type="text/css">
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/admin.css")" type="text/css">
@@ -40,13 +42,14 @@
 	</head>
 
 	<body>
-		<div id="wrap">
-			<p id="topbar"></p>
-
-			<p id="pager-filters"></p>
-			<p id="pager-bar-activities" style="margin-top: 5pt"></p>
+		<div id="header">
+			<div id="topbar"></div>
+		</div>
+		<div class="clear"></div>
+		<div id="content">
+			<div id="pager-filters"></div>
+			<div id="pager-bar-activities"></div>
 			<div id="pager-screen-activities"></div>
-			
 		</div>
 	</body>
 </html>

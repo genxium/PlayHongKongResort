@@ -1,3 +1,5 @@
+@import "common.css";
+
 #pager-screen-activities
 {
 	margin-top: 5pt;
@@ -6,5 +8,6 @@
 
 #pager-bar-activities
 {
+	margin-top: 5pt;
 }
 

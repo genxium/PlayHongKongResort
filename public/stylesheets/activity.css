@@ -1,3 +1,7 @@
+#section-activity {
+	box-sizing: border-box;
+	padding: 5px;
+}
 .cell-container {
 	height: 200px;
 	margin: 10px
@@ -132,8 +136,15 @@
 	max-height: 200pt;
 	max-width:	400pt;
 	border: solid 2px bisque;
-	box-sizing: content-box;
+	box-sizing: border-box;
 	resize: none;
+}
+
+.btn-join {
+	position: relative;
+	font-size: 50px;
+	width: 200px;
+	height: 100px;
 }
 
 .btn-save, .btn-submit, .btn-cancel, .btn-delete {
@@ -177,9 +188,34 @@
 	height: 36px;
 }
 .activity-detail {
+	position: absolute;
+	top: 0px;
+	left: 0px;
 	width: 150px;
 	height: 150px;
 	font-size: 60px;
+}
+.activity-cell-relation {
+	position: absolute;
+	top: 160px;
+	left: 0px;
+	color: violet;
+	font-size: 13pt;
+}
+.activity-cell-status {
+	position: absolute;
+	top: 180px;
+	left: 0px;
+	color: red;
+	margin-left: 10pt;
+	font-size: 13pt;
+	vertical-align: center;
+}
+.activity-detail-relation {
+	position: relative;
+	font-size: 50px;
+	width: 200px;
+	height: 100px;
 }
 
 #pager-filters {
@@ -187,5 +223,4 @@
 }
 .activity-action {
 	position: relative; /* nearest position anchor requires the position property to be set */
-	font-size: 2em;	
 }

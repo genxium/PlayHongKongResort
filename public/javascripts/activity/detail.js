@@ -8,11 +8,17 @@ var g_navTab = null;
 var g_activityId = null;
 var g_activity = null;
 
+function emptyBarButtons() {
+	if (g_barButtons == null) return;
+	setDimensions(g_barButtons, "auto", "0px");
+	g_barButtons.empty();
+}
+
 function clearDetail() {
 	if (g_sectionActivity != null) g_sectionActivity.empty();
 	if (g_sectionNav != null) g_sectionNav.empty();
 	if (g_sectionPanes != null) g_sectionPanes.empty();
-	if (g_barButtons != null) g_barButtons.empty();
+	emptyBarButtons();
 }
 
 function queryActivityDetail(activityId){
@@ -23,22 +29,24 @@ function queryActivityDetail(activityId){
         if(token != null)	params[g_keyToken] = token;
 
         $.ajax({
-		type: "GET",
-		url: "/activity/detail",
-		data: params,
-		success: function(data, status, xhr){
-			var activityJson = data;
-			g_activity = new Activity(activityJson);
-			g_barButtons.empty();
-			var buttonContainer = $("<span>", {
-				style: "float: right; width: 20%; height: 10%;"
-			}).appendTo(g_barButtons);
-			attachJoinButton(buttonContainer, g_activity);
-			displayActivityDetail(g_sectionActivity);
-		},
-		error: function(xhr, status, err){
+			type: "GET",
+			url: "/activity/detail",
+			data: params,
+			success: function(data, status, xhr){
+				var activityJson = data;
+				g_activity = new Activity(activityJson);
+				displayActivityDetail(g_sectionActivity);
+				if (g_loggedInUser == null || g_loggedInUser.id == g_activity.host.id) {
+					emptyBarButtons();
+					return;
+				}
+				g_barButtons.empty();
+				setDimensions(g_barButtons, "auto", "100px"); // resume dimensions
+				attachJoinButton(g_barButtons, g_activity);
+			},
+			error: function(xhr, status, err){
 
-		}
+			}
         });
 }
 
@@ -143,7 +151,7 @@ function requestActivityDetail(activityId) {
 	g_sectionActivity = $("#section-activity");
 	g_sectionNav = $("#section-nav")
 	g_sectionPanes = $("#section-panes");
-	g_barButtons = $("#bar-buttons");
+	g_barButtons = $("#section-user");
 
 	var refs = ["tab-comments", "tab-participants", "tab-assessments"];
 	var titles = ["Q & A", "參與者", "評價"];
