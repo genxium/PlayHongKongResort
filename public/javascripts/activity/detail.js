@@ -49,7 +49,9 @@ function queryActivityDetail(activityId){
 				attachJoinButton(g_barButtons, g_activity);
 			},
 			error: function(xhr, status, err){
-
+				alert("You're not permitted to view this page!");	
+				emptyBarButtons();	
+				g_sectionActivity.empty();	
 			}
         });
 }
@@ -119,12 +121,21 @@ function displayActivityDetail(par){
 	var token = $.cookie(g_keyToken);
 	if(token == null)   return ret;
 
-	if(g_activity.hasBegun()) {
-	    $("<p>", {
-	        style: "color: red; font-size: 13pt",
-	        text: "Q & A is disabled because the activity has begun. You can still view existing conversations"
-	    }).appendTo(ret);
-	    return ret;
+	if (g_activity.hasBegun()) {
+		$("<p>", {
+			style: "color: red; font-size: 13pt",
+			text: "Q & A is disabled because the activity has begun. You can still view existing conversations."
+		}).appendTo(ret);
+		return ret;
+	}
+
+	if (g_activity.status != null && g_activity.status != undefined && g_activity.status != g_statusAccepted) {
+		// for host viewing unaccepted activity
+		$("<p>", {
+			style: "color: red; font-size: 13pt",
+			text: "Q & A is disabled before activity accepted."
+		}).appendTo(ret);
+		return ret;
 	}
 
 	// Comment editor

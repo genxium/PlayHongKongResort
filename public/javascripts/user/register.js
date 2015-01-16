@@ -60,6 +60,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		    || email == null || email.length == 0 || !validateEmail(email)
 		    || password == null || password.length == 0 || !validatePassword(password) || !validatePasswordConfirm(password, passwordConfirm)) return;
 
+		disableField($(this));
 		var params = {};
 		params[g_keyName] = username;
 		params[g_keyEmail] = email;
@@ -72,12 +73,13 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		    url: "/user/register",
 		    data: params,
 		    success: function(data, status, xhr){
-				widget.empty();
+				widget.empty();	
+		    		enableField($(this));
 				if (widget.onSuccess == null) return;
 				widget.onSuccess(data);
 		    },
 		    error: function(xhr, status, err){
-				alert("Oops! Not registered...");
+		    		enableField($(this));
 				if (widget.onError == null) return;
 				widget.onError(err);
 		    }

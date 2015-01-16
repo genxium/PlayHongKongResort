@@ -286,7 +286,6 @@ function generateActivityCell(par, activity){
 		class: "activity-title",
 		text: activity.title
 	}).appendTo(middle);
-	attachRelationIndicator(title, activity, true);
 	
 	var addr = $("<p>", {
 		class: "activity-addr",
@@ -329,4 +328,5 @@ function generateActivityCell(par, activity){
 	});
 
 	attachStatusIndicator(right, activity);
+	attachRelationIndicator(right, activity, true);
 }

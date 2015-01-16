@@ -86,67 +86,65 @@ public class UserController extends Controller {
     }
 
     public static Result register() {
-        try {
-            RequestBody body = request().body();
-            Map<String, String[]> formData = body.asFormUrlEncoded();
-            String name = formData.get(User.NAME)[0];
-            String email = formData.get(User.EMAIL)[0];
-            String password = formData.get(User.PASSWORD)[0];
+	    try {
+		    RequestBody body = request().body();
+		    Map<String, String[]> formData = body.asFormUrlEncoded();
+		    String name = formData.get(User.NAME)[0];
+		    String email = formData.get(User.EMAIL)[0];
+		    String password = formData.get(User.PASSWORD)[0];
 
-			String sid = formData.get(UserActivityRelation.SID)[0];
-			String captcha = formData.get(UserActivityRelation.CAPTCHA)[0];  
-			if (sid == null || captcha == null) throw new CaptchaNotMatchedException(); 
-			if (session(sid) == null || !captcha.equalsIgnoreCase(session(sid))) throw new CaptchaNotMatchedException(); 
+		    String sid = formData.get(UserActivityRelation.SID)[0];
+		    String captcha = formData.get(UserActivityRelation.CAPTCHA)[0];  
+		    if (sid == null || captcha == null) throw new CaptchaNotMatchedException(); 
+		    if (session(sid) == null || !captcha.equalsIgnoreCase(session(sid))) throw new CaptchaNotMatchedException(); 
 
-            if ((name == null || !General.validateName(name)) || (email == null || !General.validateEmail(email)) || (password == null || !General.validatePassword(password)))  throw new InvalidRegistrationParamsException();
-            String code = SQLCommander.generateVerificationCode(name);
-            String salt = SQLCommander.generateSalt(email, password);
-            String passwordDigest = Converter.md5(password + salt);
-            User user = new User(email, passwordDigest, name);
-            user.setVerificationCode(code);
-            user.setSalt(salt);
-
-            if (SQLCommander.registerUser(user) == SQLHelper.INVALID) throw new NullPointerException();
-
-            sendVerificationEmail(user.getName(), user.getEmail(), code);
-            return ok().as("text/plain");
-        } catch (CaptchaNotMatchedException e) {
-			return badRequest(CaptchaNotMatchedResult.get());
-		} catch (Exception e) {
-            Loggy.e(TAG, "register", e);
-        }  
-        return badRequest();
+		    if ((name == null || !General.validateName(name)) || (email == null || !General.validateEmail(email)) || (password == null || !General.validatePassword(password)))  throw new InvalidRegistrationParamsException();
+		    String code = SQLCommander.generateVerificationCode(name);
+		    String salt = SQLCommander.generateSalt(email, password);
+		    String passwordDigest = Converter.md5(password + salt);
+		    User user = new User(email, passwordDigest, name);
+		    user.setVerificationCode(code);
+		    user.setSalt(salt);
+		    if (SQLCommander.registerUser(user) == SQLHelper.INVALID) throw new NullPointerException();
+		    sendVerificationEmail(user.getName(), user.getEmail(), code);
+		    return ok().as("text/plain");
+	    } catch (CaptchaNotMatchedException e) {
+		    return badRequest(CaptchaNotMatchedResult.get());
+	    } catch (Exception e) {
+		    Loggy.e(TAG, "register", e);
+	    }  
+	    return badRequest();
     }
 
     public static Result status(String token) {
-        try {
-            if (token == null) throw new NullPointerException();
-            Long userId = SQLCommander.queryUserId(token);
-            if (userId == null) throw new UserNotFoundException();
-            User user = SQLCommander.queryUser(userId);
-            if (user == null) throw new UserNotFoundException();
-            return ok(user.toObjectNode(userId)).as("text/plain");
-        } catch (Exception e) {
-	    if (e instanceof UserNotFoundException)	return ok(StandardFailureResult.get());
-            Loggy.e(TAG, "status", e);
-        }
-        return ok(StandardFailureResult.get());
+	    try {
+		    if (token == null) throw new NullPointerException();
+		    Long userId = SQLCommander.queryUserId(token);
+		    if (userId == null) throw new UserNotFoundException();
+		    User user = SQLCommander.queryUser(userId);
+		    if (user == null) throw new UserNotFoundException();
+		    return ok(user.toObjectNode(userId)).as("text/plain");
+	    } catch (Exception e) {
+		    if (e instanceof UserNotFoundException)	return ok(StandardFailureResult.get());
+		    Loggy.e(TAG, "status", e);
+	    }
+	    return ok(StandardFailureResult.get());
     }
 
     public static Result relation(Long activityId, String token) {
-        try {
-            Long userId = SQLCommander.queryUserId(token);
-            int relation = SQLCommander.queryUserActivityRelation(userId, activityId);
-            if (relation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
-            ObjectNode ret = Json.newObject();
-            ret.put(UserActivityRelation.RELATION, String.valueOf(relation));
-            return ok(ret);
-        } catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
-        } catch (Exception e) {
-            Loggy.e(TAG, "relation", e);
-        }
-        return badRequest();
+	    try {
+		    Long userId = SQLCommander.queryUserId(token);
+		    int relation = SQLCommander.queryUserActivityRelation(userId, activityId);
+		    if (relation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
+		    ObjectNode ret = Json.newObject();
+		    ret.put(UserActivityRelation.RELATION, String.valueOf(relation));
+		    return ok(ret);
+	    } catch (TokenExpiredException e) {
+		    return badRequest(TokenExpiredResult.get());
+	    } catch (Exception e) {
+		    Loggy.e(TAG, "relation", e);
+	    }
+	    return badRequest();
     }
 
     public static Result logout() {

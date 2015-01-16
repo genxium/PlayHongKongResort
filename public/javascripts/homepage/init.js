@@ -35,7 +35,7 @@ function requestHome() {
 				listActivitiesAndRefresh();
 			},
 			function(err) {
-				
+				alert("Oops! Not registered...");
 			});
 
 	var selector = createSelector($("#pager-filters"), ["時間倒序", "時間順序"], [g_orderDescend, g_orderAscend], null, null, null, null);
