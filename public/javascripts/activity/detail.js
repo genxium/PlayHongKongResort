@@ -40,6 +40,10 @@ function queryActivityDetail(activityId){
 					emptyBarButtons();
 					return;
 				}
+				if (g_activity.isDeadlineExpired() && g_activity.relation == null) {
+					emptyBarButtons();
+					return;
+				}
 				g_barButtons.empty();
 				setDimensions(g_barButtons, "auto", "100px"); // resume dimensions
 				attachJoinButton(g_barButtons, g_activity);
