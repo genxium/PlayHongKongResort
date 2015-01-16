@@ -503,7 +503,6 @@ function generateActivityEditor(par, activity){
 	titleCounter.update(titleInput.val().length);
 
 	titleInput.on("input paste keyup", function(evt){
-			evt.preventDefault();
 			g_activityEditor.setSavable();
 			g_activityEditor.setNonSubmittable();
 			var count = $(this).val().length;
@@ -520,7 +519,6 @@ function generateActivityEditor(par, activity){
 	addrCounter.appendCounter(ret);
 	addrCounter.update(addressInput.val().length);
 	addressInput.on("input paste keyup", function(evt){
-			evt.preventDefault();
 			g_activityEditor.setSavable();
 			g_activityEditor.setNonSubmittable();
 			var count = $(this).val().length;
@@ -538,7 +536,6 @@ function generateActivityEditor(par, activity){
 	contentCounter.appendCounter(ret);
 	contentCounter.update(contentInput.val().length);
 	contentInput.on("input paste keyup", function(evt){
-			evt.preventDefault();
 			g_activityEditor.setSavable();
 			g_activityEditor.setNonSubmittable();
 			var count = $(this).val().length;
