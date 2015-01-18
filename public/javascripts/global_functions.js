@@ -105,6 +105,27 @@ function extractParams(url) {
 	return params;
 }
 
+function extractTagAndParams(url) {
+	var urlRegex = /https?:\/\/(.+)#(profile|detail|home|search)\?(.*)/i;
+	var matchUrl = urlRegex.exec(url);
+
+	if (matchUrl == null) return null;
+
+	var ret = {};
+	ret["tag"] = matchUrl[2];
+	ret["params"] = {};
+	var params = matchUrl[3];
+
+	var paramRegex = /(\w+)=(\w+)/;
+	var matchParams = paramRegex.exec(params);
+	while (matchParams != null) {
+		var key = matchParams[1];
+		var val = matchParams[2];
+		ret["params"][key] = val;
+	}
+	return ret;
+}
+
 function firstChild(obj, selector){
 	return $(obj.children(selector)[0]);
 }
