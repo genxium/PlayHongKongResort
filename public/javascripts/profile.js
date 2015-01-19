@@ -70,11 +70,12 @@ function requestProfile(vieweeId) {
 	var pagerCache = new PagerCache(5);
 	
 	// initialize pager widgets
-	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
+	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
 	
 	var onLoginSuccess = function(data) {
 		queryUserDetail();
 		listActivitiesAndRefresh();
+		listAssessmentsAndRefresh(g_vieweeId);
 	};
 
 	var onLoginError = function(err) {

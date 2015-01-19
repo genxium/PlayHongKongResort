@@ -215,7 +215,7 @@ function PagerButton(pager, page) {
 	this.page = page;
 }
 
-function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, filters, onSuccess, onError) {
+function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, pagerCache, filters, onSuccess, onError) {
 	this.screen = screen; // screen of the pager
 	this.nItems = numItemsPerPage; // number of items per page
 
@@ -231,6 +231,7 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, pagerCache, f
 
 	// prototype: paramsGenerator(Pager, page)
 	this.paramsGenerator = paramsGenerator;
+	this.extraParams = extraParams;
 
 	// prototypes: onSuccess(data), onError(err)
 	this.onSuccess = onSuccess;

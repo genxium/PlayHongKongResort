@@ -210,11 +210,11 @@ function requestActivityDetail(activityId) {
 	g_tabAssessments = g_navTab.panes[2];
 
 	var commentsCache = new PagerCache(5);
-	g_pagerComments = new Pager(commentPagerScreen, commentPagerBar, 5, "/comment/list", generateCommentsListParams, commentsCache, null, onListCommentsSuccess, onListCommentsError);
+	g_pagerComments = new Pager(commentPagerScreen, commentPagerBar, 5, "/comment/list", generateCommentsListParams, null, commentsCache, null, onListCommentsSuccess, onListCommentsError);
 
 	var subCommentsCache = new PagerCache(20);	
 
-	g_pagerSubComments = new Pager(subCommentPagerScreen, subCommentPagerBar, 20, "/comment/sub/list", generateCommentsListParams, subCommentsCache, null, onListSubCommentsSuccess, onListSubCommentsError);
+	g_pagerSubComments = new Pager(subCommentPagerScreen, subCommentPagerBar, 20, "/comment/sub/list", generateCommentsListParams, null, subCommentsCache, null, onListSubCommentsSuccess, onListSubCommentsError);
 	
 	// squeeze the sub-comments' container
 	g_pagerSubComments.squeeze();

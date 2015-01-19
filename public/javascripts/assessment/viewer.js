@@ -3,7 +3,6 @@ var g_modalAssessmentsViewer = null;
 var g_assessmentsViewer = null;
 var g_nAssessmentsPerPage = 20;
 var g_pagerAssessments = null;
-var g_tmpTo = null; // for the legacy design of `Pager` paramsGenerator prototype
 
 function removeAssessmentsViewer(){
         if(g_sectionAssessmentsViewer == null) return;
@@ -175,6 +174,11 @@ function generateAssessmentsListParams(pager, page) {
 		}
 	}
 
+	if (pager.extraParams == null) return params;
+	if (var key in pager.extraParams) {
+		params[key] = pager.extraParams[key];
+	}
+
 	return params;
 }
 
@@ -197,7 +201,7 @@ function listAssessments(page, to, onSuccess, onError) {
 	});
 }
 
-function listAssessmentsAndRefresh() {
+function listAssessmentsAndRefresh(to) {
 	var page = 1;
-	listAssessments(page, onListAssessmentsSuccess, onListAssessmentsError);
+	listAssessments(page, to, onListAssessmentsSuccess, onListAssessmentsError);
 }
