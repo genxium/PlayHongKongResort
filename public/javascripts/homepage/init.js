@@ -75,18 +75,31 @@ function requestHome() {
 }
 
 function routeByHash() {
-	var hash = window.location.hash;
-	if (hash == null || hash == "") {
+	var href = window.location.href;
+	var bundle = extractTagAndParams(href);
+	if (bundle == null) {
+		requestHome();	
+		return;
+	}
+	var tag = bundle["tag"];	
+	var params = bundle["params"];
+
+	if (tag == null || tag == "" || tag == "home") {
 		requestHome();
 		return;
 	}
-	if (hash == "#notifications") {
+	if (tag == "notifications") {
 		requestNotifications();
 		return;
 	}
-	var parts = hash.split("=");		
-	if (parts[0] == ("#" + g_keyVieweeId)) requestProfile(parseInt(parts[1]));
-	else requestActivityDetail(parseInt(parts[1]));
+	if (tag == "detail") {
+		requestActivityDetail(parseInt(params["activity_id"]));
+		return;
+	}
+	if (tag == "profile") {
+		requestProfile(parseInt(params["viewee_id"]));
+		return;
+	}
 }
 	
 $(document).ready(function(){

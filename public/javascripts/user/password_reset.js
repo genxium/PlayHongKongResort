@@ -9,13 +9,10 @@ var g_code = null;
 
 $(document).ready(function(){
 
-	var params = extractParams(window.location.href);
-	for(var i = 0; i < params.length; i++){
-		var param = params[i];
-		var pair = param.split("=");
-		if(pair[0] == g_keyEmail)	g_email = pair[1];
-		if(pair[0] == g_keyCode)	g_code = pair[1]; 
-	}
+	var bundle = extractTagAndParams(window.location.href);
+	var params = bundle["params"];
+	g_email = params["email"]; 
+	g_keyCode = params["code"];
 
 	g_fieldPassword = $("#password-1");
 	g_fieldRetypePassword = $("#password-2");

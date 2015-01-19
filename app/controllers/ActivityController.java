@@ -147,7 +147,7 @@ public class ActivityController extends Controller {
 			if (activityDetail == null) throw new ActivityNotFoundException();
 			Long userId = null;
 			if (token != null) userId = SQLCommander.queryUserId(token);
-			if (!userId.equals(activityDetail.getHost().getId()) && activityDetail.getStatus() != Activity.ACCEPTED) return badRequest();
+			if ((userId == null || !userId.equals(activityDetail.getHost().getId())) && activityDetail.getStatus() != Activity.ACCEPTED) return badRequest();
 			return ok(activityDetail.toObjectNode(userId));
 		} catch (Exception e) {
 			Loggy.e(TAG, "detail", e);

@@ -324,7 +324,7 @@ function generateActivityCell(par, activity){
 	btnDetail.click(activity, function(evt){
 		evt.preventDefault();
 		var act = evt.data;
-		window.location.hash = (g_keyActivityId + "=" + act.id.toString());
+		window.location.hash = ("detail?" + g_keyActivityId + "=" + act.id.toString());
 	});
 
 	attachStatusIndicator(right, activity);

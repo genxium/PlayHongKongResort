@@ -141,7 +141,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	var profileReact = function(evt){
 		evt.preventDefault();
 		if (g_loggedInUser == null) return;
-		window.location.hash = (g_keyVieweeId + "=" + g_loggedInUser.id.toString());
+		window.location.hash = ("profile?" + g_keyVieweeId + "=" + g_loggedInUser.id.toString());
 	};
 	
 	var logoutReact = function(evt){
@@ -263,5 +263,9 @@ function checkLoginStatus(){
 		error: function(xhr, status, err){
 		}
 	});
+
+}
+
+function focusLogin() {
 
 }

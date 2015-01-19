@@ -100,13 +100,8 @@ function validateName(name) {
 	return regex.test(name);	
 }
 
-function extractParams(url) {  
-	var params = url.split("?")[1].split("&");	
-	return params;
-}
-
 function extractTagAndParams(url) {
-	var urlRegex = /https?:\/\/(.+)#(profile|detail|home|search)\?(.*)/i;
+	var urlRegex = /https?:\/\/(.+)#(default|profile|detail|home|search)\?(.*)/i;
 	var matchUrl = urlRegex.exec(url);
 
 	if (matchUrl == null) return null;
@@ -116,12 +111,13 @@ function extractTagAndParams(url) {
 	ret["params"] = {};
 	var params = matchUrl[3];
 
-	var paramRegex = /(\w+)=(\w+)/;
-	var matchParams = paramRegex.exec(params);
+	var paramRegex = /(\w+)=(\w+)/g; // get all matches
+	matchParams = paramRegex.exec(params);
 	while (matchParams != null) {
 		var key = matchParams[1];
 		var val = matchParams[2];
 		ret["params"][key] = val;
+		matchParams = paramRegex.exec(params)
 	}
 	return ret;
 }

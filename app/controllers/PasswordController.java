@@ -25,7 +25,6 @@ public class PasswordController extends UserController {
     public static final String TAG = PasswordController.class.getName();
 
     public static Result index() {
-        response().setContentType("text/html");
         try {
             Content html = password_index.render("hongkongresort@126.com");
             return ok(html);
@@ -36,7 +35,6 @@ public class PasswordController extends UserController {
     }
 
     public static Result request(String email) {
-        response().setContentType("text/plain");
         try {
             User user = SQLCommander.queryUserByEmail(email);
             if(user == null) throw new UserNotFoundException();
@@ -45,7 +43,7 @@ public class PasswordController extends UserController {
             builder.update(User.TABLE).set(User.PASSWORD_RESET_CODE, code).where(User.EMAIL, "=", email);
             if(!builder.execUpdate()) throw new NullPointerException();
             sendResetEmail(user.getName(), user.getEmail(), code);
-            return ok();
+            return ok().as("text/plain");
         } catch (Exception e) {
             Loggy.e(TAG, "request", e);
         }
@@ -61,7 +59,7 @@ public class PasswordController extends UserController {
             msg.setFrom(new InternetAddress("admin@hongkongresort.com", "The HongKongResort Team"));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, name));
             msg.setSubject("HongKongResort");
-            String link = "http://" + request().host() + "/user/password/reset?email=" + recipient + "&code=" + code;
+            String link = "http://" + request().host() + "/user/password/reset#default?email=" + recipient + "&code=" + code;
             msg.setText("Dear " + name + ", you can now click the following link to reset your password: " + link);
             Transport.send(msg);
         } catch (Exception e) {
@@ -70,7 +68,6 @@ public class PasswordController extends UserController {
     }
 
     public static Result reset() {
-        response().setContentType("text/html");
         try {
             Content html = password_reset.render();
             return ok(html);
