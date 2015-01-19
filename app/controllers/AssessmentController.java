@@ -1,5 +1,7 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
@@ -14,26 +16,56 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.Converter;
+import utilities.DataUtils;
 import utilities.Loggy;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AssessmentController extends Controller {
 
     public static final String TAG = AssessmentController.class.getName();
 
+    public static Result list(Integer pageSt, Integer pageEd, Integer numItems, Integer orientation, String token, Long vieweeId) {
+        try {
+            if (pageSt == null || pageEd == null || numItems == null) throw new InvalidQueryParamsException();
+
+            // anti-cracking by param order
+            if (orientation == null)  throw new InvalidQueryParamsException();
+            String orientationStr = SQLHelper.convertOrientation(orientation);
+            if (orientationStr == null)   throw new InvalidQueryParamsException();
+
+            // anti=cracking by param token
+            if (token == null) throw new InvalidQueryParamsException();
+	    Long viewerId = SQLCommander.queryUserId(token);
+	    if (viewerId == null) throw new UserNotFoundException();
+	    User viewer = SQLCommander.queryUser(viewerId);
+	    if (viewer == null) throw new UserNotFoundException();
+
+	    if (viewerId.equals(vieweeId)) throw new InvalidQueryParamsException();
+
+	    List<Assessment> assessmentList = SQLCommander.queryAssessmentList(pageSt, pageEd, numItems, Assessment.GENERATED_TIME, orientationStr, viewerId, vieweeId);
+
+            ObjectNode result = Json.newObject();
+	    for (Assessment assessment : assessmentList)   result.put(String.valueOf(assessment.getId()), assessment.toObjectNodeWithNames());
+            return ok(result);
+        } catch (TokenExpiredException e) {
+            return badRequest(TokenExpiredResult.get());
+        } catch (Exception e) {
+            Loggy.e(TAG, "list", e);
+        }
+        return badRequest();
+    }
+
     public static Result query(String refIndex, Integer numItems, Integer direction, String token, Long to, Long activityId) {
         response().setContentType("text/plain");
         try {
-            if (to.equals(0L)) to = null;
-		    Long from = SQLCommander.queryUserId(token);
-		    if(from.equals(to)) throw new AccessDeniedException();
-		    List<Assessment> assessments = SQLCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, null, to, activityId);
-            ObjectNode result = Json.newObject();
-            for (Assessment assessment : assessments)   result.put(String.valueOf(assessment.getId()), assessment.toObjectNodeWithNames());
-            return ok(result);
+		if (to.equals(0L)) to = null;
+		Long from = SQLCommander.queryUserId(token);
+		if(from.equals(to)) throw new AccessDeniedException();
+		List<Assessment> assessments = SQLCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, null, to, activityId);
+		ObjectNode result = Json.newObject();
+		for (Assessment assessment : assessments)   result.put(String.valueOf(assessment.getId()), assessment.toObjectNodeWithNames());
+		return ok(result);
         } catch (Exception e) {
 		    Loggy.e(TAG, "query", e);
         }

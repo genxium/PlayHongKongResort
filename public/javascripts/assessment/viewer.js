@@ -2,6 +2,8 @@ var g_sectionAssessmentsViewer = null;
 var g_modalAssessmentsViewer = null;
 var g_assessmentsViewer = null;
 var g_nAssessmentsPerPage = 20;
+var g_pagerAssessments = null;
+var g_tmpTo = null; // for the legacy design of `Pager` paramsGenerator prototype
 
 function removeAssessmentsViewer(){
         if(g_sectionAssessmentsViewer == null) return;
@@ -92,14 +94,19 @@ function onQueryAssessmentsError(err) {
 
 function queryAssessments(refIndex, numItems, direction, to, activityId) {
 	
+	var token = $.cookie(g_keyToken);
+	if (token == null) {
+		focusLogin();
+		return;
+	}
+
 	var params = {};	
 
 	if(refIndex != null) params[g_keyRefIndex] = refIndex;
 	if(numItems != null) params[g_keyNumItems] = numItems;
 	if(direction != null) params[g_keyDirection] = parseInt(direction);
 
-	var token = $.cookie(g_keyToken);
-	if(token != null) params[g_keyToken] = token;
+	params[g_keyToken] = token;
         params[g_keyTo] = to;
 	params[g_keyActivityId] = activityId;
 
@@ -118,4 +125,79 @@ function queryAssessments(refIndex, numItems, direction, to, activityId) {
 
 function queryAssessmentsAndRefresh(to, activityId) {
 	queryAssessments(0, g_nAssessmentsPerPage, g_directionForward, to, activityId);
+}
+
+function onListAssessmentsSuccess(data) {
+	var jsonResponse = JSON.parse(data);
+	if(jsonResponse == null || Object.keys(jsonResponse).length == 0) return;
+	var assessments = new Array();
+	for(var key in jsonResponse) {
+		var assessmentJson = jsonResponse[key];
+		var assessment = new Assessment(assessmentJson);
+		assessments.push(assessment);
+	}
+	/*
+	 * should show results in a pager widget
+	 * */	
+}
+
+function onLisAssessmentsError(err) {
+
+}
+
+function generateAssessmentsListParams(pager, page) {
+	if (page == null) return null;
+	if (g_tmpTo == null) return null;
+	var token = $.cookie(g_keyToken);
+	if (token == null) {
+		focusLogin();
+		return;
+	}
+
+	var params = {};
+	params[g_keyTo] = g_tmpTo;
+	params[g_keyToken] = token;
+	
+	var pageSt = page - 2;
+	var pageEd = page + 2;
+	var offset = pageSt < 1 ? (pageSt - 1) : 0;
+	pageSt -= offset;
+	pageEd -= offset;
+	params[g_keyPageSt] = pageSt;
+	params[g_keyPageEd] = pageEd;
+	if (pager.nItems != null) params[g_keyNumItems] = pager.nItems;
+	if (g_activityId != null) params[g_keyActivityId] = g_activityId;
+
+	if (pager.filters != null) {
+		for (var i = 0; i < pager.filters.length; ++i) {
+			var filter = pager.filters[i];
+			params[filter.key] = filter.selector.val();	
+		}
+	}
+
+	return params;
+}
+
+function listAssessments(page, to, onSuccess, onError) {
+	// prototypes: onSuccess(data), onError(err)
+	g_tmpTo = to;
+	var params = generateAssessmentsListParams(g_pagerAssessments, page);
+	g_tmpTo = null;
+
+	$.ajax({
+		type: "GET",
+		url: "/assessment/list",
+		data: params,
+		success: function(data, status, xhr) {
+		    onSuccess(data);
+		},
+		error: function(xhr, status, err) {
+		    onError(err);
+		}
+	});
+}
+
+function listAssessmentsAndRefresh() {
+	var page = 1;
+	listAssessments(page, onListAssessmentsSuccess, onListAssessmentsError);
 }

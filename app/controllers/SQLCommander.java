@@ -423,27 +423,47 @@ public class SQLCommander {
 	    return null;
     }
 
-    public static List<Assessment> queryAssessments(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, Long from, Long to, Long activityId) {
-	    List<Assessment> ret = new ArrayList<Assessment>();
-	    try {
-		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    String[] names = {Assessment.ID, Assessment.CONTENT, Assessment.CONTENT, Assessment.FROM, Assessment.ACTIVITY_ID, Assessment.TO, Assessment.GENERATED_TIME};
-		    builder.select(names).from(Assessment.TABLE)
-			    .where(Assessment.ACTIVITY_ID, "=", activityId);
+	public static List<Assessment> queryAssessmentList(Integer pageSt, Integer pageEd, Integer numItems, String orderKey, String orientation, Long viewerId, Long vieweeId) {
+		List<Assessment> ret = new ArrayList<Assessment>();
+		try {
+			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			String[] names = {Assessment.ID, Assessment.CONTENT, Assessment.CONTENT, Assessment.FROM, Assessment.ACTIVITY_ID, Assessment.TO, Assessment.GENERATED_TIME};
 
-		    if(from != null) builder.where(Assessment.FROM, "=", from);
-		    if(to != null) builder.where(Assessment.TO, "=", to);
+			List<JSONObject> records = builder.select(names)
+							.from(Assessment.TABLE)
+							.where(Assessment.TO, "=", vieweeId)
+							.order(orderKey, orientation)
+							.limit((pageSt - 1) * numItems, pageEd * numItems).execSelect();
 
-            List<JSONObject> assessmentJsonList = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
+			if (records == null) return ret;
+			for (JSONObject record : records)	ret.add(new Assessment(record));
+		} catch(Exception e) {
+			Loggy.e(TAG, "queryAssessmentList", e);
+		}
+		return ret; 
+	}
 
-		    if (assessmentJsonList == null) return ret;
-		    for (JSONObject assessmentJson : assessmentJsonList)	ret.add(new Assessment(assessmentJson));
+	public static List<Assessment> queryAssessments(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, Long from, Long to, Long activityId) {
+		List<Assessment> ret = new ArrayList<Assessment>();
+		try {
+			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			String[] names = {Assessment.ID, Assessment.CONTENT, Assessment.CONTENT, Assessment.FROM, Assessment.ACTIVITY_ID, Assessment.TO, Assessment.GENERATED_TIME};
+			builder.select(names).from(Assessment.TABLE)
+				.where(Assessment.ACTIVITY_ID, "=", activityId);
 
-	    } catch (Exception e) {
-		    Loggy.e(TAG, "queryAssessments", e);
-	    }
-	    return ret;
-    }
+			if(from != null) builder.where(Assessment.FROM, "=", from);
+			if(to != null) builder.where(Assessment.TO, "=", to);
+
+			List<JSONObject> records = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
+
+			if (records == null) return ret;
+			for (JSONObject record : records)	ret.add(new Assessment(record));
+
+		} catch (Exception e) {
+			Loggy.e(TAG, "queryAssessments", e);
+		}
+		return ret;
+	}
 
     public static boolean updateAssessment(Integer activityId, Integer from, Integer to, String content) {
 	    try {
