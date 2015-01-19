@@ -437,32 +437,35 @@ function DropdownMenu(toggle, items, reactions) {
 function createDropdownMenu(par, id, menuTitle, icons, titles, reactions) {
 	var length = titles.length;
 	if (length != icons.length) return; 
-	var container = $("<div class='dropdown'>").appendTo(par);
+	var container = $("<div>", { class: "menu-actions" }).appendTo(par);
 	// these params indicate that the container is centred
-	container.css("position", "absolute");
-	container.css("width", "90%")
-	container.css("left", "5%")
-	container.css("height", "60%");
-	container.css("top", "20%")
+	//container.css("position", "absolute");
+	//container.css("width", "90%")
+	//container.css("left", "5%")
+	//container.css("height", "60%");
+	//container.css("top", "20%")
 	
-	var toggle = $("<button id='" + id + "' class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>").appendTo(container);
+	/*var toggle = $("<button id='" + id + "' class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>").appendTo(container);
 	toggle.css("font-size", "1em");
 	toggle.css("width", "100%")
 	toggle.css("height", "100%");
 	
-	toggle.text(menuTitle);
-	var sp = $("<span class='caret'>").appendTo(toggle);	
-	var ul = $("<ul  aria-labelledby='" + id + "' class='dropdown-menu' role = 'menu'>").appendTo(container);
+	toggle.text(menuTitle);*/
+	var toggle = null;
+	//var sp = $("<span class='caret'>").appendTo(toggle);	
+	//var ul = $("<ul  aria-labelledby='" + id + "' class='dropdown-menu' role = 'menu'>").appendTo(container);
+	var ul = $("<ul>", {
+	}).appendTo(container); 
 	var lis = [];
 	for (var i = 0; i < titles.length; i++) {
-		var li = $("<li>").appendTo(ul);
-		var action = $("<a tabindex='-1' href='#'>").appendTo(li);
-		action.css("font-size", "15pt");
-		action.css("display", "block"); // increase the size of the link target, ref: http://css-tricks.com/keep-margins-out-of-link-lists/
-		action.css("padding", "5px");
-		action.css("text-align", "center");
-		action.css("vertical-align", "middle");
-		setBackgroundImage(action, icons[i], "contain", "no-repeat", "left center");
+		var li = $("<li class='action-"+titles[i]+"'>").appendTo(ul);
+		var action = $("<a tabindex='-1' href='#' title='"+titles[i]+"'>").appendTo(li);
+		//action.css("font-size", "15pt");
+		//action.css("display", "block"); // increase the size of the link target, ref: http://css-tricks.com/keep-margins-out-of-link-lists/
+		//action.css("padding", "5px");
+		//action.css("text-align", "center");
+		//action.css("vertical-align", "middle");
+		//setBackgroundImage(action, icons[i], "contain", "no-repeat", "left center");
 		action.text(titles[i]);
 		lis.push(li);
 	}
@@ -695,29 +698,33 @@ function generateAvatarEditor(par, user) {
 	if (user == null) return null;
 	
 	var ret = $("<div>", {
-		class: "avatar-editor-form"
+		class: "avatar-editor-form clearfix"
 	}).appendTo(par);
 
 	var avatar = (!user.hasAvatar()) ? "assets/icons/anonymous.png" : user.avatar;	
+	var picContainer = $("<div>", {
+		class: "avatar left"
+	}).appendTo(ret);
 	var pic = $("<img>", {
-		style: "position: absolute; left: 20px; top: 50px; margin: auto;",
 		src: avatar
-	}).appendTo(ret); 
-	setDimensions(pic, "200px", "200px");
+	}).appendTo(picContainer); 
+	//setDimensions(pic, "200px", "200px");
 
+	var uploadContainer = $("<div>", {
+		class: "upload left"
+	}).appendTo(ret);
 	var btnChoose = $("<input>", {
 		type: "file",
-		text: "Choose a picture",
-		style: "position: absolute; left: 250px; top: 50px; padding: 0px; border: none; outline: none;"
-	}).appendTo(ret);
-	setDimensions(btnChoose, "250px", "95px");
+		text: "Choose a picture"
+	}).appendTo(uploadContainer);
+	//setDimensions(btnChoose, "250px", "95px");
 
 	var btnUpload = $("<button>", {
 		text: "Upload",	
-		style: "font-size: 17pt; background-color: indianred; color: white; position: absolute; left: 250px; top: 150px;"
-	}).appendTo(ret);	
-	setDimensions(btnUpload, "250px", "95px");
+		class: "purple"
+	}).appendTo(uploadContainer);	
+	//setDimensions(btnUpload, "250px", "95px");
 	
-	var hint = $("<p>").appendTo(ret);
+	var hint = $("<p>").appendTo(uploadContainer);
 	return new AvatarEditor(par, pic, btnChoose, btnUpload, hint); 
 }

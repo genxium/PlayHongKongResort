@@ -230,17 +230,16 @@ function attachStatusIndicator(par, activity) {
 
 	var arrayStatusName = ["created", "pending", "rejected", "accepted", "expired"];
 
-	var statusIndicator = $('<span>',{
+	var statusIndicator = $('<div>',{
 		class: "activity-cell-status",
 		text: arrayStatusName[activity.status]
 	}).appendTo(par);
 
 	if(activity.status != g_statusCreated && activity.status != g_statusRejected) return;
-	var btnWrapper = $("<span>").appendTo(par);
 	var btnEdit = $('<button>', {
-		style: "background-color: white; width: 30px; height: 30px; margin-left: 10px"
-	}).appendTo(btnWrapper);
-	setBackgroundImageDefault(btnEdit, "/assets/icons/edit.png");
+		class: 'activity-edit'
+	}).appendTo(statusIndicator);
+	//setBackgroundImageDefault(btnEdit, "/assets/icons/edit.png");
 	var dEdit = {};
 	dEdit[g_keyActivity] = activity;
 	btnEdit.click(dEdit, onBtnEditClicked);
@@ -318,7 +317,7 @@ function generateActivityCell(par, activity){
 	}).appendTo(ret);
 
 	var btnDetail = $('<button>', {
-		class: "activity-detail right purple",
+		class: "activity-detail purple",
 		text: "Go"
 	}).appendTo(right);
 	btnDetail.click(activity, function(evt){

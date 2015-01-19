@@ -49,20 +49,20 @@ function requestHome() {
 
 	var onLoginSuccess = function(data) {
 		emptySectionRegister();
-		g_registerWidget.hide();
+		g_sectionRegister.hide();
 		listActivitiesAndRefresh();
 	};
 
 	var onLoginError = function(err) {
 		initSectionRegister();
-		g_registerWidget.show();
+		g_sectionRegister.show();
 		g_pager.screen.show();
 		listActivitiesAndRefresh();
 	};
 
 	var onLogoutSuccess = function(data) {
 		initSectionRegister();
-		g_registerWidget.show();
+		g_sectionRegister.show();
 		g_pager.screen.show();
 		listActivitiesAndRefresh();
 	}; 

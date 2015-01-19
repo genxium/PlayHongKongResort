@@ -173,10 +173,36 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 			}	
 		});
 	};
-
-	var noti = $("<div>", {
-		class: "noti-container inline"
+	
+	var userBox = $("<div>", {
+		class: "user-box clearfix"
 	}).appendTo(par);
+	var avatarContainer = $("<div>", {
+		class: "post-login-avatar left"
+	}).appendTo(userBox);
+	var avatar = (g_loggedInUser == null || !g_loggedInUser.hasAvatar()) ? "assets/icons/anonymous.png" : g_loggedInUser.avatar;
+	//setBackgroundImageDefault(avatarContainer, avatar);
+	var avatarImage = $("<img>", {
+		src: avatar
+	}).appendTo(avatarContainer);
+	var avatarSpan = $("<span>", {
+		text: "Edit"
+	}).appendTo(avatarContainer);
+	avatarContainer.click(function(evt){
+		evt.preventDefault();
+		if (g_loggedInUser == null) return;
+		showAvatarEditor(g_loggedInUser);
+	});
+	
+	var userBoxLeft = $("<div>", {
+		class: "user-box-left left clearfix"
+	}).appendTo(userBox);
+	var leftFirstRow = $("<div>", {
+		class: "left-first-row clearfix"
+	}).appendTo(userBoxLeft);
+	var noti = $("<div>", {
+		class: "noti-container left"
+	}).appendTo(leftFirstRow);
 
 	noti.click(function(evt){
 		evt.preventDefault();		
@@ -184,7 +210,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 		window.location.hash = "notifications";
 	}); 
 
-	setBackgroundImage(noti, "/assets/icons/notification.png", "contain", "no-repeat", "center");
+	//setBackgroundImage(noti, "/assets/icons/notification.png", "contain", "no-repeat", "center");
 	var spBubble = $("<span>", {
 		class: "noti-bubble",
 		text: "0"
@@ -192,20 +218,14 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	var bubble = new NotiBubble(0, spBubble);
 	bubble.update(g_loggedInUser.unreadCount);
 
-	var avatarContainer = $("<div>", {
-		class: "post-login-avatar inline"
-	}).appendTo(par);
-	var avatar = (g_loggedInUser == null || !g_loggedInUser.hasAvatar()) ? "assets/icons/anonymous.png" : g_loggedInUser.avatar;
-	setBackgroundImageDefault(avatarContainer, avatar);
-	avatarContainer.click(function(evt){
-		evt.preventDefault();
-		if (g_loggedInUser == null) return;
-		showAvatarEditor(g_loggedInUser);
-	});
+	var userName = $("<div>", {
+		class: "username left",
+		html: g_loggedInUser.name
+	}).appendTo(leftFirstRow);
 
 	var postLoginMenuContainer = $("<div>", {
-		class: "post-login-menu-container inline"
-	}).appendTo(par);
+		class: "menu-action-row"
+	}).appendTo(userBoxLeft);
 
 	var icons = ["/assets/icons/new_activity.png", "/assets/icons/profile.png", "/assets/icons/logout.png"];
 	var titles = ["create", "profile", "logout"];

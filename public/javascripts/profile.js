@@ -4,7 +4,7 @@ var g_viewee = null;
 
 function emptySectionUser() {
 	if (g_sectionUser == null) return;
-	setDimensions(g_sectionUser, "auto", "0px");
+	//setDimensions(g_sectionUser, "auto", "0px");
 	g_sectionUser.empty();
 }
 
@@ -31,14 +31,23 @@ function queryUserDetail(){
 			var username = g_viewee.name;
 			var avatar = (!g_viewee.hasAvatar()) ? "assets/icons/anonymous.png" : g_viewee.avatar;	
 			g_sectionUser.empty();
-			var name = $("<div>", {
-				text: username,
-				class: "section-user-name inline"
+			var profile = $("<div>", {
+				class: "user-profile clearfix"
 			}).appendTo(g_sectionUser);
 			var pic = $("<div>", {
-				class: "section-user-avatar inline"
-			}).appendTo(g_sectionUser); 
-			setBackgroundImageDefault(pic, avatar);
+				class: "section-user-avatar left"
+			}).appendTo(profile);
+			var profileImage = $("<img>", {
+				src: avatar
+			}).appendTo(pic);
+			//setBackgroundImageDefault(pic, avatar);
+			var userInfo = $("<div>", {
+				class: "section-user-info left"
+			}).appendTo(profile);
+			var name = $("<div>", {
+				text: username,
+				class: "section-user-name"
+			}).appendTo(userInfo);
 		}
 	});
 } 
@@ -50,7 +59,7 @@ function requestProfile(vieweeId) {
 	
 	g_vieweeId = vieweeId;
 	g_sectionUser = $("#section-user");
-	setDimensions(g_sectionUser, "auto", "100px"); // resume dimensions
+	//setDimensions(g_sectionUser, "auto", "100px"); // resume dimensions
 	if (g_registerWidget != null) g_registerWidget.hide();
 
 	var relationSelector = createSelector($("#pager-filters"), ["發起的活動", "參與的活動"], [hosted, present], null, null, null, null);

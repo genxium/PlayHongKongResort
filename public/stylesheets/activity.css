@@ -1,5 +1,4 @@
 #section-activity {
-	box-sizing: border-box;
 	padding: 5px;
 }
 .cell-container {
@@ -36,7 +35,74 @@
 .time-table, .activity-attend, .selected-snippet {
 	margin-top: 5px;
 }
+.time-table {
+	padding: 2px 5px;
+}
+.time-label {
+	width: 190px;
+	background-color: #a7db5a;
+	color: #002b9b;
+}
+.time-detail {
+	margin-left: 5px;
+}
+.time-table.expired .time-label {
+	background-color: #eee;
+}
+.time-table.expired div {
+	color: #888;
+}
+.activity-attend li {
+	width: 190px;
+}
+.activity-attend li.applied {
+	padding-left: 5px;
+}
+.selected-snippet img {
+	width: 36px;
+	height: 36px;
+}
+.activity-detail {
+	width: 150px;
+	height: 150px;
+	font-size: 60px;
+}
+.activity-cell-status {
+	color: red;
+	font-size: 13pt;
+	text-align: center;
+	margin-top: 10px;
+}
+#pager-filters {
+	padding: 10px;
+}
+#pager-filters select {
+	margin-right: 10px;
+}
+.activity-edit {
+	width: 24px;
+	height: 24px;
+	border: none;
+	margin-left: 10px;
+	background: url("../icons/edit-button.png") left top no-repeat;
+}
+.activity-edit:hover {
+	background-position: left bottom;
+}
 
+.activity-detail-relation {
+	position: relative;
+	font-size: 50px;
+	width: 200px;
+	height: 100px;
+}
+.activity-cell-relation {
+	position: absolute;
+	top: 160px;
+	left: 0px;
+	color: violet;
+	font-size: 13pt;
+}
 .activity-editor {
 	position: fixed;
 	box-sizing: content-box;
@@ -156,69 +222,4 @@
 	font-size: 15pt;
 	border: 0;
 	box-sizing: box-border;
-}
-
-.time-table {
-	padding: 2px 5px;
-}
-.time-label {
-	width: 190px;
-	background-color: #a7db5a;
-	color: #002b9b;
-}
-.time-detail {
-	margin-left: 5px;
-}
-.time-table.expired .time-label {
-	background-color: #eee;
-}
-
-.time-table.expired div {
-	color: #888;
-}
-
-.activity-attend li {
-	width: 190px;
-}
-.activity-attend li.applied {
-	padding-left: 5px;
-}
-.selected-snippet img {
-	width: 36px;
-	height: 36px;
-}
-.activity-detail {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	width: 150px;
-	height: 150px;
-	font-size: 60px;
-}
-.activity-cell-relation {
-	position: absolute;
-	top: 160px;
-	left: 0px;
-	color: violet;
-	font-size: 13pt;
-}
-.activity-cell-status {
-	position: absolute;
-	top: 180px;
-	left: 0px;
-	color: red;
-	font-size: 13pt;
-}
-.activity-detail-relation {
-	position: relative;
-	font-size: 50px;
-	width: 200px;
-	height: 100px;
-}
-
-#pager-filters {
-	padding: 10px;
-}
-.activity-action {
-	position: relative; /* nearest position anchor requires the position property to be set */
 }

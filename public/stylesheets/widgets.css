@@ -85,3 +85,24 @@
 	height: 320px;
 	padding: 50px;
 }
+.avatar-editor-form .avatar{
+	width: 220px;
+	height: 220px;
+}
+.avatar-editor-form .avatar img {
+	max-width: 100%;
+	max-height: 100%;
+	margin: auto;
+}
+.avatar-editor-form .upload {
+	margin-left: 10px;
+}
+.avatar-editor-form .upload input {
+	border: none;
+}
+.avatar-editor-form .upload button {
+	margin-top: 90px;
+	font-size: 36px;
+	width: 200px;
+	height: 100px;
+}
