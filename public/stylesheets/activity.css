@@ -90,6 +90,10 @@
 	background-position: left bottom;
 }
 
+.activity-action {
+        position: relative; /* nearest position anchor requires the position property to be set */
+}
+
 .activity-detail-relation {
 	position: relative;
 	font-size: 50px;
