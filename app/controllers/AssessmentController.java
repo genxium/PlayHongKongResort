@@ -36,11 +36,11 @@ public class AssessmentController extends Controller {
 	    User viewer = SQLCommander.queryUser(viewerId);
 	    if (viewer == null) throw new UserNotFoundException();
 
-	    if (viewerId.equals(to)) throw new InvalidQueryParamsException();
+            ObjectNode result = Json.newObject();
+	    if (viewerId.equals(to)) return ok(result);
 
 	    List<Assessment> assessmentList = SQLCommander.queryAssessmentList(pageSt, pageEd, numItems, Assessment.GENERATED_TIME, SQLHelper.DESCEND, viewerId, to);
 
-            ObjectNode result = Json.newObject();
 	    for (Assessment assessment : assessmentList)   result.put(String.valueOf(assessment.getId()), assessment.toObjectNodeWithNames());
             return ok(result);
         } catch (TokenExpiredException e) {
