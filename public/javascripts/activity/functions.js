@@ -166,7 +166,7 @@ function onBtnJoinClicked(evt){
 	}
 
 	// prevent number limit violation
-	if (activity.num_applied >= g_maxApplied) {
+	if (activity.numApplied >= g_maxApplied) {
 		alert("Applicant number has exceeded upper limit(500)!");
 		return;
 	} 
