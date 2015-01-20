@@ -213,12 +213,12 @@ function attachRelationIndicator(par, activity, inListCell) {
 	mapRelationName[hosted] = "";
 		
 	if (inListCell) {
-		$("<span>", {
+		$("<div>", {
 			class: "activity-cell-relation",
 			text: mapRelationName[getPriorRelation(activity)]
 		}).appendTo(par);
 	} else {
-		$("<span>", {
+		$("<div>", {
 			class: "activity-detail-relation right",
 			text: mapRelationName[getPriorRelation(activity)]
 		}).appendTo(par);

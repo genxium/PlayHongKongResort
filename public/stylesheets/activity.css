@@ -28,7 +28,7 @@
 	margin-left: 10px;
 	max-height: 100%;
 	width: 100%;
-	max-width: 380px;
+	max-width: 280px;
 	overflow: hidden;
 }
 .activity-title {
@@ -51,7 +51,7 @@
 	padding: 2px 5px;
 }
 .time-label {
-	width: 190px;
+	width: 160px;
 	background-color: #a7db5a;
 	color: #002b9b;
 }
@@ -65,7 +65,7 @@
 	color: #888;
 }
 .activity-attend li {
-	width: 190px;
+	width: 160px;
 	padding-left: 5px;
 }
 .activity-attend li.applied {
@@ -90,13 +90,13 @@
 	font-size: 18px;
 	margin-left: 5px;
 }
-.activity-cell-status {
+.activity-cell-status, .activity-cell-relation {
 	color: red;
 	font-size: 13pt;
 	text-align: center;
 	margin-top: 10px;
 }
-.activity-info .activity-cell-status {
+.activity-info .activity-cell-status, .activity-info .avtivity-cell-relation {
 	float: right;
 }
 #pager-filters {
@@ -121,17 +121,6 @@
 	width: 200px;
 	height: 100px;
 }
-.activity-cell-relation {
-	position: absolute;
-	top: 160px;
-	left: 0px;
-	color: violet;
-	font-size: 13pt;
-}
-.activity-editor {
-	position: fixed;
-	box-sizing: content-box;
-}
 .activity-editor-form {
 	padding: 10px;
 }
@@ -147,12 +136,22 @@
 	margin: 10px auto;
 }
 }
-@media (max-width: 685px) {
+@media (max-width: 657px) {
 .cell-container {
-	max-width: 380px;
+	max-width: 280px;
+}
+.avtivity-info {
+	margin-left: 0;
 }
 .activity-cover {
-	margin-left: 52px;
+	margin-left: 2px;
+}
+.time-table {
+	padding: 0;
+}
+.activity-attend li {
+	padding-left: 0;
+	width: 140px;
 }
 }
 
