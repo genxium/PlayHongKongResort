@@ -84,7 +84,7 @@ function displayActivityDetail(par){
                 }).appendTo(sp2);
 		host.click(function(evt){
 			evt.preventDefault();
-			window.location.hash = (g_keyVieweeId + "=" + g_activity.host.id.toString());	
+			window.location.hash = ("profile?" + g_keyVieweeId + "=" + g_activity.host.id.toString());	
 		});
         }
 

@@ -310,6 +310,11 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 		setDimensions(this.screen.parent(), width, null);
 		this.screen.parent().show();
 	};
+		
+	this.remove = function() {
+		if (this.screen == null) return;
+		this.screen.remove();
+	};
 	
 	// multi-level filters
 	this.filters = filters;

@@ -48,6 +48,21 @@ function queryUserDetail(){
 				text: username,
 				class: "section-user-name"
 			}).appendTo(userInfo);
+
+			// refresh pager for assessments
+			if (g_pagerAssessments != null) g_pagerAssessments.remove();
+			var pagerBar = $("<div>", {
+				id: "pager-bar-assessments"
+			}).appendTo(g_sectionUser);
+			var pagerScreen = $("<div>", {
+				id: "pager-screen-assessments"
+			}).appendTo(g_sectionUser);
+			var pagerCache = new PagerCache(5);
+			var extraParams = {
+				to: g_viewee.id
+			};
+			g_pagerAssessments = new Pager(pagerScreen, pagerBar, 10, "/assessment/list", generateAssessmentsListParams, extraParams, pagerCache, null, onQueryAssessmentsSuccess, onQueryAssessmentsError); 	
+			listAssessmentsAndRefresh();
 		}
 	});
 } 
@@ -75,7 +90,6 @@ function requestProfile(vieweeId) {
 	var onLoginSuccess = function(data) {
 		queryUserDetail();
 		listActivitiesAndRefresh();
-		listAssessmentsAndRefresh(g_vieweeId);
 	};
 
 	var onLoginError = function(err) {

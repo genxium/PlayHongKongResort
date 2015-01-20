@@ -306,8 +306,12 @@ function generateActivityCell(par, activity){
 			var participant = activity.selectedParticipants[i];
 			var avatar = (participant.avatar == null) ? "assets/icons/anonymous.png" : participant.avatar;
 			$("<img>", {
+				title: participant.name,
 				src: avatar,
 				class: "selected-snippet-avatar left"
+			}).click(function(evt) {
+				evt.preventDefault();
+				window.location.hash = ("profile?" + g_keyVieweeId + "=" + participant.id.toString());
 			}).appendTo(selectedSnippet);
 		}
 	}
