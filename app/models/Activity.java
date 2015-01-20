@@ -47,6 +47,8 @@ public class Activity extends AbstractSimpleMessage {
 	public static final int TITLE_MAX_COUNT = 64;
 	public static final int ADDR_MAX_COUNT = 256;
 	public static final int CONTENT_MAX_COUNT = 1024; // TEXT 
+	public static final int MAX_APPLIED = 500;
+	public static final int MAX_SELECTED = 250;
 
 	protected String m_title = null;
 
@@ -111,11 +113,19 @@ public class Activity extends AbstractSimpleMessage {
 		return m_numApplied;
 	}
 
+	public boolean exceededAppliedLimit() {
+		return m_numApplied > MAX_APPLIED;
+	}
+
 	protected int m_numSelected = 0;
 
 	public int getNumSelected() {
 		return m_numSelected;
 	} 
+
+	public boolean exceededSelectedLimit() {
+		return m_numSelected > MAX_SELECTED;	
+	}
 
 	protected int m_status = CREATED;
 
