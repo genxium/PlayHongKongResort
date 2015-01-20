@@ -67,7 +67,7 @@ function generateAssessmentsViewer(par, assessments) {
 			text: assessment.content
 		}).appendTo(row);
 		$('<td>', {
-			text: assessment.from_name
+			text: assessment.fromName
 		}).appendTo(row);
 	}
 	return ret;
@@ -126,6 +126,10 @@ function generateAssessmentTag(par, assessment) {
 	var ret = $("<span>", {
 		text: assessment.content,
 		class: "assessment-tag"
+	}).click(assessment, function(evt) {
+		evt.preventDefault();
+		var aAssessment = evt.data;
+		window.location.hash = ("detail?" + g_keyActivityId + "=" + aAssessment.activityId);
 	}).appendTo(par);	
 }
 
@@ -134,11 +138,10 @@ function queryAssessmentsAndRefresh(to, activityId) {
 }
 
 function onListAssessmentsSuccess(data) {
-	var jsonResponse = JSON.parse(data);
-	if (jsonResponse == null || Object.keys(jsonResponse).length == 0) return;
+	if (data == null || Object.keys(data).length == 0) return;
 	var assessments = new Array();
-	for (var key in jsonResponse) {
-		var assessmentJson = jsonResponse[key];
+	for (var key in data) {
+		var assessmentJson = data[key];
 		var assessment = new Assessment(assessmentJson);
 		assessments.push(assessment);
 	}
@@ -147,7 +150,7 @@ function onListAssessmentsSuccess(data) {
 	 * */	
 	for (var i = 0; i < assessments.length; ++i) {
 		var assessment = assessments[i];		
-		
+		generateAssessmentTag(g_pagerAssessments.screen, assessment);	
 	}
 }
 

@@ -28,12 +28,20 @@
 .assessment-tag {
 	color: white;
 	background-color: orange;
-	max-width: 
-	width: 10px;
-	height: 30px;
+	max-width: 250px; 
+	width: 50px;
+	height: 50px;
 	max-width: 200px;
-	max-height: 30px;
+	max-height: 50px;
+	font-size: 14px;
+	padding: 1px;
+	margin-left: 5px;
 	-webkit-border-radius: 20px;
 	-moz-border-radius: 20px;
-	border-radius: 20px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.assessment-tag:hover {
+	background-color: purple;
 }

@@ -86,7 +86,7 @@ function generateParticipantsSelectionForm(par, activity) {
 		if (token == null) return;
 
 		// prevent violation
-		if (participantIdList.length + aForm.activity.num_selected > g_maxSelected) {
+		if (participantIdList.length + aForm.activity.numSelected > g_maxSelected) {
 			alert("Selected applicant number has exceeded upper limit(250)!");
 			return;
 		}	
