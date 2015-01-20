@@ -223,7 +223,7 @@ function requestAdmin() {
 	var pagerCache = new PagerCache(10);
 
 	// initialize pager widgets
-	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, pagerCache, filters, onListActivitiesSuccessAdmin, onListActivitiesErrorAdmin);
+	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, pagerCache, filters, onListActivitiesSuccessAdmin, onListActivitiesErrorAdmin);
 
 	var onLoginSuccess = function(data) {
 		listActivitiesAndRefreshAdmin();

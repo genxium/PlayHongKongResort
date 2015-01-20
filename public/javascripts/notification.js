@@ -344,7 +344,7 @@ function requestNotifications() {
 	var pagerCache = new PagerCache(5); 
 
 	// initialize pager widgets
-	g_pagerNotifications = new Pager($("#pager-screen-notifications"), $("#pager-bar-notifications"), 10, "/notification/list", generateNotificationsListParams, pagerCache, filters, onListNotificationsSuccess, onListNotificationsError);
+	g_pagerNotifications = new Pager($("#pager-screen-notifications"), $("#pager-bar-notifications"), 10, "/notification/list", generateNotificationsListParams, null, pagerCache, filters, onListNotificationsSuccess, onListNotificationsError);
 
 	var onLoginSuccess = function(data) {
 		countNotifications();

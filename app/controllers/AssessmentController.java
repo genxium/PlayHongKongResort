@@ -25,14 +25,9 @@ public class AssessmentController extends Controller {
 
     public static final String TAG = AssessmentController.class.getName();
 
-    public static Result list(Integer pageSt, Integer pageEd, Integer numItems, Integer orientation, String token, Long vieweeId) {
+    public static Result list(Long to, Integer pageSt, Integer pageEd, Integer numItems, String token) {
         try {
-            if (pageSt == null || pageEd == null || numItems == null) throw new InvalidQueryParamsException();
-
-            // anti-cracking by param order
-            if (orientation == null)  throw new InvalidQueryParamsException();
-            String orientationStr = SQLHelper.convertOrientation(orientation);
-            if (orientationStr == null)   throw new InvalidQueryParamsException();
+            if (to == null || to.equals(0) || pageSt == null || pageEd == null || numItems == null) throw new InvalidQueryParamsException();
 
             // anti=cracking by param token
             if (token == null) throw new InvalidQueryParamsException();
@@ -41,9 +36,9 @@ public class AssessmentController extends Controller {
 	    User viewer = SQLCommander.queryUser(viewerId);
 	    if (viewer == null) throw new UserNotFoundException();
 
-	    if (viewerId.equals(vieweeId)) throw new InvalidQueryParamsException();
+	    if (viewerId.equals(to)) throw new InvalidQueryParamsException();
 
-	    List<Assessment> assessmentList = SQLCommander.queryAssessmentList(pageSt, pageEd, numItems, Assessment.GENERATED_TIME, orientationStr, viewerId, vieweeId);
+	    List<Assessment> assessmentList = SQLCommander.queryAssessmentList(pageSt, pageEd, numItems, Assessment.GENERATED_TIME, SQLHelper.DESCEND, viewerId, to);
 
             ObjectNode result = Json.newObject();
 	    for (Assessment assessment : assessmentList)   result.put(String.valueOf(assessment.getId()), assessment.toObjectNodeWithNames());

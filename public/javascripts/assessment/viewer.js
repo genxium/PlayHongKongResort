@@ -3,7 +3,6 @@ var g_modalAssessmentsViewer = null;
 var g_assessmentsViewer = null;
 var g_nAssessmentsPerPage = 20;
 var g_pagerAssessments = null;
-var g_tmpTo = null; // for the legacy design of `Pager` paramsGenerator prototype
 
 function removeAssessmentsViewer(){
         if(g_sectionAssessmentsViewer == null) return;
@@ -123,15 +122,22 @@ function queryAssessments(refIndex, numItems, direction, to, activityId) {
 	});
 }
 
+function generateAssessmentTag(par, assessment) {
+	var ret = $("<span>", {
+		text: assessment.content,
+		class: "assessment-tag"
+	}).appendTo(par);	
+}
+
 function queryAssessmentsAndRefresh(to, activityId) {
 	queryAssessments(0, g_nAssessmentsPerPage, g_directionForward, to, activityId);
 }
 
 function onListAssessmentsSuccess(data) {
 	var jsonResponse = JSON.parse(data);
-	if(jsonResponse == null || Object.keys(jsonResponse).length == 0) return;
+	if (jsonResponse == null || Object.keys(jsonResponse).length == 0) return;
 	var assessments = new Array();
-	for(var key in jsonResponse) {
+	for (var key in jsonResponse) {
 		var assessmentJson = jsonResponse[key];
 		var assessment = new Assessment(assessmentJson);
 		assessments.push(assessment);
@@ -139,15 +145,18 @@ function onListAssessmentsSuccess(data) {
 	/*
 	 * should show results in a pager widget
 	 * */	
+	for (var i = 0; i < assessments.length; ++i) {
+		var assessment = assessments[i];		
+		
+	}
 }
 
-function onLisAssessmentsError(err) {
+function onListAssessmentsError(err) {
 
 }
 
 function generateAssessmentsListParams(pager, page) {
 	if (page == null) return null;
-	if (g_tmpTo == null) return null;
 	var token = $.cookie(g_keyToken);
 	if (token == null) {
 		focusLogin();
@@ -155,7 +164,6 @@ function generateAssessmentsListParams(pager, page) {
 	}
 
 	var params = {};
-	params[g_keyTo] = g_tmpTo;
 	params[g_keyToken] = token;
 	
 	var pageSt = page - 2;
@@ -175,15 +183,17 @@ function generateAssessmentsListParams(pager, page) {
 		}
 	}
 
+	if (pager.extraParams == null) return params;
+	for (var key in pager.extraParams) {
+		params[key] = pager.extraParams[key];
+	}
+
 	return params;
 }
 
-function listAssessments(page, to, onSuccess, onError) {
+function listAssessments(page, onSuccess, onError) {
 	// prototypes: onSuccess(data), onError(err)
-	g_tmpTo = to;
 	var params = generateAssessmentsListParams(g_pagerAssessments, page);
-	g_tmpTo = null;
-
 	$.ajax({
 		type: "GET",
 		url: "/assessment/list",

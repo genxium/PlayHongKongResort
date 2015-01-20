@@ -45,7 +45,7 @@ function generateAssessmentEditor(par, participant, activity, batchEditor){
 	}).appendTo(row);
 	name.click(function(evt) {
 		evt.preventDefault();
-		window.location.hash = (g_keyVieweeId + "=" + participant.id.toString());	
+		window.location.hash = ("profile?" + g_keyVieweeId + "=" + participant.id.toString());	
 	});
 	singleEditor.participantId = participant.id;
 	singleEditor.name = participant.name;

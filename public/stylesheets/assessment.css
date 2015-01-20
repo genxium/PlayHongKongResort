@@ -24,3 +24,16 @@
     vertical-align: middle;
     width: 50%;
 }
+
+.assessment-tag {
+	color: white;
+	background-color: orange;
+	max-width: 
+	width: 10px;
+	height: 30px;
+	max-width: 200px;
+	max-height: 30px;
+	-webkit-border-radius: 20px;
+	-moz-border-radius: 20px;
+	border-radius: 20px;
+}

@@ -55,6 +55,7 @@ GET /comment/sub/list controllers.SubCommentController.list(parent_id: Long ?=0,
 # Assessment
 POST /assessment/submit controllers.AssessmentController.submit()
 GET /assessment/query controllers.AssessmentController.query(ref_index: String ?=null, num_items: Integer ?=null, direction: Integer ?=null, token: String ?=null, to: Long ?=0, activity_id: Long ?=0)
+GET /assessment/list controllers.AssessmentController.list(to: Long ?=0, page_st: Integer ?=null, page_ed: Integer ?=null, num_items: Integer ?=null, token: String ?=null)
 
 # Notification
 GET /notification/count controllers.NotificationController.count(token: String ?=null, is_read: Integer ?=0)

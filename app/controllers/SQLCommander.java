@@ -423,7 +423,7 @@ public class SQLCommander {
 	    return null;
     }
 
-	public static List<Assessment> queryAssessmentList(Integer pageSt, Integer pageEd, Integer numItems, String orderKey, String orientation, Long viewerId, Long vieweeId) {
+	public static List<Assessment> queryAssessmentList(Integer pageSt, Integer pageEd, Integer numItems, String orderKey, String orientation, Long viewerId, Long to) {
 		List<Assessment> ret = new ArrayList<Assessment>();
 		try {
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -431,7 +431,7 @@ public class SQLCommander {
 
 			List<JSONObject> records = builder.select(names)
 							.from(Assessment.TABLE)
-							.where(Assessment.TO, "=", vieweeId)
+							.where(Assessment.TO, "=", to)
 							.order(orderKey, orientation)
 							.limit((pageSt - 1) * numItems, pageEd * numItems).execSelect();
 

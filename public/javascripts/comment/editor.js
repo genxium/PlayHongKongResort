@@ -186,7 +186,7 @@ function generateCommentCell(par, commentJson, activity, single){
         }).appendTo(spanFromName);
 	hrefFromName.click(function(evt) {
 		evt.preventDefault();
-		window.location.hash = (g_keyVieweeId + "=" + comment.from.toString());	
+		window.location.hash = ("profile?" + g_keyVieweeId + "=" + comment.from.toString());	
 	});
         
         var generatedTime = $('<span>', {
@@ -262,7 +262,7 @@ function generateSubCommentCell(par, commentJson, activity){
 	}).appendTo(spanTo);
 	hrefTo.click(function(evt) {
 		evt.preventDefault();
-		window.location.hash = (g_keyVieweeId + "=" + comment.to.toString());	
+		window.location.hash = ("profile?" + g_keyVieweeId + "=" + comment.to.toString());	
 	});
 
 	var content = $('<span>', {
@@ -279,7 +279,7 @@ function generateSubCommentCell(par, commentJson, activity){
 	}).appendTo(spanFromName);
 	hrefFromName.click(function(evt) {
 		evt.preventDefault();
-		window.location.hash = (g_keyVieweeId + "=" + comment.from.toString());	
+		window.location.hash = ("profile?" + g_keyVieweeId + "=" + comment.from.toString());	
 	});
 
 	var generatedTime = $('<span>', {
