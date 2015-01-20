@@ -85,6 +85,12 @@ function generateParticipantsSelectionForm(par, activity) {
 		var token = $.cookie(g_keyToken);
 		if (token == null) return;
 
+		// prevent violation
+		if (participantIdList.length + aForm.activity.num_selected > g_maxSelected) {
+			alert("Selected applicant number has exceeded upper limit(250)!");
+			return;
+		}	
+
 		var params={};
 		params[g_keyToken] = token;
 		params[g_keyActivityId] = aForm.activity.id;
@@ -93,9 +99,15 @@ function generateParticipantsSelectionForm(par, activity) {
 		$.ajax({
 			type: "POST",
 			url: "/el/activity/participants/update",
+			// url: "/activity/participants/update",
 			data: params,
 			success: function(data, status, xhr){
 				if (!isStandardSuccess(data)) return;
+				// report violation
+				if (parseInt(data.ret) == 2) {
+					alert("Selected applicant number has exceeded upper limit(250)!");
+					return;
+				}
 				for(var i = 0; i < aForm.labels.length; ++i){
 					var label = aForm.labels[i];
 					// ignore selected participants

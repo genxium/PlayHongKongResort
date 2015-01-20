@@ -160,10 +160,16 @@ function onBtnJoinClicked(evt){
 	evt.preventDefault();
 	var activity = evt.data;
 
-	if(activity.isDeadlineExpired()) {
+	if (activity.isDeadlineExpired()) {
 		alert("Application deadline has expired!");
 		return;
 	}
+
+	// prevent number limit violation
+	if (activity.num_applied >= g_maxApplied) {
+		alert("Applicant number has exceeded upper limit(500)!");
+		return;
+	} 
 
 	var token = $.cookie(g_keyToken).toString();
 
@@ -174,9 +180,15 @@ function onBtnJoinClicked(evt){
 	$.ajax({
 		type: "POST",
 		url: "/el/activity/join",
+		// url: "/activity/join",
 		data: params,
 		success: function(data, status, xhr){
-			if (!isStandardSuccess(data)) return;
+			if (!isStandardSuccess(data)) {
+				var ret = parseInt(data[g_keyRet]);
+				// report number limit violation
+				if (ret == 2) alert("Applicant number has exceeded upper limit(500)!");
+				return;
+			}
 			if (g_onJoined == null) return;
 			g_onJoined(activity.id);
 		},

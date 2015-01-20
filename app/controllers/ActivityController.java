@@ -331,16 +331,18 @@ public class ActivityController extends Controller {
 			Map<String, String[]> formData = request().body().asFormUrlEncoded();
 			Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 			String token = formData.get(User.TOKEN)[0];
-			if (token == null) throw new Exception();
+			if (token == null) throw new InvalidQueryParamsException();
 			Long userId = SQLCommander.queryUserId(token);
-			if (userId == null) throw new Exception();
+			if (userId == null) throw new UserNotFoundException();
 
 			Activity activity = SQLCommander.queryActivity(activityId);
 			if (activity == null) throw new ActivityNotFoundException();
-			if (!SQLCommander.isActivityJoinable(userId, activity))	throw new NullPointerException();
 
-            long now = General.millisec();
-            String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME, UserActivityRelation.LAST_APPLYING_TIME};
+			if (activity.getNumApplied() + 1 > Activity.MAX_APPLIED) throw new NumberLimitExceededException();
+			if (!SQLCommander.isActivityJoinable(userId, activity)) return ok(StandardFailureResult.get());
+
+			long now = General.millisec();
+			String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME, UserActivityRelation.LAST_APPLYING_TIME};
 			Object[] values = {activityId, userId, UserActivityRelation.maskRelation(UserActivityRelation.APPLIED, null), now, now};
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 			builder.insert(names, values).into(UserActivityRelation.TABLE).execInsert();
@@ -350,11 +352,13 @@ public class ActivityController extends Controller {
 			if (!increment.execUpdate()) throw new NullPointerException();
 			return ok(StandardSuccessResult.get());
 		} catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
-        } catch (Exception e) {
+			return badRequest(TokenExpiredResult.get());
+		} catch (NumberLimitExceededException e) {
+			return ok(StandardFailureResult.get(2));
+		} catch (Exception e) {
 			Loggy.e(TAG, "join", e);
 		}
-        return ok(StandardFailureResult.get());
+		return ok(StandardFailureResult.get());
 	}
 
 	public static Result mark() {

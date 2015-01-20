@@ -7,6 +7,9 @@ import exception.AccessDeniedException;
 import exception.ActivityHasBegunException;
 import exception.ActivityNotFoundException;
 import exception.UserNotFoundException;
+import exception.InvalidQueryParamsException;
+import exception.InvalidUserActivityRelationException;
+import exception.NumberLimitExceededException;
 import models.AbstractMessage;
 import models.Activity;
 import models.User;
@@ -18,6 +21,8 @@ import utilities.Converter;
 import utilities.Loggy;
 
 import java.util.Map;
+import java.util.List;
+import java.util.LinkedList;
 
 public class ParticipantController extends UserController {
 
@@ -36,28 +41,36 @@ public class ParticipantController extends UserController {
 			if (viewerId == null) throw new UserNotFoundException();
 			if (!SQLCommander.validateOwnership(viewerId, activity)) throw new AccessDeniedException();
 
-            /**
-             * TODO: select user_id, relation from user_activity_relation where ..., check if returned records matches requested user list
-             * */
-			int count = 0;
+			List<Long> userIdList = new LinkedList<>();
 			JSONArray bundle = (JSONArray) JSONValue.parse(formData.get(AbstractMessage.BUNDLE)[0]);
 			for (Object selectedParticipantJson : bundle) {
 				Long userId = Converter.toLong(selectedParticipantJson);
-				if (userId.equals(viewerId)) continue; // anti-cracking by selecting the host of an activity
-				int originalRelation = SQLCommander.queryUserActivityRelation(userId, activityId);
-				if (originalRelation != UserActivityRelation.APPLIED) continue; // // anti-cracking by verifying original relation
-				if (!SQLCommander.updateUserActivityRelation(userId, activityId, UserActivityRelation.maskRelation(UserActivityRelation.SELECTED, originalRelation))) continue;
-				++count;
+				if (userId.equals(viewerId)) throw new InvalidQueryParamsException(); // anti-cracking by selecting the host of an activity
+				userIdList.add(userId);	
 			}
+			if (userIdList.size() + activity.getNumSelected() > Activity.MAX_SELECTED) throw new NumberLimitExceededException();
 
+			List<Integer> relationList = SQLCommander.queryUserActivityRelationList(userIdList, activityId);
+
+			// validation loop
+			for (Integer relation : relationList) {
+				if (relation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
+				if (relation != UserActivityRelation.APPLIED) throw new InvalidUserActivityRelationException();
+			}
+			
+			if (!SQLCommander.updateUserActivityRelation(userIdList, activityId, UserActivityRelation.maskRelation(UserActivityRelation.SELECTED, UserActivityRelation.APPLIED))) throw new NullPointerException();
+
+			int count = userIdList.size();
 			EasyPreparedStatementBuilder change = new EasyPreparedStatementBuilder();
 			change.update(Activity.TABLE)
-                    .decrease(Activity.NUM_APPLIED, count)
-                    .increase(Activity.NUM_SELECTED, count)
-                    .where(Activity.ID, "=", activityId);
+			    .decrease(Activity.NUM_APPLIED, count)
+			    .increase(Activity.NUM_SELECTED, count)
+			    .where(Activity.ID, "=", activityId);
 			if (!change.execUpdate()) throw new NullPointerException();
 
 			return ok(StandardSuccessResult.get());
+		} catch (NumberLimitExceededException e) {
+			return ok(StandardFailureResult.get(2));
 		} catch (Exception e) {
 			Loggy.e(TAG, "update", e);
 		}

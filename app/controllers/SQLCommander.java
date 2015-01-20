@@ -279,7 +279,7 @@ public class SQLCommander {
 	    return UserActivityRelation.INVALID;
     }
 
-    public static List<Integer> queryUserActivityRelations(List<Long> userIdList, Long activityId) {
+    public static List<Integer> queryUserActivityRelationList(List<Long> userIdList, Long activityId) {
         try {
             if (userIdList == null) throw new UserNotFoundException();
             if (activityId == null) throw new ActivityNotFoundException();
@@ -719,8 +719,26 @@ public class SQLCommander {
 			return builder.execUpdate();
 
 		} catch (Exception e) {
-			return false;
+			Loggy.e(TAG, "updateUserActivityRelation", e);
 		}
+		return false;
+	}
+
+	public static boolean updateUserActivityRelation(List<Long> userIdList, Long activityId, int relation) {
+		try {
+			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			builder.update(UserActivityRelation.TABLE)
+				.set(UserActivityRelation.RELATION, relation)
+				.where(UserActivityRelation.ACTIVITY_ID, "=", activityId)
+				.where(UserActivityRelation.USER_ID, "IN", userIdList);
+
+			if ((relation & UserActivityRelation.SELECTED) > 0) builder.set(UserActivityRelation.LAST_SELECTED_TIME, General.millisec());
+			return builder.execUpdate();
+
+		} catch (Exception e) {
+			Loggy.e(TAG, "updateUserActivityRelation", e);
+		}
+		return false;
 	}
 
     public static List<BasicUser> queryAppliedParticipants(long activityId) {

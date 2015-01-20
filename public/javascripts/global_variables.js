@@ -110,3 +110,6 @@ var g_statusCreated = 0;
 var g_statusPending = 1;
 var g_statusRejected = 2;
 var g_statusAccepted = 3;
+
+var g_maxApplied = 500;
+var g_maxSelected = 250;

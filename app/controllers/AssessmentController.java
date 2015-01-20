@@ -111,10 +111,10 @@ public class AssessmentController extends Controller {
                 userIdList.add(assessment.getTo());
             }
 
-            List<Integer> relations = SQLCommander.queryUserActivityRelations(userIdList, activityId);
+            List<Integer> relationList = SQLCommander.queryUserActivityRelationList(userIdList, activityId);
 
             // validation loop
-            for (Integer relation : relations) {
+            for (Integer relation : relationList) {
                 if (relation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
                 if ((relation & UserActivityRelation.SELECTED) == 0) throw new InvalidUserActivityRelationException();
             }
