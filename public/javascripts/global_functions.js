@@ -101,7 +101,7 @@ function validateName(name) {
 }
 
 function extractTagAndParams(url) {
-	var urlRegex = /https?:\/\/(.+)#(default|profile|detail|home|search)\?(.*)/i;
+	var urlRegex = /https?:\/\/(.+)#(default|profile|detail|home|search|notifications)\??(.*)/i;
 	var matchUrl = urlRegex.exec(url);
 
 	if (matchUrl == null) return null;

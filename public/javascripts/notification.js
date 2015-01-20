@@ -269,7 +269,7 @@ function NotificationCell(container, notification, indicator) {
 		if (g_notificationTrash.isActive)	return;
 		evt.preventDefault();
 		var aNotification = evt.data;
-		window.location.hash = (g_keyActivityId + "=" + aNotification.activityId);
+		window.location.hash = ("detail?" + g_keyActivityId + "=" + aNotification.activityId);
 	});
 
 	if (this.notification.isRead != 0) return;
