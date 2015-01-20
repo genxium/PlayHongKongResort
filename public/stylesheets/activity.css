@@ -2,35 +2,47 @@
 	padding: 5px;
 }
 .cell-container {
-	height: 200px;
 	margin: 10px
 }
 .activity-cover {
 	background-color: #666;
 	width: 276px;
-	height: 100%;
+	height: 200px;
 	padding: 2px;
+	display: table-cell;
+	text-align: center;
+	vertical-align: middle;
+}
+.image-helper {
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
 }
 .activity-cover img {
 	max-width: 100%;
 	max-height: 100%;
-	display: block;
+	display: inline-block;
 	margin: auto;
 }
 .activity-info {
 	margin-left: 10px;
 	max-height: 100%;
-	width: 550px;
+	width: 100%;
+	max-width: 380px;
 	overflow: hidden;
 }
 .activity-title {
 	font-size: 36px;
 	color: #3090a6;
 	font-weight: bold;
+	width: 100%;
+	white-space: nowrap;
 }
 .activity-addr {
 	font-size: 18px;
 	color: #e21e61;
+	width: 100%;
+	white-space: nowrap;
 }
 .time-table, .activity-attend, .selected-snippet {
 	margin-top: 5px;
@@ -54,6 +66,7 @@
 }
 .activity-attend li {
 	width: 190px;
+	padding-left: 5px;
 }
 .activity-attend li.applied {
 	padding-left: 5px;
@@ -67,11 +80,23 @@
 	height: 150px;
 	font-size: 60px;
 }
+.activity-action-small {
+	display: none;
+}
+.activity-detail-small {
+	width: 50px;
+	height: 36px;
+	font-size: 18px;
+	margin-left: 5px;
+}
 .activity-cell-status {
 	color: red;
 	font-size: 13pt;
 	text-align: center;
 	margin-top: 10px;
+}
+.activity-info .activity-cell-status {
+	float: right;
 }
 #pager-filters {
 	padding: 10px;
@@ -89,11 +114,6 @@
 .activity-edit:hover {
 	background-position: left bottom;
 }
-
-.activity-action {
-        position: relative; /* nearest position anchor requires the position property to be set */
-}
-
 .activity-detail-relation {
 	position: relative;
 	font-size: 50px;
@@ -114,6 +134,27 @@
 .activity-editor-form {
 	padding: 10px;
 }
+@media (max-width: 855px) {
+.activity-action {
+	display: none;
+}
+.activity-action-small {
+	display: block;
+}
+.cell-container {
+	max-width: 666px;
+	margin: 10px auto;
+}
+}
+@media (max-width: 685px) {
+.cell-container {
+	max-width: 380px;
+}
+.activity-cover {
+	margin-left: 52px;
+}
+}
+
 
 .input-title, .input-address, .input-content {
 	display: block;

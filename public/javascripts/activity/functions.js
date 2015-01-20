@@ -229,7 +229,7 @@ function attachStatusIndicator(par, activity) {
 	if(activity.status == null) return;
 
 	var arrayStatusName = ["created", "pending", "rejected", "accepted", "expired"];
-
+	
 	var statusIndicator = $('<div>',{
 		class: "activity-cell-status",
 		text: arrayStatusName[activity.status]
@@ -271,6 +271,9 @@ function generateActivityCell(par, activity){
 	var left = $("<div>", {
 		class: "activity-cover left"
 	}).appendTo(ret);
+	var helper = $("<span>", {
+		class: "image-helper"
+	}).appendTo(left);
 	if(coverImageUrl != null){
 		//setBackgroundImageDefault(left, coverImageUrl);
 		var cover = $("<img>", {
@@ -282,12 +285,12 @@ function generateActivityCell(par, activity){
 		class: "activity-info left"
 	}).appendTo(ret);
 	var title = $("<p>", {
-		class: "activity-title",
+		class: "activity-title truncate",
 		text: activity.title
 	}).appendTo(middle);
 	
 	var addr = $("<p>", {
-		class: "activity-addr",
+		class: "activity-addr truncate",
 		text: activity.address
 	}).appendTo(middle);
 
@@ -312,14 +315,35 @@ function generateActivityCell(par, activity){
 		}
 	}
 
+	var rightMiddle = $("<div>", {
+		class: "activity-action-small right"
+	}).appendTo(middle);
+
+	var btnDetailMiddle = $('<button>', {
+		class: "activity-detail-small purple right",
+		text: "Go"
+	}).appendTo(rightMiddle);
+
+	
+	btnDetailMiddle.click(activity, function(evt){
+		evt.preventDefault();
+		var act = evt.data;
+		window.location.hash = ("detail?" + g_keyActivityId + "=" + act.id.toString());
+	});
+
+	attachStatusIndicator(rightMiddle, activity);
+	attachRelationIndicator(rightMiddle, activity, true);
+
 	var right = $("<div>", {
-		class: "activity-action left"
+		class: "activity-action right"
 	}).appendTo(ret);
 
 	var btnDetail = $('<button>', {
 		class: "activity-detail purple",
 		text: "Go"
 	}).appendTo(right);
+
+	
 	btnDetail.click(activity, function(evt){
 		evt.preventDefault();
 		var act = evt.data;

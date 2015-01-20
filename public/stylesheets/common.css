@@ -28,6 +28,10 @@
 .inline {
 	display: inline;
 }
+.truncate {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 html, body {
 	margin: 0;
 	padding: 0;
