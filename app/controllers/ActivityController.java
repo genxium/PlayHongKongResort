@@ -168,18 +168,14 @@ public class ActivityController extends Controller {
 			String activityTitle = formData.get(Activity.TITLE)[0];
 			String activityAddress = formData.get(Activity.ADDRESS)[0];
 			String activityContent = formData.get(Activity.CONTENT)[0];
-			
-			int length = activityTitle.length();
-			if (length == 0 || length > Activity.TITLE_MAX_COUNT) throw new InvalidQueryParamsException();
-			length = activityAddress.length();
-			if (length == 0 || length > Activity.ADDR_MAX_COUNT) throw new InvalidQueryParamsException();
-			length = activityContent.length();
-			if (length == 0 || length > Activity.CONTENT_MAX_COUNT) throw new InvalidQueryParamsException();
+
+			if (!General.validateActivityTitle(activityTitle) || !General.validateActivityAddress(activityAddress) || !General.validateActivityContent(activityContent)) throw new InvalidQueryParamsException();
 
 			long beginTime = Converter.toLong(formData.get(Activity.BEGIN_TIME)[0]);
 			long deadline = Converter.toLong(formData.get(Activity.DEADLINE)[0]);
 
-			if(deadline > beginTime) throw new DeadlineAfterBeginTimeException();
+			if (deadline < 0 || beginTime < 0) throw new InvalidQueryParamsException();
+			if (deadline > beginTime) throw new DeadlineAfterBeginTimeException();
 
 			// check new images
 			if (imageFiles != null && imageFiles.size() > 0) {

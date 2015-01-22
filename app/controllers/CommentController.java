@@ -77,7 +77,7 @@ public class CommentController extends Controller {
 			if (!formData.containsKey(User.TOKEN)) throw new InvalidCommentParamsException();
 
 		    String content = formData.get(Comment.CONTENT)[0];
-		    if (content == null || content.length() <= Comment.MIN_CONTENT_LENGTH) throw new NullPointerException();
+		    if (content == null || !General.validateCommentContent(content)) throw new InvalidCommentParamsException();
 
 		    String token = formData.get(User.TOKEN)[0];
 		    if (token == null) throw new InvalidCommentParamsException();
@@ -85,7 +85,8 @@ public class CommentController extends Controller {
 		    Long from = SQLCommander.queryUserId(token);
 		    if (from == null) throw new UserNotFoundException();
 
-		    Integer activityId = Converter.toInteger(formData.get(Comment.ACTIVITY_ID)[0]);
+		    Long activityId = Converter.toLong(formData.get(Comment.ACTIVITY_ID)[0]);
+            if (activityId == null) throw new InvalidCommentParamsException();
 		    Activity activity = SQLCommander.queryActivity(activityId);
 
 		    if (activity == null) throw new ActivityNotFoundException();

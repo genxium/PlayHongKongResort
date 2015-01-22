@@ -36,9 +36,9 @@ public class SubCommentController extends CommentController {
             ArrayNode commentsNode = new ArrayNode(JsonNodeFactory.instance);
             for (Comment comment : comments)	commentsNode.add(comment.toSubCommentObjectNode());
             result.put(Comment.SUB_COMMENTS, commentsNode);
-            return ok(result).as("text/plain");
+            return ok(result);
         } catch (Exception e) {
-            Loggy.e(TAG, "query", e);
+            Loggy.e(TAG, "list", e);
         }
         return badRequest();
     }
@@ -54,8 +54,8 @@ public class SubCommentController extends CommentController {
 
             ArrayNode commentsNode = new ArrayNode(JsonNodeFactory.instance);
             for (Comment comment : comments)	commentsNode.add(comment.toSubCommentObjectNode());
-	    result.put(Comment.SUB_COMMENTS, commentsNode);
-            return ok(result).as("text/plain");
+	        result.put(Comment.SUB_COMMENTS, commentsNode);
+            return ok(result);
         } catch (Exception e) {
             Loggy.e(TAG, "query", e);
         }
@@ -74,7 +74,7 @@ public class SubCommentController extends CommentController {
 	        if (!formData.containsKey(Comment.TO)) throw new InvalidCommentParamsException();
 
             String content = formData.get(Comment.CONTENT)[0];
-            if (content == null || content.length() <= Comment.MIN_CONTENT_LENGTH) throw new NullPointerException();
+            if (content == null || !General.validateCommentContent(content)) throw new InvalidCommentParamsException();
 
             String token = formData.get(User.TOKEN)[0];
             if (token == null) throw new InvalidCommentParamsException();
@@ -82,7 +82,8 @@ public class SubCommentController extends CommentController {
             Long from = SQLCommander.queryUserId(token);
             if (from == null) throw new UserNotFoundException();
 
-            Integer activityId = Integer.valueOf(formData.get(Comment.ACTIVITY_ID)[0]);
+            Long activityId = Converter.toLong(formData.get(Comment.ACTIVITY_ID)[0]);
+            if (activityId == null) throw new InvalidCommentParamsException();
             Activity activity = SQLCommander.queryActivity(activityId);
 
             if(activity == null) throw new ActivityNotFoundException();
@@ -108,7 +109,7 @@ public class SubCommentController extends CommentController {
             EasyPreparedStatementBuilder increment = new EasyPreparedStatementBuilder();
             increment.update(Comment.TABLE).increase(Comment.NUM_CHILDREN, 1).where(Comment.ID, "=", parentId);
             if (!increment.execUpdate()) throw new NullPointerException();
-            return ok().as("text/plain");
+            return ok();
         } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {

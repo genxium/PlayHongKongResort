@@ -59,16 +59,13 @@ function generateCommentsListParams(pager, page) {
 // Tab Q & A a.k.a comments
 function onListCommentsSuccess(data){
 	// this function is only valid in detail's page
-	if(g_activity == null) return;
+	if(g_activity == null || data == null) return;
 
-	var jsonResponse = JSON.parse(data);
-	if(jsonResponse == null) return;
-
-	var commentsJson = jsonResponse[g_keyComments];
+	var commentsJson = data[g_keyComments];
 	var length = Object.keys(commentsJson).length;
 
-        var pageSt = parseInt(jsonResponse[g_keyPageSt]);
-        var pageEd = parseInt(jsonResponse[g_keyPageEd]);
+        var pageSt = parseInt(data[g_keyPageSt]);
+        var pageEd = parseInt(data[g_keyPageEd]);
         var page = pageSt;
 
 	g_pagerComments.screen.empty();

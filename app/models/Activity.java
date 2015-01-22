@@ -16,6 +16,10 @@ public class Activity extends AbstractSimpleMessage {
 
 	public static final String TAG = Activity.class.getName();
 
+	public static final String TITLE_PATTERN = "/.{1,64}/u";
+	public static final String ADDR_PATTERN = "/.{1,128}/u";
+	public static final String CONTENT_PATTERN = "/.{1,1024}/u";
+
 	public static final int CREATED = 0;
 	public static final int PENDING = 1;
 	public static final int REJECTED = 2;
@@ -43,10 +47,6 @@ public class Activity extends AbstractSimpleMessage {
 	public static final String ACTIVITIES = "activities";
 
 	public static String[] QUERY_FIELDS = {Activity.ID, Activity.TITLE, Activity.ADDRESS, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
-
-	public static final int TITLE_MAX_COUNT = 64;
-	public static final int ADDR_MAX_COUNT = 256;
-	public static final int CONTENT_MAX_COUNT = 1024; // TEXT 
 	public static final int MAX_APPLIED = 500;
 	public static final int MAX_SELECTED = 250;
 
