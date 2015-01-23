@@ -146,7 +146,7 @@
 	max-width: 666px;
 	margin: 10px auto;
 }
-}
+
 @media (max-width: 685px) {
 .cell-container {
 	max-width: 380px;
@@ -154,8 +154,6 @@
 .activity-cover {
 	margin-left: 52px;
 }
-}
-
 
 .input-title, .input-address, .input-content {
 	display: block;

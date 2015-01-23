@@ -558,29 +558,41 @@ function Captcha(sid) {
  * WordCounter Widget
  * */
 
-function WordCounter(text, min, max, regex) {
+function WordCounter(text, min, max, regex, violationHint) {
 	this.text = text;
 	this.min = min;
 	this.max = max;
 	this.regex = regex;
+	this.violationHint = violationHint;
 	this.currentText = null;
 	this.maxText = null;
+	this.hintText = null;
 	this.update = function(text) {
 		this.text = text;
-		if (this.valid()) this.currentText.css("color", "gray");
-		else this.currentText.css("color", "red");
+		this.currentText.text(text.length);	
+		if (this.valid()) {
+			this.currentText.css("color", "gray");
+			this.hintText.text("");
+		} else {
+			this.currentText.css("color", "red");
+			this.hintText.text(this.violationHint);
+		}
 	};
 	this.appendCounter = function(par) {
 		var row = $("<p>").appendTo(par);
 		this.currentText = $("<span>", {
 			class: "word-counter-current",
-			text: this.current
+			text: this.text.length
 		}).appendTo(row);	
 		this.maxText = $("<span>", {
 			class: "word-counter-max",
 			text: "/" + this.max.toString()
 		}).appendTo(row);
-		this.update(this.current);
+		this.hintText = $("<span>", {
+			class: "word-counter-violation-hint",
+			text: ""
+		}).appendTo(row);	
+		this.update(this.text);
 	};
 	this.valid = function() {
 		return (regex.test(this.text));

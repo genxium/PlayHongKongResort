@@ -275,7 +275,7 @@ function onSave(evt){
 	var titleCounter = g_activityEditor.titleCounter;
 	var addressCounter = g_activityEditor.addressCounter;
 	var contentCounter = g_activityEditor.contentCounter;
-	if(!titleCounter.valid() || !addressCounter.valid || !contentCounter.valid()) {
+	if(!titleCounter.valid() || !addressCounter.valid() || !contentCounter.valid()) {
 		alert("All text fields (title, address and content) should be filled with respect to the text limits.");
 		return;
 	}
@@ -498,7 +498,7 @@ function generateActivityEditor(par, activity){
 		type: 'text',
 		value: activityTitle
 	}).appendTo(ret);
-	var titleCounter = new WordCounter(activityTitle, 1, 64, g_activityTitlePattern);
+	var titleCounter = new WordCounter(activityTitle, 1, 64, g_activityTitlePattern, "");
 	titleCounter.appendCounter(ret);
 	titleCounter.update(titleInput.val().length);
 
@@ -514,7 +514,7 @@ function generateActivityEditor(par, activity){
 		type: "text",
 		value: activityAddress
 	}).appendTo(ret);
-	var addrCounter = new WordCounter(activityAddress, 1, 256, g_activityAddressPattern);
+	var addrCounter = new WordCounter(activityAddress, 1, 256, g_activityAddressPattern, "");
 	addrCounter.appendCounter(ret);
 	addrCounter.update(addressInput.val().length);
 	addressInput.on("input paste keyup", function(evt){
@@ -530,7 +530,7 @@ function generateActivityEditor(par, activity){
 		class: "input-content" 
 	}).appendTo(ret);
 	contentInput.val(activityContent);
-	var contentCounter = new WordCounter(activityContent, 1, 1024, g_activityContentPattern);
+	var contentCounter = new WordCounter(activityContent, 1, 1024, g_activityContentPattern, "");
 	contentCounter.appendCounter(ret);
 	contentCounter.update(contentInput.val().length);
 	contentInput.on("input paste keyup", function(evt){
