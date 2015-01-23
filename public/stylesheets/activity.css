@@ -13,11 +13,6 @@
 	text-align: center;
 	vertical-align: middle;
 }
-.image-helper {
-	display: inline-block;
-	height: 100%;
-	vertical-align: middle;
-}
 .activity-cover img {
 	max-width: 100%;
 	max-height: 100%;
@@ -51,7 +46,7 @@
 	padding: 2px 5px;
 }
 .time-label {
-	width: 160px;
+	width: 140px;
 	background-color: #a7db5a;
 	color: #002b9b;
 }
@@ -65,7 +60,7 @@
 	color: #888;
 }
 .activity-attend li {
-	width: 160px;
+	width: 140px;
 	padding-left: 5px;
 }
 .activity-attend li.applied {
@@ -96,7 +91,7 @@
 	text-align: center;
 	margin-top: 10px;
 }
-.activity-info .activity-cell-status, .activity-info .avtivity-cell-relation {
+.activity-info .activity-cell-status, .activity-info .activity-cell-relation {
 	float: right;
 }
 #pager-filters {
@@ -104,6 +99,14 @@
 }
 #pager-filters select {
 	margin-right: 10px;
+}
+#pager-bar-activities {
+	padding: 10px;
+}
+#pager-bar-activities button, .paginator button {
+	min-width: 30px;
+	height: 25px;
+	margin-right: 5px;
 }
 .activity-edit {
 	width: 24px;
@@ -124,7 +127,54 @@
 .activity-editor-form {
 	padding: 10px;
 }
-@media (max-width: 855px) {
+.activity-detail-page {
+	margin: 10px;
+}
+.activity-detail-page .activity-title {
+	font-size: 3em;
+}
+.activity-detail-page .time-table {
+	padding: 0;
+	font-size: 1em;
+}
+.activiry-detail-page .activity-content {
+	margin: 10px 0;
+	font-size: 1.2em;
+}
+.activity-image {
+	width: 320px;
+	height: 240px;
+	text-align: center;
+	vertical-align: middle;
+	background-color: #666;
+	margin-right: 5px;
+	margin-top: 5px;
+}
+.activity-detail-page .activity-image:last-child {
+	margin-right: 0;
+}
+.activity-image img {
+	max-width: 100%;
+	max-height: 100%;
+}
+.activity-comment {
+	margin-top: 20px;
+}
+.activity-comment input {
+	max-width: 640px;
+	width: 100%;
+	display: block;
+}
+.activity-comment button{
+	width: 200px;
+	height: 30px;
+	font-size: 20px;
+	margin-top: 5px;
+}
+.tab-container {
+	padding-top: 10px;
+}
+@media (max-width: 752px) {
 .activity-action {
 	display: none;
 }
@@ -132,7 +182,7 @@
 	display: block;
 }
 .cell-container {
-	max-width: 666px;
+	max-width: 566px;
 	margin: 10px auto;
 }
 }
@@ -151,7 +201,6 @@
 }
 .activity-attend li {
 	padding-left: 0;
-	width: 140px;
 }
 }
 

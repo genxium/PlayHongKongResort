@@ -81,13 +81,13 @@
 	box-sizing: content-box;
 }
 .avatar-editor-form {
-	width: 900px;
-	height: 320px;
 	padding: 50px;
 }
 .avatar-editor-form .avatar{
 	width: 220px;
 	height: 220px;
+	vertical-align: middle;
+	text-align: center;
 }
 .avatar-editor-form .avatar img {
 	max-width: 100%;
@@ -101,7 +101,7 @@
 	border: none;
 }
 .avatar-editor-form .upload button {
-	margin-top: 90px;
+	margin-top: 30px;
 	font-size: 36px;
 	width: 200px;
 	height: 100px;

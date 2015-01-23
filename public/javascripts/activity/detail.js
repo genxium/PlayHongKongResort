@@ -45,7 +45,7 @@ function queryActivityDetail(activityId){
 					return;
 				}
 				g_barButtons.empty();
-				setDimensions(g_barButtons, "auto", "100px"); // resume dimensions
+				//setDimensions(g_barButtons, "auto", "100px"); // resume dimensions
 				attachJoinButton(g_barButtons, g_activity);
 			},
 			error: function(xhr, status, err){
@@ -61,27 +61,21 @@ function displayActivityDetail(par){
 	g_onJoined = queryActivityDetail;
 
 	par.empty();
-	var ret = $("<div>").appendTo(par);
-        var row1 = $("<p>").appendTo(ret);
+	var ret = $("<div>", {
+		class: "activity-detail-page"
+	}).appendTo(par);
 
-	var title = $("<span>",{
+	var title = $("<div>",{
 		text: g_activity.title.toString(),
-		style: "font-size: 18pt; color: blue"
-	}).appendTo(row1);
+		class: "activity-title"
+	}).appendTo(ret);
 
         if(g_activity.host.id != null && g_activity.host.name != null){
-                var sp1 = $('<span>', {
-                        text: " -- by",
-                        style: "margin-left: 20%; font-size : 14pt"
-                }).appendTo(row1);
-                var sp2 = $('<span>', {
-                        style: "margin-left: 5pt"
-                }).appendTo(row1);
                 var host = $('<a>', {
 			href: "#", 
-                        text: "@" + g_activity.host.name,
-                        style: "font-size: 14pt; font-weight: bold;"
-                }).appendTo(sp2);
+                        text: "by @" + g_activity.host.name,
+                        class: "activity-host"
+                }).appendTo(ret);
 		host.click(function(evt){
 			evt.preventDefault();
 			window.location.hash = ("profile?" + g_keyVieweeId + "=" + g_activity.host.id.toString());	
@@ -92,18 +86,25 @@ function displayActivityDetail(par){
 
 	var content = $('<div>',{
 		text: g_activity.content,
-		style: "margin-top: 10px; font-size: 15pt"
+		class: "activity-content"
 	}).appendTo(ret);
 
 	if(g_activity.images != null) {
 		// the images are expected to be arranged in a non-uniform manner(not confirmed), thus they should not be bounded to static CSS styling, the current style is a temporary solution
 		var constantHeight = 128;
-		var imagesNode = $('<p>').appendTo(ret);
+		var imagesContainer = $('<div>', {
+			class: "activity-image-container clearfix"
+		}).appendTo(ret);
 		for(var i=0;i<g_activity.images.length;++i){
+			var imageNode = $('<div>', {
+				class: "activity-image left"
+			}).appendTo(imagesContainer);
+			$('<span>',{
+				class: "image-helper"
+			}).appendTo(imageNode);
 			$('<img>',{
 				src: g_activity.images[i].url,
-				style: "width: auto; height: " + constantHeight.toString() + "px;"
-			}).appendTo(imagesNode);
+			}).appendTo(imageNode);
 		}
 	}	
 
@@ -173,21 +174,23 @@ function requestActivityDetail(activityId) {
 	var preactiveRef = refs[0];	
 		
 	var tabCommentContent = $("<div>", {
-		style: "margin-top: 5pt; width: 100%; position: relative;"
+		class: "tab-container"
 	});
 	var commentsContainer = $("<div>", {
-		style: "position: absolute; width: 100%; height: auto; left: 0px; top: 0px;"
-	}).appendTo(tabCommentContent); 
-	var commentPagerBar = $("<p>").appendTo(commentsContainer);
-	var commentPagerScreen = $("<div>").appendTo(commentsContainer);
+	}).appendTo(tabCommentContent);
+	var commentPagerBar = $("<div>", {
+		class: "paginator"
+	}).appendTo(commentsContainer);
+	var commentPagerScreen = $("<div>", {
+		class: "comment-content"
+	}).appendTo(commentsContainer);
 
 	// sub-comments' container is initially invisible 
 	var subCommentsContainer = $("<div>", {
-		style: "position: absolute; width: 0%; height: auto; left: 100%; top 0px;"
+		class: "subcomment-container"
 	}).appendTo(tabCommentContent);
 	var btnBack = $("<button>", {
 		text: "< BACK",
-		style: "border: none; background-color: white; color: crimson; cursor: pointer; margin-top: 5px; margin-bottom: 5px;"
 	}).appendTo(subCommentsContainer);
 	// note that the back button in sub-comments' container takes both pagers as input
 	btnBack.click(function(evt) {
@@ -198,7 +201,7 @@ function requestActivityDetail(activityId) {
 		g_pagerSubComments.squeeze();
 		setOffset(g_pagerSubComments.screen.parent(), "100%", null);
 	});
-	var subCommentPagerBar = $("<p>").appendTo(subCommentsContainer);
+	var subCommentPagerBar = $("<div>").appendTo(subCommentsContainer);
 	var subCommentPagerScreen = $("<div>").appendTo(subCommentsContainer);
 
 	var contents = [tabCommentContent, null, null];

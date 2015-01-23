@@ -32,6 +32,11 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+.image-helper {
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
+}
 html, body {
 	margin: 0;
 	padding: 0;
@@ -80,9 +85,18 @@ button.purple {
 	border: none;
 	
 }
-button.purple:hover {
+button.purple:hover, button.pruple.active {
 	color: #e2e185;
 	background-color: #ad4497;	
+}
+button.gray {
+	background-color: #eee;
+	border: none;
+	color: #000;
+}
+button.gray:hover, button.gray.active {
+	background-color: #3090a6;
+	color: #fff;
 }
 #header {
 	background-color: #3090a6;

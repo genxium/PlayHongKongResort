@@ -309,14 +309,15 @@ function generateSubCommentCell(par, commentJson, activity){
 }
 
 function generateCommentEditor(par, activity){
-    var editor = $('<div>').appendTo(par);
+    var editor = $('<div>', {
+		class: "activity-comment"
+	}).appendTo(par);
     var input = $('<input>', {
-        style: "font-size: 15pt"
     }).appendTo(editor);
 
     var btnSubmit = $('<button>',{
         text: "Comment!",
-        style: "font-size: 15pt; margin-left: 2pt"
+    	class: "purple"
     }).appendTo(editor);
 
     btnSubmit.click(function(evt){

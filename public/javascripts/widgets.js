@@ -256,16 +256,16 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 			var index = parseInt(key);
 			var indicator = $("<button>", {
 				text: index,
-				style: "display: inline; border: none; color: white; background-color: gray; font-size: 14pt; margin-left: 2px; margin-right: 2px;"
+				class: "gray"
 			}).appendTo(pager.bar);
-			indicator.hover(
+			/*indicator.hover(
 				function(evt){
 					$(this).css("background-color", "cornflowerblue");
 				}, 
 				function(evt){
 					$(this).css("background-color", "gray");
 				}
-			);
+			);*/
 		
 			var pagerButton = new PagerButton(pager, index);
 			indicator.click(pagerButton, function(evt) {
@@ -293,8 +293,9 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 			
 			if (index != page) continue;
 			indicator.off("mouseenter mouseleave"); // unbind hovering
-			indicator.css("background-color", "blue");
-			indicator.css("font-weight", "bold");
+			//indicator.css("background-color", "blue");
+			//indicator.css("font-weight", "bold");
+			indicator.addClass("active");
 		}	
 	};	
 
@@ -711,6 +712,9 @@ function generateAvatarEditor(par, user) {
 	var picContainer = $("<div>", {
 		class: "avatar left"
 	}).appendTo(ret);
+	var picHelper = $("<span>", {
+		class: "image-helper"
+	}).appendTo(picContainer);
 	var pic = $("<img>", {
 		src: avatar
 	}).appendTo(picContainer); 
