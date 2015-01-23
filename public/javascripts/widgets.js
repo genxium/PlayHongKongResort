@@ -559,38 +559,44 @@ function Captcha(sid) {
  * WordCounter Widget
  * */
 
-function WordCounter(current, min, max) {
-	this.current = current;
+function WordCounter(text, min, max, regex, violationHint) {
+	this.text = text;
 	this.min = min;
 	this.max = max;
+	this.regex = regex;
+	this.violationHint = violationHint;
 	this.currentText = null;
 	this.maxText = null;
-	this.update = function(value) {
-		this.current = value;
-		this.currentText.text(value);
-		if (this.min <= value && value <= this.max) this.currentText.css("color", "gray");
-		else this.currentText.css("color", "red");
-	};
-	this.decrease = function(value) {
-		this.update(this.current - value);
-	};
-	this.increase = function(value) {
-		this.update(this.current + value);
+	this.hintText = null;
+	this.update = function(text) {
+		this.text = text;
+		this.currentText.text(text.length);	
+		if (this.valid()) {
+			this.currentText.css("color", "gray");
+			this.hintText.text("");
+		} else {
+			this.currentText.css("color", "red");
+			this.hintText.text(this.violationHint);
+		}
 	};
 	this.appendCounter = function(par) {
 		var row = $("<p>").appendTo(par);
 		this.currentText = $("<span>", {
 			class: "word-counter-current",
-			text: this.current
+			text: this.text.length
 		}).appendTo(row);	
 		this.maxText = $("<span>", {
 			class: "word-counter-max",
 			text: "/" + this.max.toString()
 		}).appendTo(row);
-		this.update(this.current);
+		this.hintText = $("<span>", {
+			class: "word-counter-violation-hint",
+			text: ""
+		}).appendTo(row);	
+		this.update(this.text);
 	};
 	this.valid = function() {
-		return (this.current <= this.max && this.current >= this.min);
+		return (regex.test(this.text));
 	};
 }
 

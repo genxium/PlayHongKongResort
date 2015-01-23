@@ -3,8 +3,6 @@
 all_data.sql
 .target
 .target/*
-test
-test/*
 
 # built application files
 *.apk

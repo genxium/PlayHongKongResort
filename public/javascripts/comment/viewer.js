@@ -25,16 +25,13 @@ function listSubComments(page, parentId, onSuccess, onError){
 // Tab Q&A a.k.a comments
 function onListSubCommentsSuccess(data){
 	// this function is only valid in detail's page
-	if(g_activity == null) return;
+	if(g_activity == null || data == null) return;
 
-	var jsonResponse = JSON.parse(data);
-	if(jsonResponse == null) return;
-
-	var subCommentsJson = jsonResponse[g_keySubComments];
+	var subCommentsJson = data[g_keySubComments];
 	var length = Object.keys(subCommentsJson).length;
 
-        var pageSt = parseInt(jsonResponse[g_keyPageSt]);
-        var pageEd = parseInt(jsonResponse[g_keyPageEd]);
+        var pageSt = parseInt(data[g_keyPageSt]);
+        var pageEd = parseInt(data[g_keyPageEd]);
         var page = pageSt;
 
 	g_pagerSubComments.screen.empty();

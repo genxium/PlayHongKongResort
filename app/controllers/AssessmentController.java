@@ -1,7 +1,5 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
@@ -16,10 +14,12 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.Converter;
-import utilities.DataUtils;
+import utilities.General;
 import utilities.Loggy;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class AssessmentController extends Controller {
 
@@ -31,17 +31,17 @@ public class AssessmentController extends Controller {
 
             // anti=cracking by param token
             if (token == null) throw new InvalidQueryParamsException();
-	    Long viewerId = SQLCommander.queryUserId(token);
-	    if (viewerId == null) throw new UserNotFoundException();
-	    User viewer = SQLCommander.queryUser(viewerId);
-	    if (viewer == null) throw new UserNotFoundException();
+            Long viewerId = SQLCommander.queryUserId(token);
+            if (viewerId == null) throw new UserNotFoundException();
+            User viewer = SQLCommander.queryUser(viewerId);
+            if (viewer == null) throw new UserNotFoundException();
 
             ObjectNode result = Json.newObject();
-	    if (viewerId.equals(to)) return ok(result);
+            if (viewerId.equals(to)) return ok(result);
 
-	    List<Assessment> assessmentList = SQLCommander.queryAssessmentList(pageSt, pageEd, numItems, Assessment.GENERATED_TIME, SQLHelper.DESCEND, viewerId, to);
+            List<Assessment> assessmentList = SQLCommander.queryAssessmentList(pageSt, pageEd, numItems, Assessment.GENERATED_TIME, SQLHelper.DESCEND, viewerId, to);
 
-	    for (Assessment assessment : assessmentList)   result.put(String.valueOf(assessment.getId()), assessment.toObjectNodeWithNames());
+            for (Assessment assessment : assessmentList)   result.put(String.valueOf(assessment.getId()), assessment.toObjectNodeWithNames());
             return ok(result);
         } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
@@ -52,15 +52,14 @@ public class AssessmentController extends Controller {
     }
 
     public static Result query(String refIndex, Integer numItems, Integer direction, String token, Long to, Long activityId) {
-        response().setContentType("text/plain");
         try {
-		if (to.equals(0L)) to = null;
-		Long from = SQLCommander.queryUserId(token);
-		if(from.equals(to)) throw new AccessDeniedException();
-		List<Assessment> assessments = SQLCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, null, to, activityId);
-		ObjectNode result = Json.newObject();
-		for (Assessment assessment : assessments)   result.put(String.valueOf(assessment.getId()), assessment.toObjectNodeWithNames());
-		return ok(result);
+            if (to.equals(0L)) to = null;
+            Long from = SQLCommander.queryUserId(token);
+            if(from.equals(to)) throw new AccessDeniedException();
+            List<Assessment> assessments = SQLCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, null, to, activityId);
+            ObjectNode result = Json.newObject();
+            for (Assessment assessment : assessments)   result.put(String.valueOf(assessment.getId()), assessment.toObjectNodeWithNames());
+            return ok(result);
         } catch (Exception e) {
 		    Loggy.e(TAG, "query", e);
         }
@@ -68,7 +67,6 @@ public class AssessmentController extends Controller {
     }
 
     public static Result submit() {
-
         try {
             Http.RequestBody body = request().body();
 
@@ -76,7 +74,7 @@ public class AssessmentController extends Controller {
             Map<String, String[]> formData = body.asFormUrlEncoded();
 
             String token = formData.get(User.TOKEN)[0];
-            if (token == null) throw new NullPointerException();
+            if (token == null) throw new InvalidQueryParamsException();
             Long userId = SQLCommander.queryUserId(token);
 
             if (userId == null) throw new UserNotFoundException();
@@ -98,13 +96,15 @@ public class AssessmentController extends Controller {
             // Only PRESENT participants can submit assessments (host must be present)
             if ( (originalRelation & UserActivityRelation.PRESENT) == 0) throw new InvalidUserActivityRelationException();
 
-            List<Long> userIdList = new LinkedList<Long>();
-            List<Assessment> assessmentList = new LinkedList<Assessment>();
-            userIdList.add(userId);
+            List<Long> userIdList = new LinkedList<>();
+            List<Assessment> assessmentList = new LinkedList<>();
+            userIdList.add(userId); // validate whether the submitting participant has been selected
 
             JSONArray bundle= (JSONArray) JSONValue.parse(formData.get(AbstractMessage.BUNDLE)[0]);
             for (Object obj : bundle) {
                 Assessment assessment = new Assessment((JSONObject) obj);
+                if (!General.validateAssessmentContent(assessment.getContent())) throw new InvalidAssessmentBehaviourException();
+                if (assessment.getTo().equals(userId)) throw new InvalidAssessmentBehaviourException();
                 assessment.setActivityId(activityId);
                 assessment.setFrom(userId);
                 assessmentList.add(assessment);
@@ -124,14 +124,15 @@ public class AssessmentController extends Controller {
             int newRelation = UserActivityRelation.maskRelation(UserActivityRelation.ASSESSED, originalRelation);
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            builder.update(UserActivityRelation.TABLE).set(UserActivityRelation.RELATION, newRelation)
+            builder.update(UserActivityRelation.TABLE)
+                    .set(UserActivityRelation.RELATION, newRelation)
                     .where(UserActivityRelation.USER_ID, "=", userId)
                     .where(UserActivityRelation.ACTIVITY_ID, "=", activityId);
             if(!builder.execUpdate()) throw new NullPointerException();
 
             ObjectNode ret = Json.newObject();
             ret.put(UserActivityRelation.RELATION, newRelation);
-            return ok(ret).as("text/plain");
+            return ok(ret);
         } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
         } catch (Exception e) {

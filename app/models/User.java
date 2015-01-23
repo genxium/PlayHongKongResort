@@ -35,6 +35,8 @@ public class User extends BasicUser {
 
     public static final String[] QUERY_FILEDS = {ID, EMAIL, NAME, AVATAR, PASSWORD, PASSWORD_RESET_CODE, UNREAD_COUNT, UNASSESSED_COUNT, SALT, GROUP_ID, AUTHENTICATION_STATUS, GENDER, VERIFICATION_CODE};
 
+    public static final String PASSWORD_PATTERN = "^[0-9a-zA-Z_#\\!]{6,32}$";
+
     protected String m_password = null;
 
     public String getPassword() {

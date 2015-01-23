@@ -74,11 +74,10 @@ function generateAssessmentsViewer(par, assessments) {
 } 
 
 function onQueryAssessmentsSuccess(data) {
-	var jsonResponse = JSON.parse(data);
-	if(jsonResponse == null || Object.keys(jsonResponse).length == 0) return;
+	if(data == null || Object.keys(data).length == 0) return;
 	var assessments = new Array();
-	for(var key in jsonResponse) {
-		var assessmentJson = jsonResponse[key];
+	for(var key in data) {
+		var assessmentJson = data[key];
 		var assessment = new Assessment(assessmentJson);
 		assessments.push(assessment);
 	}

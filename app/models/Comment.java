@@ -15,7 +15,7 @@ public class Comment extends AbstractActivityMessage {
 
     public static final String TAG = Comment.class.getName();
 
-    public static final Integer MIN_CONTENT_LENGTH = 5;
+    public static final String CONTENT_PATTERN = ".{5,128}";
 
     public static final String TABLE = "comment";
     public static final String COMMENT_ID = "comment_id";

@@ -1,13 +1,13 @@
 package utilities;
 
+import models.*;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 public class General {
-
-    public static final String RET = "ret";
-    public static final String DATA = "data";
 
     protected static Calendar s_localCalendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+8"));
 
@@ -15,36 +15,76 @@ public class General {
         return s_localCalendar;
     }
 
-    public static boolean validateEmail(String email) {
-
+    public static boolean validateEmail(final String email) {
         try {
-            String regex = "(?i)^((([a-z]|\\d|[!#\\$%&'\\*\\+\\-\\/=\\?\\^_`{\\|}~]|[\\u00A0-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFEF])+(\\.([a-z]|\\d|[!#\\$%&'\\*\\+\\-\\/=\\?\\^_`{\\|}~]|[\\u00A0-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFEF])+)*)|((\\x22)((((\\x20|\\x09)*(\\x0d\\x0a))?(\\x20|\\x09)+)?(([\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]|\\x21|[\\x23-\\x5b]|[\\x5d-\\x7e]|[\\u00A0-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFEF])|(\\\\([\\x01-\\x09\\x0b\\x0c\\x0d-\\x7f]|[\\u00A0-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFEF]))))*(((\\x20|\\x09)*(\\x0d\\x0a))?(\\x20|\\x09)+)?(\\x22)))@((([a-z]|\\d|[\\u00A0-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFEF])|(([a-z]|\\d|[\\u00A0-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFEF])([a-z]|\\d|-|\\.|_|~|[\\u00A0-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFEF])*([a-z]|\\d|[\\u00A0-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFEF])))\\.)+(([a-z]|[\\u00A0-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFEF])|(([a-z]|[\\u00A0-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFEF])([a-z]|\\d|-|\\.|_|~|[\\u00A0-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFEF])*([a-z]|[\\u00A0-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFEF])))\\.?$"; // referred to https://jqueryui.com/resources/demos/dialog/modal-form.html;
-            return email.matches(regex);
+            Pattern pattern = Pattern.compile(User.EMAIL_PATTERN, Pattern.CASE_INSENSITIVE);
+            return pattern.matcher(email).matches();
         } catch (Exception e) {
 	        return false;
         }
-
     }
 	
-    public static boolean validateName(String name) {
-
+    public static boolean validateName(final String name) {
         try {
-            String regex = "^[0-9a-zA-Z]{6,20}$"; // referred to https://jqueryui.com/resources/demos/dialog/modal-form.html;
-            return name.matches(regex);
+            Pattern pattern = Pattern.compile(User.NAME_PATTERN, Pattern.UNICODE_CHARACTER_CLASS);
+            return pattern.matcher(name).matches();
         } catch (Exception e) {
 	        return false;
         }
     }
 
-    public static boolean validatePassword(String password) {
-
+    public static boolean validatePassword(final String password) {
         try {
-            String regex = "^[0-9a-zA-Z]{6,20}$"; // referred to https://jqueryui.com/resources/demos/dialog/modal-form.html;
-            return password.matches(regex);
+            Pattern pattern = Pattern.compile(User.PASSWORD_PATTERN, Pattern.UNICODE_CHARACTER_CLASS);
+            return pattern.matcher(password).matches();
         } catch (Exception e) {
 	        return false;
         }
+    }
 
+    public static boolean validateAssessmentContent(final String content) {
+        try {
+            Pattern pattern = Pattern.compile(Assessment.CONTENT_PATTERN, Pattern.UNICODE_CHARACTER_CLASS);
+            return pattern.matcher(content).matches();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean validateCommentContent(final String content) {
+        try {
+            Pattern pattern = Pattern.compile(Comment.CONTENT_PATTERN, Pattern.UNICODE_CHARACTER_CLASS);
+            return pattern.matcher(content).matches();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean validateActivityTitle(final String title) {
+        try {
+            Pattern pattern = Pattern.compile(Activity.TITLE_PATTERN, Pattern.UNICODE_CHARACTER_CLASS);
+            return pattern.matcher(title).matches();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean validateActivityAddress(final String address) {
+        try {
+            Pattern pattern = Pattern.compile(Activity.ADDR_PATTERN, Pattern.UNICODE_CHARACTER_CLASS);
+            return pattern.matcher(address).matches();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean validateActivityContent(final String content) {
+        try {
+            Pattern pattern = Pattern.compile(Activity.CONTENT_PATTERN, Pattern.UNICODE_CHARACTER_CLASS);
+            return pattern.matcher(content).matches();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public static long millisec() {
