@@ -16,9 +16,9 @@ public class Activity extends AbstractSimpleMessage {
 
 	public static final String TAG = Activity.class.getName();
 
-	public static final String TITLE_PATTERN = "/.{1,64}/u";
-	public static final String ADDR_PATTERN = "/.{1,128}/u";
-	public static final String CONTENT_PATTERN = "/.{1,1024}/u";
+	public static final String TITLE_PATTERN = ".{5,64}";
+	public static final String ADDR_PATTERN = ".{10,128}";
+	public static final String CONTENT_PATTERN = ".{15,1024}";
 
 	public static final int CREATED = 0;
 	public static final int PENDING = 1;

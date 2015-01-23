@@ -498,15 +498,14 @@ function generateActivityEditor(par, activity){
 		type: 'text',
 		value: activityTitle
 	}).appendTo(ret);
-	var titleCounter = new WordCounter(0, 1, 64);
+	var titleCounter = new WordCounter(activityTitle, 1, 64, g_activityTitlePattern);
 	titleCounter.appendCounter(ret);
 	titleCounter.update(titleInput.val().length);
 
 	titleInput.on("input paste keyup", function(evt){
 			g_activityEditor.setSavable();
 			g_activityEditor.setNonSubmittable();
-			var count = $(this).val().length;
-			titleCounter.update(count);
+			titleCounter.update($(this).val());
 	});
 
 	var addressInput = $("<input>", {
@@ -515,14 +514,13 @@ function generateActivityEditor(par, activity){
 		type: "text",
 		value: activityAddress
 	}).appendTo(ret);
-	var addrCounter = new WordCounter(0, 1, 256);
+	var addrCounter = new WordCounter(activityAddress, 1, 256, g_activityAddressPattern);
 	addrCounter.appendCounter(ret);
 	addrCounter.update(addressInput.val().length);
 	addressInput.on("input paste keyup", function(evt){
 			g_activityEditor.setSavable();
 			g_activityEditor.setNonSubmittable();
-			var count = $(this).val().length;
-			addrCounter.update(count);
+			addrCounter.update($(this).val());
 	});
 
 	var addressField = new AddressField(addressInput, null);
@@ -532,14 +530,13 @@ function generateActivityEditor(par, activity){
 		class: "input-content" 
 	}).appendTo(ret);
 	contentInput.val(activityContent);
-	var contentCounter = new WordCounter(0, 1, 1024);
+	var contentCounter = new WordCounter(activityContent, 1, 1024, g_activityContentPattern);
 	contentCounter.appendCounter(ret);
 	contentCounter.update(contentInput.val().length);
 	contentInput.on("input paste keyup", function(evt){
 			g_activityEditor.setSavable();
 			g_activityEditor.setNonSubmittable();
-			var count = $(this).val().length;
-			contentCounter.update(count);
+			contentCounter.update($(this).val());
 	});
 
 	$("<p>", {
