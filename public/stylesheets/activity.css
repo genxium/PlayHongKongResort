@@ -1,5 +1,5 @@
 #section-activity {
-	padding: 5px;
+	padding: 5px 5px 5px 5px 5px 25px;
 }
 .cell-container {
 	margin: 10px
@@ -9,7 +9,6 @@
 	width: 276px;
 	height: 200px;
 	padding: 2px;
-	display: table-cell;
 	text-align: center;
 	vertical-align: middle;
 }
@@ -119,12 +118,16 @@
 	background-position: left bottom;
 }
 .activity-detail-relation {
-	position: relative;
 	font-size: 50px;
 	width: 200px;
-	height: 100px;
+	height: 60px;
+	margin: 25px 25px 5px 5px;
+	text-align: center;
+	line-height: 50px;
+	color: #e21e61;
+	border: solid 1px #e21e61;
 }
-.activity-editor-form {
+.activity-editor-form 
 	padding: 10px;
 }
 .activity-detail-page {
@@ -132,12 +135,13 @@
 }
 .activity-detail-page .activity-title {
 	font-size: 3em;
+	white-space: normal;
 }
 .activity-detail-page .time-table {
 	padding: 0;
 	font-size: 1em;
 }
-.activiry-detail-page .activity-content {
+.activity-detail-page .activity-content {
 	margin: 10px 0;
 	font-size: 1.2em;
 }

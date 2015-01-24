@@ -37,6 +37,9 @@ function queryUserDetail(){
 			var pic = $("<div>", {
 				class: "section-user-avatar left"
 			}).appendTo(profile);
+			var imageHelper = $("<span>", {
+				class: "image-helper"
+			}).appendTo(pic);
 			var profileImage = $("<img>", {
 				src: avatar
 			}).appendTo(pic);

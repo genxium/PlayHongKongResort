@@ -26,7 +26,7 @@ public class CommentController extends Controller {
     public static Result querySingle(Integer commentId) {
 	    try {
 		    Comment comment = SQLCommander.queryComment(commentId);
-		    return ok(comment.toObjectNode(true)).as("text/plain");
+		    return ok(comment.toObjectNode(true));
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "query", e);
 	    }
@@ -62,7 +62,7 @@ public class CommentController extends Controller {
             for (Comment comment : comments)	commentsNode.add(comment.toObjectNode(false));
 
             result.put(Comment.COMMENTS, commentsNode);
-            return ok(result).as("text/plain");
+            return ok(result);
         } catch (Exception e) {
             Loggy.e(TAG, "query", e);
         }
