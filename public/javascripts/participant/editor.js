@@ -15,7 +15,9 @@ function ParticipantsForm(activity, labels, idList, statusList){
 }
 
 function generateParticipantsSelectionForm(par, activity) {
-	var form = $('<form>').appendTo(par);
+	var form = $('<form>', {
+		class: "participants-form"
+	}).appendTo(par);
 
 	var labels = new Array();
 	var idList = new Array();
@@ -24,24 +26,38 @@ function generateParticipantsSelectionForm(par, activity) {
 		var participant = activity.selectedParticipants[i];
 		idList.push(participant.id);
 		statusList.push(g_aliasSelected);
+		var row = $("<p>").appendTo(form);
+		var avatar = $("<img>", {
+			src: participant.avatar,
+			class: "participant-avatar"
+		}).click(function(evt) {
+			evt.preventDefault();
+			window.location.hash = ("profile?" + g_keyVieweeId + "=" + participant.id.toString());
+		}).appendTo(row);
 		var label = $('<label>', {
 			text: participant.name,
-			style: "background-color: aquamarine"
-		}).appendTo(form);
+			class: "participant-label aquamarine"
+		}).appendTo(row);
 		labels.push(label);
-		$('<br>').appendTo(form);
 	}
 
 	for(var i = 0; i < activity.appliedParticipants.length; ++i){
 		var participant = activity.appliedParticipants[i];
 		idList.push(participant.id);
 		statusList.push(g_aliasApplied);
+		var row = $("<p>").appendTo(form);	
+		var avatar = $("<img>", {
+			src: participant.avatar,
+			class: "participant-avatar"
+		}).click(function(evt) {
+			evt.preventDefault();
+			window.location.hash = ("profile?" + g_keyVieweeId + "=" + participant.id.toString());
+		}).appendTo(row);
 		var label = $('<label>', {
 			text: participant.name,
-			style: "background-color: pink"
-		}).appendTo(form);
+			class: "participant-label pink"
+		}).appendTo(row);
 		labels.push(label);
-		$('<br>').appendTo(form);
 	}
 
 	var ret = new ParticipantsForm(activity, labels, idList, statusList); 
@@ -60,11 +76,11 @@ function generateParticipantsSelectionForm(par, activity) {
 		if(statusList[i] == g_aliasSelected) checkbox.hide();
 	}
 	ret.setBoxes(boxes);
-	if (boxes.length <= 1) return ret; // no submit button is needed	
+	if (activity.appliedParticipants.length == 0 || boxes.length <= 1) return ret; // no submit button is needed	
 
 	var btnSubmit = $("<button>",{
-		text: 'Confirm Selection',
-		style: 'color: white; background-color:black; font-size: 13pt'
+		text: 'Submit Selection',
+		class: "purple"
 	}).appendTo(form);
 
 	btnSubmit.click(ret, function(evt) {
@@ -74,7 +90,7 @@ function generateParticipantsSelectionForm(par, activity) {
 		var participantIdList = new Array();
 		for(var i = 0; i < aForm.labels.length; i++) {
 			var box = aForm.boxes[i];
-			if (box == null || !box.is(":checked")) continue;
+			if (box == null || !isChecked(box)) continue;
 			var participantId = aForm.idList[i];
 			if(participantId == aForm.activity.host.id) continue;
 			participantIdList.push(participantId);
@@ -113,7 +129,7 @@ function generateParticipantsSelectionForm(par, activity) {
 					// ignore selected participants
 					if(aForm.statusList[i] == g_aliasSelected) continue;
 					var box = aForm.boxes[i];
-					if(!box.is(":checked")) continue;
+					if(!isChecked(box)) continue;
 					label.css("background-color", "aquamarine");
 					box.hide();
 				}

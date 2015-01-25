@@ -6,7 +6,6 @@ var g_onRefresh = null;
 var g_lockedCount = 0;
 var g_btnSubmit = null;
 
-
 var g_sectionAssessmentEditors = null;
 var g_sectionAssessmentButtons = null;
 
@@ -16,7 +15,6 @@ function createAssessment(content, to) {
 	assessmentJson["to"] = to;
 	return new Assessment(assessmentJson);
 }
-
 
 /*
 	Trying out new style of info gathering for DOMs
@@ -37,6 +35,13 @@ function BatchAssessmentEditor(){
 function generateAssessmentEditor(par, participant, activity, batchEditor){
 	var singleEditor = new SingleAssessmentEditor();
 	var row = $('<p>').appendTo(par);
+	var avatar = $("<img>", {
+		src: participant.avatar,
+		class: "assessment-avatar"
+	}).click(function(evt) {
+		evt.preventDefault();
+		window.location.hash = ("profile?" + g_keyVieweeId + "=" + participant.id.toString());
+	}).appendTo(row);
 	var name = $('<a>', {
 		href: "#",
 		text: "@" + participant.name,
@@ -254,7 +259,7 @@ function generateAssessedView(row, participant, activity) {
 		text: "View assessments >>",
 		style: "display: inline; color: blue; margin-left: 5pt; cursor: pointer"
 	}).appendTo(row);					
-	btnView.on("click", function(evt){
+	btnView.click(function(evt){
 		evt.preventDefault();
 		queryAssessmentsAndRefresh(participant.id, activity.id);	
 	});
@@ -273,17 +278,17 @@ function generateUnassessedView(row, singleEditor, batchEditor) {
 		type: "checkbox",
 		style: "margin-left: 10pt; display: inline"
 	}).appendTo(row);
-	lock.on("change", function(evt){
+	lock.change(function(evt){
 		evt.preventDefault();
-		var checked = $(this).is(":checked");
+		var checked = isChecked($(this));
 		if(!checked) {
-			content.prop("disabled", false);
+			enableField(content);
 			--g_lockedCount;
-			if(g_btnSubmit != null) g_btnSubmit.prop("disabled", true);
+			if(g_btnSubmit != null) disableField(g_btnSubmit);
 		} else {
-			content.prop("disabled", true);
+			disableField(content);
 			++g_lockedCount;
-			if(g_lockedCount >= (batchEditor.editors.length - 1) && g_btnSubmit != null) g_btnSubmit.prop("disabled", false);
+			if(g_lockedCount >= (batchEditor.editors.length - 1) && g_btnSubmit != null) enableField(g_btnSubmit);
 		}
 	});
 	singleEditor.lock = lock;

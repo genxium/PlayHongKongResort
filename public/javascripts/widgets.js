@@ -644,6 +644,8 @@ function AvatarEditor(container, image, btnChoose, btnUpload, hint) {
 		formData.append(g_keyAvatar, file);
 		formData.append(g_keyToken, token);
 		
+		editor.hint.text("Uploading...");
+		
 		$.ajax({
 			method: "POST",
 			url: "/user/avatar/upload", 

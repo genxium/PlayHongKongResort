@@ -177,7 +177,7 @@ function generateCommentCell(par, commentJson, activity, single){
         var spanFromName = $('<span>').appendTo(row);
         var hrefFromName = $('<a>', {
 		href: "#",
-		text: comment.fromName,
+		text: "@" + comment.fromName,
 		target: "_blank",
 		style: "text-align: left; margin-left: 25pt; color: brown; font-size: 14pt"
         }).appendTo(spanFromName);
@@ -270,7 +270,7 @@ function generateSubCommentCell(par, commentJson, activity){
 	var spanFromName = $('<span>').appendTo(row);
 	var hrefFromName = $('<a>', {
 		href: "#",
-		text: comment.fromName,
+		text: "@" + comment.fromName,
 		target: "_blank",
 		style: "text-align: left; margin-left: 25pt; color: brown; font-size: 13pt"
 	}).appendTo(spanFromName);
