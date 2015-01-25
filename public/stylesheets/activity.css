@@ -234,6 +234,29 @@
 	font-weight: bold;
 	color: #e21e61;
 }
+.participant-avatar {
+	cursor: pointer;
+	width: 36px;
+	height: 36px;
+}
+.participant-label {
+	padding: 2px;
+	font-size: 24px;
+	margin-left: 10px;
+	vertical-align: middle;
+	height: 36px;
+	width: 200px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.aquamarine {
+	background-color: aquamarine;
+}
+.participant-label.pink {
+	background-color: pink;
+}
+
 @media (max-width: 752px) {
 .activity-action {
 	display: none;

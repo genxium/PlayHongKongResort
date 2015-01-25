@@ -292,10 +292,10 @@ function onSave(evt){
 	formData.append(g_keyContent, content);
 
 	// append activity begin time and deadline
-	var beginTime = localYmdhisToGmtMillisec(getDateTime(g_activityEditor.beginTimePicker));
-	var deadline = localYmdhisToGmtMillisec(getDateTime(g_activityEditor.deadlinePicker));
+	var beginTime = localYmdhisToGmtMillisec(g_activityEditor.beginTimePicker.getDatetime());
+	var deadline = localYmdhisToGmtMillisec(g_activityEditor.deadlinePicker.getDatetime());
 		
-	if(deadline > beginTime) {
+	if(deadline < 0 || beginTime < 0 || deadline > beginTime) {
 		alert("Deadline can not be after the begin time of an activity.");
 		return;
 	}

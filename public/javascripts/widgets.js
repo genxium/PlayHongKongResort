@@ -93,15 +93,24 @@ function generateExplorerTriggerSpan(par, onChange, imgSrc, nodeW, nodeH, picW, 
 /*
  * Datetime Picker
  */
+function DatetimePicker(input) {
+	this.input = input;	
+	this.getDatetime = function() {
+		var dateStr = this.input.val();
+		if (dateStr == null || dateStr == "" || dateStr.length == 0) return null;
+		return dateStr + ":00";
+	}
+}
+
 function generateDatePicker(par, time, onEdit) {
     
-	var ret = $('<div>', {
+	var container = $('<div>', {
 		//class: 'col-sm-6'    
 	}).appendTo(par);
 
 	var formGroup = $('<div>', {
 		//class: 'form-group'    
-	}).appendTo(ret);
+	}).appendTo(container);
 
 	var inputGroup = $("<div>", {
 		class: 'input-group date'    
@@ -128,19 +137,8 @@ function generateDatePicker(par, time, onEdit) {
 		pick12HourFormat: false  
 	});
 
-	ret.on("input change keyup", onEdit);
-	return ret;
-}
-
-function getDateTime(picker){
-	var ret = null;
-	var formGroup = $(picker.children(".form-group")[0]);
-	var inputGroup = $(formGroup.children(".input-group.date")[0]);
-	var input = $(inputGroup.children(".form-control")[0]); 
-	var dateStr = input.val();
-	if (dateStr==null || dateStr=="" || dateStr.length==0) return null;
-	ret = dateStr+":00";
-	return ret;
+	container.on("input change keyup", onEdit);
+	return new DatetimePicker(input);
 }
 
 /*
