@@ -110,6 +110,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 
 	g_btnSubmit.click(function(evt){
 		evt.preventDefault();
+		if (g_loggedInUser == null) return;
 		var assessments = new Array();
 		for(var i = 0; i < batchEditor.editors.length; i++) {
 			var editor = batchEditor.editors[i];
@@ -137,17 +138,16 @@ function generateAssessmentButtons(par, activity, batchEditor){
 				refreshBatchEditor(activity);
 			},
 			error: function(xhr, status, err){
-
+				alert("Assessment NOT submitted!");
 			}
 		});
 	}).appendTo(row);
-	g_btnSubmit.prop("disabled", true);
+	disableField(g_btnSubmit);
 }
 
 function generateBatchAssessmentEditor(par, activity, onRefresh){
 	par.empty();
 
-	initAssessmentsViewer();
 	if(g_onRefresh == null)	g_onRefresh = onRefresh;
 
 	g_lockedCount = 0; // clear lock count on batch editor generated

@@ -114,8 +114,7 @@ function displayActivityDetail(par){
 	listCommentsAndRefresh(g_activity);
 
 	// Tab assessments
-	var viewer = null;
-	if(g_activity.hasOwnProperty("viewer")) viewer = g_activity.viewer;
+	initAssessmentsViewer($("#content"));
 	g_batchAssessmentEditor = generateBatchAssessmentEditor(g_tabAssessments, g_activity, queryActivityDetail);
 
 	var token = $.cookie(g_keyToken);

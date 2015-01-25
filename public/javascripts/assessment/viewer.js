@@ -14,21 +14,19 @@ function removeAssessmentsViewer(){
         g_assessmentsViewer.remove();
 }
 
-function initAssessmentsViewer(){
-	var wrap = $("#wrap");
+function initAssessmentsViewer(par){
 	/*
 		Note: ALL attributes, especially the `class` attribute MUST be written INSIDE the div tag, bootstrap is NOT totally compatible with jQuery!!!
 	*/
 	g_sectionAssessmentsViewer = $("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='' aria-hidden='true'>", {
 		style: "position: absolute; width: 80%; height: 80%;"
-	}).appendTo(wrap);
+	}).appendTo(par);
 	var dialog = $("<div>", {
 		class: "modal-dialog modal-lg"
 	}).appendTo(g_sectionAssessmentsViewer);
 	g_modalAssessmentsViewer = $("<div>", {
 		class: "modal-content"
 	}).appendTo(dialog);	
-
 	removeAssessmentsViewer();
 }
 
