@@ -30,13 +30,14 @@ function generateParticipantsSelectionForm(par, activity) {
 		var avatar = $("<img>", {
 			src: participant.avatar,
 			class: "participant-avatar"
-		}).click(function(evt) {
+		}).click(participant, function(evt) {
 			evt.preventDefault();
-			window.location.hash = ("profile?" + g_keyVieweeId + "=" + participant.id.toString());
+			var aParticipant = evt.data;
+			window.location.hash = ("profile?" + g_keyVieweeId + "=" + aParticipant.id.toString());
 		}).appendTo(row);
 		var label = $('<label>', {
 			text: participant.name,
-			class: "selected-participant"
+			class: "participant-label selected-participant"
 		}).appendTo(row);
 		labels.push(label);
 	}
@@ -55,7 +56,7 @@ function generateParticipantsSelectionForm(par, activity) {
 		}).appendTo(row);
 		var label = $('<label>', {
 			text: participant.name,
-			class: "applied-participant"
+			class: "participant-label applied-participant"
 		}).appendTo(row);
 		labels.push(label);
 	}

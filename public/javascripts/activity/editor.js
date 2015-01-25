@@ -510,8 +510,6 @@ function generateActivityEditor(par, activity){
 	}).appendTo(ret);
 	var titleCounter = new WordCounter(activityTitle, 1, 64, g_activityTitlePattern, "");
 	titleCounter.appendCounter(ret);
-	titleCounter.update(titleInput.val().length);
-
 	titleInput.on("input paste keyup", function(evt){
 			g_activityEditor.setSavable();
 			g_activityEditor.setNonSubmittable();
@@ -526,7 +524,6 @@ function generateActivityEditor(par, activity){
 	}).appendTo(ret);
 	var addrCounter = new WordCounter(activityAddress, 1, 256, g_activityAddressPattern, "");
 	addrCounter.appendCounter(ret);
-	addrCounter.update(addressInput.val().length);
 	addressInput.on("input paste keyup", function(evt){
 			g_activityEditor.setSavable();
 			g_activityEditor.setNonSubmittable();
@@ -542,7 +539,6 @@ function generateActivityEditor(par, activity){
 	contentInput.val(activityContent);
 	var contentCounter = new WordCounter(activityContent, 1, 1024, g_activityContentPattern, "");
 	contentCounter.appendCounter(ret);
-	contentCounter.update(contentInput.val().length);
 	contentInput.on("input paste keyup", function(evt){
 			g_activityEditor.setSavable();
 			g_activityEditor.setNonSubmittable();

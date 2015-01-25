@@ -24,8 +24,6 @@ function requestHome() {
 	clearDetail();
 	clearNotifications();
 
-	window.location.hash = "";
-
 	initSectionRegister();
 	g_sectionUser = $("#section-user");
 	g_sectionRegister = $("#section-register");

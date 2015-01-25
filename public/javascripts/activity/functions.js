@@ -324,9 +324,10 @@ function generateActivityCell(par, activity){
 				title: participant.name,
 				src: avatar,
 				class: "selected-snippet-avatar left"
-			}).click(function(evt) {
+			}).click(participant, function(evt) {
 				evt.preventDefault();
-				window.location.hash = ("profile?" + g_keyVieweeId + "=" + participant.id.toString());
+				var aParticipant = evt.data;
+				window.location.hash = ("profile?" + g_keyVieweeId + "=" + aParticipant.id.toString());
 			}).appendTo(selectedSnippet);
 		}
 	}

@@ -10,7 +10,6 @@ var g_activity = null;
 
 function emptyBarButtons() {
 	if (g_barButtons == null) return;
-	//setDimensions(g_barButtons, "auto", "0px");
 	g_barButtons.empty();
 }
 

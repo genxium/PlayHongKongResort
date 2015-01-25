@@ -96,7 +96,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var nameVal = $(this).val();
 		if(nameVal == null || nameVal.length == 0) return;
 		if(!validateName(nameVal)) {
-			nameCheck.html("<p>Username can only contain 6~20 alphabet letters and numbers</p>");
+			nameCheck.html("<p>Username can only contain 6~32 alphabet letters, numbers, or symbol '_'</p>");
 			nameCheck.addClass("warn");
 			return;
 		}
@@ -163,7 +163,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		if(pswVal == null || pswVal.length ==0 ) return;
 		if(validatePassword(pswVal))	return;
 		pswCheck.addClass("warn");
-		pswCheck.html("<p>Password can only contain 6~20 alphabet letters and numbers</p>");
+		pswCheck.html("<p>Password can only contain 6~32 alphabet letters, numbers or symbols '#', '_' and '!'</p>");
 	});	
  
 	this.pswConfirm.on("input keyup paste", {0: this.pswConfirmCheck, 1: this.psw}, function(evt){

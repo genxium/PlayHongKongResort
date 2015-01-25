@@ -124,4 +124,4 @@ var g_activityTitlePattern = /^.{5,64}$/;
 var g_activityAddressPattern = /^.{10,128}$/;
 var g_activityContentPattern = /^.{15,1024}$/;
 var g_commentContentPattern  = /^.{5,128}$/;
-var g_assessmentContentPattern = /^.{5,64}$/;
+var g_assessmentContentPattern = /^.{0,64}$/;

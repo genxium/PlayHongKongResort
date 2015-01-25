@@ -152,10 +152,12 @@ function generateActivityCellForAdmin(par, activity){
 	}).appendTo(ret);
 
 	if(coverImageUrl != null){
-		var coverImage = $("<img>", {
-			class: "cell-cover",
-			src: coverImageUrl
+		var cover = $("<div>", {
+			class: "activity-cover"
 		}).appendTo(infoWrap);
+		var coverImage = $("<img>", {
+			src: coverImageUrl
+		}).appendTo(cover);
 	}
 
 	var cellActivityTitle = $("<plaintext>", {

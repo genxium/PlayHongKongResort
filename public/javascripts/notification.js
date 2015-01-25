@@ -4,7 +4,6 @@ var g_notificationTrash = null;
 
 function emptySectionNotifications() {
 	if (g_sectionNotifications == null) return;
-	setDimensions(g_sectionNotifications, "100%", 0);
 	g_sectionNotifications.empty();
 }
 
@@ -282,8 +281,6 @@ function NotificationCell(container, notification, indicator) {
 	var unreadIndicator = $("<div>", {
 		class: "notification-unread"
 	}).appendTo(this.indicator);
-	//unreadIndicator.width("50px");
-	//unreadIndicator.height("50px");
 
 	this.container.click(this, function(evt) {
 		if (g_notificationTrash.isActive)	return;
@@ -302,7 +299,7 @@ function NotificationCell(container, notification, indicator) {
 			url: "/el/notification/mark",
 			data: params,
 			success: function(data, status, xhr) {
-				window.location.hash = (g_keyActivityId + "=" + aNotification.activityId);
+				window.location.hash = ("detail?" + g_keyActivityId + "=" + aNotification.activityId);
 			},
 			error: function(xhr, status, err) {
 
