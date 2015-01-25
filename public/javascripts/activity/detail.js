@@ -191,15 +191,16 @@ function requestActivityDetail(activityId) {
 	}).appendTo(tabCommentContent);
 	var btnBack = $("<button>", {
 		text: "< BACK",
+		class: "purple back-button"
 	}).appendTo(subCommentsContainer);
 	// note that the back button in sub-comments' container takes both pagers as input
 	btnBack.click(function(evt) {
 		evt.preventDefault();
 		g_commentId = null;
 		g_pagerComments.expand(null);
-		setOffset(g_pagerComments.screen.parent(), "0%", null);
+		//setOffset(g_pagerComments.screen.parent(), "0%", null);
 		g_pagerSubComments.squeeze();
-		setOffset(g_pagerSubComments.screen.parent(), "100%", null);
+		//setOffset(g_pagerSubComments.screen.parent(), "100%", null);
 	});
 	var subCommentPagerBar = $("<div>").appendTo(subCommentsContainer);
 	var subCommentPagerScreen = $("<div>").appendTo(subCommentsContainer);

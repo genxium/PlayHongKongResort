@@ -67,7 +67,7 @@ ul {
 	margin: 0;
 	list-style: none;
 }
-input {
+input, textarea {
 	margin: 0;
 	padding: 0;
 	border: solid 1px #999;
@@ -85,7 +85,7 @@ button.purple {
 	border: none;
 	
 }
-button.purple:hover, button.pruple.active {
+button.purple:hover, button.purple.active {
 	color: #e2e185;
 	background-color: #ad4497;	
 }
@@ -97,6 +97,12 @@ button.gray {
 button.gray:hover, button.gray.active {
 	background-color: #3090a6;
 	color: #fff;
+}
+button.disabled-button, button.disabled-button:hover {
+	background-color: #fff;
+	color: #eee;
+	border: solid 1px #eee;
+	cursor: default;
 }
 #header {
 	background-color: #3090a6;

@@ -68,24 +68,23 @@ function ExplorerTrigger(node, pic, btn) {
 }
 
 function generateExplorerTriggerSpan(par, onChange, imgSrc, nodeW, nodeH, picW, picH) {
-	var node = $("<span>", {
-		style: "position: absolute;"
+	var node = $("<div>", {
+		class: "add-image"
 	}).appendTo(par);
-	setDimensions(node, nodeW, nodeH);
-	setOffset(node, 0, 0); 	
-	
-	var pic = $("<img>", {
-		style: "position: absolute; left: 0; top:0; right: 0; bottom:0; margin: auto;",
-		src: imgSrc
+	//setDimensions(node, nodeW, nodeH);
+	//setOffset(node, 0, 0); 	
+	var pic = $("<span>", {
+		text: "add-image",
+		class: "purple"
 	}).appendTo(node); 
-	setDimensions(pic, picW, picH);
+	//setDimensions(pic, picW, picH);
 
 	// btn should have the same dimensions as node to be clickable
 	var btn = $("<input>", {
-		type: "file",
-		style: "filter: alpha(opacity=0); opacity: 0; position: absolute;"
+		type: "file"
 	}).appendTo(node);
-	setDimensions(btn, nodeW, nodeH);
+	//setDimensions(btn, nodeW, nodeH);
+	
 
 	btn.change(onChange);
 	return new ExplorerTrigger(node, pic, btn); 
@@ -97,11 +96,11 @@ function generateExplorerTriggerSpan(par, onChange, imgSrc, nodeW, nodeH, picW, 
 function generateDatePicker(par, time, onEdit) {
     
 	var ret = $('<div>', {
-		class: 'col-sm-6'    
+		//class: 'col-sm-6'    
 	}).appendTo(par);
 
 	var formGroup = $('<div>', {
-		class: 'form-group'    
+		//class: 'form-group'    
 	}).appendTo(ret);
 
 	var inputGroup = $("<div>", {
@@ -113,7 +112,6 @@ function generateDatePicker(par, time, onEdit) {
 		value: time,
 		disabled: true,
 		class: "form-control",
-		style: "color: black; background-color: transparent; cursor: default; width: auto; border: none; outline: none; padding: 0; box-sizing: content-box;"    
 	}).appendTo(inputGroup);
 
 	var inputGroupAddon = $('<span>', {
@@ -508,8 +506,8 @@ function createNavTab(par, refs, titles, preactiveRef, sectionPanes, contents) {
 
 function createNavTabPane(par, ref, isPreactive, content) {
 	var pane = null;	
-	if (isPreactive) pane = $("<div role ='tabpanel' class='tab-pane fade in active' id='" + ref + "' style='padding-left: 5pt; padding-right:5pt'>").appendTo(par);
-	else pane = $("<div role='tabpanel' class='tab-pane' fade id='" + ref + "' style='padding-left: 5pt; padding-right:5pt'>").appendTo(par);
+	if (isPreactive) pane = $("<div role ='tabpanel' class='tab-pane fade in active' id='" + ref + "'>").appendTo(par);
+	else pane = $("<div role='tabpanel' class='tab-pane' fade id='" + ref + "'>").appendTo(par);
 	if (content == null) return pane;
 	pane.append(content);
 	return pane;	

@@ -272,14 +272,18 @@ function NotificationCell(container, notification, indicator) {
 		window.location.hash = ("detail?" + g_keyActivityId + "=" + aNotification.activityId);
 	});
 
-	if (this.notification.isRead != 0) return;
+	if (this.notification.isRead != 0) {
+		var readIndicator = $("<div>", {
+			class: "notification-read"
+		}).appendTo(this.indicator);
+		return;
+	}
 
-	var unreadIndicator = $("<img>", {
-		style: "position: relative; margin-left: 5pt;",
-		src: "/assets/icons/notification.png"
+	var unreadIndicator = $("<div>", {
+		class: "notification-unread"
 	}).appendTo(this.indicator);
-	unreadIndicator.width("50px");
-	unreadIndicator.height("50px");
+	//unreadIndicator.width("50px");
+	//unreadIndicator.height("50px");
 
 	this.container.click(this, function(evt) {
 		if (g_notificationTrash.isActive)	return;
@@ -310,22 +314,23 @@ function NotificationCell(container, notification, indicator) {
 
 function generateNotificationCell(par, notification) {
 	var container = $("<tr class = 'notifications-viewer-row'>", {
-		style: "position: relative; height: 50px; border-bottom: 1px solid gray; cursor: pointer;"
 	}).appendTo(par);
 	var idColumn = $("<td>", {
-		style: "postion: relative; margin-right: 5pt; font-size: 11pt; vertical-align: middle;",
-		text: notification.id
+		text: notification.id,
+		class: "notification-id"
 	}).appendTo(container);
 	var content = $("<td>", {
-		style: "position: relative; font-size: 14pt; vertical-align: middle;",
-		text: notification.content
+		text: notification.content,
+		class: "notification-content"
 	}).appendTo(container);
 	var timestamp = $("<td>", {
-		style: "position: relative; font-size: 11pt; margin-left: 10pt; color: blue; vertical-align: middle;",
-		text: gmtMiilisecToLocalYmdhis(notification.generatedTime) 
+		text: gmtMiilisecToLocalYmdhis(notification.generatedTime),
+		 class: "notification-time"
 	}).appendTo(container); 
 
-	var indicator = $("<td>").appendTo(container); 
+	var indicator = $("<td>", {
+		class: "notification-envelope"
+	}).appendTo(container); 
 	return new NotificationCell(container, notification, indicator);
 }
 

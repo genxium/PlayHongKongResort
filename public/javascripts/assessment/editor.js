@@ -147,7 +147,9 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 
 	if(activity == null) return g_batchAssessmentEditor;
 	var editors = [];
-	var sectionAll = $('<div>').appendTo(par);
+	var sectionAll = $('<div>', {
+		class: "assessment-container"
+	}).appendTo(par);
 	
 	var initVal = false;
 	var disabled = false;

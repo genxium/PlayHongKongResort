@@ -15,7 +15,9 @@ function ParticipantsForm(activity, labels, idList, statusList){
 }
 
 function generateParticipantsSelectionForm(par, activity) {
-	var form = $('<form>').appendTo(par);
+	var form = $('<form>', {
+		class: "participant-form"
+	}).appendTo(par);
 
 	var labels = new Array();
 	var idList = new Array();
@@ -26,7 +28,7 @@ function generateParticipantsSelectionForm(par, activity) {
 		statusList.push(g_aliasSelected);
 		var label = $('<label>', {
 			text: participant.name,
-			style: "background-color: aquamarine"
+			class: "selected-participant"
 		}).appendTo(form);
 		labels.push(label);
 		$('<br>').appendTo(form);
@@ -38,7 +40,7 @@ function generateParticipantsSelectionForm(par, activity) {
 		statusList.push(g_aliasApplied);
 		var label = $('<label>', {
 			text: participant.name,
-			style: "background-color: pink"
+			class: "applied-participant"
 		}).appendTo(form);
 		labels.push(label);
 		$('<br>').appendTo(form);
@@ -64,7 +66,7 @@ function generateParticipantsSelectionForm(par, activity) {
 
 	var btnSubmit = $("<button>",{
 		text: 'Confirm Selection',
-		style: 'color: white; background-color:black; font-size: 13pt'
+		class: "purple participant-confirm"
 	}).appendTo(form);
 
 	btnSubmit.click(ret, function(evt) {
@@ -114,7 +116,9 @@ function generateParticipantsSelectionForm(par, activity) {
 					if(aForm.statusList[i] == g_aliasSelected) continue;
 					var box = aForm.boxes[i];
 					if(!box.is(":checked")) continue;
-					label.css("background-color", "aquamarine");
+					//label.css("background-color", "aquamarine");
+					label.removeClass("applied-participant");
+					label.addClass("selected-participant");
 					box.hide();
 				}
 			},

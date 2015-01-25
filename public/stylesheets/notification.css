@@ -1,25 +1,45 @@
-.notifications-viewer th td {
-    border: 1px solid blue;
+#pager-bar-notifications {
+	padding: 10px;
 }
-
+#pager-bar-notifications button {
+	min-width: 30px;
+	height: 25px;
+	margin-right: 5px;
+}
 .notifications-viewer {
-    width: 100%;
+	max-width: 1004px;
+	margin: 10px;
 }
-
 .notifications-viewer-row {
-    width: 100%;
+	border-bottom: solid 1px #eee;
+	cursor: pointer;
 }
-
-.notifications-viewer-row > th {
-    background-color: blue;
-    color: white;
-    text-align: center;
-    vertical-align: middle;
+.notifications-viewer-row:last-child {
+	border-bottom: none;
 }
-
-.notifications-viewer-row > td {
-	padding: 2px;
-    color: black;
-    text-align: center;
-    vertical-align: middle;
+.notification-id {
+	width: 50px;
+}
+.notification-content {
+}
+.notification-time {
+	width: 125px;
+	text-align: center;
+}
+.notification-envelope {
+	width: 40px;
+}
+.notification-envelope div {
+	width: 40px;
+	height: 40px;
+}
+.notification-unread {
+	background: url("../icons/notification-close.png") left top no-repeat;
+	cursor: pointer;
+}
+.notification-unread:hover {
+	background: url("../icons/notification-open.png") left top no-repeat;
+}
+.notification-read {
+	background: url("../icons/notification-gray.png") left top no-repeat;
 }

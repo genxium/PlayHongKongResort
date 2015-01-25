@@ -108,7 +108,7 @@ function generateReplyEditor(par, activity, comment){
     }).appendTo(ret);
     var btnSubmit = $('<button>',{
         text: "SUBMIT REPLY",
-        style: "color: white; background-color: gray; border: none"
+        class: "comment-submit purple"
     }).appendTo(ret);
 
     btnSubmit.on("click", {input: input}, function(evt) {
@@ -150,7 +150,7 @@ function generateReplyEditor(par, activity, comment){
 
     var btnCollapse = $('<button>',{
         text: "COLLAPSE",
-        style: "color: red; text-decoration: underline; background-color: none; border: none"
+        class: "comment-collapse gray"
     }).appendTo(ret);
 
     btnCollapse.click(function(evt){
@@ -164,40 +164,42 @@ function generateReplyEditor(par, activity, comment){
 function generateCommentCell(par, commentJson, activity, single){
 	var comment = new Comment(commentJson);
 	var ret = $('<div>', {
-	    style: "margin-top: 5px;"
+	    class: "comment-group"
 	}).appendTo(par);
-        var row = $('<p>').appendTo(ret);
-	if (single) row.css("background-color", "Cornsilk");
+        var row = $('<div>', {
+		class: "comment-row clearfix"
+	}).appendTo(ret);
+	if (single) row.addClass("single-row");
 
-        var content = $('<span>', {
+        var content = $('<div>', {
             text: comment.content,
-            style: "text-align: left; margin-left: 25pt; font-size: 14pt"
+            class: "comment-content left"
         }).appendTo(row);
 
-        var spanFromName = $('<span>').appendTo(row);
+        var spanFromName = $('<div>', {
+	    class: "comment-from left"
+	}).appendTo(row);
         var hrefFromName = $('<a>', {
 		href: "#",
 		text: comment.fromName,
-		target: "_blank",
-		style: "text-align: left; margin-left: 25pt; color: brown; font-size: 14pt"
+		target: "_blank"
         }).appendTo(spanFromName);
 	hrefFromName.click(function(evt) {
 		evt.preventDefault();
 		window.location.hash = ("profile?" + g_keyVieweeId + "=" + comment.from.toString());	
 	});
         
-        var generatedTime = $('<span>', {
+        var generatedTime = $('<div>', {
             text: gmtMiilisecToLocalYmdhis(comment.generatedTime),
-            style: "text-align: left; margin-left:  25pt; color: blue; font-size: 14pt"
+            class: "comment-time left"
         }).appendTo(row);
 
 	if (!single && comment.numChildren > 3) {
-		var spanView = $("<span>", {
-			style: "margin-left: 5px"
+		var spanView = $("<div>", {
+			class: "comment-view left"
 		}).appendTo(row);
 		var viewAll = $("<a>", {
-			text: "view all replies(" + comment.numChildren + ")",
-			style: "cursor: pointer"
+			text: "view all replies(" + comment.numChildren + ")"
 		}).appendTo(spanView);
 		viewAll.click(comment.id, function(evt) {
 			evt.preventDefault();
@@ -223,13 +225,13 @@ function generateCommentCell(par, commentJson, activity, single){
         var token = $.cookie(g_keyToken);
         if(token == null || activity.hasBegun()) return;
 
-        var operations = $('<span>',{
-                style: "margin-left: 20pt"
+        var operations = $('<div>',{
+                class: "comment-action left"
         }).appendTo(row);
 
         var btnReply = $('<button>',{
             text: "reply",
-            style: "color: white; background-color: black; border: none"
+            class: "purple comment-reply"
         }).appendTo(operations);
 
         btnReply.click(ret, function(evt){
@@ -246,54 +248,58 @@ function generateSubCommentCell(par, commentJson, activity){
 	var comment = new Comment(commentJson);
 
 	var ret = $("<div>", {
-		style: "margin-top: 3px; text-indent: 25pt; border-left: thick solid #000000"
+		class: "comment-group subgroup"
 	}).appendTo(par);
 
-	var row = $("<p>").appendTo(ret);
-	var spanTo = $('<span>').appendTo(row);
+	var row = $("<div>", {
+		class: "comment-row clearfix"
+	}).appendTo(ret);
+	var spanTo = $('<div>', {
+		class: "comment-to left"
+	}).appendTo(row);
 	var hrefTo = $('<a>', {
 		href: "#",
 		text: "to @" + comment.toName + ": ",
 		target: "_blank",
-		style: "color: blueviolet; font-size: 13pt"
 	}).appendTo(spanTo);
 	hrefTo.click(function(evt) {
 		evt.preventDefault();
 		window.location.hash = ("profile?" + g_keyVieweeId + "=" + comment.to.toString());	
 	});
 
-	var content = $('<span>', {
+	var content = $('<div>', {
 		text: comment.content,
-		style: "text-align: left; margin-left: 25pt; font-size: 13pt"
+		class: "comment-content left"
 	}).appendTo(row);
 
-	var spanFromName = $('<span>').appendTo(row);
+	var spanFromName = $('<div>', {
+		class: "comment-from left"
+	}).appendTo(row);
 	var hrefFromName = $('<a>', {
 		href: "#",
 		text: comment.fromName,
-		target: "_blank",
-		style: "text-align: left; margin-left: 25pt; color: brown; font-size: 13pt"
+		target: "_blank"
 	}).appendTo(spanFromName);
 	hrefFromName.click(function(evt) {
 		evt.preventDefault();
 		window.location.hash = ("profile?" + g_keyVieweeId + "=" + comment.from.toString());	
 	});
 
-	var generatedTime = $('<span>', {
+	var generatedTime = $('<div>', {
 		text: gmtMiilisecToLocalYmdhis(comment.generatedTime),
-		style: "text-align: left; margin-left:  25pt; color: blue; font-size: 13pt"
+		class: "comment-time left"
 	}).appendTo(row);
 
 	var token = $.cookie(g_keyToken);
 	if(token == null || activity.hasBegun()) return ret;
 
-	var operations = $('<span>',{
-		style: "margin-left: 20pt"
+	var operations = $('<div>',{
+		class: "comment-action left"
 	}).appendTo(row);
 
 	var btnReply = $('<button>',{
 		text: "reply",
-		style: "color: white; background-color: black; border: none"
+		class: "purple comment-reply"
 	}).appendTo(operations);
 
 	btnReply.click(ret, function(evt){

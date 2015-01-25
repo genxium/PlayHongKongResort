@@ -10,10 +10,10 @@ var g_modalActivityEditor = null;
 var g_sectionActivityEditor = null;
 
 // button keys
-var g_classBtnSubmit = "btn-submit";
-var g_classBtnDelete = "btn-delete";
-var g_classBtnSave = "btn-save";
-var g_classBtnCancel = "btn-cancel";
+var g_classBtnSubmit = "btn-submit purple"
+var g_classBtnDelete = "btn-delete gray";
+var g_classBtnSave = "btn-save purple";
+var g_classBtnCancel = "btn-cancel gray";
 
 // DOM indexes for cascaded DOM element search
 var g_indexOldImage = "old_image";
@@ -72,33 +72,40 @@ function ActivityEditor(container, id, titleField, titleCounter, addressField, a
 
 	this.disableEditorButtons = function() {
 		disableField(this.btnSave);
-		this.btnSave.css("color", "dimgray");
+		//this.btnSave.css("color", "dimgray");
+		this.btnSave.addClass("disabled-button");
 		disableField(this.btnSubmit);
-		this.btnSubmit.css("color", "dimgray");
+		//this.btnSubmit.css("color", "dimgray");
+		this.btnSubmit.addClass("disabled-button");
 		if (this.btnDelete == null) return;
 		disableField(this.btnDelete);
-		this.btnDelete.css("color", "dimgray");
+		//this.btnDelete.css("color", "dimgray");
+		this.btnDelete.addClass("disabled-button");
 	};
 
 	this.enableEditorButtons = function() {
 		if (this.savable) {
 			enableField(this.btnSave);
-			this.btnSave.css("color", "white");
+			this.btnSave.removeClass("disabled-button");
+			//this.btnSave.css("color", "white");
 		}	
 		if (this.submittable) {
 			enableField(this.btnSubmit);
-			this.btnSubmit.css("color", "white");
+			this.btnSubmit.removeClass("disabled-button");
+			//this.btnSubmit.css("color", "white");
 		}	
 		if (this.btnDelete != null) {
 			enableField(this.btnDelete);
-			this.btnDelete.css("color", "white");
+			this.btnDelete.removeClass("disabled-button");
+			//this.btnDelete.css("color", "white");
 		}
 	};
 
 	this.setNonSavable = function() {
 		this.savable = false;
 		disableField(this.btnSave);
-		this.btnSave.css("color", "dimgray");
+		this.btnSave.addClass("disabled-button");
+		//this.btnSave.css("color", "dimgray");
 	};
 
 	this.setSavable = function() {
@@ -109,7 +116,8 @@ function ActivityEditor(container, id, titleField, titleCounter, addressField, a
 	this.setNonSubmittable = function() {
 		this.submittable = false;
 		disableField(this.btnSubmit);
-		this.btnSubmit.css("color", "dimgray");
+		this.btnSubmit.addClass("disabled-button");
+		//this.btnSubmit.css("color", "dimgray");
 	};
 
 	this.setSubmittable = function() {
@@ -393,23 +401,25 @@ function previewImage(par, editor) {
 
 		var offset = Object.keys(editor.newImageFiles).length;
 		editor.newImageFiles[key] = newImage; // add new image to file map
-		var node = $('<span>', {
-			style: "position: absolute; padding: 2pt"
+		var node = $('<div>', {
+			class: "preview-container left"
 		}).appendTo(par);
-		setDimensions(node, g_wImageCell, g_hImageCell + g_hDelete);
-		setOffset(node, offset * g_wImageCell, null);
+		//setDimensions(node, g_wImageCell, g_hImageCell + g_hDelete);
+		//setOffset(node, offset * g_wImageCell, null);
 		editor.newImageNodes[key] = node; // add new image node to view map		
-
+		var imgHelper = $('<span>', {
+			class: "image-helper"
+		}).appendTo(node);
 		var img = $('<img>', {
 			src: e.target.result
 		}).appendTo(node);
-		setDimensions(img, g_wImageCell, g_hImageCell);
+		//setDimensions(img, g_wImageCell, g_hImageCell);
 
 		var btnDelete = $("<button>", {
 			text: "delete",
-			style: "font-size: 12pt; color: white; background-color: red;"
+			class: "purple image-delete"
 		}).appendTo(node);
-		setDimensions(btnDelete, g_wImageCell, g_hDelete);
+		//setDimensions(btnDelete, g_wImageCell, g_hDelete);
 		
 		editor.explorerTrigger.shift(+1, g_wImageCell);
 		
@@ -425,8 +435,8 @@ function previewImage(par, editor) {
 			for(var otherKey in editor.newImageNodes) {
 				if(otherKey < key) continue;
 				var newImageNode = editor.newImageNodes[otherKey];	
-				var offset = getOffset(newImageNode);
-				setOffset(newImageNode, offset.left - g_wImageCell, null);
+				//var offset = getOffset(newImageNode);
+				//setOffset(newImageNode, offset.left - g_wImageCell, null);
 			}
 			editor.explorerTrigger.shift(-1, g_wImageCell);
 		});
@@ -539,8 +549,8 @@ function generateActivityEditor(par, activity){
 			contentCounter.update($(this).val());
 	});
 
-	$("<p>", {
-		style: "font-size: 14pt; color: red; padding: 5pt",
+	$("<div>", {
+		class: "warning",
 		html: "Up to 3 images can be saved for an activity. Single image size is limited to 2MB(2048KB), please go to <a href='http://www.pixlr.com'>Pixlr</a> to compress your image if necessary"
 	}).appendTo(ret);
 
@@ -548,36 +558,38 @@ function generateActivityEditor(par, activity){
 	var newImageNodes = {};
 	var imageSelectors = new Array();
 
-	var newImagesRow = $("<p>", {
-		style: "position: relative; overflow-x: auto; overflow-y: hidden"
+	var newImagesRow = $("<div>", {
+		class: "image-row new clearfix"
 	});
 
-	setDimensions(newImagesRow, null, g_hImageCell + g_hDelete + 5);
+	//setDimensions(newImagesRow, null, g_hImageCell + g_hDelete + 5);
 
 	if(activity != null && activity.images != null) {
-		var oldImagesRow = $("<p>", {
-			style: "position: relative; overflow-x: auto;"	
-		}).appendTo(ret);
-		setDimensions(oldImagesRow, null, g_hImageCell + 5);
+		var oldImagesRow = $("<div>", {
+			class: "image-row old clearfix"
+	}).appendTo(ret);
+		//setDimensions(oldImagesRow, null, g_hImageCell + 5);
 
 		var countOldImages = Object.keys(activity.images).length;
 		for(var i =0; i < countOldImages; i++){
-			var node = $("<span>").appendTo(oldImagesRow);
-			setDimensions(node, g_wImageCell, g_hImageCell);
-
-			var image = $('<img>', {
-				src: activity.images[i].url,
-				style: "position: absolute; padding: 2pt"
+			var node = $("<div>", {
+				class: "preview-container"
+			}).appendTo(oldImagesRow);
+			//setDimensions(node, g_wImageCell, g_hImageCell);
+			var imageHelper = $('<span>', {
+				class: "image-helper"
 			}).appendTo(node);
-			setDimensions(image, g_wImageCell, g_hImageCell);
-			setOffset(image, i * g_wImageCell + 10, null);
+			var image = $('<img>', {
+				src: activity.images[i].url
+			}).appendTo(node);
+			//setDimensions(image, g_wImageCell, g_hImageCell);
+			//setOffset(image, i * g_wImageCell + 10, null);
 
 			var indicator = $('<img>',{
 				src: "/assets/icons/checked.png",
-				style: "position: absolute;"
 			}).appendTo(node);
-			setDimensions(indicator, 0.2 * g_wImageCell, 0.2 * g_hImageCell);
-			setOffset(indicator, i * g_wImageCell + 10, null);
+			//setDimensions(indicator, 0.2 * g_wImageCell, 0.2 * g_hImageCell);
+			//setOffset(indicator, i * g_wImageCell + 10, null);
 
 			var selector = new ImageSelector(activity.images[i].id, image, indicator);
 			node.click(selector, function(evt) {
@@ -612,7 +624,7 @@ function generateActivityEditor(par, activity){
 
 	var explorerTrigger = generateExplorerTriggerSpan(newImagesRow, onChange, "/assets/icons/add.png", g_wImageCell, g_hImageCell, g_wImageCell/2, g_hImageCell/2);
 
-	$('<br>').appendTo(ret);
+	//$('<br>').appendTo(ret);
 	
 	// Schedules
 	var deadline = reformatDate(new Date());
@@ -621,23 +633,28 @@ function generateActivityEditor(par, activity){
 	var beginTime = reformatDate(new Date());
 	if(activity != null && activity.beginTime != null) beginTime = activity.beginTime;
 
-	var tableSchedule = $("<table>", {
-		style: "position: relative; margin-top: 15pt; margin-bottom: 5pt"
+	var scheduleRow1 = $("<div>", {
+		class: "edit-deadline clearfix"
 	}).appendTo(ret);
-	var scheduleRow1 = $("<tr>").appendTo(tableSchedule);
-	var scheduleCell11 = $("<td>", {
-		text: "Deadline ",
-		style: "font-size: 14pt; font-variant: small-caps; font-family: verdana, sans-serif; white-space: nowrap; vertical-align: text-top"
+	var scheduleCell11 = $("<div>", {
+		text: "Deadline",
+		class: "left edit-label"
 	}).appendTo(scheduleRow1);
-	var scheduleCell12 = $("<td>").appendTo(scheduleRow1);
+	var scheduleCell12 = $("<div>", {
+		class: "datetime-picker left"
+	}).appendTo(scheduleRow1);
 	var deadlinePicker = generateDateSelection(scheduleCell12, gmtMiilisecToLocalYmdhi(deadline));
-
-	var scheduleRow2 = $("<tr>").appendTo(tableSchedule);
-	var scheduleCell21 = $("<td>", {
-		text: "Begin Time ",
-		style: "font-size: 14pt; font-variant: small-caps; font-family: verdana, sans-serif; white-space: nowrap; vertical-align: text-top"
+	
+	var scheduleRow2 = $("<div>", {
+		class: "edit-begin clearfix"
+	}).appendTo(ret);
+	var scheduleCell21 = $("<div>", {
+		text: "Begin Time",
+		class: "left edit-label"
 	}).appendTo(scheduleRow2);
-	var scheduleCell22 = $("<td>").appendTo(scheduleRow2);
+	var scheduleCell22 = $("<div>", {
+		class: "datetime-picker left"
+	}).appendTo(scheduleRow2);
 	var beginTimePicker = generateDateSelection(scheduleCell22, gmtMiilisecToLocalYmdhi(beginTime));
 
 	var sid = null;
@@ -648,8 +665,8 @@ function generateActivityEditor(par, activity){
 		captcha.appendCaptcha(ret);
 	}
 
-	var buttons = $("<p>", {
-		style: "position: relative; margin-top: 5pt; width: 100%; height: auto;"
+	var buttons = $("<div>", {
+		class: "edit-button-rows"
 	}).appendTo(ret);
 
 	/* Associated Buttons */
@@ -687,8 +704,8 @@ function generateActivityEditor(par, activity){
 		});
 	}
 
-	var hint = $("<p>", {
-		style: "color: blue"
+	var hint = $("<div>", {
+		class: "hint"
 	}).appendTo(ret);
 
 	var editor = new ActivityEditor(ret, activityId, titleInput, titleCounter, addressField, addrCounter, contentInput, contentCounter, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, captcha);	

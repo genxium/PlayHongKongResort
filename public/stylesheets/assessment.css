@@ -1,3 +1,7 @@
+.assessment-container {
+	padding-top: 10px;
+}
+
 .assessments-viewer th td {
     border: 1px solid green;
 }

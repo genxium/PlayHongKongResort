@@ -127,11 +127,11 @@
 	color: #e21e61;
 	border: solid 1px #e21e61;
 }
-.activity-editor-form 
+.activity-editor-form {
 	padding: 10px;
 }
 .activity-detail-page {
-	margin: 10px;
+	padding: 10px 25px;
 }
 .activity-detail-page .activity-title {
 	font-size: 3em;
@@ -178,6 +178,62 @@
 .tab-container {
 	padding-top: 10px;
 }
+#section-nav, .tab-content {
+	margin: 0 25px;
+}
+.comment-row {
+	padding: 10px 0;
+	font-size: 1em;
+	line-height: 2em;
+}
+.comment-row div {
+	margin-right: 20px;
+}
+.comment-group.subgroup {
+	margin-left: 20px;
+}
+.comment-from a, .comment-to a {
+	color: #81246e;
+	font-size: bold;
+}
+.comment-from a:hover, .comment-to a:hover {
+	color: #ad4497;
+}
+.comment-view a {
+	color: #3090a6;
+}
+.comment-view a:hover {
+	color: #efda73;
+}
+.comment-reply {
+	width: 55px;
+	height: 24px;
+	font-size: 12px
+}
+.back-button {
+	width: 55px;
+	height: 24px;
+	font-size: 12px;
+}
+.subcomment-container .comment-group.subgroup {
+	margin-left : 0;
+}
+.comment-submit, .comment-collapse {
+	margin: 5px 10px 5px 0;
+	width: 100px;
+	height: 24px;
+	font-size: 12px;
+}
+.participant-form {
+	padding-top: 10px;
+}
+.applied-participant {
+	font-weight: normal;
+}
+.selected-participant {
+	font-weight: bold;
+	color: #e21e61;
+}
 @media (max-width: 752px) {
 .activity-action {
 	display: none;
@@ -206,116 +262,106 @@
 .activity-attend li {
 	padding-left: 0;
 }
+}
 
 .input-title, .input-address, .input-content {
-	display: block;
-	position: relative;
 	font-size: 15pt;
 	margin-top: 10pt;
 	margin-bottom: 2pt;
 }
-
-/* placeholder reference (note that this DOESN'T work with comma syntax!) : http://davidwalsh.name/html5-placeholder-css */
-.input-title::-webkit-input-placeholder {
-	font-style: italic;
-	font-size: 16pt;
-}
-.input-title:-moz-placeholder {
-	font-style: italic;
-	font-size: 16pt;
-}
-.input-title::-moz-placeholder {
-	font-style: italic;
-	font-size: 16pt;
-}
-.input-title:-ms-input-placeholder {
-	font-style: italic;
-	font-size: 16pt;
-}
-.input-address::-webkit-input-placeholder {
-	font-style: italic;
-	font-size: 15pt;
-}
-.input-address:-moz-placeholder {
-	font-style: italic;
-	font-size: 15pt;
-}
-.input-address::-moz-placeholder {
-	font-style: italic;
-	font-size: 15pt;
-}
-.input-address:-ms-input-placeholder {
-	font-style: italic;
-	font-size: 15pt;
-}
-.input-content::-webkit-input-placeholder { 
-	font-style: italic;
-	font-size: 15pt;
-}
-.input-content:-moz-placeholder {
-	font-style: italic;
-	font-size: 15pt;
-}
-.input-content::-moz-placeholder {
-	font-style: italic;
-	font-size: 15pt;
-}
-.input-content:-ms-input-placeholder {
-	font-style: italic;
-	font-size: 15pt;
-}
-
-.input-title
-{
-	height: 25pt;
-	width: 400pt;
-	max-height: 50pt;
-	max-width:	400pt;
-	font-size: 16pt;
+.input-title {
 	border: 0;
-	border-bottom: solid 1px cadetblue;
-	outline: none;
-	color: cadetblue;
+	border-bottom: solid 1px #3090a6;
 }
-
-.input-address
-{
-	height: 25pt;
-	width: 400pt;
-	max-height: 50pt;
-	max-width:	400pt;
+.input-address {
 	border: 0;
-	border-bottom: solid 1px indianred;
-	font-style: italic;
-	outline: none;
-	color: indianred;
+	border-bottom: solid 1px #f41d3e;
 }
-
-.input-content
-{
-	height: 200pt;
-	width: 400pt;
-	max-height: 200pt;
-	max-width:	400pt;
-	border: solid 2px bisque;
-	box-sizing: border-box;
-	resize: none;
+.input-content {
+	height: 200px;
+	border: solid 2px #efda73;
 }
-
 .btn-join {
-	position: relative;
 	font-size: 50px;
 	width: 200px;
 	height: 100px;
 }
-
 .btn-save, .btn-submit, .btn-cancel, .btn-delete {
-	position: relative;
-	top: 0;
-	padding: 3pt;
-	width: auto;
-	height: 36pt;
+	width: 80px;
+	height: 30pt;
 	font-size: 15pt;
-	border: 0;
-	box-sizing: box-border;
+}
+.activity-editor-form .captcha input {
+	max-width: 280px;
+	display: block;
+}
+.activity-editor-form .captcha {
+	margin: 10px 0;
+}
+.word-counter-current {
+	color: red;
+}
+.activity-editor-form .warning {
+	font-size: 14px;
+	color: red;
+	padding: 5px 0;
+}
+.image-row {
+	margin-bottom: 30px;
+}
+.add-image {
+	position: relative;
+	display: block;
+	width: 150px;
+	height: 38px;
+	margin-bottom: 5px;
+}
+.add-image span, .add-image input {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 150px;
+	height: 38px;
+}
+.add-image span {
+	font-size: 24px;
+	text-align: center;
+	color: #fff;
+	background-color: #81246e;
+}
+.image-row:hover span {
+	color: #e2e185;
+	background-color: #ad4497;	
+}
+.add-image input {
+	opacity: 0;
+}
+.preview-container {
+	width: 180px;
+	height: 180px;
+	vertical-align: middle;
+	text-align: center;
+	margin-right: 5px;
+}
+.preview-container img {
+	max-width: 100%;
+	max-height: 100%;
+}
+.preview-container button {
+	width: 180px;
+	height: 20px;
+}
+.edit-deadline, .edit-begin {
+	margin-bottom: 5px;
+}
+.edit-label {
+	width: 100px;
+	font-size: 16px;
+	line-height: 34px;
+}
+.datetime-picker {
+	width: 200px;
+}
+.edit-button-rows button{
+	margin-right: 10px;
 }
