@@ -319,10 +319,9 @@ function generateActivityCell(par, activity){
 		var count = activity.selectedParticipants.length <= 3 ? activity.selectedParticipants.length : 3;
 		for (var i = 0; i < count; ++i) {
 			var participant = activity.selectedParticipants[i];
-			var avatar = (participant.avatar == null) ? "assets/icons/anonymous.png" : participant.avatar;
 			$("<img>", {
 				title: participant.name,
-				src: avatar,
+				src: participant.avatar,
 				class: "selected-snippet-avatar left"
 			}).click(participant, function(evt) {
 				evt.preventDefault();

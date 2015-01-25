@@ -1,6 +1,21 @@
 .assessment-container {
 	padding-top: 10px;
 }
+.assessment-button {
+	margin-top: 10px;
+}
+.assessment-button button {
+	font-size: 16px;
+	width: 100px;
+	height: 30px;
+	margin-right: 5px;
+}
+.assessment-container input[type=checkbox] {
+	width: 50px;
+}
+.assessment-input-row {
+	margin: 5px 0;
+}
 
 .assessments-viewer th td {
     border: 1px solid green;

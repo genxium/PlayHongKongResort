@@ -28,7 +28,6 @@ function queryUserDetail(){
 			var userJson = JSON.parse(data);
 			g_viewee = new User(userJson);
 			var username = g_viewee.name;
-			var avatar = (!g_viewee.hasAvatar()) ? "assets/icons/anonymous.png" : g_viewee.avatar;	
 			g_sectionUser.empty();
 			var profile = $("<div>", {
 				class: "user-profile clearfix"
@@ -40,7 +39,7 @@ function queryUserDetail(){
 				class: "image-helper"
 			}).appendTo(pic);
 			var profileImage = $("<img>", {
-				src: avatar
+				src: g_viewee.avatar
 			}).appendTo(pic);
 			//setBackgroundImageDefault(pic, avatar);
 			var userInfo = $("<div>", {

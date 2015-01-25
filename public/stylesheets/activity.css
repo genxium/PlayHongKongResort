@@ -234,21 +234,34 @@
 	font-weight: bold;
 	color: #e21e61;
 }
+.participant-label {
+	padding: 2px;
+	height: 50px;
+	width: auto;
+}
+.participant-checkbox {
+	vertical-align: middle;
+	height: 30px;
+	width: 30px;
+	display: inline;
+}
 .participant-avatar {
 	cursor: pointer;
 	width: 50px;
 	height: 50px;
+	display: inline;
 }
-.participant-label {
-	padding: 2px;
+.participant-label-name {
+	vertical-align: middle;
 	font-size: 24px;
 	margin-left: 10px;
-	vertical-align: middle;
-	height: 36px;
-	width: 200px;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	overflow: hidden;
+	height: 50px;
+	width: auto;
+	display: inline;
+}
+.participant-confirm {
+	font-size: 24px;
+	padding: 2px;
 }
 
 @media (max-width: 752px) {
@@ -267,7 +280,7 @@
 .cell-container {
 	max-width: 280px;
 }
-.avtivity-info {
+.activity-info {
 	margin-left: 0;
 }
 .activity-cover {
@@ -359,10 +372,18 @@
 	vertical-align: middle;
 	text-align: center;
 	margin-right: 5px;
+	position: relative;
 }
 .preview-container img {
 	max-width: 100%;
 	max-height: 100%;
+}
+.preview-container .checked-image {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	width: 50px;
+	height: 50px;
 }
 .preview-container button {
 	width: 180px;
@@ -378,6 +399,9 @@
 }
 .datetime-picker {
 	width: 200px;
+}
+.edit-button-rows {
+	margin-top: 5px;
 }
 .edit-button-rows button{
 	margin-right: 10px;

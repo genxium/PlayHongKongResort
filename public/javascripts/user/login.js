@@ -180,10 +180,8 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	var avatarContainer = $("<div>", {
 		class: "post-login-avatar left"
 	}).appendTo(userBox);
-	var avatar = (g_loggedInUser == null || !g_loggedInUser.hasAvatar()) ? "assets/icons/anonymous.png" : g_loggedInUser.avatar;
-	//setBackgroundImageDefault(avatarContainer, avatar);
 	var avatarImage = $("<img>", {
-		src: avatar
+		src: g_loggedInUser.avatar
 	}).appendTo(avatarContainer);
 	var avatarSpan = $("<span>", {
 		text: "Edit"
@@ -210,7 +208,6 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 		window.location.hash = "notifications";
 	}); 
 
-	//setBackgroundImage(noti, "/assets/icons/notification.png", "contain", "no-repeat", "center");
 	var spBubble = $("<span>", {
 		class: "noti-bubble",
 		text: "0"

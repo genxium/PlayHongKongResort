@@ -34,7 +34,9 @@ function BatchAssessmentEditor(){
 
 function generateAssessmentEditor(par, participant, activity, batchEditor){
 	var singleEditor = new SingleAssessmentEditor();
-	var row = $('<p>').appendTo(par);
+	var row = $('<div>', {
+		class: "assessment-input-row"
+	}).appendTo(par);
 	var avatar = $("<img>", {
 		src: participant.avatar,
 		class: "assessment-avatar"
@@ -46,7 +48,6 @@ function generateAssessmentEditor(par, participant, activity, batchEditor){
 		href: "#",
 		text: "@" + participant.name,
 		target: "_blank",
-		style: "margin-left: 5pt; display: inline; cursor: pointer; color: BlueViolet"
 	}).appendTo(row);
 	name.click(function(evt) {
 		evt.preventDefault();
@@ -74,10 +75,12 @@ function generateAssessmentEditors(par, activity, batchEditor) {
 function generateAssessmentButtons(par, activity, batchEditor){
 	par.empty();
 	if(batchEditor.editors == null || batchEditor.editors.length <= 1) return;
-	var row = $('<p>').appendTo(par);
+	var row = $('<div>', {
+		class: "assessment-button"
+	}).appendTo(par);
 	var btnCheckAll = $("<button>", {
 		text: "Check All",
-		style: "display: inline"
+		class: "gray assessment-button"
 	}).appendTo(row);   
 
 	btnCheckAll.click(function(evt){
@@ -90,7 +93,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 
 	var btnUncheckAll = $("<button>", {
 	    text: "Uncheck All",
-	    style: "display: inline; margin-left: 5pt"
+	    class: "gray assessment-button"
 	}).appendTo(row);
 	btnUncheckAll.click(function(evt){
 		evt.preventDefault();
@@ -102,7 +105,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 
 	g_btnSubmit = $("<button>", {
 		text: "Submit",
-		style: "display: inline; margin-left: 5pt"
+		class: "purple assessment-button"
 	}).appendTo(row);
 
 	g_btnSubmit.click(function(evt){
@@ -268,18 +271,16 @@ function generateAssessedView(row, participant, activity) {
 }
 
 function generateUnassessedView(row, singleEditor, batchEditor) {
-	var content = $('<input>', {
-		type: 'text',
-		style: "margin-left: 10pt; display: inline"
-	}).appendTo(row); 
-	content.on("input paste keyup", function(evt){
-		evt.preventDefault();
-		singleEditor.content = $(this).val();	
-	});	
 	var lock=$('<input>', {
 		type: "checkbox",
-		style: "margin-left: 10pt; display: inline"
+		class: "left"
 	}).appendTo(row);
+	var content = $('<input>', {
+		type: 'text'
+	}).appendTo(row); 
+	content.on("input paste keyup", function(evt){
+		singleEditor.content = $(this).val();	
+	});	
 	lock.change(function(evt){
 		evt.preventDefault();
 		var checked = isChecked($(this));

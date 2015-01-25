@@ -10,7 +10,7 @@ function User(userJson){
 	this.id = parseInt(userJson["id"]);
 	if (userJson.hasOwnProperty("email"))	this.email = userJson["email"];
 	this.name = userJson["name"];
-	this.avatar = userJson["avatar"];
+	this.avatar =  (userJson.hasOwnProperty("avatar") ? userJson["avatar"] : "/assets/icons/anonymous.png");
 	if (userJson.hasOwnProperty("unread_count"))	this.unreadCount = parseInt(userJson["unread_count"]);
 	this.hasAvatar = function() {
 		return (this.avatar != null && this.avatar != undefined);

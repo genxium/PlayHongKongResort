@@ -193,7 +193,11 @@ function compareYmdhisDate(foo, bar) {
 }
 
 function isChecked(checkbox) {
-	return checkbox.is(":checked");
+	return (checkbox != null && checkbox.is(":checked"));
+}
+
+function isHidden(field) {
+	return (field != null && field.is(":hidden"));
 }
 
 function checkField(field) {

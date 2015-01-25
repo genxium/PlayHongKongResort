@@ -569,7 +569,7 @@ function generateActivityEditor(par, activity){
 		var countOldImages = Object.keys(activity.images).length;
 		for(var i =0; i < countOldImages; i++){
 			var node = $("<div>", {
-				class: "preview-container"
+				class: "preview-container left"
 			}).appendTo(oldImagesRow);
 			//setDimensions(node, g_wImageCell, g_hImageCell);
 			var imageHelper = $('<span>', {
@@ -582,7 +582,8 @@ function generateActivityEditor(par, activity){
 			//setOffset(image, i * g_wImageCell + 10, null);
 
 			var indicator = $('<img>',{
-				src: "/assets/icons/checked.png",
+				class: "checked-image",
+				src: "/assets/icons/checked.png"
 			}).appendTo(node);
 			//setDimensions(indicator, 0.2 * g_wImageCell, 0.2 * g_hImageCell);
 			//setOffset(indicator, i * g_wImageCell + 10, null);

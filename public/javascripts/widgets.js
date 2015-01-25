@@ -712,7 +712,6 @@ function generateAvatarEditor(par, user) {
 		class: "avatar-editor-form clearfix"
 	}).appendTo(par);
 
-	var avatar = (!user.hasAvatar()) ? "assets/icons/anonymous.png" : user.avatar;	
 	var picContainer = $("<div>", {
 		class: "avatar left"
 	}).appendTo(ret);
@@ -720,9 +719,8 @@ function generateAvatarEditor(par, user) {
 		class: "image-helper"
 	}).appendTo(picContainer);
 	var pic = $("<img>", {
-		src: avatar
+		src: user.avatar
 	}).appendTo(picContainer); 
-	//setDimensions(pic, "200px", "200px");
 
 	var uploadContainer = $("<div>", {
 		class: "upload left"
