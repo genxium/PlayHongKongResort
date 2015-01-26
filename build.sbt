@@ -1,4 +1,4 @@
-name := "PlayHelloWorld"
+name := "HKR"
 
 version := "1.0-SNAPSHOT"
 
