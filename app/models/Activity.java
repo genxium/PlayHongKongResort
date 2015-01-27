@@ -101,13 +101,13 @@ public class Activity extends AbstractSimpleMessage {
 		m_lastRejectedTime = time;
 	}
 
-	protected int m_capacity = 0;
+	protected Integer m_capacity = 0;
 
 	public int getCapacity() {
 		return m_capacity;
 	}
 
-	protected int m_numApplied = 0;
+	protected Integer m_numApplied = 0;
 
 	public int getNumApplied() {
 		return m_numApplied;
@@ -117,7 +117,7 @@ public class Activity extends AbstractSimpleMessage {
 		return m_numApplied > MAX_APPLIED;
 	}
 
-	protected int m_numSelected = 0;
+	protected Integer m_numSelected = 0;
 
 	public int getNumSelected() {
 		return m_numSelected;
@@ -127,7 +127,7 @@ public class Activity extends AbstractSimpleMessage {
 		return m_numSelected > MAX_SELECTED;	
 	}
 
-	protected int m_status = CREATED;
+	protected Integer m_status = CREATED;
 
 	public int getStatus() {
 		return m_status;

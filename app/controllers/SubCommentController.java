@@ -34,7 +34,7 @@ public class SubCommentController extends CommentController {
             result.put(Comment.PAGE_ED, page_ed);
 
             ArrayNode commentsNode = new ArrayNode(JsonNodeFactory.instance);
-            for (Comment comment : comments)	commentsNode.add(comment.toSubCommentObjectNode());
+            for (Comment comment : comments)	commentsNode.add(comment.toSubCommentObjectNode(null));
             result.put(Comment.SUB_COMMENTS, commentsNode);
             return ok(result);
         } catch (Exception e) {
@@ -53,7 +53,7 @@ public class SubCommentController extends CommentController {
             result.put(Comment.PAGE, page);
 
             ArrayNode commentsNode = new ArrayNode(JsonNodeFactory.instance);
-            for (Comment comment : comments)	commentsNode.add(comment.toSubCommentObjectNode());
+            for (Comment comment : comments)	commentsNode.add(comment.toSubCommentObjectNode(null));
 	        result.put(Comment.SUB_COMMENTS, commentsNode);
             return ok(result);
         } catch (Exception e) {

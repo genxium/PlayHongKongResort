@@ -1,5 +1,7 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
@@ -33,15 +35,12 @@ public class AssessmentController extends Controller {
             if (token == null) throw new InvalidQueryParamsException();
             Long viewerId = SQLCommander.queryUserId(token);
             if (viewerId == null) throw new UserNotFoundException();
-            User viewer = SQLCommander.queryUser(viewerId);
-            if (viewer == null) throw new UserNotFoundException();
 
-            ObjectNode result = Json.newObject();
+            ArrayNode result = new ArrayNode(JsonNodeFactory.instance);
             if (viewerId.equals(to)) return ok(result);
 
             List<Assessment> assessmentList = SQLCommander.queryAssessmentList(pageSt, pageEd, numItems, Assessment.GENERATED_TIME, SQLHelper.DESCEND, viewerId, to);
-
-            for (Assessment assessment : assessmentList)   result.put(String.valueOf(assessment.getId()), assessment.toObjectNodeWithNames());
+            for (Assessment assessment : assessmentList)   result.add(assessment.toObjectNode(viewerId));
             return ok(result);
         } catch (TokenExpiredException e) {
             return badRequest(TokenExpiredResult.get());
@@ -53,12 +52,13 @@ public class AssessmentController extends Controller {
 
     public static Result query(String refIndex, Integer numItems, Integer direction, String token, Long to, Long activityId) {
         try {
+            if (token == null) throw new InvalidQueryParamsException();
             if (to.equals(0L)) to = null;
-            Long from = SQLCommander.queryUserId(token);
-            if(from.equals(to)) throw new AccessDeniedException();
+            Long viewerId = SQLCommander.queryUserId(token);
+            if(viewerId.equals(to)) throw new AccessDeniedException();
             List<Assessment> assessments = SQLCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, null, to, activityId);
-            ObjectNode result = Json.newObject();
-            for (Assessment assessment : assessments)   result.put(String.valueOf(assessment.getId()), assessment.toObjectNodeWithNames());
+            ArrayNode result = new ArrayNode(JsonNodeFactory.instance);
+            for (Assessment assessment : assessments)   result.add(assessment.toObjectNode(viewerId));
             return ok(result);
         } catch (Exception e) {
 		    Loggy.e(TAG, "query", e);

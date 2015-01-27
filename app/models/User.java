@@ -57,7 +57,7 @@ public class User extends BasicUser {
         m_salt = salt;
     }
 
-    protected int m_groupId = 0;
+    protected Integer m_groupId = 0;
 
     public int getGroupId() {
         return m_groupId;
@@ -73,13 +73,13 @@ public class User extends BasicUser {
         m_verificationCode = code;
     }
 
-	protected int m_unreadCount = 0;
+	protected Integer m_unreadCount = 0;
 
 	public int getUnreadCount() {
 		return m_unreadCount;
 	}
 
-	protected int m_unassessedCount = 0;
+	protected Integer m_unassessedCount = 0;
 	
 	public int getUnassessedCount() {
 		return m_unassessedCount;

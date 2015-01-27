@@ -11,9 +11,10 @@ public abstract class AbstractMessage extends AbstractSimpleMessage {
     public static final String RET = "ret";
 
     public static final String FROM = "from";
-    public static final String FROM_NAME = "from_name";
     public static final String TO = "to";
-    public static final String TO_NAME = "to_name";
+
+    public static final String FROM_USER = "from_user";
+    public static final String TO_USER = "to_user";
 
     public static final String GENERATED_TIME = "generated_time";
 

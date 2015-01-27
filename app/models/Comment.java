@@ -32,30 +32,29 @@ public class Comment extends AbstractActivityMessage {
 
     public Comment(JSONObject commentJson) {
         super(commentJson);
-
         if (commentJson.containsKey(PARENT_ID)) m_parentId = Converter.toInteger(commentJson.get(PARENT_ID));
         if (commentJson.containsKey(PREDECESSOR_ID))    m_predecessorId = Converter.toInteger(commentJson.get(PREDECESSOR_ID));
         if (commentJson.containsKey(NUM_CHILDREN))  m_numChildren = Converter.toInteger(commentJson.get(NUM_CHILDREN));
 
     }
 
-    public ObjectNode toSubCommentObjectNode() {
+    public ObjectNode toSubCommentObjectNode(Long viewerId) {
 	    ObjectNode ret = super.toObjectNode();
 	    try {
 		    ret.put(PARENT_ID, m_parentId);
-		    ret.put(FROM_NAME, SQLCommander.queryUser(m_from).getName());
-		    ret.put(TO_NAME, SQLCommander.queryUser(m_to).getName());
+		    ret.put(FROM_USER, SQLCommander.queryUser(m_from).toObjectNode(viewerId));
+		    ret.put(TO_USER, SQLCommander.queryUser(m_to).toObjectNode(viewerId));
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "toSubCommentObjectNode", e);
 	    }
 	    return ret;
     }
 
-    public ObjectNode toObjectNode(boolean single) {
+    public ObjectNode toObjectNode(boolean single, Long viewerId) {
 	    ObjectNode ret = super.toObjectNode();
 	    try {
 		    ret.put(PARENT_ID, m_parentId);
-		    ret.put(FROM_NAME, SQLCommander.queryUser(m_from).getName());
+		    ret.put(FROM_USER, SQLCommander.queryUser(m_from).toObjectNode(viewerId));
 		    ret.put(NUM_CHILDREN, m_numChildren.toString());
 
 		    if (single) return ret;
@@ -63,7 +62,7 @@ public class Comment extends AbstractActivityMessage {
 
 		    ArrayNode subCommentsNode = new ArrayNode(JsonNodeFactory.instance);
 		    for (Comment subComment : subComments) {
-			    subCommentsNode.add(subComment.toSubCommentObjectNode());
+			    subCommentsNode.add(subComment.toSubCommentObjectNode(viewerId));
 		    }
 		    ret.put(SUB_COMMENTS, subCommentsNode);
 	    } catch (Exception e) {

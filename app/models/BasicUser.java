@@ -39,7 +39,7 @@ public class BasicUser extends AbstractModel {
         m_name = name;
     }
 
-    protected int m_avatar = 0;
+    protected Integer m_avatar = 0;
 
     public int getAvatar() {
         return m_avatar;

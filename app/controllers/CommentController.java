@@ -26,7 +26,7 @@ public class CommentController extends Controller {
     public static Result querySingle(Integer commentId) {
 	    try {
 		    Comment comment = SQLCommander.queryComment(commentId);
-		    return ok(comment.toObjectNode(true));
+		    return ok(comment.toObjectNode(true, null));
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "query", e);
 	    }
@@ -59,7 +59,7 @@ public class CommentController extends Controller {
             result.put(Comment.PAGE_ED, pageEd);
 
             ArrayNode commentsNode = new ArrayNode(JsonNodeFactory.instance);
-            for (Comment comment : comments)	commentsNode.add(comment.toObjectNode(false));
+            for (Comment comment : comments)	commentsNode.add(comment.toObjectNode(false, null));
 
             result.put(Comment.COMMENTS, commentsNode);
             return ok(result);

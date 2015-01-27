@@ -65,7 +65,7 @@ function generateAssessmentsViewer(par, assessments) {
 			text: assessment.content
 		}).appendTo(row);
 		$('<td>', {
-			text: assessment.fromName
+			text: assessment.fromUser.name
 		}).appendTo(row);
 	}
 	return ret;

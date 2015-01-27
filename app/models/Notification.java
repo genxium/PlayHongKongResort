@@ -21,12 +21,12 @@ public class Notification extends AbstractActivityMessage {
 
 	public static String[] QUERY_FIELDS = {ID, IS_READ, COMMENT_ID, ASSESSMENT_ID, CMD, RELATION, STATUS};
 
-	protected int m_isRead = 0;
-	protected int m_commentId = INVALID;
-	protected int m_assessmentId = INVALID;
-	protected long m_cmd = INVALID;
-	protected int m_relation = UserActivityRelation.INVALID;
-	protected int m_status = INVALID;
+	protected Integer m_isRead = 0;
+	protected Integer m_commentId = INVALID;
+	protected Integer m_assessmentId = INVALID;
+	protected Long m_cmd = (long)INVALID;
+	protected Integer m_relation = UserActivityRelation.INVALID;
+	protected Integer m_status = INVALID;
 
 	public Notification(JSONObject notificationJson) {
 		super(notificationJson);

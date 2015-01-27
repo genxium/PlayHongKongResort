@@ -107,27 +107,29 @@ function Comment(commentJson) {
 
         if (commentJson.hasOwnProperty("id")) this.id = parseInt(commentJson["id"]);
         if (commentJson.hasOwnProperty("content")) this.content = commentJson["content"];
-        if (commentJson.hasOwnProperty("from")) this.from = parseInt(commentJson["from"]);
-        if (commentJson.hasOwnProperty("from_name")) this.fromName = commentJson["from_name"];
+
         if (commentJson.hasOwnProperty("activity_id")) this.activityId = parseInt(commentJson["activity_id"]);
         if (commentJson.hasOwnProperty("parent_id")) this.parentId = parseInt(commentJson["parent_id"]);
         if (commentJson.hasOwnProperty("predecessor_id")) this.predecessorId = parseInt(commentJson["predecessor_id"]);
         if (commentJson.hasOwnProperty("generated_time")) this.generatedTime = parseInt(commentJson["generated_time"]);
         if (commentJson.hasOwnProperty("num_children")) this.numChildren = parseInt(commentJson["num_children"]);
 
-        if (commentJson.hasOwnProperty("to")) this.to = parseInt(commentJson["to"]);
-        if (commentJson.hasOwnProperty("to_name")) this.toName = commentJson["to_name"];
+        if (commentJson.hasOwnProperty("from")) this.from = parseInt(commentJson["from"]);
+        if (commentJson.hasOwnProperty("from_user")) this.fromUser = new User(commentJson["from_user"]);
 
+        if (commentJson.hasOwnProperty("to")) this.to = parseInt(commentJson["to"]);
+        if (commentJson.hasOwnProperty("to_user")) this.toUser = new User(commentJson["to_user"]);
 }
 
 function Assessment(assessmentJson) {
 
 	if (assessmentJson.hasOwnProperty("content")) this.content = assessmentJson["content"];
+	if (assessmentJson.hasOwnProperty("activity_id")) this.activityId = parseInt(assessmentJson["activity_id"]);
+
 	if (assessmentJson.hasOwnProperty("from")) this.from = parseInt(assessmentJson["from"]);
 	if (assessmentJson.hasOwnProperty("to")) this.to = parseInt(assessmentJson["to"]);
-	if (assessmentJson.hasOwnProperty("from_name")) this.fromName = assessmentJson["from_name"];
-	if (assessmentJson.hasOwnProperty("to_name")) this.toName = assessmentJson["to_name"];
-	if (assessmentJson.hasOwnProperty("activity_id")) this.activityId = parseInt(assessmentJson["activity_id"]);
+	if (assessmentJson.hasOwnProperty("from_user")) this.fromUser = new User(assessmentJson["from_user"]);
+	if (assessmentJson.hasOwnProperty("to_user")) this.toUser = new User(assessmentJson["to_user"]);
 
 }
 

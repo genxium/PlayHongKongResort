@@ -16,9 +16,6 @@ function createAssessment(content, to) {
 	return new Assessment(assessmentJson);
 }
 
-/*
-	Trying out new style of info gathering for DOMs
-*/
 function SingleAssessmentEditor(){
         this.participantId = 0;
 	this.name = "";

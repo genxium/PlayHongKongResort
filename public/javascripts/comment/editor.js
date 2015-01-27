@@ -104,7 +104,7 @@ function removeReplyEditor(){
 function generateReplyEditor(par, activity, comment){
     var ret = $('<p>').appendTo(par);
     var input = $('<input>', {
-        placeholder: "to @" + comment.fromName + ":"
+        placeholder: "to @" + comment.fromUser.name + ":"
     }).appendTo(ret);
     var btnSubmit = $('<button>',{
         text: "SUBMIT REPLY",
@@ -171,19 +171,19 @@ function generateCommentCell(par, commentJson, activity, single){
 	}).appendTo(ret);
 	if (single) row.addClass("single-row");
 
-        var content = $('<div>', {
-            text: comment.content,
-            class: "comment-content left"
-        }).appendTo(row);
-
-        var spanFromName = $('<div>', {
-	    class: "comment-from left"
+	var content = $('<div>', {
+		text: comment.content,
+		class: "comment-content left"
 	}).appendTo(row);
-        var hrefFromName = $('<a>', {
+
+	var commentFrom = $('<div>', {
+		class: "comment-from left"
+	}).appendTo(row);
+	var hrefFromName = $('<a>', {
 		href: "#",
-		text: comment.fromName,
+		text: comment.fromUser.name,
 		target: "_blank"
-        }).appendTo(spanFromName);
+	}).appendTo(commentFrom);
 	hrefFromName.click(function(evt) {
 		evt.preventDefault();
 		window.location.hash = ("profile?" + g_keyVieweeId + "=" + comment.from.toString());	
@@ -254,14 +254,14 @@ function generateSubCommentCell(par, commentJson, activity){
 	var row = $("<div>", {
 		class: "comment-row clearfix"
 	}).appendTo(ret);
-	var spanTo = $('<div>', {
+	var commentTo = $('<div>', {
 		class: "comment-to left"
 	}).appendTo(row);
 	var hrefTo = $('<a>', {
 		href: "#",
-		text: "to @" + comment.toName + ": ",
+		text: "to @" + comment.toUser.name + ": ",
 		target: "_blank",
-	}).appendTo(spanTo);
+	}).appendTo(commentTo);
 	hrefTo.click(function(evt) {
 		evt.preventDefault();
 		window.location.hash = ("profile?" + g_keyVieweeId + "=" + comment.to.toString());	
@@ -272,14 +272,14 @@ function generateSubCommentCell(par, commentJson, activity){
 		class: "comment-content left"
 	}).appendTo(row);
 
-	var spanFromName = $('<div>', {
+	var commentFrom = $('<div>', {
 		class: "comment-from left"
 	}).appendTo(row);
 	var hrefFromName = $('<a>', {
 		href: "#",
-		text: comment.fromName,
+		text: comment.fromUser.name,
 		target: "_blank"
-	}).appendTo(spanFromName);
+	}).appendTo(commentFrom);
 	hrefFromName.click(function(evt) {
 		evt.preventDefault();
 		window.location.hash = ("profile?" + g_keyVieweeId + "=" + comment.from.toString());	

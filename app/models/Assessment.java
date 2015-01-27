@@ -18,13 +18,13 @@ public class Assessment extends AbstractActivityMessage {
         super(assessmentJson);
     }
 
-    public ObjectNode toObjectNodeWithNames() {
+    public ObjectNode toObjectNode(Long viewerId) {
         ObjectNode ret = toObjectNode();
         try {
-            User fromUser = SQLCommander.queryUser(m_from);
-            User toUser = SQLCommander.queryUser(m_to);
-            ret.put(FROM_NAME, fromUser.getName());
-            ret.put(TO_NAME, toUser.getName());
+            BasicUser fromUser = SQLCommander.queryUser(m_from);
+            BasicUser toUser = SQLCommander.queryUser(m_to);
+            ret.put(FROM_USER, fromUser.toObjectNode(viewerId));
+            ret.put(TO_USER, toUser.toObjectNode(viewerId));
         } catch (Exception e) {
             Loggy.e(TAG, "toObjectNodeWithNames", e);
         }
