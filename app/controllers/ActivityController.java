@@ -122,6 +122,9 @@ public class ActivityController extends Controller {
             boolean isAdmin = false;
             if (viewer != null && SQLCommander.validateAdminAccess(viewer)) isAdmin = true;
 
+			SQLCommander.appendImageInfoForActivity(activities);
+			SQLCommander.appendParticipantInfoForActivity(activities);
+
             ArrayNode activitiesNode = new ArrayNode(JsonNodeFactory.instance);
             for (Activity activity : activities) {
                 boolean isHost = (viewerId != null && viewer != null && activity.getHost().getId().equals(viewerId));
@@ -129,7 +132,7 @@ public class ActivityController extends Controller {
                 if (activity.getStatus() != Activity.ACCEPTED
                         &&
                     (!isHost && !isAdmin))	continue;
-                activitiesNode.add(activity.toObjectNodeWithImagesAndSelectedParticipants(viewerId));
+                activitiesNode.add(activity.toObjectNode(viewerId));
             }
             result.put(Activity.ACTIVITIES, activitiesNode);
             return ok(result);
@@ -171,10 +174,10 @@ public class ActivityController extends Controller {
 
 			if (!General.validateActivityTitle(activityTitle) || !General.validateActivityAddress(activityAddress) || !General.validateActivityContent(activityContent)) throw new InvalidQueryParamsException();
 
-			long beginTime = Converter.toLong(formData.get(Activity.BEGIN_TIME)[0]);
-			long deadline = Converter.toLong(formData.get(Activity.DEADLINE)[0]);
+			Long beginTime = Converter.toLong(formData.get(Activity.BEGIN_TIME)[0]);
+			Long deadline = Converter.toLong(formData.get(Activity.DEADLINE)[0]);
 
-			if (deadline < 0 || beginTime < 0) throw new InvalidQueryParamsException();
+			if (beginTime == null || deadline == null || deadline < 0 || beginTime < 0) throw new InvalidQueryParamsException();
 			if (deadline > beginTime) throw new DeadlineAfterBeginTimeException();
 
 			// check new images
@@ -250,7 +253,11 @@ public class ActivityController extends Controller {
 				}
 			}
 
-			return ok(activity.toObjectNodeWithImages(userId));
+			List<Activity> tmp = new LinkedList<>();
+			tmp.add(activity);
+			SQLCommander.appendImageInfoForActivity(tmp);
+
+			return ok(activity.toObjectNode(userId));
 		} catch (TokenExpiredException e) {
 			return badRequest(TokenExpiredResult.get());
 		} catch (CaptchaNotMatchedException e) {

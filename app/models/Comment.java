@@ -4,18 +4,18 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.SQLCommander;
-import dao.SQLHelper;
 import org.json.simple.JSONObject;
 import utilities.Converter;
 import utilities.Loggy;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Comment extends AbstractActivityMessage {
 
     public static final String TAG = Comment.class.getName();
 
-    public static final String CONTENT_PATTERN = ".{5,128}";
+    public static final Pattern CONTENT_PATTERN = Pattern.compile(".{5,128}", Pattern.UNICODE_CHARACTER_CLASS);
 
     public static final String TABLE = "comment";
     public static final String COMMENT_ID = "comment_id";
@@ -30,6 +30,11 @@ public class Comment extends AbstractActivityMessage {
     protected Integer m_predecessorId = null;
     protected Integer m_numChildren = null;
 
+	protected List<Comment> m_subCommentList = null;
+	public void setSubCommentList(List<Comment> subCommentList) {
+		m_subCommentList = subCommentList;
+	}
+
     public Comment(JSONObject commentJson) {
         super(commentJson);
         if (commentJson.containsKey(PARENT_ID)) m_parentId = Converter.toInteger(commentJson.get(PARENT_ID));
@@ -42,8 +47,8 @@ public class Comment extends AbstractActivityMessage {
 	    ObjectNode ret = super.toObjectNode();
 	    try {
 		    ret.put(PARENT_ID, m_parentId);
-		    ret.put(FROM_USER, SQLCommander.queryUser(m_from).toObjectNode(viewerId));
-		    ret.put(TO_USER, SQLCommander.queryUser(m_to).toObjectNode(viewerId));
+		    ret.put(FROM_USER, m_fromUser.toObjectNode(viewerId));
+		    ret.put(TO_USER, m_toUser.toObjectNode(viewerId));
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "toSubCommentObjectNode", e);
 	    }
@@ -57,11 +62,9 @@ public class Comment extends AbstractActivityMessage {
 		    ret.put(FROM_USER, SQLCommander.queryUser(m_from).toObjectNode(viewerId));
 		    ret.put(NUM_CHILDREN, m_numChildren.toString());
 
-		    if (single) return ret;
-            List<Comment> subComments = SQLCommander.querySubComments(m_id, SQLCommander.INITIAL_REF_INDEX, ID, SQLHelper.DESCEND, 3, SQLCommander.DIRECTION_FORWARD);
-
-		    ArrayNode subCommentsNode = new ArrayNode(JsonNodeFactory.instance);
-		    for (Comment subComment : subComments) {
+		    if (single || m_subCommentList == null) return ret;
+            ArrayNode subCommentsNode = new ArrayNode(JsonNodeFactory.instance);
+		    for (Comment subComment : m_subCommentList) {
 			    subCommentsNode.add(subComment.toSubCommentObjectNode(viewerId));
 		    }
 		    ret.put(SUB_COMMENTS, subCommentsNode);

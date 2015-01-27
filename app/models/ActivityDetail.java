@@ -3,6 +3,7 @@ package models;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.json.simple.JSONObject;
 import utilities.Loggy;
 
 import java.util.ArrayList;
@@ -10,7 +11,6 @@ import java.util.List;
 
 public class ActivityDetail extends Activity {
 
-    public static String IMAGES = "images";
     public static String APPLIED_PARTICIPANTS = "applied_participants";
     public static String PRESENT_PARTICIPANTS = "present_participants";
 
@@ -21,55 +21,40 @@ public class ActivityDetail extends Activity {
     }
 
     public void setImages(List<Image> images) {
-        if (m_images != null)   m_images.clear();
-        else m_images = new ArrayList<Image>();
-        for (Image image : images)  m_images.add(image);
+        m_images = images;
     }
 
     protected List<BasicUser> m_appliedParticipants = null;
-    protected List<BasicUser> m_presentParticipants = null;
-
-    public ActivityDetail(Activity activity, List<Image> images, List<BasicUser> appliedParticipants, List<BasicUser> selectedParticipants, List<BasicUser> presentParticipants) {
-        super();
-        m_id = activity.getId();
-        m_title = activity.getTitle();
-        m_content = activity.getContent();
-        m_createdTime = activity.getCreatedTime();
-        m_beginTime = activity.getBeginTime();
-        m_deadline = activity.getDeadline();
-        m_capacity = activity.getCapacity();
-        m_numApplied = activity.getNumApplied();
-        m_numSelected = activity.getNumSelected();
-        m_status = activity.getStatus();
-        m_host = activity.getHost();
-        m_images = images;
+    public void setAppliedParticipants(final List<BasicUser> appliedParticipants) {
         m_appliedParticipants = appliedParticipants;
-        m_selectedParticipants = selectedParticipants;
+    }
+    public void addAppliedParticipant(final BasicUser user) {
+        if (m_appliedParticipants == null) m_appliedParticipants = new ArrayList<>();
+        m_appliedParticipants.add(user);
+    }
+
+    protected List<BasicUser> m_presentParticipants = null;
+    public void setPresentParticipants(final List<BasicUser> presentParticipants) {
         m_presentParticipants = presentParticipants;
+    }
+    public void addPresentParticipant(final BasicUser user) {
+        if (m_presentParticipants == null) m_presentParticipants = new ArrayList<>();
+        m_presentParticipants.add(user);
+    }
+
+    public ActivityDetail(final JSONObject activityJson) {
+        super(activityJson);
     }
 
     public ObjectNode toObjectNode(Long viewerId) {
         ObjectNode ret = super.toObjectNode(viewerId);
         try {
-            if (m_images != null) {
-                ArrayNode imagesNode = new ArrayNode(JsonNodeFactory.instance);
-                for (Image image : m_images) {
-                    imagesNode.add(image.toObjectNode());
-                }
-                ret.put(IMAGES, imagesNode);
-            }
 
             ArrayNode appliedParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
             for (BasicUser participant : m_appliedParticipants) {
                 appliedParticipantsNode.add(participant.toObjectNode(viewerId));
             }
             ret.put(APPLIED_PARTICIPANTS, appliedParticipantsNode);
-
-            ArrayNode selectedParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
-            for (BasicUser participant : m_selectedParticipants) {
-                selectedParticipantsNode.add(participant.toObjectNode(viewerId));
-            }
-            ret.put(SELECTED_PARTICIPANTS, selectedParticipantsNode);
 
             ArrayNode presentParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
             for (BasicUser participant : m_presentParticipants) {
@@ -78,7 +63,7 @@ public class ActivityDetail extends Activity {
             }
             ret.put(PRESENT_PARTICIPANTS, presentParticipantsNode);
 
-            if (m_viewer != null) ret.put(VIEWER, m_viewer.toObjectNode(m_viewer.getId()));
+            if (m_viewer != null) ret.put(VIEWER, m_viewer.toObjectNode(null));
 
         } catch (Exception e) {
             Loggy.e(TAG, "toObjectNode", e);

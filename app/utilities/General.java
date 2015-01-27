@@ -1,11 +1,13 @@
 package utilities;
 
-import models.*;
+import models.Activity;
+import models.Assessment;
+import models.Comment;
+import models.User;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
-import java.util.regex.Pattern;
 
 public class General {
 
@@ -17,8 +19,7 @@ public class General {
 
     public static boolean validateEmail(final String email) {
         try {
-            Pattern pattern = Pattern.compile(User.EMAIL_PATTERN, Pattern.CASE_INSENSITIVE);
-            return pattern.matcher(email).matches();
+            return User.EMAIL_PATTERN.matcher(email).matches();
         } catch (Exception e) {
 	        return false;
         }
@@ -26,8 +27,7 @@ public class General {
 	
     public static boolean validateName(final String name) {
         try {
-            Pattern pattern = Pattern.compile(User.NAME_PATTERN, Pattern.UNICODE_CHARACTER_CLASS);
-            return pattern.matcher(name).matches();
+            return User.NAME_PATTERN.matcher(name).matches();
         } catch (Exception e) {
 	        return false;
         }
@@ -35,8 +35,7 @@ public class General {
 
     public static boolean validatePassword(final String password) {
         try {
-            Pattern pattern = Pattern.compile(User.PASSWORD_PATTERN, Pattern.UNICODE_CHARACTER_CLASS);
-            return pattern.matcher(password).matches();
+            return User.PASSWORD_PATTERN.matcher(password).matches();
         } catch (Exception e) {
 	        return false;
         }
@@ -44,8 +43,7 @@ public class General {
 
     public static boolean validateAssessmentContent(final String content) {
         try {
-            Pattern pattern = Pattern.compile(Assessment.CONTENT_PATTERN, Pattern.UNICODE_CHARACTER_CLASS);
-            return pattern.matcher(content).matches();
+            return Assessment.CONTENT_PATTERN.matcher(content).matches();
         } catch (Exception e) {
             return false;
         }
@@ -53,8 +51,7 @@ public class General {
 
     public static boolean validateCommentContent(final String content) {
         try {
-            Pattern pattern = Pattern.compile(Comment.CONTENT_PATTERN, Pattern.UNICODE_CHARACTER_CLASS);
-            return pattern.matcher(content).matches();
+            return Comment.CONTENT_PATTERN.matcher(content).matches();
         } catch (Exception e) {
             return false;
         }
@@ -62,8 +59,7 @@ public class General {
 
     public static boolean validateActivityTitle(final String title) {
         try {
-            Pattern pattern = Pattern.compile(Activity.TITLE_PATTERN, Pattern.UNICODE_CHARACTER_CLASS);
-            return pattern.matcher(title).matches();
+            return Activity.TITLE_PATTERN.matcher(title).matches();
         } catch (Exception e) {
             return false;
         }
@@ -71,8 +67,7 @@ public class General {
 
     public static boolean validateActivityAddress(final String address) {
         try {
-            Pattern pattern = Pattern.compile(Activity.ADDR_PATTERN, Pattern.UNICODE_CHARACTER_CLASS);
-            return pattern.matcher(address).matches();
+            return Activity.ADDR_PATTERN.matcher(address).matches();
         } catch (Exception e) {
             return false;
         }
@@ -80,8 +75,7 @@ public class General {
 
     public static boolean validateActivityContent(final String content) {
         try {
-            Pattern pattern = Pattern.compile(Activity.CONTENT_PATTERN, Pattern.UNICODE_CHARACTER_CLASS);
-            return pattern.matcher(content).matches();
+            return Activity.CONTENT_PATTERN.matcher(content).matches();
         } catch (Exception e) {
             return false;
         }

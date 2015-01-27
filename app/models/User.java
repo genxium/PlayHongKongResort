@@ -9,6 +9,8 @@ import org.json.simple.JSONObject;
 import utilities.Converter;
 import utilities.Loggy;
 
+import java.util.regex.Pattern;
+
 public class User extends BasicUser {
 
     public static final int TOKEN_LIFE = 7889230; // in seconds, this equals 3 months
@@ -35,7 +37,7 @@ public class User extends BasicUser {
 
     public static final String[] QUERY_FILEDS = {ID, EMAIL, NAME, AVATAR, PASSWORD, PASSWORD_RESET_CODE, UNREAD_COUNT, UNASSESSED_COUNT, SALT, GROUP_ID, AUTHENTICATION_STATUS, GENDER, VERIFICATION_CODE};
 
-    public static final String PASSWORD_PATTERN = "^[0-9a-zA-Z_#\\!]{6,32}$";
+    public static final Pattern PASSWORD_PATTERN = Pattern.compile("^[0-9a-zA-Z_#\\!]{6,32}$", Pattern.UNICODE_CHARACTER_CLASS);
 
     protected String m_password = null;
 

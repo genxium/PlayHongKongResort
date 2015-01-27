@@ -29,7 +29,7 @@ public class AssessmentController extends Controller {
 
     public static Result list(Long to, Integer pageSt, Integer pageEd, Integer numItems, String token) {
         try {
-            if (to == null || to.equals(0) || pageSt == null || pageEd == null || numItems == null) throw new InvalidQueryParamsException();
+            if (to == null || to.equals(0L) || pageSt == null || pageEd == null || numItems == null) throw new InvalidQueryParamsException();
 
             // anti=cracking by param token
             if (token == null) throw new InvalidQueryParamsException();
@@ -103,7 +103,7 @@ public class AssessmentController extends Controller {
             JSONArray bundle= (JSONArray) JSONValue.parse(formData.get(AbstractMessage.BUNDLE)[0]);
             for (Object obj : bundle) {
                 Assessment assessment = new Assessment((JSONObject) obj);
-                if (!General.validateAssessmentContent(assessment.getContent())) throw new InvalidAssessmentBehaviourException();
+                if (!General.validateAssessmentContent(assessment.getContent())) throw new InvalidQueryParamsException();
                 if (assessment.getTo().equals(userId)) throw new InvalidAssessmentBehaviourException();
                 assessment.setActivityId(activityId);
                 assessment.setFrom(userId);

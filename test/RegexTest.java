@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 public class RegexTest {
     @Test
     public void testActivityTitle() {
-        Pattern pattern = Pattern.compile(Activity.TITLE_PATTERN, Pattern.UNICODE_CHARACTER_CLASS);
+        Pattern pattern = Activity.TITLE_PATTERN;
         String s1 = "abcde";
         Assert.assertTrue(pattern.matcher(s1).matches());
         String s2 = "12345";

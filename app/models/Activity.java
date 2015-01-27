@@ -3,22 +3,23 @@ package models;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import controllers.ExtraCommander;
 import controllers.SQLCommander;
 import org.json.simple.JSONObject;
 import utilities.Converter;
 import utilities.General;
 import utilities.Loggy;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Activity extends AbstractSimpleMessage {
 
 	public static final String TAG = Activity.class.getName();
 
-	public static final String TITLE_PATTERN = ".{5,64}";
-	public static final String ADDR_PATTERN = ".{10,128}";
-	public static final String CONTENT_PATTERN = ".{15,1024}";
+	public static final Pattern TITLE_PATTERN = Pattern.compile(".{5,64}", Pattern.UNICODE_CHARACTER_CLASS);
+	public static final Pattern ADDR_PATTERN = Pattern.compile(".{10,128}", Pattern.UNICODE_CHARACTER_CLASS);
+	public static final Pattern CONTENT_PATTERN = Pattern.compile(".{15,1024}", Pattern.UNICODE_CHARACTER_CLASS);
 
 	public static final int CREATED = 0;
 	public static final int PENDING = 1;
@@ -43,6 +44,8 @@ public class Activity extends AbstractSimpleMessage {
 	public static final String LAST_REJECTED_TIME = "last_rejected_time";
 
 	public static String SELECTED_PARTICIPANTS = "selected_participants";
+
+	public static String IMAGES = "images";
 
 	public static final String ACTIVITIES = "activities";
 
@@ -75,7 +78,7 @@ public class Activity extends AbstractSimpleMessage {
 		return m_beginTime;
 	}
 
-	public void setBeginTime(long beginTime) {
+	public void setBeginTime(final long beginTime) {
 		m_beginTime = beginTime;
 	}
 
@@ -91,13 +94,13 @@ public class Activity extends AbstractSimpleMessage {
 
 	protected Long m_lastAcceptedTime = null;
 
-	public void setLastAcceptedTime(long time) {
+	public void setLastAcceptedTime(final long time) {
 		m_lastAcceptedTime = time;
 	}
 
 	protected Long m_lastRejectedTime = null;
 
-	public void setLastRejectedTime(long time) {
+	public void setLastRejectedTime(final long time) {
 		m_lastRejectedTime = time;
 	}
 
@@ -133,7 +136,7 @@ public class Activity extends AbstractSimpleMessage {
 		return m_status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(final int status) {
 		m_status = status;
 	}
 
@@ -145,6 +148,11 @@ public class Activity extends AbstractSimpleMessage {
 
 	public void setAddress(final String address) {
 		m_address = address;
+	}
+
+	protected Long m_hostId = null;
+	public Long getHostId() {
+		return m_hostId;
 	}
 
 	protected User m_host = null;
@@ -159,6 +167,23 @@ public class Activity extends AbstractSimpleMessage {
 
 	protected User m_viewer = null;
 
+	public User getViewer() {
+		return m_viewer;
+	}
+
+	public void setViewer(final User viewer) {
+		m_viewer = viewer;
+	}
+
+	protected List<Image> m_imageList = null;
+	public void setImageList(final List<Image> imageList) {
+		m_imageList = imageList;
+	}
+	public void addImage(final Image image) {
+		if (m_imageList == null) m_imageList = new ArrayList<>();
+		m_imageList.add(image);
+	}
+
 	public boolean isDeadlineExpired() {
 		return General.millisec() > m_deadline;
 	}
@@ -168,12 +193,19 @@ public class Activity extends AbstractSimpleMessage {
 	}
 
 	protected List<BasicUser> m_selectedParticipants = null;
+	public void setSelectedParticipants(final List<BasicUser> selectedParticipants) {
+		m_selectedParticipants = selectedParticipants;
+	}
+	public void addSelectedParticipant(final BasicUser user) {
+		if (m_selectedParticipants == null) m_selectedParticipants = new ArrayList<>();
+		m_selectedParticipants.add(user);
+	}
 
 	public Activity() {
 		super();
 	}
 
-	public Activity(JSONObject activityJson, User host) {
+	public Activity(JSONObject activityJson) {
 		super(activityJson);
 
 		if (activityJson.containsKey(TITLE))
@@ -209,9 +241,8 @@ public class Activity extends AbstractSimpleMessage {
 		if (activityJson.containsKey(ADDRESS)) 
 			m_address = (String) activityJson.get(ADDRESS);
 
-		if (host != null)
-			m_host = host;
-
+		if (activityJson.containsKey(HOST_ID))
+			m_hostId = Converter.toLong(activityJson.get(HOST_ID));
 	}
 
 	public ObjectNode toObjectNode(Long viewerId) {
@@ -227,46 +258,27 @@ public class Activity extends AbstractSimpleMessage {
 			ret.put(CAPACITY, String.valueOf(m_capacity));
 			ret.put(NUM_APPLIED, String.valueOf(m_numApplied));
 			ret.put(NUM_SELECTED, String.valueOf(m_numSelected));
-			ret.put(HOST, m_host.toObjectNode(viewerId));
+			if (m_host != null) ret.put(HOST, m_host.toObjectNode(viewerId));
 
 			if (viewerId == null) return ret;
 			int relation = SQLCommander.queryUserActivityRelation(viewerId, m_id);
 			if (relation != UserActivityRelation.INVALID)	ret.put(UserActivityRelation.RELATION, relation);
-			m_viewer = SQLCommander.queryUser(viewerId);
 			if (viewerId.equals(m_host.getId()))	ret.put(STATUS, String.valueOf(m_status));
 			if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	ret.put(STATUS, String.valueOf(m_status));
+
+			if (m_imageList != null && m_imageList.size() > 0) {
+				ArrayNode imagesNode = new ArrayNode(JsonNodeFactory.instance);
+				for (Image image : m_imageList)	imagesNode.add(image.toObjectNode());
+				ret.put(ActivityDetail.IMAGES, imagesNode);
+			}
+
+			if (m_selectedParticipants != null && m_selectedParticipants.size() > 0) {
+				ArrayNode selectedParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
+				for (BasicUser participant : m_selectedParticipants)	selectedParticipantsNode.add(participant.toObjectNode(viewerId));
+				ret.put(SELECTED_PARTICIPANTS, selectedParticipantsNode);
+			}
 		} catch (Exception e) {
 			Loggy.e(TAG, "toObjectNode", e);
-		}
-		return ret;
-	}
-
-	public ObjectNode toObjectNodeWithImages(Long viewerId) {;
-		ObjectNode ret = this.toObjectNode(viewerId);
-		try {
-			List<Image> images = ExtraCommander.queryImages(m_id);
-			if (images == null || images.size() <= 0) return ret;
-			ArrayNode imagesNode = new ArrayNode(JsonNodeFactory.instance);
-			for (Image image : images)	imagesNode.add(image.toObjectNode());
-			ret.put(ActivityDetail.IMAGES, imagesNode);
-		} catch (Exception e) {
-			Loggy.e(TAG, "toObjectNodeWithImages", e);
-		}
-		return ret;
-	}
-
-	public ObjectNode toObjectNodeWithImagesAndSelectedParticipants(Long viewerId) {
-		ObjectNode ret = this.toObjectNodeWithImages(viewerId);
-		try {
-			m_selectedParticipants = SQLCommander.querySelectedParticipants(m_id);
-			if (m_selectedParticipants == null || m_selectedParticipants.size() == 0) return ret;
-			ArrayNode selectedParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
-			for (BasicUser participant : m_selectedParticipants) {
-				selectedParticipantsNode.add(participant.toObjectNode(viewerId));
-			}
-			ret.put(SELECTED_PARTICIPANTS, selectedParticipantsNode);
-		} catch (Exception e) {
-			Loggy.e(TAG, "toObjectNodeWithImagesAndSelectedParticipants", e);
 		}
 		return ret;
 	}

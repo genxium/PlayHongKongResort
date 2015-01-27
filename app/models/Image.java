@@ -43,6 +43,10 @@ public class Image extends AbstractModel {
         return m_metaId;
     }
 
+    public Integer getMetaType() {
+        return m_metaType;
+    }
+
     public static String getUrlPrefix() {
         if (Play.application().isProd()) return PROD_URL_PREFIX;
         else return DEV_URL_PREFIX;

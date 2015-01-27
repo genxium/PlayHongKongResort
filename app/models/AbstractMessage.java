@@ -26,12 +26,31 @@ public abstract class AbstractMessage extends AbstractSimpleMessage {
         return m_from;
     }
 
-    public void setFrom(long from) {
+    public void setFrom(final long from) {
         m_from = from;
     }
 
     public Long getTo() {
         return m_to;
+    }
+
+    protected User m_fromUser = null;
+    protected User m_toUser = null;
+
+    public User getFromUser() {
+        return m_fromUser;
+    }
+
+    public void setFromUser(final User user) {
+        m_fromUser = user;
+    }
+
+    public User getToUser() {
+        return m_toUser;
+    }
+
+    public void setToUser(final User user) {
+        m_toUser = user;
     }
 
     public AbstractMessage() {

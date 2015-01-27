@@ -89,16 +89,12 @@ public class EasyPreparedStatementBuilder {
     }
 
     public EasyPreparedStatementBuilder select(List<String> cols) {
-        for (String col : cols) {
-            select(col);
-        }
+        for (String col : cols) select(col);
         return this;
     }
 
     public EasyPreparedStatementBuilder select(String[] cols) {
-        for (String col : cols) {
-            select(col);
-        }
+        for (String col : cols) select(col);
         return this;
     }
 

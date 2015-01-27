@@ -7,31 +7,79 @@ import models.*;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import play.mvc.Http.MultipartFormData.FilePart;
+import utilities.Converter;
 import utilities.DataUtils;
 import utilities.General;
 import utilities.Loggy;
 
 import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ExtraCommander extends SQLCommander {
 
     public static final String TAG = ExtraCommander.class.getName();
 
 	public static ActivityDetail queryActivityDetail(Long activityId) {
-		ActivityDetail activityDetail = null;
 		try {
-			Activity activity = queryActivity(activityId);
+			String[] names = Activity.QUERY_FIELDS;
+			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			List<JSONObject> results = builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId).execSelect();
+			if (results == null || results.size() != 1) throw new ActivityNotFoundException();
+			JSONObject activityJson = results.get(0);
+			User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
+			ActivityDetail activityDetail = new ActivityDetail(activityJson);
+			activityDetail.setHost(host);
+
 			List<Image> images = queryImages(activityId);
+			activityDetail.setImages(images);
+
 			List<BasicUser> appliedParticipants = queryAppliedParticipants(activityId);
 			List<BasicUser> selectedParticipants = querySelectedParticipants(activityId);
 			List<BasicUser> presentParticipants = new LinkedList<>(); // not used
-			activityDetail = new ActivityDetail(activity, images, appliedParticipants, selectedParticipants, presentParticipants);
+			activityDetail.setAppliedParticipants(appliedParticipants);
+			activityDetail.setPresentParticipants(presentParticipants);
+			activityDetail.setSelectedParticipants(selectedParticipants);
+
+			return activityDetail;
 		} catch (Exception e) {
 			Loggy.e(TAG, "queryActivityDetail", e);
 		}
-		return activityDetail;
+		return null;
+	}
+
+	public static boolean appendParticipantInfoForActivityDetail(final List<ActivityDetail> activityList) {
+		Map<Long, ActivityDetail> tmp = new HashMap<>();
+		List<Long> activityIdList = new ArrayList<>();
+		for (ActivityDetail activity : activityList) {
+			tmp.put(activity.getId(), activity);
+			activityIdList.add(activity.getId());
+		}
+		List<Integer> appliedStates = new LinkedList<>();
+		for (Integer state : UserActivityRelation.APPLIED_STATES) appliedStates.add(state);
+		List<Integer> selectedStates = new LinkedList<>();
+		for (Integer state : UserActivityRelation.SELECTED_STATES) selectedStates.add(state);
+		List<Integer> presentStates = new LinkedList<>();
+		for (Integer state : UserActivityRelation.PRESENT_STATES) presentStates.add(state);
+
+		List<SpecialUserRecord> appliedList = queryUsers(activityIdList, appliedStates);
+		for (SpecialUserRecord record : appliedList) {
+			ActivityDetail activity = tmp.get(record.activityId);
+			activity.addAppliedParticipant(record.user);
+		}
+
+		List<SpecialUserRecord> selectedList = queryUsers(activityIdList, selectedStates);
+		for (SpecialUserRecord record : selectedList) {
+			ActivityDetail activity = tmp.get(record.activityId);
+			activity.addSelectedParticipant(record.user);
+		}
+
+		List<SpecialUserRecord> presentList = queryUsers(activityIdList, presentStates);
+		for (SpecialUserRecord record : presentList) {
+			ActivityDetail activity = tmp.get(record.activityId);
+			activity.addPresentParticipant(record.user);
+		}
+
+		return true;
 	}
 
 	public static boolean deleteActivity(long activityId) {
@@ -112,6 +160,25 @@ public class ExtraCommander extends SQLCommander {
 											.from(Image.TABLE)
 											.where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
 											.where(Image.META_ID, "=", activityId).execSelect();
+
+			for (JSONObject record : records) {
+				Image image = new Image(record);
+				images.add(image);
+			}
+		} catch (Exception e) {
+			Loggy.e(TAG, "queryImages", e);
+		}
+		return images;
+	}
+
+	public static List<Image> queryImages(List<Long> activityIdList) {
+		List<Image> images = new LinkedList<>();
+		try {
+			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			List<JSONObject> records = builder.select(Image.QUERY_FIELDS)
+											.from(Image.TABLE)
+											.where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
+											.where(Image.META_ID, "IN", activityIdList).execSelect();
 
 			for (JSONObject record : records) {
 				Image image = new Image(record);

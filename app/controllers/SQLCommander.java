@@ -24,9 +24,18 @@ public class SQLCommander {
     public static final int DIRECTION_FORWARD = (+1);
     public static final int DIRECTION_BACKWARD = (-1);
 
-    public static User queryUser(Long userId) {
+	public static class SpecialUserRecord {
+		public BasicUser user;
+		public Long activityId;
+		public SpecialUserRecord(final JSONObject record) {
+			// record must be guaranteed to contain correct fields
+			user = new BasicUser(record);
+			activityId = Converter.toLong(record.get(UserActivityRelation.ACTIVITY_ID));
+		}
+	}
 
-	    User user = null;
+    public static User queryUser(final Long userId) {
+
 	    try {
 		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.AVATAR, User.UNREAD_COUNT, User.UNASSESSED_COUNT};
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -35,12 +44,29 @@ public class SQLCommander {
 		    Iterator<JSONObject> it = results.iterator();
 		    if (!it.hasNext()) return null;
 		    JSONObject userJson = it.next();
-		    user = new User(userJson);
+		    return new User(userJson);
 	    } catch (Exception e) {
-
+			Loggy.e(TAG, "queryUserList", e);
 	    }
-	    return user;
+	    return null;
     }
+
+	public static List<User> queryUserList(final List<Long> userIdList) {
+		List<User> ret = new ArrayList<>();
+		try {
+			if(userIdList == null || userIdList.size() == 0) return ret;
+			String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.AVATAR, User.UNREAD_COUNT, User.UNASSESSED_COUNT};
+			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			List<JSONObject> records = builder.select(names).from(User.TABLE).where(User.ID, "IN", userIdList).execSelect();
+			if (records == null || records.size() <= 0) return null;
+			for (JSONObject record : records) {
+				ret.add(new User(record));
+			}
+		} catch (Exception e) {
+			Loggy.e(TAG, "queryUserList", e);
+		}
+		return ret;
+	}
 
     public static User queryUserByEmail(String email) {
 	    User user = null;
@@ -112,9 +138,7 @@ public class SQLCommander {
     }
 
     /* querying activities */
-    public static Activity queryActivity(long activityId) {
-
-	    Activity activity = null;
+    public static Activity queryActivity(final long activityId) {
 	    try {
 		    String[] names = Activity.QUERY_FIELDS;
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -122,12 +146,13 @@ public class SQLCommander {
 		    if (results == null || results.size() != 1) throw new ActivityNotFoundException();
 		    JSONObject activityJson = results.get(0);
 		    User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
-		    activity = new Activity(activityJson, host);
+			Activity activity = new Activity(activityJson);
+			activity.setHost(host);
+			return activity;
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "queryActivity", e);
 	    }
-	    return activity;
-
+	    return null;
     }
 
     public static List<Activity> queryActivities(Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems, Long vieweeId, List<Integer> maskedRelationList) {
@@ -146,33 +171,13 @@ public class SQLCommander {
                                                     .order(orderKey, orientation)
                                                     .limit((page_st - 1) * numItems, page_ed * numItems).execSelect();
 		    if (activityJsonList == null) return null;
+
 		    for (JSONObject activityJson : activityJsonList) {
-			    User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
-			    ret.add(new Activity(activityJson, host));
+			    Activity activity = new Activity(activityJson);
+			    ret.add(activity);
 		    }
-	    } catch (Exception e) {
-		    Loggy.e(TAG, "queryActivities", e);
-	    }
-	    return ret;
-    }
-
-    public static List<Activity> queryActivities(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, int status) {
-	    List<Activity> ret = new ArrayList<>();
-	    try {
-		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    String[] names = Activity.QUERY_FIELDS;
-		    builder.select(names)
-                   .from(Activity.TABLE)
-                   .where(Activity.STATUS, "=", status);
-
-            List<JSONObject> activityJsonList = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
-
-		    if (activityJsonList == null)	return null;
-		    for (JSONObject activityJson : activityJsonList) {
-			    User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
-			    ret.add(new Activity(activityJson, host));
-		    }
-
+			if (ret.size() == 0) return ret;
+			appendUserInfoForActivity(ret, null);
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "queryActivities", e);
 	    }
@@ -196,42 +201,19 @@ public class SQLCommander {
             List<JSONObject> activityJsonList = builder.execSelect();
             if (activityJsonList == null)	return null;
             for (JSONObject activityJson : activityJsonList) {
-                User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
-                ret.add(new Activity(activityJson, host));
+                Activity activity = new Activity(activityJson);
+				ret.add(activity);
             }
+			if (ret.size() == 0) return ret;
+			appendUserInfoForActivity(ret, null);
         } catch (Exception e) {
             Loggy.e(TAG, "queryActivities", e);
         }
         return ret;
     }
 
-    public static List<Activity> queryHostedActivities(Long hostId, Long viewerId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction){
-        List<Activity> ret = new ArrayList<>();
-        try {
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] names = Activity.QUERY_FIELDS;
-            builder.select(names).from(Activity.TABLE);
-            // extra where criterion
-            builder.where(Activity.HOST_ID, "=", hostId);
-            if(viewerId == null || !hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
-
-            List<JSONObject> activityJsonList = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
-
-            if (activityJsonList == null) return null;
-            for (JSONObject activityJson : activityJsonList) {
-                User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
-                Activity activity = new Activity(activityJson, host);
-                ret.add(activity);
-            }
-
-        } catch (Exception e) {
-            Loggy.e(TAG, "queryHostedActivities", e);
-        }
-        return ret;
-    }
-
     public static List<Activity> queryHostedActivities(Long hostId, Long viewerId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems){
-        List<Activity> ret = new ArrayList<Activity>();
+        List<Activity> ret = new ArrayList<>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             String[] names = Activity.QUERY_FIELDS;
@@ -247,11 +229,11 @@ public class SQLCommander {
 
             if (activityJsonList == null) return null;
             for (JSONObject activityJson : activityJsonList) {
-                User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
-                Activity activity = new Activity(activityJson, host);
-                ret.add(activity);
+                Activity activity = new Activity(activityJson);
+				ret.add(activity);
             }
-
+			if (ret.size() == 0) return ret;
+			appendUserInfoForActivity(ret, null);
         } catch (Exception e) {
             Loggy.e(TAG, "queryHostedActivities", e);
         }
@@ -292,7 +274,7 @@ public class SQLCommander {
 
             if (records == null) return null;
 
-            List<Integer> ret = new ArrayList<Integer>();
+            List<Integer> ret = new ArrayList<>();
             for (JSONObject record : records) ret.add(Converter.toInteger(record.get(UserActivityRelation.RELATION)));
             return ret;
         } catch (Exception e) {
@@ -314,32 +296,8 @@ public class SQLCommander {
 	    return null;
     }
 
-    public static List<Comment> queryTopLevelComments(Long activityId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction) {
-	    List<Comment> ret = new ArrayList<Comment>();
-	    try {
-		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-
-		    // query table Comment
-		    String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.NUM_CHILDREN, Comment.GENERATED_TIME};
-		    String[] whereCols = {Comment.ACTIVITY_ID, Comment.PARENT_ID};
-		    String[] whereOps = {"=", "="};
-		    Object[] whereVals = {activityId, SQLHelper.INVALID};
-
-		    builder.select(names).from(Comment.TABLE).where(whereCols, whereOps, whereVals);
-
-		    List<JSONObject> commentJsonList = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
-
-		    if (commentJsonList == null) throw new NullPointerException();
-		    for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
-
-	    } catch (Exception e) {
-		    Loggy.e(TAG, "queryTopLevelComments", e);
-	    }
-	    return ret;
-    }
-
     public static List<Comment> queryTopLevelComments(Long activityId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
-        List<Comment> ret = new ArrayList<Comment>();
+        List<Comment> ret = new ArrayList<>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
@@ -359,6 +317,8 @@ public class SQLCommander {
 
             if (commentJsonList == null) throw new NullPointerException();
             for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
+			if (ret.size() == 0) return ret;
+			appendUserInfoForTopLevelComment(ret);
 
         } catch (Exception e) {
             Loggy.e(TAG, "queryTopLevelComments", e);
@@ -367,17 +327,17 @@ public class SQLCommander {
     }
 
     public static List<Comment> querySubComments(Long parentId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction) {
-	    List<Comment> ret = new ArrayList<Comment>();
+	    List<Comment> ret = new ArrayList<>();
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-
 		    String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
-		    builder.select(names).from(Comment.TABLE).where(Comment.PARENT_ID, "=", parentId);
+			builder.select(names).from(Comment.TABLE).where(Comment.PARENT_ID, "=", parentId);
             List<JSONObject> commentJsonList = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
 
 		    if (commentJsonList == null) throw new NullPointerException();
 		    for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
-
+			if (ret.size() == 0) return ret;
+			appendUserInfoForSubComment(ret);
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "querySubComments", e);
 	    }
@@ -385,7 +345,7 @@ public class SQLCommander {
     }
 
     public static List<Comment> querySubComments(Long parentId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
-        List<Comment> ret = new ArrayList<Comment>();
+        List<Comment> ret = new ArrayList<>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
@@ -400,31 +360,16 @@ public class SQLCommander {
 
             if (commentJsonList == null) throw new NullPointerException();
             for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
-
+			if (ret.size() == 0) return ret;
+			appendUserInfoForSubComment(ret);
         } catch (Exception e) {
             Loggy.e(TAG, "querySubComments", e);
         }
         return ret;
     }
 
-    public static Assessment queryAssessment(Integer activityId, Integer from, Integer to) {
-        try {
-		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    String[] names = {Assessment.ID, Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO, Assessment.CONTENT, Assessment.GENERATED_TIME};
-		    String[] whereCols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO};
-		    String[] whereOps = {"=", "=", "="};
-		    Object[] whereVals = {activityId, from, to};
-            List<JSONObject> assessmentJsonList = builder.select(names).where(whereCols, whereOps, whereVals).from(Assessment.TABLE).execSelect();
-		    if (assessmentJsonList == null || assessmentJsonList.size() != 1) return null;
-            return new Assessment(assessmentJsonList.get(0));
-	    } catch (Exception e) {
-		    Loggy.e(TAG, "queryAssessment", e);
-	    }
-	    return null;
-    }
-
 	public static List<Assessment> queryAssessmentList(Integer pageSt, Integer pageEd, Integer numItems, String orderKey, String orientation, Long viewerId, Long to) {
-		List<Assessment> ret = new ArrayList<Assessment>();
+		List<Assessment> ret = new ArrayList<>();
 		try {
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 			String[] names = {Assessment.ID, Assessment.CONTENT, Assessment.CONTENT, Assessment.FROM, Assessment.ACTIVITY_ID, Assessment.TO, Assessment.GENERATED_TIME};
@@ -437,6 +382,8 @@ public class SQLCommander {
 
 			if (records == null) return ret;
 			for (JSONObject record : records)	ret.add(new Assessment(record));
+			if (ret.size() == 0) return ret;
+			appendUserInfoForAssessemnt(ret);
 		} catch(Exception e) {
 			Loggy.e(TAG, "queryAssessmentList", e);
 		}
@@ -444,7 +391,7 @@ public class SQLCommander {
 	}
 
 	public static List<Assessment> queryAssessments(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, Long from, Long to, Long activityId) {
-		List<Assessment> ret = new ArrayList<Assessment>();
+		List<Assessment> ret = new ArrayList<>();
 		try {
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 			String[] names = {Assessment.ID, Assessment.CONTENT, Assessment.CONTENT, Assessment.FROM, Assessment.ACTIVITY_ID, Assessment.TO, Assessment.GENERATED_TIME};
@@ -457,8 +404,10 @@ public class SQLCommander {
 			List<JSONObject> records = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
 
 			if (records == null) return ret;
-			for (JSONObject record : records)	ret.add(new Assessment(record));
 
+			for (JSONObject record : records)	ret.add(new Assessment(record));
+			if (ret.size() == 0) return ret;
+			appendUserInfoForAssessemnt(ret);
 		} catch (Exception e) {
 			Loggy.e(TAG, "queryAssessments", e);
 		}
@@ -682,7 +631,7 @@ public class SQLCommander {
         return false;
     }
 
-    public static List<BasicUser> queryUsers(long activityId, List<Integer> maskedRelationList) {
+    public static List<BasicUser> queryUsers(final long activityId, final List<Integer> maskedRelationList) {
         List<BasicUser> users = new ArrayList<>();
         try {
             String[] onCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION};
@@ -700,12 +649,37 @@ public class SQLCommander {
                 BasicUser user = new BasicUser(userJson);
                 users.add(user);
             }
-
         } catch (Exception e) {
             Loggy.e(TAG, "queryUsers", e);
         }
         return users;
     }
+
+	public static List<SpecialUserRecord> queryUsers(final List<Long> activityIdList, final List<Integer> maskedRelationList) {
+		List<SpecialUserRecord> ret = new ArrayList<>();
+		try {
+			String[] onCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION};
+			String[] onOps = {"IN", "=", "IN"};
+			Object[] onVals = {activityIdList, new EasyPreparedStatementBuilder.PrimaryTableField(User.ID), maskedRelationList};
+
+			List<String> fields = new ArrayList<>();
+			for (String field : User.QUERY_FILEDS) fields.add(field);
+			fields.add(UserActivityRelation.ACTIVITY_ID);
+			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			List<JSONObject> records = builder.select(fields)
+					.from(User.TABLE)
+					.join(UserActivityRelation.TABLE, onCols, onOps, onVals).execSelect();
+
+			if (records == null) throw new NullPointerException();
+
+			for (JSONObject record : records) {
+				ret.add(new SpecialUserRecord(record));
+			}
+		} catch (Exception e) {
+			Loggy.e(TAG, "queryUsers", e);
+		}
+		return ret;
+	}
 
 	public static boolean updateUserActivityRelation(Long userId, Long activityId, int relation) {
 		try {
@@ -742,19 +716,19 @@ public class SQLCommander {
 	}
 
     public static List<BasicUser> queryAppliedParticipants(long activityId) {
-        List<Integer> relationList = new LinkedList<>();
+        List<Integer> relationList = new ArrayList<>();
         for (int relation : UserActivityRelation.APPLIED_STATES) relationList.add(relation);
         return queryUsers(activityId, relationList);
     }
 
 	public static List<BasicUser> querySelectedParticipants(long activityId) {
-		List<Integer> relationList = new LinkedList<>();
+		List<Integer> relationList = new ArrayList<>();
         for (int relation : UserActivityRelation.SELECTED_STATES) relationList.add(relation);
 		return queryUsers(activityId, relationList);
 	}
 
 	public static List<BasicUser> queryPresentParticipants(long activityId) {
-        List<Integer> relationList = new LinkedList<>();
+        List<Integer> relationList = new ArrayList<>();
         for (int relation : UserActivityRelation.PRESENT_STATES) relationList.add(relation);
         return queryUsers(activityId, relationList);
 	}
@@ -805,5 +779,139 @@ public class SQLCommander {
 
 	public static String generateSalt(String email, String password) {
 		return DataUtils.encryptByTime(email + password);
+	}
+
+	public static boolean appendUserInfoForActivity(final List<Activity> activityList, final Long viewerId) {
+		// host and viewer
+		List<Long> hostIdList = new ArrayList<>();
+		for (Activity activity : activityList) {
+			hostIdList.add(activity.getHostId());
+		}
+		List<User> hostList = queryUserList(hostIdList);
+		if (hostList == null || hostList.size() != activityList.size()) return false;
+
+		User viewer = (viewerId == null ? null : queryUser(viewerId));
+		for (int i = 0; i < hostList.size(); ++i) {
+			User host = hostList.get(i);
+			Activity activity = activityList.get(i);
+			activity.setHost(host);
+			if (viewer != null) activity.setViewer(viewer);
+		}
+		return true;
+	}
+
+	public static boolean appendImageInfoForActivity(final List<Activity> activityList) {
+		Map<Long, Activity> tmp = new HashMap<>();
+		List<Long> activityIdList = new ArrayList<>();
+		for (Activity activity : activityList) {
+			tmp.put(activity.getId(), activity);
+			activityIdList.add(activity.getId());
+		}
+		List<Image> imageList = ExtraCommander.queryImages(activityIdList);
+		for (Image image : imageList) {
+			Activity activity = tmp.get(image.getMetaId());
+			activity.addImage(image);
+		}
+		return true;
+	}
+
+	public static boolean appendParticipantInfoForActivity(final List<Activity> activityList) {
+		Map<Long, Activity> tmp = new HashMap<>();
+		List<Long> activityIdList = new ArrayList<>();
+		for (Activity activity : activityList) {
+			tmp.put(activity.getId(), activity);
+			activityIdList.add(activity.getId());
+		}
+		List<Integer> selectedStates = new LinkedList<>();
+		for (Integer state : UserActivityRelation.SELECTED_STATES) selectedStates.add(state);
+
+		List<SpecialUserRecord> selectedList = queryUsers(activityIdList, selectedStates);
+		for (SpecialUserRecord record : selectedList) {
+			Activity activity = tmp.get(record.activityId);
+			activity.addSelectedParticipant(record.user);
+		}
+		return true;
+	}
+
+	public static boolean appendUserInfoForTopLevelComment(final List<Comment> commentList) {
+		List<Long> userIdList = new ArrayList<>();
+		for (Comment comment : commentList) {
+			userIdList.add(comment.getFrom());
+			// TODO: optimization by "GROUP BY" limits? reference: http://www.xaprb.com/blog/2006/12/07/how-to-select-the-firstleastmax-row-per-group-in-sql/
+			comment.setSubCommentList(querySubComments(comment.getId(), SQLCommander.INITIAL_REF_INDEX, Comment.ID, SQLHelper.DESCEND, 3, SQLCommander.DIRECTION_FORWARD));
+		}
+
+		// for top level comments
+		List<User> userList = queryUserList(userIdList);
+		if (userList.size() != commentList.size()) return false;
+		for (int i = 0; i < userList.size(); ++i) {
+			User user = userList.get(i);
+			Comment comment = commentList.get(i);
+			comment.setFromUser(user);
+		}
+
+		return true;
+	}
+
+	public static boolean appendUserInfoForSubComment(final List<Comment> subCommentList) {
+		if (subCommentList == null) return false;
+
+		List<Long> fromList = new ArrayList<>();
+		List<Long> toList = new ArrayList<>();
+		for (Comment comment : subCommentList) {
+			fromList.add(comment.getFrom());
+			toList.add(comment.getTo());
+		}
+
+		if (fromList.size() != toList.size()) return false;
+
+		List<User> fromUserList = queryUserList(fromList);
+		List<User> toUserList = queryUserList(toList);
+
+		if (fromUserList == null || toUserList == null || fromUserList.size() != toUserList.size()) return false;
+
+		for (int i = 0; i < fromUserList.size(); ++i) {
+			User user = fromUserList.get(i);
+			Comment comment = subCommentList.get(i);
+			comment.setFromUser(user);
+		}
+
+		for (int i = 0; i < toUserList.size(); ++i) {
+			User user = toUserList.get(i);
+			Comment comment = subCommentList.get(i);
+			comment.setToUser(user);
+		}
+		return true;
+	}
+
+	public static boolean appendUserInfoForAssessemnt(final List<Assessment> assessmentList) {
+		if (assessmentList == null) return false;
+
+		List<Long> fromList = new ArrayList<>();
+		List<Long> toList = new ArrayList<>();
+		for (Assessment assessment : assessmentList) {
+			fromList.add(assessment.getFrom());
+			toList.add(assessment.getTo());
+		}
+
+		if (fromList.size() != toList.size()) return false;
+
+		List<User> fromUserList = queryUserList(fromList);
+		List<User> toUserList = queryUserList(toList);
+
+		if (fromUserList == null || toUserList == null || fromUserList.size() != toUserList.size()) return false;
+
+		for (int i = 0; i < fromUserList.size(); ++i) {
+			User user = fromUserList.get(i);
+			Assessment assessment = assessmentList.get(i);
+			assessment.setFromUser(user);
+		}
+
+		for (int i = 0; i < toUserList.size(); ++i) {
+			User user = toUserList.get(i);
+			Assessment assessment = assessmentList.get(i);
+			assessment.setToUser(user);
+		}
+		return true;
 	}
 }
