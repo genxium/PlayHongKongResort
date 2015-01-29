@@ -176,8 +176,8 @@ public class SQLCommander {
 			    Activity activity = new Activity(activityJson);
 			    ret.add(activity);
 		    }
-			if (ret.size() == 0) return ret;
-			appendUserInfoForActivity(ret, null);
+		    if (ret.size() == 0) return ret;
+		    appendUserInfoForActivity(ret, null);
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "queryActivities", e);
 	    }
@@ -788,12 +788,17 @@ public class SQLCommander {
 			hostIdList.add(activity.getHostId());
 		}
 		List<User> hostList = queryUserList(hostIdList);
-		if (hostList == null || hostList.size() != activityList.size()) return false;
+		if (hostList == null) return false;
+
+		Map<Long, User> tmp = new HashMap<>();
+		for (User host : hostList) {
+			tmp.put(host.getId(), host);
+		}
 
 		User viewer = (viewerId == null ? null : queryUser(viewerId));
-		for (int i = 0; i < hostList.size(); ++i) {
-			User host = hostList.get(i);
+		for (int i = 0; i < activityList.size(); ++i) {
 			Activity activity = activityList.get(i);
+			User host = tmp.get(activity.getHostId());
 			activity.setHost(host);
 			if (viewer != null) activity.setViewer(viewer);
 		}
@@ -843,10 +848,14 @@ public class SQLCommander {
 
 		// for top level comments
 		List<User> userList = queryUserList(userIdList);
-		if (userList.size() != commentList.size()) return false;
-		for (int i = 0; i < userList.size(); ++i) {
-			User user = userList.get(i);
+		if (userList == null) return false;
+		Map<Long, User> tmp = new HashMap<>();
+		for (User fromUser : userList) {
+			tmp.put(fromUser.getId(), fromUser);
+		}	
+		for (int i = 0; i < commentList.size(); ++i) {
 			Comment comment = commentList.get(i);
+			User user = tmp.get(comment.getFrom());
 			comment.setFromUser(user);
 		}
 
@@ -868,18 +877,25 @@ public class SQLCommander {
 		List<User> fromUserList = queryUserList(fromList);
 		List<User> toUserList = queryUserList(toList);
 
-		if (fromUserList == null || toUserList == null || fromUserList.size() != toUserList.size()) return false;
+		if (fromUserList.size() != toUserList.size()) return false;
+		if (fromUserList == null || toUserList == null) return false;
 
-		for (int i = 0; i < fromUserList.size(); ++i) {
-			User user = fromUserList.get(i);
-			Comment comment = subCommentList.get(i);
-			comment.setFromUser(user);
+		Map<Long, User> tmpFrom = new HashMap<>();
+		for (User fromUser : fromUserList) {
+			tmpFrom.put(fromUser.getId(), fromUser);
 		}
 
-		for (int i = 0; i < toUserList.size(); ++i) {
-			User user = toUserList.get(i);
+		Map<Long, User> tmpTo = new HashMap<>();
+		for (User toUser: toUserList) {
+			tmpTo.put(toUser.getId(), toUser);
+		}
+
+		for (int i = 0; i < subCommentList.size(); ++i) {
 			Comment comment = subCommentList.get(i);
-			comment.setToUser(user);
+			User fromUser = tmpFrom.get(comment.getFrom());
+			User toUser = tmpTo.get(comment.getTo());
+			comment.setFromUser(fromUser);
+			comment.setToUser(toUser);
 		}
 		return true;
 	}
@@ -899,18 +915,25 @@ public class SQLCommander {
 		List<User> fromUserList = queryUserList(fromList);
 		List<User> toUserList = queryUserList(toList);
 
-		if (fromUserList == null || toUserList == null || fromUserList.size() != toUserList.size()) return false;
+		if (fromUserList == null || toUserList == null) return false;
+		if (fromUserList.size() != toUserList.size()) return false;
 
-		for (int i = 0; i < fromUserList.size(); ++i) {
-			User user = fromUserList.get(i);
-			Assessment assessment = assessmentList.get(i);
-			assessment.setFromUser(user);
+		Map<Long, User> tmpFrom = new HashMap<>();
+		for (User fromUser : fromUserList) {
+			tmpFrom.put(fromUser.getId(), fromUser);
 		}
 
-		for (int i = 0; i < toUserList.size(); ++i) {
-			User user = toUserList.get(i);
+		Map<Long, User> tmpTo = new HashMap<>();
+		for (User toUser: toUserList) {
+			tmpTo.put(toUser.getId(), toUser);
+		}
+
+		for (int i = 0; i < assessmentList.size(); ++i) {
 			Assessment assessment = assessmentList.get(i);
-			assessment.setToUser(user);
+			User fromUser = tmpFrom.get(assessment.getFrom());
+			User toUser = tmpTo.get(assessment.getTo());
+			assessment.setFromUser(fromUser);
+			assessment.setToUser(toUser);
 		}
 		return true;
 	}

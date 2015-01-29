@@ -260,12 +260,6 @@ public class Activity extends AbstractSimpleMessage {
 			ret.put(NUM_SELECTED, String.valueOf(m_numSelected));
 			if (m_host != null) ret.put(HOST, m_host.toObjectNode(viewerId));
 
-			if (viewerId == null) return ret;
-			int relation = SQLCommander.queryUserActivityRelation(viewerId, m_id);
-			if (relation != UserActivityRelation.INVALID)	ret.put(UserActivityRelation.RELATION, relation);
-			if (viewerId.equals(m_host.getId()))	ret.put(STATUS, String.valueOf(m_status));
-			if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	ret.put(STATUS, String.valueOf(m_status));
-
 			if (m_imageList != null && m_imageList.size() > 0) {
 				ArrayNode imagesNode = new ArrayNode(JsonNodeFactory.instance);
 				for (Image image : m_imageList)	imagesNode.add(image.toObjectNode());
@@ -277,6 +271,13 @@ public class Activity extends AbstractSimpleMessage {
 				for (BasicUser participant : m_selectedParticipants)	selectedParticipantsNode.add(participant.toObjectNode(viewerId));
 				ret.put(SELECTED_PARTICIPANTS, selectedParticipantsNode);
 			}
+
+			if (viewerId == null) return ret;
+			int relation = SQLCommander.queryUserActivityRelation(viewerId, m_id);
+			if (relation != UserActivityRelation.INVALID)	ret.put(UserActivityRelation.RELATION, relation);
+			if (viewerId.equals(m_host.getId()))	ret.put(STATUS, String.valueOf(m_status));
+			if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	ret.put(STATUS, String.valueOf(m_status));
+
 		} catch (Exception e) {
 			Loggy.e(TAG, "toObjectNode", e);
 		}

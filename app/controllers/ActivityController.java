@@ -39,7 +39,7 @@ public class ActivityController extends Controller {
             String orientationStr = SQLHelper.convertOrientation(orientation);
             if (orientationStr == null)   throw new InvalidQueryParamsException();
             Set<Integer> validRelations = new HashSet<>();
-			validRelations.add(UserActivityRelation.HOSTED);
+	    validRelations.add(UserActivityRelation.HOSTED);
             validRelations.add(UserActivityRelation.PRESENT);
             validRelations.add(UserActivityRelation.ABSENT);
             validRelations.add(UserActivityRelation.PRESENT);
@@ -77,7 +77,7 @@ public class ActivityController extends Controller {
                 cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, orderKey);
                 // activities = (List<Activity>) play.cache.Cache.get(cacheKey);
                 if (activities == null) {
-					List<Integer> maskedRelationList = new LinkedList<>();
+			List<Integer> maskedRelationList = new LinkedList<>();
                     if (relation == UserActivityRelation.PRESENT) {
                         for (int aRelation : UserActivityRelation.PRESENT_STATES) {
                             maskedRelationList.add(aRelation);
@@ -121,11 +121,11 @@ public class ActivityController extends Controller {
 
             boolean isAdmin = false;
             if (viewer != null && SQLCommander.validateAdminAccess(viewer)) isAdmin = true;
-
-			SQLCommander.appendImageInfoForActivity(activities);
-			SQLCommander.appendParticipantInfoForActivity(activities);
+	    SQLCommander.appendImageInfoForActivity(activities);
+	    SQLCommander.appendParticipantInfoForActivity(activities);
 
             ArrayNode activitiesNode = new ArrayNode(JsonNodeFactory.instance);
+		Loggy.d(TAG, "list", String.valueOf(activities.size()));
             for (Activity activity : activities) {
                 boolean isHost = (viewerId != null && viewer != null && activity.getHost().getId().equals(viewerId));
                 // only hosts and admins can view non-accepted activities

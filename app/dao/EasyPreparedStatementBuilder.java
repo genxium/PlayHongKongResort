@@ -644,7 +644,7 @@ public class EasyPreparedStatementBuilder {
         List<JSONObject> ret = new ArrayList<JSONObject>();
         try {
             Connection connection = SQLHelper.getConnection();
-            PreparedStatement statement = this.toSelect(connection);
+	    PreparedStatement statement = this.toSelect(connection);
             ResultSet rs = statement.executeQuery();
             if (rs != null) {
                 ret = ResultSetUtil.convertToJSON(rs);
