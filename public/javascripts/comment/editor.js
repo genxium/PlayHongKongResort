@@ -324,11 +324,10 @@ function generateCommentEditor(par, activity){
     inputCounter.appendCounter(editor);
 
     input.on("input paste keyup", inputCounter, function(evt){
-	evt.data.update($(this).val());
+			evt.data.update($(this).val());
     });
 
-
-    btnSubmit.click(function(evt){
+    btnSubmit.click({counter: inputCounter, input: input}, function(evt){
 
 		evt.preventDefault();
 		var content = input.val();
@@ -343,12 +342,16 @@ function generateCommentEditor(par, activity){
 		params[g_keyActivityId] = activity.id;
 		params[g_keyToken] = token;
 
+		var aCounter = evt.data.counter;
+		var aInput = evt.data.input;
+
 		$.ajax({
 			type: "POST",
 			url: "/el/comment/submit",
 			data: params,
 			success: function(data, status, xhr){
-			        input.val("");
+				aInput.val("");
+				aCounter.update("");
 				listCommentsAndRefresh(activity, null, null);
 			},
 			error: function(xhr, status, err){

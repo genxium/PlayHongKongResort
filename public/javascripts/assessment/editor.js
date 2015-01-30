@@ -17,7 +17,7 @@ function createAssessment(content, to) {
 }
 
 function SingleAssessmentEditor(){
-        this.participantId = 0;
+	this.participantId = 0;
 	this.name = "";
 	this.content = "";
 	this.lock = null;
@@ -80,10 +80,10 @@ function generateAssessmentButtons(par, activity, batchEditor){
 		class: "gray assessment-button"
 	}).appendTo(row);   
 
-	btnCheckAll.click(function(evt){
+	btnCheckAll.click(batchEditor, function(evt){
 		evt.preventDefault();
-		for(var i = 0; i < batchEditor.editors.length; i++) {
-			var editor = batchEditor.editors[i];
+		for(var i = 0; i < evt.data..editors.length; i++) {
+			var editor = evt.data.editors[i];
 			editor.lock.prop("checked", true).change();
 		}
 	});
@@ -92,10 +92,10 @@ function generateAssessmentButtons(par, activity, batchEditor){
 	    text: "Uncheck All",
 	    class: "gray assessment-button"
 	}).appendTo(row);
-	btnUncheckAll.click(function(evt){
+	btnUncheckAll.click(batchEditor, function(evt){
 		evt.preventDefault();
-		for(var i = 0; i < batchEditor.editors.length; i++) {
-			var editor = batchEditor.editors[i];
+		for(var i = 0; i < evt.data.editors.length; i++) {
+			var editor = evt.data.editors[i];
 			editor.lock.prop("checked", false).change();
 		}
 	});
@@ -105,12 +105,14 @@ function generateAssessmentButtons(par, activity, batchEditor){
 		class: "purple assessment-button"
 	}).appendTo(row);
 
-	g_btnSubmit.click(function(evt){
+	g_btnSubmit.click({editor: batchEditor, activity: activity}, function(evt){
 		evt.preventDefault();
 		if (g_loggedInUser == null) return;
+		var aBatchEditor = evt.data.editor;
+		var aActivity = evt.data.activity;
 		var assessments = new Array();
-		for(var i = 0; i < batchEditor.editors.length; i++) {
-			var editor = batchEditor.editors[i];
+		for(var i = 0; i < aBatchEditor.editors.length; i++) {
+			var editor = aBatchEditor.editors[i];
 			var content = editor.content;
 			var to = editor.participantId;
 			if(to == g_loggedInUser.id) continue;
@@ -122,7 +124,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 		var params = {};
 		var token = $.cookie(g_keyToken);
 		params[g_keyToken] = token;
-		params[g_keyActivityId] = activity.id; 
+		params[g_keyActivityId] = aActivity.id; 
 		params[g_keyBundle] = JSON.stringify(assessments);
 			
 		$.ajax({
@@ -131,8 +133,8 @@ function generateAssessmentButtons(par, activity, batchEditor){
 			data: params,
 			success: function(data, status, xhr){
 				alert("Assessment submitted!");
-				activity.relation |= assessed;
-				refreshBatchEditor(activity);
+				aActivity.relation |= assessed;
+				refreshBatchEditor(aActivity);
 			},
 			error: function(xhr, status, err){
 				alert("Assessment NOT submitted!");
@@ -272,23 +274,25 @@ function generateUnassessedView(row, singleEditor, batchEditor) {
 		type: "checkbox",
 		class: "left"
 	}).appendTo(row);
-	var content = $('<input>', {
+	var contentInput = $('<input>', {
 		type: 'text'
 	}).appendTo(row); 
-	content.on("input paste keyup", function(evt){
-		singleEditor.content = $(this).val();	
+	contentInput.on("input paste keyup", singleEditor, function(evt){
+		evt.data.content = $(this).val();	
 	});	
-	lock.change(function(evt){
+	lock.change({input: contentInput, editor: batchEditor}, function(evt){
+		var aInput = evt.data.input;
+		var aBatchEditor = evt.data.editor;
 		evt.preventDefault();
 		var checked = isChecked($(this));
 		if(!checked) {
-			enableField(content);
+			enableField(aInput);
 			--g_lockedCount;
 			if(g_btnSubmit != null) disableField(g_btnSubmit);
 		} else {
-			disableField(content);
+			disableField(aInput);
 			++g_lockedCount;
-			if(g_lockedCount >= (batchEditor.editors.length - 1) && g_btnSubmit != null) enableField(g_btnSubmit);
+			if(g_lockedCount >= (aBatchEditor.editors.length - 1) && g_btnSubmit != null) enableField(g_btnSubmit);
 		}
 	});
 	singleEditor.lock = lock;
