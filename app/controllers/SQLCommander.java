@@ -317,8 +317,8 @@ public class SQLCommander {
 
             if (commentJsonList == null) throw new NullPointerException();
             for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
-			if (ret.size() == 0) return ret;
-			appendUserInfoForTopLevelComment(ret);
+	    if (ret.size() == 0) return ret;
+	    appendUserInfoForTopLevelComment(ret);
 
         } catch (Exception e) {
             Loggy.e(TAG, "queryTopLevelComments", e);
@@ -331,13 +331,13 @@ public class SQLCommander {
 	    try {
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
-			builder.select(names).from(Comment.TABLE).where(Comment.PARENT_ID, "=", parentId);
-            List<JSONObject> commentJsonList = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
+		    builder.select(names).from(Comment.TABLE).where(Comment.PARENT_ID, "=", parentId);
+		    List<JSONObject> commentJsonList = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
 
 		    if (commentJsonList == null) throw new NullPointerException();
 		    for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
-			if (ret.size() == 0) return ret;
-			appendUserInfoForSubComment(ret);
+		    if (ret.size() == 0) return ret;
+		    appendUserInfoForSubComment(ret);
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "querySubComments", e);
 	    }
@@ -346,26 +346,26 @@ public class SQLCommander {
 
     public static List<Comment> querySubComments(Long parentId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
         List<Comment> ret = new ArrayList<>();
-        try {
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+	try {
+		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-            String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
-            builder.select(names)
-                    .from(Comment.TABLE)
-                    .where(Comment.PARENT_ID, "=", parentId)
-					.order(orderKey, orientation)
-                    .limit((page_st - 1) * numItems, page_ed * numItems);
+		String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
+		builder.select(names)
+			.from(Comment.TABLE)
+			.where(Comment.PARENT_ID, "=", parentId)
+			.order(orderKey, orientation)
+			.limit((page_st - 1) * numItems, page_ed * numItems);
 
-            List<JSONObject> commentJsonList = builder.execSelect();
+		List<JSONObject> commentJsonList = builder.execSelect();
 
-            if (commentJsonList == null) throw new NullPointerException();
-            for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
-			if (ret.size() == 0) return ret;
-			appendUserInfoForSubComment(ret);
-        } catch (Exception e) {
-            Loggy.e(TAG, "querySubComments", e);
-        }
-        return ret;
+		if (commentJsonList == null) throw new NullPointerException();
+		for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
+		if (ret.size() == 0) return ret;
+		appendUserInfoForSubComment(ret);
+	} catch (Exception e) {
+		Loggy.e(TAG, "querySubComments", e);
+	}
+	return ret;
     }
 
 	public static List<Assessment> queryAssessmentList(Integer pageSt, Integer pageEd, Integer numItems, String orderKey, String orientation, Long viewerId, Long to) {
@@ -796,12 +796,11 @@ public class SQLCommander {
 		}
 
 		User viewer = (viewerId == null ? null : queryUser(viewerId));
-		for (int i = 0; i < activityList.size(); ++i) {
-			Activity activity = activityList.get(i);
-			User host = tmp.get(activity.getHostId());
-			activity.setHost(host);
-			if (viewer != null) activity.setViewer(viewer);
-		}
+        for (Activity activity : activityList) {
+            User host = tmp.get(activity.getHostId());
+            activity.setHost(host);
+            if (viewer != null) activity.setViewer(viewer);
+        }
 		return true;
 	}
 
@@ -852,12 +851,11 @@ public class SQLCommander {
 		Map<Long, User> tmp = new HashMap<>();
 		for (User fromUser : userList) {
 			tmp.put(fromUser.getId(), fromUser);
-		}	
-		for (int i = 0; i < commentList.size(); ++i) {
-			Comment comment = commentList.get(i);
-			User user = tmp.get(comment.getFrom());
-			comment.setFromUser(user);
 		}
+        for (Comment comment : commentList) {
+            User user = tmp.get(comment.getFrom());
+            comment.setFromUser(user);
+        }
 
 		return true;
 	}
@@ -877,10 +875,7 @@ public class SQLCommander {
 		List<User> fromUserList = queryUserList(fromList);
 		List<User> toUserList = queryUserList(toList);
 
-		if (fromUserList.size() != toUserList.size()) return false;
-		if (fromUserList == null || toUserList == null) return false;
-
-		Map<Long, User> tmpFrom = new HashMap<>();
+        Map<Long, User> tmpFrom = new HashMap<>();
 		for (User fromUser : fromUserList) {
 			tmpFrom.put(fromUser.getId(), fromUser);
 		}
@@ -890,13 +885,12 @@ public class SQLCommander {
 			tmpTo.put(toUser.getId(), toUser);
 		}
 
-		for (int i = 0; i < subCommentList.size(); ++i) {
-			Comment comment = subCommentList.get(i);
-			User fromUser = tmpFrom.get(comment.getFrom());
-			User toUser = tmpTo.get(comment.getTo());
-			comment.setFromUser(fromUser);
-			comment.setToUser(toUser);
-		}
+        for (Comment comment : subCommentList) {
+            User fromUser = tmpFrom.get(comment.getFrom());
+            User toUser = tmpTo.get(comment.getTo());
+            comment.setFromUser(fromUser);
+            comment.setToUser(toUser);
+        }
 		return true;
 	}
 
@@ -928,13 +922,12 @@ public class SQLCommander {
 			tmpTo.put(toUser.getId(), toUser);
 		}
 
-		for (int i = 0; i < assessmentList.size(); ++i) {
-			Assessment assessment = assessmentList.get(i);
-			User fromUser = tmpFrom.get(assessment.getFrom());
-			User toUser = tmpTo.get(assessment.getTo());
-			assessment.setFromUser(fromUser);
-			assessment.setToUser(toUser);
-		}
+        for (Assessment assessment : assessmentList) {
+            User fromUser = tmpFrom.get(assessment.getFrom());
+            User toUser = tmpTo.get(assessment.getTo());
+            assessment.setFromUser(fromUser);
+            assessment.setToUser(toUser);
+        }
 		return true;
 	}
 }

@@ -110,11 +110,9 @@ function displayTimesTable(par, activity) {
     	}).appendTo(deadlineRow);
     	var deadline = $("<div>", {
     		text: gmtMiilisecToLocalYmdhis(activity.applicationDeadline),
-			class: "time-detail left"
+		class: "time-detail left"
     	}).appendTo(deadlineRow);
 	if (activity.isDeadlineExpired()) {
-		//stencilize(deadlineTitle);
-		//stencilize(deadline);
 		deadlineRow.addClass("expired");
 	}
 
@@ -131,8 +129,6 @@ function displayTimesTable(par, activity) {
     	}).appendTo(beginTimeRow);
 
 	if (activity.hasBegun()) {
-		//stencilize(beginTimeTitle);
-		//stencilize(beginTime);
 		beginTimeRow.addClass("expired");
 	} 
 }
@@ -251,7 +247,6 @@ function attachStatusIndicator(par, activity) {
 	var btnEdit = $('<button>', {
 		class: 'activity-edit'
 	}).appendTo(statusIndicator);
-	//setBackgroundImageDefault(btnEdit, "/assets/icons/edit.png");
 	var dEdit = {};
 	dEdit[g_keyActivity] = activity;
 	btnEdit.click(dEdit, onBtnEditClicked);

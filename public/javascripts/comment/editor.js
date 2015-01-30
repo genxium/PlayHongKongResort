@@ -2,7 +2,6 @@ var g_comment = null;
 var g_activityId = null;
 var g_activity = null;
 
-var g_minContentLength = 5;
 var g_replyEditor = null;
 
 var g_onCommentSubmitSuccess = null;
@@ -107,21 +106,20 @@ function generateReplyEditor(par, activity, comment){
         placeholder: "to @" + comment.fromUser.name + ":"
     }).appendTo(ret);
     var btnSubmit = $('<button>',{
-        text: "SUBMIT REPLY",
+        text: "提交回覆",
         class: "comment-submit purple"
     }).appendTo(ret);
 
-    btnSubmit.on("click", {input: input}, function(evt) {
+    btnSubmit.click(input, function(evt) {
 
                 evt.preventDefault();
-                var data = evt.data;
-                var content = data.input.val();
+                var content = evt.data.val();
                 var token = $.cookie(g_keyToken);
 
-                if(content == null || content.length <= g_minContentLength) {
-                        alert("Please comment with no less than " + g_minContentLength.toString() + " characters!");
+                if (content == null || validateCommentContent(content)) {
+			alert("請輸入5 ~ 128個字");
                         return;
-                }
+		}
 
                 var parentId = comment.parentId == (-1) ? comment.id : comment.parentId;
                 var params={};
@@ -149,7 +147,7 @@ function generateReplyEditor(par, activity, comment){
     });
 
     var btnCollapse = $('<button>',{
-        text: "COLLAPSE",
+        text: "收起",
         class: "comment-collapse gray"
     }).appendTo(ret);
 
@@ -230,7 +228,7 @@ function generateCommentCell(par, commentJson, activity, single){
         }).appendTo(row);
 
         var btnReply = $('<button>',{
-            text: "reply",
+            text: "回覆",
             class: "purple comment-reply"
         }).appendTo(operations);
 
@@ -298,7 +296,7 @@ function generateSubCommentCell(par, commentJson, activity){
 	}).appendTo(row);
 
 	var btnReply = $('<button>',{
-		text: "reply",
+		text: "回覆",
 		class: "purple comment-reply"
 	}).appendTo(operations);
 
@@ -317,11 +315,18 @@ function generateCommentEditor(par, activity){
 	}).appendTo(par);
     var input = $('<input>', {
     }).appendTo(editor);
-
     var btnSubmit = $('<button>',{
-        text: "Comment!",
+        text: "提交問題",
     	class: "purple"
     }).appendTo(editor);
+
+    var inputCounter = new WordCounter("", 5, 128, g_commentContentPattern, "請輸入5 ~ 128個字");
+    inputCounter.appendCounter(editor);
+
+    input.on("input paste keyup", inputCounter, function(evt){
+	evt.data.update($(this).val());
+    });
+
 
     btnSubmit.click(function(evt){
 
@@ -329,8 +334,7 @@ function generateCommentEditor(par, activity){
 		var content = input.val();
 		var token = $.cookie(g_keyToken);
 		
-		if(content == null || content.length <= g_minContentLength) {
-			alert("Please comment with no less than " + g_minContentLength.toString() + " characters!");
+		if(content == null || validateCommentContent(content)) {
 			return;	
 		}
 

@@ -125,7 +125,6 @@ public class ActivityController extends Controller {
 	    SQLCommander.appendParticipantInfoForActivity(activities);
 
             ArrayNode activitiesNode = new ArrayNode(JsonNodeFactory.instance);
-		Loggy.d(TAG, "list", String.valueOf(activities.size()));
             for (Activity activity : activities) {
                 boolean isHost = (viewerId != null && viewer != null && activity.getHost().getId().equals(viewerId));
                 // only hosts and admins can view non-accepted activities
@@ -263,7 +262,6 @@ public class ActivityController extends Controller {
 		} catch (CaptchaNotMatchedException e) {
 			return badRequest(CaptchaNotMatchedResult.get());
 		} catch (Exception e) {
-			System.out.println("Exception on save.");
 			Loggy.e(TAG, "save", e);
 		}
 		return badRequest();

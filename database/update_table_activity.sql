@@ -1,4 +1,0 @@
-ALTER TABLE `activity` MODIFY `title` VARCHAR(64) DEFAULT '';
-ALTER TABLE `activity` MODIFY `address` VARCHAR(256) DEFAULT '';
-ALTER TABLE `activity` MODIFY `content` VARCHAR(1024) DEFAULT '';
-
