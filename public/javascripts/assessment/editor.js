@@ -82,7 +82,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 
 	btnCheckAll.click(batchEditor, function(evt){
 		evt.preventDefault();
-		for(var i = 0; i < evt.data..editors.length; i++) {
+		for(var i = 0; i < evt.data.editors.length; i++) {
 			var editor = evt.data.editors[i];
 			editor.lock.prop("checked", true).change();
 		}

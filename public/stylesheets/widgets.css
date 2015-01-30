@@ -108,11 +108,11 @@
 }
 .word-counter-current {
 	font-family: "Times New Roman", Georgia, Serif; 	
-	font-size: 32px;
+	font-size: 24px;
 }
 .word-counter-max {
 	font-family: "Times New Roman", Georgia, Serif; 	
-	font-size: 32px;
+	font-size: 24px;
 }
 .word-counter-violation-hint {
 	color: brown;
@@ -122,5 +122,5 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	font-family: "Times New Roman", Georgia, Serif; 	
-	font-size: 32px;
+	font-size: 24px;
 }
