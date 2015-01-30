@@ -116,7 +116,7 @@ function generateReplyEditor(par, activity, comment){
                 var content = evt.data.val();
                 var token = $.cookie(g_keyToken);
 
-                if (content == null || validateCommentContent(content)) {
+                if (content == null || !validateCommentContent(content)) {
 			alert("請輸入5 ~ 128個字");
                         return;
 		}
@@ -334,7 +334,7 @@ function generateCommentEditor(par, activity){
 		var content = input.val();
 		var token = $.cookie(g_keyToken);
 		
-		if(content == null || validateCommentContent(content)) {
+		if(content == null || !validateCommentContent(content)) {
 			return;	
 		}
 
