@@ -909,9 +909,6 @@ public class SQLCommander {
 		List<User> fromUserList = queryUserList(fromList);
 		List<User> toUserList = queryUserList(toList);
 
-		if (fromUserList == null || toUserList == null) return false;
-		if (fromUserList.size() != toUserList.size()) return false;
-
 		Map<Long, User> tmpFrom = new HashMap<>();
 		for (User fromUser : fromUserList) {
 			tmpFrom.put(fromUser.getId(), fromUser);
