@@ -122,6 +122,10 @@ var g_usernamePattern = /^[0-9a-zA-Z_]{6,32}$/;
 /* The following patterns should follow Unicode standard */
 var g_activityTitlePattern = /^.{5,64}$/;  
 var g_activityAddressPattern = /^.{10,128}$/;
-var g_activityContentPattern = /^.{15,1024}$/;
+var g_activityContentPattern = /^[.\n]{15,1024}$/;
 var g_commentContentPattern  = /^.{5,128}$/;
 var g_assessmentContentPattern = /^.{0,64}$/;
+
+/* Error codes reference: https://www.evernote.com/shard/s50/sh/62bbc660-3794-403c-98d1-a8134c868589/ad7b98b93af61deb774e1154ff08dfd7 */
+var g_errUserNotFound = 1003;
+var g_errPswErr = 1004; 

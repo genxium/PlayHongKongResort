@@ -212,6 +212,8 @@ public class ActivityController extends Controller {
 			if (isNewActivity) {
 				activity = SQLCommander.createActivity(user, now);
 				activityId = activity.getId();
+			} else {
+				activity = SQLCommander.queryActivity(activityId);
 			}
 			if (activity == null || activityId == null || activityId.equals(SQLHelper.INVALID)) throw new ActivityNotFoundException();
 			// update activity

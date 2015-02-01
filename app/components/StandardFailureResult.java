@@ -6,6 +6,8 @@ import play.libs.Json;
 
 public class StandardFailureResult {
 	private static ObjectNode s_result = null;
+	public static int USER_NOT_FOUND = 1003;
+	public static int PSW_ERR = 1004;
 
 	public static ObjectNode get() {
 		if (s_result == null) {

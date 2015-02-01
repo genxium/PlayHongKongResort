@@ -44,11 +44,10 @@ function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, on
 		    url: "/user/login",
 		    data: params,
 		    success: function(data, status, xhr){
-				var userJson = JSON.parse(data);
-				g_loggedInUser = new User(userJson);
+				g_loggedInUser = new User(data);
 				if (g_loggedInUser == null) return;
 				// store token in cookie iff query succeeds
-				$.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
+				$.cookie(g_keyToken, data[g_keyToken], {path: '/'});
 				wsConnect();	
 				if(g_sectionLogin == null) return;
 				g_postLoginMenu = generatePostLoginMenu(g_sectionLogin, form.onLoginSuccess, form.onLoginError, form.onLogoutSuccess, form.onLogoutError);
@@ -57,6 +56,7 @@ function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, on
 		    },
 		    error: function(xhr, status, err){
 				if(form.onLoginError == null) return;
+				alert("用戶不存在或密碼錯誤！");
 				form.onLoginError(err);
 		    }
 		});

@@ -53,7 +53,6 @@ public class UserController extends Controller {
 
     public static Result login() {
         // define response attributes
-        response().setContentType("text/plain");
         try {
             Http.RequestBody body = request().body();
             Map<String, String[]> formData = body.asFormUrlEncoded();
@@ -66,7 +65,7 @@ public class UserController extends Controller {
             if (user == null) throw new UserNotFoundException();
 
             String passwordDigest = Converter.md5(password + user.getSalt());
-            if (!user.getPassword().equals(passwordDigest)) throw new UserNotFoundException();
+            if (!user.getPassword().equals(passwordDigest)) throw new PswErrException();
 
             String token = Converter.generateToken(email, password);
             Long userId = user.getId();
@@ -78,11 +77,13 @@ public class UserController extends Controller {
             ObjectNode result = user.toObjectNode(userId);
             result.put(User.TOKEN, token);
             return ok(result);
-        } catch (Exception e) {
-            Loggy.e(TAG, "login", e);
-        }
-
-        return badRequest();
+        } catch (UserNotFoundException e) {
+			return badRequest(StandardFailureResult.get(StandardFailureResult.USER_NOT_FOUND));
+        } catch (PswErrException e) {
+			return badRequest(StandardFailureResult.get(StandardFailureResult.PSW_ERR));
+		} catch (Exception e) {
+			return badRequest(StandardFailureResult.get());
+		}
     }
 
     public static Result register() {

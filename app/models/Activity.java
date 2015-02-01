@@ -19,7 +19,7 @@ public class Activity extends AbstractSimpleMessage {
 
 	public static final Pattern TITLE_PATTERN = Pattern.compile(".{5,64}", Pattern.UNICODE_CHARACTER_CLASS);
 	public static final Pattern ADDR_PATTERN = Pattern.compile(".{10,128}", Pattern.UNICODE_CHARACTER_CLASS);
-	public static final Pattern CONTENT_PATTERN = Pattern.compile(".{15,1024}", Pattern.UNICODE_CHARACTER_CLASS);
+	public static final Pattern CONTENT_PATTERN = Pattern.compile("[.\n]{15,1024}", Pattern.UNICODE_CHARACTER_CLASS);
 
 	public static final int CREATED = 0;
 	public static final int PENDING = 1;
