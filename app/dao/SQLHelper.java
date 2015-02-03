@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 public class SQLHelper {
 
@@ -78,13 +79,6 @@ public class SQLHelper {
 		    builder.append(s_host + ":");
 		    builder.append(s_port.toString() + "/");
 		    builder.append(s_databaseName);
-			/**
-			 * avoid auto-disconnection from MySQL server after 8 hours' idle time
-			 * */
-			builder.append("?autoReconnect=true&amp;autoReconnectForPools=true");
-		    if (s_charsetResult != null) builder.append("?" + s_charsetResult);
-		    if (s_charsetEncoding != null) builder.append("&" + s_charsetEncoding);
-		    if (s_useUnicode != null) builder.append("&" + s_useUnicode);
 		    ret = builder.toString();
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "getConnectionURI", e);
@@ -95,11 +89,28 @@ public class SQLHelper {
 
     public static DataSource setupDataSource(String connectURI) {
         try {
-            ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI, s_user, s_password);
+            /**
+             * MySQL server connection options reference: http://pages.citebite.com/p4x3a0r8pmhm
+             * */
+            Properties prop = new Properties();
+            prop.setProperty("user", s_user);
+            prop.setProperty("password", s_password);
+
+            if (s_useUnicode != null) prop.setProperty("useUnicode", s_useUnicode);
+            if (s_charsetEncoding != null) prop.setProperty("characterEncoding", s_charsetEncoding);
+            if (s_charsetResult != null) prop.setProperty("characterSetResults", s_charsetResult);
+
+            /**
+             * avoid auto-disconnection from MySQL server after 8 hours' idle time
+             * */
+            prop.setProperty("autoReconnect", "true");
+            prop.setProperty("autoReconnectForPools", "true");
+
+            ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI, prop);
             PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
-            ObjectPool<PoolableConnection> connectionPool = new GenericObjectPool<PoolableConnection>(poolableConnectionFactory);
+            ObjectPool<PoolableConnection> connectionPool = new GenericObjectPool<>(poolableConnectionFactory);
             poolableConnectionFactory.setPool(connectionPool);
-            return new PoolingDataSource<PoolableConnection>(connectionPool);
+            return new PoolingDataSource<>(connectionPool);
         } catch (Exception e) {
             Loggy.e(TAG, "setupDataSource", e);
         }

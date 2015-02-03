@@ -32,6 +32,13 @@
 	width: 100%;
 	white-space: nowrap;
 }
+.activity-address {
+	font-size: 24px;
+	color: indianred;
+	font-weight: bold;
+	width: 100%;
+	white-space: nowrap;
+}
 .activity-addr {
 	font-size: 18px;
 	color: #e21e61;

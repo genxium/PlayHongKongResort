@@ -32,8 +32,15 @@ function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, on
 		var email = form.handle.val();
 		var password = form.psw.val();
 
-		if( (email == null || email.length == 0 || !validateEmail(email))
-		    || password == null || password.length == 0 || !validatePassword(password)) return;
+		if ( email == null || email.length == 0 || !validateEmail(email) ) {
+			alert("不是有效的Email地址")
+			return;
+		}
+
+		if ( password == null || password.length == 0 || !validatePassword(password) ) {
+			alert("密碼錯誤");
+			return;
+		}
 
 		var params={};
 		params[g_keyEmail] = email;

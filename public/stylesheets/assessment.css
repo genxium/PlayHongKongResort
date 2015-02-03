@@ -44,6 +44,15 @@
     width: 50%;
 }
 
+.assessments-viewer-avatar {
+	width: 36px;
+	height: 36px;
+}
+
+.assessments-viewer-name {
+
+}
+
 .assessment-tag {
 	color: white;
 	background-color: orange;

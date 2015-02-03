@@ -31,7 +31,7 @@ public class ExtraCommander extends SQLCommander {
 			activityDetail.setHost(host);
 
 			List<Image> images = queryImages(activityId);
-			activityDetail.setImages(images);
+			activityDetail.setImageList(images);
 
 			List<BasicUser> appliedParticipants = queryAppliedParticipants(activityId);
 			List<BasicUser> selectedParticipants = querySelectedParticipants(activityId);

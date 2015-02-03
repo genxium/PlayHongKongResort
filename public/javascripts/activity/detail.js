@@ -64,9 +64,14 @@ function displayActivityDetail(par){
 		class: "activity-detail-page"
 	}).appendTo(par);
 
-	var title = $("<div>",{
-		text: g_activity.title.toString(),
+	var title = $("<div>", {
+		text: g_activity.title,
 		class: "activity-title"
+	}).appendTo(ret);
+
+	var address = $("<div>", {
+		text: g_activity.address,
+		class: "activity-address"	
 	}).appendTo(ret);
 
         if(g_activity.host.id != null && g_activity.host.name != null){

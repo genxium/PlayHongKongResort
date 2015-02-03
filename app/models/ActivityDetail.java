@@ -14,16 +14,6 @@ public class ActivityDetail extends Activity {
     public static String APPLIED_PARTICIPANTS = "applied_participants";
     public static String PRESENT_PARTICIPANTS = "present_participants";
 
-    protected List<Image> m_images = null;
-
-    public List<Image> getImages() {
-        return m_images;
-    }
-
-    public void setImages(List<Image> images) {
-        m_images = images;
-    }
-
     protected List<BasicUser> m_appliedParticipants = null;
     public void setAppliedParticipants(final List<BasicUser> appliedParticipants) {
         m_appliedParticipants = appliedParticipants;
