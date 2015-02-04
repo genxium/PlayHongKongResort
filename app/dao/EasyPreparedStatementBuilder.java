@@ -317,7 +317,7 @@ public class EasyPreparedStatementBuilder {
             query += (" JOIN `" + table + "` AS `" + tableAlias + "` ON ");
             for (int i = 0; i < length; ++i) {
                 OnCondition condition = conditionList.get(i);
-                query += ("`" + tableAlias + "`.`" + condition.key + "` " + condition.op);
+                query += ("`" + tableAlias + "`.`" + condition.key + "` " + condition.op + " ");
                 if (condition.val instanceof List) {
                     List<?> castedVals = (List<?>) condition.val;
                     query += "(";
@@ -345,9 +345,9 @@ public class EasyPreparedStatementBuilder {
             String col = m_whereCols.get(i);
             String op = m_whereOps.get(i);
             Object val = m_whereVals.get(i);
-            query += ("`" + col + "` " + op);
+            query += ("`" + col + "` " + op + " ");
             if (val instanceof List) {
-                query += " ("; // mind the space
+                query += "(";
                 List<?> castedVals = (List<?>)(m_whereVals.get(i));
                 for (int j = 0; j < castedVals.size(); ++j) {
                     query += "?";

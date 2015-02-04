@@ -633,6 +633,7 @@ public class SQLCommander {
 
     public static List<BasicUser> queryUsers(final long activityId, final List<Integer> maskedRelationList) {
         List<BasicUser> users = new ArrayList<>();
+        if (maskedRelationList == null || maskedRelationList.size() == 0) return users;
         try {
             String[] onCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION};
             String[] onOps = {"=", "=", "IN"};
@@ -657,6 +658,8 @@ public class SQLCommander {
 
 	public static List<SpecialUserRecord> queryUsers(final List<Long> activityIdList, final List<Integer> maskedRelationList) {
 		List<SpecialUserRecord> ret = new ArrayList<>();
+        if (activityIdList == null || activityIdList.size() == 0) return ret;
+        if (maskedRelationList == null || maskedRelationList.size() == 0) return ret;
 		try {
 			String[] onCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION};
 			String[] onOps = {"IN", "=", "IN"};
