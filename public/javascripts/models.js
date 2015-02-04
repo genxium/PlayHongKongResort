@@ -45,6 +45,10 @@ function Activity(activityJson){
 	if (activityJson.hasOwnProperty("num_applied")) this.numApplied = parseInt(activityJson["num_applied"]);
 	if (activityJson.hasOwnProperty("num_selected")) this.numSelected = parseInt(activityJson["num_selected"]);
 	if (activityJson.hasOwnProperty("status")) this.status = parseInt(activityJson["status"]);
+	this.relation = null;
+	this.containsRelation = function() {
+		return (this.relation != null && this.relation != undefined);	
+	};
 	if (activityJson.hasOwnProperty("relation")) this.relation = parseInt(activityJson["relation"]);
 	if (activityJson.hasOwnProperty("images")){
 		var images = new Array();

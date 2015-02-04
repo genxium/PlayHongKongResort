@@ -52,8 +52,8 @@ function generateAssessmentEditor(par, participant, activity, batchEditor){
 	});
 	singleEditor.participantId = participant.id;
 	singleEditor.name = participant.name;
-	if((activity.relation & assessed) == 0)	generateUnassessedView(row, singleEditor, batchEditor);
-	else	generateAssessedView(row, participant, activity);
+	if ( activity.containsRelation() && (activity.relation & assessed == 0) )	generateUnassessedView(row, singleEditor, batchEditor);
+	else generateAssessedView(row, participant, activity);
 	if(g_loggedInUser != null && g_loggedInUser.id == participant.id) row.hide(); 
 	return singleEditor;
 }
@@ -185,8 +185,10 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 		style: "margin-top: 5pt"
 	}).appendTo(sectionAll);
 
-	if( (activity.relation & present) > 0 || (g_loggedInUser != null && activity.host.id == g_loggedInUser.id) ) {
-		// present but not yet assessed participants
+	if( g_loggedInUser != null ) {
+		/* 
+ 		 * 	show list for logged-in users
+		 */
 		refreshBatchEditor(activity);
 	}
 
@@ -305,7 +307,7 @@ function refreshBatchEditor(activity) {
 	var editors = generateAssessmentEditors(g_sectionAssessmentEditors, activity, g_batchAssessmentEditor);
 	g_batchAssessmentEditor.editors = editors;
 	g_sectionAssessmentButtons.empty();
-	if((activity.relation & assessed) > 0 || g_batchAssessmentEditor.editors.length <= 1) return;
+	if(!activity.containsRelation() || (activity.containsRelation() && (activity.relation & assessed) > 0) || g_batchAssessmentEditor.editors.length <= 1) return;
 	generateAssessmentButtons(g_sectionAssessmentButtons, activity, g_batchAssessmentEditor);
 
 }

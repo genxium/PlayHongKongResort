@@ -74,19 +74,19 @@ function displayActivityDetail(par){
 		class: "activity-address"	
 	}).appendTo(ret);
 
-        if(g_activity.host.id != null && g_activity.host.name != null){
-                var host = $('<a>', {
-			href: "#", 
-                        text: "by @" + g_activity.host.name,
-                        class: "activity-host"
-                }).appendTo(ret);
-		host.click(function(evt){
-			evt.preventDefault();
-			window.location.hash = ("profile?" + g_keyVieweeId + "=" + g_activity.host.id.toString());	
-		});
-        }
+	if(g_activity.host.id != null && g_activity.host.name != null){
+			var host = $('<a>', {
+					href: "#", 
+					text: "by @" + g_activity.host.name,
+					class: "activity-host"
+			}).appendTo(ret);
+			host.click(function(evt){
+				evt.preventDefault();
+				window.location.hash = ("profile?" + g_keyVieweeId + "=" + g_activity.host.id.toString());	
+			});
+	}
 
-        displayTimesTable(ret, g_activity);
+	displayTimesTable(ret, g_activity);
 
 	var content = $('<div>',{
 		text: g_activity.content,
