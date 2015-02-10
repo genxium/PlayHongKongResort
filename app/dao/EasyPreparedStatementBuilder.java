@@ -3,10 +3,7 @@ package dao;
 import org.json.simple.JSONObject;
 import utilities.Loggy;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 
 public class EasyPreparedStatementBuilder {
@@ -641,10 +638,10 @@ public class EasyPreparedStatementBuilder {
     }
 
     public List<JSONObject> execSelect() {
-        List<JSONObject> ret = new ArrayList<JSONObject>();
+        List<JSONObject> ret = new ArrayList<>();
         try {
             Connection connection = SQLHelper.getConnection();
-	    PreparedStatement statement = this.toSelect(connection);
+	        PreparedStatement statement = this.toSelect(connection);
             ResultSet rs = statement.executeQuery();
             if (rs != null) {
                 ret = ResultSetUtil.convertToJSON(rs);
@@ -652,8 +649,10 @@ public class EasyPreparedStatementBuilder {
             }
             statement.close();
             SQLHelper.closeConnection(connection);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             Loggy.e(TAG, "select", e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return ret;
     }
@@ -673,7 +672,6 @@ public class EasyPreparedStatementBuilder {
             statement.close();
             SQLHelper.closeConnection(connection);
         } catch (Exception e) {
-            // return the INVALID value for exceptions
             Loggy.e(TAG, "insert", e);
         }
         return lastId;
@@ -694,7 +692,6 @@ public class EasyPreparedStatementBuilder {
             statement.close();
             SQLHelper.closeConnection(connection);
         } catch (Exception e) {
-            // return the INVALID value for exceptions
             Loggy.e(TAG, "insert", e);
         }
         return lastId;

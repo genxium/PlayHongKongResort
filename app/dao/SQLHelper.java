@@ -3,15 +3,12 @@ package dao;
 import org.apache.commons.dbcp2.*;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.json.simple.JSONObject;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import play.Play;
 import utilities.Loggy;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -72,14 +69,8 @@ public class SQLHelper {
 	    String ret = null;
 	    try {
 		    if(!readMySQLConfig()) return null;
-
 		    Class.forName("com.mysql.jdbc.Driver");
-		    StringBuilder builder = new StringBuilder();
-		    builder.append("jdbc:mysql://");
-		    builder.append(s_host + ":");
-		    builder.append(s_port.toString() + "/");
-		    builder.append(s_databaseName);
-		    ret = builder.toString();
+            ret = "jdbc:mysql://" + s_host + ":" + s_port.toString() + "/" + s_databaseName;
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "getConnectionURI", e);
 	    }
@@ -102,13 +93,27 @@ public class SQLHelper {
 
             /**
              * avoid auto-disconnection from MySQL server after 8 hours' idle time
+             * TODO: reconnection properties set for connection factory don't seem working!
              * */
             prop.setProperty("autoReconnect", "true");
             prop.setProperty("autoReconnectForPools", "true");
 
             ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI, prop);
             PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
-            ObjectPool<PoolableConnection> connectionPool = new GenericObjectPool<>(poolableConnectionFactory);
+
+            /**
+             * TODO: optimize these numbers!
+             * */
+            GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
+             poolConfig.setMaxIdle(10);
+            poolConfig.setMinIdle(5);
+            poolConfig.setTimeBetweenEvictionRunsMillis(60000); // validate every minute
+            poolConfig.setNumTestsPerEvictionRun(1);
+            poolConfig.setTestWhileIdle(true);
+            poolConfig.setTestOnBorrow(false);
+            poolConfig.setTestOnReturn(false);
+
+            ObjectPool<PoolableConnection> connectionPool = new GenericObjectPool<>(poolableConnectionFactory, poolConfig);
             poolableConnectionFactory.setPool(connectionPool);
             return new PoolingDataSource<>(connectionPool);
         } catch (Exception e) {
@@ -137,70 +142,6 @@ public class SQLHelper {
         } catch (Exception e) {
             Loggy.e(TAG, "closeConnection", e);
         }
-    }
-
-    public static List<JSONObject> select(PreparedStatement statement) {
-        List<JSONObject> ret = null;
-        try {
-            ResultSet rs = statement.executeQuery();
-            if (rs != null) {
-                ret = ResultSetUtil.convertToJSON(rs);
-                rs.close();
-            }
-            Connection connection = statement.getConnection();
-            statement.close();
-            closeConnection(connection);
-        } catch (Exception e) {
-            Loggy.e(TAG, "select", e);
-        }
-        return ret;
-    }
-
-    public static Long insert(PreparedStatement statement) {
-        long lastId = INVALID;
-        try {
-            statement.executeUpdate();
-            ResultSet rs = statement.getGeneratedKeys();
-            if (rs != null && rs.next()) {
-                lastId = (int) rs.getLong(1);
-                rs.close();
-            }
-            Connection connection = statement.getConnection();
-            statement.close();
-            closeConnection(connection);
-        } catch (Exception e) {
-            // return the INVALID value for exceptions
-            Loggy.e(TAG, "insert", e);
-        }
-        return lastId;
-    }
-
-    public static boolean update(PreparedStatement statement) {
-        boolean bRet = false;
-        try {
-            statement.executeUpdate();
-            Connection connection = statement.getConnection();
-            statement.close();
-            closeConnection(connection);
-            bRet = true;
-        } catch (Exception e) {
-            Loggy.e(TAG, "update", e);
-        }
-        return bRet;
-    }
-
-    public static boolean delete(PreparedStatement statement) {
-        boolean bRet = false;
-        try {
-            statement.executeUpdate();
-            Connection connection = statement.getConnection();
-            statement.close();
-            closeConnection(connection);
-            bRet = true;
-        } catch (Exception e) {
-            Loggy.e(TAG, "delete", e);
-        }
-        return bRet;
     }
 
     public static String convertOrientation(int order) {
