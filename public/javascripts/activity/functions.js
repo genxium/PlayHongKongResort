@@ -100,33 +100,33 @@ function onListActivitiesError(err){
 }
 
 function displayTimesTable(par, activity) {
-    	// deadline and begin time
-    	var deadlineRow = $("<div>", {
+	// deadline and begin time
+	var deadlineRow = $("<div>", {
 		class: "time-table dealine clearfix"
 	}).appendTo(par);
-    	var deadlineTitle = $("<div>", {
-    		text: "Application Deadline",
-			class: "time-label left"
-    	}).appendTo(deadlineRow);
-    	var deadline = $("<div>", {
-    		text: gmtMiilisecToLocalYmdhis(activity.applicationDeadline),
+	var deadlineTitle = $("<div>", {
+		text: TITLES["deadline"],
+		class: "time-label left"
+	}).appendTo(deadlineRow);
+	var deadline = $("<div>", {
+		text: gmtMiilisecToLocalYmdhis(activity.applicationDeadline),
 		class: "time-detail left"
-    	}).appendTo(deadlineRow);
+	}).appendTo(deadlineRow);
 	if (activity.isDeadlineExpired()) {
 		deadlineRow.addClass("expired");
 	}
 
-    	var beginTimeRow = $("<div>", {
+	var beginTimeRow = $("<div>", {
 		class: "time-table begin clearfix"
 	}).appendTo(par);
-    	var beginTimeTitle = $("<div>", {
-    		text: "Begin Time",
-    		class: "time-label left"
-    	}).appendTo(beginTimeRow);
-    	var beginTime = $("<div>", {
-    		text: gmtMiilisecToLocalYmdhis(activity.beginTime),
-    		class: "time-detail left"
-    	}).appendTo(beginTimeRow);
+	var beginTimeTitle = $("<div>", {
+		text: TITLES["begin_time"],
+		class: "time-label left"
+	}).appendTo(beginTimeRow);
+	var beginTime = $("<div>", {
+		text: gmtMiilisecToLocalYmdhis(activity.beginTime),
+		class: "time-detail left"
+	}).appendTo(beginTimeRow);
 
 	if (activity.hasBegun()) {
 		beginTimeRow.addClass("expired");
@@ -138,12 +138,12 @@ function displayParticipantStatistics(par, activity) {
 		class: "clearfix"
 	}).appendTo(par);
 	var spanSelected = $("<li>", {
-		text: activity.numSelected.toString() + " selected",
+		text: activity.numSelected.toString() + " " + TITLES["selected"],
 		class: "selected left"
 	}).appendTo(attend);
 
 	var spanApplied = $("<li>", {
-		text: (activity.numApplied + activity.numSelected).toString() + " applied", // display the total number of applied users including the selected ones
+		text: (activity.numApplied + activity.numSelected).toString() + " " + TITLES["applied"], // display the total number of applied users including the selected ones
 		class: "applied left"
 	}).appendTo(attend);
 
@@ -157,13 +157,13 @@ function onBtnJoinClicked(evt){
 	var activity = evt.data;
 
 	if (activity.isDeadlineExpired()) {
-		alert("Application deadline has expired!");
+		alert(ALERTS["deadline_expired"]);
 		return;
 	}
 
 	// prevent number limit violation
 	if (activity.numApplied >= g_maxApplied) {
-		alert("Applicant number has exceeded upper limit(500)!");
+		alert(ALERTS["applicant_num_exceeded"]);
 		return;
 	} 
 
@@ -182,13 +182,13 @@ function onBtnJoinClicked(evt){
 			if (!isStandardSuccess(data)) {
 				var ret = parseInt(data[g_keyRet]);
 				// report number limit violation
-				if (ret == 2) alert("Applicant number has exceeded upper limit(500)!");
+				if (ret == 2) alert(ALERTS["applicant_num_exceeded"]);
 				return;
 			}
 			if (g_onJoined == null) return;
 			g_onJoined(activity.id);
 		},
-		error: function(xhr, status, errThrown){
+		error: function(xhr, status, err){
 
 		}
 	});
@@ -199,7 +199,7 @@ function attachJoinButton(par, activity) {
 	if(activity.relation == null && !activity.isDeadlineExpired()){
 		var btnJoin = $('<button>', {
 			class: "btn-join purple right",
-			text: 'Join'
+			text: TITLES["join"]
 		}).appendTo(par);
 		btnJoin.click(activity, onBtnJoinClicked);
 	} else {
@@ -213,12 +213,12 @@ function attachRelationIndicator(par, activity, inListCell) {
 	if(activity.relation == null || g_loggedInUser == null || g_loggedInUser.id == activity.host.id) return;
 
 	var mapRelationName = {};
-	mapRelationName[applied] = "applied";
-	mapRelationName[selected] = "selected";
-	mapRelationName[present] = "present";
-	mapRelationName[absent] = "absent";
-	mapRelationName[assessed] = "assessed";
-	mapRelationName[hosted] = "";
+	mapRelationName[applied] = STATUS_NAMES["applied"];
+	mapRelationName[selected] = STATUS_NAMES["selected"];
+	mapRelationName[present] = STATUS_NAMES["present"];
+	mapRelationName[absent] = STATUS_NAMES["absent"];
+	mapRelationName[assessed] = STATUS_NAMES["assessed"];
+	mapRelationName[hosted] = STATUS_NAMES["hosted"];
 		
 	if (inListCell) {
 		$("<div>", {
@@ -332,10 +332,8 @@ function generateActivityCell(par, activity){
 
 	var btnDetailMiddle = $('<button>', {
 		class: "activity-detail-small purple right",
-		text: "Go"
 	}).appendTo(rightMiddle);
 
-	
 	btnDetailMiddle.click(activity, function(evt){
 		evt.preventDefault();
 		var act = evt.data;
@@ -351,7 +349,7 @@ function generateActivityCell(par, activity){
 
 	var btnDetail = $('<button>', {
 		class: "activity-detail purple",
-		text: "Go"
+		text: TITLES["view"]
 	}).appendTo(right);
 
 	

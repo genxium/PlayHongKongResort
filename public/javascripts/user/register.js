@@ -96,7 +96,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var nameVal = $(this).val();
 		if(nameVal == null || nameVal.length == 0) return;
 		if(!validateName(nameVal)) {
-			nameCheck.html("<p>Username can only contain 6~32 alphabet letters, numbers, or symbol '_'</p>");
+			nameCheck.html("<p>" + MESSAGES["username_requirement"] + "</p>");
 			nameCheck.addClass("warn");
 			return;
 		}
@@ -109,10 +109,10 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 			data: params,
 			success: function(data, status, xhr){
 				if (isStandardSuccess(data)){
-					nameCheck.html("<p>This username can be used :)</p>");        
+					nameCheck.html("<p>" + MESSAGES["username_valid"] + "</p>");        
 			    }else{
 					nameCheck.addClass("warn");
-					nameCheck.html("<p>This username cannot be used :(</p>");
+					nameCheck.html("<p>" + MESSAGES["username_invalid"] + "</p>");
 				}        
 			},
 			error: function(xhr, status, err){
@@ -130,7 +130,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		if(emailVal == null || emailVal.length == 0) return;
 		if(!validateEmail(emailVal)) {
 			emailCheck.addClass("warn");
-			emailCheck.html("<p>Not valid email format</p>");
+			emailCheck.html("<p>" + MESSAGES["email_requirement"] + "</p>");
 			return;
 		}
 
@@ -142,10 +142,10 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 			data: params,
 			success: function(data, status, xhr){
 				if (isStandardSuccess(data)){
-					emailCheck.html("<p>This email can be used :)</p>");        
+					emailCheck.html("<p>" + MESSAGES["email_valid"] + "</p>");        
 				}else{
 					emailCheck.addClass("warn");
-					emailCheck.html("<p>This email cannot be used :(</p>");
+					emailCheck.html("<p>" + MESSAGES["email_invalid"] + "</p>");
 				}        
 			},
 			error: function(xhr, status, err){
@@ -163,7 +163,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		if(pswVal == null || pswVal.length ==0 ) return;
 		if(validatePassword(pswVal))	return;
 		pswCheck.addClass("warn");
-		pswCheck.html("<p>Password can only contain 6~32 alphabet letters, numbers or symbols '#', '_' and '!'</p>");
+		pswCheck.html("<p>" + MESSAGES["password_requirement"] + "</p>");
 	});	
  
 	this.pswConfirm.on("input keyup paste", {0: this.pswConfirmCheck, 1: this.psw}, function(evt){
@@ -176,7 +176,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		pswConfirmCheck.removeClass("warn");
 		if(validatePasswordConfirm(pswVal, pswConfirmVal))	return;
 		pswConfirmCheck.addClass("warn");
-		pswConfirmCheck.html("<p>Doesn't match!</p>");
+		pswConfirmCheck.html("<p>" + MESSAGES["password_confirm_requirement"] + "</p>");
 	});	
 }
 
@@ -191,7 +191,7 @@ function generateRegisterWidget(par, onSuccess, onError){
 	}).appendTo(register_box);
 	var fieldName = $('<input>', {
 		type: "text",
-		placeHolder: "Username",	
+		placeHolder: HINTS["username"],	
 	}).appendTo(rowName);
 	var spName = $('<div>', {
 		class: "message"
@@ -202,7 +202,7 @@ function generateRegisterWidget(par, onSuccess, onError){
 	}).appendTo(register_box);
 	var fieldEmail = $('<input>', {
 		type: "text",
-		placeHolder: "Email",
+		placeHolder: HINTS["email"],
 	}).appendTo(rowEmail);
 	var spEmail = $('<div>', {
 		class: "message"
@@ -213,7 +213,7 @@ function generateRegisterWidget(par, onSuccess, onError){
 	}).appendTo(register_box);
 	var fieldPsw = $('<input>', {
 		type: "password",
-		placeHolder: "Password"	
+		placeHolder: HINTS["password"]	
 	}).appendTo(rowPsw);
 	var spanPsw = $('<div>', {
 		class: "message"
@@ -224,7 +224,7 @@ function generateRegisterWidget(par, onSuccess, onError){
 	}).appendTo(register_box);
 	var fieldPswConfirm = $('<input>', {
 		type: "password",
-		placeHolder: "Confirm Password"	
+		placeHolder: HINTS["confirm_password"]	
 	}).appendTo(rowPswConfirm);
 	var spPswConfirm = $('<div>', {
 		class: "message"
@@ -238,7 +238,7 @@ function generateRegisterWidget(par, onSuccess, onError){
 		class: "register-button"
 	}).appendTo(register_box);
 	var btnRegister = $('<button>', {
-		text: "Register",
+		text: TITLES["register"],
 		class: "purple"
 	}).appendTo(rowButton);
 

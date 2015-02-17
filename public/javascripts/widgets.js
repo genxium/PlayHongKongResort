@@ -640,7 +640,7 @@ function AvatarEditor(container, image, btnChoose, btnUpload, hint) {
 		formData.append(g_keyAvatar, file);
 		formData.append(g_keyToken, token);
 		
-		editor.hint.text("Uploading...");
+		editor.hint.text(MESSAGES["uploading"]);
 		
 		$.ajax({
 			method: "POST",
@@ -650,10 +650,10 @@ function AvatarEditor(container, image, btnChoose, btnUpload, hint) {
 			contentType: false,
 			processData: false,
 			success: function(data, status, xhr){
-				editor.hint.text("Uploaded");
+				editor.hint.text(MESSAGES["uploaded"]);
 			},
 			error: function(xhr, status, err){
-				editor.hint.text("Failed");
+				editor.hint.text(MESSAGES["upload_failed"]);
 			}
 		});
 	});
@@ -727,12 +727,12 @@ function generateAvatarEditor(par, user) {
 	}).appendTo(ret);
 	var btnChoose = $("<input>", {
 		type: "file",
-		text: "Choose a picture"
+		text: TITLES["choose_picture"]
 	}).appendTo(uploadContainer);
 	//setDimensions(btnChoose, "250px", "95px");
 
 	var btnUpload = $("<button>", {
-		text: "Upload",	
+		text: TITLES["upload"],	
 		class: "purple"
 	}).appendTo(uploadContainer);	
 	//setDimensions(btnUpload, "250px", "95px");

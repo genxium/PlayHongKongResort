@@ -416,7 +416,7 @@ function previewImage(par, editor) {
 		//setDimensions(img, g_wImageCell, g_hImageCell);
 
 		var btnDelete = $("<button>", {
-			text: "delete",
+			text: TITLES["delete"],
 			class: "purple image-delete"
 		}).appendTo(node);
 		//setDimensions(btnDelete, g_wImageCell, g_hDelete);
@@ -608,21 +608,19 @@ function generateActivityEditor(par, activity){
 
         var onChange = function(evt) {
                 evt.preventDefault();
-		if (g_activityEditor == null) return;
-		if (countImages(g_activityEditor) >= g_imagesLimit) {
-			alert("You can only choose up to " + g_imagesLimit.toString() + " images!");
-			return;
-		
-		}
+				if (g_activityEditor == null) return;
+				if (countImages(g_activityEditor) >= g_imagesLimit) {
+					var msg = String.format(ALERTS["image_selection_limit_exceeded"], g_imagesLimit);	
+					alert(msg);
+					return;
+				}
                 g_activityEditor.setSavable();
                 g_activityEditor.setNonSubmittable();
                 previewImage(newImagesRow, g_activityEditor);
         };
 
-	var explorerTrigger = generateExplorerTriggerSpan(newImagesRow, onChange, "/assets/icons/add.png", g_wImageCell, g_hImageCell, g_wImageCell/2, g_hImageCell/2);
+		var explorerTrigger = generateExplorerTriggerSpan(newImagesRow, onChange, "/assets/icons/add.png", g_wImageCell, g_hImageCell, g_wImageCell/2, g_hImageCell/2);
 
-	//$('<br>').appendTo(ret);
-	
 	// Schedules
 	var deadline = reformatDate(new Date());
 	if(activity != null && activity.applicationDeadline != null) deadline = activity.applicationDeadline;
@@ -634,7 +632,7 @@ function generateActivityEditor(par, activity){
 		class: "edit-deadline clearfix"
 	}).appendTo(ret);
 	var scheduleCell11 = $("<div>", {
-		text: "Deadline",
+		text: TITLES["deadline"],
 		class: "left edit-label"
 	}).appendTo(scheduleRow1);
 	var scheduleCell12 = $("<div>", {
@@ -646,7 +644,7 @@ function generateActivityEditor(par, activity){
 		class: "edit-begin clearfix"
 	}).appendTo(ret);
 	var scheduleCell21 = $("<div>", {
-		text: "Begin Time",
+		text: TITLES["begin_time"],
 		class: "left edit-label"
 	}).appendTo(scheduleRow2);
 	var scheduleCell22 = $("<div>", {
@@ -669,13 +667,13 @@ function generateActivityEditor(par, activity){
 	/* Associated Buttons */
 	var btnSave = $('<button>',{
 		class: g_classBtnSave,
-		text: 'Save'
+		text: TITLES["save"]
 	}).appendTo(buttons);
 	btnSave.click(onSave);
 
 	var btnSubmit = $('<button>',{
 		class: g_classBtnSubmit,
-		text: 'Submit'
+		text: TITLES["submit"]
 	}).appendTo(buttons);
 	var dSubmit = {};
 	dSubmit[g_keyActivityId] = activityId;
@@ -683,7 +681,7 @@ function generateActivityEditor(par, activity){
 
 	var btnCancel = $('<button>',{
 		class: g_classBtnCancel,
-		text: 'Cancel'
+		text: TITLES["cancel"]
 	}).appendTo(buttons);
 	btnCancel.click(onCancel);
 
@@ -691,7 +689,7 @@ function generateActivityEditor(par, activity){
 	if(!isNewActivity){
 		btnDelete = $('<button>',{
 			class: g_classBtnDelete,
-			text: 'Delete'
+			text: TITLES["delete"]
 		}).appendTo(buttons);
 		var dDelete = {};
 		btnDelete.click(function(evt) {
@@ -728,17 +726,17 @@ function generateDeleteConfirmation(par, activity) {
 	}).appendTo(par);
 	
 	var title = $("<p>", {
-		text: "Are you sure to delete this activity?",
+		text: MESSAGES["delete_activity_confirmation"],
 		style: "font-size: 18pt;"
 	}).appendTo(ret);
 
 	var buttons = $("<p>").appendTo(ret);
 	var btnYes = $("<button>", {
-		text: "YES",
+		text: TITLES["yes"],
 		style: "font-size: 16pt; background-color: cornflowerblue; color: white; margin-right: 10pt;"
 	}).appendTo(buttons);
 	var btnNo = $("<button>", {
-		text: "NO",
+		text: TITLES["no"],
 		style: "font-size: 16pt; background-color: crimson; color: white; margin-left: 10pt;"
 	}).appendTo(buttons);
 	

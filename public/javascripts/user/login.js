@@ -33,12 +33,12 @@ function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, on
 		var password = form.psw.val();
 
 		if ( email == null || email.length == 0 || !validateEmail(email) ) {
-			alert("不是有效的Email地址")
+			alert(ALERTS["invalid_email_format"])
 			return;
 		}
 
 		if ( password == null || password.length == 0 || !validatePassword(password) ) {
-			alert("密碼錯誤");
+			alert(ALERTS["wrong_password"]);
 			return;
 		}
 
@@ -63,7 +63,7 @@ function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, on
 		    },
 		    error: function(xhr, status, err){
 				if(form.onLoginError == null) return;
-				alert("用戶不存在或密碼錯誤！");
+				alert(ALERTS["user_not_existing_or_wrong_password"]);
 				form.onLoginError(err);
 		    }
 		});
@@ -114,21 +114,21 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 		class: "login-inputs left"
 	}).appendTo(row1);
 	var handle = $('<input>', {
-		placeHolder: "Email",
+		placeHolder: HINTS["email"],
 		type: "text",
 		class: "login-email"
 	}).appendTo(inputs);
 	var psw = $('<input>', {
-        placeHolder: "Password",
+        placeHolder: HINTS["password"],
         type: "password",
 		class: "login-pw"
     }).appendTo(inputs);
     var btn = $('<button>',{
-        text: "Login",
+        text: TITLES["login"],
 		class: "login-btn right purple"
     }).appendTo(row1);
 	var forgot = $("<button>", {
-		text: "Forgot Password",
+		text: TITLES["forgot_password"],
 		class: "login-forgot"
 	}).appendTo(container);	
 	
@@ -191,7 +191,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 		src: g_loggedInUser.avatar
 	}).appendTo(avatarContainer);
 	var avatarSpan = $("<span>", {
-		text: "Edit"
+		text: TITLES["edit"]
 	}).appendTo(avatarContainer);
 	avatarContainer.click(function(evt){
 		evt.preventDefault();
@@ -232,7 +232,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	}).appendTo(userBoxLeft);
 
 	var icons = ["/assets/icons/new_activity.png", "/assets/icons/profile.png", "/assets/icons/logout.png"];
-	var titles = ["create", "profile", "logout"];
+	var titles = [TITLES["create"], TITLES["profile"], TITLES["logout"]];
 	var reactions = [createReact, profileReact, logoutReact]; 
 
 	var dropdownMenu = createDropdownMenu(postLoginMenuContainer, "menu-post-login", g_loggedInUser.name, icons, titles, reactions);
