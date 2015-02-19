@@ -213,12 +213,12 @@ function attachRelationIndicator(par, activity, inListCell) {
 	if(activity.relation == null || g_loggedInUser == null || g_loggedInUser.id == activity.host.id) return;
 
 	var mapRelationName = {};
-	mapRelationName[applied] = STATUS_NAMES["applied"];
-	mapRelationName[selected] = STATUS_NAMES["selected"];
-	mapRelationName[present] = STATUS_NAMES["present"];
-	mapRelationName[absent] = STATUS_NAMES["absent"];
-	mapRelationName[assessed] = STATUS_NAMES["assessed"];
-	mapRelationName[hosted] = STATUS_NAMES["hosted"];
+	mapRelationName[applied] = RELATION_NAMES["applied"];
+	mapRelationName[selected] = RELATION_NAMES["selected"];
+	mapRelationName[present] = RELATION_NAMES["present"];
+	mapRelationName[absent] = RELATION_NAMES["absent"];
+	mapRelationName[assessed] = RELATION_NAMES["assessed"];
+	mapRelationName[hosted] = RELATION_NAMES["hosted"];
 		
 	if (inListCell) {
 		$("<div>", {
@@ -236,7 +236,7 @@ function attachRelationIndicator(par, activity, inListCell) {
 function attachStatusIndicator(par, activity) {
 	if(activity.status == null) return;
 
-	var arrayStatusName = ["created", "pending", "rejected", "accepted", "expired"];
+	var arrayStatusName = [STATUS_NAMES["created"], STATUS_NAMES["pending"], STATUS_NAMES["rejected"], STATUS_NAMES["accepted"]];
 	
 	var statusIndicator = $('<div>',{
 		class: "activity-cell-status",

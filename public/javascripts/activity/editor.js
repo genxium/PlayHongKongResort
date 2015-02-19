@@ -610,7 +610,7 @@ function generateActivityEditor(par, activity){
                 evt.preventDefault();
 				if (g_activityEditor == null) return;
 				if (countImages(g_activityEditor) >= g_imagesLimit) {
-					var msg = String.format(ALERTS["image_selection_limit_exceeded"], g_imagesLimit);	
+					var msg = ALERTS["image_selection_limit_exceeded"].format(g_imagesLimit);	
 					alert(msg);
 					return;
 				}

@@ -103,10 +103,10 @@ function removeReplyEditor(){
 function generateReplyEditor(par, activity, comment){
     var ret = $('<p>').appendTo(par);
     var input = $('<input>', {
-        placeholder: "to @" + comment.fromUser.name + ":"
+        placeholder: HINTS["reply"].format(comment.fromUser.name)
     }).appendTo(ret);
     var btnSubmit = $('<button>',{
-        text: "提交回覆",
+        text: TITLES["submit_comment"],
         class: "comment-submit purple"
     }).appendTo(ret);
 
@@ -117,9 +117,9 @@ function generateReplyEditor(par, activity, comment){
                 var token = $.cookie(g_keyToken);
 
                 if (content == null || !validateCommentContent(content)) {
-			alert("請輸入5 ~ 128個字");
-                        return;
-		}
+					alert(ALERTS["comment_requirement"]);
+					return;
+				}
 
                 var parentId = comment.parentId == (-1) ? comment.id : comment.parentId;
                 var params={};
@@ -140,14 +140,14 @@ function generateReplyEditor(par, activity, comment){
                                 g_onCommentSubmitSuccess();
                         },
                         error: function(xhr, status, err){
-                                alert("Comment not submitted...");
+                                alert(MESSAGES["comment_reply_not_submitted"]);
                         }
                 });
 
     });
 
     var btnCollapse = $('<button>',{
-        text: "收起",
+        text: TITLES["collapse"],
         class: "comment-collapse gray"
     }).appendTo(ret);
 
@@ -228,7 +228,7 @@ function generateCommentCell(par, commentJson, activity, single){
         }).appendTo(row);
 
         var btnReply = $('<button>',{
-            text: "回覆",
+            text: TITLES["reply"],
             class: "purple comment-reply"
         }).appendTo(operations);
 
@@ -257,7 +257,7 @@ function generateSubCommentCell(par, commentJson, activity){
 	}).appendTo(row);
 	var hrefTo = $('<a>', {
 		href: "#",
-		text: "to @" + comment.toUser.name + ": ",
+		text: TITLES["replied_to"].format(comment.toUser.name),
 		target: "_blank",
 	}).appendTo(commentTo);
 	hrefTo.click(function(evt) {
@@ -296,7 +296,7 @@ function generateSubCommentCell(par, commentJson, activity){
 	}).appendTo(row);
 
 	var btnReply = $('<button>',{
-		text: "回覆",
+		text: TITLES["reply"],
 		class: "purple comment-reply"
 	}).appendTo(operations);
 
@@ -316,11 +316,11 @@ function generateCommentEditor(par, activity){
     var input = $('<input>', {
     }).appendTo(editor);
     var btnSubmit = $('<button>',{
-        text: "提交問題",
+        text: TITLES["submit_comment_question"],
     	class: "purple"
     }).appendTo(editor);
 
-    var inputCounter = new WordCounter("", 5, 128, g_commentContentPattern, "請輸入5 ~ 128個字");
+    var inputCounter = new WordCounter("", 5, 128, g_commentContentPattern, ALERTS["comment_requirement"]);
     inputCounter.appendCounter(editor);
 
     input.on("input paste keyup", inputCounter, function(evt){
@@ -355,7 +355,7 @@ function generateCommentEditor(par, activity){
 				listCommentsAndRefresh(activity, null, null);
 			},
 			error: function(xhr, status, err){
-				alert("Comment not submitted...");
+				alert(ALERTS["comment_question_not_submitted"]);
 			}
 		});
     });

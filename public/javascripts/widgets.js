@@ -534,7 +534,7 @@ function Captcha(sid) {
 			class: "captcha"
 		}).appendTo(par);
 		this.input = $("<input>", {
-			placeHolder: "Captcha"
+			placeHolder: HINTS["captcha"]
 		}).appendTo(row);
 		this.img = $("<img>", {
 			src: "/captcha?" + g_keySid + "=" + this.sid

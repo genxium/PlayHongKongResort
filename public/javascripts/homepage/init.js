@@ -29,14 +29,14 @@ function requestHome() {
 	g_sectionRegister = $("#section-register");
 	g_registerWidget = generateRegisterWidget($("#section-register"), 
 			function(data) {
-				alert("Registered successfully!");
+				alert(ALERTS["registered"]);
 				listActivitiesAndRefresh();
 			},
 			function(err) {
-				alert("Oops! Not registered...");
+				alert(ALERTS["not_registered"]);
 			});
 
-	var selector = createSelector($("#pager-filters"), ["時間倒序", "時間順序"], [g_orderDescend, g_orderAscend], null, null, null, null);
+	var selector = createSelector($("#pager-filters"), [TITLES["time_descendant"], TITLES["time_ascendant"]], [g_orderDescend, g_orderAscend], null, null, null, null);
 	var filter = new PagerFilter(g_keyOrientation, selector);
 	var filters = [filter];	
 
