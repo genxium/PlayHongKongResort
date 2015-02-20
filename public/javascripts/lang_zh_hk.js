@@ -119,5 +119,6 @@ var ALERTS = {
 	not_permitted_to_view_detail: "你無權瀏覽此頁",
 	activity_not_begun: "活動尚未開始",
 	assessment_submitted: "評價已成功提交",
-	assessment_not_submitted: "評價未提交"
+	assessment_not_submitted: "評價未提交",
+	choose_one_image: "一次只能選擇一張圖片"
 };

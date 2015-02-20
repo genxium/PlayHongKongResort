@@ -17,7 +17,7 @@ function ExplorerTrigger(node, pic, btn) {
 		var files = this.btn[0].files;
 		if (files == null) return null;	
 		if (files.length != 1) {
-			alert("Choose only 1 image at a time!!!");
+			alert(ALERTS["choose_one_image"]);
 			return null;
 		}
 		return files[0];
@@ -610,7 +610,7 @@ function AvatarEditor(container, image, btnChoose, btnUpload, hint) {
 		var files = this.btnChoose[0].files;
 		if (files == null) return null;	
 		if (files.length != 1) {
-			alert("Choose only 1 image at a time!!!");
+			alert(ALERTS["choose_one_image"]);
 			return null;
 		}
 		return files[0];
@@ -639,7 +639,7 @@ function AvatarEditor(container, image, btnChoose, btnUpload, hint) {
 		var formData = new FormData();
 		formData.append(g_keyAvatar, file);
 		formData.append(g_keyToken, token);
-		
+		disableField($(this));	
 		editor.hint.text(MESSAGES["uploading"]);
 		
 		$.ajax({
@@ -650,9 +650,11 @@ function AvatarEditor(container, image, btnChoose, btnUpload, hint) {
 			contentType: false,
 			processData: false,
 			success: function(data, status, xhr){
+				enableField($(this));	
 				editor.hint.text(MESSAGES["uploaded"]);
 			},
 			error: function(xhr, status, err){
+				enableField($(this));	
 				editor.hint.text(MESSAGES["upload_failed"]);
 			}
 		});
