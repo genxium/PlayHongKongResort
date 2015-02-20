@@ -48,7 +48,7 @@ function queryActivityDetail(activityId){
 				attachJoinButton(g_barButtons, g_activity);
 			},
 			error: function(xhr, status, err){
-				alert("You're not permitted to view this page!");	
+				alert(ALERTS["not_permitted_to_view_detail"]);	
 				emptyBarButtons();	
 				g_sectionActivity.empty();	
 			}
@@ -77,7 +77,7 @@ function displayActivityDetail(par){
 	if(g_activity.host.id != null && g_activity.host.name != null){
 			var host = $('<a>', {
 					href: "#", 
-					text: "by @" + g_activity.host.name,
+					text: TITLES["by_host"].format("@" + g_activity.host.name),
 					class: "activity-host"
 			}).appendTo(ret);
 			host.click(function(evt){
@@ -127,8 +127,8 @@ function displayActivityDetail(par){
 
 	if (g_activity.hasBegun()) {
 		$("<p>", {
-			style: "color: red; font-size: 13pt",
-			text: "Q & A is disabled because the activity has begun. You can still view existing conversations."
+			class: "comment-not-permitted",
+			text: MESSAGES["comment_disabled_activity_has_begun"]
 		}).appendTo(ret);
 		return ret;
 	}
@@ -136,8 +136,8 @@ function displayActivityDetail(par){
 	if (g_activity.status != null && g_activity.status != undefined && g_activity.status != g_statusAccepted) {
 		// for host viewing unaccepted activity
 		$("<p>", {
-			style: "color: red; font-size: 13pt",
-			text: "Q & A is disabled before activity accepted."
+			class: "comment-not-permitted",
+			text: MESSAGES["comment_disabled_activity_not_accepted"]
 		}).appendTo(ret);
 		return ret;
 	}
@@ -173,7 +173,7 @@ function requestActivityDetail(activityId) {
 	g_barButtons = $("#section-user");
 
 	var refs = ["tab-comments", "tab-participants", "tab-assessments"];
-	var titles = ["Q & A", "參與者", "評價"];
+	var titles = [TITLES["question"], TITLES["participant"], TITLES["assessment"]];
 	var preactiveRef = refs[0];	
 		
 	var tabCommentContent = $("<div>", {

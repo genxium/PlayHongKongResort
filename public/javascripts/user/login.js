@@ -232,10 +232,11 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	}).appendTo(userBoxLeft);
 
 	var icons = ["/assets/icons/new_activity.png", "/assets/icons/profile.png", "/assets/icons/logout.png"];
+	var actionNames = ["create", "profile", "logout"];
 	var titles = [TITLES["create"], TITLES["profile"], TITLES["logout"]];
 	var reactions = [createReact, profileReact, logoutReact]; 
 
-	var dropdownMenu = createDropdownMenu(postLoginMenuContainer, "menu-post-login", g_loggedInUser.name, icons, titles, reactions);
+	var dropdownMenu = createDropdownMenu(postLoginMenuContainer, "menu-post-login", g_loggedInUser.name, icons, actionNames, titles, reactions);
 	var menu = new PostLoginMenu(bubble, dropdownMenu, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
 	var params = [menu, menu, menu];
 	dropdownMenu.setReactionParams(params);

@@ -437,7 +437,7 @@ function DropdownMenu(toggle, items, reactions) {
 	};
 }
 
-function createDropdownMenu(par, id, menuTitle, icons, titles, reactions) {
+function createDropdownMenu(par, id, menuTitle, icons, actionNames, titles, reactions) {
 	var length = titles.length;
 	if (length != icons.length) return; 
 	var container = $("<div>", { class: "menu-actions" }).appendTo(par);
@@ -461,7 +461,7 @@ function createDropdownMenu(par, id, menuTitle, icons, titles, reactions) {
 	}).appendTo(container); 
 	var lis = [];
 	for (var i = 0; i < titles.length; i++) {
-		var li = $("<li class='action-"+titles[i]+"'>").appendTo(ul);
+		var li = $("<li class='action-"+actionNames[i]+"'>").appendTo(ul);
 		var action = $("<a tabindex='-1' href='#' title='"+titles[i]+"'>").appendTo(li);
 		//action.css("font-size", "15pt");
 		//action.css("display", "block"); // increase the size of the link target, ref: http://css-tricks.com/keep-margins-out-of-link-lists/

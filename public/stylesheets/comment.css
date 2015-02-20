@@ -59,3 +59,8 @@
 	height: 24px;
 	font-size: 12px;
 }
+.comment-not-permitted {
+	margin-top: 12px;
+	color: indianred;
+	font-size: 18px;
+}

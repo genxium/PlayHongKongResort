@@ -51,11 +51,11 @@ function generateAssessmentsViewer(par, assessments) {
 	var head = $("<tr class='assessments-viewer-row'>").appendTo(tbl);
 
 	$('<th>', {
-		text: "Content"
+		text: TITLES["content"]
 	}).appendTo(head);
 
 	$('<th>', {
-		text: "From"
+		text: TITLES["from"]
 	}).appendTo(head);
 
 	for(var i = 0; i < assessments.length; i++) {
@@ -66,12 +66,12 @@ function generateAssessmentsViewer(par, assessments) {
 		}).appendTo(row);
 		var fromCell = $("<td>").appendTo(row);
 		var iconSlot = $("<img>", {
-		    src: assessment.fromUser.avatar,
-		    class: "assessments-viewer-avatar"
+			src: assessment.fromUser.avatar,
+			class: "assessments-viewer-avatar"
 		}).appendTo(fromCell);
 		var nameSlot = $("<span>", {
-            text: assessment.fromUser.name,
-            class: "assessments-viewer-name"
+			text: assessment.fromUser.name,
+			class: "assessments-viewer-name"
 		}).appendTo(fromCell);
  	}
 	return ret;

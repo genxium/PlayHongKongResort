@@ -61,7 +61,17 @@ var TITLES = {
 	time_ascendant: "時間順序",
 	time_descendant: "時間倒序",
 	joined_activities: "參與的活動",
-	posted_activities: "發起的活動"
+	posted_activities: "發起的活動",
+	question: "Q & A",
+	participant: "參與者",
+	assessment: "評價",
+	view_assessment: "查看Ta收到的評價 >",
+	assessment_disabled: "未可用",
+	present: "已出席",
+	absent: "未出席",
+	from: "來自",
+	content: "內容",
+	by_host: "由 {0} 發起"
 };
 
 var MESSAGES = {
@@ -78,7 +88,9 @@ var MESSAGES = {
 	password_requirement: "密碼需為6~32位由英文字母，數字或符號'#'，'_'及'!'組成",	
 	password_confirm_requirement: "密碼不匹配",	
 	comment_reply_not_submitted: "回覆未提交",
-	assessment_requirement: "請填寫－～64個字"
+	assessment_requirement: "請填寫－～64個字",
+	comment_disabled_activity_has_begun: "Q&A時間已經結束",
+	comment_disabled_activity_not_accepted: "活動尚未通過審核"
 };
 
 var HINTS = {
@@ -103,5 +115,9 @@ var ALERTS = {
 	comment_requirement: "請填寫5～128個字",
 	comment_question_not_submitted: "問題未提交",
 	registered: "註冊成功",
-	not_registered: "註冊不成功"
+	not_registered: "註冊不成功",
+	not_permitted_to_view_detail: "你無權瀏覽此頁",
+	activity_not_begun: "活動尚未開始",
+	assessment_submitted: "評價已成功提交",
+	assessment_not_submitted: "評價未提交"
 };

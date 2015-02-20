@@ -132,12 +132,12 @@ function generateAssessmentButtons(par, activity, batchEditor){
 			url: "/assessment/submit",
 			data: params,
 			success: function(data, status, xhr){
-				alert("Assessment submitted!");
+				alert(ALERTS["assessment_submitted"]);
 				aActivity.relation |= assessed;
 				refreshBatchEditor(aActivity);
 			},
 			error: function(xhr, status, err){
-				alert("Assessment NOT submitted!");
+				alert(ALERTS["assessment_not_submitted"]);
 			}
 		});
 	}).appendTo(row);
@@ -176,7 +176,7 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 		disabled = true;
 	}
 
-	var attendanceSwitch = createBinarySwitch(sectionAll, disabled, initVal, "N/A", "Present", "Absent", "switch-attendance");	
+	var attendanceSwitch = createBinarySwitch(sectionAll, disabled, initVal, TITLES["assessment_disabled"], TITLES["present"], TITLES["absent"], "switch-attendance");	
 	g_sectionAssessmentEditors = $('<div>', {
 		style: "margin-top: 5pt"
 	}).appendTo(sectionAll);
@@ -220,7 +220,7 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 		evt.preventDefault();
 		if(activity.relation == invalid) return;
 		if(!activity.hasBegun()) {
-			alert("Activity has not begun yet!");
+			alert(ALERTS["activity_not_begun"]);
 			return; 
 		}
 		var value = getBinarySwitchState(attendanceSwitch);
@@ -262,7 +262,7 @@ function updateAttendance(activityId, attendance, onSuccess, onError){
 
 function generateAssessedView(row, participant, activity) {
 	var btnView = $('<span>', {
-		text: "View assessments >>",
+		text: TITLES["view_assessment"],
 		style: "display: inline; color: blue; margin-left: 5pt; cursor: pointer"
 	}).appendTo(row);					
 	btnView.click(function(evt){
