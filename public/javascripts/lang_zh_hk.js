@@ -90,7 +90,9 @@ var MESSAGES = {
 	comment_reply_not_submitted: "回覆未提交",
 	assessment_requirement: "請填寫－～64個字",
 	comment_disabled_activity_has_begun: "Q&A時間已經結束",
-	comment_disabled_activity_not_accepted: "活動尚未通過審核"
+	comment_disabled_activity_not_accepted: "活動尚未通過審核",
+	email_verification_success: "Hi {0}， 你的電郵地址{1}已完成驗證， {2}秒後將為你跳轉到首頁",
+	email_verification_failure: "Hi {0}， 很遺憾你的電郵地址{1}未能通過驗證， 如需幫助請與hongkongresort@126.com聯繫"
 };
 
 var HINTS = {

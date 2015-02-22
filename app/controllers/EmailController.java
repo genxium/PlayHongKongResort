@@ -4,11 +4,13 @@ import components.StandardFailureResult;
 import components.StandardSuccessResult;
 import dao.EasyPreparedStatementBuilder;
 import exception.DuplicateException;
+import exception.InvalidQueryParamsException;
 import exception.UserNotFoundException;
 import models.User;
 import org.json.simple.JSONObject;
 import play.mvc.Content;
 import play.mvc.Result;
+import utilities.DataUtils;
 import utilities.General;
 import utilities.Loggy;
 import views.html.email_verification;
@@ -36,6 +38,8 @@ public class EmailController extends UserController {
 
     public static Result verify(String email, String code) {
         try {
+			if (email == null || code == null) throw new NullPointerException();
+            if (email.isEmpty() || code.isEmpty()) throw new InvalidQueryParamsException();
             EasyPreparedStatementBuilder builderUpdate = new EasyPreparedStatementBuilder();
             boolean res = builderUpdate.update(User.TABLE)
                                         .set(User.GROUP_ID, User.USER)
@@ -50,12 +54,20 @@ public class EmailController extends UserController {
             if(userJsons == null || userJsons.size() != 1) throw new UserNotFoundException();
 
             User user = new User(userJsons.get(0));
-            Content html = email_verification.render(res, user.getName(), user.getEmail());
-            return ok(html);
+			if (res) {
+				return redirect("http://" + request().host() + "/user/email#success?name=" + DataUtils.encodeUtf8(user.getName()) + "&email=" + DataUtils.encodeUtf8(user.getEmail()));
+			} else {
+                return redirect("http://" + request().host() + "/user/email#failure?name=" + DataUtils.encodeUtf8(user.getName()) + "&email=" + DataUtils.encodeUtf8(user.getEmail()));
+			}	
         } catch (Exception e) {
             Loggy.e(TAG, "verify", e);
         }
         return badRequest();
     }
+
+	public static Result index() {
+		Content html = email_verification.render();
+		return ok(html);
+	}
 
 }

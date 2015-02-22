@@ -126,7 +126,7 @@ function validateAssessmentContent(content) {
 }
 
 function extractTagAndParams(url) {
-	var urlRegex = /https?:\/\/(.+)#(default|profile|detail|home|search|notifications)\??(.*)/i;
+	var urlRegex = /https?:\/\/(.+)#(default|profile|detail|home|search|notifications|success|failure)\??(.*)/i;
 	var matchUrl = urlRegex.exec(url);
 
 	if (matchUrl == null) return null;

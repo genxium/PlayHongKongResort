@@ -6,6 +6,8 @@ import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.Map;
 
@@ -68,7 +70,15 @@ public class DataUtils {
 		return null;
     } 
 
-    public static String appendCacheKey(String cacheKey, String key, Object val) {
+    public static String appendCacheKey(final String cacheKey, final String key, final Object val) {
         return cacheKey + "|" + key + ":" + String.valueOf(val);
+    }
+
+    public static String encodeUtf8(final String toEncode) {
+        try {
+            return URLEncoder.encode(toEncode, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
     }
 }
