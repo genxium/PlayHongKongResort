@@ -78,7 +78,10 @@ function generateAssessmentsViewer(par, assessments) {
 } 
 
 function onQueryAssessmentsSuccess(data) {
-	if(data == null || Object.keys(data).length == 0) return;
+	if(data == null || Object.keys(data).length == 0) {
+		alert(ALERTS["no_assessment"]);
+		return;
+	}
 	var assessments = new Array();
 	for(var key in data) {
 		var assessmentJson = data[key];

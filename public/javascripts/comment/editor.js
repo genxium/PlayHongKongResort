@@ -197,7 +197,7 @@ function generateCommentCell(par, commentJson, activity, single){
 			class: "comment-view left"
 		}).appendTo(row);
 		var viewAll = $("<a>", {
-			text: "view all replies(" + comment.numChildren + ")"
+			text: TITLES["view_all_replies"].format(comment.numChildren)
 		}).appendTo(spanView);
 		viewAll.click(comment.id, function(evt) {
 			evt.preventDefault();

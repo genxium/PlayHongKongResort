@@ -63,12 +63,13 @@ var TITLES = {
 	participant: "參與者",
 	assessment: "評價",
 	view_assessment: "查看Ta收到的評價 >",
-	assessment_disabled: "未可用",
+	assessment_disabled: "不可用",
 	present: "已出席",
 	absent: "未出席",
 	from: "來自",
 	content: "內容",
-	by_host: "由 @{0} 發起"
+	by_host: "由 @{0} 發起",
+	view_all_replies: "查看全部回覆({0})"
 };
 
 var MESSAGES = {
@@ -119,5 +120,6 @@ var ALERTS = {
 	activity_not_begun: "活動尚未開始",
 	assessment_submitted: "評價已成功提交",
 	assessment_not_submitted: "評價未提交",
+	no_assessment: "Oops! 暫時沒有人給Ta留下評價喔",
 	choose_one_image: "一次只能選擇一張圖片"
 };
