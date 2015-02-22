@@ -1,15 +1,12 @@
-// (prerequisite) implement String.format if not existing, reference: http://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format 
-if (!String.prototype.format) {
-  String.prototype.format = function(format) {
-    var args = Array.prototype.slice.call(arguments, 1);
-    return format.replace(/{(\d+)}/g, function(match, number) { 
-      return typeof args[number] != 'undefined'
-        ? args[number] 
-        : match
-      ;
-    });
-  };
-}
+// (prerequisite) Implement/Override String.format, reference: http://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format 
+String.prototype.format = function() {
+    var formatted = this;
+    for (var i = 0; i < arguments.length; i++) {
+        var regexp = new RegExp('\\{'+i+'\\}', 'gi');
+        formatted = formatted.replace(regexp, arguments[i]);
+    }
+    return formatted;
+};
 
 // activity status names
 var RELATION_NAMES = {
@@ -57,7 +54,7 @@ var TITLES = {
 	submit_comment_reply: "提交",
 	collapse: "收起",
 	reply: "回覆",
-	replied_to: "對{0}: ",	
+	replied_to: "對@{0}: ",	
 	time_ascendant: "時間順序",
 	time_descendant: "時間倒序",
 	joined_activities: "參與的活動",
@@ -71,7 +68,7 @@ var TITLES = {
 	absent: "未出席",
 	from: "來自",
 	content: "內容",
-	by_host: "由 {0} 發起"
+	by_host: "由 @{0} 發起"
 };
 
 var MESSAGES = {
@@ -91,8 +88,8 @@ var MESSAGES = {
 	assessment_requirement: "請填寫－～64個字",
 	comment_disabled_activity_has_begun: "Q&A時間已經結束",
 	comment_disabled_activity_not_accepted: "活動尚未通過審核",
-	email_verification_success: "Hi {0}， 你的電郵地址{1}已完成驗證， {2}秒後將為你跳轉到首頁",
-	email_verification_failure: "Hi {0}， 很遺憾你的電郵地址{1}未能通過驗證， 如需幫助請與hongkongresort@126.com聯繫"
+	email_verification_success: "Hi @{0}， 你的電郵地址{1}已完成驗證， {2}秒後將為你跳轉到首頁",
+	email_verification_failure: "Hi @{0}， 很遺憾你的電郵地址{1}未能通過驗證， 如需幫助請與hongkongresort@126.com聯繫"
 };
 
 var HINTS = {

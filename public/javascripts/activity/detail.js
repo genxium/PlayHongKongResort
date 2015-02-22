@@ -77,7 +77,7 @@ function displayActivityDetail(par){
 	if(g_activity.host.id != null && g_activity.host.name != null){
 			var host = $('<a>', {
 					href: "#", 
-					text: TITLES["by_host"].format("@" + g_activity.host.name),
+					text: TITLES["by_host"].format(g_activity.host.name),
 					class: "activity-host"
 			}).appendTo(ret);
 			host.click(function(evt){
