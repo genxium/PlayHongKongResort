@@ -45,14 +45,16 @@ function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, on
 		var params={};
 		params[g_keyEmail] = email;
 		params[g_keyPassword] = password;
-		disableField($(this));
+
+		var aButton = $(evt.srcElement ? evt.srcElement : evt.target);
+		disableField(aButton);
 		
 		$.ajax({
 		    type: "POST",
 		    url: "/user/login",
 		    data: params,
 		    success: function(data, status, xhr){
-				enableField($(this));
+				enableField(aButton);
 				g_loggedInUser = new User(data);
 				if (g_loggedInUser == null) return;
 				// store token in cookie iff query succeeds
@@ -64,7 +66,7 @@ function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, on
 				form.onLoginSuccess(data);
 		    },
 		    error: function(xhr, status, err){
-				enableField($(this));
+				enableField(aButton);
 				if(form.onLoginError == null) return;
 				alert(ALERTS["user_not_existing_or_wrong_password"]);
 				form.onLoginError(err);
@@ -161,13 +163,14 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 		var token = $.cookie(g_keyToken);
 		var params = {};
 		params[g_keyToken] = token;
-		disableField($(this));
+		var aButton = $(evt.srcElement ? evt.srcElement : evt.target);
+		disableField(aButton);
 		$.ajax({
 			type: "POST",
 			url: "/user/logout",
 			data: params,
 			success: function(data, status, xhr){
-				enableField($(this));
+				enableField(aButton);
 				g_loggedInUser = null;
 				$.removeCookie(g_keyToken, {path: '/'});
 				wsDisconnect();
@@ -178,7 +181,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 			},
 			error: function(xhr, status, err){
 				// reload the whole page if exception occurs
-				enableField($(this));
+				enableField(aButton);
 				wsDisconnect();
 				$.removeCookie(g_keyToken, {path: '/'});
 				if (menu.onLogoutError == null) return;

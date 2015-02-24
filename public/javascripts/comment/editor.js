@@ -106,7 +106,7 @@ function generateReplyEditor(par, activity, comment){
         placeholder: HINTS["reply"].format(comment.fromUser.name)
     }).appendTo(ret);
     var btnSubmit = $('<button>',{
-        text: TITLES["submit_comment"],
+        text: TITLES["submit_comment_reply"],
         class: "comment-submit purple"
     }).appendTo(ret);
 
@@ -117,9 +117,9 @@ function generateReplyEditor(par, activity, comment){
                 var token = $.cookie(g_keyToken);
 
                 if (content == null || !validateCommentContent(content)) {
-					alert(ALERTS["comment_requirement"]);
-					return;
-				}
+			alert(ALERTS["comment_requirement"]);
+			return;
+		}
 
                 var parentId = comment.parentId == (-1) ? comment.id : comment.parentId;
                 var params={};
@@ -129,17 +129,21 @@ function generateReplyEditor(par, activity, comment){
                 params[g_keyActivityId] = activity.id;
                 params[g_keyToken] = token;
                 params[g_keyTo] = comment.from;
-
+		
+		var aButton = $(this);
+		disableField(aButton);
                 $.ajax({
                         type: "POST",
                         url: "/el/comment/sub/submit",
                         data: params,
                         success: function(data, status, xhr){
+				enableField(aButton);
                                 removeReplyEditor();
                                 if(g_onCommentSubmitSuccess == null) return;
                                 g_onCommentSubmitSuccess();
                         },
                         error: function(xhr, status, err){
+				enableField(aButton);
                                 alert(MESSAGES["comment_reply_not_submitted"]);
                         }
                 });
@@ -344,17 +348,24 @@ function generateCommentEditor(par, activity){
 
 		var aCounter = evt.data.counter;
 		var aInput = evt.data.input;
-
+				
+		var aButton = $(this);
+		disableField(aButton);
+		disableField(aInput);
 		$.ajax({
 			type: "POST",
 			url: "/el/comment/submit",
 			data: params,
 			success: function(data, status, xhr){
+				enableField(aButton);
+				enableField(aInput);
 				aInput.val("");
 				aCounter.update("");
 				listCommentsAndRefresh(activity, null, null);
 			},
 			error: function(xhr, status, err){
+				enableField(aButton);
+				enableField(aInput);
 				alert(ALERTS["comment_question_not_submitted"]);
 			}
 		});

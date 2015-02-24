@@ -29,7 +29,7 @@ function AjaxButton(url, clickData, method, extraParams, onSuccess, onError) {
 			var aExtraParams = evt.data.extraParams; 
 			var aOnSuccess = evt.data.onSuccess;
 			var aOnError = evt.data.onError;
-			var aButton = $(this);
+			var aButton = $(evt.srcElement ? evt.srcElement : evt.target);
 			disableField(aButton);
 			$.ajax({
 				url: aUrl,

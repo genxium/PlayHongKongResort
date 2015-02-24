@@ -126,17 +126,21 @@ function generateAssessmentButtons(par, activity, batchEditor){
 		params[g_keyToken] = token;
 		params[g_keyActivityId] = aActivity.id; 
 		params[g_keyBundle] = JSON.stringify(assessments);
-			
+
+		var aButton = $(this);	
+		disableField(aButton);
 		$.ajax({
 			type: "POST", 
 			url: "/assessment/submit",
 			data: params,
 			success: function(data, status, xhr){
+				enableField(aButton);
 				alert(ALERTS["assessment_submitted"]);
 				aActivity.relation |= assessed;
 				refreshBatchEditor(aActivity);
 			},
 			error: function(xhr, status, err){
+				enableField(aButton);
 				alert(ALERTS["assessment_not_submitted"]);
 			}
 		});
