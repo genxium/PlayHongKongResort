@@ -121,8 +121,8 @@ var g_usernamePattern = /^[0-9a-zA-Z_]{6,32}$/;
 
 /* The following patterns should follow Unicode standard */
 var g_activityTitlePattern = /^.{5,64}$/;  
-var g_activityAddressPattern = /^.{10,128}$/;
-var g_activityContentPattern = /^[.\n]{15,1024}$/;
+var g_activityAddressPattern = /^.{5,128}$/;
+var g_activityContentPattern = /^[\s\S]{15,1024}$/;
 var g_commentContentPattern  = /^.{5,128}$/;
 var g_assessmentContentPattern = /^.{0,64}$/;
 
