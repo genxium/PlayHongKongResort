@@ -1,3 +1,60 @@
+/**
+ * AjaxButton
+ * */
+
+function AjaxButton(url, clickData, method, extraParams, onSuccess, onError) {
+	this.url = url;
+	this.clickData = clickData;
+	this.method = method;
+	this.extraParams = extraParams;
+	this.onSuccess = onSuccess;
+	this.onError = onError;
+	this.button = null;
+	this.append = function(par) {
+		this.remove();
+		this.button = $("<button>").appendTo(par);
+		var dButton = {
+			url: this.url,
+			method: this.method,
+			clickData: this.clickData,
+			extraParams: this.extraParams,
+			onSuccess: this.onSuccess,
+			onError: this.onError
+		};
+		this.button.click(dButton, function(evt){
+			evt.preventDefault();
+			var aClickData = evt.data.clickData;
+			var aUrl = evt.data.url;
+			var aMethod = evt.data.method;
+			var aExtraParams = evt.data.extraParams; 
+			var aOnSuccess = evt.data.onSuccess;
+			var aOnError = evt.data.onError;
+			var aButton = $(this);
+			disableField(aButton);
+			$.ajax({
+				url: aUrl,
+				type: aMethod,
+				data: aExtraParams,
+				success: function(data, status, xhr) {
+					enableField(aButton);
+					if (aOnSuccess == null) return;
+					aOnSuccess(data);
+				},
+				error: function(xhr, status, err) {
+					enableField(aButton);
+					if (aOnError == null) return;
+					aOnError(err);
+				}
+			});
+		});
+	};
+	this.remove = function() {
+		if (this.button == null) return;
+		this.button.remove();
+		this.button = null;
+	};
+}
+
 /*
  * ExplorerTrigger
  * */
@@ -277,12 +334,12 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 				    url: pager.url,
 				    data: params,
 				    success: function(data, status, xhr) {
-					enableField(indicator);
-					pager.onSuccess(data);
+						enableField(indicator);
+						pager.onSuccess(data);
 				    },
 				    error: function(xhr, status, err) {
-					enableField(indicator);
-					pager.onError(err);
+						enableField(indicator);
+						pager.onError(err);
 				    }
 				});
 			});
@@ -331,14 +388,14 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 			    url: pager.url,
 			    data: params,
 			    success: function(data, status, xhr) {
-				var size = pager.cache.size;
-				pager.cache = new PagerCache(size);
-				enableField(selector);
-				pager.onSuccess(data);
+					var size = pager.cache.size;
+					pager.cache = new PagerCache(size);
+					enableField(selector);
+					pager.onSuccess(data);
 			    },
 			    error: function(xhr, status, err) {
-				enableField(selector);
-				pager.onError(err);
+					enableField(selector);
+					pager.onError(err);
 			    }
 			});
 		});	
@@ -639,7 +696,8 @@ function AvatarEditor(container, image, btnChoose, btnUpload, hint) {
 		var formData = new FormData();
 		formData.append(g_keyAvatar, file);
 		formData.append(g_keyToken, token);
-		disableField($(this));	
+		var aButton = $(this);
+		disableField(aButton);	
 		editor.hint.text(MESSAGES["uploading"]);
 		
 		$.ajax({
@@ -650,11 +708,11 @@ function AvatarEditor(container, image, btnChoose, btnUpload, hint) {
 			contentType: false,
 			processData: false,
 			success: function(data, status, xhr){
-				enableField($(this));	
+				enableField(aButton);	
 				editor.hint.text(MESSAGES["uploaded"]);
 			},
 			error: function(xhr, status, err){
-				enableField($(this));	
+				enableField(aButton);	
 				editor.hint.text(MESSAGES["upload_failed"]);
 			}
 		});

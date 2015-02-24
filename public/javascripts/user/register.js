@@ -182,13 +182,13 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 
 function generateRegisterWidget(par, onSuccess, onError){	
 	par.empty();
-	var register_box = $('<div>', {
+	var registerBox = $('<div>', {
 		id: "register-box"
 	}).appendTo(par);
 
 	var rowName = $('<div>', {
 		class: "register-name"
-	}).appendTo(register_box);
+	}).appendTo(registerBox);
 	var fieldName = $('<input>', {
 		type: "text",
 		placeHolder: HINTS["username"],	
@@ -199,7 +199,7 @@ function generateRegisterWidget(par, onSuccess, onError){
 
 	var rowEmail = $('<div>', {
 		class: "register-email"
-	}).appendTo(register_box);
+	}).appendTo(registerBox);
 	var fieldEmail = $('<input>', {
 		type: "text",
 		placeHolder: HINTS["email"],
@@ -210,7 +210,7 @@ function generateRegisterWidget(par, onSuccess, onError){
 	
 	var rowPsw = $('<div>', {
 		class: "register-password"
-	}).appendTo(register_box);
+	}).appendTo(registerBox);
 	var fieldPsw = $('<input>', {
 		type: "password",
 		placeHolder: HINTS["password"]	
@@ -221,7 +221,7 @@ function generateRegisterWidget(par, onSuccess, onError){
 
 	var rowPswConfirm = $('<div>', {
 		class: "register-pswconfirm"
-	}).appendTo(register_box);
+	}).appendTo(registerBox);
 	var fieldPswConfirm = $('<input>', {
 		type: "password",
 		placeHolder: HINTS["confirm_password"]	
@@ -232,11 +232,11 @@ function generateRegisterWidget(par, onSuccess, onError){
 
 	var sid = generateUuid();
 	var captcha = new Captcha(sid);
-	captcha.appendCaptcha(register_box);
+	captcha.appendCaptcha(registerBox);
 
 	var rowButton = $('<div>', {
 		class: "register-button"
-	}).appendTo(register_box);
+	}).appendTo(registerBox);
 	var btnRegister = $('<button>', {
 		text: TITLES["register"],
 		class: "purple"
