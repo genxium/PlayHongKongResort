@@ -12,7 +12,7 @@ yum install mysql-server
 yum install sar
 
 # install jdk
-java-1.7.0-openjdk-devel
+yum install java-1.7.0-openjdk-devel
 
 # install vim editor
 yum install vim
