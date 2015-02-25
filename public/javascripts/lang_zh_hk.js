@@ -58,7 +58,7 @@ var TITLES = {
 	time_ascendant: "時間順序",
 	time_descendant: "時間倒序",
 	joined_activities: "參與的活動",
-	posted_activities: "發起的活動",
+	hosted_activities: "發起的活動",
 	question: "Q & A",
 	participant: "參與者",
 	assessment: "評價",

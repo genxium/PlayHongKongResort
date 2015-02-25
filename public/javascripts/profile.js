@@ -49,7 +49,7 @@ function queryUserDetail(){
 				text: username,
 				class: "section-user-name"
 			}).appendTo(userInfo);
-
+			
 			// refresh pager for assessments
 			if (g_pagerAssessments != null) g_pagerAssessments.remove();
 			var pagerBar = $("<div>", {
@@ -63,6 +63,8 @@ function queryUserDetail(){
 				to: g_viewee.id
 			};
 			g_pagerAssessments = new Pager(pagerScreen, pagerBar, 10, "/assessment/list", generateAssessmentsListParams, extraParams, pagerCache, null, onQueryAssessmentsSuccess, onQueryAssessmentsError); 	
+
+			if (g_loggedInUser == null || g_loggedInUser.id == g_vieweeId) return;
 			listAssessmentsAndRefresh();
 		}
 	});
@@ -78,10 +80,10 @@ function requestProfile(vieweeId) {
 	//setDimensions(g_sectionUser, "auto", "100px"); // resume dimensions
 	if (g_registerWidget != null) g_registerWidget.hide();
 
-	var relationSelector = createSelector($("#pager-filters"), ["發起的活動", "參與的活動"], [hosted, present], null, null, null, null);
-	var orientationSelector = createSelector($("#pager-filters"), ["時間倒序", "時間順序"], [g_orderDescend, g_orderAscend], null, null, null, null);
-	var relationFilter = new PagerFilter("relation", relationSelector);
-	var orientationFilter = new PagerFilter("orientation", orientationSelector); 
+	var relationSelector = createSelector($("#pager-filters"), [TITLES["hosted_activities"], TITLES["joined_activities"]], [hosted, present], null, null, null, null);
+	var orientationSelector = createSelector($("#pager-filters"), [TITLES["time_descendant"], TITLES["time_ascendant"]], [g_orderDescend, g_orderAscend], null, null, null, null);
+	var relationFilter = new PagerFilter(g_keyRelation, relationSelector);
+	var orientationFilter = new PagerFilter(g_keyOrientation, orientationSelector); 
 	var filters = [relationFilter, orientationFilter];	
 	var pagerCache = new PagerCache(5);
 	

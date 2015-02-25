@@ -35,9 +35,11 @@ public class AvatarController extends ImageController {
 
             // delete previous avatar record and file
             Image previousAvatar = ExtraCommander.queryImage(previousAvatarId);
+	    if (previousAvatar == null) return ok();
+
             boolean isPreviousAvatarDeleted = ExtraCommander.deleteImageRecordAndFile(previousAvatar);
-            if (isPreviousAvatarDeleted) {
-                Loggy.d(TAG, "upload", "previous avatar file and record deleted.");
+            if (!isPreviousAvatarDeleted) {
+                Loggy.e(TAG, "upload", "previous avatar file or record NOT deleted for image id:" + previousAvatarId);
             }
 
             return ok();
