@@ -173,12 +173,15 @@ function onBtnJoinClicked(evt){
 	params[g_keyActivityId] = activity.id;
 	params[g_keyToken] = token;
 
+	var aButton = $(evt.srcElement ? evt.srcElement : evt.target);
+	disableField(aButton);
 	$.ajax({
 		type: "POST",
 		url: "/el/activity/join",
 		// url: "/activity/join",
 		data: params,
 		success: function(data, status, xhr){
+			enableField(aButton);
 			if (!isStandardSuccess(data)) {
 				var ret = parseInt(data[g_keyRet]);
 				// report number limit violation
@@ -189,7 +192,7 @@ function onBtnJoinClicked(evt){
 			g_onJoined(activity.id);
 		},
 		error: function(xhr, status, err){
-
+			enableField(aButton);
 		}
 	});
 }
