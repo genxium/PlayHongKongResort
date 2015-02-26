@@ -198,7 +198,7 @@ function initActivityEditor(par, onRemove){
 		backdrop being 'static' prevents modal from closing on losing focus
 		keyboard being 'false' prevents modal from closing on pressing `esc`
 	*/
-	g_sectionActivityEditor = $("<div class='modal fade activity-editor' data-keyboard='false' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='Create an activity!' aria-hidden='true'>").appendTo(par);
+	g_sectionActivityEditor = $("<div class='modal fade activity-editor' data-keyboard='false' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='create' aria-hidden='true'>").appendTo(par);
 	var dialog = $("<div>", {
 		class: "modal-dialog modal-lg"
 	}).appendTo(g_sectionActivityEditor);
@@ -242,7 +242,7 @@ function onSave(evt){
 	// append user token and activity id for identity
 	var token = $.cookie(g_keyToken.toString());
 	if (token == null) {
-		alert("Are you logged out?");
+		alert(ALERTS["please_log_in"]);
 		return;
 	}
 	formData.append(g_keyToken, token);

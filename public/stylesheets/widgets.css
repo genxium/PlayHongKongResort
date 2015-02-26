@@ -76,9 +76,18 @@
 .date-picker-input {
 }
 
+.general-popup {
+	position: fixed;
+}
+
+.general-popup-paragraph {
+	white-space: pre;
+	padding: 50px;
+	font-size: 20px;
+}
+
 .avatar-editor {
 	position: fixed;
-	box-sizing: content-box;
 }
 .avatar-editor-form {
 	padding: 50px;

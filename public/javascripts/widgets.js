@@ -405,21 +405,19 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 /*
  * Return a modal handle
  * */
-function createModal(par, message, widthRatioPercentage, heightRatioPercentage){
-	var pager=$("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='' aria-hidden='true'>", {
-		style: "width: " + widthRatioPercentage + "%; height: " + heightRatioPercentage + "%"
-	}).appendTo(par);	
-	var dialog=$("<div class='modal-dialog modal-lg'>").appendTo(pager);
-	var content=$("<div class='modal-content'>", {
+function createModal(par, message, widthRatioPercentage, heightRatioPercentage) {
+	var pager = $("<div class='modal fade general-popup' tabindex='-1' role='dialog' aria-labelledby='none' aria-hidden='true'>").appendTo(par);	
+	var dialog = $("<div class='modal-dialog modal-lg'>").appendTo(pager);
+	var content = $("<div class='modal-content'>").appendTo(dialog);
+	var div = $("<div>", {
+		class: "general-popup-paragraph",
 		text: message
-	}).appendTo(dialog);
+	}).appendTo(content);
 	return pager;
 }
 
 function showModal(container) {
-	container.modal({
-                show: true    
-        });
+	container.modal("show");
 }
 
 function hideModal(container) {
@@ -429,6 +427,7 @@ function hideModal(container) {
 function removeModal(container){
 	container.empty();
 	container.remove();
+	container = null;
 }
 
 function createBinarySwitch(par, disabled, initVal, disabledText, positiveText, negativeText, inputId){
@@ -800,3 +799,4 @@ function generateAvatarEditor(par, user) {
 	var hint = $("<p>").appendTo(uploadContainer);
 	return new AvatarEditor(par, pic, btnChoose, btnUpload, hint); 
 }
+

@@ -134,6 +134,9 @@
 	color: #e21e61;
 	border: solid 1px #e21e61;
 }
+.activity-editor {
+	position: fixed;
+}
 .activity-editor-form {
 	padding: 10px;
 }
