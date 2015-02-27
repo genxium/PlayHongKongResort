@@ -15,7 +15,7 @@ function AjaxButton(text, url, clickData, method, extraParams, onSuccess, onErro
 		this.remove();
 		this.button = $("<button>", {
 			text: this.text,
-			class: "purple"
+			class: "indianred"
 		}).appendTo(par);
 		var dButton = {
 			url: this.url,

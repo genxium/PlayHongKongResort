@@ -79,11 +79,20 @@ button {
 	cursor: pointer;
 	padding: 0;
 }
+button.indianred {
+    margin: 10px;
+    background-color: indianred;
+    color: white;
+    border: none;
+}
+button.indianred:hover, button.indianred.active {
+	background-color: #ad4497;
+}
+
 button.purple {
 	background-color: #81246e;
 	color: #fff;
 	border: none;
-	
 }
 button.purple:hover, button.purple.active {
 	color: #e2e185;

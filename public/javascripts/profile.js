@@ -65,7 +65,7 @@ function queryUserDetail(){
 			g_pagerAssessments = new Pager(pagerScreen, pagerBar, 10, "/assessment/list", generateAssessmentsListParams, extraParams, pagerCache, null, onQueryAssessmentsSuccess, onQueryAssessmentsError); 	
 
 			if (g_loggedInUser == null) return;
-			if (g_loggedInUser.isVisitor()) {
+			if (g_loggedInUser.isVisitor() && g_vieweeId == g_loggedInUser.id) {
 				var hintResend = null;
 				var extraParams = {};
 				extraParams[g_keyToken] = $.cookie(g_keyToken);
