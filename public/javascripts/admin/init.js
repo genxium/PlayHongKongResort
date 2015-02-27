@@ -135,33 +135,35 @@ function generateActivityCellForAdmin(par, activity){
 
 	var coverImageUrl = null;
 
-	if(activity.images != null) {
-		for(var key in activity.images){
-			var image = activity.images[key];
-			coverImageUrl = image.url;
-			break;
-		}
-	}
 
 	var ret = $("<p>", {
-		style: "display: block"	
+		style: "display: block;"
 	}).appendTo(par);
 
 	var infoWrap = $("<span>", {
 		style: "margin-left: 5pt; display: inline-block;"	
 	}).appendTo(ret);
 
-	if(coverImageUrl != null){
-		var cover = $("<div>", {
-			class: "activity-cover"
-		}).appendTo(infoWrap);
-		var coverImage = $("<img>", {
-			src: coverImageUrl
-		}).appendTo(cover);
+	if(activity.images != null) {
+		var imagesContainer = $('<div>', {
+            class: "activity-image-container clearfix"
+        }).appendTo(infoWrap);
+        for(var i = 0; i < activity.images.length; ++i){
+            var imageNode = $('<div>', {
+                class: "activity-image left"
+            }).appendTo(imagesContainer);
+            $('<span>',{
+                class: "image-helper"
+            }).appendTo(imageNode);
+            $('<img>',{
+                src: activity.images[i].url,
+            }).appendTo(imageNode);
+        }
 	}
 
-	var cellActivityTitle = $("<plaintext>", {
-		style: "color: black: font-size: 15pt",
+	var cellActivityTitle = $("<a>", {
+	    href: window.location.protocol + "//" + window.location.host + "#" +("detail?" + g_keyActivityId + "=" + activity.id.toString()),
+		style: "color: blue; margin-top: 5pt; font-size: 15pt;",
 		text: activity.title
 	}).appendTo(infoWrap);
 
@@ -213,6 +215,7 @@ function generateActivityCellForAdmin(par, activity){
 	var hr = $("<hr>", {
 		style: "height: 1pt; color: black; background-color: black"
 	}).appendTo(ret);
+
 	return ret;
 }
 

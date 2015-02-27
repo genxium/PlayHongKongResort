@@ -94,12 +94,10 @@ function displayActivityDetail(par){
 	}).appendTo(ret);
 
 	if(g_activity.images != null) {
-		// the images are expected to be arranged in a non-uniform manner(not confirmed), thus they should not be bounded to static CSS styling, the current style is a temporary solution
-		var constantHeight = 128;
 		var imagesContainer = $('<div>', {
 			class: "activity-image-container clearfix"
 		}).appendTo(ret);
-		for(var i=0;i<g_activity.images.length;++i){
+		for(var i = 0; i < g_activity.images.length; ++i){
 			var imageNode = $('<div>', {
 				class: "activity-image left"
 			}).appendTo(imagesContainer);

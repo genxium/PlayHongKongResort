@@ -173,6 +173,7 @@ public class ExtraCommander extends SQLCommander {
 
 	public static List<Image> queryImages(List<Long> activityIdList) {
 		List<Image> images = new LinkedList<>();
+        if (activityIdList == null || activityIdList.isEmpty()) return images;
 		try {
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 			List<JSONObject> records = builder.select(Image.QUERY_FIELDS)

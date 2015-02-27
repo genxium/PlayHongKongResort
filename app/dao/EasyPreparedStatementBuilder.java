@@ -632,7 +632,7 @@ public class EasyPreparedStatementBuilder {
                 }
             }
         } catch (Exception e) {
-
+            Loggy.e(TAG, "select", e);
         }
         return statement;
     }
@@ -641,7 +641,7 @@ public class EasyPreparedStatementBuilder {
         List<JSONObject> ret = new ArrayList<>();
         try {
             Connection connection = SQLHelper.getConnection();
-	        PreparedStatement statement = this.toSelect(connection);
+            PreparedStatement statement = this.toSelect(connection);
             ResultSet rs = statement.executeQuery();
             if (rs != null) {
                 ret = ResultSetUtil.convertToJSON(rs);
@@ -649,10 +649,8 @@ public class EasyPreparedStatementBuilder {
             }
             statement.close();
             SQLHelper.closeConnection(connection);
-        } catch (SQLException e) {
-            Loggy.e(TAG, "select", e);
         } catch (Exception e) {
-            e.printStackTrace();
+            Loggy.e(TAG, "select", e);
         }
         return ret;
     }

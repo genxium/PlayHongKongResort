@@ -354,7 +354,6 @@ function generateActivityCell(par, activity){
 		class: "activity-detail purple",
 		text: TITLES["view"]
 	}).appendTo(right);
-
 	
 	btnDetail.click(activity, function(evt){
 		evt.preventDefault();
