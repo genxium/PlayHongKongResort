@@ -66,21 +66,21 @@ function queryUserDetail(){
 
 			if (g_loggedInUser == null) return;
 			if (g_loggedInUser.isVisitor()) {
-			    var hintResend = null;
-			    var extraParams = {};
-			    extraParams[g_keyToken] = $.cookie(g_keyToken);
-			    AjaxButton(url, clickData, method, extraParams, onSuccess, onError)
-
-			    AjaxButton btnResend = new AjaxButton("/user/email/resend", null, "POST", extraParams, function(data) {
-			        if (data == null) return;
-                    hintResend.text(MESSAGES["email_verification_resent"].format(data[g_keyEmail]))
-			    }, function(err) {
-			        hintResend.text(MESSAGES["email_verification_not_sent"]);
-			    });
-                btnResend.appendTo(g_sectionUser);
-                hintResend = $("<p>", {
-                    text: "";
-                }).appendTo(g_sectionUser);
+				var hintResend = null;
+				var extraParams = {};
+				extraParams[g_keyToken] = $.cookie(g_keyToken);
+				var onSuccess = function(data) {
+					if (data == null) return;
+					hintResend.text(MESSAGES["email_verification_sent"].format(data[g_keyEmail]));
+				};
+				var onError = function(err) {
+					hintResend.text(MESSAGES["email_verification_not_sent"]);
+				};
+				var btnResend = new AjaxButton(TITLES["resend_email_verification"], "/user/email/resend", null, "POST", extraParams, onSuccess, onError);
+				btnResend.appendTo(g_sectionUser);
+				hintResend = $("<p>", {
+					text: ""
+				}).appendTo(g_sectionUser);
 			}
 
 			if (g_loggedInUser.id == g_vieweeId) return;

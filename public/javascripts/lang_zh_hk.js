@@ -72,7 +72,8 @@ var TITLES = {
 	view_all_replies: "查看全部回覆({0})",
 	about_us: "關於我們",
 	contact_us: "聯絡我們",
-	privacy_policy: "隱私聲明"
+	privacy_policy: "隱私聲明",
+	resend_email_verification: "重發驗證郵件"
 };
 
 var MESSAGES = {

@@ -2,7 +2,8 @@
  * AjaxButton
  * */
 
-function AjaxButton(url, clickData, method, extraParams, onSuccess, onError) {
+function AjaxButton(text, url, clickData, method, extraParams, onSuccess, onError) {
+	this.text = text;
 	this.url = url;
 	this.clickData = clickData;
 	this.method = method;
@@ -12,7 +13,10 @@ function AjaxButton(url, clickData, method, extraParams, onSuccess, onError) {
 	this.button = null;
 	this.appendTo = function(par) {
 		this.remove();
-		this.button = $("<button>").appendTo(par);
+		this.button = $("<button>", {
+			text: this.text,
+			class: "purple"
+		}).appendTo(par);
 		var dButton = {
 			url: this.url,
 			method: this.method,
