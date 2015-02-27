@@ -159,6 +159,9 @@ public class ActivityController extends Controller {
 	}
 
 	public static Result save() {
+		/**
+		 * TODO: enable VISITOR group checking
+		 * */
 		try {
 			Http.RequestBody body = request().body();
 
@@ -208,7 +211,7 @@ public class ActivityController extends Controller {
 			User user = SQLCommander.queryUser(userId);
 			if (user == null) throw new UserNotFoundException();
 
-            if (user.getGroupId() == User.VISITOR) throw new AccessDeniedException();
+//				if (user.getGroupId() == User.VISITOR) throw new AccessDeniedException();
 
 			Activity activity = null;
 			long now = General.millisec();

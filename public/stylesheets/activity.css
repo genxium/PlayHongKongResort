@@ -154,6 +154,7 @@
 .activity-detail-page .activity-content {
 	margin: 10px 0;
 	font-size: 1.2em;
+	overflow-wrap: break-word;
 }
 .activity-image {
 	width: 320px;

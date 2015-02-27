@@ -19,7 +19,8 @@ function onBtnAcceptClicked(evt){
 		// url: "/admin/accept",
 		data: params,
 		success: function(data, status, xhr) {
-		    enableField(btnAccept);
+			enableField(btnAccept);
+			if (!isStandardSuccess(data)) return;
 			var buttonsWrap = btnAccept.parent();
 			var cell = buttonsWrap.parent(); 
 			btnAccept.remove();
@@ -27,7 +28,7 @@ function onBtnAcceptClicked(evt){
 			indicator.text("Accepted");
 		},
 		error: function(xhr, status, err) {
-            enableField(btnAccept);
+			enableField(btnAccept);
 		}
 	});
 }
@@ -43,14 +44,15 @@ function onBtnRejectClicked(evt){
  	params[g_keyActivityId] = data[g_keyActivityId];
 	params[g_keyToken] = token;
 
-    disableField(btnReject);
+	disableField(btnReject);
 	$.ajax({
 		type: "POST",
 		url: "/el/admin/activity/reject", 
 		// url: "/admin/reject",
 		data: params,
 		success: function(data, status, xhr){
-		    enableField(btnReject);
+			enableField(btnReject);
+			if (!isStandardSuccess(data)) return;
 			var buttonsWrap = btnReject.parent(); 
 			var cell = buttonsWrap.parent();
 			btnReject.remove();
@@ -58,7 +60,7 @@ function onBtnRejectClicked(evt){
 			indicator.text("Rejected");
 		},
 		error: function(xhr, status, err){
-            enableField(btnReject);
+			enableField(btnReject);
 		}
 	});
 }
@@ -74,13 +76,14 @@ function onBtnDeleteClicked(evt){
 	params[g_keyActivityId] = data[g_keyActivityId];
 	params[g_keyToken] = token;
 
-    disableField(btnDelete);
+	disableField(btnDelete);
 	$.ajax({
 		type: "POST",
 		url: "/admin/delete", 
 		data: params,
 		success: function(data, status, xhr){
-		    enableField(btnDelete);
+			enableField(btnDelete);
+			if (!isStandardSuccess(data)) return;
 			var buttonsWrap = btnDelete.parent(); 
 			var cell = buttonsWrap.parent();
 			btnDelete.remove();
@@ -142,29 +145,29 @@ function generateActivityCellForAdmin(par, activity){
 
 	var coverImageUrl = null;
 
-	var ret = $("<p>", {
+	var ret = $("<div>", {
 		style: "display: block;"
 	}).appendTo(par);
 
 	var infoWrap = $("<div>", {
-		style: "margin-left: 5pt; display: inline-block;"	
+		style: "margin-left: 5pt;"	
 	}).appendTo(ret);
 
 	if(activity.images != null) {
 		var imagesContainer = $('<div>', {
-            class: "activity-image-container clearfix"
-        }).appendTo(infoWrap);
-        for(var i = 0; i < activity.images.length; ++i){
-            var imageNode = $('<div>', {
-                class: "activity-image left"
-            }).appendTo(imagesContainer);
-            $('<span>',{
-                class: "image-helper"
-            }).appendTo(imageNode);
-            $('<img>',{
-                src: activity.images[i].url,
-            }).appendTo(imageNode);
-        }
+			class: "activity-image-container clearfix"
+		}).appendTo(infoWrap);
+		for(var i = 0; i < activity.images.length; ++i){
+		    var imageNode = $('<div>', {
+			class: "activity-image left"
+		    }).appendTo(imagesContainer);
+		    $('<span>',{
+			class: "image-helper"
+		    }).appendTo(imageNode);
+		    $('<img>',{
+			src: activity.images[i].url,
+		    }).appendTo(imageNode);
+		}
 	}
 
 	var cellActivityTitle = $("<a>", {
@@ -174,7 +177,8 @@ function generateActivityCellForAdmin(par, activity){
 	}).appendTo(infoWrap);
 
 	var cellActivityContent = $("<div>", {
-		style: "display: block; font-size: 1.2em;",
+		class: "truncate",	
+		style: "font-size: 1.2em; width: 100%;",
 		text: activity.content
 	}).appendTo(infoWrap);
 
