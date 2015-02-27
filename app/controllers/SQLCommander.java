@@ -86,18 +86,30 @@ public class SQLCommander {
 	    return user;
     }
 
-    public static long registerUser(User user) {
-	    long ret = SQLHelper.INVALID;
+    public static long registerUser(final User user) {
 	    try {
 		    String[] cols = {User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.VERIFICATION_CODE, User.SALT};
 		    Object[] values = {user.getEmail(), user.getPassword(), user.getName(), user.getGroupId(), user.getVerificationCode(), user.getSalt()};
 
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    ret = builder.insert(cols, values).into(User.TABLE).execInsert();
+		    return builder.insert(cols, values).into(User.TABLE).execInsert();
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "registerUser", e);
 	    }
-	    return ret;
+	    return SQLHelper.INVALID;
+    }
+
+    public static boolean updateUser(final User user) {
+        try {
+            String[] cols = {User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.VERIFICATION_CODE};
+            Object[] values = {user.getEmail(), user.getPassword(), user.getName(), user.getGroupId(), user.getVerificationCode()};
+
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            return builder.update(User.TABLE).set(cols, values).where(User.ID, "=", user.getId()).execUpdate();
+        } catch (Exception e) {
+            Loggy.e(TAG, "updateUser", e);
+        }
+        return false;
     }
 
     public static Activity createActivity(final User host, final long now) {
@@ -469,14 +481,7 @@ public class SQLCommander {
 		return (activity != null && activity.getHost().getId() == userId);
 	}
 
-	public static boolean isActivityEditable(Long userId, Long activityId) throws UserNotFoundException, ActivityNotFoundException, AccessDeniedException, InvalidActivityStatusException {
-		if (userId == null) throw new UserNotFoundException();
-		if (activityId == null) throw new ActivityNotFoundException();
-		Activity activity = SQLCommander.queryActivity(activityId);
-		return isActivityEditable(userId, activity);
-	}
-
-	public static boolean isActivityEditable(Long userId, Activity activity) throws UserNotFoundException, ActivityNotFoundException, AccessDeniedException, InvalidActivityStatusException {
+	public static boolean isActivityEditable(final Long userId, final Activity activity) throws UserNotFoundException, ActivityNotFoundException, AccessDeniedException, InvalidActivityStatusException {
 		if (userId == null) throw new UserNotFoundException();
 		if (activity == null) throw new ActivityNotFoundException();
 		if (!validateOwnership(userId, activity)) throw new AccessDeniedException();
@@ -484,80 +489,88 @@ public class SQLCommander {
 		return true;
 	}
 
-	public static boolean isActivityJoinable(Long userId, int activityId) throws UserNotFoundException, ActivityNotFoundException, InvalidActivityStatusException, InvalidUserActivityRelationException, DeadlineHasPassedException {
+	public static boolean isActivityJoinable(final Long userId, final int activityId) throws UserNotFoundException, ActivityNotFoundException, InvalidActivityStatusException, InvalidUserActivityRelationException, DeadlineHasPassedException, AccessDeniedException {
 		if (userId == null) throw new UserNotFoundException();
+        User user = queryUser(userId);
+        if (user == null) throw new UserNotFoundException();
 		Activity activity = queryActivity(activityId);
 		if (activity == null) throw new ActivityNotFoundException();
-		return isActivityJoinable(userId, activity);
+		return isActivityJoinable(user, activity);
 	}
 
-	public static boolean isActivityJoinable(User user, Activity activity) throws UserNotFoundException, InvalidUserActivityRelationException, InvalidActivityStatusException, ActivityNotFoundException, DeadlineHasPassedException {
+	public static boolean isActivityJoinable(final User user, final Activity activity) throws UserNotFoundException, InvalidUserActivityRelationException, InvalidActivityStatusException, ActivityNotFoundException, DeadlineHasPassedException, AccessDeniedException {
 		if (user == null) throw new UserNotFoundException();
-		return isActivityJoinable(user.getId(), activity);
+        if (user.getGroupId() == User.VISITOR) throw  new AccessDeniedException();
+        if (activity.getStatus() != Activity.ACCEPTED) throw new InvalidActivityStatusException();
+        if (activity.isDeadlineExpired()) throw new DeadlineHasPassedException();
+        int relation = queryUserActivityRelation(user.getId(), activity.getId());
+        if (relation != UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
+        return true;
 	}
 
-	public static boolean isActivityJoinable(Long userId, Activity activity) throws UserNotFoundException, ActivityNotFoundException, InvalidActivityStatusException, DeadlineHasPassedException, InvalidUserActivityRelationException {
-		if (userId == null) throw new UserNotFoundException();
+	public static boolean isActivityCommentable(final Long from, Long activityId) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException, AccessDeniedException {
+		if (from == null) throw new UserNotFoundException();
+		if (activityId == null) throw new ActivityNotFoundException();
+        User fromUser = queryUser(from);
+        if (fromUser == null) throw new UserNotFoundException();
+		Activity activity = queryActivity(activityId);
 		if (activity == null) throw new ActivityNotFoundException();
-		if (activity.getStatus() != Activity.ACCEPTED) throw new InvalidActivityStatusException();
-		if (activity.isDeadlineExpired()) throw new DeadlineHasPassedException();
-		int relation = queryUserActivityRelation(userId, activity.getId());
-		if (relation != UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
+		return isActivityCommentable(fromUser, activity);
+	}
+
+	public static boolean isActivityCommentable(final User fromUser, final Activity activity) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException, AccessDeniedException {
+		if (fromUser == null) throw new UserNotFoundException();
+		if (activity == null) throw new ActivityNotFoundException();
+        if (fromUser.getGroupId() == User.VISITOR) throw new AccessDeniedException();
+		if (activity.hasBegun()) throw new ActivityHasNotBegunException();
+		if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
 		return true;
 	}
 
-	public static boolean isActivityCommentable(Long from, Long activityId) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException {
+	public static boolean isActivityCommentable(final Long from, final Long to, final Long activityId) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException, AccessDeniedException {
 		if (from == null) throw new UserNotFoundException();
+		if (to == null) throw new UserNotFoundException();
 		if (activityId == null) throw new ActivityNotFoundException();
-		Activity activity = queryActivity(activityId);
+        User fromUser = queryUser(from);
+        User toUser = queryUser(to);
+        if (fromUser == null || toUser == null) throw new UserNotFoundException();
+        Activity activity = queryActivity(activityId);
 		if (activity == null) throw new ActivityNotFoundException();
-		return isActivityCommentable(from, activity);
+		return isActivityCommentable(fromUser, toUser, activity);
 	}
 
-	public static boolean isActivityCommentable(Long from, Activity activity) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException {
-		if (from == null) throw new UserNotFoundException();
+	public static boolean isActivityCommentable(final User fromUser, final User toUser, final Activity activity) throws UserNotFoundException, ActivityHasNotBegunException, ActivityNotFoundException, ActivityNotAcceptedException, AccessDeniedException {
+		if (fromUser == null || toUser == null) throw new UserNotFoundException();
+		if (fromUser.getGroupId() == User.VISITOR || toUser.getGroupId() == User.VISITOR) throw new AccessDeniedException();
 		if (activity == null) throw new ActivityNotFoundException();
 		if (activity.hasBegun()) throw new ActivityHasNotBegunException();
 		if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
 		return true;
 	}
 
-	public static boolean isActivityCommentable(Long from, Long to, Long activityId) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException {
-		if (from == null) throw new UserNotFoundException();
-		if (to == null) throw new UserNotFoundException();
-		if (activityId == null) throw new ActivityNotFoundException();
-		Activity activity = queryActivity(activityId);
-		if (activity == null) throw new ActivityNotFoundException();
-		return isActivityCommentable(from, to, activity);
-	}
-
-	public static boolean isActivityCommentable(Long from, Long to, Activity activity) throws UserNotFoundException, ActivityHasNotBegunException, ActivityNotFoundException, ActivityNotAcceptedException {
-		if (from == null) throw new UserNotFoundException();
-		if (to == null) throw new UserNotFoundException();
-		if (activity == null) throw new ActivityNotFoundException();
-		if (activity.hasBegun()) throw new ActivityHasNotBegunException();
-		if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
-		return true;
-	}
-
-	public static boolean isUserAssessable(Long from, Long to, Long activityId) throws UserNotFoundException, InvalidAssessmentBehaviourException, ActivityNotFoundException, ActivityHasNotBegunException, InvalidUserActivityRelationException {
+	public static boolean isUserAssessable(final Long from, final Long to, final Long activityId) throws UserNotFoundException, InvalidAssessmentBehaviourException, ActivityNotFoundException, ActivityHasNotBegunException, InvalidUserActivityRelationException, AccessDeniedException {
 		if (from == null) throw new UserNotFoundException();
 		if (to == null) throw new UserNotFoundException();
 		if (from.equals(to)) throw new InvalidAssessmentBehaviourException();
+
+        User fromUser = queryUser(from);
+        User toUser = queryUser(to);
+        if (fromUser == null || toUser == null) throw new UserNotFoundException();
+
 		if (activityId == null) throw new ActivityNotFoundException();
 		Activity activity = queryActivity(activityId);
 		if (activity == null) throw new ActivityNotFoundException();
-		return isUserAssessable(from, to, activity);
+		return isUserAssessable(fromUser, toUser, activity);
 	}
 
-	public static boolean isUserAssessable(Long from, Long to, Activity activity) throws UserNotFoundException, InvalidAssessmentBehaviourException, ActivityNotFoundException, ActivityHasNotBegunException, InvalidUserActivityRelationException {
-		if (from == null) throw new UserNotFoundException();
-		if (to == null) throw new UserNotFoundException();
-		if (from.equals(to)) throw new InvalidAssessmentBehaviourException();
-		if (activity == null) throw new ActivityNotFoundException();
+	public static boolean isUserAssessable(final User fromUser, final User toUser, final Activity activity) throws UserNotFoundException, InvalidAssessmentBehaviourException, ActivityNotFoundException, ActivityHasNotBegunException, InvalidUserActivityRelationException, AccessDeniedException {
+		if (fromUser == null || toUser == null) throw new UserNotFoundException();
+		if (fromUser.getId().equals(toUser.getId())) throw new InvalidAssessmentBehaviourException();
+        if (fromUser.getGroupId() == User.VISITOR || toUser.getGroupId() == User.VISITOR) throw new AccessDeniedException();
+        if (activity == null) throw new ActivityNotFoundException();
 		if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
-		int relation1 = queryUserActivityRelation(from, activity.getId());
-		int relation2 = queryUserActivityRelation(to, activity.getId());
+		int relation1 = queryUserActivityRelation(fromUser.getId(), activity.getId());
+		int relation2 = queryUserActivityRelation(toUser.getId(), activity.getId());
 		if ((relation1 & UserActivityRelation.SELECTED) == 0 || (relation2 & UserActivityRelation.SELECTED) == 0)	throw new InvalidUserActivityRelationException();
 		return true;
 	}
@@ -597,7 +610,7 @@ public class SQLCommander {
 		return ret;
 	}
 
-	public static boolean acceptActivity(User user, Activity activity) {
+	public static boolean acceptActivity(final User user, final Activity activity) {
 		if (user == null) return false;
 		if (activity == null) return false;
 		try {
@@ -614,7 +627,7 @@ public class SQLCommander {
 		return false;
 	}
 
-	public static boolean rejectActivity(User user, Activity activity) {
+	public static boolean rejectActivity(final User user, final Activity activity) {
         if (user == null) return false;
         if (activity == null) return false;
         try {

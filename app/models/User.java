@@ -59,7 +59,7 @@ public class User extends BasicUser {
         m_salt = salt;
     }
 
-    protected Integer m_groupId = 0;
+    protected Integer m_groupId = VISITOR;
 
     public int getGroupId() {
         return m_groupId;
@@ -107,6 +107,7 @@ public class User extends BasicUser {
         try {
             ret.put(UNREAD_COUNT, String.valueOf(m_unreadCount));
 			ret.put(UNASSESSED_COUNT, String.valueOf(m_unassessedCount));
+            ret.put(GROUP_ID, String.valueOf(m_groupId));
         } catch (Exception e) {
             Loggy.e(TAG, "toObjectNode", e);
         }

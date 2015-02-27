@@ -22,6 +22,7 @@ POST /user/password/confirm controllers.PasswordController.confirm()
 GET /user/email controllers.EmailController.index()
 GET /user/email/verify controllers.EmailController.verify(email: String ?=null, code: String ?=null)
 GET /user/email/duplicate controllers.EmailController.duplicate(email: String ?=null)
+POST /user/email/resend controllers.EmailController.resend()
 
 # Home Page
 

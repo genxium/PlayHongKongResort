@@ -39,7 +39,7 @@ public class ActivityController extends Controller {
             String orientationStr = SQLHelper.convertOrientation(orientation);
             if (orientationStr == null)   throw new InvalidQueryParamsException();
             Set<Integer> validRelations = new HashSet<>();
-	    validRelations.add(UserActivityRelation.HOSTED);
+	        validRelations.add(UserActivityRelation.HOSTED);
             validRelations.add(UserActivityRelation.PRESENT);
             validRelations.add(UserActivityRelation.ABSENT);
             validRelations.add(UserActivityRelation.PRESENT);
@@ -207,6 +207,8 @@ public class ActivityController extends Controller {
 			User user = SQLCommander.queryUser(userId);
 			if (user == null) throw new UserNotFoundException();
 
+            if (user.getGroupId() == User.VISITOR) throw new AccessDeniedException();
+
 			Activity activity = null;
 			long now = General.millisec();
 			if (isNewActivity) {
@@ -337,12 +339,14 @@ public class ActivityController extends Controller {
 			if (token == null) throw new InvalidQueryParamsException();
 			Long userId = SQLCommander.queryUserId(token);
 			if (userId == null) throw new UserNotFoundException();
+            User user = SQLCommander.queryUser(userId);
+            if (user == null) throw new UserNotFoundException();
 
 			Activity activity = SQLCommander.queryActivity(activityId);
 			if (activity == null) throw new ActivityNotFoundException();
 
 			if (activity.getNumApplied() + 1 > Activity.MAX_APPLIED) throw new NumberLimitExceededException();
-			if (!SQLCommander.isActivityJoinable(userId, activity)) return ok(StandardFailureResult.get());
+			if (!SQLCommander.isActivityJoinable(user, activity)) return ok(StandardFailureResult.get());
 
 			long now = General.millisec();
 			String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME, UserActivityRelation.LAST_APPLYING_TIME};

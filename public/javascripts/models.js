@@ -15,6 +15,10 @@ function User(userJson){
 	this.hasAvatar = function() {
 		return (this.avatar != null && this.avatar != undefined);
 	}
+	if (userJson.hasOwnProperty("group_id")) this.groupId = parseInt(userJson["group_id"]);
+	this.isVisitor = function() {
+	    return (this.groupId == null || this.groupId == undefined || this.groupId == 0);
+	}
 }
 
 function Image(imageJson){

@@ -64,7 +64,26 @@ function queryUserDetail(){
 			};
 			g_pagerAssessments = new Pager(pagerScreen, pagerBar, 10, "/assessment/list", generateAssessmentsListParams, extraParams, pagerCache, null, onQueryAssessmentsSuccess, onQueryAssessmentsError); 	
 
-			if (g_loggedInUser == null || g_loggedInUser.id == g_vieweeId) return;
+			if (g_loggedInUser == null) return;
+			if (g_loggedInUser.isVisitor()) {
+			    var hintResend = null;
+			    var extraParams = {};
+			    extraParams[g_keyToken] = $.cookie(g_keyToken);
+			    AjaxButton(url, clickData, method, extraParams, onSuccess, onError)
+
+			    AjaxButton btnResend = new AjaxButton("/user/email/resend", null, "POST", extraParams, function(data) {
+			        if (data == null) return;
+                    hintResend.text(MESSAGES["email_verification_resent"].format(data[g_keyEmail]))
+			    }, function(err) {
+			        hintResend.text(MESSAGES["email_verification_not_sent"]);
+			    });
+                btnResend.appendTo(g_sectionUser);
+                hintResend = $("<p>", {
+                    text: "";
+                }).appendTo(g_sectionUser);
+			}
+
+			if (g_loggedInUser.id == g_vieweeId) return;
 			listAssessmentsAndRefresh();
 		}
 	});
@@ -77,7 +96,6 @@ function requestProfile(vieweeId) {
 	
 	g_vieweeId = vieweeId;
 	g_sectionUser = $("#section-user");
-	//setDimensions(g_sectionUser, "auto", "100px"); // resume dimensions
 	if (g_registerWidget != null) g_registerWidget.hide();
 
 	var relationSelector = createSelector($("#pager-filters"), [TITLES["hosted_activities"], TITLES["joined_activities"]], [hosted, present], null, null, null, null);

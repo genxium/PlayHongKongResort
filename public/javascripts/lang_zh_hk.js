@@ -95,7 +95,10 @@ var MESSAGES = {
 	email_verification_success: "Hi @{0}， 你的電郵地址{1}已完成驗證， {2}秒後將為你跳轉到首頁",
 	email_verification_failure: "Hi @{0}， 很遺憾你的電郵地址{1}未能通過驗證， 如需幫助請與hongkongresort@126.com聯繫",
 	about_us: "關於我們\n\r\n\r仲未寫",
-	privacy_policy: "隱私聲明\n\r\n\r仲未寫"
+	privacy_policy: "隱私聲明\n\r\n\r仲未寫",
+	please_wait: "請稍後...",
+	email_verification_sent: "驗證郵件已發送到你的註冊郵箱{0}, 請查收",
+	email_verification_not_sent: "未能成功發送驗證郵件, 請重試"
 };
 
 var HINTS = {

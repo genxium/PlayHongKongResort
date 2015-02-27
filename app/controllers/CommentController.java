@@ -83,6 +83,8 @@ public class CommentController extends Controller {
 
 		    Long from = SQLCommander.queryUserId(token);
 		    if (from == null) throw new UserNotFoundException();
+            User fromUser = SQLCommander.queryUser(from);
+            if (fromUser == null) throw new UserNotFoundException();
 
 		    Long activityId = Converter.toLong(formData.get(Comment.ACTIVITY_ID)[0]);
             if (activityId == null) throw new InvalidCommentParamsException();
@@ -90,7 +92,7 @@ public class CommentController extends Controller {
 
 		    if (activity == null) throw new ActivityNotFoundException();
 
-            SQLCommander.isActivityCommentable(from, activity);
+            SQLCommander.isActivityCommentable(fromUser, activity);
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 

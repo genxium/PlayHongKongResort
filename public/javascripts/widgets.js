@@ -10,7 +10,7 @@ function AjaxButton(url, clickData, method, extraParams, onSuccess, onError) {
 	this.onSuccess = onSuccess;
 	this.onError = onError;
 	this.button = null;
-	this.append = function(par) {
+	this.appendTo = function(par) {
 		this.remove();
 		this.button = $("<button>").appendTo(par);
 		var dButton = {
