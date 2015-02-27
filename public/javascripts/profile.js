@@ -79,7 +79,8 @@ function queryUserDetail(){
 				var btnResend = new AjaxButton(TITLES["resend_email_verification"], "/user/email/resend", null, "POST", extraParams, onSuccess, onError);
 				btnResend.appendTo(g_sectionUser);
 				hintResend = $("<p>", {
-					text: ""
+					text: "",
+					style: "padding: 10px;"
 				}).appendTo(g_sectionUser);
 			}
 

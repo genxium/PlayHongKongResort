@@ -3,7 +3,7 @@ var g_keyStatusIndicator = "status-indicator";
 // Assistant Handlers
 function onBtnAcceptClicked(evt){
 
-	var btnAccept = $(this);
+	var btnAccept = $(evt.srcElement ? evt.srcElement : evt.target);
 
 	evt.preventDefault();
 	var data = evt.data;
@@ -12,12 +12,14 @@ function onBtnAcceptClicked(evt){
  	params[g_keyActivityId] = data[g_keyActivityId];
 	params[g_keyToken] = token;
 
+    disableField(btnAccept);
 	$.ajax({
 		type: "POST",
 		url: "/el/admin/activity/accept",
 		// url: "/admin/accept",
 		data: params,
 		success: function(data, status, xhr) {
+		    enableField(btnAccept);
 			var buttonsWrap = btnAccept.parent();
 			var cell = buttonsWrap.parent(); 
 			btnAccept.remove();
@@ -25,13 +27,14 @@ function onBtnAcceptClicked(evt){
 			indicator.text("Accepted");
 		},
 		error: function(xhr, status, err) {
-
+            enableField(btnAccept);
 		}
 	});
 }
 
 function onBtnRejectClicked(evt){
-	var btnReject = $(this);
+
+	var btnReject = $(evt.srcElement ? evt.srcElement : evt.target);
 
 	evt.preventDefault();
 	var data = evt.data;
@@ -40,12 +43,14 @@ function onBtnRejectClicked(evt){
  	params[g_keyActivityId] = data[g_keyActivityId];
 	params[g_keyToken] = token;
 
+    disableField(btnReject);
 	$.ajax({
 		type: "POST",
 		url: "/el/admin/activity/reject", 
 		// url: "/admin/reject",
 		data: params,
 		success: function(data, status, xhr){
+		    enableField(btnReject);
 			var buttonsWrap = btnReject.parent(); 
 			var cell = buttonsWrap.parent();
 			btnReject.remove();
@@ -53,14 +58,14 @@ function onBtnRejectClicked(evt){
 			indicator.text("Rejected");
 		},
 		error: function(xhr, status, err){
-
-		}			
+            enableField(btnReject);
+		}
 	});
 }
 
 function onBtnDeleteClicked(evt){
 
-	var btnDelete = $(this);
+	var btnDelete = $(evt.srcElement ? evt.srcElement : evt.target);
 
 	evt.preventDefault();
 	var data = evt.data;
@@ -69,11 +74,13 @@ function onBtnDeleteClicked(evt){
 	params[g_keyActivityId] = data[g_keyActivityId];
 	params[g_keyToken] = token;
 
+    disableField(btnDelete);
 	$.ajax({
 		type: "POST",
 		url: "/admin/delete", 
 		data: params,
 		success: function(data, status, xhr){
+		    enableField(btnDelete);
 			var buttonsWrap = btnDelete.parent(); 
 			var cell = buttonsWrap.parent();
 			btnDelete.remove();
@@ -81,7 +88,7 @@ function onBtnDeleteClicked(evt){
 			indicator.text("Deleted");
 		},
 		error: function(xhr, status, err){
-			
+			enableField(btnDelete);
 		}
 	});
 }
@@ -135,12 +142,11 @@ function generateActivityCellForAdmin(par, activity){
 
 	var coverImageUrl = null;
 
-
 	var ret = $("<p>", {
 		style: "display: block;"
 	}).appendTo(par);
 
-	var infoWrap = $("<span>", {
+	var infoWrap = $("<div>", {
 		style: "margin-left: 5pt; display: inline-block;"	
 	}).appendTo(ret);
 
@@ -163,30 +169,32 @@ function generateActivityCellForAdmin(par, activity){
 
 	var cellActivityTitle = $("<a>", {
 	    href: window.location.protocol + "//" + window.location.host + "#" +("detail?" + g_keyActivityId + "=" + activity.id.toString()),
-		style: "color: blue; margin-top: 5pt; font-size: 15pt;",
+		class: "activity-title",
 		text: activity.title
 	}).appendTo(infoWrap);
 
-	var cellActivityContent = $("<plaintext>", {
-		style: "color: black; font-size: 15pt",
+	var cellActivityContent = $("<div>", {
+		style: "display: block; font-size: 1.2em;",
 		text: activity.content
 	}).appendTo(infoWrap);
 
-	var statusIndicator = $("<span>", {
+	$("<br/><br/>").appendTo(ret);
+
+	var statusIndicator = $("<div>", {
 		style: "color: red; font-size: 15pt; margin-left: 5pt; display: inline-block",
 		text: arrayStatusName[parseInt(activity.status)]
 	}).appendTo(ret);
 
 	ret.data(g_keyStatusIndicator, statusIndicator);
 	
-	var buttonsWrap = $("<span>", {
-		style: "margin-left: 5pt; display: inline-block"
-	}).appendTo(ret); 
+	var buttonsWrap = $("<div>", {
+	    style: "display: inline-block;"
+	}).appendTo(ret);
 
 	// this condition is temporarily hard-coded
 	if(activity.status != g_statusAccepted){
             var btnAccept = $("<button>", {
-		style: " width: 64pt; height: 36pt; font-size: 16pt; color: DarkSlateBlue; margin-left: 5pt; background-color: #aaaaaa;",
+		        style: "width: 64pt; height: 36pt; font-size: 16pt; color: DarkSlateBlue; margin-left: 5pt; background-color: #aaaaaa;",
                 text: 'Accept'
             }).appendTo(buttonsWrap);
             var dAccept = {};
@@ -196,7 +204,7 @@ function generateActivityCellForAdmin(par, activity){
 
 	if(activity.status != g_statusRejected){
             var btnReject = $("<button>", {
-		style: " width: 64pt; height: 36pt; font-size: 16pt; color: purple; margin-left: 5pt; background-color: #aaaaaa;",
+		        style: " width: 64pt; height: 36pt; font-size: 16pt; color: purple; margin-left: 5pt; background-color: #aaaaaa;",
                 text: 'Reject'
             }).appendTo(buttonsWrap);
             var dReject = {};
@@ -205,7 +213,7 @@ function generateActivityCellForAdmin(par, activity){
         }
 
 	var btnDelete = $("<button>", {
-		style: " width: 64pt; height: 36pt; font-size: 16pt; color: IndianRed; margin-left: 5pt; background-color: #aaaaaa;",
+		style: "width: 64pt; height: 36pt; font-size: 16pt; color: IndianRed; margin-left: 5pt; background-color: #aaaaaa;",
 		text: 'Delete'
 	}).appendTo(buttonsWrap);
 	var dDelete = {};
