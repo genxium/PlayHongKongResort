@@ -499,8 +499,11 @@ public class SQLCommander {
 	}
 
 	public static boolean isActivityJoinable(final User user, final Activity activity) throws UserNotFoundException, InvalidUserActivityRelationException, InvalidActivityStatusException, ActivityNotFoundException, DeadlineHasPassedException, AccessDeniedException {
+        /**
+         * TODO: enable VISITOR group checking
+         * */
 		if (user == null) throw new UserNotFoundException();
-        if (user.getGroupId() == User.VISITOR) throw  new AccessDeniedException();
+//        if (user.getGroupId() == User.VISITOR) throw  new AccessDeniedException();
         if (activity.getStatus() != Activity.ACCEPTED) throw new InvalidActivityStatusException();
         if (activity.isDeadlineExpired()) throw new DeadlineHasPassedException();
         int relation = queryUserActivityRelation(user.getId(), activity.getId());
@@ -519,9 +522,12 @@ public class SQLCommander {
 	}
 
 	public static boolean isActivityCommentable(final User fromUser, final Activity activity) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException, AccessDeniedException {
+        /**
+         * TODO: enable VISITOR group checking
+         * */
 		if (fromUser == null) throw new UserNotFoundException();
 		if (activity == null) throw new ActivityNotFoundException();
-        if (fromUser.getGroupId() == User.VISITOR) throw new AccessDeniedException();
+//        if (fromUser.getGroupId() == User.VISITOR) throw new AccessDeniedException();
 		if (activity.hasBegun()) throw new ActivityHasNotBegunException();
 		if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
 		return true;
@@ -540,8 +546,11 @@ public class SQLCommander {
 	}
 
 	public static boolean isActivityCommentable(final User fromUser, final User toUser, final Activity activity) throws UserNotFoundException, ActivityHasNotBegunException, ActivityNotFoundException, ActivityNotAcceptedException, AccessDeniedException {
+        /**
+         * TODO: enable VISITOR group checking
+         * */
 		if (fromUser == null || toUser == null) throw new UserNotFoundException();
-		if (fromUser.getGroupId() == User.VISITOR || toUser.getGroupId() == User.VISITOR) throw new AccessDeniedException();
+//		if (fromUser.getGroupId() == User.VISITOR || toUser.getGroupId() == User.VISITOR) throw new AccessDeniedException();
 		if (activity == null) throw new ActivityNotFoundException();
 		if (activity.hasBegun()) throw new ActivityHasNotBegunException();
 		if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
@@ -564,9 +573,12 @@ public class SQLCommander {
 	}
 
 	public static boolean isUserAssessable(final User fromUser, final User toUser, final Activity activity) throws UserNotFoundException, InvalidAssessmentBehaviourException, ActivityNotFoundException, ActivityHasNotBegunException, InvalidUserActivityRelationException, AccessDeniedException {
+        /**
+         * TODO: enable VISITOR group checking
+         * */
 		if (fromUser == null || toUser == null) throw new UserNotFoundException();
 		if (fromUser.getId().equals(toUser.getId())) throw new InvalidAssessmentBehaviourException();
-        if (fromUser.getGroupId() == User.VISITOR || toUser.getGroupId() == User.VISITOR) throw new AccessDeniedException();
+//        if (fromUser.getGroupId() == User.VISITOR || toUser.getGroupId() == User.VISITOR) throw new AccessDeniedException();
         if (activity == null) throw new ActivityNotFoundException();
 		if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
 		int relation1 = queryUserActivityRelation(fromUser.getId(), activity.getId());
