@@ -271,7 +271,7 @@ function onSave(evt){
 	formData.append(g_indexOldImage, JSON.stringify(selectedOldImages));
 	
 	if(countImages > g_imagesLimit) {
-		alert("No more than 3 images! Don't cheat!");
+		alert(ALERTS["image_selection_requirement"]);
 		return;
 	}
 
@@ -284,7 +284,7 @@ function onSave(evt){
 	var addressCounter = g_activityEditor.addressCounter;
 	var contentCounter = g_activityEditor.contentCounter;
 	if(!titleCounter.valid() || !addressCounter.valid() || !contentCounter.valid()) {
-		alert("All text fields (title, address and content) should be filled with respect to the text limits.");
+		alert(ALERTS["please_follow_activity_field_instructions"]);
 		return;
 	}
 	formData.append(g_keyTitle, title);
@@ -296,7 +296,7 @@ function onSave(evt){
 	var deadline = localYmdhisToGmtMillisec(g_activityEditor.deadlinePicker.getDatetime());
 		
 	if(deadline < 0 || beginTime < 0 || deadline > beginTime) {
-		alert("Deadline can not be after the begin time of an activity.");
+		alert(ALERTS["deadline_behind_begin_time"]);
 		return;
 	}
 
@@ -316,7 +316,7 @@ function onSave(evt){
 	g_activityEditor.disableEditorButtons();
 	g_activityEditor.setNonSavable();
 	g_activityEditor.setNonSubmittable();
-	g_activityEditor.hint.text("Saving...");
+	g_activityEditor.hint.text(MESSAGES["activity_saving"]);
 
 	$.ajax({
 			method: "POST",
@@ -327,13 +327,17 @@ function onSave(evt){
 			processData: false, // tell jQuery not to process the data
 			success: function(data, status, xhr){
 				var activityJson = JSON.parse(data);
+				if (isTokenExpired(activityJson)) {
+					logout(null);
+					return;
+				}
 				g_activityEditor.setSubmittable();
 				g_activityEditor.enableEditorButtons();
 				var activity = new Activity(activityJson);
 				if (g_activityEditor.id == null) {
-					g_activityEditor.hint.text("Activity created.");
+					g_activityEditor.hint.text(MESSAGES["activity_created"]);
 				} else {
-					g_activityEditor.hint.text("Changes saved.");
+					g_activityEditor.hint.text(MESSAGES["activity_saved"]);
 				}
 				g_activityEditor.id = activity.id;
 				refreshActivityEditor(activity);	
@@ -343,7 +347,7 @@ function onSave(evt){
 			error: function(xhr, status, err){
 				g_activityEditor.setSavable();
 				g_activityEditor.enableEditorButtons();
-				g_activityEditor.hint.text("Activity not saved!");
+				g_activityEditor.hint.text(MESSAGES["activity_not_saved"]);
 			}
 	});
 }
@@ -361,7 +365,7 @@ function onSubmit(evt){
         // append user token and activity id for identity
         var token = $.cookie(g_keyToken);
 	if(token == null) {
-		alert("Are you logged out?");
+		alert(ALERTS["please_log_in"]);
 		return;
 	}
         params[g_keyToken] = token;
@@ -378,13 +382,18 @@ function onSubmit(evt){
                 url: "/activity/submit",
                 data: params,
                 success: function(data, status, xhr){
-						g_activityEditor.enableEditorButtons();
+			if (isTokenExpired(data)) {
+				logout(null);
+				return;
+			}
+			if (!isStandardSuccess(data)) return;
+			g_activityEditor.enableEditorButtons();
                         removeActivityEditor();
                         if(g_onEditorRemoved == null) return;
-						g_onEditorRemoved();
+			g_onEditorRemoved();
                 },
                 error: function(xhr, status, err){
-						g_activityEditor.enableEditorButtons();
+			g_activityEditor.enableEditorButtons();
                         g_activityEditor.setSubmittable();
                 }
         });
@@ -454,18 +463,25 @@ function onDelete(evt){
 	var params={};
 	params[g_keyActivityId] = activityId;
 	params[g_keyToken] = token;
-
+	
+	var aButton = (evt.srcElement ? evt.srcElement :  evt.target);
+	disableField(aButton);
 	$.ajax({
 		type: "POST",
 		url: "/activity/delete",
 		data: params,
 		success: function(data, status, xhr){
+			enableField(aButton);
+			if (isTokenExpired(data)) {
+				logout(null);
+				return;	
+			}
 			removeActivityEditor();
-			if(g_onEditorRemoved == null)   return;
+			if (g_onEditorRemoved == null)   return;
 			g_onEditorRemoved();
 		},
 		error: function(xhr, status, err){
-
+			enableField(aButton);
 		}
 	});
 
@@ -503,7 +519,7 @@ function generateActivityEditor(par, activity){
 	}).appendTo(par);
 
 	var titleInput = $('<input>', {
-		placeholder: "Title",
+		placeholder: HINTS["activity_title"],
 		class: "input-title",
 		type: 'text',
 		value: activityTitle
@@ -517,7 +533,7 @@ function generateActivityEditor(par, activity){
 	});
 
 	var addressInput = $("<input>", {
-		placeholder: "Where",
+		placeholder: HINTS["activity_address"],
 		class: "input-address",
 		type: "text",
 		value: activityAddress
@@ -533,7 +549,7 @@ function generateActivityEditor(par, activity){
 	var addressField = new AddressField(addressInput, null);
 
 	var contentInput = $("<textarea>",	{
-		placeholder: "What to do",
+		placeholder: ["activity_content"],
 		class: "input-content" 
 	}).appendTo(ret);
 	contentInput.val(activityContent);
@@ -547,7 +563,7 @@ function generateActivityEditor(par, activity){
 
 	$("<div>", {
 		class: "warning",
-		html: "Up to 3 images can be saved for an activity. Single image size is limited to 2MB(2048KB), please go to <a href='http://www.pixlr.com'>Pixlr</a> to compress your image if necessary"
+		html: MESSAGES["image_selection_requirement"]
 	}).appendTo(ret);
 
 	var newImageFiles = {};
@@ -619,7 +635,7 @@ function generateActivityEditor(par, activity){
                 previewImage(newImagesRow, g_activityEditor);
         };
 
-		var explorerTrigger = generateExplorerTriggerSpan(newImagesRow, onChange, "/assets/icons/add.png", g_wImageCell, g_hImageCell, g_wImageCell/2, g_hImageCell/2);
+	var explorerTrigger = generateExplorerTriggerSpan(newImagesRow, onChange, "/assets/icons/add.png", g_wImageCell, g_hImageCell, g_wImageCell/2, g_hImageCell/2);
 
 	// Schedules
 	var deadline = reformatDate(new Date());

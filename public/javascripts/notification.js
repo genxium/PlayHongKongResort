@@ -29,8 +29,11 @@ function countNotifications() {
 		data: paramsBubble,
 		success: function(data, status, xhr) {
 			if (g_loggedInUser == null) return;
-			var jsonResponse = JSON.parse(data);
-			var count = parseInt(jsonResponse[g_keyCount]);
+			if (isTokenExpired(data)) {
+				logout(null);
+				return;
+			}
+			var count = parseInt(data[g_keyCount]);
 			g_loggedInUser.unreadCount = count;
 			g_postLoginMenu.bubble.update(count);
 		}, 
@@ -136,15 +139,24 @@ function NotificationTrash(toolbar) {
 			if (token == null) return;
 			params[g_keyToken] = token;
 			params[g_keyBundle] = JSON.stringify(notificationIdArray) ;
-				
+		
+			var aButton = $(evt.srcElement ? evt.srcElement : evt.target);
+			disableField(aButton);	
 			$.ajax({
 				type: "POST",
 				data: params,
 				url: "/notification/delete",
 				success: function(data, status, xhr) {
+					enableField(aButton);
+					if (isTokenExpired(data)) {
+						logout(null);
+						return;
+					}
+					if (!isStandardSuccess(data)) return;	
 					listNotificationsAndRefresh();			
 				},
 				error: function(xhr, status, err) {
+					enableField(aButton);
 					alert("Error occurs!");
 				}
 			});
@@ -165,6 +177,10 @@ function listNotifications(page, onSuccess, onError){
 		url: "/notification/list",
 		data: params,
 		success: function(data, status, xhr) {
+			if (isTokenExpired(data)) {
+				logout(null);
+				return;
+			}
 			onSuccess(data);
 		},
 		error: function(xhr, status, err) {
@@ -201,7 +217,7 @@ function generateNotificationsListParams(pager, page) {
 // Tab Q & A a.k.a comments
 function onListNotificationsSuccess(data){
 
-	var jsonResponse = JSON.parse(data);
+	var jsonResponse = data;
 	if(jsonResponse == null) return;
 
 	var notificationJsonList = jsonResponse[g_keyNotifications];
@@ -299,6 +315,10 @@ function NotificationCell(container, notification, indicator) {
 			url: "/el/notification/mark",
 			data: params,
 			success: function(data, status, xhr) {
+				if (isTokenExpired(data)) {
+					logout(null);
+					return;
+				}
 				window.location.hash = ("detail?" + g_keyActivityId + "=" + aNotification.activityId);
 			},
 			error: function(xhr, status, err) {

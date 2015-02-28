@@ -111,7 +111,7 @@ public class SubCommentController extends CommentController {
             if (!increment.execUpdate()) throw new NullPointerException();
             return ok();
         } catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
+            return ok(TokenExpiredResult.get());
         } catch (Exception e) {
             Loggy.e(TAG, "submit", e);
         }

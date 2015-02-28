@@ -43,7 +43,7 @@ public class AssessmentController extends Controller {
             for (Assessment assessment : assessmentList)   result.add(assessment.toObjectNode(viewerId));
             return ok(result);
         } catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
+            return ok(TokenExpiredResult.get());
         } catch (Exception e) {
             Loggy.e(TAG, "list", e);
         }
@@ -134,7 +134,7 @@ public class AssessmentController extends Controller {
             ret.put(UserActivityRelation.RELATION, newRelation);
             return ok(ret);
         } catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
+            return ok(TokenExpiredResult.get());
         } catch (Exception e) {
 		    Loggy.e(TAG, "submit", e);
         }

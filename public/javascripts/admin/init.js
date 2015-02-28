@@ -20,6 +20,10 @@ function onBtnAcceptClicked(evt){
 		data: params,
 		success: function(data, status, xhr) {
 			enableField(btnAccept);
+			if (isTokenExpired(data)) {
+				logout(null);
+				return;
+			}
 			if (!isStandardSuccess(data)) return;
 			var buttonsWrap = btnAccept.parent();
 			var cell = buttonsWrap.parent(); 
@@ -52,6 +56,10 @@ function onBtnRejectClicked(evt){
 		data: params,
 		success: function(data, status, xhr){
 			enableField(btnReject);
+			if (isTokenExpired(data)) {
+				logout(null);
+				return;
+			}
 			if (!isStandardSuccess(data)) return;
 			var buttonsWrap = btnReject.parent(); 
 			var cell = buttonsWrap.parent();
@@ -83,6 +91,10 @@ function onBtnDeleteClicked(evt){
 		data: params,
 		success: function(data, status, xhr){
 			enableField(btnDelete);
+			if (isTokenExpired(data)) {
+				logout(null);
+				return;
+			}
 			if (!isStandardSuccess(data)) return;
 			var buttonsWrap = btnDelete.parent(); 
 			var cell = buttonsWrap.parent();
@@ -102,6 +114,11 @@ function listActivitiesAndRefreshAdmin() {
 }
 
 function onListActivitiesSuccessAdmin(data){
+
+	if (isTokenExpired(data)) {
+		logout(null);
+		return;
+	}
 	var jsonResponse = data;
 
 	var pageSt = parseInt(jsonResponse[g_keyPageSt]);

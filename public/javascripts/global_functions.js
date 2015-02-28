@@ -361,3 +361,24 @@ function isStandardFailure(data) {
 	var ret = parseInt(data[g_keyRet]);
 	return ret == 1;
 }
+
+function isTokenExpired(data) {
+	if (data == null) return false;
+	if (!data.hasOwnProperty(g_keyRet)) return false;
+	var ret = parseInt(data[g_keyRet]);
+	return ret == 1001;
+}
+
+function isApplicantLimitExceeded(data) {
+	if (data == null) return false;
+	if (!data.hasOwnProperty(g_keyRet)) return false;
+	var ret = parseInt(data[g_keyRet]);
+	return ret == 3008;
+}
+
+function isSelectedLimitExceeded(data) {
+	if (data == null) return false;
+	if (!data.hasOwnProperty(g_keyRet)) return false;
+	var ret = parseInt(data[g_keyRet]);
+	return ret == 3009;
+}

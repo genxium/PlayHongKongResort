@@ -140,7 +140,46 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 	return new PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
 }
 
-function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError){
+function logout(evt) {
+	/**
+	 * May be triggered by: 1. GUI click on the logout button 2. token expiry on operations
+	 * */
+
+	var menu = ((evt && evt.data) ? evt.data : g_postLoginMenu);
+	if (menu == null) return;
+
+	var token = $.cookie(g_keyToken);
+	var params = {};
+	params[g_keyToken] = token;
+
+	var aButton = (evt ? $(evt.srcElement ? evt.srcElement : evt.target) : null);
+	disableField(aButton);
+	$.ajax({
+		type: "POST",
+		url: "/user/logout",
+		data: params,
+		success: function(data, status, xhr){
+			enableField(aButton);
+			g_loggedInUser = null;
+			$.removeCookie(g_keyToken, {path: '/'});
+			wsDisconnect();
+			if (g_sectionLogin == null) return;
+			g_preLoginForm = generatePreLoginForm(par, menu.onLoginSuccess, menu.onLoginError, menu.onLogoutSuccess, menu.onLogoutError);
+			if (menu.onLogoutSuccess == null) return;
+			menu.onLogoutSuccess(data);
+		},
+		error: function(xhr, status, err){
+			// reload the whole page if exception occurs
+			enableField(aButton);
+			wsDisconnect();
+			$.removeCookie(g_keyToken, {path: '/'});
+			if (menu.onLogoutError == null) return;
+			menu.onLogoutError(err);
+		}	
+	});
+}
+
+function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
 	if (par == null) return null;
 	if (g_loggedInUser == null) return null;
 	par.empty();
@@ -156,39 +195,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 		window.location.hash = ("profile?" + g_keyVieweeId + "=" + g_loggedInUser.id.toString());
 	};
 	
-	var logoutReact = function(evt){
-		evt.preventDefault();
-		var menu = evt.data;
-		if (menu == null) return;
-		var token = $.cookie(g_keyToken);
-		var params = {};
-		params[g_keyToken] = token;
-		var aButton = $(evt.srcElement ? evt.srcElement : evt.target);
-		disableField(aButton);
-		$.ajax({
-			type: "POST",
-			url: "/user/logout",
-			data: params,
-			success: function(data, status, xhr){
-				enableField(aButton);
-				g_loggedInUser = null;
-				$.removeCookie(g_keyToken, {path: '/'});
-				wsDisconnect();
-				if (g_sectionLogin == null) return;
-				g_preLoginForm = generatePreLoginForm(par, menu.onLoginSuccess, menu.onLoginError, menu.onLogoutSuccess, menu.onLogoutError);
-				if (menu.onLogoutSuccess == null) return;
-				menu.onLogoutSuccess(data);
-			},
-			error: function(xhr, status, err){
-				// reload the whole page if exception occurs
-				enableField(aButton);
-				wsDisconnect();
-				$.removeCookie(g_keyToken, {path: '/'});
-				if (menu.onLogoutError == null) return;
-				menu.onLogoutError(err);
-			}	
-		});
-	};
+	var logoutReact = logout;
 	
 	var userBox = $("<div>", {
 		class: "user-box clearfix"

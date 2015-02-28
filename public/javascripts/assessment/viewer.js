@@ -208,10 +208,14 @@ function listAssessments(page, onSuccess, onError) {
 		url: "/assessment/list",
 		data: params,
 		success: function(data, status, xhr) {
-		    onSuccess(data);
+			if (isTokenExpired(data)) {
+				logout(null);
+				return;
+			}
+			onSuccess(data);
 		},
 		error: function(xhr, status, err) {
-		    onError(err);
+			onError(err);
 		}
 	});
 }

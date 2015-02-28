@@ -91,7 +91,7 @@ function generateParticipantsSelectionForm(par, activity) {
 	if (!editable || activity.appliedParticipants.length == 0 || boxes.length <= 1) return ret; // no submit button is needed	
 
 	var btnSubmit = $("<button>",{
-		text: 'Submit Selection',
+		text: TITLES["submit_participant_selection"],
 		class: "purple participant-confirm"
 	}).appendTo(form);
 
@@ -114,7 +114,7 @@ function generateParticipantsSelectionForm(par, activity) {
 
 		// prevent violation
 		if (participantIdList.length + aForm.activity.numSelected > g_maxSelected) {
-			alert("Selected applicant number has exceeded upper limit(250)!");
+			alert(ALERTS["selected_num_exceeded"]);
 			return;
 		}	
 
@@ -123,18 +123,26 @@ function generateParticipantsSelectionForm(par, activity) {
 		params[g_keyActivityId] = aForm.activity.id;
 		params[g_keyBundle] = JSON.stringify(participantIdList);
 
+		var aButton = (evt.srcElement ? evt.srcElement : evt.target);
+		disableField(aButton);
+
 		$.ajax({
 			type: "POST",
 			url: "/el/activity/participants/update",
 			// url: "/activity/participants/update",
 			data: params,
 			success: function(data, status, xhr){
-				if (!isStandardSuccess(data)) return;
+				enableField(aButton);
 				// report violation
-				if (parseInt(data.ret) == 2) {
-					alert("Selected applicant number has exceeded upper limit(250)!");
+				if (isTokenExpired(data)) {
+					logout(null);
 					return;
 				}
+				if (isSelectedLimitExceeded(data)) {
+					alert(ALERTS["selected_num_exceeded"]);
+					return;
+				}
+				if (!isStandardSuccess(data)) return;
 				for(var i = 0; i < aForm.labels.length; ++i){
 					var label = aForm.labels[i];
 					// ignore selected participants
@@ -148,7 +156,7 @@ function generateParticipantsSelectionForm(par, activity) {
 				}
 			},
 			error: function(xhr, status, err) {
-
+				enableField(aButton);
 			}
 		});
 	});

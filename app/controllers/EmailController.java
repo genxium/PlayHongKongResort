@@ -46,7 +46,7 @@ public class EmailController extends UserController {
             ret.put(User.EMAIL, user.getEmail());
             return ok(ret);
         } catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
+            return ok(TokenExpiredResult.get());
         } catch (Exception e) {
             Loggy.e(TAG, "resend", e);
         }

@@ -73,7 +73,8 @@ var TITLES = {
 	about_us: "關於我們",
 	contact_us: "聯絡我們",
 	privacy_policy: "隱私聲明",
-	resend_email_verification: "重發驗證郵件"
+	resend_email_verification: "重發驗證郵件",
+	submit_participant_selection: "提交"
 };
 
 var MESSAGES = {
@@ -99,7 +100,12 @@ var MESSAGES = {
 	privacy_policy: "隱私聲明\n\r\n\r仲未寫",
 	please_wait: "請稍後...",
 	email_verification_sent: "驗證郵件已發送到你的註冊郵箱{0}, 請查收",
-	email_verification_not_sent: "未能成功發送驗證郵件, 請重試"
+	email_verification_not_sent: "未能成功發送驗證郵件, 請重試",
+	image_selection_requirement: "請選擇不多於3張圖片輔助活動說明, 每張圖片應不超過2MB(2048KB), 如需編輯或壓縮圖片可以使用<a target='_blank' href='http://www.pixlr.com'>Pixlr</a>",
+	activity_created: "活動已創建, 你可以在個人主頁查看相關信息",
+	activity_saved: "更新已保存",
+	activity_not_saved: "保存不成功",
+	activity_saving: "正在保存..."
 };
 
 var HINTS = {
@@ -110,12 +116,16 @@ var HINTS = {
 	title: "標題",
 	address: "地址",
 	content: "內容",
+	activity_title: "標題",
+	activity_address: "活動地點",
+	activity_content: "活動內容",
 	captcha: "驗證碼",
 	reply: "對@{0}說: "
 };
 
 var ALERTS = {
 	applicant_num_exceeded: "報名人數已達到上限",
+	selected_num_exceeded: "已選人數已達到上限",
 	deadline_expired: "報名已截止",
 	image_selection_limit_exceeded: "請選擇{0}張以內圖片",
 	invalid_email_format: "無效的電郵地址",
@@ -131,5 +141,8 @@ var ALERTS = {
 	assessment_not_submitted: "評價未提交",
 	no_assessment: "Oops! 暫時沒有人給Ta留下評價喔",
 	choose_one_image: "一次只能選擇一張圖片",
-	please_log_in: "請先登入"
+	please_log_in: "請先登入",
+	image_selection_requirement: "請選擇不多於3張圖片輔助活動說明, 每張圖片應不超過2MB(2048KB)",
+	deadline_behind_begin_time: "報名截止時間應在活動開始時間之前",
+	please_follow_activity_field_instructions: "請根據字數要求填寫各項"
 };

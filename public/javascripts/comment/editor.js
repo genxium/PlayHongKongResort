@@ -113,6 +113,7 @@ function generateReplyEditor(par, activity, comment){
     btnSubmit.click(input, function(evt) {
 
                 evt.preventDefault();
+		var aInput = evt.data;
                 var content = evt.data.val();
                 var token = $.cookie(g_keyToken);
 
@@ -130,20 +131,27 @@ function generateReplyEditor(par, activity, comment){
                 params[g_keyToken] = token;
                 params[g_keyTo] = comment.from;
 		
-		var aButton = $(this);
+		var aButton = $(evt.srcElement ? evt.srcElement : evt.target);
 		disableField(aButton);
+		disableField(aInput);
                 $.ajax({
                         type: "POST",
                         url: "/el/comment/sub/submit",
                         data: params,
                         success: function(data, status, xhr){
 				enableField(aButton);
+				enableField(aInput);
+				if (isTokenExpired(data)) {
+					logout(null);
+					return;
+				}
                                 removeReplyEditor();
                                 if(g_onCommentSubmitSuccess == null) return;
                                 g_onCommentSubmitSuccess();
                         },
                         error: function(xhr, status, err){
 				enableField(aButton);
+				enableField(aInput);
                                 alert(MESSAGES["comment_reply_not_submitted"]);
                         }
                 });
@@ -349,7 +357,7 @@ function generateCommentEditor(par, activity){
 		var aCounter = evt.data.counter;
 		var aInput = evt.data.input;
 				
-		var aButton = $(this);
+		var aButton = $(evt.srcElement ? evt.srcElement : evt.target);
 		disableField(aButton);
 		disableField(aInput);
 		$.ajax({
@@ -359,6 +367,10 @@ function generateCommentEditor(par, activity){
 			success: function(data, status, xhr){
 				enableField(aButton);
 				enableField(aInput);
+				if (isTokenExpired(data)) {
+					logout(null);
+					return;
+				}
 				aInput.val("");
 				aCounter.update("");
 				listCommentsAndRefresh(activity, null, null);

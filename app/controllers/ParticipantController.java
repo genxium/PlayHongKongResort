@@ -2,14 +2,10 @@ package controllers;
 
 import components.StandardFailureResult;
 import components.StandardSuccessResult;
+import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
-import exception.AccessDeniedException;
-import exception.ActivityHasBegunException;
-import exception.ActivityNotFoundException;
-import exception.UserNotFoundException;
-import exception.InvalidQueryParamsException;
-import exception.InvalidUserActivityRelationException;
-import exception.NumberLimitExceededException;
+import exception.*;
+import fixtures.Constants;
 import models.AbstractMessage;
 import models.Activity;
 import models.User;
@@ -33,6 +29,8 @@ public class ParticipantController extends UserController {
 			Map<String, String[]> formData = request().body().asFormUrlEncoded();
 			String token = formData.get(User.TOKEN)[0];
 			Long activityId = Converter.toLong(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+            if (activityId == null) throw new NullPointerException();
+
 			Activity activity = SQLCommander.queryActivity(activityId);
 			if(activity == null) throw new ActivityNotFoundException();
 			if(activity.hasBegun()) throw new ActivityHasBegunException();
@@ -69,8 +67,10 @@ public class ParticipantController extends UserController {
 			if (!change.execUpdate()) throw new NullPointerException();
 
 			return ok(StandardSuccessResult.get());
-		} catch (NumberLimitExceededException e) {
-			return ok(StandardFailureResult.get(2));
+		} catch (TokenExpiredException e) {
+            return ok(TokenExpiredResult.get());
+        } catch (NumberLimitExceededException e) {
+			return ok(StandardFailureResult.get(Constants.INFO_ACTIVITY_SELECTED_LIMIT));
 		} catch (Exception e) {
 			Loggy.e(TAG, "update", e);
 		}

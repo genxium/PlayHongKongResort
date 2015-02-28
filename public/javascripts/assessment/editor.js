@@ -135,6 +135,10 @@ function generateAssessmentButtons(par, activity, batchEditor){
 			data: params,
 			success: function(data, status, xhr){
 				enableField(aButton);
+				if (isTokenExpired(data)) {
+					logout(null);
+					return;
+				}
 				alert(ALERTS["assessment_submitted"]);
 				aActivity.relation |= assessed;
 				refreshBatchEditor(aActivity);
@@ -255,6 +259,10 @@ function updateAttendance(activityId, attendance, onSuccess, onError){
 		url: "/activity/mark",
 		data: params,
 		success: function(data, status, xhr) {
+			if (isTokenExpired(data)) {
+				logout(null);
+				return;
+			}
 			onSuccess(data);
 		},
 		error: function(xhr, status, err) {

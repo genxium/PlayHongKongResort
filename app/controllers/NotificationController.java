@@ -3,6 +3,8 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import components.StandardFailureResult;
+import components.StandardSuccessResult;
 import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
@@ -37,9 +39,9 @@ public class NotificationController extends Controller {
 			User user = SQLCommander.queryUser(userId);
 			ObjectNode result = Json.newObject();
 			result.put(Notification.COUNT, user.getUnreadCount());
-			return ok(result).as("text/plain");
+			return ok(result);
 		} catch (TokenExpiredException e) {
-			return badRequest(TokenExpiredResult.get());
+			return ok(TokenExpiredResult.get());
 		} catch (Exception e) {
 			Loggy.e(TAG, "count", e);
 		}
@@ -71,9 +73,9 @@ public class NotificationController extends Controller {
 				notificationArrayNode.add(notification.toObjectNode());
 			}
 			result.put(Notification.NOTIFICATIONS, notificationArrayNode);
-			return ok(result).as("text/plain");
+			return ok(result);
 		} catch (TokenExpiredException e) {
-			return badRequest(TokenExpiredResult.get());
+			return ok(TokenExpiredResult.get());
 		} catch (Exception e) {
 			Loggy.e(TAG, "list", e);
 		}
@@ -127,12 +129,14 @@ public class NotificationController extends Controller {
 					.where(Notification.TO, "=", userId);		
 
 			boolean res = builder.execDelete();		
-			if (res) return ok();	
-			else badRequest();
+			if (res) return ok(StandardSuccessResult.get());
+			else ok(StandardFailureResult.get());
 
-		} catch (Exception e) {
+		} catch (TokenExpiredException e) {
+            return ok(TokenExpiredResult.get());
+        } catch (Exception e) {
 			Loggy.e(TAG, "delete", e);
 		}
-		return badRequest();
+		return ok(StandardFailureResult.get());
 	}
 }

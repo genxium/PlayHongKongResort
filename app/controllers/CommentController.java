@@ -103,7 +103,7 @@ public class CommentController extends Controller {
 		    if (SQLHelper.INVALID == builder.execInsert()) throw new NullPointerException();
 		    return ok();
 	    } catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
+            return ok(TokenExpiredResult.get());
         } catch (Exception e) {
 		    Loggy.e(TAG, "submit", e);
 	    }

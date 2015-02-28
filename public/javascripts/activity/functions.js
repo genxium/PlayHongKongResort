@@ -18,10 +18,14 @@ function listActivities(page, onSuccess, onError) {
 		url: "/activity/list",
 		data: params,
 		success: function(data, status, xhr) {
-		    onSuccess(data);
+			if (isTokenExpired(data)) {
+				logout(null);
+				return;
+			}
+			onSuccess(data);
 		},
 		error: function(xhr, status, err) {
-		    onError(err);
+			onError(err);
 		}
 	});
 }
@@ -182,12 +186,15 @@ function onBtnJoinClicked(evt){
 		data: params,
 		success: function(data, status, xhr){
 			enableField(aButton);
-			if (!isStandardSuccess(data)) {
-				var ret = parseInt(data[g_keyRet]);
-				// report number limit violation
-				if (ret == 2) alert(ALERTS["applicant_num_exceeded"]);
+			if (isTokenExpired(data)) {
+				logout(null);
 				return;
 			}
+			if (isApplicationLimitExceeded(data)) {
+				alert(ALERTS["applicant_num_exceeded"]);
+				return;
+			}
+			if (!isStandardSuccess(data)) return;
 			if (g_onJoined == null) return;
 			g_onJoined(activity.id);
 		},

@@ -22,6 +22,8 @@ import utilities.DataUtils;
 import utilities.General;
 import utilities.Loggy;
 
+import fixtures.Constants;
+
 import java.util.*;
 
 public class ActivityController extends Controller {
@@ -137,7 +139,7 @@ public class ActivityController extends Controller {
             result.put(Activity.ACTIVITIES, activitiesNode);
             return ok(result);
         } catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
+            return ok(TokenExpiredResult.get());
         } catch (Exception e) {
             Loggy.e(TAG, "list", e);
         }
@@ -266,7 +268,7 @@ public class ActivityController extends Controller {
 
 			return ok(activity.toObjectNode(userId));
 		} catch (TokenExpiredException e) {
-			return badRequest(TokenExpiredResult.get());
+			return ok(TokenExpiredResult.get());
 		} catch (CaptchaNotMatchedException e) {
 			return badRequest(CaptchaNotMatchedResult.get());
 		} catch (Exception e) {
@@ -301,7 +303,7 @@ public class ActivityController extends Controller {
 
 			return ok();
 		} catch (TokenExpiredException e) {
-			return badRequest(TokenExpiredResult.get());
+			return ok(TokenExpiredResult.get());
 		} catch (Exception e) {
 			Loggy.e(TAG, "submit", e);
 		}
@@ -328,7 +330,7 @@ public class ActivityController extends Controller {
 			if(!ExtraCommander.deleteActivity(activityId)) throw new NullPointerException();
 			return ok();
 		} catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
+            return ok(TokenExpiredResult.get());
         } catch (Exception e) {
             Loggy.e(TAG, "delete", e);
 		}
@@ -363,9 +365,9 @@ public class ActivityController extends Controller {
 			if (!increment.execUpdate()) throw new NullPointerException();
 			return ok(StandardSuccessResult.get());
 		} catch (TokenExpiredException e) {
-			return badRequest(TokenExpiredResult.get());
+            return ok(TokenExpiredResult.get());
 		} catch (NumberLimitExceededException e) {
-			return ok(StandardFailureResult.get(2));
+			return ok(StandardFailureResult.get(Constants.INFO_ACTIVITY_APPLIED_LIMIT));
 		} catch (Exception e) {
 			Loggy.e(TAG, "join", e);
 		}
@@ -404,7 +406,7 @@ public class ActivityController extends Controller {
 			ret.put(UserActivityRelation.RELATION, newRelation);
 			return ok(ret);
 		} catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
+            return ok(TokenExpiredResult.get());
         } catch (Exception e) {
             Loggy.e(TAG, "mark", e);
 		}

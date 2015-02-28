@@ -37,11 +37,11 @@ public class AdminController extends Controller {
 
 		    return ok();
 	    } catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
+            return ok(TokenExpiredResult.get());
         } catch (Exception e) {
 		    Loggy.e(TAG, "accept", e);
 	    }
-	    return badRequest("Activity not accepted!");
+	    return badRequest("");
     }
 
     public static Result reject() {
@@ -62,11 +62,11 @@ public class AdminController extends Controller {
             if(!SQLCommander.rejectActivity(user, activity)) throw new NullPointerException();
             return ok();
         } catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
+            return ok(TokenExpiredResult.get());
         } catch (Exception e) {
             Loggy.e(TAG, "reject", e);
         }
-	    return badRequest("Activity not accepted!");
+	    return badRequest();
     }
 
     public static Result delete() {
@@ -86,7 +86,7 @@ public class AdminController extends Controller {
 
 		    return ok();
 	    } catch (TokenExpiredException e) {
-            return badRequest(TokenExpiredResult.get());
+            return ok(TokenExpiredResult.get());
         } catch (Exception e) {
             Loggy.e(TAG, "delete", e);
 	    }

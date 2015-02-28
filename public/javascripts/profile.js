@@ -71,6 +71,10 @@ function queryUserDetail(){
 				extraParams[g_keyToken] = $.cookie(g_keyToken);
 				var onSuccess = function(data) {
 					if (data == null) return;
+					if (isTokenExpired(data)) {
+						logout(null);
+						return;
+					}
 					hintResend.text(MESSAGES["email_verification_sent"].format(data[g_keyEmail]));
 				};
 				var onError = function(err) {
