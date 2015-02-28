@@ -8,7 +8,7 @@ function onEmailInput(evt) {
 	var email = $(this).val();
 	if(email == null || email.length == 0) return;
 	if(!validateEmail(email)) {
-		g_spanHint.text("Not valid email format");
+		g_spanHint.text(MESSAGES["email_requirement"]);
 		return;
 	}	
 	
@@ -19,10 +19,16 @@ function onEmailInput(evt) {
 		url: "/user/email/duplicate",
 		data: params,
 		success: function(data, status, xhr){
-			g_spanHint.text(" Account not existing ");        
+			if (isStandardSuccess(data)) {
+				g_spanHint.text(" Account not existing ");        
+				return;
+			}
+			if (isStandardFailure(data)) {
+				g_spanHint.text(" Account exists ");        
+				return;
+			}
 		},
 		error: function(xhr, status, err){
-			g_spanHint.text(" Account exists ");        
 		}
 	});
 }
@@ -32,11 +38,14 @@ function onEmailRequest(evt) {
 	var email = g_fieldEmail.val();
 	var params = {};
 	params[g_keyEmail] = email;
+	var aButton = $(evt.srcElement ? evt.srcElement : evt.target);
+	disableField(aButton);
 	$.ajax({
 		type: "GET",
 		url: "/user/password/request",
 		data: params,
 		success: function(data, status, xhr) {
+			enableField(aButton);
 			g_sectionResponse.empty();	
 			$("<span>", {
 				text: "Instructions have been sent to "
@@ -47,6 +56,7 @@ function onEmailRequest(evt) {
 			}).appendTo(linkSpan);
 		},
 		error: function(xhr, status, err) {
+			enableField(aButton);
 			alert("Email request rejected!");
 		}
 	});	

@@ -74,7 +74,10 @@ var TITLES = {
 	contact_us: "聯絡我們",
 	privacy_policy: "隱私聲明",
 	resend_email_verification: "重發驗證郵件",
-	submit_participant_selection: "提交"
+	submit_participant_selection: "提交",
+	new_password: "新密碼",
+	confirm_new_password: "確認新密碼",
+	input_to_reset_password: "請輸入新密碼並提交以完成修改"
 };
 
 var MESSAGES = {

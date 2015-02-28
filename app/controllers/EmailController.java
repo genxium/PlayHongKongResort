@@ -55,7 +55,7 @@ public class EmailController extends UserController {
 
     public static Result duplicate(final String email) {
         try {
-            if (email == null || !General.validateEmail(email)) throw new NullPointerException();
+            if (email == null || !General.validateEmail(email)) throw new InvalidQueryParamsException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             List<JSONObject> userJsons = builder.select(User.ID).from(User.TABLE).where(User.EMAIL, "=", email).execSelect();
             if (userJsons != null && userJsons.size() > 0) throw new DuplicateException();
@@ -70,27 +70,29 @@ public class EmailController extends UserController {
 
     public static Result verify(final String email, final String code) {
         try {
-			if (email == null || code == null) throw new NullPointerException();
-            if (email.isEmpty() || code.isEmpty()) throw new InvalidQueryParamsException();
-            EasyPreparedStatementBuilder builderUpdate = new EasyPreparedStatementBuilder();
-            boolean res = builderUpdate.update(User.TABLE)
-                                        .set(User.GROUP_ID, User.USER)
-                                        .set(User.VERIFICATION_CODE, "")
-                                        .where(User.EMAIL, "=", email)
-                                        .where(User.VERIFICATION_CODE, "=", code).execUpdate();
+		if (email == null || code == null) throw new NullPointerException();
+		if (email.isEmpty() || code.isEmpty()) throw new InvalidQueryParamsException();
+		if (!General.validateEmail(email)) throw new InvalidQueryParamsException();
 
-            String[] names = {User.ID, User.EMAIL, User.NAME, User.PASSWORD, User.GROUP_ID, User.AVATAR};
-            EasyPreparedStatementBuilder builderSelect = new EasyPreparedStatementBuilder();
-            List<JSONObject> userJsons = builderSelect.select(names).from(User.TABLE).where(User.EMAIL, "=", email).execSelect();
+		EasyPreparedStatementBuilder builderUpdate = new EasyPreparedStatementBuilder();
+		boolean res = builderUpdate.update(User.TABLE)
+			.set(User.GROUP_ID, User.USER)
+			.set(User.VERIFICATION_CODE, "")
+			.where(User.EMAIL, "=", email)
+			.where(User.VERIFICATION_CODE, "=", code).execUpdate();
 
-            if(userJsons == null || userJsons.size() != 1) throw new UserNotFoundException();
+		String[] names = {User.ID, User.EMAIL, User.NAME, User.PASSWORD, User.GROUP_ID, User.AVATAR};
+		EasyPreparedStatementBuilder builderSelect = new EasyPreparedStatementBuilder();
+		List<JSONObject> userJsons = builderSelect.select(names).from(User.TABLE).where(User.EMAIL, "=", email).execSelect();
 
-            User user = new User(userJsons.get(0));
-			if (res) {
-				return redirect("http://" + request().host() + "/user/email#success?name=" + DataUtils.encodeUtf8(user.getName()) + "&email=" + DataUtils.encodeUtf8(user.getEmail()));
-			} else {
-                return redirect("http://" + request().host() + "/user/email#failure?name=" + DataUtils.encodeUtf8(user.getName()) + "&email=" + DataUtils.encodeUtf8(user.getEmail()));
-			}	
+		if(userJsons == null || userJsons.size() != 1) throw new UserNotFoundException();
+
+		User user = new User(userJsons.get(0));
+		if (res) {
+			return redirect("http://" + request().host() + "/user/email#success?name=" + DataUtils.encodeUtf8(user.getName()) + "&email=" + DataUtils.encodeUtf8(user.getEmail()));
+		} else {
+			return redirect("http://" + request().host() + "/user/email#failure?name=" + DataUtils.encodeUtf8(user.getName()) + "&email=" + DataUtils.encodeUtf8(user.getEmail()));
+		}	
         } catch (Exception e) {
             Loggy.e(TAG, "verify", e);
         }

@@ -136,7 +136,7 @@ function extractTagAndParams(url) {
 	ret["params"] = {};
 	var params = matchUrl[3];
 
-	var paramRegex = /(\w+)=(\w+)/g; // get all matches
+	var paramRegex = /(\w+)=([@\.\w]+)/g; // get all matches
 	matchParams = paramRegex.exec(params);
 	while (matchParams != null) {
 		var key = matchParams[1];
