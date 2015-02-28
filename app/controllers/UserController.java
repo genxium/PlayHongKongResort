@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import fixtures.Constants;
+
 public class UserController extends Controller {
 
     public static final String TAG = UserController.class.getName();
@@ -52,38 +54,37 @@ public class UserController extends Controller {
     }
 
     public static Result login() {
-        // define response attributes
-        try {
-            Http.RequestBody body = request().body();
-            Map<String, String[]> formData = body.asFormUrlEncoded();
-            String email = formData.get(User.EMAIL)[0];
-            String password = formData.get(User.PASSWORD)[0];
+	    try {
+		    Http.RequestBody body = request().body();
+		    Map<String, String[]> formData = body.asFormUrlEncoded();
+		    String email = formData.get(User.EMAIL)[0];
+		    String password = formData.get(User.PASSWORD)[0];
 
-            if ((email == null || !General.validateEmail(email)) || (password == null || !General.validatePassword(password)))  throw new InvalidLoginParamsException();
+		    if ((email == null || !General.validateEmail(email)) || (password == null || !General.validatePassword(password)))  throw new InvalidLoginParamsException();
 
-            User user = SQLCommander.queryUserByEmail(email);
-            if (user == null) throw new UserNotFoundException();
+		    User user = SQLCommander.queryUserByEmail(email);
+		    if (user == null) throw new UserNotFoundException();
 
-            String passwordDigest = Converter.md5(password + user.getSalt());
-            if (!user.getPassword().equals(passwordDigest)) throw new PswErrException();
+		    String passwordDigest = Converter.md5(password + user.getSalt());
+		    if (!user.getPassword().equals(passwordDigest)) throw new PswErrException();
 
-            String token = Converter.generateToken(email, password);
-            Long userId = user.getId();
+		    String token = Converter.generateToken(email, password);
+		    Long userId = user.getId();
 
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] cols = {Login.USER_ID, Login.TOKEN, Login.TIMESTAMP};
-            Object[] vals = {userId, token, General.millisec()};
-            builder.insert(cols, vals).into(Login.TABLE).execInsert();
-            ObjectNode result = user.toObjectNode(userId);
-            result.put(User.TOKEN, token);
-            return ok(result);
-        } catch (UserNotFoundException e) {
-			return badRequest(StandardFailureResult.get(StandardFailureResult.USER_NOT_FOUND));
-        } catch (PswErrException e) {
-			return badRequest(StandardFailureResult.get(StandardFailureResult.PSW_ERR));
-		} catch (Exception e) {
-			return badRequest(StandardFailureResult.get());
-		}
+		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+		    String[] cols = {Login.USER_ID, Login.TOKEN, Login.TIMESTAMP};
+		    Object[] vals = {userId, token, General.millisec()};
+		    builder.insert(cols, vals).into(Login.TABLE).execInsert();
+		    ObjectNode result = user.toObjectNode(userId);
+		    result.put(User.TOKEN, token);
+		    return ok(result);
+	    } catch (UserNotFoundException e) {
+		    return badRequest(StandardFailureResult.get(Constants.INFO_USER_NOT_FOUND));
+	    } catch (PswErrException e) {
+		    return badRequest(StandardFailureResult.get(Constants.INFO_PSW_ERR));
+	    } catch (Exception e) {
+		    return badRequest(StandardFailureResult.get());
+	    }
     }
 
     public static Result register() {

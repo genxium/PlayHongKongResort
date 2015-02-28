@@ -90,6 +90,7 @@ public class PasswordController extends UserController {
             if (user == null) throw new UserNotFoundException();
 
             String passwordDigest = Converter.md5(password + user.getSalt());
+	    Loggy.d(TAG, "confirm", password + ", " + passwordDigest);
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.update(User.TABLE)

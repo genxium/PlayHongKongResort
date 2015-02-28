@@ -67,8 +67,13 @@ function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, on
 		    },
 		    error: function(xhr, status, err){
 				enableField(aButton);
+				if (isUserNotFound(err)) {
+					alert(ALERTS["user_not_existing"]);
+				} 
+				if (isPswErr(err)) {
+					alert(ALERTS["wrong_password"]);
+				}
 				if(form.onLoginError == null) return;
-				alert(ALERTS["user_not_existing_or_wrong_password"]);
 				form.onLoginError(err);
 		    }
 		});

@@ -700,7 +700,6 @@ public class EasyPreparedStatementBuilder {
         try {
             Connection connection = SQLHelper.getConnection();
             PreparedStatement statement = this.toUpdate(connection);
-            // the following command returns the last inserted row id for the auto incremented key
             statement.executeUpdate();
             statement.close();
             SQLHelper.closeConnection(connection);

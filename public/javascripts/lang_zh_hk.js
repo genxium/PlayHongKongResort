@@ -133,7 +133,7 @@ var ALERTS = {
 	image_selection_limit_exceeded: "請選擇{0}張以內圖片",
 	invalid_email_format: "無效的電郵地址",
 	wrong_password: "密碼錯誤",
-	user_not_existing_or_wrong_password: "用戶不存在或密碼錯誤",	
+	user_not_existing: "用戶不存在",
 	comment_requirement: "請填寫5～128個字",
 	comment_question_not_submitted: "問題未提交",
 	registered: "註冊成功",

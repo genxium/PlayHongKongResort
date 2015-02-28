@@ -16,7 +16,7 @@ $(document).ready(function(){
 	var bundle = extractTagAndParams(window.location.href);
 	var params = bundle["params"];
 	g_email = params["email"]; 
-	g_keyCode = params["code"];
+	g_code = params["code"];
 
 	g_fieldPassword = $("#password-1");
 	g_fieldRetypePassword = $("#password-2");

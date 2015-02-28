@@ -369,6 +369,20 @@ function isTokenExpired(data) {
 	return ret == 1001;
 }
 
+function isUserNotFound(data) {
+	if (data == null) return false;
+	if (!data.hasOwnProperty(g_keyRet)) return false;
+	var ret = parseInt(data[g_keyRet]);
+	return ret == 1003;
+}
+
+function isPswErr(data) {
+	if (data == null) return false;
+	if (!data.hasOwnProperty(g_keyRet)) return false;
+	var ret = parseInt(data[g_keyRet]);
+	return ret == 1004;
+}
+
 function isApplicantLimitExceeded(data) {
 	if (data == null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
@@ -382,3 +396,4 @@ function isSelectedLimitExceeded(data) {
 	var ret = parseInt(data[g_keyRet]);
 	return ret == 3009;
 }
+
