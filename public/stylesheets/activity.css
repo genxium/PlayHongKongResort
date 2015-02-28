@@ -237,7 +237,7 @@
 }
 @media (max-width: 657px) {
 .cell-container {
-	max-width: 280px;
+	max-width: 560px;
 }
 .activity-info {
 	margin-left: 0;
@@ -246,7 +246,7 @@
 	margin-left: 2px;
 }
 .time-table {
-	padding: 0;
+	padding: 5px;
 }
 .activity-attend li {
 	padding-left: 0;
