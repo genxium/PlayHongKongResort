@@ -79,9 +79,9 @@ public class UserController extends Controller {
 		    result.put(User.TOKEN, token);
 		    return ok(result);
 	    } catch (UserNotFoundException e) {
-		    return badRequest(StandardFailureResult.get(Constants.INFO_USER_NOT_FOUND));
+		    return ok(StandardFailureResult.get(Constants.INFO_USER_NOT_FOUND));
 	    } catch (PswErrException e) {
-		    return badRequest(StandardFailureResult.get(Constants.INFO_PSW_ERR));
+		    return ok(StandardFailureResult.get(Constants.INFO_PSW_ERR));
 	    } catch (Exception e) {
 		    return badRequest(StandardFailureResult.get());
 	    }

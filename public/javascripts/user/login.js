@@ -55,6 +55,14 @@ function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, on
 		    data: params,
 		    success: function(data, status, xhr){
 				enableField(aButton);
+				if (isUserNotFound(data)) {
+					alert(ALERTS["user_not_existing"]);
+					return;
+				} 
+				if (isPswErr(data)) {
+					alert(ALERTS["wrong_password"]);
+					return;
+				}
 				g_loggedInUser = new User(data);
 				if (g_loggedInUser == null) return;
 				// store token in cookie iff query succeeds
@@ -67,12 +75,6 @@ function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, on
 		    },
 		    error: function(xhr, status, err){
 				enableField(aButton);
-				if (isUserNotFound(err)) {
-					alert(ALERTS["user_not_existing"]);
-				} 
-				if (isPswErr(err)) {
-					alert(ALERTS["wrong_password"]);
-				}
 				if(form.onLoginError == null) return;
 				form.onLoginError(err);
 		    }
