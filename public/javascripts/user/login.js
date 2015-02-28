@@ -164,7 +164,7 @@ function logout(evt) {
 			$.removeCookie(g_keyToken, {path: '/'});
 			wsDisconnect();
 			if (g_sectionLogin == null) return;
-			g_preLoginForm = generatePreLoginForm(par, menu.onLoginSuccess, menu.onLoginError, menu.onLogoutSuccess, menu.onLogoutError);
+			g_preLoginForm = generatePreLoginForm(g_sectionLogin, menu.onLoginSuccess, menu.onLoginError, menu.onLogoutSuccess, menu.onLogoutError);
 			if (menu.onLogoutSuccess == null) return;
 			menu.onLogoutSuccess(data);
 		},
