@@ -15,7 +15,7 @@ function AjaxButton(text, url, clickData, method, extraParams, onSuccess, onErro
 		this.remove();
 		this.button = $("<button>", {
 			text: this.text,
-			class: "indianred"
+			"class": "indianred"
 		}).appendTo(par);
 		var dButton = {
 			url: this.url,
@@ -130,13 +130,13 @@ function ExplorerTrigger(node, pic, btn) {
 
 function generateExplorerTriggerSpan(par, onChange, imgSrc, nodeW, nodeH, picW, picH) {
 	var node = $("<div>", {
-		class: "add-image"
+		"class": "add-image"
 	}).appendTo(par);
 	//setDimensions(node, nodeW, nodeH);
 	//setOffset(node, 0, 0); 	
 	var pic = $("<span>", {
 		text: "add-image",
-		class: "purple"
+		"class": "purple"
 	}).appendTo(node); 
 	//setDimensions(pic, picW, picH);
 
@@ -166,30 +166,30 @@ function DatetimePicker(input) {
 function generateDatePicker(par, time, onEdit) {
     
 	var container = $('<div>', {
-		//class: 'col-sm-6'    
+		//"class": 'col-sm-6'    
 	}).appendTo(par);
 
 	var formGroup = $('<div>', {
-		//class: 'form-group'    
+		//"class": 'form-group'    
 	}).appendTo(container);
 
 	var inputGroup = $("<div>", {
-		class: 'input-group date'    
+		"class": 'input-group date'    
 	}).appendTo(formGroup);
 
 	var input = $("<input>", {
 		type: 'text',
 		value: time,
 		disabled: true,
-		class: "form-control",
+		"class": "form-control",
 	}).appendTo(inputGroup);
 
 	var inputGroupAddon = $('<span>', {
-		class: 'input-group-addon'    
+		"class": 'input-group-addon'    
 	}).appendTo(inputGroup);
 
 	var glyphiconCalendar = $('<span>', {
-		class: 'glyphicon glyphicon-calendar'   
+		"class": 'glyphicon glyphicon-calendar'   
 	}).appendTo(inputGroupAddon);
 
 	inputGroup.datetimepicker({
@@ -313,7 +313,7 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 			var index = parseInt(key);
 			var indicator = $("<button>", {
 				text: index,
-				class: "gray"
+				"class": "gray"
 			}).appendTo(pager.bar);
 			/*indicator.hover(
 				function(evt){
@@ -414,7 +414,7 @@ function createModal(par, message, widthRatioPercentage, heightRatioPercentage) 
 	var dialog = $("<div class='modal-dialog modal-lg'>").appendTo(pager);
 	var content = $("<div class='modal-content'>").appendTo(dialog);
 	var div = $("<div>", {
-		class: "general-popup-paragraph",
+		"class": "general-popup-paragraph",
 		text: message
 	}).appendTo(content);
 	return pager;
@@ -500,7 +500,7 @@ function DropdownMenu(toggle, items, reactions) {
 function createDropdownMenu(par, id, menuTitle, icons, actionNames, titles, reactions) {
 	var length = titles.length;
 	if (length != icons.length) return; 
-	var container = $("<div>", { class: "menu-actions" }).appendTo(par);
+	var container = $("<div>", { "class": "menu-actions" }).appendTo(par);
 	// these params indicate that the container is centred
 	//container.css("position", "absolute");
 	//container.css("width", "90%")
@@ -591,7 +591,7 @@ function Captcha(sid) {
 	};
 	this.appendCaptcha = function(par) {
 		var row = $("<div>", {
-			class: "captcha"
+			"class": "captcha"
 		}).appendTo(par);
 		this.input = $("<input>", {
 			placeHolder: HINTS["captcha"]
@@ -600,7 +600,7 @@ function Captcha(sid) {
 			src: "/captcha?" + g_keySid + "=" + this.sid
 		}).appendTo(row);
 		var btnChange = $("<button>", {
-			class: "change"
+			"class": "change"
 		}).appendTo(row);
 
 		btnChange.click(this, function(evt) {
@@ -638,15 +638,15 @@ function WordCounter(text, min, max, regex, violationHint) {
 	this.appendCounter = function(par) {
 		var row = $("<p>").appendTo(par);
 		this.currentText = $("<span>", {
-			class: "word-counter-current",
+			"class": "word-counter-current",
 			text: this.text.length
 		}).appendTo(row);	
 		this.maxText = $("<span>", {
-			class: "word-counter-max",
+			"class": "word-counter-max",
 			text: "/" + this.max.toString()
 		}).appendTo(row);
 		this.hintText = $("<span>", {
-			class: "word-counter-violation-hint",
+			"class": "word-counter-violation-hint",
 			text: ""
 		}).appendTo(row);	
 		this.update(this.text);
@@ -758,11 +758,11 @@ function initAvatarEditor(par) {
 	g_sectionAvatarEditor = $("<div class='modal fade avatar-editor' tabindex='-1' role='dialog' aria-labelledby='AvatarEditor' aria-hidden='true'>").appendTo(par);
 	 
 	var dialog = $("<div>", {
-		class: "modal-dialog modal-lg"
+		"class": "modal-dialog modal-lg"
 	}).appendTo(g_sectionAvatarEditor);
 
 	g_modalAvatarEditor = $("<div>", {
-		class: "modal-content"
+		"class": "modal-content"
 	}).appendTo(dialog);
 		
 	removeAvatarEditor();	
@@ -772,21 +772,21 @@ function generateAvatarEditor(par, user) {
 	if (user == null) return null;
 	
 	var ret = $("<div>", {
-		class: "avatar-editor-form clearfix"
+		"class": "avatar-editor-form clearfix"
 	}).appendTo(par);
 
 	var picContainer = $("<div>", {
-		class: "avatar left"
+		"class": "avatar left"
 	}).appendTo(ret);
 	var picHelper = $("<span>", {
-		class: "image-helper"
+		"class": "image-helper"
 	}).appendTo(picContainer);
 	var pic = $("<img>", {
 		src: user.avatar
 	}).appendTo(picContainer); 
 
 	var uploadContainer = $("<div>", {
-		class: "upload left"
+		"class": "upload left"
 	}).appendTo(ret);
 	var btnChoose = $("<input>", {
 		type: "file",
@@ -796,7 +796,7 @@ function generateAvatarEditor(par, user) {
 
 	var btnUpload = $("<button>", {
 		text: TITLES["upload"],	
-		class: "purple"
+		"class": "purple"
 	}).appendTo(uploadContainer);	
 	//setDimensions(btnUpload, "250px", "95px");
 	

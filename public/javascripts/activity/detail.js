@@ -61,24 +61,24 @@ function displayActivityDetail(par){
 
 	par.empty();
 	var ret = $("<div>", {
-		class: "activity-detail-page"
+		"class": "activity-detail-page"
 	}).appendTo(par);
 
 	var title = $("<div>", {
 		text: g_activity.title,
-		class: "activity-title"
+		"class": "activity-title"
 	}).appendTo(ret);
 
 	var address = $("<div>", {
 		text: g_activity.address,
-		class: "activity-address"	
+		"class": "activity-address"	
 	}).appendTo(ret);
 
 	if(g_activity.host.id != null && g_activity.host.name != null){
 			var host = $('<a>', {
 					href: "#", 
 					text: TITLES["by_host"].format(g_activity.host.name),
-					class: "activity-host"
+					"class": "activity-host"
 			}).appendTo(ret);
 			host.click(function(evt){
 				evt.preventDefault();
@@ -88,21 +88,21 @@ function displayActivityDetail(par){
 
 	displayTimesTable(ret, g_activity);
 
-	var content = $('<div>',{
+	var content = $("<div>",{
 		text: g_activity.content,
-		class: "activity-content"
+		"class": "activity-content"
 	}).appendTo(ret);
 
 	if(g_activity.images != null) {
-		var imagesContainer = $('<div>', {
-			class: "activity-image-container clearfix"
+		var imagesContainer = $("<div>", {
+			"class": "activity-image-container clearfix"
 		}).appendTo(ret);
 		for(var i = 0; i < g_activity.images.length; ++i){
 			var imageNode = $('<div>', {
-				class: "activity-image left"
+				"class": "activity-image left"
 			}).appendTo(imagesContainer);
 			$('<span>',{
-				class: "image-helper"
+				"class": "image-helper"
 			}).appendTo(imageNode);
 			$('<img>',{
 				src: g_activity.images[i].url,
@@ -125,7 +125,7 @@ function displayActivityDetail(par){
 
 	if (g_activity.hasBegun()) {
 		$("<p>", {
-			class: "comment-not-permitted",
+			"class": "comment-not-permitted",
 			text: MESSAGES["comment_disabled_activity_has_begun"]
 		}).appendTo(ret);
 		return ret;
@@ -134,7 +134,7 @@ function displayActivityDetail(par){
 	if (g_activity.status != null && g_activity.status != undefined && g_activity.status != g_statusAccepted) {
 		// for host viewing unaccepted activity
 		$("<p>", {
-			class: "comment-not-permitted",
+			"class": "comment-not-permitted",
 			text: MESSAGES["comment_disabled_activity_not_accepted"]
 		}).appendTo(ret);
 		return ret;
@@ -175,24 +175,24 @@ function requestActivityDetail(activityId) {
 	var preactiveRef = refs[0];	
 		
 	var tabCommentContent = $("<div>", {
-		class: "tab-container"
+		"class": "tab-container"
 	});
 	var commentsContainer = $("<div>", {
 	}).appendTo(tabCommentContent);
 	var commentPagerBar = $("<div>", {
-		class: "paginator"
+		"class": "paginator"
 	}).appendTo(commentsContainer);
 	var commentPagerScreen = $("<div>", {
-		class: "comment-content"
+		"class": "comment-content"
 	}).appendTo(commentsContainer);
 
 	// sub-comments' container is initially invisible 
 	var subCommentsContainer = $("<div>", {
-		class: "subcomment-container"
+		"class": "subcomment-container"
 	}).appendTo(tabCommentContent);
 	var btnBack = $("<button>", {
 		text: "< BACK",
-		class: "purple back-button"
+		"class": "purple back-button"
 	}).appendTo(subCommentsContainer);
 	// note that the back button in sub-comments' container takes both pagers as input
 	btnBack.click(function(evt) {

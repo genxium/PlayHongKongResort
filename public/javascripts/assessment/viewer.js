@@ -22,10 +22,10 @@ function initAssessmentsViewer(par){
 		style: "position: absolute; width: 80%; height: 80%;"
 	}).appendTo(par);
 	var dialog = $("<div>", {
-		class: "modal-dialog modal-lg"
+		"class": "modal-dialog modal-lg"
 	}).appendTo(g_sectionAssessmentsViewer);
 	g_modalAssessmentsViewer = $("<div>", {
-		class: "modal-content"
+		"class": "modal-content"
 	}).appendTo(dialog);	
 	removeAssessmentsViewer();
 }
@@ -67,11 +67,11 @@ function generateAssessmentsViewer(par, assessments) {
 		var fromCell = $("<td>").appendTo(row);
 		var iconSlot = $("<img>", {
 			src: assessment.fromUser.avatar,
-			class: "assessments-viewer-avatar"
+			"class": "assessments-viewer-avatar"
 		}).appendTo(fromCell);
 		var nameSlot = $("<span>", {
 			text: assessment.fromUser.name,
-			class: "assessments-viewer-name"
+			"class": "assessments-viewer-name"
 		}).appendTo(fromCell);
  	}
 	return ret;
@@ -131,7 +131,7 @@ function queryAssessments(refIndex, numItems, direction, to, activityId) {
 function generateAssessmentTag(par, assessment) {
 	var ret = $("<span>", {
 		text: assessment.content,
-		class: "assessment-tag"
+		"class": "assessment-tag"
 	}).click(assessment, function(evt) {
 		evt.preventDefault();
 		var aAssessment = evt.data;

@@ -6,7 +6,7 @@ function initTopbar(par){
 	g_topbar.addClass("clearfix");
 	var topbarBanner = $("<div>", {
 		id: "topbar-title",
-		class: "left"
+		"class": "left"
 	}).appendTo(g_topbar);
 	var topbarTitle = $("<p>", {
 		text: "Let's Date"
@@ -14,7 +14,7 @@ function initTopbar(par){
 
 	g_sectionLogin = $("<div>", {
 		id: "login-section",
-		class: "right"	
+		"class": "right"	
 	}).appendTo(g_topbar);
 
 	topbarTitle.click(function(evt){

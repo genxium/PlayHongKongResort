@@ -106,30 +106,30 @@ function onListActivitiesError(err){
 function displayTimesTable(par, activity) {
 	// deadline and begin time
 	var deadlineRow = $("<div>", {
-		class: "time-table dealine clearfix"
+		"class": "time-table dealine clearfix"
 	}).appendTo(par);
 	var deadlineTitle = $("<div>", {
 		text: TITLES["deadline"],
-		class: "time-label left"
+		"class": "time-label left"
 	}).appendTo(deadlineRow);
 	var deadline = $("<div>", {
 		text: gmtMiilisecToLocalYmdhis(activity.applicationDeadline),
-		class: "time-detail left"
+		"class": "time-detail left"
 	}).appendTo(deadlineRow);
 	if (activity.isDeadlineExpired()) {
 		deadlineRow.addClass("expired");
 	}
 
 	var beginTimeRow = $("<div>", {
-		class: "time-table begin clearfix"
+		"class": "time-table begin clearfix"
 	}).appendTo(par);
 	var beginTimeTitle = $("<div>", {
 		text: TITLES["begin_time"],
-		class: "time-label left"
+		"class": "time-label left"
 	}).appendTo(beginTimeRow);
 	var beginTime = $("<div>", {
 		text: gmtMiilisecToLocalYmdhis(activity.beginTime),
-		class: "time-detail left"
+		"class": "time-detail left"
 	}).appendTo(beginTimeRow);
 
 	if (activity.hasBegun()) {
@@ -139,16 +139,16 @@ function displayTimesTable(par, activity) {
 
 function displayParticipantStatistics(par, activity) {
 	var attend = $("<ul>", {
-		class: "clearfix"
+		"class": "clearfix"
 	}).appendTo(par);
 	var spanSelected = $("<li>", {
 		text: activity.numSelected.toString() + " " + TITLES["selected"],
-		class: "selected left"
+		"class": "selected left"
 	}).appendTo(attend);
 
 	var spanApplied = $("<li>", {
 		text: (activity.numApplied + activity.numSelected).toString() + " " + TITLES["applied"], // display the total number of applied users including the selected ones
-		class: "applied left"
+		"class": "applied left"
 	}).appendTo(attend);
 
 }
@@ -208,7 +208,7 @@ function attachJoinButton(par, activity) {
 
 	if(activity.relation == null && !activity.isDeadlineExpired()){
 		var btnJoin = $('<button>', {
-			class: "btn-join purple right",
+			"class": "btn-join purple right",
 			text: TITLES["join"]
 		}).appendTo(par);
 		btnJoin.click(activity, onBtnJoinClicked);
@@ -232,12 +232,12 @@ function attachRelationIndicator(par, activity, inListCell) {
 		
 	if (inListCell) {
 		$("<div>", {
-			class: "activity-cell-relation",
+			"class": "activity-cell-relation",
 			text: mapRelationName[getPriorRelation(activity)]
 		}).appendTo(par);
 	} else {
 		$("<div>", {
-			class: "activity-detail-relation right",
+			"class": "activity-detail-relation right",
 			text: mapRelationName[getPriorRelation(activity)]
 		}).appendTo(par);
 	}
@@ -249,13 +249,13 @@ function attachStatusIndicator(par, activity) {
 	var arrayStatusName = [STATUS_NAMES["created"], STATUS_NAMES["pending"], STATUS_NAMES["rejected"], STATUS_NAMES["accepted"]];
 	
 	var statusIndicator = $('<div>',{
-		class: "activity-cell-status",
+		"class": "activity-cell-status",
 		text: arrayStatusName[activity.status]
 	}).appendTo(par);
 
 	if(activity.status != g_statusCreated && activity.status != g_statusRejected) return;
 	var btnEdit = $('<button>', {
-		class: 'activity-edit'
+		"class": 'activity-edit'
 	}).appendTo(statusIndicator);
 	var dEdit = {};
 	dEdit[g_keyActivity] = activity;
@@ -282,14 +282,14 @@ function generateActivityCell(par, activity){
 	}
 
 	var ret = $("<div>", {
-		class: "cell-container clearfix"
+		"class": "cell-container clearfix"
 	}).appendTo(par);
 
 	var left = $("<div>", {
-		class: "activity-cover left"
+		"class": "activity-cover left"
 	}).appendTo(ret);
 	var helper = $("<span>", {
-		class: "image-helper"
+		"class": "image-helper"
 	}).appendTo(left);
 	if(coverImageUrl != null){
 		//setBackgroundImageDefault(left, coverImageUrl);
@@ -299,26 +299,26 @@ function generateActivityCell(par, activity){
 	}
 
 	var middle = $("<div>", {
-		class: "activity-info left"
+		"class": "activity-info left"
 	}).appendTo(ret);
 	var title = $("<p>", {
-		class: "activity-title truncate",
+		"class": "activity-title truncate",
 		text: activity.title
 	}).appendTo(middle);
 	
 	var addr = $("<p>", {
-		class: "activity-addr truncate",
+		"class": "activity-addr truncate",
 		text: activity.address
 	}).appendTo(middle);
 
 	displayTimesTable(middle, activity);
 	var midBottom = $("<div>", {
-		class: "activity-attend"
+		"class": "activity-attend"
 	}).appendTo(middle);
 	displayParticipantStatistics(midBottom, activity);
 	
 	var selectedSnippet = $("<div>", {
-		class: "selected-snippet"
+		"class": "selected-snippet"
 	}).appendTo(middle);
 	if (activity.selectedParticipants != null) {
 		var count = activity.selectedParticipants.length <= 3 ? activity.selectedParticipants.length : 3;
@@ -327,7 +327,7 @@ function generateActivityCell(par, activity){
 			$("<img>", {
 				title: participant.name,
 				src: participant.avatar,
-				class: "selected-snippet-avatar left"
+				"class": "selected-snippet-avatar left"
 			}).click(participant, function(evt) {
 				evt.preventDefault();
 				var aParticipant = evt.data;
@@ -337,11 +337,11 @@ function generateActivityCell(par, activity){
 	}
 
 	var rightMiddle = $("<div>", {
-		class: "activity-action-small right"
+		"class": "activity-action-small right"
 	}).appendTo(middle);
 
 	var btnDetailMiddle = $('<button>', {
-		class: "activity-detail-small purple right",
+		"class": "activity-detail-small purple right",
 	}).appendTo(rightMiddle);
 
 	btnDetailMiddle.click(activity, function(evt){
@@ -354,11 +354,11 @@ function generateActivityCell(par, activity){
 	attachRelationIndicator(rightMiddle, activity, true);
 
 	var right = $("<div>", {
-		class: "activity-action right"
+		"class": "activity-action right"
 	}).appendTo(ret);
 
 	var btnDetail = $('<button>', {
-		class: "activity-detail purple",
+		"class": "activity-detail purple",
 		text: TITLES["view"]
 	}).appendTo(right);
 	

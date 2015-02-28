@@ -120,28 +120,28 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 		id: "login-box"
 	}).appendTo(par);
 	var row1 = $('<div>', {
-		class: "login-row1 clearfix"
+		"class": "login-row1 clearfix"
 	}).appendTo(container);
 	var inputs = $('<div>', {
-		class: "login-inputs left"
+		"class": "login-inputs left"
 	}).appendTo(row1);
 	var handle = $('<input>', {
 		placeHolder: HINTS["email"],
 		type: "text",
-		class: "login-email"
+		"class": "login-email"
 	}).appendTo(inputs);
 	var psw = $('<input>', {
         placeHolder: HINTS["password"],
         type: "password",
-		class: "login-pw"
+		"class": "login-pw"
     }).appendTo(inputs);
     var btn = $('<button>',{
         text: TITLES["login"],
-		class: "login-btn right purple"
+		"class": "login-btn right purple"
     }).appendTo(row1);
 	var forgot = $("<button>", {
 		text: TITLES["forgot_password"],
-		class: "login-forgot"
+		"class": "login-forgot"
 	}).appendTo(container);	
 	
 	return new PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
@@ -205,10 +205,10 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	var logoutReact = logout;
 	
 	var userBox = $("<div>", {
-		class: "user-box clearfix"
+		"class": "user-box clearfix"
 	}).appendTo(par);
 	var avatarContainer = $("<div>", {
-		class: "post-login-avatar left"
+		"class": "post-login-avatar left"
 	}).appendTo(userBox);
 	var avatarImage = $("<img>", {
 		src: g_loggedInUser.avatar
@@ -223,13 +223,13 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	});
 	
 	var userBoxLeft = $("<div>", {
-		class: "user-box-left left clearfix"
+		"class": "user-box-left left clearfix"
 	}).appendTo(userBox);
 	var leftFirstRow = $("<div>", {
-		class: "left-first-row clearfix"
+		"class": "left-first-row clearfix"
 	}).appendTo(userBoxLeft);
 	var noti = $("<div>", {
-		class: "noti-container left"
+		"class": "noti-container left"
 	}).appendTo(leftFirstRow);
 
 	noti.click(function(evt){
@@ -239,19 +239,19 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	}); 
 
 	var spBubble = $("<span>", {
-		class: "noti-bubble",
+		"class": "noti-bubble",
 		text: "0"
 	}).appendTo(noti);
 	var bubble = new NotiBubble(0, spBubble);
 	bubble.update(g_loggedInUser.unreadCount);
 
 	var userName = $("<div>", {
-		class: "username left",
+		"class": "username left",
 		html: g_loggedInUser.name
 	}).appendTo(leftFirstRow);
 
 	var postLoginMenuContainer = $("<div>", {
-		class: "menu-action-row"
+		"class": "menu-action-row"
 	}).appendTo(userBoxLeft);
 
 	var icons = ["/assets/icons/new_activity.png", "/assets/icons/profile.png", "/assets/icons/logout.png"];

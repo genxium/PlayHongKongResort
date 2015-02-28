@@ -172,14 +172,14 @@ function generateActivityCellForAdmin(par, activity){
 
 	if(activity.images != null) {
 		var imagesContainer = $('<div>', {
-			class: "activity-image-container clearfix"
+			"class": "activity-image-container clearfix"
 		}).appendTo(infoWrap);
 		for(var i = 0; i < activity.images.length; ++i){
 		    var imageNode = $('<div>', {
-			class: "activity-image left"
+			"class": "activity-image left"
 		    }).appendTo(imagesContainer);
 		    $('<span>',{
-			class: "image-helper"
+			"class": "image-helper"
 		    }).appendTo(imageNode);
 		    $('<img>',{
 			src: activity.images[i].url,
@@ -189,12 +189,12 @@ function generateActivityCellForAdmin(par, activity){
 
 	var cellActivityTitle = $("<a>", {
 	    href: window.location.protocol + "//" + window.location.host + "#" +("detail?" + g_keyActivityId + "=" + activity.id.toString()),
-		class: "activity-title",
+		"class": "activity-title",
 		text: activity.title
 	}).appendTo(infoWrap);
 
 	var cellActivityContent = $("<div>", {
-		class: "truncate",	
+		"class": "truncate",	
 		style: "font-size: 1.2em; width: 100%;",
 		text: activity.content
 	}).appendTo(infoWrap);

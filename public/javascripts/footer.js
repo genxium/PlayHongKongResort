@@ -9,11 +9,11 @@ function initFooter(par){
 	// 2. if this is a local variable use aBC
 	var footerLeft = $("<div>", {
 		id: "footer-links",
-		class: "left"
+		"class": "left"
 	}).appendTo(g_footer);
 
 	var links = $("<ul>", {
-		class: "clearfix"
+		"class": "clearfix"
 	}).appendTo(footerLeft);
 
 	var link1 = $("<li>").appendTo(links);
@@ -44,7 +44,7 @@ function initFooter(par){
 	
 	var footerRight = $("<div>", {
 		id: "footer-copy",
-		class: "right",
+		"class": "right",
 		html: "Copyright &copy; All rights reserved."
 	}).appendTo(g_footer);
 }

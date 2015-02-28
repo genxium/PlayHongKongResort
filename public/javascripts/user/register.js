@@ -187,47 +187,47 @@ function generateRegisterWidget(par, onSuccess, onError){
 	}).appendTo(par);
 
 	var rowName = $('<div>', {
-		class: "register-name"
+		"class": "register-name"
 	}).appendTo(registerBox);
 	var fieldName = $('<input>', {
 		type: "text",
 		placeHolder: HINTS["username"],	
 	}).appendTo(rowName);
 	var spName = $('<div>', {
-		class: "message"
+		"class": "message"
 	}).appendTo(rowName);
 
 	var rowEmail = $('<div>', {
-		class: "register-email"
+		"class": "register-email"
 	}).appendTo(registerBox);
 	var fieldEmail = $('<input>', {
 		type: "text",
 		placeHolder: HINTS["email"],
 	}).appendTo(rowEmail);
 	var spEmail = $('<div>', {
-		class: "message"
+		"class": "message"
 	}).appendTo(rowEmail);
 	
 	var rowPsw = $('<div>', {
-		class: "register-password"
+		"class": "register-password"
 	}).appendTo(registerBox);
 	var fieldPsw = $('<input>', {
 		type: "password",
 		placeHolder: HINTS["password"]	
 	}).appendTo(rowPsw);
 	var spanPsw = $('<div>', {
-		class: "message"
+		"class": "message"
 	}).appendTo(rowPsw);
 
 	var rowPswConfirm = $('<div>', {
-		class: "register-pswconfirm"
+		"class": "register-pswconfirm"
 	}).appendTo(registerBox);
 	var fieldPswConfirm = $('<input>', {
 		type: "password",
 		placeHolder: HINTS["confirm_password"]	
 	}).appendTo(rowPswConfirm);
 	var spPswConfirm = $('<div>', {
-		class: "message"
+		"class": "message"
 	}).appendTo(rowPswConfirm);
 
 	var sid = generateUuid();
@@ -235,11 +235,11 @@ function generateRegisterWidget(par, onSuccess, onError){
 	captcha.appendCaptcha(registerBox);
 
 	var rowButton = $('<div>', {
-		class: "register-button"
+		"class": "register-button"
 	}).appendTo(registerBox);
 	var btnRegister = $('<button>', {
 		text: TITLES["register"],
-		class: "purple"
+		"class": "purple"
 	}).appendTo(rowButton);
 
 	return new RegisterWidget(fieldName, spName, fieldEmail, spEmail, fieldPsw, spanPsw, fieldPswConfirm, spPswConfirm, btnRegister, onSuccess, onError, captcha);

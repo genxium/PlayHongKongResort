@@ -13,7 +13,7 @@ function ParticipantsForm(activity, labels, boxes, idList, statusList){
 
 function generateParticipantsSelectionForm(par, activity) {
 	var form = $('<form>', {
-		class: "participant-form"
+		"class": "participant-form"
 	}).appendTo(par);
 
 	var currentGmTMillis = currentMillis();
@@ -29,20 +29,20 @@ function generateParticipantsSelectionForm(par, activity) {
 		statusList.push(g_aliasSelected);
 		var row = $("<p>").appendTo(form);
 		var label = $('<label>', {
-			class: "participant-label"
+			"class": "participant-label"
 		}).appendTo(row);
 		labels.push(label);
 
 		var checkbox = $("<input>",{
 			type: "checkbox",
-			class: "participant-checkbox"
+			"class": "participant-checkbox"
 		}).appendTo(label);
 		boxes.push(checkbox);
 		checkbox.hide();
 
 		var avatar = $("<img>", {
 			src: participant.avatar,
-			class: "participant-avatar"
+			"class": "participant-avatar"
 		}).click(participant, function(evt) {
 			evt.preventDefault();
 			var aParticipant = evt.data;
@@ -50,7 +50,7 @@ function generateParticipantsSelectionForm(par, activity) {
 		}).appendTo(label);
 
 		var text = $("<plaintext>", {
-			class: "participant-label-name selected-participant",
+			"class": "participant-label-name selected-participant",
 			text: participant.name	
 		}).appendTo(label);
 	}
@@ -61,27 +61,27 @@ function generateParticipantsSelectionForm(par, activity) {
 		statusList.push(g_aliasApplied);
 		var row = $("<p>").appendTo(form);	
 		var label = $('<label>', {
-			class: "participant-label"
+			"class": "participant-label"
 		}).appendTo(row);
 		labels.push(label);
 
 		var checkbox = $("<input>",{
 			type: "checkbox",
-			class: "participant-checkbox"
+			"class": "participant-checkbox"
 		}).appendTo(label);
 		boxes.push(checkbox);
 		if (!editable) checkbox.hide();
 
 		var avatar = $("<img>", {
 			src: participant.avatar,
-			class: "participant-avatar"
+			"class": "participant-avatar"
 		}).click(function(evt) {
 			evt.preventDefault();
 			window.location.hash = ("profile?" + g_keyVieweeId + "=" + participant.id.toString());
 		}).appendTo(label);
 
 		var text = $("<plaintext>", {
-			class: "participant-label-name applied-participant",
+			"class": "participant-label-name applied-participant",
 			text: participant.name	
 		}).appendTo(label);
 	}
@@ -92,7 +92,7 @@ function generateParticipantsSelectionForm(par, activity) {
 
 	var btnSubmit = $("<button>",{
 		text: TITLES["submit_participant_selection"],
-		class: "purple participant-confirm"
+		"class": "purple participant-confirm"
 	}).appendTo(form);
 
 	btnSubmit.click(ret, function(evt) {

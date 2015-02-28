@@ -32,11 +32,11 @@ function BatchAssessmentEditor(){
 function generateAssessmentEditor(par, participant, activity, batchEditor){
 	var singleEditor = new SingleAssessmentEditor();
 	var row = $('<div>', {
-		class: "assessment-input-row"
+		"class": "assessment-input-row"
 	}).appendTo(par);
 	var avatar = $("<img>", {
 		src: participant.avatar,
-		class: "assessment-avatar"
+		"class": "assessment-avatar"
 	}).click(function(evt) {
 		evt.preventDefault();
 		window.location.hash = ("profile?" + g_keyVieweeId + "=" + participant.id.toString());
@@ -73,11 +73,11 @@ function generateAssessmentButtons(par, activity, batchEditor){
 	par.empty();
 	if(batchEditor.editors == null || batchEditor.editors.length <= 1) return;
 	var row = $('<div>', {
-		class: "assessment-button"
+		"class": "assessment-button"
 	}).appendTo(par);
 	var btnCheckAll = $("<button>", {
 		text: "Check All",
-		class: "gray assessment-button"
+		"class": "gray assessment-button"
 	}).appendTo(row);   
 
 	btnCheckAll.click(batchEditor, function(evt){
@@ -90,7 +90,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 
 	var btnUncheckAll = $("<button>", {
 	    text: "Uncheck All",
-	    class: "gray assessment-button"
+	    "class": "gray assessment-button"
 	}).appendTo(row);
 	btnUncheckAll.click(batchEditor, function(evt){
 		evt.preventDefault();
@@ -102,7 +102,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 
 	g_btnSubmit = $("<button>", {
 		text: "Submit",
-		class: "purple assessment-button"
+		"class": "purple assessment-button"
 	}).appendTo(row);
 
 	g_btnSubmit.click({editor: batchEditor, activity: activity}, function(evt){
@@ -163,7 +163,7 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 	if(activity == null) return g_batchAssessmentEditor;
 	var editors = [];
 	var sectionAll = $('<div>', {
-		class: "assessment-container"
+		"class": "assessment-container"
 	}).appendTo(par);
 	
 	var initVal = false;
@@ -286,7 +286,7 @@ function generateAssessedView(row, participant, activity) {
 function generateUnassessedView(row, singleEditor, batchEditor) {
 	var lock=$('<input>', {
 		type: "checkbox",
-		class: "left"
+		"class": "left"
 	}).appendTo(row);
 	var contentInput = $('<input>', {
 		type: 'text'

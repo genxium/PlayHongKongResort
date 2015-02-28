@@ -36,7 +36,7 @@ var TITLES = {
 	upload: "上傳",
 	choose_picture: "選擇圖片",
 	edit: "編輯",
-	delete: "刪除",
+	'delete': "刪除",
 	update: "更新",
 	save: "保存",
 	submit: "提交",

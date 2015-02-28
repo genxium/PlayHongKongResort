@@ -200,10 +200,10 @@ function initActivityEditor(par, onRemove){
 	*/
 	g_sectionActivityEditor = $("<div class='modal fade activity-editor' data-keyboard='false' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='create' aria-hidden='true'>").appendTo(par);
 	var dialog = $("<div>", {
-		class: "modal-dialog modal-lg"
+		"class": "modal-dialog modal-lg"
 	}).appendTo(g_sectionActivityEditor);
 	g_modalActivityEditor = $("<div>", {
-		class: "modal-content"
+		"class": "modal-content"
 	}).appendTo(dialog);
 
 	g_onEditorCancelled = function(){
@@ -411,13 +411,13 @@ function previewImage(par, editor) {
 		var offset = Object.keys(editor.newImageFiles).length;
 		editor.newImageFiles[key] = newImage; // add new image to file map
 		var node = $('<div>', {
-			class: "preview-container left"
+			"class": "preview-container left"
 		}).appendTo(par);
 		//setDimensions(node, g_wImageCell, g_hImageCell + g_hDelete);
 		//setOffset(node, offset * g_wImageCell, null);
 		editor.newImageNodes[key] = node; // add new image node to view map		
 		var imgHelper = $('<span>', {
-			class: "image-helper"
+			"class": "image-helper"
 		}).appendTo(node);
 		var img = $('<img>', {
 			src: e.target.result
@@ -426,7 +426,7 @@ function previewImage(par, editor) {
 
 		var btnDelete = $("<button>", {
 			text: TITLES["delete"],
-			class: "purple image-delete"
+			"class": "purple image-delete"
 		}).appendTo(node);
 		//setDimensions(btnDelete, g_wImageCell, g_hDelete);
 		
@@ -515,12 +515,12 @@ function generateActivityEditor(par, activity){
 	}
 
 	var ret = $('<form>', {
-		class: "activity-editor-form"
+		"class": "activity-editor-form"
 	}).appendTo(par);
 
 	var titleInput = $('<input>', {
 		placeholder: HINTS["activity_title"],
-		class: "input-title",
+		"class": "input-title",
 		type: 'text',
 		value: activityTitle
 	}).appendTo(ret);
@@ -534,7 +534,7 @@ function generateActivityEditor(par, activity){
 
 	var addressInput = $("<input>", {
 		placeholder: HINTS["activity_address"],
-		class: "input-address",
+		"class": "input-address",
 		type: "text",
 		value: activityAddress
 	}).appendTo(ret);
@@ -550,7 +550,7 @@ function generateActivityEditor(par, activity){
 
 	var contentInput = $("<textarea>",	{
 		placeholder: ["activity_content"],
-		class: "input-content" 
+		"class": "input-content" 
 	}).appendTo(ret);
 	contentInput.val(activityContent);
 	var contentCounter = new WordCounter(activityContent, 1, 1024, g_activityContentPattern, "");
@@ -562,7 +562,7 @@ function generateActivityEditor(par, activity){
 	});
 
 	$("<div>", {
-		class: "warning",
+		"class": "warning",
 		html: MESSAGES["image_selection_requirement"]
 	}).appendTo(ret);
 
@@ -571,25 +571,25 @@ function generateActivityEditor(par, activity){
 	var imageSelectors = new Array();
 
 	var newImagesRow = $("<div>", {
-		class: "image-row new clearfix"
+		"class": "image-row new clearfix"
 	});
 
 	//setDimensions(newImagesRow, null, g_hImageCell + g_hDelete + 5);
 
 	if(activity != null && activity.images != null) {
 		var oldImagesRow = $("<div>", {
-			class: "image-row old clearfix"
+			"class": "image-row old clearfix"
 	}).appendTo(ret);
 		//setDimensions(oldImagesRow, null, g_hImageCell + 5);
 
 		var countOldImages = Object.keys(activity.images).length;
 		for(var i =0; i < countOldImages; i++){
 			var node = $("<div>", {
-				class: "preview-container left"
+				"class": "preview-container left"
 			}).appendTo(oldImagesRow);
 			//setDimensions(node, g_wImageCell, g_hImageCell);
 			var imageHelper = $('<span>', {
-				class: "image-helper"
+				"class": "image-helper"
 			}).appendTo(node);
 			var image = $('<img>', {
 				src: activity.images[i].url
@@ -598,7 +598,7 @@ function generateActivityEditor(par, activity){
 			//setOffset(image, i * g_wImageCell + 10, null);
 
 			var indicator = $('<img>',{
-				class: "checked-image",
+				"class": "checked-image",
 				src: "/assets/icons/checked.png"
 			}).appendTo(node);
 			//setDimensions(indicator, 0.2 * g_wImageCell, 0.2 * g_hImageCell);
@@ -645,26 +645,26 @@ function generateActivityEditor(par, activity){
 	if(activity != null && activity.beginTime != null) beginTime = activity.beginTime;
 
 	var scheduleRow1 = $("<div>", {
-		class: "edit-deadline clearfix"
+		"class": "edit-deadline clearfix"
 	}).appendTo(ret);
 	var scheduleCell11 = $("<div>", {
 		text: TITLES["deadline"],
-		class: "left edit-label"
+		"class": "left edit-label"
 	}).appendTo(scheduleRow1);
 	var scheduleCell12 = $("<div>", {
-		class: "datetime-picker left"
+		"class": "datetime-picker left"
 	}).appendTo(scheduleRow1);
 	var deadlinePicker = generateDateSelection(scheduleCell12, gmtMiilisecToLocalYmdhi(deadline));
 	
 	var scheduleRow2 = $("<div>", {
-		class: "edit-begin clearfix"
+		"class": "edit-begin clearfix"
 	}).appendTo(ret);
 	var scheduleCell21 = $("<div>", {
 		text: TITLES["begin_time"],
-		class: "left edit-label"
+		"class": "left edit-label"
 	}).appendTo(scheduleRow2);
 	var scheduleCell22 = $("<div>", {
-		class: "datetime-picker left"
+		"class": "datetime-picker left"
 	}).appendTo(scheduleRow2);
 	var beginTimePicker = generateDateSelection(scheduleCell22, gmtMiilisecToLocalYmdhi(beginTime));
 
@@ -677,18 +677,18 @@ function generateActivityEditor(par, activity){
 	}
 
 	var buttons = $("<div>", {
-		class: "edit-button-rows"
+		"class": "edit-button-rows"
 	}).appendTo(ret);
 
 	/* Associated Buttons */
 	var btnSave = $('<button>',{
-		class: g_classBtnSave,
+		"class": g_classBtnSave,
 		text: TITLES["save"]
 	}).appendTo(buttons);
 	btnSave.click(onSave);
 
 	var btnSubmit = $('<button>',{
-		class: g_classBtnSubmit,
+		"class": g_classBtnSubmit,
 		text: TITLES["submit"]
 	}).appendTo(buttons);
 	var dSubmit = {};
@@ -696,7 +696,7 @@ function generateActivityEditor(par, activity){
 	btnSubmit.click(dSubmit, onSubmit);
 
 	var btnCancel = $('<button>',{
-		class: g_classBtnCancel,
+		"class": g_classBtnCancel,
 		text: TITLES["cancel"]
 	}).appendTo(buttons);
 	btnCancel.click(onCancel);
@@ -704,7 +704,7 @@ function generateActivityEditor(par, activity){
 	var btnDelete = null;
 	if(!isNewActivity){
 		btnDelete = $('<button>',{
-			class: g_classBtnDelete,
+			"class": g_classBtnDelete,
 			text: TITLES["delete"]
 		}).appendTo(buttons);
 		var dDelete = {};
@@ -716,7 +716,7 @@ function generateActivityEditor(par, activity){
 	}
 
 	var hint = $("<div>", {
-		class: "hint"
+		"class": "hint"
 	}).appendTo(ret);
 
 	var editor = new ActivityEditor(ret, activityId, titleInput, titleCounter, addressField, addrCounter, contentInput, contentCounter, newImageFiles, newImageNodes, imageSelectors, beginTimePicker, deadlinePicker, btnSave, btnSubmit, btnDelete, explorerTrigger, hint, captcha);	

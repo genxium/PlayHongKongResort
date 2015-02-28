@@ -30,24 +30,24 @@ function queryUserDetail(){
 			var username = g_viewee.name;
 			g_sectionUser.empty();
 			var profile = $("<div>", {
-				class: "user-profile clearfix"
+				"class": "user-profile clearfix"
 			}).appendTo(g_sectionUser);
 			var pic = $("<div>", {
-				class: "section-user-avatar left"
+				"class": "section-user-avatar left"
 			}).appendTo(profile);
 			var imageHelper = $("<span>", {
-				class: "image-helper"
+				"class": "image-helper"
 			}).appendTo(pic);
 			var profileImage = $("<img>", {
 				src: g_viewee.avatar
 			}).appendTo(pic);
 			//setBackgroundImageDefault(pic, avatar);
 			var userInfo = $("<div>", {
-				class: "section-user-info left"
+				"class": "section-user-info left"
 			}).appendTo(profile);
 			var name = $("<div>", {
 				text: username,
-				class: "section-user-name"
+				"class": "section-user-name"
 			}).appendTo(userInfo);
 			
 			// refresh pager for assessments

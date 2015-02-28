@@ -107,7 +107,7 @@ function generateReplyEditor(par, activity, comment){
     }).appendTo(ret);
     var btnSubmit = $('<button>',{
         text: TITLES["submit_comment_reply"],
-        class: "comment-submit purple"
+        "class": "comment-submit purple"
     }).appendTo(ret);
 
     btnSubmit.click(input, function(evt) {
@@ -160,7 +160,7 @@ function generateReplyEditor(par, activity, comment){
 
     var btnCollapse = $('<button>',{
         text: TITLES["collapse"],
-        class: "comment-collapse gray"
+        "class": "comment-collapse gray"
     }).appendTo(ret);
 
     btnCollapse.click(function(evt){
@@ -174,20 +174,20 @@ function generateReplyEditor(par, activity, comment){
 function generateCommentCell(par, commentJson, activity, single){
 	var comment = new Comment(commentJson);
 	var ret = $('<div>', {
-	    class: "comment-group"
+	    "class": "comment-group"
 	}).appendTo(par);
         var row = $('<div>', {
-		class: "comment-row clearfix"
+		"class": "comment-row clearfix"
 	}).appendTo(ret);
 	if (single) row.addClass("single-row");
 
 	var content = $('<div>', {
 		text: comment.content,
-		class: "comment-content left"
+		"class": "comment-content left"
 	}).appendTo(row);
 
 	var commentFrom = $('<div>', {
-		class: "comment-from left"
+		"class": "comment-from left"
 	}).appendTo(row);
 	var hrefFromName = $('<a>', {
 		href: "#",
@@ -201,12 +201,12 @@ function generateCommentCell(par, commentJson, activity, single){
         
         var generatedTime = $('<div>', {
             text: gmtMiilisecToLocalYmdhis(comment.generatedTime),
-            class: "comment-time left"
+            "class": "comment-time left"
         }).appendTo(row);
 
 	if (!single && comment.numChildren > 3) {
 		var spanView = $("<div>", {
-			class: "comment-view left"
+			"class": "comment-view left"
 		}).appendTo(row);
 		var viewAll = $("<a>", {
 			text: TITLES["view_all_replies"].format(comment.numChildren)
@@ -236,12 +236,12 @@ function generateCommentCell(par, commentJson, activity, single){
         if(token == null || activity.hasBegun()) return;
 
         var operations = $('<div>',{
-                class: "comment-action left"
+                "class": "comment-action left"
         }).appendTo(row);
 
         var btnReply = $('<button>',{
             text: TITLES["reply"],
-            class: "purple comment-reply"
+            "class": "purple comment-reply"
         }).appendTo(operations);
 
         btnReply.click(ret, function(evt){
@@ -258,14 +258,14 @@ function generateSubCommentCell(par, commentJson, activity){
 	var comment = new Comment(commentJson);
 
 	var ret = $("<div>", {
-		class: "comment-group subgroup"
+		"class": "comment-group subgroup"
 	}).appendTo(par);
 
 	var row = $("<div>", {
-		class: "comment-row clearfix"
+		"class": "comment-row clearfix"
 	}).appendTo(ret);
 	var commentTo = $('<div>', {
-		class: "comment-to left"
+		"class": "comment-to left"
 	}).appendTo(row);
 	var hrefTo = $('<a>', {
 		href: "#",
@@ -279,11 +279,11 @@ function generateSubCommentCell(par, commentJson, activity){
 
 	var content = $('<div>', {
 		text: comment.content,
-		class: "comment-content left"
+		"class": "comment-content left"
 	}).appendTo(row);
 
 	var commentFrom = $('<div>', {
-		class: "comment-from left"
+		"class": "comment-from left"
 	}).appendTo(row);
 	var hrefFromName = $('<a>', {
 		href: "#",
@@ -297,19 +297,19 @@ function generateSubCommentCell(par, commentJson, activity){
 
 	var generatedTime = $('<div>', {
 		text: gmtMiilisecToLocalYmdhis(comment.generatedTime),
-		class: "comment-time left"
+		"class": "comment-time left"
 	}).appendTo(row);
 
 	var token = $.cookie(g_keyToken);
 	if(token == null || activity.hasBegun()) return ret;
 
 	var operations = $('<div>',{
-		class: "comment-action left"
+		"class": "comment-action left"
 	}).appendTo(row);
 
 	var btnReply = $('<button>',{
 		text: TITLES["reply"],
-		class: "purple comment-reply"
+		"class": "purple comment-reply"
 	}).appendTo(operations);
 
 	btnReply.click(ret, function(evt){
@@ -323,13 +323,13 @@ function generateSubCommentCell(par, commentJson, activity){
 
 function generateCommentEditor(par, activity){
     var editor = $('<div>', {
-		class: "activity-comment"
+		"class": "activity-comment"
 	}).appendTo(par);
     var input = $('<input>', {
     }).appendTo(editor);
     var btnSubmit = $('<button>',{
         text: TITLES["submit_comment_question"],
-    	class: "purple"
+    	"class": "purple"
     }).appendTo(editor);
 
     var inputCounter = new WordCounter("", 5, 128, g_commentContentPattern, ALERTS["comment_requirement"]);

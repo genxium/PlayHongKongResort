@@ -289,13 +289,13 @@ function NotificationCell(container, notification, indicator) {
 
 	if (this.notification.isRead != 0) {
 		var readIndicator = $("<div>", {
-			class: "notification-read"
+			"class": "notification-read"
 		}).appendTo(this.indicator);
 		return;
 	}
 
 	var unreadIndicator = $("<div>", {
-		class: "notification-unread"
+		"class": "notification-unread"
 	}).appendTo(this.indicator);
 
 	this.container.click(this, function(evt) {
@@ -334,19 +334,19 @@ function generateNotificationCell(par, notification) {
 	}).appendTo(par);
 	var idColumn = $("<td>", {
 		text: notification.id,
-		class: "notification-id"
+		"class": "notification-id"
 	}).appendTo(container);
 	var content = $("<td>", {
 		text: notification.content,
-		class: "notification-content"
+		"class": "notification-content"
 	}).appendTo(container);
 	var timestamp = $("<td>", {
 		text: gmtMiilisecToLocalYmdhis(notification.generatedTime),
-		 class: "notification-time"
+		 "class": "notification-time"
 	}).appendTo(container); 
 
 	var indicator = $("<td>", {
-		class: "notification-envelope"
+		"class": "notification-envelope"
 	}).appendTo(container); 
 	return new NotificationCell(container, notification, indicator);
 }
