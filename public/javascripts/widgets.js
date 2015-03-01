@@ -134,18 +134,18 @@ function generateExplorerTriggerSpan(par, onChange, imgSrc, nodeW, nodeH, picW, 
 	}).appendTo(par);
 	//setDimensions(node, nodeW, nodeH);
 	//setOffset(node, 0, 0); 	
+	
 	var pic = $("<span>", {
-		text: "add-image",
-		"class": "purple"
+		text: TITLES["add-image"]//,
+		// "class": "purple"
 	}).appendTo(node); 
-	//setDimensions(pic, picW, picH);
+	// setDimensions(pic, picW, picH);
 
 	// btn should have the same dimensions as node to be clickable
 	var btn = $("<input>", {
 		type: "file"
 	}).appendTo(node);
 	//setDimensions(btn, nodeW, nodeH);
-	
 
 	btn.change(onChange);
 	return new ExplorerTrigger(node, pic, btn); 

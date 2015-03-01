@@ -271,7 +271,7 @@ public class ExtraCommander extends SQLCommander {
 				// Save renamed file to server storage at the final step
 				FileUtils.moveFile(file, new File(imageAbsolutePath));
 			} catch (Exception err) {
-				if(deleteImageRecord(imageId))	Loggy.i(TAG, "saveAvatar", newImageName + " has been reverted");
+				if(deleteImageRecord(imageId))	Loggy.d(TAG, "saveAvatar", newImageName + " has been reverted");
 				File tmpFile = new File(imageAbsolutePath);
 				if (tmpFile.exists()) tmpFile.delete();
 				imageId = SQLHelper.INVALID;

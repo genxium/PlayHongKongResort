@@ -549,7 +549,7 @@ function generateActivityEditor(par, activity){
 	var addressField = new AddressField(addressInput, null);
 
 	var contentInput = $("<textarea>",	{
-		placeholder: ["activity_content"],
+		placeholder: HINTS["activity_content"],
 		"class": "input-content" 
 	}).appendTo(ret);
 	contentInput.val(activityContent);

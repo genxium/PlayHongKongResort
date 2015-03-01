@@ -77,7 +77,9 @@ var TITLES = {
 	submit_participant_selection: "提交",
 	new_password: "新密碼",
 	confirm_new_password: "確認新密碼",
-	input_to_reset_password: "請輸入新密碼並提交以完成修改"
+	input_to_reset_password: "請輸入新密碼並提交以完成修改",
+	add_image: "+",
+	send: "發送"
 };
 
 var MESSAGES = {
@@ -108,7 +110,14 @@ var MESSAGES = {
 	activity_created: "活動已創建, 你可以在個人主頁查看相關信息",
 	activity_saved: "更新已保存",
 	activity_not_saved: "保存不成功",
-	activity_saving: "正在保存..."
+	activity_saving: "正在保存...",
+	instructions_sent_to: "密碼重設郵件已發送至{0}, 請查收",
+	instructions_not_sent: "郵件發送失敗， 請重試",
+	password_reset_tips: "請輸入你的註冊電郵地址",
+	notice: "請注意",
+	password_reset_notice_1: "若電郵地址未在本站註冊， 你將無法收到所需郵件",
+	password_reset_notice_2: "若電郵地址不存在， 你將無法收到所需郵件",
+	password_reset_notice_3: "電郵地址所關聯帳號在申請密碼重設期間不會失效， 如需凍結帳號請通過<a href=\"mailto:admin@qiutongqu.com?subject='account suspension'\">admin@qiutongqu.com</a>聯繫我們"
 };
 
 var HINTS = {
