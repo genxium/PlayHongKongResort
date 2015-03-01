@@ -406,49 +406,49 @@ function previewImage(par, editor) {
         var reader = new FileReader();
 
         reader.onload = function (e) {
-		var key = new Date().getTime(); // the key which identifies an image in the map newImages
+			var key = new Date().getTime(); // the key which identifies an image in the map newImages
 
-		var offset = Object.keys(editor.newImageFiles).length;
-		editor.newImageFiles[key] = newImage; // add new image to file map
-		var node = $('<div>', {
-			"class": "preview-container left"
-		}).appendTo(par);
-		//setDimensions(node, g_wImageCell, g_hImageCell + g_hDelete);
-		//setOffset(node, offset * g_wImageCell, null);
-		editor.newImageNodes[key] = node; // add new image node to view map		
-		var imgHelper = $('<span>', {
-			"class": "image-helper"
-		}).appendTo(node);
-		var img = $('<img>', {
-			src: e.target.result
-		}).appendTo(node);
-		//setDimensions(img, g_wImageCell, g_hImageCell);
+			var offset = Object.keys(editor.newImageFiles).length;
+			editor.newImageFiles[key] = newImage; // add new image to file map
+			var node = $('<div>', {
+				"class": "preview-container left"
+			}).appendTo(par);
+			//setDimensions(node, g_wImageCell, g_hImageCell + g_hDelete);
+			//setOffset(node, offset * g_wImageCell, null);
+			editor.newImageNodes[key] = node; // add new image node to view map		
+			var imgHelper = $('<span>', {
+				"class": "image-helper"
+			}).appendTo(node);
+			var img = $('<img>', {
+				src: e.target.result
+			}).appendTo(node);
+			//setDimensions(img, g_wImageCell, g_hImageCell);
 
-		var btnDelete = $("<button>", {
-			text: TITLES["delete"],
-			"class": "purple image-delete"
-		}).appendTo(node);
-		//setDimensions(btnDelete, g_wImageCell, g_hDelete);
-		
-		editor.explorerTrigger.shift(+1, g_wImageCell);
-		
-		btnDelete.click(function(evt){
-			evt.preventDefault();
-			editor.setSavable();
-			editor.setNonSubmittable();
-			if(!editor.newImageFiles.hasOwnProperty(key)) return;
-			delete editor.newImageFiles[key];	
-			if(!editor.newImageNodes.hasOwnProperty(key)) return;
-			editor.newImageNodes[key].remove();
-			delete editor.newImageNodes[key];
-			for(var otherKey in editor.newImageNodes) {
-				if(otherKey < key) continue;
-				var newImageNode = editor.newImageNodes[otherKey];	
-				//var offset = getOffset(newImageNode);
-				//setOffset(newImageNode, offset.left - g_wImageCell, null);
-			}
-			editor.explorerTrigger.shift(-1, g_wImageCell);
-		});
+			var btnDelete = $("<button>", {
+				text: TITLES["delete"],
+				"class": "purple image-delete"
+			}).appendTo(node);
+			//setDimensions(btnDelete, g_wImageCell, g_hDelete);
+			
+			editor.explorerTrigger.shift(+1, g_wImageCell);
+			
+			btnDelete.click(function(evt){
+				evt.preventDefault();
+				editor.setSavable();
+				editor.setNonSubmittable();
+				if(!editor.newImageFiles.hasOwnProperty(key)) return;
+				delete editor.newImageFiles[key];	
+				if(!editor.newImageNodes.hasOwnProperty(key)) return;
+				editor.newImageNodes[key].remove();
+				delete editor.newImageNodes[key];
+				for(var otherKey in editor.newImageNodes) {
+					if(otherKey < key) continue;
+					var newImageNode = editor.newImageNodes[otherKey];	
+					//var offset = getOffset(newImageNode);
+					//setOffset(newImageNode, offset.left - g_wImageCell, null);
+				}
+				editor.explorerTrigger.shift(-1, g_wImageCell);
+			});
         }
 
         reader.readAsDataURL(newImage);
@@ -573,7 +573,6 @@ function generateActivityEditor(par, activity){
 	var newImagesRow = $("<div>", {
 		"class": "image-row new clearfix"
 	});
-
 	//setDimensions(newImagesRow, null, g_hImageCell + g_hDelete + 5);
 
 	if(activity != null && activity.images != null) {
@@ -626,8 +625,7 @@ function generateActivityEditor(par, activity){
                 evt.preventDefault();
 				if (g_activityEditor == null) return;
 				if (countImages(g_activityEditor) >= g_imagesLimit) {
-					var msg = ALERTS["image_selection_limit_exceeded"].format(g_imagesLimit);	
-					alert(msg);
+					alert(ALERTS["image_selection_limit_exceeded"].format(g_imagesLimit));	
 					return;
 				}
                 g_activityEditor.setSavable();
@@ -635,7 +633,7 @@ function generateActivityEditor(par, activity){
                 previewImage(newImagesRow, g_activityEditor);
         };
 
-	var explorerTrigger = generateExplorerTriggerSpan(newImagesRow, onChange, "/assets/icons/add.png", g_wImageCell, g_hImageCell, g_wImageCell/2, g_hImageCell/2);
+	var explorerTrigger = generateExplorerTriggerSpan(newImagesRow, onChange, "/assets/icons/add.png", g_wImageCell, g_hImageCell, g_wImageCell*2/3, g_hImageCell*2/3);
 
 	// Schedules
 	var deadline = reformatDate(new Date());

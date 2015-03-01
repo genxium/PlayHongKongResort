@@ -296,31 +296,30 @@
 	padding: 5px 0;
 }
 .image-row {
-	margin-bottom: 30px;
-}
-.add-image {
 	position: relative;
-	display: block;
-	width: 150px;
-	height: 38px;
+	width: auto;
+	height: 200px;
 	margin-bottom: 5px;
 }
-.add-image span, .add-image input {
+.image-row .new{
+}
+.image-row .old{
+}
+.image-row:hover .pic {
+	color: #e2e185;
+	background-color: cadetblue;
+}
+.add-image {
 	position: absolute;
-	top: 0;
-	left: 0;
-	width: 150px;
-	height: 38px;
+	display: inline-block;
+}
+.add-image .pic {
+	position: absolute;
 }
 .add-image span {
 	font-size: 24px;
 	text-align: center;
 	color: #fff;
-	background-color: #81246e;
-}
-.image-row:hover span {
-	color: #e2e185;
-	background-color: #ad4497;	
 }
 .add-image input {
 	opacity: 0;
