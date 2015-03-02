@@ -79,7 +79,9 @@ var TITLES = {
 	confirm_new_password: "確認新密碼",
 	input_to_reset_password: "請輸入新密碼並提交以完成修改",
 	add_image: "+",
-	send: "發送"
+	send: "發送",
+	check_all: "全選",
+	uncheck_all: "清空已選"
 };
 
 var MESSAGES = {

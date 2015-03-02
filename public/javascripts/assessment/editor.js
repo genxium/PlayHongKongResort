@@ -75,7 +75,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 		"class": "assessment-button"
 	}).appendTo(par);
 	var btnCheckAll = $("<button>", {
-		text: "Check All",
+		text: TITLES["check_all"],
 		"class": "gray assessment-button"
 	}).appendTo(row);   
 
@@ -88,7 +88,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 	});
 
 	var btnUncheckAll = $("<button>", {
-	    text: "Uncheck All",
+	    text: TITLES["uncheck_all"],
 	    "class": "gray assessment-button"
 	}).appendTo(row);
 	btnUncheckAll.click(batchEditor, function(evt){
@@ -100,7 +100,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 	});
 
 	g_btnSubmit = $("<button>", {
-		text: "Submit",
+		text: TITLES["submit"],
 		"class": "purple assessment-button"
 	}).appendTo(row);
 
