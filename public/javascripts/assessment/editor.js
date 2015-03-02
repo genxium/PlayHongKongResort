@@ -43,8 +43,7 @@ function generateAssessmentEditor(par, participant, activity, batchEditor){
 	}).appendTo(row);
 	var name = $('<a>', {
 		href: "#",
-		text: "@" + participant.name,
-		target: "_blank",
+		text: participant.name
 	}).appendTo(row);
 	name.click(function(evt) {
 		evt.preventDefault();
@@ -52,7 +51,7 @@ function generateAssessmentEditor(par, participant, activity, batchEditor){
 	});
 	singleEditor.participantId = participant.id;
 	singleEditor.name = participant.name;
-	if ( activity.containsRelation() && (activity.relation & assessed == 0) )	generateUnassessedView(row, singleEditor, batchEditor);
+	if ( activity.containsRelation() && ((activity.relation & assessed) == 0) )	generateUnassessedView(row, singleEditor, batchEditor);
 	else generateAssessedView(row, participant, activity);
 	if(g_loggedInUser != null && g_loggedInUser.id == participant.id) row.hide(); 
 	return singleEditor;
@@ -284,7 +283,7 @@ function generateAssessedView(row, participant, activity) {
 }
 
 function generateUnassessedView(row, singleEditor, batchEditor) {
-	var lock=$('<input>', {
+	var lock = $('<input>', {
 		type: "checkbox",
 		"class": "left"
 	}).appendTo(row);

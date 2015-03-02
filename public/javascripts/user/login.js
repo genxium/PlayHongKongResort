@@ -152,6 +152,7 @@ function logout(evt) {
 	 * May be triggered by: 1. GUI click on the logout button 2. token expiry on operations
 	 * */
 
+	evt.preventDefault();
 	var menu = ((evt && evt.data) ? evt.data : g_postLoginMenu);
 	if (menu == null) return;
 
