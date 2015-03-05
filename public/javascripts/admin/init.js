@@ -12,7 +12,7 @@ function onBtnAcceptClicked(evt){
  	params[g_keyActivityId] = data[g_keyActivityId];
 	params[g_keyToken] = token;
 
-    disableField(btnAccept);
+	disableField(btnAccept);
 	$.ajax({
 		type: "POST",
 		url: "/el/admin/activity/accept",
@@ -273,7 +273,8 @@ function requestAdmin() {
 
 	var onLogoutError = null;
 
-	g_preLoginForm = generatePreLoginForm(g_sectionLogin, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
+	// registering is disabled on admin page
+	g_preLoginForm = generatePreLoginForm(g_sectionLogin, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError, false);
 
 	checkLoginStatus();
 

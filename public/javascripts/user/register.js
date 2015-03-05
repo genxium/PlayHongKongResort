@@ -186,15 +186,11 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 
 function removeRegisterWidget() {
 	if (g_sectionRegister == null) return;
-	g_sectionRegister.modal("hide");
 	g_sectionRegister.empty();
-	var par = g_sectionRegister.parent();
-	g_sectionRegister = null;
-	if (par == null) return; 
-	par.empty();
 	if (g_modalRegister == null) return;
 	g_modalRegister.empty();
 	g_modalRegister = null;
+	g_sectionRegister.modal("hide");
 }
 
 function initRegisterWidget(par, isModal) {
@@ -203,7 +199,7 @@ function initRegisterWidget(par, isModal) {
 		g_sectionRegister = $("<div>").appendTo(par);	
 		return;
 	}
-	g_sectionRegister = $("<div class='modal fade activity-editor' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='create' aria-hidden='true'>").appendTo(par);
+	g_sectionRegister = $("<div class='modal fade activity-editor' tabindex='-1' role='dialog' aria-labelledby='create' aria-hidden='true'>").appendTo(par);
 	var dialog = $("<div>", {
 		"class": "modal-dialog modal-lg"
 	}).appendTo(g_sectionRegister);

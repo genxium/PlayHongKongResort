@@ -2,8 +2,7 @@ function clearHome() {
 	$("#pager-filters").empty();
 	$("#pager-bar-activities").empty();
 	$("#pager-screen-activities").empty();
-	if (g_sectionRegister == null) return;
-	g_sectionRegister.empty();
+	removeRegisterWidget();
 }
 
 function requestHome() {
@@ -28,21 +27,18 @@ function requestHome() {
 	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
 
 	var onLoginSuccess = function(data) {
-		emptySectionRegister();
-		g_sectionRegister.hide();
+		if (g_registerWidget != null) g_registerWidget.hide();
 		listActivitiesAndRefresh();
 	};
 
 	var onLoginError = function(err) {
-		initSectionRegister();
-		g_sectionRegister.show();
+		if (g_registerWidget != null) g_registerWidget.show();
 		g_pager.screen.show();
 		listActivitiesAndRefresh();
 	};
 
 	var onLogoutSuccess = function(data) {
-		initSectionRegister();
-		g_sectionRegister.show();
+		if (g_registerWidget != null) g_registerWidget.show();
 		g_pager.screen.show();
 		listActivitiesAndRefresh();
 	}; 

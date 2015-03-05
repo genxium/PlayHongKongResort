@@ -51,6 +51,9 @@
 	color: #fff;
 	border: none;
 }
+.login-registry {
+	margin-left: 10px;
+}
 .login-forgot:hover, .login-registry:hover {
 	color: #e2e185;
 }
