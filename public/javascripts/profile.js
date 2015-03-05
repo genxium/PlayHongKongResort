@@ -1,5 +1,4 @@
 var g_sectionUser = null;
-var g_sectionRegister = null;
 var g_viewee = null;
 
 function emptySectionUser() {
@@ -98,10 +97,9 @@ function requestProfile(vieweeId) {
 	clearHome();
 	clearDetail();	
 	clearNotifications();
-	
 	g_vieweeId = vieweeId;
+
 	g_sectionUser = $("#section-user");
-	if (g_registerWidget != null) g_registerWidget.hide();
 
 	var relationSelector = createSelector($("#pager-filters"), [TITLES["hosted_activities"], TITLES["joined_activities"]], [hosted, present], null, null, null, null);
 	var orientationSelector = createSelector($("#pager-filters"), [TITLES["time_descendant"], TITLES["time_ascendant"]], [g_orderDescend, g_orderAscend], null, null, null, null);
@@ -130,7 +128,7 @@ function requestProfile(vieweeId) {
 	
 	var onLogoutError = null;
 
-	g_preLoginForm = generatePreLoginForm(g_sectionLogin, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
+	g_preLoginForm = generatePreLoginForm(g_sectionLogin, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError, true);
 
 	g_onActivitySaveSuccess = listActivitiesAndRefresh;
 	checkLoginStatus();

@@ -3,11 +3,12 @@ var g_loggedInUser = null;
 var g_preLoginForm = null;
 var g_postLoginMenu = null;
 
-function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
+function PreLoginForm(handle, psw, btn, forgot, registry, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
 	this.handle = handle;
 	this.psw = psw;
 	this.btn = btn;
 	this.forgot = forgot;
+	this.registry = registry;
 	this.onLoginSuccess = onLoginSuccess;
 	this.onLoginError = onLoginError;
 	this.onLogoutSuccess = onLogoutSuccess;
@@ -85,6 +86,17 @@ function PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, on
 		evt.preventDefault();
 		window.open("/user/password/index");
 	});
+
+	if (this.registry) {
+		this.registry.click(function(evt) {
+			evt.preventDefault();
+			/**
+			 * TODO: replace `$("#content")` by a member variable
+			 * */
+			g_registerWidget = generateRegisterWidget($("#content"), true, null, null);
+			g_sectionRegister.modal("show");
+		});
+	}
 } 
 
 function NotiBubble(num, view) {
@@ -113,7 +125,7 @@ function PostLoginMenu(bubble, dropdownMenu, onLoginSuccess, onLoginError, onLog
 	this.onLogoutError = onLogoutError;
 }
 
-function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
+function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError, attachRegistry) {
 	if (par == null) return null;
 	par.empty();
 	var container = $('<div>', {
@@ -131,20 +143,30 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 		"class": "login-email"
 	}).appendTo(inputs);
 	var psw = $('<input>', {
-        placeHolder: HINTS["password"],
-        type: "password",
+		placeHolder: HINTS["password"],
+		type: "password",
 		"class": "login-pw"
-    }).appendTo(inputs);
-    var btn = $('<button>',{
-        text: TITLES["login"],
+	}).appendTo(inputs);
+	var btn = $('<button>',{
+		text: TITLES["login"],
 		"class": "login-btn right purple"
-    }).appendTo(row1);
+	}).appendTo(row1);
+	var row2 = $("<div>", {
+		"class": "login-bottom"
+	}).appendTo(container);
 	var forgot = $("<button>", {
 		text: TITLES["forgot_password"],
 		"class": "login-forgot"
-	}).appendTo(container);	
+	}).appendTo(row2);	
+	var registry = null;
+	if (attachRegistry) {
+		registry = $("<button>", {
+			text: TITLES["register"],
+			"class": "login-registry"
+		}).appendTo(row2);	
+	}
 	
-	return new PreLoginForm(handle, psw, btn, forgot, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
+	return new PreLoginForm(handle, psw, btn, forgot, registry, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
 }
 
 function logout(evt) {

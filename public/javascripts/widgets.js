@@ -804,4 +804,3 @@ function generateAvatarEditor(par, user) {
 	var hint = $("<p>").appendTo(uploadContainer);
 	return new AvatarEditor(par, pic, btnChoose, btnUpload, hint); 
 }
-

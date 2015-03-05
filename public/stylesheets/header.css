@@ -43,13 +43,15 @@
 	height: 60px;
 	font-size: 24px;
 }
-.login-forgot {
+.login-botttom {
 	margin-top: 5px;
+}
+.login-forgot, .login-registry {
 	background-color: #3ba8c2;
 	color: #fff;
 	border: none;
 }
-.login-forgot:hover {
+.login-forgot:hover, .login-registry:hover {
 	color: #e2e185;
 }
 .post-login-avatar {

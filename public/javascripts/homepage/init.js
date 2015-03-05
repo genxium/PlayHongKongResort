@@ -1,20 +1,7 @@
-var g_registerWidget = null;
-
-function emptySectionRegister() {
-	if (g_sectionRegister == null) return;
-	//setDimensions(g_sectionRegister, "100%", 0);
-}
-
-function initSectionRegister() {
-	if (g_sectionRegister == null) return;
-	//setDimensions(g_sectionRegister, "100%", "auto");
-}
-
 function clearHome() {
 	$("#pager-filters").empty();
 	$("#pager-bar-activities").empty();
 	$("#pager-screen-activities").empty();
-	emptySectionRegister();
 	if (g_sectionRegister == null) return;
 	g_sectionRegister.empty();
 }
@@ -23,18 +10,13 @@ function requestHome() {
 	clearProfile();
 	clearDetail();
 	clearNotifications();
-
-	initSectionRegister();
-	g_sectionUser = $("#section-user");
-	g_sectionRegister = $("#section-register");
-	g_registerWidget = generateRegisterWidget($("#section-register"), 
-			function(data) {
-				alert(ALERTS["registered"]);
-				listActivitiesAndRefresh();
-			},
-			function(err) {
-				alert(ALERTS["not_registered"]);
-			});
+	g_registerWidget = generateRegisterWidget($("#section-register"), false, 
+						function(data) {
+							alert(ALERTS["registered"]);
+						},
+						function(err) {
+							alert(ALERTS["not_registered"]);
+						});
 
 	var selector = createSelector($("#pager-filters"), [TITLES["time_descendant"], TITLES["time_ascendant"]], [g_orderDescend, g_orderAscend], null, null, null, null);
 	var filter = new PagerFilter(g_keyOrientation, selector);
@@ -67,7 +49,7 @@ function requestHome() {
 
 	var onLogoutError = null;
 
-	g_preLoginForm = generatePreLoginForm(g_sectionLogin, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
+	g_preLoginForm = generatePreLoginForm(g_sectionLogin, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError, false);
 	g_onActivitySaveSuccess = null;
 	checkLoginStatus();
 }

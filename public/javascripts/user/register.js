@@ -1,3 +1,7 @@
+var g_registerWidget = null;
+var g_modalRegister = null;
+var g_sectionRegister = null;
+
 function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswConfirm, pswConfirmCheck, btn, onSuccess, onError, captcha) {
 	// prototypes: onSuccess(data), onError(err)		
 	this.name = name;
@@ -180,12 +184,40 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 	});	
 }
 
-function generateRegisterWidget(par, onSuccess, onError){	
+function removeRegisterWidget() {
+	if (g_sectionRegister == null) return;
+	g_sectionRegister.modal("hide");
+	g_sectionRegister.empty();
+	var par = g_sectionRegister.parent();
+	g_sectionRegister = null;
+	if (par == null) return; 
 	par.empty();
+	if (g_modalRegister == null) return;
+	g_modalRegister.empty();
+	g_modalRegister = null;
+}
+
+function initRegisterWidget(par, isModal) {
+	removeRegisterWidget();
+	if (!isModal) {
+		g_sectionRegister = $("<div>").appendTo(par);	
+		return;
+	}
+	g_sectionRegister = $("<div class='modal fade activity-editor' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='create' aria-hidden='true'>").appendTo(par);
+	var dialog = $("<div>", {
+		"class": "modal-dialog modal-lg"
+	}).appendTo(g_sectionRegister);
+	g_modalRegister = $("<div>", {
+		"class": "modal-content"
+	}).appendTo(dialog);
+}
+
+function generateRegisterWidget(container, isModal, onSuccess, onError){	
+	initRegisterWidget(container, isModal);
+	var par = (isModal ? g_modalRegister : g_sectionRegister);	
 	var registerBox = $('<div>', {
 		id: "register-box"
 	}).appendTo(par);
-
 	var rowName = $('<div>', {
 		"class": "register-name"
 	}).appendTo(registerBox);

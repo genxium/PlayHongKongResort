@@ -305,7 +305,7 @@
 }
 .image-row .old{
 }
-.image-row:hover .pic {
+.image-row > .pic:hover {
 	color: #e2e185;
 	background-color: cadetblue;
 }

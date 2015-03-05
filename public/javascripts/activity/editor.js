@@ -2,10 +2,8 @@
  * variables
  */
 
-var g_activityEditor = null;
 var g_deleteConfirmation = null;
-
-// general DOM elements
+var g_activityEditor = null;
 var g_modalActivityEditor = null;
 var g_sectionActivityEditor = null;
 
@@ -192,6 +190,7 @@ function removeActivityEditor(){
 }
 
 function initActivityEditor(par, onRemove){
+	removeActivityEditor();
 	g_onEditorRemoved = onRemove;
 	/*
 		Note: ALL attributes, especially the `class` attribute MUST be written INSIDE the div tag, bootstrap is NOT totally compatible with jQuery!!!
@@ -206,11 +205,9 @@ function initActivityEditor(par, onRemove){
 		"class": "modal-content"
 	}).appendTo(dialog);
 
-	g_onEditorCancelled = function(){
+	g_onEditorCancelled = function() {
 		g_sectionActivityEditor.modal("hide");
 	};
-
-	removeActivityEditor();
 }
 
 function showActivityEditor(activity) {
