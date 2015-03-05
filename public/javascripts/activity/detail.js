@@ -239,7 +239,7 @@ function requestActivityDetail(activityId) {
 	
 	var onLogoutError = null;
 
-	g_preLoginForm = generatePreLoginForm(g_sectionLogin, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
+	g_preLoginForm = generatePreLoginForm(g_sectionLogin, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError, true);
 
 	checkLoginStatus();
 }
