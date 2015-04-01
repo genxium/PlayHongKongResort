@@ -51,11 +51,13 @@ function generateAssessmentsViewer(par, assessments) {
 	var head = $("<tr class='assessments-viewer-row'>").appendTo(tbl);
 
 	$('<th>', {
-		text: TITLES["content"]
+		text: TITLES["content"],
+		"class": "assessments-viewer-header-content"
 	}).appendTo(head);
 
 	$('<th>', {
-		text: TITLES["from"]
+		text: TITLES["from"],
+		"class": "assessments-viewer-header-from"
 	}).appendTo(head);
 
 	for(var i = 0; i < assessments.length; i++) {
