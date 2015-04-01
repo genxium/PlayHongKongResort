@@ -3,7 +3,7 @@ package models;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import controllers.SQLCommander;
+import controllers.DBCommander;
 import org.json.simple.JSONObject;
 import utilities.Converter;
 import utilities.Loggy;
@@ -59,7 +59,7 @@ public class Comment extends AbstractActivityMessage {
 	    ObjectNode ret = super.toObjectNode();
 	    try {
 		    ret.put(PARENT_ID, m_parentId);
-		    ret.put(FROM_USER, SQLCommander.queryUser(m_from).toObjectNode(viewerId));
+		    ret.put(FROM_USER, DBCommander.queryUser(m_from).toObjectNode(viewerId));
 		    ret.put(NUM_CHILDREN, m_numChildren.toString());
 
 		    if (single || m_subCommentList == null) return ret;

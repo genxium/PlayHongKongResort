@@ -31,13 +31,13 @@ public class ParticipantController extends UserController {
 			Long activityId = Converter.toLong(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
             if (activityId == null) throw new NullPointerException();
 
-			Activity activity = SQLCommander.queryActivity(activityId);
+			Activity activity = DBCommander.queryActivity(activityId);
 			if(activity == null) throw new ActivityNotFoundException();
 			if(activity.hasBegun()) throw new ActivityHasBegunException();
 
-			Long viewerId = SQLCommander.queryUserId(token);
+			Long viewerId = DBCommander.queryUserId(token);
 			if (viewerId == null) throw new UserNotFoundException();
-			if (!SQLCommander.validateOwnership(viewerId, activity)) throw new AccessDeniedException();
+			if (!DBCommander.validateOwnership(viewerId, activity)) throw new AccessDeniedException();
 
 			List<Long> userIdList = new LinkedList<>();
 			JSONArray bundle = (JSONArray) JSONValue.parse(formData.get(AbstractMessage.BUNDLE)[0]);
@@ -48,7 +48,7 @@ public class ParticipantController extends UserController {
 			}
 			if (userIdList.size() + activity.getNumSelected() > Activity.MAX_SELECTED) throw new NumberLimitExceededException();
 
-			List<Integer> relationList = SQLCommander.queryUserActivityRelationList(userIdList, activityId);
+			List<Integer> relationList = DBCommander.queryUserActivityRelationList(userIdList, activityId);
 
 			// validation loop
 			for (Integer relation : relationList) {
@@ -56,7 +56,7 @@ public class ParticipantController extends UserController {
 				if (relation != UserActivityRelation.APPLIED) throw new InvalidUserActivityRelationException();
 			}
 			
-			if (!SQLCommander.updateUserActivityRelation(userIdList, activityId, UserActivityRelation.maskRelation(UserActivityRelation.SELECTED, UserActivityRelation.APPLIED))) throw new NullPointerException();
+			if (!DBCommander.updateUserActivityRelation(userIdList, activityId, UserActivityRelation.maskRelation(UserActivityRelation.SELECTED, UserActivityRelation.APPLIED))) throw new NullPointerException();
 
 			int count = userIdList.size();
 			EasyPreparedStatementBuilder change = new EasyPreparedStatementBuilder();

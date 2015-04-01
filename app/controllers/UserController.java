@@ -26,6 +26,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -36,17 +37,18 @@ public class UserController extends Controller {
 
     public static final String TAG = UserController.class.getName();
 
-    protected static void sendVerificationEmail(String name, String recipient, String code) {
+    protected static void sendVerificationEmail(final String lang, final String name, final String recipient, final String code) {
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);
-
+		HashMap<String, String> targetMap = Constants.LANG_MAP.get(lang);
         try {
             Message msg = new MimeMessage(session);
-            msg.setFrom(new InternetAddress("admin@qiutongqu.com", "The HongKongResort Team"));
+            msg.setFrom(new InternetAddress(Constants.ADMIN_EMAIL, targetMap.get(Constants.HONGKONGRESORT_TEAM)));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, name));
-            msg.setSubject("Welcome to HongKongResort");
+            msg.setSubject(targetMap.get(Constants.WELCOME));
             String link = "http://" + request().host() + "/user/email/verify?email=" + recipient + "&code=" + code;
-            msg.setText("Dear " + name + ", you're our member now! Please click the following link to complete email verification: " + link);
+			String text = String.format(targetMap.get(Constants.VERIFY_INSTRUCTION), name, link);
+            msg.setText(text);
             Transport.send(msg);
         } catch (Exception e) {
             Loggy.e(TAG, "sendVerificationEmail", e);
@@ -62,7 +64,7 @@ public class UserController extends Controller {
 
 		    if ((email == null || !General.validateEmail(email)) || (password == null || !General.validatePassword(password)))  throw new InvalidLoginParamsException();
 
-		    User user = SQLCommander.queryUserByEmail(email);
+		    User user = DBCommander.queryUserByEmail(email);
 		    if (user == null) throw new UserNotFoundException();
 
 		    String passwordDigest = Converter.md5(password + user.getSalt());
@@ -101,15 +103,15 @@ public class UserController extends Controller {
 		    if (session(sid) == null || !captcha.equalsIgnoreCase(session(sid))) throw new CaptchaNotMatchedException(); 
 
 		    if ((name == null || !General.validateName(name)) || (email == null || !General.validateEmail(email)) || (password == null || !General.validatePassword(password)))  throw new InvalidRegistrationParamsException();
-		    String code = SQLCommander.generateVerificationCode(name);
-		    String salt = SQLCommander.generateSalt(email, password);
+		    String code = DBCommander.generateVerificationCode(name);
+		    String salt = DBCommander.generateSalt(email, password);
 		    String passwordDigest = Converter.md5(password + salt);
 		    User user = new User(email, passwordDigest, name);
 		    user.setVerificationCode(code);
 		    user.setSalt(salt);
-		    if (SQLCommander.registerUser(user) == SQLHelper.INVALID) throw new NullPointerException();
-		    sendVerificationEmail(user.getName(), user.getEmail(), code);
-		    return ok().as("text/plain");
+		    if (DBCommander.registerUser(user) == SQLHelper.INVALID) throw new NullPointerException();
+		    sendVerificationEmail(user.getLang(), user.getName(), user.getEmail(), code);
+		    return ok();
 	    } catch (CaptchaNotMatchedException e) {
 		    return badRequest(CaptchaNotMatchedResult.get());
 	    } catch (Exception e) {
@@ -121,11 +123,11 @@ public class UserController extends Controller {
     public static Result status(String token) {
 	    try {
 		    if (token == null) throw new NullPointerException();
-		    Long userId = SQLCommander.queryUserId(token);
+		    Long userId = DBCommander.queryUserId(token);
 		    if (userId == null) throw new UserNotFoundException();
-		    User user = SQLCommander.queryUser(userId);
+		    User user = DBCommander.queryUser(userId);
 		    if (user == null) throw new UserNotFoundException();
-		    return ok(user.toObjectNode(userId)).as("text/plain");
+		    return ok(user.toObjectNode(userId));
 	    } catch (Exception e) {
 		    if (e instanceof UserNotFoundException)	return ok(StandardFailureResult.get());
 		    Loggy.e(TAG, "status", e);
@@ -135,8 +137,8 @@ public class UserController extends Controller {
 
     public static Result relation(Long activityId, String token) {
 	    try {
-		    Long userId = SQLCommander.queryUserId(token);
-		    int relation = SQLCommander.queryUserActivityRelation(userId, activityId);
+		    Long userId = DBCommander.queryUserId(token);
+		    int relation = DBCommander.queryUserActivityRelation(userId, activityId);
 		    if (relation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
 		    ObjectNode ret = Json.newObject();
 		    ret.put(UserActivityRelation.RELATION, String.valueOf(relation));
@@ -183,12 +185,13 @@ public class UserController extends Controller {
         try {
             if (vieweeId.equals(0L)) vieweeId = null;
             Long viewerId = null;
-            if (token != null)  viewerId = SQLCommander.queryUserId(token);
-            User viewee = SQLCommander.queryUser(vieweeId);
-            return ok(viewee.toObjectNode(viewerId)).as("text/plain");
-        } catch (TokenExpiredException e) {
+            if (token != null)  viewerId = DBCommander.queryUserId(token);
+            User viewee = DBCommander.queryUser(vieweeId);
+			if (viewee == null) throw new UserNotFoundException();
+            return ok(viewee.toObjectNode(viewerId));
+        } catch (TokenExpiredException | UserNotFoundException e) {
             Loggy.e(TAG, "detail", e);
         }
-        return badRequest();
+		return badRequest();
     }
 }

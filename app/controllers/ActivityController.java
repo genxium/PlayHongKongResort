@@ -52,8 +52,8 @@ public class ActivityController extends Controller {
             Long viewerId = null;
             User viewer = null;
             if (token != null) {
-                viewerId = SQLCommander.queryUserId(token);
-                viewer = SQLCommander.queryUser(viewerId);
+                viewerId = DBCommander.queryUserId(token);
+                viewer = DBCommander.queryUser(viewerId);
             }
             if (vieweeId.equals(0L)) vieweeId = null;
 
@@ -95,21 +95,21 @@ public class ActivityController extends Controller {
                             maskedRelationList.add(aRelation);
                         }
                     }
-                    activities = SQLCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, vieweeId, maskedRelationList);
+                    activities = DBCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, vieweeId, maskedRelationList);
 					if (activities != null) play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
 				}
             } else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
                 cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, Activity.ID);
                 // activities = (List<Activity>) play.cache.Cache.get(cacheKey);
                 if (activities == null) {
-					activities = SQLCommander.queryHostedActivities(vieweeId, viewerId, pageSt, pageEd, Activity.ID, orientationStr, numItems);
+					activities = DBCommander.queryHostedActivities(vieweeId, viewerId, pageSt, pageEd, Activity.ID, orientationStr, numItems);
 					if (activities != null) play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
 				}
             } else if (status != null) {
                 cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, orderKey);
                 // activities = (List<Activity>) play.cache.Cache.get(cacheKey);
                 if (activities == null) {
-					activities = SQLCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, status);
+					activities = DBCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, status);
 					if (activities != null) play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
 				}
             } else throw new InvalidQueryParamsException();
@@ -122,9 +122,9 @@ public class ActivityController extends Controller {
             result.put(AbstractModel.PAGE_ED, pageEd);
 
             boolean isAdmin = false;
-            if (viewer != null && SQLCommander.validateAdminAccess(viewer)) isAdmin = true;
-	    SQLCommander.appendImageInfoForActivity(activities);
-	    SQLCommander.appendParticipantInfoForActivity(activities);
+            if (viewer != null && DBCommander.validateAdminAccess(viewer)) isAdmin = true;
+	    DBCommander.appendImageInfoForActivity(activities);
+	    DBCommander.appendParticipantInfoForActivity(activities);
 
             ArrayNode activitiesNode = new ArrayNode(JsonNodeFactory.instance);
             for (Activity activity : activities) {
@@ -151,7 +151,7 @@ public class ActivityController extends Controller {
 			ActivityDetail activityDetail = ExtraCommander.queryActivityDetail(activityId);
 			if (activityDetail == null) throw new ActivityNotFoundException();
 			Long userId = null;
-			if (token != null) userId = SQLCommander.queryUserId(token);
+			if (token != null) userId = DBCommander.queryUserId(token);
 			if ((userId == null || !userId.equals(activityDetail.getHost().getId())) && activityDetail.getStatus() != Activity.ACCEPTED) return badRequest();
 			return ok(activityDetail.toObjectNode(userId));
 		} catch (Exception e) {
@@ -208,9 +208,9 @@ public class ActivityController extends Controller {
 				if (session(sid) == null || !captcha.equalsIgnoreCase(session(sid))) throw new CaptchaNotMatchedException(); 
 			}
 
-			Long userId = SQLCommander.queryUserId(token);
+			Long userId = DBCommander.queryUserId(token);
 			if (userId == null) throw new UserNotFoundException();
-			User user = SQLCommander.queryUser(userId);
+			User user = DBCommander.queryUser(userId);
 			if (user == null) throw new UserNotFoundException();
 
 //				if (user.getGroupId() == User.VISITOR) throw new AccessDeniedException();
@@ -218,21 +218,21 @@ public class ActivityController extends Controller {
 			Activity activity = null;
 			long now = General.millisec();
 			if (isNewActivity) {
-				activity = SQLCommander.createActivity(user, now);
+				activity = DBCommander.createActivity(user, now);
 				activityId = activity.getId();
 			} else {
-				activity = SQLCommander.queryActivity(activityId);
+				activity = DBCommander.queryActivity(activityId);
 			}
 			if (activity == null || activityId == null || activityId.equals(SQLHelper.INVALID)) throw new ActivityNotFoundException();
 			// update activity
-			if (!SQLCommander.isActivityEditable(userId, activity)) throw new AccessDeniedException();
+			if (!DBCommander.isActivityEditable(userId, activity)) throw new AccessDeniedException();
 			activity.setTitle(activityTitle);
 			activity.setAddress(activityAddress);
 			activity.setContent(activityContent);
 			activity.setBeginTime(beginTime);
 			activity.setDeadline(deadline);
 
-			if(!SQLCommander.updateActivity(activity))	throw new SQLUpdateException();
+			if(!DBCommander.updateActivity(activity))	throw new SQLUpdateException();
 
 			// save new images
 			List<Image> previousImages = ExtraCommander.queryImages(activityId);
@@ -264,7 +264,7 @@ public class ActivityController extends Controller {
 
 			List<Activity> tmp = new LinkedList<>();
 			tmp.add(activity);
-			SQLCommander.appendImageInfoForActivity(tmp);
+			DBCommander.appendImageInfoForActivity(tmp);
 
 			return ok(activity.toObjectNode(userId));
 		} catch (TokenExpiredException e) {
@@ -287,11 +287,11 @@ public class ActivityController extends Controller {
 			String token = formData.get(User.TOKEN)[0];
 			Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 
-			Long userId = SQLCommander.queryUserId(token);
+			Long userId = DBCommander.queryUserId(token);
 			if (userId == null) throw new UserNotFoundException();
 
-			Activity activity = SQLCommander.queryActivity(activityId);
-			if (!SQLCommander.isActivityEditable(userId, activity)) throw new Exception();
+			Activity activity = DBCommander.queryActivity(activityId);
+			if (!DBCommander.isActivityEditable(userId, activity)) throw new Exception();
 
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
@@ -321,11 +321,11 @@ public class ActivityController extends Controller {
 			Integer activityId = Integer.parseInt(ids[0]);
 			String token = tokens[0];
 
-			Long userId = SQLCommander.queryUserId(token);
+			Long userId = DBCommander.queryUserId(token);
 			if (userId == null) throw new UserNotFoundException();
 
-			Activity activity = SQLCommander.queryActivity(activityId);
-			if (!SQLCommander.isActivityEditable(userId, activity)) throw new NullPointerException();
+			Activity activity = DBCommander.queryActivity(activityId);
+			if (!DBCommander.isActivityEditable(userId, activity)) throw new NullPointerException();
 
 			if(!ExtraCommander.deleteActivity(activityId)) throw new NullPointerException();
 			return ok();
@@ -343,16 +343,16 @@ public class ActivityController extends Controller {
 			Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 			String token = formData.get(User.TOKEN)[0];
 			if (token == null) throw new InvalidQueryParamsException();
-			Long userId = SQLCommander.queryUserId(token);
+			Long userId = DBCommander.queryUserId(token);
 			if (userId == null) throw new UserNotFoundException();
-            User user = SQLCommander.queryUser(userId);
+            User user = DBCommander.queryUser(userId);
             if (user == null) throw new UserNotFoundException();
 
-			Activity activity = SQLCommander.queryActivity(activityId);
+			Activity activity = DBCommander.queryActivity(activityId);
 			if (activity == null) throw new ActivityNotFoundException();
 
 			if (activity.getNumApplied() + 1 > Activity.MAX_APPLIED) throw new NumberLimitExceededException();
-			if (!SQLCommander.isActivityJoinable(user, activity)) return ok(StandardFailureResult.get());
+			if (!DBCommander.isActivityJoinable(user, activity)) return ok(StandardFailureResult.get());
 
 			long now = General.millisec();
 			String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME, UserActivityRelation.LAST_APPLYING_TIME};
@@ -381,12 +381,12 @@ public class ActivityController extends Controller {
 			String token = formData.get(User.TOKEN)[0];
 			if (token == null) throw new NullPointerException();
 			Integer relation = Converter.toInteger(formData.get(UserActivityRelation.RELATION)[0]);
-			Long userId = SQLCommander.queryUserId(token);
+			Long userId = DBCommander.queryUserId(token);
 			if (userId == null) throw new UserNotFoundException();
 
-			Activity activity = SQLCommander.queryActivity(activityId);
+			Activity activity = DBCommander.queryActivity(activityId);
 			if (activity == null) throw new ActivityNotFoundException();
-			int originalRelation = SQLCommander.isActivityMarkable(userId, activity, relation);
+			int originalRelation = DBCommander.isActivityMarkable(userId, activity, relation);
 			if (originalRelation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
 
 			int newRelation = UserActivityRelation.maskRelation(relation, originalRelation);

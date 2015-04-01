@@ -321,7 +321,7 @@ function checkLoginStatus(){
 				g_preLoginForm.onLoginError(null);		
 				return;
 			}
-			var userJson = JSON.parse(data);
+			var userJson = data;
 			g_loggedInUser = new User(userJson);
 			if (g_loggedInUser == null) return;
 			$.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});

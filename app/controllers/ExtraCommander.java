@@ -15,7 +15,7 @@ import utilities.Loggy;
 import java.io.File;
 import java.util.*;
 
-public class ExtraCommander extends SQLCommander {
+public class ExtraCommander extends DBCommander {
 
     public static final String TAG = ExtraCommander.class.getName();
 

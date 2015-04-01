@@ -3,7 +3,7 @@ package models;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import controllers.SQLCommander;
+import controllers.DBCommander;
 import org.json.simple.JSONObject;
 import utilities.Converter;
 import utilities.General;
@@ -273,7 +273,7 @@ public class Activity extends AbstractSimpleMessage {
 			}
 
 			if (viewerId == null) return ret;
-			int relation = SQLCommander.queryUserActivityRelation(viewerId, m_id);
+			int relation = DBCommander.queryUserActivityRelation(viewerId, m_id);
 			if (relation != UserActivityRelation.INVALID)	ret.put(UserActivityRelation.RELATION, relation);
 			if (viewerId.equals(m_host.getId()))	ret.put(STATUS, String.valueOf(m_status));
 			if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	ret.put(STATUS, String.valueOf(m_status));

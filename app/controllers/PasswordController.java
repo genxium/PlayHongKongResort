@@ -3,6 +3,7 @@ package controllers;
 import dao.EasyPreparedStatementBuilder;
 import exception.InvalidPasswordException;
 import exception.UserNotFoundException;
+import fixtures.Constants;
 import models.User;
 import play.mvc.Content;
 import play.mvc.Result;
@@ -17,6 +18,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -26,7 +28,7 @@ public class PasswordController extends UserController {
 
     public static Result index() {
         try {
-            Content html = password_index.render("hongkongresort@126.com");
+            Content html = password_index.render();
             return ok(html);
         } catch (Exception e) {
             Loggy.e(TAG, "index", e);
@@ -36,31 +38,32 @@ public class PasswordController extends UserController {
 
     public static Result request(String email) {
         try {
-            User user = SQLCommander.queryUserByEmail(email);
+            User user = DBCommander.queryUserByEmail(email);
             if(user == null) throw new UserNotFoundException();
-            String code = SQLCommander.generateVerificationCode(email);
+            String code = DBCommander.generateVerificationCode(email);
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.update(User.TABLE).set(User.PASSWORD_RESET_CODE, code).where(User.EMAIL, "=", email);
             if(!builder.execUpdate()) throw new NullPointerException();
-            sendResetEmail(user.getName(), user.getEmail(), code);
-            return ok().as("text/plain");
+            sendResetEmail(user.getLang(), user.getName(), user.getEmail(), code);
+            return ok();
         } catch (Exception e) {
             Loggy.e(TAG, "request", e);
         }
         return badRequest();
     }
 
-    protected static void sendResetEmail(String name, String recipient, String code) {
+    protected static void sendResetEmail(final String lang, final String name, final String recipient, final String code) {
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);
-
+        HashMap<String, String> targetMap = Constants.LANG_MAP.get(lang);
         try {
             Message msg = new MimeMessage(session);
-            msg.setFrom(new InternetAddress("admin@qiutongqu.com", "The HongKongResort Team"));
+            msg.setFrom(new InternetAddress(Constants.ADMIN_EMAIL, targetMap.get(Constants.HONGKONGRESORT_TEAM)));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, name));
-            msg.setSubject("HongKongResort");
+            msg.setSubject(targetMap.get(Constants.RESET_PASSWORD_TITLE));
             String link = "http://" + request().host() + "/user/password/reset#default?email=" + recipient + "&code=" + code;
-            msg.setText("Dear " + name + ", you can now click the following link to reset your password: " + link);
+            String text = String.format(targetMap.get(Constants.RESET_PASSWORD_INSTRUCTION), name, link);
+            msg.setText(text);
             Transport.send(msg);
         } catch (Exception e) {
             Loggy.e(TAG, "sendResetEmail", e);
@@ -86,7 +89,7 @@ public class PasswordController extends UserController {
 
             if(!General.validatePassword(password)) throw new InvalidPasswordException();
 
-            User user = SQLCommander.queryUserByEmail(email);
+            User user = DBCommander.queryUserByEmail(email);
             if (user == null) throw new UserNotFoundException();
 
             String passwordDigest = Converter.md5(password + user.getSalt());

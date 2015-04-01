@@ -16,9 +16,9 @@ import java.util.*;
  * Note that the relation (a.k.a UserActivityRelation.RELATION) in this class is always referring to masked relation
  * */
 
-public class SQLCommander {
+public class DBCommander {
 
-    public static final String TAG = SQLCommander.class.getName();
+    public static final String TAG = DBCommander.class.getName();
 
     public static final String INITIAL_REF_INDEX = "0";
     public static final int DIRECTION_FORWARD = (+1);
@@ -80,7 +80,7 @@ public class SQLCommander {
 		    JSONObject userJson = it.next();
 		    user = new User(userJson);
 	    } catch (Exception e) {
-		    System.out.println(SQLCommander.class.getName() + ".queryUserByEmail, " + e.getMessage());
+		    System.out.println(DBCommander.class.getName() + ".queryUserByEmail, " + e.getMessage());
 
 	    }
 	    return user;
@@ -870,7 +870,7 @@ public class SQLCommander {
 		for (Comment comment : commentList) {
 			userIdList.add(comment.getFrom());
 			// TODO: optimization by "GROUP BY" limits? reference: http://www.xaprb.com/blog/2006/12/07/how-to-select-the-firstleastmax-row-per-group-in-sql/
-			comment.setSubCommentList(querySubComments(comment.getId(), SQLCommander.INITIAL_REF_INDEX, Comment.ID, SQLHelper.DESCEND, 3, SQLCommander.DIRECTION_FORWARD));
+			comment.setSubCommentList(querySubComments(comment.getId(), DBCommander.INITIAL_REF_INDEX, Comment.ID, SQLHelper.DESCEND, 3, DBCommander.DIRECTION_FORWARD));
 		}
 
 		// for top level comments

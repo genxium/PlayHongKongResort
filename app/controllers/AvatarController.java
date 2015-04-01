@@ -23,9 +23,9 @@ public class AvatarController extends ImageController {
 
             // get user token from request body stream
             String token = DataUtils.getUserToken(data);
-            Long userId = SQLCommander.queryUserId(token);
+            Long userId = DBCommander.queryUserId(token);
             if (userId == null) throw new UserNotFoundException();
-            User user = SQLCommander.queryUser(userId);
+            User user = DBCommander.queryUser(userId);
             if (user == null) throw new UserNotFoundException();
 
             if (avatarFile == null) throw new NullPointerException();

@@ -26,7 +26,7 @@ public class SubCommentController extends CommentController {
     public static Result list(Long parentId, Integer page_st, Integer page_ed, Integer numItems) {
         try {
             if (parentId.equals(0L)) parentId = null;
-            List<Comment> comments = SQLCommander.querySubComments(parentId, page_st, page_ed, Comment.ID, SQLHelper.DESCEND, numItems);
+            List<Comment> comments = DBCommander.querySubComments(parentId, page_st, page_ed, Comment.ID, SQLHelper.DESCEND, numItems);
 
             ObjectNode result = Json.newObject();
             result.put(Comment.COUNT, 0);
@@ -46,7 +46,7 @@ public class SubCommentController extends CommentController {
     public static Result query(Long parentId, String refIndex, Integer page, Integer numItems, Integer direction) {
         try {
             if (parentId.equals(0L)) parentId = null;
-            List<Comment> comments = SQLCommander.querySubComments(parentId, refIndex, Comment.ID, SQLHelper.DESCEND, numItems, direction);
+            List<Comment> comments = DBCommander.querySubComments(parentId, refIndex, Comment.ID, SQLHelper.DESCEND, numItems, direction);
 
             ObjectNode result = Json.newObject();
             result.put(Comment.COUNT, 0);
@@ -79,12 +79,12 @@ public class SubCommentController extends CommentController {
             String token = formData.get(User.TOKEN)[0];
             if (token == null) throw new InvalidCommentParamsException();
 
-            Long from = SQLCommander.queryUserId(token);
+            Long from = DBCommander.queryUserId(token);
             if (from == null) throw new UserNotFoundException();
 
             Long activityId = Converter.toLong(formData.get(Comment.ACTIVITY_ID)[0]);
             if (activityId == null) throw new InvalidCommentParamsException();
-            Activity activity = SQLCommander.queryActivity(activityId);
+            Activity activity = DBCommander.queryActivity(activityId);
 
             if(activity == null) throw new ActivityNotFoundException();
             if(activity.hasBegun()) throw new ActivityHasBegunException();

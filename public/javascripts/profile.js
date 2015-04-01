@@ -24,7 +24,7 @@ function queryUserDetail(){
 		data: params,
 		success: function(data, status, xhr){
 			if(g_sectionUser == null) return;
-			var userJson = JSON.parse(data);
+			var userJson = data;
 			g_viewee = new User(userJson);
 			var username = g_viewee.name;
 			g_sectionUser.empty();

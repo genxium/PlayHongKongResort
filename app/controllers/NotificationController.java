@@ -35,8 +35,9 @@ public class NotificationController extends Controller {
 	public static Result count(String token, Integer isRead) {
 		try {
 			if (token == null) throw new InvalidQueryParamsException();
-			Long userId = SQLCommander.queryUserId(token);
-			User user = SQLCommander.queryUser(userId);
+			Long userId = DBCommander.queryUserId(token);
+			User user = DBCommander.queryUser(userId);
+			if (user == null) throw new UserNotFoundException();
 			ObjectNode result = Json.newObject();
 			result.put(Notification.COUNT, user.getUnreadCount());
 			return ok(result);
@@ -57,10 +58,10 @@ public class NotificationController extends Controller {
 
 			// anti=cracking by param token
 			if (token == null) throw new InvalidQueryParamsException(); 
-			Long to = SQLCommander.queryUserId(token);
+			Long to = DBCommander.queryUserId(token);
 
 			List<Notification> notifications = null;
-			notifications = SQLCommander.queryNotifications(to, isRead, page_st, page_ed, Notification.ID, orientationStr, numItems);
+			notifications = DBCommander.queryNotifications(to, isRead, page_st, page_ed, Notification.ID, orientationStr, numItems);
 
 			if (notifications == null) throw new NullPointerException();
 			ObjectNode result = Json.newObject();
@@ -92,9 +93,9 @@ public class NotificationController extends Controller {
 
 			String token = formData.get(User.TOKEN)[0];
 			if (token == null) throw new NullPointerException();
-			Long userId = SQLCommander.queryUserId(token);
+			Long userId = DBCommander.queryUserId(token);
 			if (userId == null) throw new UserNotFoundException();
-			User user = SQLCommander.queryUser(userId);
+			User user = DBCommander.queryUser(userId);
 			if (user == null) throw new UserNotFoundException();
 			
 			List<Long> notificationIdList = new LinkedList<Long>();
@@ -106,7 +107,7 @@ public class NotificationController extends Controller {
 			}
 
 			/**
-			 * TODO: move the query to SQLCommander with proper wrapping
+			 * TODO: move the query to DBCommander with proper wrapping
 			 * */
 			EasyPreparedStatementBuilder query = new EasyPreparedStatementBuilder();
 			List<JSONObject> results = query.select(Notification.QUERY_FIELDS)

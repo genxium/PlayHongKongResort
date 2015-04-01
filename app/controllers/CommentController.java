@@ -25,7 +25,7 @@ public class CommentController extends Controller {
 
     public static Result querySingle(Integer commentId) {
 	    try {
-		    Comment comment = SQLCommander.queryComment(commentId);
+		    Comment comment = DBCommander.queryComment(commentId);
 		    return ok(comment.toObjectNode(true, null));
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "query", e);
@@ -48,7 +48,7 @@ public class CommentController extends Controller {
             // List<Comment> comments = (List<Comment>)play.cache.Cache.get(cacheKey);
             List<Comment> comments = null;
             if (comments == null)   {
-		    comments = SQLCommander.queryTopLevelComments(activityId, pageSt, pageEd, Comment.ID, SQLHelper.DESCEND, numItems);
+		    comments = DBCommander.queryTopLevelComments(activityId, pageSt, pageEd, Comment.ID, SQLHelper.DESCEND, numItems);
 		    if (comments != null) play.cache.Cache.set(cacheKey, comments, DataUtils.CACHE_DURATION);
 	    }
             if (comments == null)   throw new NullPointerException();
@@ -81,18 +81,18 @@ public class CommentController extends Controller {
 		    String token = formData.get(User.TOKEN)[0];
 		    if (token == null) throw new InvalidCommentParamsException();
 
-		    Long from = SQLCommander.queryUserId(token);
+		    Long from = DBCommander.queryUserId(token);
 		    if (from == null) throw new UserNotFoundException();
-            User fromUser = SQLCommander.queryUser(from);
+            User fromUser = DBCommander.queryUser(from);
             if (fromUser == null) throw new UserNotFoundException();
 
 		    Long activityId = Converter.toLong(formData.get(Comment.ACTIVITY_ID)[0]);
             if (activityId == null) throw new InvalidCommentParamsException();
-		    Activity activity = SQLCommander.queryActivity(activityId);
+		    Activity activity = DBCommander.queryActivity(activityId);
 
 		    if (activity == null) throw new ActivityNotFoundException();
 
-            SQLCommander.isActivityCommentable(fromUser, activity);
+            DBCommander.isActivityCommentable(fromUser, activity);
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 

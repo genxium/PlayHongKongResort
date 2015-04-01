@@ -5,6 +5,7 @@
 package models;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import fixtures.Constants;
 import org.json.simple.JSONObject;
 import utilities.Converter;
 import utilities.Loggy;
@@ -34,6 +35,8 @@ public class User extends BasicUser {
 
 	public static final String UNREAD_COUNT = "unread_count";
 	public static final String UNASSESSED_COUNT = "unassessed_count";
+
+    public static final String LANG = "lang";
 
     public static final String[] QUERY_FILEDS = {ID, EMAIL, NAME, AVATAR, PASSWORD, PASSWORD_RESET_CODE, UNREAD_COUNT, UNASSESSED_COUNT, SALT, GROUP_ID, AUTHENTICATION_STATUS, GENDER, VERIFICATION_CODE};
 
@@ -85,7 +88,14 @@ public class User extends BasicUser {
 	
 	public int getUnassessedCount() {
 		return m_unassessedCount;
-	}	
+	}
+
+    protected String m_lang = null;
+
+    public String getLang() {
+        if (m_lang == null) return Constants.ZH_HK; // default to traditional Chinese
+        return m_lang;
+    }
 
     public User(String email, String password, String name) {
         super(email, name);
@@ -100,6 +110,7 @@ public class User extends BasicUser {
         if (userJson.containsKey(GROUP_ID)) m_groupId = Converter.toInteger(userJson.get(GROUP_ID));
 		if (userJson.containsKey(UNREAD_COUNT)) m_unreadCount = Converter.toInteger(userJson.get(UNREAD_COUNT));
 		if (userJson.containsKey(UNASSESSED_COUNT)) m_unassessedCount = Converter.toInteger(userJson.get(UNASSESSED_COUNT));
+        if (userJson.containsKey(LANG)) m_lang = (String) userJson.get(LANG);
     }
 
     public ObjectNode toObjectNode(Long viewerId) {
