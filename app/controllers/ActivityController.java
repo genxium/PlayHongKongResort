@@ -79,7 +79,7 @@ public class ActivityController extends Controller {
                 cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, orderKey);
                 // activities = (List<Activity>) play.cache.Cache.get(cacheKey);
                 if (activities == null) {
-			List<Integer> maskedRelationList = new LinkedList<>();
+					List<Integer> maskedRelationList = new LinkedList<>();
                     if (relation == UserActivityRelation.PRESENT) {
                         for (int aRelation : UserActivityRelation.PRESENT_STATES) {
                             maskedRelationList.add(aRelation);
@@ -219,10 +219,13 @@ public class ActivityController extends Controller {
 			long now = General.millisec();
 			if (isNewActivity) {
 				activity = DBCommander.createActivity(user, now);
+				if (activity == null) throw new ActivityNotFoundException();
 				activityId = activity.getId();
-			} else {
+			} else if (activityId != null) {
 				activity = DBCommander.queryActivity(activityId);
-			}
+			} else
+				throw new ActivityNotFoundException();
+
 			if (activity == null || activityId == null || activityId.equals(SQLHelper.INVALID)) throw new ActivityNotFoundException();
 			// update activity
 			if (!DBCommander.isActivityEditable(userId, activity)) throw new AccessDeniedException();
@@ -270,7 +273,9 @@ public class ActivityController extends Controller {
 		} catch (TokenExpiredException e) {
 			return ok(TokenExpiredResult.get());
 		} catch (CaptchaNotMatchedException e) {
-			return badRequest(CaptchaNotMatchedResult.get());
+			return ok(CaptchaNotMatchedResult.get());
+		} catch (ActivityCreationLimitException e) {
+			return ok(StandardFailureResult.get(Constants.INFO_ACTIVITY_CREATION_LIMIT));
 		} catch (Exception e) {
 			Loggy.e(TAG, "save", e);
 		}

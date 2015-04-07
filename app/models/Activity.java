@@ -26,6 +26,9 @@ public class Activity extends AbstractSimpleMessage {
 	public static final int REJECTED = 2;
 	public static final int ACCEPTED = 3;
 
+	public static final int CREATION_CRITICAL_NUMBER = 2;
+	public static final int CREATION_CRITICAL_TIME_INTERVAL_MILLIS = 43200000; // 12 hours 
+
 	public static final String TABLE = "activity";
 	public static final String TITLE = "title";
 	public static final String ADDRESS = "address";

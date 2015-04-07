@@ -112,7 +112,9 @@ public class DBCommander {
         return false;
     }
 
-    public static Activity createActivity(final User host, final long now) {
+    public static Activity createActivity(final User host, final long now) throws ActivityCreationLimitException {
+
+		if (!ableToCreateActivity(host, now)) throw new ActivityCreationLimitException();
 
 	    Long lastActivityId = null;
 
@@ -136,6 +138,15 @@ public class DBCommander {
 
 	    return activity;
     }
+
+	protected static boolean ableToCreateActivity(final User host, final long now) {
+		if (host == null || host.getGroupId() == User.VISITOR) return false;
+		List<Activity> criticallyCreatedActivities = queryHostedActivities(host.getId(), host.getId(), 1, 1, Activity.CREATED_TIME, SQLHelper.DESCEND, Activity.CREATION_CRITICAL_NUMBER);
+		if (criticallyCreatedActivities == null) return true;
+		if (criticallyCreatedActivities.size() < Activity.CREATION_CRITICAL_NUMBER) return true;
+		Activity criticalActivity = criticallyCreatedActivities.get(0);
+		return (now - criticalActivity.getCreatedTime() >= Activity.CREATION_CRITICAL_TIME_INTERVAL_MILLIS);
+	}
 
     public static boolean updateActivity(Activity activity) {
 	    try {

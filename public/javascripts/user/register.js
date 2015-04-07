@@ -78,8 +78,13 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		    url: "/user/register",
 		    data: params,
 		    success: function(data, status, xhr){
-				widget.empty();	
 				enableField(btnRegister);
+				if (isCaptchaNotMatched(data)) {
+					alert(ALERTS["captcha_not_matched"]);
+					if (widget.onError != null) widget.onError(data);
+                    return;
+				}
+				widget.empty();
 				if (widget.onSuccess == null) return;
 				widget.onSuccess(data);
 		    },

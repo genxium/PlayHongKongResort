@@ -127,5 +127,13 @@ var g_commentContentPattern  = /^.{5,128}$/;
 var g_assessmentContentPattern = /^.{0,64}$/;
 
 /* Error codes reference: https://www.evernote.com/shard/s50/sh/62bbc660-3794-403c-98d1-a8134c868589/ad7b98b93af61deb774e1154ff08dfd7 */
+var g_errNotLoggedIn = 1001;
 var g_errUserNotFound = 1003;
-var g_errPswErr = 1004; 
+var g_errPswErr = 1004;
+
+var g_errActivityHasBegun = 3007;
+var g_errActivityAppliedLimit = 3008;
+var g_errActivitySelectedLimit = 3009;
+var g_errActivityCreationLimit = 3010;
+
+var g_errCaptcha = 4001;

@@ -138,6 +138,8 @@ var HINTS = {
 };
 
 var ALERTS = {
+	captcha_not_matched: "驗證碼錯誤",
+	creation_limit_exceeded: "創建活動太頻繁囉， 請稍後片刻",
 	applicant_num_exceeded: "報名人數已達到上限",
 	selected_num_exceeded: "已選人數已達到上限",
 	deadline_expired: "報名已截止",

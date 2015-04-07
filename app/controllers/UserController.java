@@ -113,7 +113,7 @@ public class UserController extends Controller {
 		    sendVerificationEmail(user.getLang(), user.getName(), user.getEmail(), code);
 		    return ok();
 	    } catch (CaptchaNotMatchedException e) {
-		    return badRequest(CaptchaNotMatchedResult.get());
+		    return ok(CaptchaNotMatchedResult.get());
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "register", e);
 	    }  

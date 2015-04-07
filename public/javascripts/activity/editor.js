@@ -328,6 +328,20 @@ function onSave(evt){
 					logout(null);
 					return;
 				}
+				if (isCaptchaNotMatched(activityJson)) {
+					alert(ALERTS["captcha_not_matched"]);
+					g_activityEditor.setSavable();
+					g_activityEditor.enableEditorButtons();
+					g_activityEditor.hint.text(MESSAGES["activity_not_saved"]);
+					return;
+				}
+				if (isCreationLimitExceeded(activityJson)) {
+					alert(ALERTS["creation_limit_exceeded"]);
+					g_activityEditor.setSavable();
+					g_activityEditor.enableEditorButtons();
+					g_activityEditor.hint.text(MESSAGES["activity_not_saved"]);
+					return;
+				}
 				g_activityEditor.setSubmittable();
 				g_activityEditor.enableEditorButtons();
 				var activity = new Activity(activityJson);

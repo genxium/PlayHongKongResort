@@ -362,38 +362,52 @@ function isStandardFailure(data) {
 	return ret == 1;
 }
 
+function isCaptchaNotMatched(data) {
+	if (data == null) return false;
+	if (!data.hasOwnProperty(g_keyRet)) return false;
+	var ret = parseInt(data[g_keyRet]);
+	return ret == g_errCaptcha;
+}
+
 function isTokenExpired(data) {
 	if (data == null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
-	return ret == 1001;
+	return ret == g_errNotLoggedIn;
 }
 
 function isUserNotFound(data) {
 	if (data == null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
-	return ret == 1003;
+	return ret == g_errUserNotFound;
 }
 
 function isPswErr(data) {
 	if (data == null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
-	return ret == 1004;
+	return ret == g_errPswErr;
 }
 
 function isApplicantLimitExceeded(data) {
 	if (data == null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
-	return ret == 3008;
+	return ret == g_errActivityAppliedLimit;
 }
 
 function isSelectedLimitExceeded(data) {
 	if (data == null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
-	return ret == 3009;
+	return ret == g_errActivitySelectedLimit;
+}
+
+function isCreationLimitExceeded(data) {
+	if (data == null) return false;
+	if (!data.hasOwnProperty(g_keyRet)) return false;
+	var ret = parseInt(data[g_keyRet]);
+	return ret == g_errActivityCreationLimit;
 }
 
