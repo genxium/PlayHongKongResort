@@ -192,7 +192,7 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 		style: "margin-top: 5pt"
 	}).appendTo(sectionAll);
 
-	if( g_loggedInUser != null ) {
+	if( g_loggedInUser != null && ( ((activity.relation & present) > 0) || (activity.containsRelation() == false) ) ) {
 		/* 
  		 * 	show list for logged-in users
 		 */
