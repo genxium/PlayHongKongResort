@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.6.22, for Linux (i686)
+-- MySQL dump 10.13  Distrib 5.6.22, for osx10.10 (x86_64)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
@@ -33,7 +33,7 @@ CREATE TABLE `assessment` (
   KEY `assessment_ibfk_1` (`from`),
   KEY `assessment_ibfk_2` (`to`),
   KEY `assessment_ibfk_3` (`activity_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -45,4 +45,4 @@ CREATE TABLE `assessment` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-01-14  4:28:51
+-- Dump completed on 2015-04-08 23:07:18

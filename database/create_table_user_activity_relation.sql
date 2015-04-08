@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.6.22, for Linux (i686)
+-- MySQL dump 10.13  Distrib 5.6.22, for osx10.10 (x86_64)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
@@ -45,4 +45,4 @@ CREATE TABLE `user_activity_relation` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-01-14  4:28:51
+-- Dump completed on 2015-04-08 23:07:18

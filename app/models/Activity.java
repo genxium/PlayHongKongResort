@@ -46,6 +46,9 @@ public class Activity extends AbstractSimpleMessage {
 	public static final String LAST_ACCEPTED_TIME = "last_accepted_time";
 	public static final String LAST_REJECTED_TIME = "last_rejected_time";
 
+	public static final String PRIORITY = "priority";
+	public static final String FILTER_MASK = "filter_mask";
+
 	public static String SELECTED_PARTICIPANTS = "selected_participants";
 
 	public static String IMAGES = "images";
@@ -187,6 +190,16 @@ public class Activity extends AbstractSimpleMessage {
 		m_imageList.add(image);
 	}
 
+	protected Integer m_priority = 0;
+	public int getPriority() {
+		return m_priority;
+	}
+
+	protected Integer m_filterMask = 0;
+	public int getFilterMask() {
+		return m_filterMask;
+	}
+
 	public boolean isDeadlineExpired() {
 		return General.millisec() > m_deadline;
 	}
@@ -246,6 +259,12 @@ public class Activity extends AbstractSimpleMessage {
 
 		if (activityJson.containsKey(HOST_ID))
 			m_hostId = Converter.toLong(activityJson.get(HOST_ID));
+
+		if (activityJson.containsKey(PRIORITY))
+			m_priority = Converter.toInteger(activityJson.get(PRIORITY));
+
+		if (activityJson.containsKey(FILTER_MASK))
+			m_filterMask = Converter.toInteger(activityJson.get(FILTER_MASK));
 	}
 
 	public ObjectNode toObjectNode(Long viewerId) {

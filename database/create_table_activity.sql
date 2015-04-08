@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.6.22, for Linux (i686)
+-- MySQL dump 10.13  Distrib 5.6.22, for osx10.10 (x86_64)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
@@ -37,11 +37,16 @@ CREATE TABLE `activity` (
   `last_accepted_time` bigint(20) DEFAULT NULL,
   `last_rejected_time` bigint(20) DEFAULT NULL,
   `address` varchar(256) DEFAULT '',
+  `priority` int(11) NOT NULL DEFAULT '0',
+  `filter_mask` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `activity_ibfk_1` (`host_id`),
   KEY `status_index` (`status`),
-  KEY `begin_time_index` (`begin_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  KEY `begin_time_index` (`begin_time`),
+  KEY `accepted_time_index` (`last_accepted_time`),
+  KEY `created_time_index` (`created_time`),
+  KEY `priority_index` (`priority`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -53,4 +58,4 @@ CREATE TABLE `activity` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-01-14  4:28:51
+-- Dump completed on 2015-04-08 23:07:18
