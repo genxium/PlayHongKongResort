@@ -42,4 +42,5 @@ public class Constants {
 	static {
 		LANG_MAP.put(ZH_HK, ZH_HK_MAP);
 	}
+
 }

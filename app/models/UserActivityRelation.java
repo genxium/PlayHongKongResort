@@ -16,6 +16,8 @@ public class UserActivityRelation extends AbstractModel {
     public static final int[] APPLIED_STATES = {APPLIED};
     public static final int[] SELECTED_STATES = {SELECTED, SELECTED|PRESENT, SELECTED|ABSENT, SELECTED|PRESENT|ASSESSED, SELECTED|ABSENT|ASSESSED};
 
+    // (USER_ID, ACTIVITY_ID) is UNIQUE
+    // RELATION is indexed
     public static String TABLE = "user_activity_relation";
     public static String USER_ID = "user_id";
     public static String ACTIVITY_ID = "activity_id";

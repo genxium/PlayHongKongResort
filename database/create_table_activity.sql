@@ -39,6 +39,7 @@ CREATE TABLE `activity` (
   `address` varchar(256) DEFAULT '',
   `priority` int(11) NOT NULL DEFAULT '0',
   `filter_mask` int(11) NOT NULL DEFAULT '0',
+  `order_mask` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `activity_ibfk_1` (`host_id`),
   KEY `status_index` (`status`),
@@ -58,4 +59,4 @@ CREATE TABLE `activity` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-04-08 23:07:18
+-- Dump completed on 2015-04-09 22:39:37

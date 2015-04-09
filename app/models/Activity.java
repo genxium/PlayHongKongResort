@@ -3,6 +3,7 @@ package models;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.sun.tools.javac.util.Convert;
 import controllers.DBCommander;
 import org.json.simple.JSONObject;
 import utilities.Converter;
@@ -10,6 +11,7 @@ import utilities.General;
 import utilities.Loggy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -48,6 +50,7 @@ public class Activity extends AbstractSimpleMessage {
 
 	public static final String PRIORITY = "priority";
 	public static final String FILTER_MASK = "filter_mask";
+	public static final String ORDER_MASK = "order_mask";
 
 	public static String SELECTED_PARTICIPANTS = "selected_participants";
 
@@ -58,6 +61,25 @@ public class Activity extends AbstractSimpleMessage {
 	public static String[] QUERY_FIELDS = {Activity.ID, Activity.TITLE, Activity.ADDRESS, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
 	public static final int MAX_APPLIED = 500;
 	public static final int MAX_SELECTED = 250;
+
+	// indexed fields
+	public static HashMap<Integer, String> ORDER_MAP = new HashMap<>();
+	static {
+		ORDER_MAP.put(0, STATUS);
+		ORDER_MAP.put(1, BEGIN_TIME);
+		ORDER_MAP.put(2, LAST_ACCEPTED_TIME);
+		ORDER_MAP.put(3, CREATED_TIME);
+		ORDER_MAP.put(4, PRIORITY);
+	}
+
+	public static HashMap<String, Integer> REVERSE_ORDER_MAP = new HashMap<>();
+	static {
+		REVERSE_ORDER_MAP.put(STATUS, 0);
+		REVERSE_ORDER_MAP.put(BEGIN_TIME, 1);
+		REVERSE_ORDER_MAP.put(LAST_ACCEPTED_TIME, 2);
+		REVERSE_ORDER_MAP.put(CREATED_TIME, 3);
+		REVERSE_ORDER_MAP.put(PRIORITY, 4);
+	}
 
 	protected String m_title = null;
 
@@ -200,6 +222,11 @@ public class Activity extends AbstractSimpleMessage {
 		return m_filterMask;
 	}
 
+	protected Integer m_orderMask = 0;
+	public int getOrderMask() {
+		return m_orderMask;
+	}
+
 	public boolean isDeadlineExpired() {
 		return General.millisec() > m_deadline;
 	}
@@ -265,6 +292,9 @@ public class Activity extends AbstractSimpleMessage {
 
 		if (activityJson.containsKey(FILTER_MASK))
 			m_filterMask = Converter.toInteger(activityJson.get(FILTER_MASK));
+
+		if (activityJson.containsKey(ORDER_MASK))
+			m_orderMask = Converter.toInteger(activityJson.get(ORDER_MASK));
 	}
 
 	public ObjectNode toObjectNode(Long viewerId) {
