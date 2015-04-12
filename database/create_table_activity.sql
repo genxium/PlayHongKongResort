@@ -46,7 +46,8 @@ CREATE TABLE `activity` (
   KEY `begin_time_index` (`begin_time`),
   KEY `accepted_time_index` (`last_accepted_time`),
   KEY `created_time_index` (`created_time`),
-  KEY `priority_index` (`priority`)
+  KEY `priority_index` (`priority`),
+  KEY `order_mask_index` (`order_mask`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -59,4 +60,4 @@ CREATE TABLE `activity` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-04-09 22:39:37
+-- Dump completed on 2015-04-12 23:46:58

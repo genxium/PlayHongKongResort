@@ -3,7 +3,6 @@ package models;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.sun.tools.javac.util.Convert;
 import controllers.DBCommander;
 import org.json.simple.JSONObject;
 import utilities.Converter;
@@ -58,28 +57,28 @@ public class Activity extends AbstractSimpleMessage {
 
 	public static final String ACTIVITIES = "activities";
 
-	public static String[] QUERY_FIELDS = {Activity.ID, Activity.TITLE, Activity.ADDRESS, Activity.CONTENT, Activity.CREATED_TIME, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY, Activity.NUM_APPLIED, NUM_SELECTED, Activity.STATUS, Activity.HOST_ID};
+	public static String[] QUERY_FIELDS = {ID, TITLE, ADDRESS, CONTENT, CREATED_TIME, BEGIN_TIME, DEADLINE, CAPACITY, NUM_APPLIED, NUM_SELECTED, STATUS, HOST_ID, PRIORITY};
 	public static final int MAX_APPLIED = 500;
 	public static final int MAX_SELECTED = 250;
 
 	// indexed fields
 	public static HashMap<Integer, String> ORDER_MAP = new HashMap<>();
 	static {
-		ORDER_MAP.put(0, STATUS);
-		ORDER_MAP.put(1, BEGIN_TIME);
-		ORDER_MAP.put(2, LAST_ACCEPTED_TIME);
-		ORDER_MAP.put(3, CREATED_TIME);
-		ORDER_MAP.put(4, PRIORITY);
+		ORDER_MAP.put(1, LAST_ACCEPTED_TIME);
+		ORDER_MAP.put(2, BEGIN_TIME);
+		ORDER_MAP.put(4, DEADLINE);
 	}
 
 	public static HashMap<String, Integer> REVERSE_ORDER_MAP = new HashMap<>();
 	static {
-		REVERSE_ORDER_MAP.put(STATUS, 0);
-		REVERSE_ORDER_MAP.put(BEGIN_TIME, 1);
-		REVERSE_ORDER_MAP.put(LAST_ACCEPTED_TIME, 2);
-		REVERSE_ORDER_MAP.put(CREATED_TIME, 3);
-		REVERSE_ORDER_MAP.put(PRIORITY, 4);
+		REVERSE_ORDER_MAP.put(LAST_ACCEPTED_TIME, 1);
+		REVERSE_ORDER_MAP.put(BEGIN_TIME, 2);
+		REVERSE_ORDER_MAP.put(DEADLINE, 4);
 	}
+
+	public static final int[] LAST_ACCEPTED_TIME_MASK_LIST = {1, 1|2, 1|4, 1|2|4};
+	public static final int[] BEGIN_TIME_MASK_LIST = {2, 1|2, 2|4, 1|2|4};
+	public static final int[] DEADLINE_MASK_LIST = {4, 1|4, 2|4, 1|2|4};
 
 	protected String m_title = null;
 
@@ -330,6 +329,7 @@ public class Activity extends AbstractSimpleMessage {
 			if (viewerId.equals(m_host.getId()))	ret.put(STATUS, String.valueOf(m_status));
 			if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	ret.put(STATUS, String.valueOf(m_status));
 
+			ret.put(PRIORITY, String.valueOf(m_priority));
 		} catch (Exception e) {
 			Loggy.e(TAG, "toObjectNode", e);
 		}

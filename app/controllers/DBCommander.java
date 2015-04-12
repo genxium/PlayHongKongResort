@@ -178,7 +178,7 @@ public class DBCommander {
 	    return null;
     }
 
-    public static List<Activity> queryActivities(Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems, Long vieweeId, List<Integer> maskedRelationList) {
+    public static List<Activity> queryActivities(final Integer page_st, final Integer page_ed, final String orderKey, final String orientation, final Integer numItems, final Long vieweeId, final List<Integer> maskedRelationList) {
 	    List<Activity> ret = new ArrayList<>();
 	    try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -207,7 +207,7 @@ public class DBCommander {
 	    return ret;
     }
 
-    public static List<Activity> queryActivities(Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems, int status) {
+    public static List<Activity> queryActivities(final Integer page_st, final Integer page_ed, final String orderKey, final String orientation, final Integer numItems, final int status) {
         List<Activity> ret = new ArrayList<>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -235,7 +235,7 @@ public class DBCommander {
         return ret;
     }
 
-    public static List<Activity> queryHostedActivities(Long hostId, Long viewerId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems){
+    public static List<Activity> queryHostedActivities(final Long hostId, final Long viewerId, final Integer page_st, final Integer page_ed, final String orderKey, final String orientation, final Integer numItems){
         List<Activity> ret = new ArrayList<>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -262,6 +262,34 @@ public class DBCommander {
         }
         return ret;
     }
+
+	public static List<Activity> queryPrioritizedActivities(final List<Integer> orderMaskList, final Integer numberItems) {
+		List<Activity> ret = new ArrayList<>();
+		try {
+			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			String[] names = Activity.QUERY_FIELDS;
+			builder.select(names)
+					.from(Activity.TABLE)
+					.where(Activity.ORDER_MASK, "IN", orderMaskList)
+					.where(Activity.PRIORITY, ">", 0)
+					.where(Activity.STATUS, "=", Activity.ACCEPTED)
+					.order(Activity.PRIORITY, SQLHelper.DESCEND)
+					.limit(numberItems);
+
+			List<JSONObject> activityJsonList = builder.execSelect();
+
+			if (activityJsonList == null) return null;
+			for (JSONObject activityJson : activityJsonList) {
+				Activity activity = new Activity(activityJson);
+				ret.add(activity);
+			}
+			if (ret.size() == 0) return ret;
+			appendUserInfoForActivity(ret, null);
+		} catch (Exception e) {
+			Loggy.e(TAG, "queryPrioritizedActivities", e);
+		}
+		return ret;
+	}
 
     public static int queryUserActivityRelation(Long userId, Long activityId) {
 	    try {
@@ -466,7 +494,7 @@ public class DBCommander {
     }
 
     public static List<Notification> queryNotifications(Long to, Integer isRead, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
-	    List<Notification> ret = new ArrayList<Notification>();
+	    List<Notification> ret = new ArrayList<>();
 
 	    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 

@@ -16,9 +16,9 @@ import play.mvc.Result;
 import utilities.Converter;
 import utilities.Loggy;
 
-import java.util.Map;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class ParticipantController extends UserController {
 

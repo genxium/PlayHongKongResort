@@ -10,6 +10,7 @@ import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import exception.*;
+import fixtures.Constants;
 import models.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
@@ -21,8 +22,6 @@ import utilities.Converter;
 import utilities.DataUtils;
 import utilities.General;
 import utilities.Loggy;
-
-import fixtures.Constants;
 
 import java.util.*;
 
@@ -106,10 +105,25 @@ public class ActivityController extends Controller {
 					if (activities != null) play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
 				}
             } else if (status != null) {
+				// when status == Activity.ACCEPTED, case falls in general homepage query
                 cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, orderKey);
                 // activities = (List<Activity>) play.cache.Cache.get(cacheKey);
                 if (activities == null) {
+					List<Activity> prioritizedActivities = null;
+					if (status == Activity.ACCEPTED) {
+						// trial for querying prioritized activities
+						List<Integer> maskList = new LinkedList<>();
+						for (int orderMask : Activity.LAST_ACCEPTED_TIME_MASK_LIST) {
+							maskList.add(orderMask);
+						}
+						prioritizedActivities = DBCommander.queryPrioritizedActivities(maskList, numItems);
+						if (prioritizedActivities != null) numItems -= prioritizedActivities.size();
+					}
 					activities = DBCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, status);
+					if (activities != null && prioritizedActivities != null && prioritizedActivities.size() > 0) {
+						prioritizedActivities.addAll(activities);
+						activities = prioritizedActivities;
+					}
 					if (activities != null) play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
 				}
             } else throw new InvalidQueryParamsException();
@@ -123,8 +137,8 @@ public class ActivityController extends Controller {
 
             boolean isAdmin = false;
             if (viewer != null && DBCommander.validateAdminAccess(viewer)) isAdmin = true;
-	    DBCommander.appendImageInfoForActivity(activities);
-	    DBCommander.appendParticipantInfoForActivity(activities);
+	    	DBCommander.appendImageInfoForActivity(activities);
+	    	DBCommander.appendParticipantInfoForActivity(activities);
 
             ArrayNode activitiesNode = new ArrayNode(JsonNodeFactory.instance);
             for (Activity activity : activities) {

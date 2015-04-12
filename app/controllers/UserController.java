@@ -8,6 +8,7 @@ import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import exception.*;
+import fixtures.Constants;
 import models.Login;
 import models.User;
 import models.UserActivityRelation;
@@ -30,8 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import fixtures.Constants;
 
 public class UserController extends Controller {
 
