@@ -4,6 +4,9 @@
 .cell-container {
 	margin: 10px
 }
+.prioritized {
+	background-color: #FFEBCD;
+}
 .activity-cover {
 	background-color: #666;
 	width: 276px;

@@ -26,7 +26,7 @@ function Image(imageJson){
 	this.url = imageJson["url"];
 }
 
-function Activity(activityJson){
+function Activity(activityJson) {
 	this.id = parseInt(activityJson["id"]);
 	this.title = activityJson["title"];
 	this.address = activityJson["address"];
@@ -54,7 +54,7 @@ function Activity(activityJson){
 		return (this.relation != null && this.relation != undefined);	
 	};
 	if (activityJson.hasOwnProperty("relation")) this.relation = parseInt(activityJson["relation"]);
-	if (activityJson.hasOwnProperty("images")){
+	if (activityJson.hasOwnProperty("images")) {
 		var images = new Array();
 		var imagesJson = activityJson["images"];
 		for(var key in imagesJson){
@@ -65,10 +65,10 @@ function Activity(activityJson){
 		this.images = images;
 	}
 
-	if(activityJson.hasOwnProperty("applied_participants")){
+	if (activityJson.hasOwnProperty("applied_participants")) {
 		var participants = new Array();
 		var participantsJson = activityJson["applied_participants"];
-		for(var key in participantsJson){
+		for (var key in participantsJson){
 			var participantJson = participantsJson[key];
 			var participant = new User(participantJson);
 			participants.push(participant);
@@ -76,10 +76,10 @@ function Activity(activityJson){
 		this.appliedParticipants = participants;
 	}
 
-	if(activityJson.hasOwnProperty("selected_participants")){
+	if (activityJson.hasOwnProperty("selected_participants")) {
 		var participants = new Array();
 		var participantsJson = activityJson["selected_participants"];
-		for(var key in participantsJson){
+		for (var key in participantsJson){
 			var participantJson = participantsJson[key];
 			var participant = new User(participantJson);
 			participants.push(participant);
@@ -87,10 +87,10 @@ function Activity(activityJson){
 		this.selectedParticipants = participants;
 	}
 
-	if(activityJson.hasOwnProperty("present_participants")){
+	if (activityJson.hasOwnProperty("present_participants")) {
 		var participants = new Array();
 		var participantsJson = activityJson["present_participants"];
-		for(var key in participantsJson){
+		for (var key in participantsJson){
 			var participantJson = participantsJson[key];
 			var participant = new User(participantJson);
 			participants.push(participant);
@@ -98,16 +98,20 @@ function Activity(activityJson){
 		this.presentParticipants = participants;
 	}
 
-	if(activityJson.hasOwnProperty("host")){
+	if (activityJson.hasOwnProperty("host")) {
 		var hostJson = activityJson["host"];
 		var host = new User(hostJson);
 		this.host = host;
 	}
 
-	if(activityJson.hasOwnProperty("viewer")){
+	if (activityJson.hasOwnProperty("viewer")) {
 		var viewerJson = activityJson["viewer"];
 		var viewer = new User(viewerJson);
 		this.viewer = viewer;
+	}
+	
+	if (activityJson.hasOwnProperty("priority")) {
+		this.priority = parseInt(activityJson["priority"]);
 	}
 }
 

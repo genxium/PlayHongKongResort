@@ -323,13 +323,14 @@ public class Activity extends AbstractSimpleMessage {
 				ret.put(SELECTED_PARTICIPANTS, selectedParticipantsNode);
 			}
 
+			ret.put(PRIORITY, String.valueOf(m_priority));
+
 			if (viewerId == null) return ret;
 			int relation = DBCommander.queryUserActivityRelation(viewerId, m_id);
 			if (relation != UserActivityRelation.INVALID)	ret.put(UserActivityRelation.RELATION, relation);
 			if (viewerId.equals(m_host.getId()))	ret.put(STATUS, String.valueOf(m_status));
 			if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	ret.put(STATUS, String.valueOf(m_status));
 
-			ret.put(PRIORITY, String.valueOf(m_priority));
 		} catch (Exception e) {
 			Loggy.e(TAG, "toObjectNode", e);
 		}

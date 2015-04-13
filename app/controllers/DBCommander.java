@@ -207,7 +207,7 @@ public class DBCommander {
 	    return ret;
     }
 
-    public static List<Activity> queryActivities(final Integer page_st, final Integer page_ed, final String orderKey, final String orientation, final Integer numItems, final int status) {
+    public static List<Activity> queryActivities(final Integer page_st, final Integer page_ed, final String orderKey, final String orientation, final Integer numItems, final int status, final int offset) {
         List<Activity> ret = new ArrayList<>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -216,7 +216,8 @@ public class DBCommander {
                     .from(Activity.TABLE)
                     .order(orderKey, orientation)
                     .where(Activity.STATUS, "=", status)
-                    .limit((page_st - 1) * numItems, page_ed * numItems);
+					.where(Activity.PRIORITY, "=", 0)
+                    .limit((page_st - 1) * numItems + offset, page_ed * numItems + offset);
 			if (status == Activity.PENDING) {
 				// ONLY admin queries should be accessing this closure	
 				builder.where(Activity.DEADLINE, ">", General.millisec());

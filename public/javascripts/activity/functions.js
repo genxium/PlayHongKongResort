@@ -6,7 +6,7 @@ function onBtnEditClicked(evt){
     	evt.preventDefault();
     	var data = evt.data;
         var activity = data[g_keyActivity];
-	showActivityEditor(activity);
+		showActivityEditor(activity);
 }
 
 function listActivities(page, onSuccess, onError) {
@@ -281,7 +281,12 @@ function generateActivityCell(par, activity){
             }
 	}
 
-	var ret = $("<div>", {
+	var ret = null; 
+	
+	if (activity.priority > 0) ret = $("<div>", {
+		"class": "cell-container clearfix prioritized"
+	}).appendTo(par); 
+	else ret = $("<div>", {
 		"class": "cell-container clearfix"
 	}).appendTo(par);
 

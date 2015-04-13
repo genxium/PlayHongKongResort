@@ -109,6 +109,7 @@ public class ActivityController extends Controller {
                 cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, orderKey);
                 // activities = (List<Activity>) play.cache.Cache.get(cacheKey);
                 if (activities == null) {
+					int offset = 0;
 					List<Activity> prioritizedActivities = null;
 					if (status == Activity.ACCEPTED) {
 						// trial for querying prioritized activities
@@ -117,9 +118,13 @@ public class ActivityController extends Controller {
 							maskList.add(orderMask);
 						}
 						prioritizedActivities = DBCommander.queryPrioritizedActivities(maskList, numItems);
-						if (prioritizedActivities != null) numItems -= prioritizedActivities.size();
+						if (prioritizedActivities != null) {
+							// NOTE: hereby assumes that number of prioritized activities doesn't exceed numItems
+							if (pageSt.equals(1)) numItems -= prioritizedActivities.size();
+							else offset -= prioritizedActivities.size();
+						}
 					}
-					activities = DBCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, status);
+					activities = DBCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, status, offset);
 					if (activities != null && prioritizedActivities != null && prioritizedActivities.size() > 0) {
 						prioritizedActivities.addAll(activities);
 						activities = prioritizedActivities;
@@ -151,7 +156,7 @@ public class ActivityController extends Controller {
                 activitiesNode.add(activity.toObjectNode(viewerId));
             }
             result.put(Activity.ACTIVITIES, activitiesNode);
-            return ok(result);
+			return ok(result);
         } catch (TokenExpiredException e) {
             return ok(TokenExpiredResult.get());
         } catch (Exception e) {
