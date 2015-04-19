@@ -123,7 +123,7 @@ function generateParticipantsSelectionForm(par, activity) {
 		params[g_keyActivityId] = aForm.activity.id;
 		params[g_keyBundle] = JSON.stringify(participantIdList);
 
-		var aButton = (evt.srcElement ? evt.srcElement : evt.target);
+		var aButton = getTarget(evt);
 		disableField(aButton);
 
 		$.ajax({

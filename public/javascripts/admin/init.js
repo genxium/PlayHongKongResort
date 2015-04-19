@@ -1,7 +1,168 @@
 var g_keyStatusIndicator = "status-indicator";
 
+function OrderOption (editor, bitCode, labelName) {
+	this.editor = editor;
+	this.bitCode = bitCode;
+	this.labelName = labelName;
+	this.checkbox = null;
+	this.appendTo = function(par) {
+		var container = $("<p>", {
+			"class": "order-option"
+		}).appendTo(par);
+
+		var label = $('<label>', {
+			"class": "order-label"
+		}).appendTo(container);
+
+		this.checkbox = $("<input>",{
+			type: "checkbox",
+			"class": "order-checkbox"
+		}).appendTo(label);
+	
+		var aEditor = this.editor;
+		this.checkbox.change(function(evt) {
+			aEditor.enableSubmit();
+		});
+	
+		var name = $("<plaintext>", {
+			"class": "order-label-name",
+			text: this.labelName 
+		}).appendTo(label);
+	};
+	this.check = function() {
+		if (this.checkbox == null) return;
+		checkField(this.checkbox); 	
+	};
+	this.uncheck = function() {
+		if (this.checkbox == null) return;
+		uncheckField(this.checkbox); 	
+	};
+}
+
+function PriorityEditor (activity) {
+	this.activity = activity;
+	this.btnCheckAll = null;
+	this.btnUncheckAll = null;
+	this.orderOptionList = null;
+	this.selectPriority = null;
+	this.btnSubmit = null;
+	this.disableSubmit = function () {
+		disableField(this.btnSubmit);
+	};
+	this.enableSubmit = function () {
+		enableField(btnSubmit);
+	};
+	this.appendTo = function(par) {
+		var container = $("<div>", {
+			"class": "priority-editor",
+		}).appendTo(par);
+		
+		var aEditor = this;
+
+		var sectionPriority = $("<p>").appendTo(container);
+		this.selectPriority = createSelector(sectionPriority, {1, 2, 3}, {1, 2, 3}, 0, 0, 0, 0); 
+		this.selectPriority.change(function(evt) {
+			aEditor.enableSubmit();
+		});
+			
+		var buttonsRow  = $("<p>", {
+			"class": "priority-editor-buttons-row"
+		}).appendTo(container);
+
+		this.btnCheckAll = $("<button>", {
+			"class": "priority-editor-check-all",
+			text: TITLES["check_all"]
+		}).appendTo(buttonsRow);
+
+		this.btnUncheckAll = $("<button>", {
+			"class": "priority-editor-uncheck-all",
+			text: TITLES["uncheck_all"]
+		}).appendTo(buttonsRow);
+
+		this.btnCheckAll.click(function(evt) {
+			evt.preventDefault();
+			for (var orderOption in aEditor.orderOptionList) {
+				orderOption.check();
+				aEditor.enableField();
+			}
+		});
+
+		this.btnUncheckAll.click(function(evt) {
+			evt.preventDefault();
+			for (var orderOption in aEditor.orderOptionList) {
+				orderOption.uncheck();
+				aEditor.enableField();	
+			}
+		});
+		
+		var sectionOrderList = $("<p>", {
+			"class": "priority-editor-order-option-list"
+		}).appendTo(container);
+		this.orderOptionList = {};
+
+		var labelNameList = {TITLES["last_accepted_time"], TITLES["begin_time"], TITLES["deadline"]};
+		var bitCodeList = {1, 2, 4};
+
+		var length = labelNameList.length;
+		
+		for (var i = 0; i < length; ++i) {
+			var labelName = labelNameList[i];
+			var bitCode = bitCodeList[i];
+			OrderOption orderOption = new OrderOption(this, labelName, bitCode);
+			orderOption.appendTo(sectionOrderList);
+			this.orderOptionList.push(orderOption);	
+		}
+
+		var sectionSubmit = $("<p>", {
+			"class": "priority-editor-buttons-row"
+		}).appendTo(container);
+		
+		this.btnSubmit = $("<button>", {
+			text: TITLES["update"],
+			"class": "priority-editor-submit"
+		}).appendTo(sectionSubmit);
+
+		this.btnSubmit.click(function(evt) {
+			evt.preventDefault();
+			var token = $.cookie(g_keyToken);
+			if (token == null) return;
+
+			var orderMask = 0;
+			for (var orderOption in aEditor.orderOptionList) {
+				if (!isChecked(orderOption.checkbox)) continue;
+				orderMask |= orderOption.bitCode;
+			} 
+			
+			var priority = aEditor.selectPriority.val();			
+			
+			var params = {};
+			params[g_keyToken] = token;
+			params[g_keyPriority] = priority;
+			params[g_keyOrderMask] = orderMask;
+			params[g_keyActivityId] = aEditor.activity.id; 			
+			
+			aEditor.disableSubmit();		
+			$.ajax({
+				type: "POST",
+				url: "/admin/prioritize",
+				data: params,
+				success: function(data, status, xhr) {
+					
+				},
+				error: function(xhr, status, err) {
+					alert(ALERTS["not_updated"]);
+					aEditor.enableSubmit();
+				} 
+			});
+		});
+		
+		// initialize submit button
+		this.disableSubmit();
+	};
+}
+
 // Assistant Handlers
-function onBtnAcceptClicked(evt){
+function onBtnAcceptClicked(evt) {
 
 	var btnAccept = $(evt.srcElement ? evt.srcElement : evt.target);
 
@@ -37,7 +198,7 @@ function onBtnAcceptClicked(evt){
 	});
 }
 
-function onBtnRejectClicked(evt){
+function onBtnRejectClicked(evt) {
 
 	var btnReject = $(evt.srcElement ? evt.srcElement : evt.target);
 
@@ -113,7 +274,7 @@ function listActivitiesAndRefreshAdmin() {
 	listActivities(page, onListActivitiesSuccessAdmin, onListActivitiesErrorAdmin);
 }
 
-function onListActivitiesSuccessAdmin(data){
+function onListActivitiesSuccessAdmin(data) {
 
 	if (isTokenExpired(data)) {
 		logout(null);
@@ -151,12 +312,12 @@ function onListActivitiesSuccessAdmin(data){
 	g_pager.refreshBar();
 } 
 
-function onListActivitiesErrorAdmin(err){
+function onListActivitiesErrorAdmin(err) {
 
 }
 
 // Generators
-function generateActivityCellForAdmin(par, activity){
+function generateActivityCellForAdmin(par, activity) {
 
 	var arrayStatusName = ['created','pending','rejected','accepted','expired'];
 
@@ -280,7 +441,7 @@ function requestAdmin() {
 
 }
 
-$(document).ready(function(){
+$(document).ready(function() {
 
 	initTopbar($("#topbar"));
 	initActivityEditor($("#wrap"), listActivitiesAndRefreshAdmin);

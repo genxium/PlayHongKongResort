@@ -81,7 +81,12 @@ var TITLES = {
 	add_image: "+",
 	send: "發送",
 	check_all: "全選",
-	uncheck_all: "清空已選"
+	uncheck_all: "清空已選",
+	ascendant: "順序",
+	descendant: "倒序",
+	automatic: "自動",	
+	time: "時間",
+	last_accepted_time: "審核完成時間"
 };
 
 var MESSAGES = {
@@ -160,5 +165,6 @@ var ALERTS = {
 	please_log_in: "請先登入",
 	image_selection_requirement: "請選擇不多於3張圖片輔助活動說明, 每張圖片應不超過2MB(2048KB)",
 	deadline_behind_begin_time: "報名截止時間應在活動開始時間之前",
-	please_follow_activity_field_instructions: "請根據字數要求填寫各項"
+	please_follow_activity_field_instructions: "請根據字數要求填寫各項",
+	not_updated: "更新不成功"
 };

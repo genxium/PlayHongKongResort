@@ -43,6 +43,7 @@ POST /user/avatar/upload controllers.AvatarController.upload()
 POST /admin/accept controllers.AdminController.accept()
 POST /admin/reject controllers.AdminController.reject()
 POST /admin/delete controllers.AdminController.delete()
+POST /admin/prioritize controllers.AdminController.prioritize()
 
 # Activity Detail
 POST /activity/participants/update controllers.ParticipantController.update()
