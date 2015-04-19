@@ -1,14 +1,11 @@
 package controllers;
 
 import components.TokenExpiredResult;
+import dao.EasyPreparedStatementBuilder;
 import exception.*;
-import models.AbstractMessage;
 import models.Activity;
 import models.User;
 import models.UserActivityRelation;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import play.mvc.Controller;
 import play.mvc.Result;
 import utilities.Converter;
@@ -32,7 +29,7 @@ public class AdminController extends Controller {
 		    if (!DBCommander.validateAdminAccess(user)) throw new AccessDeniedException();
 
 			Long activityId = Converter.toLong(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-			if (activityId == null) throw new InvalidQueryParamsException();
+			if (activityId == null) throw new InvalidRequestParamsException();
 			Activity activity = DBCommander.queryActivity(activityId);
 		    if (activity == null) throw new ActivityNotFoundException();
 
@@ -59,7 +56,7 @@ public class AdminController extends Controller {
             if (!DBCommander.validateAdminAccess(user)) throw new AccessDeniedException();
 
 			Long activityId = Converter.toLong(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-			if (activityId == null) throw new InvalidQueryParamsException();
+			if (activityId == null) throw new InvalidRequestParamsException();
 			Activity activity = DBCommander.queryActivity(activityId);
             if (activity == null) throw new ActivityNotFoundException();
 
@@ -86,7 +83,7 @@ public class AdminController extends Controller {
 		    if (!DBCommander.validateAdminAccess(user)) throw new AccessDeniedException();
 
 			Long activityId = Converter.toLong(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-			if (activityId == null) throw new InvalidQueryParamsException();
+			if (activityId == null) throw new InvalidRequestParamsException();
 			if(!ExtraCommander.deleteActivity(activityId)) throw new NullPointerException();
 
 		    return ok();
@@ -110,13 +107,26 @@ public class AdminController extends Controller {
 			if (user == null) throw new UserNotFoundException();
 			if (!DBCommander.validateAdminAccess(user)) throw new AccessDeniedException();
 
-			JSONArray bundle= (JSONArray) JSONValue.parse(formData.get(AbstractMessage.BUNDLE)[0]);
-			for (Object obj : bundle) {
-				Activity activity = new Activity((JSONObject) obj);
-				/**
-				 * TODO: update activity priority settings
-				 * */
-			}
+			Integer priority = Converter.toInteger(formData.get(Activity.PRIORITY)[0]);
+			if (priority == null) throw new InvalidRequestParamsException();
+
+			Integer orderMask = Converter.toInteger(formData.get(Activity.ORDER_MASK)[0]);
+			if (orderMask == null) throw new InvalidRequestParamsException();
+
+			Long activityId = Converter.toLong(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+			if (activityId == null) throw new InvalidRequestParamsException();
+
+			Activity activity = DBCommander.queryActivity(activityId);
+			if (activity == null) throw new ActivityNotFoundException();
+
+			if (activity.getStatus() != ACCEPTED) throw new ActivityNotAcceptedException();
+
+			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			builder.update(Activity.TABLE)
+					.set(Activity.PRIORITY, priority)
+					.set(Activity.ORDER_MASK, orderMask)
+					.where(Activity.ID, "=", activityId);
+			if (!builder.execUpdate()) throw new NullPointerException();
 			return ok();
 		} catch (TokenExpiredException e) {
 			return ok(TokenExpiredResult.get());

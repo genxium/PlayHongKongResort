@@ -37,7 +37,7 @@ public class CommentController extends Controller {
     @SuppressWarnings("unchecked")
     public static Result list(Long activityId, Integer pageSt, Integer pageEd, Integer numItems) {
         try {
-            if (activityId == null || pageSt == null || pageEd == null || numItems == null) throw new InvalidQueryParamsException();
+            if (activityId == null || pageSt == null || pageEd == null || numItems == null) throw new InvalidRequestParamsException();
 
             String cacheKey = "CommentController";
             cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractActivityMessage.ACTIVITY_ID, activityId);

@@ -8,7 +8,7 @@ import components.StandardSuccessResult;
 import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
-import exception.InvalidQueryParamsException;
+import exception.InvalidRequestParamsException;
 import exception.TokenExpiredException;
 import exception.UserNotFoundException;
 import models.AbstractMessage;
@@ -34,7 +34,7 @@ public class NotificationController extends Controller {
 
 	public static Result count(String token, Integer isRead) {
 		try {
-			if (token == null) throw new InvalidQueryParamsException();
+			if (token == null) throw new InvalidRequestParamsException();
 			Long userId = DBCommander.queryUserId(token);
 			User user = DBCommander.queryUser(userId);
 			if (user == null) throw new UserNotFoundException();
@@ -57,7 +57,7 @@ public class NotificationController extends Controller {
 			if (orientationStr == null)   throw new NullPointerException();
 
 			// anti=cracking by param token
-			if (token == null) throw new InvalidQueryParamsException(); 
+			if (token == null) throw new InvalidRequestParamsException();
 			Long to = DBCommander.queryUserId(token);
 
 			List<Notification> notifications = null;

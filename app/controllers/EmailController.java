@@ -6,7 +6,7 @@ import components.StandardSuccessResult;
 import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
 import exception.DuplicateException;
-import exception.InvalidQueryParamsException;
+import exception.InvalidRequestParamsException;
 import exception.TokenExpiredException;
 import exception.UserNotFoundException;
 import models.User;
@@ -55,7 +55,7 @@ public class EmailController extends UserController {
 
     public static Result duplicate(final String email) {
         try {
-            if (email == null || !General.validateEmail(email)) throw new InvalidQueryParamsException();
+            if (email == null || !General.validateEmail(email)) throw new InvalidRequestParamsException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             List<JSONObject> userJsons = builder.select(User.ID).from(User.TABLE).where(User.EMAIL, "=", email).execSelect();
             if (userJsons != null && userJsons.size() > 0) throw new DuplicateException();
@@ -71,8 +71,8 @@ public class EmailController extends UserController {
     public static Result verify(final String email, final String code) {
         try {
 		if (email == null || code == null) throw new NullPointerException();
-		if (email.isEmpty() || code.isEmpty()) throw new InvalidQueryParamsException();
-		if (!General.validateEmail(email)) throw new InvalidQueryParamsException();
+		if (email.isEmpty() || code.isEmpty()) throw new InvalidRequestParamsException();
+		if (!General.validateEmail(email)) throw new InvalidRequestParamsException();
 
 		EasyPreparedStatementBuilder builderUpdate = new EasyPreparedStatementBuilder();
 		boolean res = builderUpdate.update(User.TABLE)

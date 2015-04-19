@@ -33,19 +33,19 @@ public class ActivityController extends Controller {
 
     public static Result list(Integer pageSt, Integer pageEd, Integer numItems, Integer orientation, String token, Long vieweeId, Integer relation, Integer status) {
         try {
-            if (pageSt == null || pageEd == null || numItems == null) throw new InvalidQueryParamsException();
+            if (pageSt == null || pageEd == null || numItems == null) throw new InvalidRequestParamsException();
 
             // anti-cracking by param order
-            if (orientation == null)  throw new InvalidQueryParamsException();
+            if (orientation == null)  throw new InvalidRequestParamsException();
             String orientationStr = SQLHelper.convertOrientation(orientation);
-            if (orientationStr == null)   throw new InvalidQueryParamsException();
+            if (orientationStr == null)   throw new InvalidRequestParamsException();
             Set<Integer> validRelations = new HashSet<>();
 	        validRelations.add(UserActivityRelation.HOSTED);
             validRelations.add(UserActivityRelation.PRESENT);
             validRelations.add(UserActivityRelation.ABSENT);
             validRelations.add(UserActivityRelation.PRESENT);
 
-            if (relation != null && !validRelations.contains(relation)) throw new InvalidQueryParamsException();
+            if (relation != null && !validRelations.contains(relation)) throw new InvalidRequestParamsException();
 
             // anti=cracking by param token
             Long viewerId = null;
@@ -131,7 +131,7 @@ public class ActivityController extends Controller {
 					}
 					if (activities != null) play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
 				}
-            } else throw new InvalidQueryParamsException();
+            } else throw new InvalidRequestParamsException();
 
             if (activities == null) throw new NullPointerException();
 
@@ -196,12 +196,12 @@ public class ActivityController extends Controller {
 			String activityAddress = formData.get(Activity.ADDRESS)[0];
 			String activityContent = formData.get(Activity.CONTENT)[0];
 
-			if (!General.validateActivityTitle(activityTitle) || !General.validateActivityAddress(activityAddress) || !General.validateActivityContent(activityContent)) throw new InvalidQueryParamsException();
+			if (!General.validateActivityTitle(activityTitle) || !General.validateActivityAddress(activityAddress) || !General.validateActivityContent(activityContent)) throw new InvalidRequestParamsException();
 
 			Long beginTime = Converter.toLong(formData.get(Activity.BEGIN_TIME)[0]);
 			Long deadline = Converter.toLong(formData.get(Activity.DEADLINE)[0]);
 
-			if (beginTime == null || deadline == null || deadline < 0 || beginTime < 0) throw new InvalidQueryParamsException();
+			if (beginTime == null || deadline == null || deadline < 0 || beginTime < 0) throw new InvalidRequestParamsException();
 			if (deadline > beginTime) throw new DeadlineAfterBeginTimeException();
 
 			// check new images
@@ -366,7 +366,7 @@ public class ActivityController extends Controller {
 			Map<String, String[]> formData = request().body().asFormUrlEncoded();
 			Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
 			String token = formData.get(User.TOKEN)[0];
-			if (token == null) throw new InvalidQueryParamsException();
+			if (token == null) throw new InvalidRequestParamsException();
 			Long userId = DBCommander.queryUserId(token);
 			if (userId == null) throw new UserNotFoundException();
             User user = DBCommander.queryUser(userId);

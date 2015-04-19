@@ -43,7 +43,7 @@ public class ParticipantController extends UserController {
 			JSONArray bundle = (JSONArray) JSONValue.parse(formData.get(AbstractMessage.BUNDLE)[0]);
 			for (Object selectedParticipantJson : bundle) {
 				Long userId = Converter.toLong(selectedParticipantJson);
-				if (userId.equals(viewerId)) throw new InvalidQueryParamsException(); // anti-cracking by selecting the host of an activity
+				if (userId.equals(viewerId)) throw new InvalidRequestParamsException(); // anti-cracking by selecting the host of an activity
 				userIdList.add(userId);	
 			}
 			if (userIdList.size() + activity.getNumSelected() > Activity.MAX_SELECTED) throw new NumberLimitExceededException();
