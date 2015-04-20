@@ -119,7 +119,7 @@ public class AdminController extends Controller {
 			Activity activity = DBCommander.queryActivity(activityId);
 			if (activity == null) throw new ActivityNotFoundException();
 
-			if (activity.getStatus() != ACCEPTED) throw new ActivityNotAcceptedException();
+			if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
 
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 			builder.update(Activity.TABLE)

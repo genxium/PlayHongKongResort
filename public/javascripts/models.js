@@ -113,6 +113,10 @@ function Activity(activityJson) {
 	if (activityJson.hasOwnProperty("priority")) {
 		this.priority = parseInt(activityJson["priority"]);
 	}
+
+	if (activityJson.hasOwnProperty("order_mask")) {
+		this.orderMask = parseInt(activityJson["order_mask"]);
+	}
 }
 
 function Comment(commentJson) {

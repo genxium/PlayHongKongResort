@@ -1,10 +1,11 @@
 var g_keyStatusIndicator = "status-indicator";
 
-function OrderOption (editor, bitCode, labelName) {
+function OrderOption (editor, bitCode, labelName, initChecked) {
 	this.editor = editor;
 	this.bitCode = bitCode;
 	this.labelName = labelName;
 	this.checkbox = null;
+	this.initChecked = initChecked;
 	this.appendTo = function(par) {
 		var container = $("<p>", {
 			"class": "order-option"
@@ -18,16 +19,17 @@ function OrderOption (editor, bitCode, labelName) {
 			type: "checkbox",
 			"class": "order-checkbox"
 		}).appendTo(label);
+
+		var name = $("<plaintext>", {
+			"class": "order-label-name",
+			text: this.labelName	
+		}).appendTo(label);
 	
 		var aEditor = this.editor;
 		this.checkbox.change(function(evt) {
 			aEditor.enableSubmit();
 		});
-	
-		var name = $("<plaintext>", {
-			"class": "order-label-name",
-			text: this.labelName 
-		}).appendTo(label);
+		if (this.initChecked > 0)	this.check();
 	};
 	this.check = function() {
 		if (this.checkbox == null) return;
@@ -50,7 +52,7 @@ function PriorityEditor (activity) {
 		disableField(this.btnSubmit);
 	};
 	this.enableSubmit = function () {
-		enableField(btnSubmit);
+		enableField(this.btnSubmit);
 	};
 	this.appendTo = function(par) {
 		var container = $("<div>", {
@@ -60,7 +62,8 @@ function PriorityEditor (activity) {
 		var aEditor = this;
 
 		var sectionPriority = $("<p>").appendTo(container);
-		this.selectPriority = createSelector(sectionPriority, {1, 2, 3}, {1, 2, 3}, 0, 0, 0, 0); 
+		this.selectPriority = createSelector(sectionPriority, ["none", "low", "medium", "high"], [0, 1, 2, 3], 0, 0, 0, 0);
+		this.selectPriority.val(activity.priority);
 		this.selectPriority.change(function(evt) {
 			aEditor.enableSubmit();
 		});
@@ -81,34 +84,37 @@ function PriorityEditor (activity) {
 
 		this.btnCheckAll.click(function(evt) {
 			evt.preventDefault();
-			for (var orderOption in aEditor.orderOptionList) {
+			for (var i = 0; i < aEditor.orderOptionList.length; ++i) {
+				var orderOption = aEditor.orderOptionList[i];
 				orderOption.check();
-				aEditor.enableField();
+				aEditor.enableSubmit();
 			}
 		});
 
 		this.btnUncheckAll.click(function(evt) {
 			evt.preventDefault();
-			for (var orderOption in aEditor.orderOptionList) {
+			for (var i = 0; i < aEditor.orderOptionList.length; ++i) {
+				var orderOption = aEditor.orderOptionList[i];
 				orderOption.uncheck();
-				aEditor.enableField();	
+				aEditor.enableSubmit();	
 			}
 		});
 		
 		var sectionOrderList = $("<p>", {
 			"class": "priority-editor-order-option-list"
 		}).appendTo(container);
-		this.orderOptionList = {};
+		this.orderOptionList = [];
 
-		var labelNameList = {TITLES["last_accepted_time"], TITLES["begin_time"], TITLES["deadline"]};
-		var bitCodeList = {1, 2, 4};
+		var labelNameList = [TITLES["last_accepted_time"], TITLES["begin_time"], TITLES["deadline"]];
+		var bitCodeList = [1, 2, 4];
 
 		var length = labelNameList.length;
 		
 		for (var i = 0; i < length; ++i) {
 			var labelName = labelNameList[i];
 			var bitCode = bitCodeList[i];
-			OrderOption orderOption = new OrderOption(this, labelName, bitCode);
+			var initChecked = ((activity.orderMask & bitCode) > 0 ? 1 : 0);
+			var orderOption = new OrderOption(this, bitCode, labelName, (activity.orderMask & bitCode));
 			orderOption.appendTo(sectionOrderList);
 			this.orderOptionList.push(orderOption);	
 		}
@@ -128,7 +134,8 @@ function PriorityEditor (activity) {
 			if (token == null) return;
 
 			var orderMask = 0;
-			for (var orderOption in aEditor.orderOptionList) {
+			for (var i = 0; i < aEditor.orderOptionList.length; ++i) {
+				var orderOption = aEditor.orderOptionList[i];
 				if (!isChecked(orderOption.checkbox)) continue;
 				orderMask |= orderOption.bitCode;
 			} 
@@ -147,7 +154,7 @@ function PriorityEditor (activity) {
 				url: "/admin/prioritize",
 				data: params,
 				success: function(data, status, xhr) {
-					
+					aEditor.activity.orderMask = orderMask;
 				},
 				error: function(xhr, status, err) {
 					alert(ALERTS["not_updated"]);
@@ -401,7 +408,15 @@ function generateActivityCellForAdmin(par, activity) {
 	var dDelete = {};
 	dDelete[g_keyActivityId] = activity.id;
 	btnDelete.click(dDelete, onBtnDeleteClicked);
-	
+
+	if (activity.status == g_statusAccepted) {
+		var sectionPriorityEditor = $("<div>", {
+			style: "padding: 2px;"
+		}).appendTo(ret);
+		var editor = new PriorityEditor(activity);
+		editor.appendTo(sectionPriorityEditor);
+	}
+
 	var hr = $("<hr>", {
 		style: "height: 1pt; color: black; background-color: black"
 	}).appendTo(ret);

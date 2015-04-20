@@ -57,7 +57,7 @@ public class Activity extends AbstractSimpleMessage {
 
 	public static final String ACTIVITIES = "activities";
 
-	public static String[] QUERY_FIELDS = {ID, TITLE, ADDRESS, CONTENT, CREATED_TIME, BEGIN_TIME, DEADLINE, CAPACITY, NUM_APPLIED, NUM_SELECTED, STATUS, HOST_ID, PRIORITY};
+	public static String[] QUERY_FIELDS = {ID, TITLE, ADDRESS, CONTENT, CREATED_TIME, BEGIN_TIME, DEADLINE, CAPACITY, NUM_APPLIED, NUM_SELECTED, STATUS, HOST_ID, PRIORITY, ORDER_MASK};
 	public static final int MAX_APPLIED = 500;
 	public static final int MAX_SELECTED = 250;
 
@@ -329,7 +329,10 @@ public class Activity extends AbstractSimpleMessage {
 			int relation = DBCommander.queryUserActivityRelation(viewerId, m_id);
 			if (relation != UserActivityRelation.INVALID)	ret.put(UserActivityRelation.RELATION, relation);
 			if (viewerId.equals(m_host.getId()))	ret.put(STATUS, String.valueOf(m_status));
-			if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	ret.put(STATUS, String.valueOf(m_status));
+			if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	{
+				ret.put(ORDER_MASK, String.valueOf(m_orderMask));
+				ret.put(STATUS, String.valueOf(m_status));
+			}
 
 		} catch (Exception e) {
 			Loggy.e(TAG, "toObjectNode", e);
