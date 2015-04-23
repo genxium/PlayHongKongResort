@@ -144,7 +144,7 @@ public class DBCommander {
 		List<Activity> criticallyCreatedActivities = queryHostedActivities(host.getId(), host.getId(), 1, 1, Activity.CREATED_TIME, SQLHelper.DESCEND, Activity.CREATION_CRITICAL_NUMBER);
 		if (criticallyCreatedActivities == null) return true;
 		if (criticallyCreatedActivities.size() < Activity.CREATION_CRITICAL_NUMBER) return true;
-		Activity criticalActivity = criticallyCreatedActivities.get(0);
+		Activity criticalActivity = criticallyCreatedActivities.get(Activity.CREATION_CRITICAL_NUMBER - 1);
 		return (now - criticalActivity.getCreatedTime() >= Activity.CREATION_CRITICAL_TIME_INTERVAL_MILLIS);
 	}
 

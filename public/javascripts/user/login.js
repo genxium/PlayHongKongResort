@@ -216,6 +216,11 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 
 	var createReact = function(evt){
 		evt.preventDefault();
+		if (g_loggedInUser == null) return;
+		if (g_loggedInUser.isVisitor()) {
+			alert(ALERTS["email_not_authenticated"]);
+			return;
+		}	
 		if (g_activityEditor == null) return;
 		g_activityEditor.refresh(null);
 		g_activityEditor.show();

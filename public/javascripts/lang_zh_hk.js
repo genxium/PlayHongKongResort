@@ -167,5 +167,6 @@ var ALERTS = {
 	image_selection_requirement: "請選擇不多於3張圖片輔助活動說明, 每張圖片應不超過2MB(2048KB)",
 	deadline_behind_begin_time: "報名截止時間應在活動開始時間之前",
 	please_follow_activity_field_instructions: "請根據字數要求填寫各項",
-	not_updated: "更新不成功"
+	not_updated: "更新不成功",
+	email_not_authenticated: "註冊郵箱尚未完成驗證無法進行此操作， 如未收到驗證郵件請在個人主頁點擊重新發送"
 };
