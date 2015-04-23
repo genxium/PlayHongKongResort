@@ -91,7 +91,7 @@ public class ActivityController extends Controller {
 			} else {
 				int offset = 0;
 				List<Activity> prioritizedActivities = null;
-				if (status == null) {
+				if (status == null || status == Activity.ACCEPTED) {
 					// when status == null, case falls in general homepage query, set it to Activity.ACCEPTED first
 					status = Activity.ACCEPTED;
 					// trial for querying prioritized activities
