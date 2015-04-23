@@ -61,7 +61,7 @@ public class EasyPreparedStatementBuilder {
     protected List<String> m_orientations = null;
 
     protected List<Integer> m_limits = null;
-	protected boolean m_ignore = false;
+    protected boolean m_ignore = false;
 
     public EasyPreparedStatementBuilder() {
 

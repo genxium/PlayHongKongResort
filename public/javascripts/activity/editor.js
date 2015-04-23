@@ -67,6 +67,7 @@ function ActivityEditor() {
 	this.hint = null;
 	this.captcha = null;
 	this.refresh = function(activity) {
+		this.id = null;
 		var isNewActivity = false;
 		if(activity == null || activity.id == null) isNewActivity = true;
 
