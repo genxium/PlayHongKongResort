@@ -16,12 +16,12 @@ function requestHome() {
 						function(err) {
 							alert(ALERTS["not_registered"]);
 						});
-
-	var selector = createSelector($("#pager-filters"), [TITLES["time_descendant"], TITLES["time_ascendant"]], [g_orderDescend, g_orderAscend], null, null, null, null);
-	var filter = new PagerFilter(g_keyOrientation, selector);
-	var filters = [filter];	
-
-	var pagerCache = new PagerCache(5); 
+	var keySelector = createSelector($("#pager-filters"), [TITLES["default"], TITLES["begin_time"], TITLES["deadline"]], ["", g_keyBeginTime, g_keyDeadline], null, null, null, null);
+	var orientationSelector = createSelector($("#pager-filters"), [TITLES["descendant"], TITLES["ascendant"]], [g_orderDescend, g_orderAscend], null, null, null, null);
+	var keyFilter = new PagerFilter(g_keyOrderKey, keySelector);
+	var orientationFilter = new PagerFilter(g_keyOrientation, orientationSelector); 
+	var filters = [keyFilter, orientationFilter];	
+	var pagerCache = new PagerCache(5);
 
 	// initialize pager widgets
 	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);

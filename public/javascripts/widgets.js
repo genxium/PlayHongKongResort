@@ -212,9 +212,6 @@ function createSelector(par, titles, values, width, height, left, top) {
 	var length = titles.length;
 
 	var ret = $("<select>").appendTo(par);
-	/*setMargin(ret, "3pt", null, "3pt", null);
-	setDimensions(ret, width, height); 
-	setOffset(ret, left, top);*/
 	
 	for (var i = 0; i < length; ++i) {
 		var title = titles[i];
@@ -316,14 +313,6 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 				text: index,
 				"class": "gray"
 			}).appendTo(pager.bar);
-			/*indicator.hover(
-				function(evt){
-					$(this).css("background-color", "cornflowerblue");
-				}, 
-				function(evt){
-					$(this).css("background-color", "gray");
-				}
-			);*/
 		
 			var pagerButton = new PagerButton(pager, index);
 			indicator.click(pagerButton, function(evt) {

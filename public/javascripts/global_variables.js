@@ -24,6 +24,7 @@ var g_keyToken="token";
 
 // extra request keys 
 var g_keyId = "id";
+var g_keyOrderKey = "order_key";
 var g_keyRelation = "relation";
 var g_keyBundle = "bundle";
 
@@ -55,7 +56,6 @@ var g_keyActivityId = "activity_id";
 var g_keyTitle = "title";
 var g_keyAddress = "address";
 var g_keyContent = "content";
-var g_keyStatus = "status";
 var g_keyCreatedTime = "created_time";
 var g_keyBeginTime = "begin_time";
 var g_keyDeadline = "application_deadline";

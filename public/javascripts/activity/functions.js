@@ -61,7 +61,6 @@ function generateActivitiesListParams(pager, page) {
 	}
 
 	if (!params.hasOwnProperty(g_keyOrientation)) params[g_keyOrientation] = g_orderDescend;
-	if (!params.hasOwnProperty(g_keyRelation) && !params.hasOwnProperty(g_keyStatus)) params[g_keyStatus] = g_statusAccepted;
 
 	var token = $.cookie(g_keyToken);
 	if (token != null)	params[g_keyToken] = token;

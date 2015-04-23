@@ -30,7 +30,7 @@ POST /activity/delete controllers.ActivityController.delete()
 POST /activity/join controllers.ActivityController.join()
 POST /activity/save controllers.ActivityController.save()
 POST /activity/submit controllers.ActivityController.submit()
-GET /activity/list controllers.ActivityController.list(page_st: Integer ?=null, page_ed: Integer ?=null, num_items: Integer ?=null, orientation: Integer ?=null, token: String ?= null, viewee_id: Long ?=0, relation: Integer ?=null, status: Integer ?=null)
+GET /activity/list controllers.ActivityController.list(page_st: Integer ?=null, page_ed: Integer ?=null, num_items: Integer ?=null, order_key: String ?=null, orientation: Integer ?=null, token: String ?= null, viewee_id: Long ?=0, relation: Integer ?=null, status: Integer ?=null)
 GET /activity/detail controllers.ActivityController.detail(activity_id: Long ?=0, token: String ?=null)
 PUT /activity/mark controllers.ActivityController.mark()
 

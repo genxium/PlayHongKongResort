@@ -86,7 +86,8 @@ var TITLES = {
 	descendant: "倒序",
 	automatic: "自動",	
 	time: "時間",
-	last_accepted_time: "審核完成時間"
+	last_accepted_time: "審核完成時間",
+	"default": "默認"
 };
 
 var MESSAGES = {

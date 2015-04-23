@@ -31,139 +31,119 @@ public class ActivityController extends Controller {
 
 	public static final String OLD_IMAGE = "old_image";
 
-    public static Result list(Integer pageSt, Integer pageEd, Integer numItems, Integer orientation, String token, Long vieweeId, Integer relation, Integer status) {
-        try {
-            if (pageSt == null || pageEd == null || numItems == null) throw new InvalidRequestParamsException();
+	public static Result list(Integer pageSt, Integer pageEd, Integer numItems, String orderKey, Integer orientation, String token, Long vieweeId, Integer relation, Integer status) {
+		try {
+			if (pageSt == null || pageEd == null || numItems == null) throw new InvalidRequestParamsException();
 
-            // anti-cracking by param order
-            if (orientation == null)  throw new InvalidRequestParamsException();
-            String orientationStr = SQLHelper.convertOrientation(orientation);
-            if (orientationStr == null)   throw new InvalidRequestParamsException();
-            Set<Integer> validRelations = new HashSet<>();
-	        validRelations.add(UserActivityRelation.HOSTED);
-            validRelations.add(UserActivityRelation.PRESENT);
-            validRelations.add(UserActivityRelation.ABSENT);
-            validRelations.add(UserActivityRelation.PRESENT);
+			// anti-cracking by param order
+			if (orientation == null)  throw new InvalidRequestParamsException();
+			String orientationStr = SQLHelper.convertOrientation(orientation);
+			if (orientationStr == null)   throw new InvalidRequestParamsException();
+			Set<Integer> validRelations = new HashSet<>();
+			validRelations.add(UserActivityRelation.HOSTED);
+			validRelations.add(UserActivityRelation.PRESENT);
+			validRelations.add(UserActivityRelation.ABSENT);
+			validRelations.add(UserActivityRelation.PRESENT);
 
-            if (relation != null && !validRelations.contains(relation)) throw new InvalidRequestParamsException();
+			if (relation != null && !validRelations.contains(relation)) throw new InvalidRequestParamsException();
 
-            // anti=cracking by param token
-            Long viewerId = null;
-            User viewer = null;
-            if (token != null) {
-                viewerId = DBCommander.queryUserId(token);
-                viewer = DBCommander.queryUser(viewerId);
-            }
-            if (vieweeId.equals(0L)) vieweeId = null;
+			// anti=cracking by param token
+			Long viewerId = null;
+			User viewer = null;
+			if (token != null) {
+				viewerId = DBCommander.queryUserId(token);
+				viewer = DBCommander.queryUser(viewerId);
+			}
+			if (vieweeId.equals(0L)) vieweeId = null;
 
-            List<Activity> activities = null;
-            String orderKey = Activity.ID;
-            if (status != null && status.equals(Activity.ACCEPTED)) {
-                orderKey = Activity.LAST_ACCEPTED_TIME;
-            }
-            if (status != null && status.equals(Activity.REJECTED)) {
-                orderKey = Activity.LAST_REJECTED_TIME;
-            }
+			List<Activity> activities = null;
+			if (orderKey == null || orderKey.isEmpty())	orderKey = Activity.LAST_ACCEPTED_TIME;
 
-            String cacheKey = "ActivityController";
-            cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.PAGE_ST, pageSt);
-            cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.PAGE_ED, pageEd);
-            cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.NUM_ITEMS, numItems);
-            cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORIENTATION, orientation);
-            if (relation != null)   cacheKey = DataUtils.appendCacheKey(cacheKey, UserActivityRelation.RELATION, relation);
-            if (vieweeId != null)   cacheKey = DataUtils.appendCacheKey(cacheKey, UserActivityRelation.VIEWEE_ID, vieweeId);
-            if (status != null)     cacheKey = DataUtils.appendCacheKey(cacheKey, Activity.STATUS, status);
+			// for admin only
+			if (status != null && status.equals(Activity.ACCEPTED)) {
+				orderKey = Activity.LAST_ACCEPTED_TIME;
+			}	else if (status != null && status.equals(Activity.REJECTED)) {
+				orderKey = Activity.LAST_REJECTED_TIME;
+			}	else if (status != null && status.equals(Activity.PENDING)) {
+				orderKey = Activity.CREATED_TIME;
+			}
 
-            if (relation != null && relation != UserActivityRelation.HOSTED && vieweeId != null) {
-                cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, orderKey);
-                // activities = (List<Activity>) play.cache.Cache.get(cacheKey);
-                if (activities == null) {
-					List<Integer> maskedRelationList = new LinkedList<>();
-                    if (relation == UserActivityRelation.PRESENT) {
-                        for (int aRelation : UserActivityRelation.PRESENT_STATES) {
-                            maskedRelationList.add(aRelation);
-                        }
-                    }
-                    if (relation == UserActivityRelation.ABSENT) {
-                        for (int aRelation : UserActivityRelation.ABSENT_STATES) {
-                            maskedRelationList.add(aRelation);
-                        }
-                    }
-                    if (relation == UserActivityRelation.PRESENT) {
-                        for (int aRelation : UserActivityRelation.PRESENT_STATES) {
-                            maskedRelationList.add(aRelation);
-                        }
-                    }
-                    activities = DBCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, vieweeId, maskedRelationList);
-					if (activities != null) play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
-				}
-            } else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
-                cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, Activity.ID);
-                // activities = (List<Activity>) play.cache.Cache.get(cacheKey);
-                if (activities == null) {
-					activities = DBCommander.queryHostedActivities(vieweeId, viewerId, pageSt, pageEd, Activity.ID, orientationStr, numItems);
-					if (activities != null) play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
-				}
-            } else if (status != null) {
-				// when status == Activity.ACCEPTED, case falls in general homepage query
-                cacheKey = DataUtils.appendCacheKey(cacheKey, AbstractModel.ORDER, orderKey);
-                // activities = (List<Activity>) play.cache.Cache.get(cacheKey);
-                if (activities == null) {
-					int offset = 0;
-					List<Activity> prioritizedActivities = null;
-					if (status == Activity.ACCEPTED) {
-						// trial for querying prioritized activities
-						List<Integer> maskList = new LinkedList<>();
-						for (int orderMask : Activity.LAST_ACCEPTED_TIME_MASK_LIST) {
-							maskList.add(orderMask);
-						}
-						prioritizedActivities = DBCommander.queryPrioritizedActivities(maskList, numItems);
-						if (prioritizedActivities != null) {
-							// NOTE: hereby assumes that number of prioritized activities doesn't exceed numItems
-							if (pageSt.equals(1)) numItems -= prioritizedActivities.size();
-							else offset -= prioritizedActivities.size();
-						}
+			if (relation != null && relation != UserActivityRelation.HOSTED && vieweeId != null) {
+				List<Integer> maskedRelationList = new LinkedList<>();
+				if (relation == UserActivityRelation.PRESENT) {
+					for (int aRelation : UserActivityRelation.PRESENT_STATES) {
+						maskedRelationList.add(aRelation);
 					}
-					activities = DBCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, status, offset);
-					if (activities != null && prioritizedActivities != null && prioritizedActivities.size() > 0) {
-						prioritizedActivities.addAll(activities);
-						activities = prioritizedActivities;
-					}
-					if (activities != null) play.cache.Cache.set(cacheKey, activities, DataUtils.CACHE_DURATION);
 				}
-            } else throw new InvalidRequestParamsException();
+				if (relation == UserActivityRelation.ABSENT) {
+					for (int aRelation : UserActivityRelation.ABSENT_STATES) {
+						maskedRelationList.add(aRelation);
+					}
+				}
+				if (relation == UserActivityRelation.PRESENT) {
+					for (int aRelation : UserActivityRelation.PRESENT_STATES) {
+						maskedRelationList.add(aRelation);
+					}
+				}
+				activities = DBCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, vieweeId, maskedRelationList);
+			} else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
+				activities = DBCommander.queryHostedActivities(vieweeId, viewerId, pageSt, pageEd, Activity.ID, orientationStr, numItems);
+			} else {
+				int offset = 0;
+				List<Activity> prioritizedActivities = null;
+				if (status == null) {
+					// when status == null, case falls in general homepage query, set it to Activity.ACCEPTED first
+					status = Activity.ACCEPTED;
+					// trial for querying prioritized activities
+					List<Integer> maskList = new LinkedList<>();
+					for (int orderMask : Activity.LAST_ACCEPTED_TIME_MASK_LIST) {
+						maskList.add(orderMask);
+					}
+					prioritizedActivities = DBCommander.queryPrioritizedActivities(maskList, numItems);
+					if (prioritizedActivities != null) {
+						// NOTE: hereby assumes that number of prioritized activities doesn't exceed numItems
+						if (pageSt.equals(1)) numItems -= prioritizedActivities.size();
+						else offset -= prioritizedActivities.size();
+					}
+				}
+				activities = DBCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, status, offset);
+				if (activities != null && prioritizedActivities != null && prioritizedActivities.size() > 0) {
+					prioritizedActivities.addAll(activities);
+					activities = prioritizedActivities;
+				}
+			}
 
-            if (activities == null) throw new NullPointerException();
+			if (activities == null) throw new NullPointerException();
 
-            ObjectNode result = Json.newObject();
-            result.put(AbstractModel.COUNT, 0);
-            result.put(AbstractModel.PAGE_ST, pageSt);
-            result.put(AbstractModel.PAGE_ED, pageEd);
+			ObjectNode result = Json.newObject();
+			result.put(AbstractModel.COUNT, 0);
+			result.put(AbstractModel.PAGE_ST, pageSt);
+			result.put(AbstractModel.PAGE_ED, pageEd);
 
-            boolean isAdmin = false;
-            if (viewer != null && DBCommander.validateAdminAccess(viewer)) isAdmin = true;
-	    	DBCommander.appendImageInfoForActivity(activities);
-	    	DBCommander.appendParticipantInfoForActivity(activities);
+			boolean isAdmin = false;
+			if (viewer != null && DBCommander.validateAdminAccess(viewer)) isAdmin = true;
+			DBCommander.appendImageInfoForActivity(activities);
+			DBCommander.appendParticipantInfoForActivity(activities);
 
-            ArrayNode activitiesNode = new ArrayNode(JsonNodeFactory.instance);
-            for (Activity activity : activities) {
-                boolean isHost = (viewerId != null && viewer != null && activity.getHost().getId().equals(viewerId));
-                // only hosts and admins can view non-accepted activities
-                if (activity.getStatus() != Activity.ACCEPTED
-                        &&
-                    (!isHost && !isAdmin))	continue;
-                if (viewer != null) activity.setViewer(viewer);
-                activitiesNode.add(activity.toObjectNode(viewerId));
-            }
-            result.put(Activity.ACTIVITIES, activitiesNode);
+			ArrayNode activitiesNode = new ArrayNode(JsonNodeFactory.instance);
+			for (Activity activity : activities) {
+				boolean isHost = (viewerId != null && viewer != null && activity.getHost().getId().equals(viewerId));
+				// only hosts and admins can view non-accepted activities
+				if (activity.getStatus() != Activity.ACCEPTED
+						&&
+						(!isHost && !isAdmin))	continue;
+				if (viewer != null) activity.setViewer(viewer);
+				activitiesNode.add(activity.toObjectNode(viewerId));
+			}
+			result.put(Activity.ACTIVITIES, activitiesNode);
 			return ok(result);
-        } catch (TokenExpiredException e) {
-            return ok(TokenExpiredResult.get());
-        } catch (Exception e) {
-            Loggy.e(TAG, "list", e);
-        }
-        return badRequest();
-    }
+		} catch (TokenExpiredException e) {
+			return ok(TokenExpiredResult.get());
+		} catch (Exception e) {
+			Loggy.e(TAG, "list", e);
+		}
+		return badRequest();
+	}
 
 	public static Result detail(Long activityId, String token) {
 		try {
