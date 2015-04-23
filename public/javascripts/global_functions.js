@@ -193,7 +193,7 @@ function compareYmdhisDate(foo, bar) {
 }
 
 function getTarget(evt) {
-	return (evt.srcElement ? evt.srcElement : evt.target);
+	return $(evt.srcElement ? evt.srcElement : evt.target);
 }
 
 function isChecked(checkbox) {

@@ -590,7 +590,7 @@ function Captcha(sid) {
 		this.input.show();
 		this.img.show();
 	};
-	this.appendCaptcha = function(par) {
+	this.appendTo = function(par) {
 		var row = $("<div>", {
 			"class": "captcha"
 		}).appendTo(par);

@@ -6,7 +6,9 @@ function onBtnEditClicked(evt){
     	evt.preventDefault();
     	var data = evt.data;
         var activity = data[g_keyActivity];
-		showActivityEditor(activity);
+	if (g_activityEditor == null) return;
+	g_activityEditor.refresh(activity);
+	g_activityEditor.show();
 }
 
 function listActivities(page, onSuccess, onError) {

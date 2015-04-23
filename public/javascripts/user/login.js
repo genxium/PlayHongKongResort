@@ -216,7 +216,9 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 
 	var createReact = function(evt){
 		evt.preventDefault();
-		showActivityEditor(null);
+		if (g_activityEditor == null) return;
+		g_activityEditor.refresh(null);
+		g_activityEditor.show();
 	};
 
 	var profileReact = function(evt){

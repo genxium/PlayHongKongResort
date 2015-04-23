@@ -265,7 +265,7 @@ function generateRegisterWidget(container, isModal, onSuccess, onError){
 
 	var sid = generateUuid();
 	var captcha = new Captcha(sid);
-	captcha.appendCaptcha(registerBox);
+	captcha.appendTo(registerBox);
 
 	var rowButton = $('<div>', {
 		"class": "register-button"
