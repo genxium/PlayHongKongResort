@@ -3,9 +3,9 @@ var g_pager = null;
 var g_onJoined = null;
 
 function onBtnEditClicked(evt){
-    	evt.preventDefault();
-    	var data = evt.data;
-        var activity = data[g_keyActivity];
+	evt.preventDefault();
+	var data = evt.data;
+	var activity = data[g_keyActivity];
 	if (g_activityEditor == null) return;
 	g_activityEditor.refresh(activity);
 	g_activityEditor.show();

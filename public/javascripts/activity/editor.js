@@ -147,7 +147,7 @@ function ActivityEditor() {
 			"class": "image-row new clearfix"
 		});
 
-		if(activity != null && activity.images != null)	generateOldImagesRow(form, editor, activity);
+		if(activity != null && activity.images != null)	generateOldImagesRow(form, this, activity);
 
 		newImagesRow.appendTo(form);
 
