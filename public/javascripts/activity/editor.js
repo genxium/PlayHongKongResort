@@ -25,11 +25,7 @@ var g_hDelete = 30;
 var g_imagesLimit = 3;
 
 // callback functions
-var g_onEditorRemoved = null;
-var g_onEditorCancelled = null;
-
 var g_onActivitySaveSuccess = null;
-
 var g_loadingWidget = null;
 
 // Existing images selector
@@ -320,12 +316,8 @@ function ActivityEditor() {
 	};	
 }
 
-function initActivityEditor(par, onRemove) {
-	g_onEditorRemoved = onRemove;
+function initActivityEditor(par) {
 	g_activityEditor = new ActivityEditor();
-	g_onEditorCancelled = function() {
-		g_activityEditor.container.modal("hide");
-	};
 	g_activityEditor.appendTo(par);	
 }
 
@@ -553,8 +545,8 @@ function onSubmit(evt){
 			if (!isStandardSuccess(data)) return;
 			g_activityEditor.enableEditorButtons();
 			g_activityEditor.hide();
-                        if(g_onEditorRemoved == null) return;
-			g_onEditorRemoved();
+			if (g_onActivitySaveSuccess == null) return;
+			g_onActivitySaveSuccess();
                 },
                 error: function(xhr, status, err){
 			g_activityEditor.enableEditorButtons();
@@ -637,8 +629,6 @@ function onDelete(evt){
 				return;	
 			}
 			g_activityEditor.hide();
-			if (g_onEditorRemoved == null)   return;
-			g_onEditorRemoved();
 		},
 		error: function(xhr, status, err){
 			enableField(aButton);
@@ -651,8 +641,6 @@ function onCancel(evt){
 
 	evt.preventDefault();
 	g_activityEditor.hide();
-	if(g_onEditorCancelled == null) return;
-	g_onEditorCancelled();
 
 }
 

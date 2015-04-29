@@ -249,7 +249,9 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	avatarContainer.click(function(evt){
 		evt.preventDefault();
 		if (g_loggedInUser == null) return;
-		showAvatarEditor(g_loggedInUser);
+		if (g_avatarEditor == null) return;
+		g_avatarEditor.refresh(g_loggedInUser);
+		g_avatarEditor.show();
 	});
 	
 	var userBoxLeft = $("<div>", {

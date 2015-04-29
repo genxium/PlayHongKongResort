@@ -40,7 +40,6 @@ function queryUserDetail(){
 			var profileImage = $("<img>", {
 				src: g_viewee.avatar
 			}).appendTo(pic);
-			//setBackgroundImageDefault(pic, avatar);
 			var userInfo = $("<div>", {
 				"class": "section-user-info left"
 			}).appendTo(profile);

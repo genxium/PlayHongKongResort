@@ -647,14 +647,124 @@ function WordCounter(text, min, max, regex, violationHint) {
 }
 
 var g_avatarEditor = null;
-var g_sectionAvatarEditor = null;
-var g_modalAvatarEditor = null;
-function AvatarEditor(container, image, btnChoose, btnUpload, hint) {
-	this.container = container;
-	this.image = image;
-	this.btnChoose = btnChoose;
-	this.btnUpload = btnUpload;
-	this.hint = hint;
+function initAvatarEditor(par) {
+	g_avatarEditor = new AvatarEditor();
+	g_avatarEditor.appendTo(par);
+}
+
+function AvatarEditor() {
+	this.container = null;
+	this.dialog = null;
+	this.content = null;
+	this.image = null;
+	this.btnChoose = null;
+	this.btnUpload = null;
+	this.hint = null;
+
+	this.refresh = function(user) {
+		if (user == null) return null;
+		this.content.empty();
+		var form = $("<div>", {
+			"class": "avatar-editor-form clearfix"
+		}).appendTo(this.content);
+
+		var picContainer = $("<div>", {
+			"class": "avatar left"
+		}).appendTo(form);
+		var picHelper = $("<span>", {
+			"class": "image-helper"
+		}).appendTo(picContainer);
+
+		this.image = $("<img>", {
+			src: user.avatar
+		}).appendTo(picContainer); 
+
+		var uploadContainer = $("<div>", {
+			"class": "upload left"
+		}).appendTo(form);
+
+		this.btnChoose = $("<input>", {
+			type: "file",
+			text: TITLES["choose_picture"]
+		}).appendTo(uploadContainer);
+
+		this.btnUpload = $("<button>", {
+			text: TITLES["upload"],	
+			"class": "purple"
+		}).appendTo(uploadContainer);	
+		
+		this.hint = $("<p>").appendTo(uploadContainer);
+
+		this.btnChoose.change(this, function(evt) {
+			evt.preventDefault();
+			var editor = evt.data;
+			var file = editor.getFile();
+			if (file == null) return;
+			if (!validateImage(file)) return;
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				editor.image.attr("src", e.target.result);
+			}
+			reader.readAsDataURL(file);
+		});
+		this.btnUpload.click(this, function(evt) {
+			evt.preventDefault();
+			var editor = evt.data;	
+			var file = editor.getFile();
+			if (!validateImage(file))	return;
+
+			var token = $.cookie(g_keyToken);
+			if (token == null) return;
+
+			var formData = new FormData();
+			formData.append(g_keyAvatar, file);
+			formData.append(g_keyToken, token);
+			var aButton = $(this);
+			disableField(aButton);	
+			editor.hint.text(MESSAGES["uploading"]);
+			
+			$.ajax({
+				method: "POST",
+				url: "/user/avatar/upload", 
+				data: formData,
+				mimeType: "mutltipart/form-data",
+				contentType: false,
+				processData: false,
+				success: function(data, status, xhr){
+					enableField(aButton);	
+					editor.hint.text(MESSAGES["uploaded"]);
+				},
+				error: function(xhr, status, err){
+					enableField(aButton);	
+					editor.hint.text(MESSAGES["upload_failed"]);
+				}
+			});
+		});
+
+	};
+	
+	this.appendTo = function(par) {
+		this.container = $("<div class='modal fade avatar-editor' tabindex='-1' role='dialog' aria-labelledby='AvatarEditor' aria-hidden='true'>").appendTo(par);
+	 
+		this.dialog = $("<div>", {
+			"class": "modal-dialog modal-lg"
+		}).appendTo(this.container);
+
+		this.content = $("<div>", {
+			"class": "modal-content"
+		}).appendTo(this.dialog);
+	};	
+	this.show = function() {
+		this.container.modal("show");
+	};
+
+	this.hide = function() {
+		this.container.modal("hide");
+	};
+
+	this.remove = function() {
+		this.container.remove();
+	};	
 	this.getFile = function() {
 		if (this.btnChoose == null) return null;	
 		var files = this.btnChoose[0].files;
@@ -665,131 +775,4 @@ function AvatarEditor(container, image, btnChoose, btnUpload, hint) {
 		}
 		return files[0];
 	};
-	this.btnChoose.change(this, function(evt) {
-		evt.preventDefault();
-		var editor = evt.data;
-		var file = editor.getFile();
-		if (file == null) return;
-		if (!validateImage(file)) return;
-		var reader = new FileReader();
-		reader.onload = function (e) {
-			editor.image.attr("src", e.target.result);
-		}
-		reader.readAsDataURL(file);
-	});
-	this.btnUpload.click(this, function(evt) {
-		evt.preventDefault();
-		var editor = evt.data;	
-		var file = editor.getFile();
-		if (!validateImage(file))	return;
-
-		var token = $.cookie(g_keyToken);
-		if (token == null) return;
-
-		var formData = new FormData();
-		formData.append(g_keyAvatar, file);
-		formData.append(g_keyToken, token);
-		var aButton = $(this);
-		disableField(aButton);	
-		editor.hint.text(MESSAGES["uploading"]);
-		
-		$.ajax({
-			method: "POST",
-			url: "/user/avatar/upload", 
-			data: formData,
-			mimeType: "mutltipart/form-data",
-			contentType: false,
-			processData: false,
-			success: function(data, status, xhr){
-				enableField(aButton);	
-				editor.hint.text(MESSAGES["uploaded"]);
-			},
-			error: function(xhr, status, err){
-				enableField(aButton);	
-				editor.hint.text(MESSAGES["upload_failed"]);
-			}
-		});
-	});
-
-	this.show = function() {
-		this.container.show();
-	};
-
-	this.hide = function() {
-		this.container.hide();
-	};
-
-	this.remove = function() {
-		this.container.remove();
-	};	
-}
-
-function removeAvatarEditor() {
-	if(g_sectionAvatarEditor == null) return;
-	g_sectionAvatarEditor.hide();
-	g_sectionAvatarEditor.modal("hide");
-	if(g_modalAvatarEditor == null) return;
-	g_modalAvatarEditor.empty();
-	if (g_avatarEditor == null) return;
-	g_avatarEditor.remove();
-}
-
-function refreshAvatarEditor(user) {
-	g_modalAvatarEditor.empty();
-	g_avatarEditor = generateAvatarEditor(g_modalAvatarEditor, user);
-}
-
-function showAvatarEditor(user) {
-	refreshAvatarEditor(user);
-	g_sectionAvatarEditor.modal("show");
-}
-
-function initAvatarEditor(par) {
-	g_sectionAvatarEditor = $("<div class='modal fade avatar-editor' tabindex='-1' role='dialog' aria-labelledby='AvatarEditor' aria-hidden='true'>").appendTo(par);
-	 
-	var dialog = $("<div>", {
-		"class": "modal-dialog modal-lg"
-	}).appendTo(g_sectionAvatarEditor);
-
-	g_modalAvatarEditor = $("<div>", {
-		"class": "modal-content"
-	}).appendTo(dialog);
-		
-	removeAvatarEditor();	
-}  
-
-function generateAvatarEditor(par, user) {
-	if (user == null) return null;
-	
-	var ret = $("<div>", {
-		"class": "avatar-editor-form clearfix"
-	}).appendTo(par);
-
-	var picContainer = $("<div>", {
-		"class": "avatar left"
-	}).appendTo(ret);
-	var picHelper = $("<span>", {
-		"class": "image-helper"
-	}).appendTo(picContainer);
-	var pic = $("<img>", {
-		src: user.avatar
-	}).appendTo(picContainer); 
-
-	var uploadContainer = $("<div>", {
-		"class": "upload left"
-	}).appendTo(ret);
-	var btnChoose = $("<input>", {
-		type: "file",
-		text: TITLES["choose_picture"]
-	}).appendTo(uploadContainer);
-	//setDimensions(btnChoose, "250px", "95px");
-
-	var btnUpload = $("<button>", {
-		text: TITLES["upload"],	
-		"class": "purple"
-	}).appendTo(uploadContainer);	
-	//setDimensions(btnUpload, "250px", "95px");
-	
-	var hint = $("<p>").appendTo(uploadContainer);
-	return new AvatarEditor(par, pic, btnChoose, btnUpload, hint); 
 }

@@ -82,7 +82,8 @@ $(document).ready(function(){
 
 	initTopbar($("#topbar"));
 	initFooter($("#footer-content"));
-	initActivityEditor($("#content"), listActivitiesAndRefresh);
+
+	initActivityEditor($("#content"));
 	initAvatarEditor($("#content"));
 
 	$(window).on("hashchange", function(evt) {

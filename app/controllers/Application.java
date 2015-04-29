@@ -17,7 +17,8 @@ public class Application extends Controller {
 
     public static Result index() {
         try {
-            Content html = views.html.homepage.render();
+		    boolean dev = true;
+            Content html = views.html.homepage.render(dev);
             return ok(html);
         } catch (Exception e) {
 
