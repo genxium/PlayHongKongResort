@@ -243,16 +243,11 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	var avatarImage = $("<img>", {
 		src: g_loggedInUser.avatar
 	}).appendTo(avatarContainer);
+
 	var avatarSpan = $("<span>", {
-		text: TITLES["edit"]
+		text: TITLES["profile"]
 	}).appendTo(avatarContainer);
-	avatarContainer.click(function(evt){
-		evt.preventDefault();
-		if (g_loggedInUser == null) return;
-		if (g_avatarEditor == null) return;
-		g_avatarEditor.refresh(g_loggedInUser);
-		g_avatarEditor.show();
-	});
+	avatarContainer.click(profileReact);
 	
 	var userBoxLeft = $("<div>", {
 		"class": "user-box-left left clearfix"

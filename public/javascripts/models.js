@@ -19,6 +19,14 @@ function User(userJson){
 	this.isVisitor = function() {
 	    return (this.groupId == null || this.groupId == undefined || this.groupId == 0);
 	}
+	if (userJson.hasOwnProperty("age")) this.age = userJson["age"];
+	else this.age = "";
+
+	if (userJson.hasOwnProperty("gender")) this.gender = userJson["gender"];
+	else this.gender = "";
+
+	if (userJson.hasOwnProperty("mood")) this.mood = userJson["mood"];
+	else this.mood = "";
 }
 
 function Image(imageJson){

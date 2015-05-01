@@ -4,8 +4,6 @@
 
 var g_deleteConfirmation = null;
 var g_activityEditor = null;
-var g_modalActivityEditor = null;
-var g_sectionActivityEditor = null;
 
 // button keys
 var g_classBtnSubmit = "btn-submit purple"

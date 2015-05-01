@@ -1,16 +1,209 @@
-var g_sectionUser = null;
+var g_sectionUser = null
 var g_viewee = null;
+var g_profileEditor = null;
 
-function emptySectionUser() {
-	if (g_sectionUser == null) return;
-	g_sectionUser.empty();
+function ProfileEditor() {
+	this.container = null;
+	this.dialog = null;
+	this.content = null;
+
+	// avatar
+	this.image = null;
+	this.btnChoose = null;
+	this.hint = null;
+
+	// text fields
+	this.age = null;
+	this.gender = null;
+	this.mood = null;
+	
+	// controlling buttons
+	this.btnSave = null;
+	this.btnEdit = null;
+	this.btnCancel = null;
+
+	this.NORMAL = 0;	
+	this.EDITING = 1;
+	this.mode = this.NORMAL; 
+
+	this.refresh = function(user) {
+		if (user == null) return null;
+
+		this.content.empty();
+		var form = $("<div>", {
+			"class": "avatar-editor-form clearfix"
+		}).appendTo(this.content);
+
+		$("<br>").appendTo(this.content);
+
+		/*
+			NEED regex checking for these items
+		*/
+		if (this.mode == this.EDITING) {
+			this.age = $("<input>", {
+				placeholder: TITLES["age"] 
+			}).appendTo(this.content); 
+			this.age.val(user.age);
+
+			this.gender = $("<input>", {
+				placeholder: TITLES["gender"]
+			}).appendTo(this.content);
+			this.gender.val(user.gender);
+			
+			this.mood = $("<input>", {
+				placeholder: TITLES["mood"]	
+			}).appendTo(this.content);
+			this.mood.val(user.mood);
+		} else if (this.mode == this.NORMAL) {
+			this.age = $("<plaintext>", {
+				text: user.age
+			}).appendTo(this.content);
+			this.gender = $("<plaintext>", {
+				text: user.gender
+			}).appendTo(this.content);
+			this.mood = $("<plaintext>", {
+				text: user.mood
+			}).appendTo(this.content);
+		} else;
+
+		var picContainer = $("<div>", {
+			"class": "avatar left"
+		}).appendTo(form);
+
+		var picHelper = $("<span>", {
+			"class": "image-helper"
+		}).appendTo(picContainer);
+
+		this.image = $("<img>", {
+			src: user.avatar
+		}).appendTo(picContainer); 
+
+		if (g_loggedInUser == null || user.id != g_loggedInUser.id) return;
+
+		var box = $("<div>", {
+			"class": "upload left"
+		}).hide().appendTo(form);
+
+		this.btnChoose = $("<input>", {
+			type: "file",
+			text: TITLES["choose_picture"]
+		}).change(this, function(evt) {
+			evt.preventDefault();
+			var editor = evt.data;
+			var file = editor.getFile();
+			if (file == null) return;
+			if (!validateImage(file)) return;
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				editor.image.attr("src", e.target.result);
+			}
+			reader.readAsDataURL(file);
+		}).appendTo(box);
+		
+		this.hint = $("<p>").appendTo(box);
+		if (this.mode == this.EDITING) box.show();
+	
+		var controlButtonsRow = $("<p>").appendTo(this.content);
+
+		this.btnEdit = $("<button>", {
+			text: TITLES["edit"] 
+		}).click(this, function(evt) {
+			var editor = evt.data;
+			editor.mode = editor.EDITING;
+			editor.refresh(user);
+		}).hide().appendTo(controlButtonsRow);
+		if (this.mode == this.NORMAL) this.btnEdit.show();
+
+		this.btnCancel = $("<button>", {
+			text: TITLES["cancel"]
+		}).click(this, function(evt) {
+			var editor = evt.data;
+			editor.mode = editor.NORMAL;
+			editor.refresh(user);
+		}).hide().appendTo(controlButtonsRow);
+		if (this.mode == this.EDITING) this.btnCancel.show();
+
+		this.btnSave = $("<button>", {
+			text: TITLES["upload"],	
+			"class": "purple"
+		}).click(this, function(evt) {
+			evt.preventDefault();
+			var editor = evt.data;	
+			var file = editor.getFile();
+			if (!validateImage(file))	return;
+
+			var token = $.cookie(g_keyToken);
+			if (token == null) return;
+
+			var formData = new FormData();
+			formData.append(g_keyToken, token);
+			formData.append(g_keyAvatar, file);
+			formData.append(g_keyAge, editor.age.val());
+			formData.append(g_keyGender, editor.gender.val());
+			formData.append(g_keyMood, editor.mood.val());
+
+			var aButton = getTarget(evt);
+			disableField(aButton);	
+			editor.hint.text(MESSAGES["saving"]);
+			
+			/*
+				POST API not implemented
+			*/
+			$.ajax({
+				method: "POST",
+				url: "/user/profile/save", 
+				data: formData,
+				mimeType: "mutltipart/form-data",
+				contentType: false,
+				processData: false,
+				success: function(data, status, xhr){
+					enableField(aButton);	
+					editor.hint.text(MESSAGES["saved"]);
+				},
+				error: function(xhr, status, err){
+					enableField(aButton);	
+					editor.hint.text(MESSAGES["save_failed"]);
+				}
+			});
+		}).hide().appendTo(controlButtonsRow);	
+		if (this.mode == this.EDITING) this.btnSave.show();
+	
+	};
+	
+	this.appendTo = function(par) {
+		this.container = $("<div>").appendTo(par);
+		this.dialog = $("<div>").appendTo(this.container);
+		this.content = $("<div>").appendTo(this.dialog);
+	};	
+	this.show = function() {
+		this.container.show();
+	};
+
+	this.hide = function() {
+		this.container.hide();
+	};
+
+	this.remove = function() {
+		this.container.remove();
+	};	
+	this.getFile = function() {
+		if (this.btnChoose == null) return null;	
+		var files = this.btnChoose[0].files;
+		if (files == null) return null;	
+		if (files.length != 1) {
+			alert(ALERTS["choose_one_image"]);
+			return null;
+		}
+		return files[0];
+	};
 }
 
 function clearProfile() {
 	$("#pager-filters").empty();
 	$("#pager-bar-activities").empty();
 	$("#pager-screen-activities").empty();
-	emptySectionUser();
+	if (g_sectionUser == null) return;
+	g_sectionUser.empty();
 }
 
 function queryUserDetail(){
@@ -28,9 +221,25 @@ function queryUserDetail(){
 			g_viewee = new User(userJson);
 			var username = g_viewee.name;
 			g_sectionUser.empty();
+
 			var profile = $("<div>", {
 				"class": "user-profile clearfix"
 			}).appendTo(g_sectionUser);
+
+			var userInfo = $("<div>", {
+				"class": "section-user-info left"
+			}).appendTo(profile);
+
+			var name = $("<div>", {
+				text: username,
+				"class": "section-user-name"
+			}).appendTo(userInfo);
+
+			if (g_profileEditor == null) g_profileEditor = new ProfileEditor();
+			g_profileEditor.appendTo(profile);	
+			g_profileEditor.refresh(g_viewee);
+
+			/*
 			var pic = $("<div>", {
 				"class": "section-user-avatar left"
 			}).appendTo(profile);
@@ -40,13 +249,7 @@ function queryUserDetail(){
 			var profileImage = $("<img>", {
 				src: g_viewee.avatar
 			}).appendTo(pic);
-			var userInfo = $("<div>", {
-				"class": "section-user-info left"
-			}).appendTo(profile);
-			var name = $("<div>", {
-				text: username,
-				"class": "section-user-name"
-			}).appendTo(userInfo);
+			*/
 			
 			// refresh pager for assessments
 			if (g_pagerAssessments != null) g_pagerAssessments.remove();
@@ -61,7 +264,6 @@ function queryUserDetail(){
 				to: g_viewee.id
 			};
 			g_pagerAssessments = new Pager(pagerScreen, pagerBar, 10, "/assessment/list", generateAssessmentsListParams, extraParams, pagerCache, null, onQueryAssessmentsSuccess, onQueryAssessmentsError); 	
-
 			if (g_loggedInUser == null) return;
 			if (g_loggedInUser.isVisitor() && g_vieweeId == g_loggedInUser.id) {
 				var hintResend = null;

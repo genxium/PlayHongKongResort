@@ -87,10 +87,16 @@ var TITLES = {
 	automatic: "自動",	
 	time: "時間",
 	last_accepted_time: "審核完成時間",
-	"default": "默認"
+	"default": "默認",
+	age: "年齡",
+	gender: "性別",
+	mood: "心情"
 };
 
 var MESSAGES = {
+	saving: "正在保存...",
+	saved: "已保存",
+	save_failed: "保存失敗",
 	uploading: "正在上傳...",
 	uploaded: "上傳成功",
 	upload_failed: "上傳失敗",
