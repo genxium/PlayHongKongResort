@@ -106,7 +106,8 @@ function ProfileEditor() {
 		var controlButtonsRow = $("<p>").appendTo(this.content);
 
 		this.btnEdit = $("<button>", {
-			text: TITLES["edit"] 
+			text: TITLES["edit"],
+			"class": "btn-edit purple" 
 		}).click(this, function(evt) {
 			var editor = evt.data;
 			editor.mode = editor.EDITING;
@@ -115,7 +116,8 @@ function ProfileEditor() {
 		if (this.mode == this.NORMAL) this.btnEdit.show();
 
 		this.btnCancel = $("<button>", {
-			text: TITLES["cancel"]
+			text: TITLES["cancel"],
+			"class": "btn-cancel gray"
 		}).click(this, function(evt) {
 			var editor = evt.data;
 			editor.mode = editor.NORMAL;
@@ -124,13 +126,13 @@ function ProfileEditor() {
 		if (this.mode == this.EDITING) this.btnCancel.show();
 
 		this.btnSave = $("<button>", {
-			text: TITLES["upload"],	
-			"class": "purple"
+			text: TITLES["save"],	
+			"class": "btn-save purple"
 		}).click(this, function(evt) {
 			evt.preventDefault();
 			var editor = evt.data;	
 			var file = editor.getFile();
-			if (!validateImage(file))	return;
+			if (file != null && !validateImage(file))	return;
 
 			var token = $.cookie(g_keyToken);
 			if (token == null) return;
@@ -190,7 +192,7 @@ function ProfileEditor() {
 		if (this.btnChoose == null) return null;	
 		var files = this.btnChoose[0].files;
 		if (files == null) return null;	
-		if (files.length != 1) {
+		if (files.length > 1) {
 			alert(ALERTS["choose_one_image"]);
 			return null;
 		}

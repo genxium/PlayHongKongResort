@@ -174,5 +174,6 @@ var ALERTS = {
 	deadline_behind_begin_time: "報名截止時間應在活動開始時間之前",
 	please_follow_activity_field_instructions: "請根據字數要求填寫各項",
 	not_updated: "更新不成功",
-	email_not_authenticated: "註冊郵箱尚未完成驗證無法進行此操作， 如未收到驗證郵件請在個人主頁點擊重新發送"
+	email_not_authenticated: "註冊郵箱尚未完成驗證無法進行此操作， 如未收到驗證郵件請在個人主頁點擊重新發送",
+	invalid_image_type: "圖片類型應為jpg, jpeg或png"
 };

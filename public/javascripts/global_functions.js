@@ -315,7 +315,7 @@ function validateImage(file){
 	var fileName = file.value == null ? file.name : file.value;
 	var ext = fileName.split('.').pop().toLowerCase();
 	if ($.inArray(ext, ['png','jpg','jpeg']) == -1) {
-		alert("Invalid image type!");
+		alert(ALERTS["invalid_image_type"]);
 		return false;
 	}
 	return true;

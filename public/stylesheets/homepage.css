@@ -55,3 +55,8 @@
 .captcha img{
 	float: left;
 }
+.btn-edit {
+	width: 80px;
+	height: 30pt;
+	font-size: 15pt;
+}
