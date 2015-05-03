@@ -26,6 +26,13 @@ function ProfileEditor() {
 	this.EDITING = 1;
 	this.mode = this.NORMAL; 
 
+	this.validate = function(age, gender, mood) {
+		/*
+			NEED regex checking for these items
+		*/
+		return true;
+	};
+
 	this.refresh = function(user) {
 		if (user == null) return null;
 
@@ -36,9 +43,6 @@ function ProfileEditor() {
 
 		$("<br>").appendTo(this.content);
 
-		/*
-			NEED regex checking for these items
-		*/
 		if (this.mode == this.EDITING) {
 			this.age = $("<input>", {
 				placeholder: TITLES["age"] 
@@ -148,17 +152,17 @@ function ProfileEditor() {
 			disableField(aButton);	
 			editor.hint.text(MESSAGES["saving"]);
 			
-			/*
-				POST API not implemented
-			*/
 			$.ajax({
 				method: "POST",
-				url: "/user/profile/save", 
+				url: "/user/save", 
 				data: formData,
 				mimeType: "mutltipart/form-data",
 				contentType: false,
 				processData: false,
 				success: function(data, status, xhr){
+					// update logged in user profile
+					var userJson = JSON.parse(data);
+					user = g_viewee = g_loggedInUser = new User(userJson);
 					enableField(aButton);	
 					editor.hint.text(MESSAGES["saved"]);
 				},
@@ -237,21 +241,10 @@ function queryUserDetail(){
 				"class": "section-user-name"
 			}).appendTo(userInfo);
 
+
 			if (g_profileEditor == null) g_profileEditor = new ProfileEditor();
 			g_profileEditor.appendTo(profile);	
 			g_profileEditor.refresh(g_viewee);
-
-			/*
-			var pic = $("<div>", {
-				"class": "section-user-avatar left"
-			}).appendTo(profile);
-			var imageHelper = $("<span>", {
-				"class": "image-helper"
-			}).appendTo(pic);
-			var profileImage = $("<img>", {
-				src: g_viewee.avatar
-			}).appendTo(pic);
-			*/
 			
 			// refresh pager for assessments
 			if (g_pagerAssessments != null) g_pagerAssessments.remove();

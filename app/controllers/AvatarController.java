@@ -29,7 +29,7 @@ public class AvatarController extends ImageController {
             if (user == null) throw new UserNotFoundException();
 
             if (avatarFile == null) throw new NullPointerException();
-            int previousAvatarId = user.getAvatar();
+            long previousAvatarId = user.getAvatar();
             long newAvatarId = ExtraCommander.saveAvatar(avatarFile, user);
             if (newAvatarId == SQLHelper.INVALID) throw new NullPointerException();
 

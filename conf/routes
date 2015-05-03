@@ -37,7 +37,7 @@ PUT /activity/mark controllers.ActivityController.mark()
 # Profile
 GET /user/detail controllers.UserController.detail(viewee_id: Long ?=0, token : String ?=null)
 
-POST /user/avatar/upload controllers.AvatarController.upload()
+POST /user/save controllers.UserController.save()
 
 # Admin
 POST /admin/accept controllers.AdminController.accept()

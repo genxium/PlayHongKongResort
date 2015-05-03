@@ -138,7 +138,7 @@ public class ExtraCommander extends DBCommander {
 		return SQLHelper.INVALID;
 	}
 
-	public static Image queryImage(int imageId) {
+	public static Image queryImage(long imageId) {
 		if (imageId == 0) return null;
 		try {
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();

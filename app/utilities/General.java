@@ -81,6 +81,30 @@ public class General {
         }
     }
 
+    public static boolean validateUserAge(final String age) {
+        try {
+            return User.AGE_PATTERN.matcher(age).matches();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean validateUserGender(final String gender) {
+        try {
+            return User.GENDER_PATTERN.matcher(gender).matches();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean validateUserMood(final String mood) {
+        try {
+            return User.MOOD_PATTERN.matcher(mood).matches();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public static long millisec() {
 	    return System.currentTimeMillis();
     }
