@@ -41,13 +41,13 @@ public class BasicUser extends AbstractModel {
         m_name = name;
     }
 
-    protected Integer m_avatar = 0;
+    protected Long m_avatar = 0L;
 
-    public int getAvatar() {
+    public long getAvatar() {
         return m_avatar;
     }
 
-    public void setAvatar(int avatar) {
+    public void setAvatar(long avatar) {
         m_avatar = avatar;
     }
 
@@ -60,14 +60,15 @@ public class BasicUser extends AbstractModel {
         super(userJson);
         if (userJson.containsKey(NAME)) m_name = (String) userJson.get(NAME);
         if (userJson.containsKey(EMAIL)) m_email = (String) userJson.get(EMAIL);
-        if (userJson.containsKey(AVATAR)) m_avatar = Converter.toInteger(userJson.get(AVATAR));
+        if (userJson.containsKey(AVATAR)) m_avatar = Converter.toLong(userJson.get(AVATAR));
     }
 
     public ObjectNode toObjectNode(Long viewerId) {
         ObjectNode ret = super.toObjectNode();
         try {
-            if (viewerId != null && viewerId.equals(m_id)) ret.put(EMAIL, m_email);
+            ret.put(ID, m_id);
             ret.put(NAME, m_name);
+            if (viewerId != null && viewerId.equals(m_id)) ret.put(EMAIL, m_email);
             Image image = ExtraCommander.queryImage(m_avatar);
             if (image != null)  ret.put(AVATAR, image.getUrl());
         } catch (Exception e) {

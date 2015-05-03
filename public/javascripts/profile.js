@@ -14,8 +14,11 @@ function ProfileEditor() {
 
 	// text fields
 	this.age = null;
+	this.ageHint = null;
 	this.gender = null;
+	this.genderHint = null;
 	this.mood = null;
+	this.moodHint = null;
 	
 	// controlling buttons
 	this.btnSave = null;
@@ -26,6 +29,13 @@ function ProfileEditor() {
 	this.EDITING = 1;
 	this.mode = this.NORMAL; 
 
+	this.validate = function(age, gender, mood) {
+		/*
+			NEED regex checking for these items
+		*/
+		return true;
+	};
+
 	this.refresh = function(user) {
 		if (user == null) return null;
 
@@ -35,35 +45,47 @@ function ProfileEditor() {
 		}).appendTo(this.content);
 
 		$("<br>").appendTo(this.content);
+		
+		var tbl = $("<table>", {
+			"class": "user-profile-table"
+		}).appendTo(this.content);
+		var ageRow = $("<tr>").appendTo(tbl); 
+		var ageTitle = $("<td>", {
+			text: TITLES["age"]
+		}).appendTo(ageRow);
+		var ageValue = $("<td>").appendTo(ageRow);
 
-		/*
-			NEED regex checking for these items
-		*/
+		var genderRow = $("<tr>").appendTo(tbl);
+		var genderTitle = $("<td>", {
+			text: TITLES["gender"]
+		}).appendTo(genderRow);	
+		var genderValue = $("<td>").appendTo(genderRow);
+	
+		var moodRow = $("<tr>").appendTo(tbl);
+		var moodTitle = $("<td>", {
+			text: TITLES["mood"]
+		}).appendTo(moodRow);
+		var moodValue = $("<td>").appendTo(moodRow);
+
 		if (this.mode == this.EDITING) {
-			this.age = $("<input>", {
-				placeholder: TITLES["age"] 
-			}).appendTo(this.content); 
+			this.age = $("<input>").appendTo(ageValue); 
 			this.age.val(user.age);
 
-			this.gender = $("<input>", {
-				placeholder: TITLES["gender"]
-			}).appendTo(this.content);
+			this.gender = $("<input>").appendTo(genderValue);
 			this.gender.val(user.gender);
 			
-			this.mood = $("<input>", {
-				placeholder: TITLES["mood"]	
-			}).appendTo(this.content);
+			this.mood = $("<input>").appendTo(moodValue);
 			this.mood.val(user.mood);
 		} else if (this.mode == this.NORMAL) {
-			this.age = $("<plaintext>", {
+			this.age = $("<span>", {
 				text: user.age
-			}).appendTo(this.content);
-			this.gender = $("<plaintext>", {
+			}).appendTo(ageValue);
+			this.gender = $("<span>", {
 				text: user.gender
-			}).appendTo(this.content);
-			this.mood = $("<plaintext>", {
+			}).appendTo(genderValue);
+			this.mood = $("<span>", {
 				text: user.mood
-			}).appendTo(this.content);
+			}).appendTo(moodValue);
 		} else;
 
 		var picContainer = $("<div>", {
@@ -148,17 +170,17 @@ function ProfileEditor() {
 			disableField(aButton);	
 			editor.hint.text(MESSAGES["saving"]);
 			
-			/*
-				POST API not implemented
-			*/
 			$.ajax({
 				method: "POST",
-				url: "/user/profile/save", 
+				url: "/user/save", 
 				data: formData,
 				mimeType: "mutltipart/form-data",
 				contentType: false,
 				processData: false,
 				success: function(data, status, xhr){
+					// update logged in user profile
+					var userJson = JSON.parse(data);
+					user = g_viewee = g_loggedInUser = new User(userJson);
 					enableField(aButton);	
 					editor.hint.text(MESSAGES["saved"]);
 				},
@@ -237,21 +259,10 @@ function queryUserDetail(){
 				"class": "section-user-name"
 			}).appendTo(userInfo);
 
+
 			if (g_profileEditor == null) g_profileEditor = new ProfileEditor();
 			g_profileEditor.appendTo(profile);	
 			g_profileEditor.refresh(g_viewee);
-
-			/*
-			var pic = $("<div>", {
-				"class": "section-user-avatar left"
-			}).appendTo(profile);
-			var imageHelper = $("<span>", {
-				"class": "image-helper"
-			}).appendTo(pic);
-			var profileImage = $("<img>", {
-				src: g_viewee.avatar
-			}).appendTo(pic);
-			*/
 			
 			// refresh pager for assessments
 			if (g_pagerAssessments != null) g_pagerAssessments.remove();

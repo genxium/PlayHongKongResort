@@ -9,6 +9,7 @@ import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import exception.*;
 import fixtures.Constants;
+import models.Image;
 import models.Login;
 import models.User;
 import models.UserActivityRelation;
@@ -19,6 +20,7 @@ import play.mvc.Http;
 import play.mvc.Http.RequestBody;
 import play.mvc.Result;
 import utilities.Converter;
+import utilities.DataUtils;
 import utilities.General;
 import utilities.Loggy;
 
@@ -193,4 +195,69 @@ public class UserController extends Controller {
         }
 		return badRequest();
     }
+
+	public static Result save() {
+		try {
+			Http.RequestBody body = request().body();
+
+			// get file data from request body stream
+			Http.MultipartFormData data = body.asMultipartFormData();
+			Http.MultipartFormData.FilePart avatarFile = data.getFile(User.AVATAR);
+			if (avatarFile != null && !DataUtils.validateImage(avatarFile)) throw new InvalidRequestParamsException();
+
+			// get user token from request body stream
+			String token = DataUtils.getUserToken(data);
+			Long userId = DBCommander.queryUserId(token);
+			if (userId == null) throw new UserNotFoundException();
+			User user = DBCommander.queryUser(userId);
+			if (user == null) throw new UserNotFoundException();
+
+			Map<String, String[]> formData = data.asFormUrlEncoded();
+
+			String age = formData.get(User.AGE)[0];
+			String gender = formData.get(User.GENDER)[0];
+			String mood = formData.get(User.MOOD)[0];
+
+			if (!General.validateUserAge(age) || !General.validateUserGender(gender) || !General.validateUserMood(mood)) throw new InvalidRequestParamsException();
+
+			user.setAge(age);
+			user.setGender(gender);
+			user.setMood(mood);
+
+			if (avatarFile == null) {
+				DBCommander.updateUser(user);
+				return ok(user.toObjectNode(userId));
+			}
+
+			long previousAvatarId = user.getAvatar();
+			long newAvatarId = ExtraCommander.saveAvatar(avatarFile, user);
+			if (newAvatarId == SQLHelper.INVALID) throw new NullPointerException();
+
+			user.setAvatar(newAvatarId);
+				
+			// delete previous avatar record and file
+			Image previousAvatar = ExtraCommander.queryImage(previousAvatarId);
+			if (previousAvatar == null) {
+				// no previous avatar
+				DBCommander.updateUser(user);
+				return ok(user.toObjectNode(userId));
+			}
+
+			boolean isPreviousAvatarDeleted = ExtraCommander.deleteImageRecordAndFile(previousAvatar);
+			if (!isPreviousAvatarDeleted) {
+				// previous avatar not deleted
+				Loggy.e(TAG, "upload", "previous avatar file or record NOT deleted for image id:" + previousAvatarId);
+				throw new NullPointerException();
+			}
+			
+			// previous avatar deleted
+			DBCommander.updateUser(user);
+			return ok(user.toObjectNode(userId));
+
+		} catch (Exception e) {
+			Loggy.e(TAG, "upload", e);
+		}
+		return badRequest();
+
+	}
 }

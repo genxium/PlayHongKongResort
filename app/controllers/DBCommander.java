@@ -37,7 +37,7 @@ public class DBCommander {
     public static User queryUser(final Long userId) {
 
 	    try {
-		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.AVATAR, User.UNREAD_COUNT, User.UNASSESSED_COUNT};
+		    String[] names = User.QUERY_FILEDS;
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             List<JSONObject> results = builder.select(names).from(User.TABLE).where(User.ID, "=", userId).execSelect();
 		    if (results == null || results.size() <= 0) return null;
@@ -55,7 +55,7 @@ public class DBCommander {
 		List<User> ret = new ArrayList<>();
 		try {
 			if(userIdList == null || userIdList.size() == 0) return ret;
-			String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.AVATAR, User.UNREAD_COUNT, User.UNASSESSED_COUNT};
+			String[] names = User.QUERY_FILEDS;
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 			List<JSONObject> records = builder.select(names).from(User.TABLE).where(User.ID, "IN", userIdList).execSelect();
 			if (records == null || records.size() <= 0) return null;
@@ -71,7 +71,7 @@ public class DBCommander {
     public static User queryUserByEmail(String email) {
 	    User user = null;
 	    try {
-		    String[] names = {User.ID, User.EMAIL, User.PASSWORD, User.SALT, User.NAME, User.GROUP_ID, User.AUTHENTICATION_STATUS, User.GENDER, User.AVATAR};
+		    String[] names = User.QUERY_FILEDS;
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             List<JSONObject> results = builder.select(names).from(User.TABLE).where(User.EMAIL, "=", email).execSelect();
 		    if (results == null || results.size() <= 0) return null;
@@ -101,8 +101,8 @@ public class DBCommander {
 
     public static boolean updateUser(final User user) {
         try {
-            String[] cols = {User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.VERIFICATION_CODE};
-            Object[] values = {user.getEmail(), user.getPassword(), user.getName(), user.getGroupId(), user.getVerificationCode()};
+            String[] cols = {User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AGE, User.GENDER, User.MOOD, User.VERIFICATION_CODE};
+            Object[] values = {user.getEmail(), user.getPassword(), user.getName(), user.getGroupId(), user.getAge(), user.getGender(), user.getMood(), user.getVerificationCode()};
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             return builder.update(User.TABLE).set(cols, values).where(User.ID, "=", user.getId()).execUpdate();

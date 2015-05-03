@@ -125,6 +125,10 @@ var g_emailPattern = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\
 var g_passwordPattern = /^[0-9a-zA-Z_#\\!]{6,32}$/;
 var g_usernamePattern = /^[0-9a-zA-Z_]{6,32}$/;
 
+var g_userAgePattern = /^.{0,16}$/;
+var g_userGenderPattern = /^.{0,16}$/;
+var g_userMoodPattern = /^.{0,64}$/;
+
 /* The following patterns should follow Unicode standard */
 var g_activityTitlePattern = /^.{5,64}$/;  
 var g_activityAddressPattern = /^.{5,128}$/;

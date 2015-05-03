@@ -1,46 +1,48 @@
 function callbackOnPageLoaded(windowHandle, callbackFunc){
-        if(callbackFunc==null) return;
+        if (callbackFunc == null) return;
         var signaled=false;
-        windowHandle.onload=windowHandle.onreadystatechange=function(){
-	    var completed = (this.readyState==null || this.readyState=='complete');
+        windowHandle.onload = windowHandle.onreadystatechange = function() {
+            var completed = (this.readyState == null || this.readyState == 'complete');
             if(signaled || !completed) return;
-	    signaled=true;
-	    callbackFunc();
+            signaled = true;
+            callbackFunc();
         };
 }
 
-function loadJavaScript(windowHandle, script, callbackFunc){
+function loadJavaScript(windowHandle, script, callbackFunc) {
         var doc = windowHandle.document;
         if(doc == null) return;
         var scriptNode = doc.createElement('script');
         var textNode = doc.createTextNode(script);
         scriptNode.appendChild(textNode);
-        
-	if(callbackFunc != null) {
-            var signaled = false;
-            scriptNode.onload = scriptNode.onreadystatechange = function(){
-		var completed = (this.readyState == null || this.readyState == 'complete');
-                if(signaled || !completed) return;
-		signaled = true;
-		callbackFunc();
-            };
-	}
 
-        var heads=doc.getElementsByTagName("head");
+        if(callbackFunc != null) {
+            var signaled = false;
+            scriptNode.onload = scriptNode.onreadystatechange = function() {
+                var completed = (this.readyState == null || this.readyState == 'complete');
+                if(signaled || !completed) return;
+                signaled = true;
+                callbackFunc();
+            };
+		}
+
+        var heads = doc.getElementsByTagName("head");
         if(heads == null) return;
         var head = heads[0];
         if(head == null) return;
         head.appendChild(scriptNode);
 }
 
-function loadScriptFile(windowHandle, path, filetype, callbackFunc){
+function loadScriptFile(windowHandle, path, filetype, callbackFunc) {
 
 	var fileRef = null;
-	if (filetype == "js"){ //if path is a external JavaScript file
+	if (filetype == "js") {
+		//if path is a external JavaScript file
 		fileRef = windowHandle.document.createElement('script');
 		fileRef.setAttribute("type","text/javascript");
 		fileRef.setAttribute("src", path);
-	} else if (filetype == "css"){ //if path is an external CSS file
+	} else if (filetype == "css"){
+		//if path is an external CSS file
 		fileRef = windowHandle.document.createElement("link");
 		fileRef.setAttribute("rel", "stylesheet");
 		fileRef.setAttribute("type", "text/css");
@@ -51,7 +53,7 @@ function loadScriptFile(windowHandle, path, filetype, callbackFunc){
 
 	if(callbackFunc != null) {
 		var signaled = false;
-		scriptNode.onload = scriptNode.onreadystatechange = function(){
+		scriptNode.onload = scriptNode.onreadystatechange = function() {
 			var completed = (this.readyState == null || this.readyState == 'complete');
 			if(signaled || !completed) return;
 			signaled = true;
@@ -60,10 +62,10 @@ function loadScriptFile(windowHandle, path, filetype, callbackFunc){
 	}
 
 	var heads = windowHandle.document.getElementsByTagName("head");
-	if(heads == null) return;
-	var head = heads[0];
-	if(head == null) return;
-	head.appendChild(fileRef);
+    if(heads == null) return;
+    var head = heads[0];
+    if(head == null) return;
+    head.appendChild(fileRef);
 
 }
 
@@ -72,10 +74,10 @@ function loadJquery(windowHandle, callbackFunc){
 }
 
 function loadJqueryPlugins(windowHandle){
-	// jquery-cookie
-	loadScriptFile(windowHandle, "assets/javascripts/jquery-cookie.js", "js", null);
-	// jquery-ui
-	loadScriptFile(windowHandle, "assets/javascripts/jquery-ui.js", "js", null);
+    // jquery-cookie
+    loadScriptFile(windowHandle, "assets/javascripts/jquery-cookie.js", "js", null);
+    // jquery-ui
+    loadScriptFile(windowHandle, "assets/javascripts/jquery-ui.js", "js", null);
 }
 
 function loadCommonScripts(windowHandle){
@@ -98,6 +100,21 @@ function validatePassword(password) {
 function validateName(name) {
 	var regex = g_usernamePattern;
 	return regex.test(name);	
+}
+
+function validateUserAge(age) {
+	var regex = g_userAgePattern;
+	return regex.test(age);
+}
+
+function validateUserGender(gender) {
+	var regex = g_userGenderPattern;
+	return regex.test(gender);
+}
+
+function validateUserMood(mood) {
+	var regex = g_userMoodPattern;
+	return regex.test(mood);
 }
 
 function validateActivityTitle(title) {
