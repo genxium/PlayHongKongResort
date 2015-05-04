@@ -78,12 +78,15 @@ function ProfileEditor() {
 			this.mood.val(user.mood);
 		} else if (this.mode == this.NORMAL) {
 			this.age = $("<span>", {
+				"class": "user-profile-table-plain-value",
 				text: user.age
 			}).appendTo(ageValue);
 			this.gender = $("<span>", {
+				"class": "user-profile-table-plain-value",
 				text: user.gender
 			}).appendTo(genderValue);
 			this.mood = $("<span>", {
+				"class": "user-profile-table-plain-value",
 				text: user.mood
 			}).appendTo(moodValue);
 		} else;

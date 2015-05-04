@@ -4,6 +4,20 @@
 .user-profile {
 	padding: 10px;
 }
+
+table.user-profile-table tr {
+	width: 256px;
+	height: 64px;
+}
+
+table.user-profile-table td {
+	padding: 10px;
+}
+
+table.user-profile-table span.user-profile-table-plain-value {
+	padding: 5px;
+}
+
 .section-user-avatar {
 	width: 180px;
 	height: 180px;
