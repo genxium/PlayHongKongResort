@@ -54,28 +54,71 @@ function ProfileEditor() {
 			text: TITLES["age"]
 		}).appendTo(ageRow);
 		var ageValue = $("<td>").appendTo(ageRow);
+		var ageHintCell = $("<td>").appendTo(ageRow);
 
 		var genderRow = $("<tr>").appendTo(tbl);
 		var genderTitle = $("<td>", {
 			text: TITLES["gender"]
 		}).appendTo(genderRow);	
 		var genderValue = $("<td>").appendTo(genderRow);
+		var genderHintCell = $("<td>").appendTo(genderRow);
 	
 		var moodRow = $("<tr>").appendTo(tbl);
 		var moodTitle = $("<td>", {
 			text: TITLES["mood"]
 		}).appendTo(moodRow);
 		var moodValue = $("<td>").appendTo(moodRow);
+		var moodHintCell = $("<td>").appendTo(moodRow);
 
 		if (this.mode == this.EDITING) {
 			this.age = $("<input>").appendTo(ageValue); 
 			this.age.val(user.age);
+			this.ageHint = $("<span>").appendTo(ageHintCell);
+			
+			this.age.on("input keyup paste", this.ageHint, function(evt){
+				evt.preventDefault();
+				var hint = evt.data;
+				hint.empty();
+				hint.html("");
+				hint.removeClass("warn");
+				var val = $(this).val();
+				if(val == null || val.length ==0 ) return;
+				if(validateUserAge(val))	return;
+				hint.addClass("warn");
+				hint.html(MESSAGES["age_requirement"]);
+			});	
 
 			this.gender = $("<input>").appendTo(genderValue);
 			this.gender.val(user.gender);
+			this.genderHint = $("<span>").appendTo(genderHintCell);
+			this.gender.on("input keyup paste", this.genderHint, function(evt){
+				evt.preventDefault();
+				var hint = evt.data;
+				hint.empty();
+				hint.html("");
+				hint.removeClass("warn");
+				var val = $(this).val();
+				if(val == null || val.length ==0 ) return;
+				if(validateUserGender(val))	return;
+				hint.addClass("warn");
+				hint.html(MESSAGES["gender_requirement"]);
+			});	
 			
 			this.mood = $("<input>").appendTo(moodValue);
 			this.mood.val(user.mood);
+			this.moodHint = $("<span>").appendTo(moodHintCell);
+			this.mood.on("input keyup paste", this.moodHint, function(evt){
+				evt.preventDefault();
+				var hint = evt.data;
+				hint.empty();
+				hint.html("");
+				hint.removeClass("warn");
+				var val = $(this).val();
+				if(val == null || val.length ==0 ) return;
+				if(validateUserMood(val))	return;
+				hint.addClass("warn");
+				hint.html(MESSAGES["mood_requirement"]);
+			});	
 		} else if (this.mode == this.NORMAL) {
 			this.age = $("<span>", {
 				"class": "user-profile-table-plain-value",

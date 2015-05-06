@@ -15,11 +15,10 @@ import java.util.Properties;
 
 public class Application extends Controller {
 
-    public static Result index() {
+    public static Result index(Integer dev) {
         try {
-		    boolean dev = true;
-            Content html = views.html.homepage.render(dev);
-            return ok(html);
+		Content html = views.html.homepage.render(dev);
+		return ok(html);
         } catch (Exception e) {
 
         }

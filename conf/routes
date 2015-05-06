@@ -3,7 +3,7 @@
 # ~~~~
 
 # Global
-GET	 /	controllers.Application.index()
+GET	 /	controllers.Application.index(dev: Integer ?=0)
 GET	 /admin	controllers.Application.admin()
 
 # Account System
