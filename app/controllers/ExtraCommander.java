@@ -266,6 +266,7 @@ public class ExtraCommander extends DBCommander {
 			String imageURL = Image.getUrlPrefix() + newImageName;
 
 			String imageAbsolutePath = Image.getFolderPath() + newImageName;
+			Loggy.d(TAG, "saveAvatar", "image absolute path is " + imageAbsolutePath);
 
 			long imageId = uploadAvatar(user, imageURL);
 			if (imageId == SQLHelper.INVALID) throw new NullPointerException();
