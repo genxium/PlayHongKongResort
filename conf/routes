@@ -5,6 +5,7 @@
 # Global
 GET	 /	controllers.Application.index(dev: Integer ?=0)
 GET	 /admin	controllers.Application.admin()
+GET	/wstest controllers.Application.wstest()
 
 # Account System
 POST /user/login controllers.UserController.login()

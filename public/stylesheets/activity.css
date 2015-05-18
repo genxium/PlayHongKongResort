@@ -293,7 +293,7 @@
 .word-counter-current {
 	color: red;
 }
-.activity-editor-form .warning {
+.activity-editor-form {
 	font-size: 14px;
 	color: red;
 	padding: 5px 0;

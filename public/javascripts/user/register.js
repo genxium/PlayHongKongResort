@@ -101,12 +101,12 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var nameCheck = evt.data;
 		nameCheck.empty();
 		nameCheck.html("");
-		nameCheck.removeClass("warn");
+		nameCheck.removeClass("warning");
 		var nameVal = $(this).val();
 		if(nameVal == null || nameVal.length == 0) return;
 		if(!validateName(nameVal)) {
 			nameCheck.html("<p>" + MESSAGES["username_requirement"] + "</p>");
-			nameCheck.addClass("warn");
+			nameCheck.addClass("warning");
 			return;
 		}
 
@@ -120,7 +120,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 				if (isStandardSuccess(data)){
 					nameCheck.html("<p>" + MESSAGES["username_valid"] + "</p>");        
 			    }else{
-					nameCheck.addClass("warn");
+					nameCheck.addClass("warning");
 					nameCheck.html("<p>" + MESSAGES["username_invalid"] + "</p>");
 				}        
 			},
@@ -134,11 +134,11 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var emailCheck = evt.data;
 		emailCheck.empty();
 		emailCheck.html("");
-		emailCheck.removeClass("warn");
+		emailCheck.removeClass("warning");
 		var emailVal = $(this).val();
 		if(emailVal == null || emailVal.length == 0) return;
 		if(!validateEmail(emailVal)) {
-			emailCheck.addClass("warn");
+			emailCheck.addClass("warning");
 			emailCheck.html("<p>" + MESSAGES["email_requirement"] + "</p>");
 			return;
 		}
@@ -153,7 +153,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 				if (isStandardSuccess(data)){
 					emailCheck.html("<p>" + MESSAGES["email_valid"] + "</p>");        
 				}else{
-					emailCheck.addClass("warn");
+					emailCheck.addClass("warning");
 					emailCheck.html("<p>" + MESSAGES["email_invalid"] + "</p>");
 				}        
 			},
@@ -167,11 +167,11 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var pswCheck = evt.data;
 		pswCheck.empty();
 		pswCheck.html("");
-		pswCheck.removeClass("warn");
+		pswCheck.removeClass("warning");
 		var pswVal = $(this).val();
 		if(pswVal == null || pswVal.length ==0 ) return;
 		if(validatePassword(pswVal))	return;
-		pswCheck.addClass("warn");
+		pswCheck.addClass("warning");
 		pswCheck.html("<p>" + MESSAGES["password_requirement"] + "</p>");
 	});	
  
@@ -182,9 +182,9 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var pswVal = evt.data[1].val();
 		pswConfirmCheck.empty();
 		pswConfirmCheck.html("");
-		pswConfirmCheck.removeClass("warn");
+		pswConfirmCheck.removeClass("warning");
 		if(validatePasswordConfirm(pswVal, pswConfirmVal))	return;
-		pswConfirmCheck.addClass("warn");
+		pswConfirmCheck.addClass("warning");
 		pswConfirmCheck.html("<p>" + MESSAGES["password_confirm_requirement"] + "</p>");
 	});	
 }
