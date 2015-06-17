@@ -4,7 +4,8 @@ var g_btnSubmit = null;
 var g_sectionResponse = null;
 
 function onEmailInput(evt) {
-	g_spanHint.empty();;
+	evt.preventDefault();
+	g_spanHint.empty();
 	var email = $(this).val();
 	if(email == null || email.length == 0) return;
 	if(!validateEmail(email)) {

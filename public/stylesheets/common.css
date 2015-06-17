@@ -120,7 +120,7 @@ button.disabled-button, button.disabled-button:hover {
 	margin: 0 auto;
 	max-width: 1024px;
 	min-height: 500px;
-	background-color: #fff;
+	background-color: white;
 	padding-bottom: 30px;
 }
 #footer{
