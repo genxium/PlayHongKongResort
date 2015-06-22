@@ -160,9 +160,6 @@ public class ActivityController extends Controller {
 	}
 
 	public static Result save() {
-		/**
-		 * TODO: enable VISITOR group checking
-		 * */
 		try {
 			Http.RequestBody body = request().body();
 
@@ -212,7 +209,7 @@ public class ActivityController extends Controller {
 			User user = DBCommander.queryUser(userId);
 			if (user == null) throw new UserNotFoundException();
 
-//				if (user.getGroupId() == User.VISITOR) throw new AccessDeniedException();
+			if (user.getGroupId() == User.VISITOR) throw new AccessDeniedException();
 
 			Activity activity = null;
 			long now = General.millisec();
@@ -234,6 +231,12 @@ public class ActivityController extends Controller {
 			activity.setBeginTime(beginTime);
 			activity.setDeadline(deadline);
 
+			/*
+			* TODO: begin SQL-transaction guard, major concerns are
+			* 1. expose SQLException(s) of all SQL commands, e.g. "saveImageOfActivity" and "deleteImageRecordAndFile", to enable transaction rollback;
+			* 2. use java.sql.PrepareStatement instead of "execSelect", "execUpdate", "execReplace", "execInsert" and "execDelete" methods because the SQL connection has to be kept till transaction commitment and rollback;
+			* 3. all java.sql.PrepareStatement instances can be closed BEFORE committing transactions.
+			* */
 			if(!DBCommander.updateActivity(activity))	throw new SQLUpdateException();
 
 			// save new images
@@ -263,6 +266,9 @@ public class ActivityController extends Controller {
 				    if (!isDeleted) break;
 				}
 			}
+			/*
+			* TODO: end SQL-transaction guard
+			* */
 
 			List<Activity> tmp = new LinkedList<>();
 			tmp.add(activity);
