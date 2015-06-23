@@ -9,6 +9,7 @@ import utilities.Loggy;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 
@@ -128,20 +129,44 @@ public class SQLHelper {
                 String connectURI = getConnectionURI();
                 s_dataSource = setupDataSource(connectURI);
             }
-            return s_dataSource.getConnection();
+            if (s_dataSource == null) return null;
+            else return s_dataSource.getConnection();
         } catch (Exception e) {
             Loggy.e(TAG, "getConnection", e);
         }
         return null;
     }
 
-    public static void closeConnection(Connection connection) {
+    public static void closeConnection(final Connection connection) {
         try {
             if (connection == null)	return;
 	        connection.close();
         } catch (Exception e) {
             Loggy.e(TAG, "closeConnection", e);
         }
+    }
+
+    public static boolean setAutoCommit(final Connection connection, final boolean val) {
+        if (connection == null) return false;
+        try {
+            connection.setAutoCommit(val);
+            return true;
+        } catch (SQLException e) {
+            Loggy.e(TAG, "setAutoCommit", e);
+            return false;
+        }
+    }
+
+    public static boolean commit(final Connection connection) throws SQLException {
+        if (connection == null) return false;
+        connection.commit();
+        return true;
+    }
+
+    public static boolean rollback(final Connection connection) throws SQLException {
+        if (connection == null) return false;
+        connection.rollback();
+        return true;
     }
 
     public static String convertOrientation(int order) {

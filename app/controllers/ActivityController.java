@@ -3,6 +3,7 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.typesafe.config.ConfigException;
 import components.CaptchaNotMatchedResult;
 import components.StandardFailureResult;
 import components.StandardSuccessResult;
@@ -12,6 +13,8 @@ import dao.SQLHelper;
 import exception.*;
 import fixtures.Constants;
 import models.*;
+import org.apache.commons.io.FileUtils;
+import org.h2.command.Prepared;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import play.libs.Json;
@@ -23,6 +26,10 @@ import utilities.DataUtils;
 import utilities.General;
 import utilities.Loggy;
 
+import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 
 public class ActivityController extends Controller {
@@ -231,25 +238,7 @@ public class ActivityController extends Controller {
 			activity.setBeginTime(beginTime);
 			activity.setDeadline(deadline);
 
-			/*
-			* TODO: begin SQL-transaction guard, major concerns are
-			* 1. expose SQLException(s) of all SQL commands, e.g. "saveImageOfActivity" and "deleteImageRecordAndFile", to enable transaction rollback;
-			* 2. use java.sql.PrepareStatement instead of "execSelect", "execUpdate", "execReplace", "execInsert" and "execDelete" methods because the SQL connection has to be kept till transaction commitment and rollback;
-			* 3. all java.sql.PrepareStatement instances can be closed BEFORE committing transactions.
-			* */
-			if(!DBCommander.updateActivity(activity))	throw new SQLUpdateException();
-
-			// save new images
-			List<Image> previousImages = ExtraCommander.queryImages(activityId);
-			if (imageFiles != null && imageFiles.size() > 0) {
-				for (Http.MultipartFormData.FilePart imageFile : imageFiles) {
-					if (SQLHelper.INVALID == ExtraCommander.saveImageOfActivity(imageFile, user, activity)) break;
-				}
-			}
-
-			// selected old images
 			Set<Long> selectedOldImagesSet = new HashSet<>();
-
 			if (formData.containsKey(OLD_IMAGE)) {
 				JSONArray selectedOldImagesJson = (JSONArray) JSONValue.parse(formData.get(OLD_IMAGE)[0]);
 				for (Object selectedOldImageJson : selectedOldImagesJson) {
@@ -257,18 +246,109 @@ public class ActivityController extends Controller {
 					selectedOldImagesSet.add(imageId);
 				}
 			}
+			List<Image> previousImages = ExtraCommander.queryImages(activityId);
 
-			// delete previous images
-			if (previousImages != null && previousImages.size() > 0) {
-				for (Image previousImage : previousImages) {
-				    if (selectedOldImagesSet.contains(previousImage.getId())) continue;
-				    boolean isDeleted = ExtraCommander.deleteImageRecordAndFile(previousImage, activityId);
-				    if (!isDeleted) break;
+			/*
+			* TODO: begin SQL-transaction guard, major concerns are
+			* 1. expose SQLException(s) of all SQL commands, e.g. "saveImageOfActivity" and "deleteImageRecordAndFile", to enable transaction rollback;
+			* 2. use java.sql.PrepareStatement instead of "execSelect", "execUpdate", "execReplace", "execInsert" and "execDelete" methods because the SQL connection has to be kept till transaction commitment and rollback;
+			* 3. all java.sql.PrepareStatement instances can be closed BEFORE committing transactions.
+			* 4. images to be deleted can be handled after the SQL-transaction guard or maybe ASYNCHRONOUSLY
+			* */
+
+			boolean transactionSucceeded = true;
+			Connection connection = SQLHelper.getConnection();
+			List<String> savedImagePathList = new ArrayList<>();
+			try {
+				if (connection == null) throw new NullPointerException();
+
+				SQLHelper.setAutoCommit(connection, false);
+
+				// update activity
+				String[] cols1 = {Activity.TITLE, Activity.ADDRESS, Activity.CONTENT, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
+				Object[] values1 = {activity.getTitle(), activity.getAddress(), activity.getContent(), activity.getBeginTime(), activity.getDeadline(), activity.getCapacity()};
+				EasyPreparedStatementBuilder updateActivityBuilder = new EasyPreparedStatementBuilder();
+				PreparedStatement updateActivityStat = updateActivityBuilder.update(Activity.TABLE)
+																			.set(cols1, values1)
+																			.where(Activity.ID, "=", activity.getId())
+																			.toUpdate(connection);
+
+				updateActivityStat.executeUpdate();
+				updateActivityStat.close();
+
+				// save new images
+				if (imageFiles != null && imageFiles.size() > 0) {
+					for (Http.MultipartFormData.FilePart imageFile : imageFiles) {
+						if (SQLHelper.INVALID == ExtraCommander.saveImageOfActivity(imageFile, user, activity)) break;
+
+						String fileName = imageFile.getFilename();
+						File file = imageFile.getFile();
+
+						String newImageName = DataUtils.generateUploadedImageName(fileName, user.getId());
+						String imageURL = Image.getUrlPrefix() + newImageName;
+
+						String imageAbsolutePath = Image.getFolderPath() + newImageName;
+
+						EasyPreparedStatementBuilder createImageBuilder = new EasyPreparedStatementBuilder();
+						String[] cols2 = {Image.URL, Image.META_ID, Image.META_TYPE, Image.GENERATED_TIME};
+						Object[] values2 = {imageURL, activity.getId(), Image.TYPE_ACTIVITY, General.millisec()};
+						PreparedStatement createImageStat = createImageBuilder.insert(cols2, values2)
+                                                                            .into(Image.TABLE)
+                                                                            .toInsert(connection);
+
+						createImageStat.executeUpdate();
+						createImageStat.close();
+
+						// Save renamed file to server storage at the final step
+						FileUtils.moveFile(file, new File(imageAbsolutePath));
+						savedImagePathList.add(imageAbsolutePath);
+					}
 				}
+
+				// delete selected old images RECORDS
+				if (previousImages != null && previousImages.size() > 0) {
+					for (Image previousImage : previousImages) {
+						if (selectedOldImagesSet.contains(previousImage.getId())) continue;
+
+						EasyPreparedStatementBuilder previousImageDeletebuilder = new EasyPreparedStatementBuilder();
+						PreparedStatement previousImageDeleteStat = previousImageDeletebuilder.from(Image.TABLE)
+								.where(Image.ID, "=", previousImage.getId())
+								.where(Image.META_ID, "=", activityId)
+								.where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
+								.toDelete(connection);
+
+						previousImageDeleteStat.executeUpdate();
+					}
+				}
+				SQLHelper.commit(connection);
+			} catch (Exception e) {
+				transactionSucceeded = false;
+				Loggy.e(TAG, "save", e);
+				SQLHelper.rollback(connection);
+				for (String savedImagePath : savedImagePathList) {
+					File tmp = new File(savedImagePath);
+					if (tmp.exists()) tmp.delete();
+				}
+			} finally {
+				SQLHelper.setAutoCommit(connection, true);
+				SQLHelper.closeConnection(connection);
 			}
+
 			/*
 			* TODO: end SQL-transaction guard
 			* */
+
+			// delete selected old images FILES when transaction succeeded
+			if (transactionSucceeded && previousImages != null && previousImages.size() > 0) {
+				for (Image previousImage : previousImages) {
+					if (selectedOldImagesSet.contains(previousImage.getId())) continue;
+					File previousImageFile = new File(previousImage.getAbsolutePath());
+					boolean isFileDeleted = (previousImageFile.exists() && previousImageFile.delete());
+					/**
+					 * TODO: add non-deleted image files to an async-deletion pool
+					 * */
+				}
+			}
 
 			List<Activity> tmp = new LinkedList<>();
 			tmp.add(activity);
@@ -337,7 +417,13 @@ public class ActivityController extends Controller {
 			Activity activity = DBCommander.queryActivity(activityId);
 			if (!DBCommander.isActivityEditable(userId, activity)) throw new NullPointerException();
 
+			/**
+			 * TODO: begin SQL-transaction guard
+			 * */
 			if(!ExtraCommander.deleteActivity(activityId)) throw new NullPointerException();
+			/**
+			 * TODO: end SQL-transaction guard
+			 * */
 			return ok();
 		} catch (TokenExpiredException e) {
             return ok(TokenExpiredResult.get());
@@ -364,6 +450,9 @@ public class ActivityController extends Controller {
 			if (activity.getNumApplied() + 1 > Activity.MAX_APPLIED) throw new NumberLimitExceededException();
 			if (!DBCommander.isActivityJoinable(user, activity)) return ok(StandardFailureResult.get());
 
+			/**
+			 * TODO: begin SQL-transaction guard
+			 * */
 			long now = General.millisec();
 			String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME, UserActivityRelation.LAST_APPLYING_TIME};
 			Object[] values = {activityId, userId, UserActivityRelation.maskRelation(UserActivityRelation.APPLIED, null), now, now};
@@ -373,6 +462,10 @@ public class ActivityController extends Controller {
 			EasyPreparedStatementBuilder increment = new EasyPreparedStatementBuilder();
 			increment.update(Activity.TABLE).increase(Activity.NUM_APPLIED, 1).where(Activity.ID, "=", activityId);
 			if (!increment.execUpdate()) throw new NullPointerException();
+			/**
+			 * TODO: end SQL-transaction guard
+			 * */
+
 			return ok(StandardSuccessResult.get());
 		} catch (TokenExpiredException e) {
             return ok(TokenExpiredResult.get());

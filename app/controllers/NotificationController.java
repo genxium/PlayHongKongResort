@@ -106,9 +106,6 @@ public class NotificationController extends Controller {
 				notificationIdList.add(notificationId);
 			}
 
-			/**
-			 * TODO: move the query to DBCommander with proper wrapping
-			 * */
 			EasyPreparedStatementBuilder query = new EasyPreparedStatementBuilder();
 			List<JSONObject> results = query.select(Notification.QUERY_FIELDS)
 					.from(Notification.TABLE)
@@ -117,11 +114,13 @@ public class NotificationController extends Controller {
 					.where(Notification.IS_READ, "=", 0)
 					.execSelect();
 			if (results == null) throw new NullPointerException();
-			if (results.size() > 0) {
-				EasyPreparedStatementBuilder decrement = new EasyPreparedStatementBuilder();
-				boolean rs = decrement.update(User.TABLE).decrease(User.UNREAD_COUNT, 1).where(User.ID, "=", userId).execUpdate();
-				if (!rs) throw new NullPointerException();
-			}
+
+			/**
+			 * TODO: begin SQL-transaction guard
+			 * */
+			EasyPreparedStatementBuilder decrement = new EasyPreparedStatementBuilder();
+			boolean rs = decrement.update(User.TABLE).decrease(User.UNREAD_COUNT, results.size()).where(User.ID, "=", userId).execUpdate();
+			if (!rs) throw new NullPointerException();
 
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 			
@@ -129,7 +128,11 @@ public class NotificationController extends Controller {
 					.where(Notification.ID, "IN", notificationIdList)
 					.where(Notification.TO, "=", userId);		
 
-			boolean res = builder.execDelete();		
+			boolean res = builder.execDelete();
+			/**
+			 * TODO: end SQL-transaction guard
+			 * */
+
 			if (res) return ok(StandardSuccessResult.get());
 			else ok(StandardFailureResult.get());
 

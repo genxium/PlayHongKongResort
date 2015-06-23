@@ -50,12 +50,17 @@ public class ParticipantController extends UserController {
 
 			List<Integer> relationList = DBCommander.queryUserActivityRelationList(userIdList, activityId);
 
+			if (relationList == null) throw new NullPointerException();
+
 			// validation loop
 			for (Integer relation : relationList) {
 				if (relation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
 				if (relation != UserActivityRelation.APPLIED) throw new InvalidUserActivityRelationException();
 			}
-			
+
+			/**
+			 * TODO: begin SQL-transaction guard
+			 * */
 			if (!DBCommander.updateUserActivityRelation(userIdList, activityId, UserActivityRelation.maskRelation(UserActivityRelation.SELECTED, UserActivityRelation.APPLIED))) throw new NullPointerException();
 
 			int count = userIdList.size();
@@ -65,6 +70,9 @@ public class ParticipantController extends UserController {
 			    .increase(Activity.NUM_SELECTED, count)
 			    .where(Activity.ID, "=", activityId);
 			if (!change.execUpdate()) throw new NullPointerException();
+			/**
+			 * TODO: end SQL-transaction guard
+			 * */
 
 			return ok(StandardSuccessResult.get());
 		} catch (TokenExpiredException e) {

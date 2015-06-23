@@ -102,6 +102,9 @@ public class SubCommentController extends CommentController {
             String[] cols = {Comment.CONTENT, Comment.ACTIVITY_ID, Comment.FROM, Comment.TO, Comment.GENERATED_TIME, Comment.PREDECESSOR_ID, Comment.PARENT_ID};
             Object[] vals = {content, activityId, from, to, General.millisec(), predecessorId, parentId};
 
+            /**
+             * TODO: begin SQL-transaction guard
+             * */
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             long lastId = builder.insert(cols, vals).into(Comment.TABLE).execInsert();
             if (lastId == SQLHelper.INVALID) throw new NullPointerException();
@@ -109,6 +112,9 @@ public class SubCommentController extends CommentController {
             EasyPreparedStatementBuilder increment = new EasyPreparedStatementBuilder();
             increment.update(Comment.TABLE).increase(Comment.NUM_CHILDREN, 1).where(Comment.ID, "=", parentId);
             if (!increment.execUpdate()) throw new NullPointerException();
+            /**
+             * TODO: end SQL-transaction guard
+             * */
             return ok();
         } catch (TokenExpiredException e) {
             return ok(TokenExpiredResult.get());

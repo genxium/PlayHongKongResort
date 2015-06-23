@@ -26,6 +26,7 @@ public class CommentController extends Controller {
     public static Result querySingle(Integer commentId) {
 	    try {
 		    Comment comment = DBCommander.queryComment(commentId);
+            if (comment == null) throw new NullPointerException();
 		    return ok(comment.toObjectNode(true, null));
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "query", e);

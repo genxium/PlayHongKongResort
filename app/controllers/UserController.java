@@ -229,6 +229,10 @@ public class UserController extends Controller {
 				return ok(user.toObjectNode(userId));
 			}
 
+
+			/**
+			 * TODO: begin SQL-transaction guard (resembling ActivityController.save)
+			 * */
 			long previousAvatarId = user.getAvatar();
 			long newAvatarId = ExtraCommander.saveAvatar(avatarFile, user);
 			if (newAvatarId == SQLHelper.INVALID) throw new NullPointerException();
@@ -252,6 +256,9 @@ public class UserController extends Controller {
 			
 			// previous avatar deleted
 			DBCommander.updateUser(user);
+			/**
+			 * TODO: end SQL-transaction guard
+			 * */
 			return ok(user.toObjectNode(userId));
 
 		} catch (Exception e) {
