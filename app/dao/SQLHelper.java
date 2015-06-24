@@ -9,6 +9,7 @@ import utilities.Loggy;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
@@ -165,6 +166,13 @@ public class SQLHelper {
             Loggy.e(TAG, "setAutoCommit", e);
             return false;
         }
+    }
+
+    public static boolean executeAndCloseStatement(final PreparedStatement stat) throws SQLException {
+        if (stat == null) return false;
+        boolean res = stat.execute();
+        stat.close();
+        return res;
     }
 
     public static boolean commit(final Connection connection) throws SQLException {

@@ -228,6 +228,7 @@ public class ActivityController extends Controller {
 				throw new ActivityNotFoundException();
 
 			if (activity == null || activityId == null || activityId.equals(SQLHelper.INVALID)) throw new ActivityNotFoundException();
+
 			// update activity
 			if (!DBCommander.isActivityEditable(userId, activity)) throw new AccessDeniedException();
 			activity.setTitle(activityTitle);
@@ -247,19 +248,19 @@ public class ActivityController extends Controller {
 			List<Image> previousImages = ExtraCommander.queryImages(activityId);
 
 			/**
-			* begin SQL-transaction guard, major concerns are
-			* 1. expose SQLException(s) of all SQL commands, e.g. "saveImageOfActivity" and "deleteImageRecordAndFile", to enable transaction rollback;
-			* 2. use java.sql.PrepareStatement instead of "execSelect", "execUpdate", "execReplace", "execInsert" and "execDelete" methods because the SQL connection has to be kept till transaction commitment and rollback;
-			* 3. all java.sql.PrepareStatement instances can be closed BEFORE committing transactions.
-			* 4. images to be deleted can be handled after the SQL-transaction guard or maybe ASYNCHRONOUSLY
-			* */
+			 * TODO: clean up these codes
+			 * begin SQL-transaction guard, major concerns are
+			 * 1. expose SQLException(s) of all SQL commands, e.g. "saveImageOfActivity" and "deleteImageRecordAndFile", to enable transaction rollback;
+			 * 2. use java.sql.PrepareStatement instead of "execSelect", "execUpdate", "execReplace", "execInsert" and "execDelete" methods because the SQL connection has to be kept till transaction commitment and rollback;
+			 * 3. all java.sql.PrepareStatement instances can be closed BEFORE committing transactions.
+			 * 4. images to be deleted can be handled after the SQL-transaction guard or maybe ASYNCHRONOUSLY
+			 * */
 
 			boolean transactionSucceeded = true;
 			Connection connection = SQLHelper.getConnection();
 			List<String> savedImagePathList = new ArrayList<>();
 			try {
 				if (connection == null) throw new NullPointerException();
-
 				SQLHelper.disableAutoCommit(connection);
 
 				// update activity
@@ -270,9 +271,7 @@ public class ActivityController extends Controller {
 																			.set(cols1, values1)
 																			.where(Activity.ID, "=", activity.getId())
 																			.toUpdate(connection);
-
-				updateActivityStat.executeUpdate();
-				updateActivityStat.close();
+				SQLHelper.executeAndCloseStatement(updateActivityStat);
 
 				// save new images
 				if (imageFiles != null && imageFiles.size() > 0) {
@@ -292,9 +291,7 @@ public class ActivityController extends Controller {
 						PreparedStatement createImageStat = createImageBuilder.insert(cols2, values2)
                                                                             .into(Image.TABLE)
                                                                             .toInsert(connection);
-
-						createImageStat.executeUpdate();
-						createImageStat.close();
+						SQLHelper.executeAndCloseStatement(createImageStat);
 
 						// Save renamed file to server storage at the final step
 						FileUtils.moveFile(file, new File(imageAbsolutePath));
@@ -314,7 +311,7 @@ public class ActivityController extends Controller {
 								.where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
 								.toDelete(connection);
 
-						previousImageDeleteStat.execute();
+						SQLHelper.executeAndCloseStatement(previousImageDeleteStat);
 					}
 				}
 				SQLHelper.commit(connection);
@@ -413,6 +410,7 @@ public class ActivityController extends Controller {
 			if (!DBCommander.isActivityEditable(userId, activity)) throw new NullPointerException();
 
 			/**
+			 * TODO: clean up these codes
 			 * begin SQL-transaction guard
 			 * */
 
@@ -420,16 +418,15 @@ public class ActivityController extends Controller {
 			List<Image> previousImages = ExtraCommander.queryImages(activity.getId());
 
 			Connection connection = SQLHelper.getConnection();
-			SQLHelper.disableAutoCommit(connection);
 			try {
+				SQLHelper.disableAutoCommit(connection);
+
 				// delete associated user-activity-relation records
 				EasyPreparedStatementBuilder relationBuilder = new EasyPreparedStatementBuilder();
 				PreparedStatement relationStat = relationBuilder.from(UserActivityRelation.TABLE)
 																.where(UserActivityRelation.ACTIVITY_ID, "=", activityId)
 																.toDelete(connection);
-
-				relationStat.execute();
-				relationStat.close();
+				SQLHelper.executeAndCloseStatement(relationStat);
 
 				if (previousImages != null && previousImages.size() > 0) {
 					// delete associated images RECORDS
@@ -440,7 +437,7 @@ public class ActivityController extends Controller {
                                                                 .where(Image.META_ID, "=", activityId)
                                                                 .where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
 																.toDelete(connection);
-						imageStat.execute();
+						SQLHelper.executeAndCloseStatement(imageStat);
 					}
 				}
 
@@ -449,25 +446,21 @@ public class ActivityController extends Controller {
 				PreparedStatement commentsStat= commentsBuilder.from(Comment.TABLE)
 															.where(Comment.ACTIVITY_ID, "=", activityId)
 															.toDelete(connection);
-				commentsStat.execute();
-				commentsStat.close();
+				SQLHelper.executeAndCloseStatement(commentsStat);
 
 				// delete associated assessments
 				EasyPreparedStatementBuilder assessmentsBuilder = new EasyPreparedStatementBuilder();
 				PreparedStatement assessmentsStat = assessmentsBuilder.from(Assessment.TABLE)
 																	.where(Assessment.ACTIVITY_ID, "=", activityId)
 																	.toDelete(connection);
-
-				assessmentsStat.execute();
-				assessmentsStat.close();
+				SQLHelper.executeAndCloseStatement(assessmentsStat);
 
 				// delete record in table activity
 				EasyPreparedStatementBuilder activityBuilder = new EasyPreparedStatementBuilder();
 				PreparedStatement activityStat = activityBuilder.from(Activity.TABLE)
 																.where(Activity.ID, "=", activityId)
 																.toDelete(connection);
-				activityStat.execute();
-				activityStat.close();
+				SQLHelper.executeAndCloseStatement(activityStat);
 
 				SQLHelper.commit(connection);
 			} catch (SQLException e) {
@@ -517,19 +510,37 @@ public class ActivityController extends Controller {
 			if (!DBCommander.isActivityJoinable(user, activity)) return ok(StandardFailureResult.get());
 
 			/**
-			 * TODO: begin SQL-transaction guard
+			 * begin SQL-transaction guard
 			 * */
+			Connection connection = SQLHelper.getConnection();
+
 			long now = General.millisec();
 			String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME, UserActivityRelation.LAST_APPLYING_TIME};
 			Object[] values = {activityId, userId, UserActivityRelation.maskRelation(UserActivityRelation.APPLIED, null), now, now};
-			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-			builder.insert(names, values).into(UserActivityRelation.TABLE).execInsert();
 
-			EasyPreparedStatementBuilder increment = new EasyPreparedStatementBuilder();
-			increment.update(Activity.TABLE).increase(Activity.NUM_APPLIED, 1).where(Activity.ID, "=", activityId);
-			if (!increment.execUpdate()) throw new NullPointerException();
+			try {
+				SQLHelper.disableAutoCommit(connection);
+
+				EasyPreparedStatementBuilder relationBuilder = new EasyPreparedStatementBuilder();
+				PreparedStatement relationStat = relationBuilder.insert(names, values)
+                                                                .into(UserActivityRelation.TABLE)
+                                                                .toInsert(connection);
+				SQLHelper.executeAndCloseStatement(relationStat);
+
+				EasyPreparedStatementBuilder incrementBuilder = new EasyPreparedStatementBuilder();
+				PreparedStatement incrementStat = incrementBuilder.update(Activity.TABLE)
+																.increase(Activity.NUM_APPLIED, 1)
+																.where(Activity.ID, "=", activityId)
+																.toUpdate(connection);
+				SQLHelper.executeAndCloseStatement(incrementStat);
+				SQLHelper.commit(connection);
+			} catch (Exception e) {
+				SQLHelper.rollback(connection);
+			} finally {
+				SQLHelper.enableAutoCommitAndClose(connection);
+			}
 			/**
-			 * TODO: end SQL-transaction guard
+			 * end SQL-transaction guard
 			 * */
 
 			return ok(StandardSuccessResult.get());
