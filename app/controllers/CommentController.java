@@ -49,9 +49,9 @@ public class CommentController extends Controller {
             // List<Comment> comments = (List<Comment>)play.cache.Cache.get(cacheKey);
             List<Comment> comments = null;
             if (comments == null)   {
-		    comments = DBCommander.queryTopLevelComments(activityId, pageSt, pageEd, Comment.ID, SQLHelper.DESCEND, numItems);
-		    if (comments != null) play.cache.Cache.set(cacheKey, comments, DataUtils.CACHE_DURATION);
-	    }
+                comments = DBCommander.queryTopLevelComments(activityId, pageSt, pageEd, Comment.ID, SQLHelper.DESCEND, numItems);
+                if (comments != null) play.cache.Cache.set(cacheKey, comments, DataUtils.CACHE_DURATION);
+            }
             if (comments == null)   throw new NullPointerException();
 
             ObjectNode result = Json.newObject();

@@ -3,7 +3,6 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.typesafe.config.ConfigException;
 import components.CaptchaNotMatchedResult;
 import components.StandardFailureResult;
 import components.StandardSuccessResult;
@@ -14,7 +13,6 @@ import exception.*;
 import fixtures.Constants;
 import models.*;
 import org.apache.commons.io.FileUtils;
-import org.h2.command.Prepared;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import play.libs.Json;
@@ -248,8 +246,8 @@ public class ActivityController extends Controller {
 			}
 			List<Image> previousImages = ExtraCommander.queryImages(activityId);
 
-			/*
-			* TODO: begin SQL-transaction guard, major concerns are
+			/**
+			* begin SQL-transaction guard, major concerns are
 			* 1. expose SQLException(s) of all SQL commands, e.g. "saveImageOfActivity" and "deleteImageRecordAndFile", to enable transaction rollback;
 			* 2. use java.sql.PrepareStatement instead of "execSelect", "execUpdate", "execReplace", "execInsert" and "execDelete" methods because the SQL connection has to be kept till transaction commitment and rollback;
 			* 3. all java.sql.PrepareStatement instances can be closed BEFORE committing transactions.
@@ -262,7 +260,7 @@ public class ActivityController extends Controller {
 			try {
 				if (connection == null) throw new NullPointerException();
 
-				SQLHelper.setAutoCommit(connection, false);
+				SQLHelper.disableAutoCommit(connection);
 
 				// update activity
 				String[] cols1 = {Activity.TITLE, Activity.ADDRESS, Activity.CONTENT, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
@@ -279,7 +277,6 @@ public class ActivityController extends Controller {
 				// save new images
 				if (imageFiles != null && imageFiles.size() > 0) {
 					for (Http.MultipartFormData.FilePart imageFile : imageFiles) {
-						if (SQLHelper.INVALID == ExtraCommander.saveImageOfActivity(imageFile, user, activity)) break;
 
 						String fileName = imageFile.getFilename();
 						File file = imageFile.getFile();
@@ -317,7 +314,7 @@ public class ActivityController extends Controller {
 								.where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
 								.toDelete(connection);
 
-						previousImageDeleteStat.executeUpdate();
+						previousImageDeleteStat.execute();
 					}
 				}
 				SQLHelper.commit(connection);
@@ -330,12 +327,11 @@ public class ActivityController extends Controller {
 					if (tmp.exists()) tmp.delete();
 				}
 			} finally {
-				SQLHelper.setAutoCommit(connection, true);
-				SQLHelper.closeConnection(connection);
+				SQLHelper.enableAutoCommitAndClose(connection);
 			}
 
-			/*
-			* TODO: end SQL-transaction guard
+			/**
+			* end SQL-transaction guard
 			* */
 
 			// delete selected old images FILES when transaction succeeded
@@ -391,14 +387,13 @@ public class ActivityController extends Controller {
 			builder.update(Activity.TABLE).set(names, values).where(Activity.ID, "=", activity.getId());
 			if (!builder.execUpdate()) throw new NullPointerException();
 
-			return ok();
+			return ok(StandardSuccessResult.get());
 		} catch (TokenExpiredException e) {
 			return ok(TokenExpiredResult.get());
 		} catch (Exception e) {
 			Loggy.e(TAG, "submit", e);
 		}
-
-		return badRequest();
+		return ok(StandardFailureResult.get());
 	}
 
 
@@ -408,7 +403,7 @@ public class ActivityController extends Controller {
 			String[] ids = formData.get(UserActivityRelation.ACTIVITY_ID);
 			String[] tokens = formData.get(User.TOKEN);
 
-			Integer activityId = Integer.parseInt(ids[0]);
+			Long activityId = Long.valueOf(ids[0]);
 			String token = tokens[0];
 
 			Long userId = DBCommander.queryUserId(token);
@@ -418,12 +413,83 @@ public class ActivityController extends Controller {
 			if (!DBCommander.isActivityEditable(userId, activity)) throw new NullPointerException();
 
 			/**
-			 * TODO: begin SQL-transaction guard
+			 * begin SQL-transaction guard
 			 * */
-			if(!ExtraCommander.deleteActivity(activityId)) throw new NullPointerException();
+
+			boolean transactionSucceeded = true;
+			List<Image> previousImages = ExtraCommander.queryImages(activity.getId());
+
+			Connection connection = SQLHelper.getConnection();
+			SQLHelper.disableAutoCommit(connection);
+			try {
+				// delete associated user-activity-relation records
+				EasyPreparedStatementBuilder relationBuilder = new EasyPreparedStatementBuilder();
+				PreparedStatement relationStat = relationBuilder.from(UserActivityRelation.TABLE)
+																.where(UserActivityRelation.ACTIVITY_ID, "=", activityId)
+																.toDelete(connection);
+
+				relationStat.execute();
+				relationStat.close();
+
+				if (previousImages != null && previousImages.size() > 0) {
+					// delete associated images RECORDS
+					for (Image previousImage : previousImages) {
+						EasyPreparedStatementBuilder imageBuilder = new EasyPreparedStatementBuilder();
+						PreparedStatement imageStat = imageBuilder.from(Image.TABLE)
+                                                                .where(Image.ID, "=", previousImage.getId())
+                                                                .where(Image.META_ID, "=", activityId)
+                                                                .where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
+																.toDelete(connection);
+						imageStat.execute();
+					}
+				}
+
+				// delete associated comments
+				EasyPreparedStatementBuilder commentsBuilder = new EasyPreparedStatementBuilder();
+				PreparedStatement commentsStat= commentsBuilder.from(Comment.TABLE)
+															.where(Comment.ACTIVITY_ID, "=", activityId)
+															.toDelete(connection);
+				commentsStat.execute();
+				commentsStat.close();
+
+				// delete associated assessments
+				EasyPreparedStatementBuilder assessmentsBuilder = new EasyPreparedStatementBuilder();
+				PreparedStatement assessmentsStat = assessmentsBuilder.from(Assessment.TABLE)
+																	.where(Assessment.ACTIVITY_ID, "=", activityId)
+																	.toDelete(connection);
+
+				assessmentsStat.execute();
+				assessmentsStat.close();
+
+				// delete record in table activity
+				EasyPreparedStatementBuilder activityBuilder = new EasyPreparedStatementBuilder();
+				PreparedStatement activityStat = activityBuilder.from(Activity.TABLE)
+																.where(Activity.ID, "=", activityId)
+																.toDelete(connection);
+				activityStat.execute();
+				activityStat.close();
+
+				SQLHelper.commit(connection);
+			} catch (SQLException e) {
+				transactionSucceeded = false;
+				SQLHelper.rollback(connection);
+			} finally {
+				SQLHelper.enableAutoCommitAndClose(connection);
+			}
 			/**
-			 * TODO: end SQL-transaction guard
+			 * end SQL-transaction guard
 			 * */
+
+			// delete images FILES associated with the activity when transaction succeeded
+			if (transactionSucceeded && previousImages != null && previousImages.size() > 0) {
+				for (Image previousImage : previousImages) {
+					File previousImageFile = new File(previousImage.getAbsolutePath());
+					boolean isFileDeleted = (previousImageFile.exists() && previousImageFile.delete());
+					/**
+					 * TODO: add non-deleted image files to an async-deletion pool
+					 * */
+				}
+			}
 			return ok();
 		} catch (TokenExpiredException e) {
             return ok(TokenExpiredResult.get());

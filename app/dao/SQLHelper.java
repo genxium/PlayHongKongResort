@@ -137,16 +137,26 @@ public class SQLHelper {
         return null;
     }
 
-    public static void closeConnection(final Connection connection) {
+    public static boolean closeConnection(final Connection connection) {
         try {
-            if (connection == null)	return;
+            if (connection == null)	return false;
 	        connection.close();
+            return true;
         } catch (Exception e) {
             Loggy.e(TAG, "closeConnection", e);
+            return false;
         }
     }
 
-    public static boolean setAutoCommit(final Connection connection, final boolean val) {
+    public static boolean disableAutoCommit(final Connection connection) {
+        return setAutoCommit(connection, false);
+    }
+
+    public static boolean enableAutoCommitAndClose(final Connection connection) {
+        return setAutoCommit(connection, true) && closeConnection(connection);
+    }
+
+    protected static boolean setAutoCommit(final Connection connection, final boolean val) {
         if (connection == null) return false;
         try {
             connection.setAutoCommit(val);

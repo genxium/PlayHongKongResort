@@ -706,8 +706,9 @@ public class DBCommander {
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             List<JSONObject> records = builder.select(User.QUERY_FILEDS)
-                    .from(User.TABLE)
-                    .join(UserActivityRelation.TABLE, onCols, onOps, onVals).execSelect();
+                                            .from(User.TABLE)
+                                            .join(UserActivityRelation.TABLE, onCols, onOps, onVals)
+											.execSelect();
 
             if (records == null) throw new NullPointerException();
 

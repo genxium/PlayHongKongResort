@@ -518,16 +518,16 @@ function onSubmit(evt){
 
         // append user token and activity id for identity
         var token = $.cookie(g_keyToken);
-	if(token == null) {
-		alert(ALERTS["please_log_in"]);
-		return;
-	}
+        if(token == null) {
+            alert(ALERTS["please_log_in"]);
+            return;
+        }
         params[g_keyToken] = token;
 	
-	var activityId = g_activityEditor.id; 
+        var activityId = g_activityEditor.id;
         params[g_keyActivityId] = activityId;
 
-	g_activityEditor.disableEditorButtons();
+		g_activityEditor.disableEditorButtons();
         g_activityEditor.setNonSavable();
         g_activityEditor.setNonSubmittable();
 
@@ -536,18 +536,18 @@ function onSubmit(evt){
                 url: "/activity/submit",
                 data: params,
                 success: function(data, status, xhr){
-			if (isTokenExpired(data)) {
-				logout(null);
-				return;
-			}
-			if (!isStandardSuccess(data)) return;
-			g_activityEditor.enableEditorButtons();
-			g_activityEditor.hide();
-			if (g_onActivitySaveSuccess == null) return;
-			g_onActivitySaveSuccess();
+                    if (isTokenExpired(data)) {
+                        logout(null);
+                        return;
+                    }
+                    if (!isStandardSuccess(data)) return;
+                    g_activityEditor.enableEditorButtons();
+                    g_activityEditor.hide();
+                    if (g_onActivitySaveSuccess == null) return;
+                    g_onActivitySaveSuccess();
                 },
                 error: function(xhr, status, err){
-			g_activityEditor.enableEditorButtons();
+                        g_activityEditor.enableEditorButtons();
                         g_activityEditor.setSubmittable();
                 }
         });

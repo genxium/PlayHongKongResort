@@ -2,11 +2,16 @@ package utilities;
 
 import play.Logger;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class Loggy {
 
     public static void e(String tag, String method, Exception e) {
         if (e == null || e.getMessage() == null) return;
-        Logger.error(tag + "." + method + ", " + e.getMessage());
+        StringWriter stktraces = new StringWriter();
+        e.printStackTrace(new PrintWriter(stktraces));
+        Logger.error(stktraces.toString());
     }
 
     public static void e(String tag, String method, String message) {
