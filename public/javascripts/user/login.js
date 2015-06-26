@@ -149,20 +149,20 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 	}).appendTo(inputs);
 	var btn = $('<button>',{
 		text: TITLES["login"],
-		"class": "login-btn right purple"
+		"class": "login-btn right positive-button"
 	}).appendTo(row1);
 	var row2 = $("<div>", {
-		"class": "login-bottom"
+		"class": "accessory-row"
 	}).appendTo(container);
 	var forgot = $("<button>", {
 		text: TITLES["forgot_password"],
-		"class": "login-forgot"
+		"class": "login-forgot faketext-button"
 	}).appendTo(row2);	
 	var registry = null;
 	if (attachRegistry) {
 		registry = $("<button>", {
 			text: TITLES["register"],
-			"class": "login-registry"
+			"class": "login-registry faketext-button"
 		}).appendTo(row2);	
 	}
 	
@@ -266,7 +266,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	}); 
 
 	var spBubble = $("<span>", {
-		"class": "noti-bubble",
+		"class": ".bubble",
 		text: "0"
 	}).appendTo(noti);
 	var bubble = new NotiBubble(0, spBubble);

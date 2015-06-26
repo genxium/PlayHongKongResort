@@ -209,7 +209,7 @@ function attachJoinButton(par, activity) {
 
 	if(activity.relation == null && !activity.isDeadlineExpired()){
 		var btnJoin = $('<button>', {
-			"class": "btn-join purple right",
+			"class": "btn-join right positive-button",
 			text: TITLES["join"]
 		}).appendTo(par);
 		btnJoin.click(activity, onBtnJoinClicked);
@@ -285,7 +285,7 @@ function generateActivityCell(par, activity){
 	var ret = null; 
 	
 	if (activity.priority > 0) ret = $("<div>", {
-		"class": "cell-container clearfix prioritized"
+		"class": "cell-container clearfix prioritized-row"
 	}).appendTo(par); 
 	else ret = $("<div>", {
 		"class": "cell-container clearfix"
@@ -347,7 +347,7 @@ function generateActivityCell(par, activity){
 	}).appendTo(middle);
 
 	var btnDetailMiddle = $('<button>', {
-		"class": "activity-detail-small purple right",
+		"class": "activity-detail-small right",
 	}).appendTo(rightMiddle);
 
 	btnDetailMiddle.click(activity, function(evt){
@@ -364,7 +364,7 @@ function generateActivityCell(par, activity){
 	}).appendTo(ret);
 
 	var btnDetail = $('<button>', {
-		"class": "activity-detail purple",
+		"class": "activity-detail big-positive-button",
 		text: TITLES["view"]
 	}).appendTo(right);
 	

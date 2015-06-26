@@ -101,7 +101,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 
 	g_btnSubmit = $("<button>", {
 		text: TITLES["submit"],
-		"class": "purple assessment-button"
+		"class": "assessment-button positive-button"
 	}).appendTo(row);
 
 	g_btnSubmit.click({editor: batchEditor, activity: activity}, function(evt){

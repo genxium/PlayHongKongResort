@@ -1,5 +1,13 @@
 @main-font-color: black;
 @main-background: white;
+@main-border-color: gray;
+
+@button-border-color: transparent;
+
+@plain-button-font-color: black;
+@plain-button-background: white;
+@plain-button-font-color-hover: white;
+@plain-button-background-hover: orange;
 
 @positive-button-font-color: white;
 @positive-button-background: orange;
@@ -13,6 +21,55 @@
 @caution-button-background: hotpink;
 @caution-button-background-hover: indianred;
 
+@hyperlink-font-color: black;
+@hyperlink-font-color-hover: darkcyan;
+
+@header-background: darkcyan; 
+
+@disabled-button-font-color: #eee;
+@disabled-button-background: white;
+@disabled-button-border-color: #eee;
+@disabled-button-background-hover: white;
+
+@underline-button-font-color: white;
+@underline-button-background: #3ba8c2;
+@underline-button-font-color-hover: gold;
+
+@faketext-button-font-color: white;
+@faketext-button-background: #3ba8c2;
+@faketext-button-font-color-hover: gold;
+
+@bubble-font-color: white;
+@bubble-background: indianred; 
+
+@prioritized-row-background: LemonChiffon;  
+
+button {
+	cursor: pointer;
+	padding: 0;
+	border-color: @button-border-color;
+}
+
+.plain-button {
+	color: @plain-button-font-color;
+	background-color: @plain-button-background;
+	border: solid 1px @main-border-color;
+	&:hover {
+		color: @plain-button-font-color-hover;
+		background-color: @plain-button-background-hover; 
+	}
+}
+
+.disabled-button {
+	background-color: @disabled-button-background;
+	color: @disabled-button-font-color;
+	border: solid 1px @disabled-button-border-color;
+	cursor: default;
+	&:hover {
+		background-color: @disabled-button-background-hover;
+	}
+}
+
 .positive-button {
 	color: @positive-button-font-color;
 	background-color: @positive-button-background;
@@ -21,6 +78,9 @@
 	}
 }
 
+.big-positive-button {
+	.positive-button();			
+}
 
 .negative-button {
 	color: @negative-button-font-color;
@@ -36,4 +96,91 @@
 	&:hover {
 		background-color: @caution-button-background-hover; 
 	}
+}
+
+.underline-button {
+	color: @underline-button-font-color;
+	background-color: @underline-button-background;
+	&:hover {
+		color: @underline-button-font-color-hover; 
+		background-color: @underline-button-background;
+	}
+}
+
+.faketext-button {
+	color: @faketext-button-font-color;
+	background-color: @faketext-button-background;
+	&:hover {
+		color: @faketext-button-font-color-hover;
+		background-color: @faketext-button-background;
+	}
+}
+
+.prioritized-row {
+  background-color: @prioritized-row-background;
+}
+
+html, body {
+	color: @main-font-color;
+	margin: 0;
+	padding: 0;
+	font-size: 12px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+	background-color: @main-background;
+	outline: none;
+}
+
+a {
+	color: @hyperlink-font-color;
+	text-decoration: none;
+	cursor: pointer;
+	outline: none;
+}
+a:hover, a:active {
+	color: @hyperlink-font-color-hover;
+	text-decoration: none;
+	outline: none;
+}
+p {
+	margin: 0;
+}
+ul {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+input, textarea {
+	margin: 0;
+	padding: 0;
+	border: solid 1px #999;
+	height: 30px;
+	width: 100%;
+	padding: 5px;
+}
+
+#header {
+	background-color: @header-background;
+}
+
+#content {
+	margin: 0 auto;
+	max-width: 1024px;
+	min-height: 500px;
+	background-color: @main-background;
+	padding-bottom: 30px;
+}
+
+.bubble {
+	color: @bubble-font-color;
+	position: absolute;
+	right: -6px;
+	top: 1px;
+	width: 15px;
+	height: 15px;
+	background-color: @bubble-background;
+	text-align: center;
+	border-radius: 10px;
 }

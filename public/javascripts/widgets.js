@@ -311,7 +311,7 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 			var index = parseInt(key);
 			var indicator = $("<button>", {
 				text: index,
-				"class": "gray"
+				"class": "plain-button"
 			}).appendTo(pager.bar);
 		
 			var pagerButton = new PagerButton(pager, index);

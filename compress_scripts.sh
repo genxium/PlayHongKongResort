@@ -64,6 +64,10 @@ done
 
 # CSS
 CSS_PREFIX="./public/stylesheets"
+TARGET_CSS=$CSS_PREFIX/theme-main.min.css
+cat $CSS_PREFIX/theme-main.css >> $TARGET_CSS
+java -jar yuicompressor-2.4.8.jar -o '.css$:.css' $TARGET_CSS 
+
 TARGET_CSS=$CSS_PREFIX/home.min.css
 cat $CSS_PREFIX/common.css $CSS_PREFIX/header.css $CSS_PREFIX/footer.css $CSS_PREFIX/widgets.css $CSS_PREFIX/activity.css $CSS_PREFIX/assessment.css $CSS_PREFIX/comment.css $CSS_PREFIX/notification.css > $TARGET_CSS
 cat $CSS_PREFIX/homepage.css >> $TARGET_CSS

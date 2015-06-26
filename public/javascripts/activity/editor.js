@@ -198,13 +198,13 @@ function ActivityEditor() {
 
 		/* Associated Buttons */
 		this.btnSave = $('<button>',{
-			"class": "btn-save",
+			"class": "btn-save positive-button",
 			text: TITLES["save"]
 		}).appendTo(buttons);
 		this.btnSave.click(onSave);
 
 		this.btnSubmit = $('<button>',{
-			"class": "btn-submit",
+			"class": "btn-submit positive-button",
 			text: TITLES["submit"]
 		}).appendTo(buttons);
 		var dSubmit = {};
@@ -212,7 +212,7 @@ function ActivityEditor() {
 		this.btnSubmit.click(dSubmit, onSubmit);
 
 		this.btnCancel = $('<button>',{
-			"class": "btn-cancel",
+			"class": "btn-cancel negative-button",
 			text: TITLES["cancel"]
 		}).appendTo(buttons);
 		this.btnCancel.click(onCancel);
@@ -220,7 +220,7 @@ function ActivityEditor() {
 		this.btnDelete = null;
 		if(!isNewActivity){
 			this.btnDelete = $('<button>',{
-				"class": "btn-delete gray",
+				"class": "btn-delete caution-button",
 				text: TITLES["delete"]
 			}).appendTo(buttons);
 			this.btnDelete.click(function(evt) {

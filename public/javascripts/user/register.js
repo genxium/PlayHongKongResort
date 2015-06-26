@@ -272,7 +272,7 @@ function generateRegisterWidget(container, isModal, onSuccess, onError){
 	}).appendTo(registerBox);
 	var btnRegister = $('<button>', {
 		text: TITLES["register"],
-		"class": "purple"
+		"class": "positive-button"
 	}).appendTo(rowButton);
 
 	return new RegisterWidget(fieldName, spName, fieldEmail, spEmail, fieldPsw, spanPsw, fieldPswConfirm, spPswConfirm, btnRegister, onSuccess, onError, captcha);

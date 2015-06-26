@@ -107,7 +107,7 @@ function generateReplyEditor(par, activity, comment){
     }).appendTo(ret);
     var btnSubmit = $('<button>',{
         text: TITLES["submit_comment_reply"],
-        "class": "comment-submit purple"
+        "class": "comment-submit positive-button"
     }).appendTo(ret);
 
     btnSubmit.click(input, function(evt) {
@@ -241,7 +241,7 @@ function generateCommentCell(par, commentJson, activity, single){
 
         var btnReply = $('<button>',{
             text: TITLES["reply"],
-            "class": "purple comment-reply"
+            "class": "comment-reply positive-button"
         }).appendTo(operations);
 
         btnReply.click(ret, function(evt){
@@ -309,7 +309,7 @@ function generateSubCommentCell(par, commentJson, activity){
 
 	var btnReply = $('<button>',{
 		text: TITLES["reply"],
-		"class": "purple comment-reply"
+		"class": "comment-reply positive-button"
 	}).appendTo(operations);
 
 	btnReply.click(ret, function(evt){
@@ -329,7 +329,7 @@ function generateCommentEditor(par, activity){
     }).appendTo(editor);
     var btnSubmit = $('<button>',{
         text: TITLES["submit_comment_question"],
-    	"class": "purple"
+    	"class": "positive-button"
     }).appendTo(editor);
 
     var inputCounter = new WordCounter("", 5, 128, g_commentContentPattern, ALERTS["comment_requirement"]);

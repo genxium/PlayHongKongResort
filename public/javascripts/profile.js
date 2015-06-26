@@ -175,7 +175,7 @@ function ProfileEditor() {
 
 		this.btnEdit = $("<button>", {
 			text: TITLES["edit"],
-			"class": "btn-edit purple" 
+			"class": "btn-edit positive-button" 
 		}).click(this, function(evt) {
 			var editor = evt.data;
 			editor.mode = editor.EDITING;
@@ -195,7 +195,7 @@ function ProfileEditor() {
 
 		this.btnSave = $("<button>", {
 			text: TITLES["save"],	
-			"class": "btn-save purple"
+			"class": "btn-save positive-button"
 		}).click(this, function(evt) {
 			evt.preventDefault();
 			var editor = evt.data;	
