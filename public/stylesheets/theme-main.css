@@ -1,0 +1,21 @@
+.positive-button {
+  color: white;
+  background-color: orange;
+}
+.positive-button:hover {
+  background-color: gold;
+}
+.negative-button {
+  color: black;
+  background-color: gray;
+}
+.negative-button:hover {
+  background-color: azure;
+}
+.caution-button {
+  color: white;
+  background-color: hotpink;
+}
+.caution-button:hover {
+  background-color: indianred;
+}

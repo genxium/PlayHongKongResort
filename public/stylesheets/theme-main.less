@@ -1,0 +1,39 @@
+@main-font-color: black;
+@main-background: white;
+
+@positive-button-font-color: white;
+@positive-button-background: orange;
+@positive-button-background-hover: gold;
+
+@negative-button-font-color: black;
+@negative-button-background: gray;
+@negative-button-background-hover: azure;
+
+@caution-button-font-color: white;
+@caution-button-background: hotpink;
+@caution-button-background-hover: indianred;
+
+.positive-button {
+	color: @positive-button-font-color;
+	background-color: @positive-button-background;
+	&:hover {
+		background-color: @positive-button-background-hover; 
+	}
+}
+
+
+.negative-button {
+	color: @negative-button-font-color;
+	background-color: @negative-button-background;
+	&:hover {
+		background-color: @negative-button-background-hover; 
+	}
+}
+
+.caution-button {
+	color: @caution-button-font-color;
+	background-color: @caution-button-background;
+	&:hover {
+		background-color: @caution-button-background-hover; 
+	}
+}

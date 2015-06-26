@@ -51,6 +51,17 @@ cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.j
 cat $USER/password_reset.js >> $TARGET
 java -jar yuicompressor-2.4.8.jar -o '.js$:.js' $TARGET 
 
+# LESS
+ALL_LESS_FILES=$(find ./public/stylesheets -name "*.less" -type f)
+LESS_FILE_RE='(.*)\.less'
+for LESS_FILE in $ALL_LESS_FILES
+do
+	CSS_FILE="$(echo $LESS_FILE | sed 's/\(.*\)\.less/\1\.css/g')" # beware of the escaping  
+	echo "$CSS_FILE > $LESS_FILE"
+	lessc $LESS_FILE > $CSS_FILE
+done
+
+
 # CSS
 CSS_PREFIX="./public/stylesheets"
 TARGET_CSS=$CSS_PREFIX/home.min.css

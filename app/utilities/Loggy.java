@@ -11,7 +11,7 @@ public class Loggy {
         if (e == null || e.getMessage() == null) return;
         StringWriter stktraces = new StringWriter();
         e.printStackTrace(new PrintWriter(stktraces));
-        Logger.error(stktraces.toString());
+        Logger.error(tag + "." + method + ",\n" + stktraces.toString());
     }
 
     public static void e(String tag, String method, String message) {

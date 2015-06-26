@@ -5,12 +5,6 @@
 var g_deleteConfirmation = null;
 var g_activityEditor = null;
 
-// button keys
-var g_classBtnSubmit = "btn-submit purple"
-var g_classBtnDelete = "btn-delete gray";
-var g_classBtnSave = "btn-save purple";
-var g_classBtnCancel = "btn-cancel gray";
-
 // DOM indexes for cascaded DOM element search
 var g_indexOldImage = "old_image";
 var g_indexNewImage = "new_image";
@@ -204,13 +198,13 @@ function ActivityEditor() {
 
 		/* Associated Buttons */
 		this.btnSave = $('<button>',{
-			"class": g_classBtnSave,
+			"class": "btn-save",
 			text: TITLES["save"]
 		}).appendTo(buttons);
 		this.btnSave.click(onSave);
 
 		this.btnSubmit = $('<button>',{
-			"class": g_classBtnSubmit,
+			"class": "btn-submit",
 			text: TITLES["submit"]
 		}).appendTo(buttons);
 		var dSubmit = {};
@@ -218,7 +212,7 @@ function ActivityEditor() {
 		this.btnSubmit.click(dSubmit, onSubmit);
 
 		this.btnCancel = $('<button>',{
-			"class": g_classBtnCancel,
+			"class": "btn-cancel",
 			text: TITLES["cancel"]
 		}).appendTo(buttons);
 		this.btnCancel.click(onCancel);
@@ -226,7 +220,7 @@ function ActivityEditor() {
 		this.btnDelete = null;
 		if(!isNewActivity){
 			this.btnDelete = $('<button>',{
-				"class": g_classBtnDelete,
+				"class": "btn-delete gray",
 				text: TITLES["delete"]
 			}).appendTo(buttons);
 			this.btnDelete.click(function(evt) {
