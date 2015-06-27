@@ -2,6 +2,13 @@
 @main-background: white;
 @main-border-color: gray;
 
+@topbar-title-background: orange;
+@topbar-title-font-color: white;
+@topbar-title-background-hover: gold;
+@topbar-title-font-color-hover: white;
+
+@content-background: white;
+
 @button-border-color: transparent;
 
 @plain-button-font-color: black;
@@ -24,7 +31,7 @@
 @hyperlink-font-color: black;
 @hyperlink-font-color-hover: darkcyan;
 
-@header-background: darkcyan; 
+@header-background: coinsilk; 
 
 @disabled-button-font-color: #eee;
 @disabled-button-background: white;
@@ -36,13 +43,34 @@
 @underline-button-font-color-hover: gold;
 
 @faketext-button-font-color: white;
-@faketext-button-background: #3ba8c2;
+@faketext-button-background: transparent;
 @faketext-button-font-color-hover: gold;
+@faketext-button-background-hover: transparent;
 
 @bubble-font-color: white;
 @bubble-background: indianred; 
 
 @prioritized-row-background: LemonChiffon;  
+
+@patch-block-alpha-font-color: black;
+@patch-block-alpha-font-color-hover: black;
+@patch-block-alpha-background: darkorange;
+@patch-block-alpha-background-hover: orange;
+
+@patch-block-beta-font-color: white;
+@patch-block-beta-font-color-hover: white;
+@patch-block-beta-background: #3babc2;
+@patch-block-beta-background-hover: #3babc2;
+
+@patch-block-gamma-font-color: black;
+@patch-block-gamma-font-color-hover: white;
+@patch-block-gamma-background: transparent;
+@patch-block-gamma-background-hover: transparent;
+
+@patch-block-delta-font-color: gray;
+@patch-block-delta-font-color-hover: white;
+@patch-block-delta-background: transparent;
+@patch-block-delta-background-hover: transparent;
 
 button {
 	cursor: pointer;
@@ -112,7 +140,7 @@ button {
 	background-color: @faketext-button-background;
 	&:hover {
 		color: @faketext-button-font-color-hover;
-		background-color: @faketext-button-background;
+		background-color: @faketext-button-background-hover;
 	}
 }
 
@@ -165,11 +193,35 @@ input, textarea {
 	background-color: @header-background;
 }
 
+#topbar {
+	margin: 0 auto;
+	width: 100%;
+	max-width: 1024px;
+	height: 100px;
+}
+
+#topbar-title {
+	width: 320px;
+	height: 100%;
+	color: @topbar-title-font-color;
+	background-color: @topbar-title-background;
+	font-size: 45px;
+	font-weight: bold;
+	&:hover {
+		cursor: pointer;
+		color: @topbar-title-font-color-hover;
+		background-color: @topbar-title-background-hover;
+	}
+	p {
+		padding: 18px 15px;
+	}
+}
+
 #content {
 	margin: 0 auto;
 	max-width: 1024px;
 	min-height: 500px;
-	background-color: @main-background;
+	background-color: @content-background;
 	padding-bottom: 30px;
 }
 
@@ -183,4 +235,40 @@ input, textarea {
 	background-color: @bubble-background;
 	text-align: center;
 	border-radius: 10px;
+}
+
+.patch-block-alpha {
+	color: @patch-block-alpha-font-color;
+	background-color: @patch-block-alpha-background;
+	&:hover {
+		color: @patch-block-alpha-font-color-hover;
+		background-color: @patch-block-alpha-background-hover;
+	}	
+}
+
+.patch-block-beta {
+	color: @patch-block-beta-font-color;
+	background-color: @patch-block-beta-background;
+	&:hover {
+		color: @patch-block-beta-font-color-hover;
+		background-color: @patch-block-beta-background-hover;
+	}	
+}
+
+.patch-block-gamma {
+	color: @patch-block-gamma-font-color;
+	background-color: @patch-block-gamma-background;
+	&:hover {
+		color: @patch-block-gamma-font-color-hover;
+		background-color: @patch-block-gamma-background-hover;
+	}	
+}
+
+.patch-block-delta {
+	color: @patch-block-delta-font-color;
+	background-color: @patch-block-delta-background;
+	&:hover {
+		color: @patch-block-delta-font-color-hover;
+		background-color: @patch-block-delta-background-hover;
+	}	
 }

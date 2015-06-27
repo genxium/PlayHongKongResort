@@ -59,11 +59,11 @@ button {
 }
 .faketext-button {
   color: white;
-  background-color: #3ba8c2;
+  background-color: transparent;
 }
 .faketext-button:hover {
   color: gold;
-  background-color: #3ba8c2;
+  background-color: transparent;
 }
 .prioritized-row {
   background-color: LemonChiffon;
@@ -110,7 +110,29 @@ textarea {
   padding: 5px;
 }
 #header {
-  background-color: darkcyan;
+  background-color: coinsilk;
+}
+#topbar {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1024px;
+  height: 100px;
+}
+#topbar-title {
+  width: 320px;
+  height: 100%;
+  color: white;
+  background-color: orange;
+  font-size: 45px;
+  font-weight: bold;
+}
+#topbar-title:hover {
+  cursor: pointer;
+  color: white;
+  background-color: gold;
+}
+#topbar-title p {
+  padding: 18px 15px;
 }
 #content {
   margin: 0 auto;
@@ -129,4 +151,36 @@ textarea {
   background-color: indianred;
   text-align: center;
   border-radius: 10px;
+}
+.patch-block-alpha {
+  color: black;
+  background-color: darkorange;
+}
+.patch-block-alpha:hover {
+  color: black;
+  background-color: orange;
+}
+.patch-block-beta {
+  color: white;
+  background-color: #3babc2;
+}
+.patch-block-beta:hover {
+  color: white;
+  background-color: #3babc2;
+}
+.patch-block-gamma {
+  color: black;
+  background-color: transparent;
+}
+.patch-block-gamma:hover {
+  color: white;
+  background-color: transparent;
+}
+.patch-block-delta {
+  color: gray;
+  background-color: transparent;
+}
+.patch-block-delta:hover {
+  color: white;
+  background-color: transparent;
 }

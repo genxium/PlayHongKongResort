@@ -147,3 +147,6 @@ var g_errActivitySelectedLimit = 3009;
 var g_errActivityCreationLimit = 3010;
 
 var g_errCaptcha = 4001;
+
+/* theme selection */
+var g_theme = "main";

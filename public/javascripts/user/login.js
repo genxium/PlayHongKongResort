@@ -238,7 +238,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 		"class": "user-box clearfix"
 	}).appendTo(par);
 	var avatarContainer = $("<div>", {
-		"class": "post-login-avatar left"
+		"class": "post-login-avatar left patch-block-alpha"
 	}).appendTo(userBox);
 	var avatarImage = $("<img>", {
 		src: g_loggedInUser.avatar
@@ -250,7 +250,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	avatarContainer.click(profileReact);
 	
 	var userBoxLeft = $("<div>", {
-		"class": "user-box-left left clearfix"
+		"class": "user-box-left left clearfix patch-block-gamma"
 	}).appendTo(userBox);
 	var leftFirstRow = $("<div>", {
 		"class": "left-first-row clearfix"
@@ -266,14 +266,14 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	}); 
 
 	var spBubble = $("<span>", {
-		"class": ".bubble",
+		"class": "bubble",
 		text: "0"
 	}).appendTo(noti);
 	var bubble = new NotiBubble(0, spBubble);
 	bubble.update(g_loggedInUser.unreadCount);
 
 	var userName = $("<div>", {
-		"class": "username left",
+		"class": "username left patch-block-delta",
 		html: g_loggedInUser.name
 	}).appendTo(leftFirstRow);
 

@@ -15,9 +15,9 @@ import java.util.Properties;
 
 public class Application extends Controller {
 
-	public static Result index(Integer dev) {
+	public static Result index(Integer dev, String theme) {
 		try {
-			Content html = views.html.homepage.render(dev);
+			Content html = views.html.homepage.render(dev, theme);
 			return ok(html);
 		} catch (Exception e) {
 

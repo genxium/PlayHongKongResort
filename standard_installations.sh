@@ -1,3 +1,6 @@
+# install epel repo
+yum install epel-release
+
 # install npm
 yum install npm
 

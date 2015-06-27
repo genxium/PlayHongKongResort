@@ -3,7 +3,7 @@
 # ~~~~
 
 # Global
-GET	 /	controllers.Application.index(dev: Integer ?=0)
+GET	 /	controllers.Application.index(dev: Integer ?=0, theme: String ?="main")
 GET	 /admin	controllers.Application.admin()
 GET	/wstest controllers.Application.wstest()
 

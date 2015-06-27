@@ -511,8 +511,8 @@ function createDropdownMenu(par, id, menuTitle, icons, actionNames, titles, reac
 	}).appendTo(container); 
 	var lis = [];
 	for (var i = 0; i < titles.length; i++) {
-		var li = $("<li class='action-"+actionNames[i]+"'>").appendTo(ul);
-		var action = $("<a tabindex='-1' href='#' title='"+titles[i]+"'>").appendTo(li);
+		var li = $("<li class='action-" + actionNames[i] + " patch-block-gamma'>").appendTo(ul);
+		var action = $("<a class='patch-block-gamma' tabindex='-1' href='#' title='"+titles[i]+"'>").appendTo(li);
 		//action.css("font-size", "15pt");
 		//action.css("display", "block"); // increase the size of the link target, ref: http://css-tricks.com/keep-margins-out-of-link-lists/
 		//action.css("padding", "5px");
