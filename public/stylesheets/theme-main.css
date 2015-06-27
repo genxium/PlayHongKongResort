@@ -1,3 +1,7 @@
+.theme-element {
+  color: white;
+  background-color: orange;
+}
 button {
   cursor: pointer;
   padding: 0;
@@ -110,7 +114,7 @@ textarea {
   padding: 5px;
 }
 #header {
-  background-color: coinsilk;
+  background-color: yellow;
 }
 #topbar {
   margin: 0 auto;
@@ -162,11 +166,11 @@ textarea {
 }
 .patch-block-beta {
   color: white;
-  background-color: #3babc2;
+  background-color: darkorange;
 }
 .patch-block-beta:hover {
   color: white;
-  background-color: #3babc2;
+  background-color: darkorange;
 }
 .patch-block-gamma {
   color: black;
