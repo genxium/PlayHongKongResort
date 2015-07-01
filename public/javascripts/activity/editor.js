@@ -132,7 +132,7 @@ function ActivityEditor() {
 		this.imageSelectors = new Array();
 
 		var newImagesRow = $("<div>", {
-			"class": "image-row new clearfix patch-block-epsilon"
+			"class": "image-row new clearfix"
 		});
 
 		if(activity != null && activity.images != null)	generateOldImagesRow(form, this, activity);
@@ -571,7 +571,7 @@ function previewImage(par, editor) {
 
 			var btnDelete = $("<button>", {
 				text: TITLES["delete"],
-				"class": "purple image-delete"
+				"class": "image-delete positive-button"
 			}).appendTo(node);
 			
 			editor.explorerTrigger.shift(+1, g_wImageCell);
@@ -621,6 +621,8 @@ function onDelete(evt){
 				return;	
 			}
 			g_activityEditor.hide();
+			if (g_onActivitySaveSuccess == null) return;
+			g_onActivitySaveSuccess();
 		},
 		error: function(xhr, status, err){
 			enableField(aButton);
@@ -639,7 +641,7 @@ function onCancel(evt){
 // Generators
 function generateOldImagesRow(par, editor, activity) {
 	var oldImagesRow = $("<div>", {
-		"class": "image-row old clearfix patch-block-epsilon"
+		"class": "image-row old clearfix"
 	}).appendTo(par);
 
 	var countOldImages = Object.keys(activity.images).length;
@@ -692,17 +694,17 @@ function generateDeleteConfirmation(par, activity) {
 	
 	var title = $("<p>", {
 		text: MESSAGES["delete_activity_confirmation"],
-		style: "font-size: 18pt;"
+		"class": "delete-confirmation-question"
 	}).appendTo(ret);
 
 	var buttons = $("<p>").appendTo(ret);
 	var btnYes = $("<button>", {
 		text: TITLES["yes"],
-		style: "font-size: 16pt; background-color: cornflowerblue; color: white; margin-right: 10pt;"
+		"class": "delete-confirmation-button negative-button"
 	}).appendTo(buttons);
 	var btnNo = $("<button>", {
 		text: TITLES["no"],
-		style: "font-size: 16pt; background-color: crimson; color: white; margin-left: 10pt;"
+		"class": "delete-confirmation-button positive-button"
 	}).appendTo(buttons);
 	
 	return new DeleteConfirmation(ret, activity, btnYes, btnNo);

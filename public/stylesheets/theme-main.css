@@ -7,14 +7,20 @@ button {
   padding: 0;
   border-color: transparent;
 }
+.plain-input {
+  color: black;
+  background-color: transparent;
+}
 .plain-button {
   color: black;
   background-color: white;
-  border: solid 1px gray;
 }
 .plain-button:hover {
   color: white;
   background-color: orange;
+}
+.pager-button {
+  border: solid 1px gray;
 }
 .disabled-button {
   background-color: white;
@@ -187,14 +193,6 @@ textarea {
 .patch-block-delta:hover {
   color: white;
   background-color: transparent;
-}
-.patch-block-epsilon {
-  color: black;
-  background-color: transparent;
-}
-.patch-block-epsilon:hover {
-  color: #e2e185;
-  background-color: cadetblue;
 }
 .title-alpha {
   color: #3090a6;

@@ -135,7 +135,7 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 		"class": "login-row1 clearfix"
 	}).appendTo(container);
 	var inputs = $('<div>', {
-		"class": "login-inputs left"
+		"class": "login-inputs left plain-input"
 	}).appendTo(row1);
 	var handle = $('<input>', {
 		placeHolder: HINTS["email"],

@@ -12,6 +12,9 @@
 
 @content-background: white;
 
+@plain-input-font-color: black;
+@plain-input-background: transparent;
+
 @button-border-color: transparent;
 
 @plain-button-font-color: black;
@@ -75,11 +78,6 @@
 @patch-block-delta-background: transparent;
 @patch-block-delta-background-hover: transparent;
 
-@patch-block-epsilon-font-color: black;
-@patch-block-epsilon-font-color-hover: #e2e185;
-@patch-block-epsilon-background: transparent;
-@patch-block-epsilon-background-hover: cadetblue;
-
 @title-alpha-font-color: #3090a6;
 @title-beta-font-color: #e21e61;
 @title-gamma-font-color: #888;
@@ -104,14 +102,22 @@ button {
 	border-color: @button-border-color;
 }
 
+.plain-input {
+	color: @plain-input-font-color;
+	background-color: @plain-input-background;
+}
+
 .plain-button {
 	color: @plain-button-font-color;
 	background-color: @plain-button-background;
-	border: solid 1px @main-border-color;
 	&:hover {
 		color: @plain-button-font-color-hover;
 		background-color: @plain-button-background-hover; 
 	}
+}
+
+.pager-button {
+	border: solid 1px @main-border-color;
 }
 
 .disabled-button {
@@ -296,15 +302,6 @@ input, textarea {
 	&:hover {
 		color: @patch-block-delta-font-color-hover;
 		background-color: @patch-block-delta-background-hover;
-	}	
-}
-
-.patch-block-epsilon {
-	color: @patch-block-epsilon-font-color;
-	background-color: @patch-block-epsilon-background;
-	&:hover {
-		color: @patch-block-epsilon-font-color-hover;
-		background-color: @patch-block-epsilon-background-hover;
 	}	
 }
 
