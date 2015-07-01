@@ -71,7 +71,7 @@ function displayActivityDetail(par){
 
 	var address = $("<div>", {
 		text: g_activity.address,
-		"class": "activity-address"	
+		"class": "activity-addr-detail title-beta"	
 	}).appendTo(ret);
 
 	if(g_activity.host.id != null && g_activity.host.name != null){

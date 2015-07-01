@@ -114,7 +114,7 @@ textarea {
   padding: 5px;
 }
 #header {
-  background-color: yellow;
+  background-color: BurlyWood;
 }
 #topbar {
   margin: 0 auto;
@@ -187,4 +187,33 @@ textarea {
 .patch-block-delta:hover {
   color: white;
   background-color: transparent;
+}
+.patch-block-epsilon {
+  color: black;
+  background-color: transparent;
+}
+.patch-block-epsilon:hover {
+  color: #e2e185;
+  background-color: cadetblue;
+}
+.title-alpha {
+  color: #3090a6;
+}
+.title-beta {
+  color: #e21e61;
+}
+.title-gamma {
+  color: #888888;
+}
+.label-active-alpha {
+  color: white;
+  background-color: darkslateblue;
+}
+.label-active-beta {
+  color: white;
+  background-color: darkslateblue;
+}
+.label-disabled {
+  color: #888888;
+  background-color: #eeeeee;
 }

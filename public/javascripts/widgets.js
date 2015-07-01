@@ -339,10 +339,8 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 			});
 			
 			if (index != page) continue;
-			indicator.off("mouseenter mouseleave"); // unbind hovering
-			//indicator.css("background-color", "blue");
-			//indicator.css("font-weight", "bold");
-			indicator.addClass("active");
+			indicator.off("mouseenter mouseleave");
+			indicator.addClass("active-button");
 		}	
 	};	
 

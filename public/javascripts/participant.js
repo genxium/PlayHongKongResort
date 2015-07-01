@@ -50,7 +50,7 @@ function generateParticipantsSelectionForm(par, activity) {
 		}).appendTo(label);
 
 		var text = $("<plaintext>", {
-			"class": "participant-label-name selected-participant",
+			"class": "participant-label-name selected-participant title-beta",
 			text: participant.name	
 		}).appendTo(label);
 	}
@@ -150,7 +150,7 @@ function generateParticipantsSelectionForm(par, activity) {
 					var box = aForm.boxes[i];
 					if (isHidden(box) || !isChecked(box)) continue;
 					label.removeClass("applied-participant");
-					label.addClass("selected-participant");
+					label.addClass("selected-participant title-beta");
 					box.hide();
 					aForm.statusList[i] = g_aliasSelected;
 				}

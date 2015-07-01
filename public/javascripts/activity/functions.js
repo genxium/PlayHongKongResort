@@ -111,14 +111,14 @@ function displayTimesTable(par, activity) {
 	}).appendTo(par);
 	var deadlineTitle = $("<div>", {
 		text: TITLES["deadline"],
-		"class": "time-label left"
+		"class": "time-label left label-active-alpha"
 	}).appendTo(deadlineRow);
 	var deadline = $("<div>", {
 		text: gmtMiilisecToLocalYmdhis(activity.applicationDeadline),
 		"class": "time-detail left"
 	}).appendTo(deadlineRow);
 	if (activity.isDeadlineExpired()) {
-		deadlineRow.addClass("expired");
+		deadlineTitle.addClass("label-disabled");
 	}
 
 	var beginTimeRow = $("<div>", {
@@ -126,7 +126,7 @@ function displayTimesTable(par, activity) {
 	}).appendTo(par);
 	var beginTimeTitle = $("<div>", {
 		text: TITLES["begin_time"],
-		"class": "time-label left"
+		"class": "time-label left label-active-beta"
 	}).appendTo(beginTimeRow);
 	var beginTime = $("<div>", {
 		text: gmtMiilisecToLocalYmdhis(activity.beginTime),
@@ -134,7 +134,7 @@ function displayTimesTable(par, activity) {
 	}).appendTo(beginTimeRow);
 
 	if (activity.hasBegun()) {
-		beginTimeRow.addClass("expired");
+		beginTimeTitle.addClass("label-disabled");
 	} 
 }
 
@@ -308,12 +308,12 @@ function generateActivityCell(par, activity){
 		"class": "activity-info left"
 	}).appendTo(ret);
 	var title = $("<p>", {
-		"class": "activity-title truncate",
+		"class": "activity-title truncate title-alpha",
 		text: activity.title
 	}).appendTo(middle);
 	
 	var addr = $("<p>", {
-		"class": "activity-addr truncate",
+		"class": "activity-addr truncate title-beta",
 		text: activity.address
 	}).appendTo(middle);
 

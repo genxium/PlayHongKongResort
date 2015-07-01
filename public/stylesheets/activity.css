@@ -30,21 +30,18 @@
 }
 .activity-title {
   font-size: 36px;
-  color: #3090a6;
   font-weight: bold;
   width: 100%;
   white-space: nowrap;
 }
-.activity-address {
+.activity-addr-detail {
   font-size: 24px;
-  color: indianred;
   font-weight: bold;
   width: 100%;
   white-space: nowrap;
 }
 .activity-addr {
   font-size: 18px;
-  color: #e21e61;
   width: 100%;
   white-space: nowrap;
 }
@@ -58,17 +55,10 @@
 }
 .time-label {
   width: 140px;
-  background-color: #a7db5a;
-  color: #002b9b;
+  padding: 2px;
 }
 .time-detail {
   margin-left: 5px;
-}
-.time-table.expired .time-label {
-  background-color: #eee;
-}
-.time-table.expired div {
-  color: #888;
 }
 .activity-attend li {
   width: 140px;
@@ -170,7 +160,6 @@
   height: 240px;
   text-align: center;
   vertical-align: middle;
-  background-color: #666;
   margin-right: 5px;
   margin-top: 5px;
 }
@@ -201,7 +190,6 @@
 }
 .selected-participant {
   font-weight: bold;
-  color: #e21e61;
 }
 .participant-label {
   padding: 2px;

@@ -132,7 +132,7 @@ function ActivityEditor() {
 		this.imageSelectors = new Array();
 
 		var newImagesRow = $("<div>", {
-			"class": "image-row new clearfix"
+			"class": "image-row new clearfix patch-block-epsilon"
 		});
 
 		if(activity != null && activity.images != null)	generateOldImagesRow(form, this, activity);
@@ -639,7 +639,7 @@ function onCancel(evt){
 // Generators
 function generateOldImagesRow(par, editor, activity) {
 	var oldImagesRow = $("<div>", {
-		"class": "image-row old clearfix"
+		"class": "image-row old clearfix patch-block-epsilon"
 	}).appendTo(par);
 
 	var countOldImages = Object.keys(activity.images).length;
