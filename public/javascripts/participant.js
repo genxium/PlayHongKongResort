@@ -16,8 +16,8 @@ function generateParticipantsSelectionForm(par, activity) {
 		"class": "participant-form"
 	}).appendTo(par);
 
-	var currentGmTMillis = currentMillis();
-	var editable = (g_loggedInUser != null && g_loggedInUser.id == activity.host.id && currentGmTMillis < activity.beginTime);
+	var currentGmtMillis = currentMillis();
+	var editable = (g_loggedInUser != null && g_loggedInUser.id == activity.host.id && currentGmtMillis < activity.beginTime);
 
 	var labels = new Array();
 	var boxes = new Array();

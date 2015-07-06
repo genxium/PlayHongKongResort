@@ -178,7 +178,7 @@ public class DBCommander {
 	    return null;
     }
 
-    public static List<Activity> queryActivities(final Integer page_st, final Integer page_ed, final String orderKey, final String orientation, final Integer numItems, final Long vieweeId, final List<Integer> maskedRelationList) {
+    public static List<Activity> queryActivities(final Integer pageSt, final Integer pageEd, final String orderKey, final String orientation, final Integer numItems, final Long vieweeId, final List<Integer> maskedRelationList) {
 	    List<Activity> ret = new ArrayList<>();
 	    try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -192,7 +192,7 @@ public class DBCommander {
                                                     .from(Activity.TABLE)
                                                     .join(UserActivityRelation.TABLE, onCols, onOps, onVals)
                                                     .order(orderKey, orientation)
-                                                    .limit((page_st - 1) * numItems, page_ed * numItems).execSelect();
+                                                    .limit((pageSt - 1) * numItems, pageEd * numItems).execSelect();
 		    if (activityJsonList == null) return null;
 
 		    for (JSONObject activityJson : activityJsonList) {
@@ -207,7 +207,7 @@ public class DBCommander {
 	    return ret;
     }
 
-    public static List<Activity> queryActivities(final Integer page_st, final Integer page_ed, final String orderKey, final String orientation, final Integer numItems, final int status, final int offset) {
+    public static List<Activity> queryActivities(final Integer pageSt, final Integer pageEd, final String orderKey, final String orientation, final Integer numItems, final int status, final int offset) {
         List<Activity> ret = new ArrayList<>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -217,7 +217,7 @@ public class DBCommander {
                     .order(orderKey, orientation)
                     .where(Activity.STATUS, "=", status)
 					.where(Activity.PRIORITY, "=", 0)
-                    .limit((page_st - 1) * numItems + offset, page_ed * numItems + offset);
+                    .limit((pageSt - 1) * numItems + offset, pageEd * numItems + offset);
 			if (status == Activity.PENDING) {
 				// ONLY admin queries should be accessing this closure	
 				builder.where(Activity.DEADLINE, ">", General.millisec());
@@ -236,7 +236,7 @@ public class DBCommander {
         return ret;
     }
 
-    public static List<Activity> queryHostedActivities(final Long hostId, final Long viewerId, final Integer page_st, final Integer page_ed, final String orderKey, final String orientation, final Integer numItems){
+    public static List<Activity> queryHostedActivities(final Long hostId, final Long viewerId, final Integer pageSt, final Integer pageEd, final String orderKey, final String orientation, final Integer numItems){
         List<Activity> ret = new ArrayList<>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -245,7 +245,7 @@ public class DBCommander {
                     .from(Activity.TABLE)
                     .order(orderKey, orientation)
                     .where(Activity.HOST_ID, "=", hostId)
-                    .limit((page_st - 1) * numItems, page_ed * numItems);
+                    .limit((pageSt - 1) * numItems, pageEd * numItems);
 
             if(viewerId == null || !hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
 
@@ -348,7 +348,7 @@ public class DBCommander {
 	    return null;
     }
 
-    public static List<Comment> queryTopLevelComments(Long activityId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
+    public static List<Comment> queryTopLevelComments(Long activityId, Integer pageSt, Integer pageEd, String orderKey, String orientation, Integer numItems) {
         List<Comment> ret = new ArrayList<>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -363,7 +363,7 @@ public class DBCommander {
                     .from(Comment.TABLE)
                     .where(whereCols, whereOps, whereVals)
 					.order(orderKey, orientation)
-                    .limit((page_st - 1) * numItems, page_ed * numItems);
+                    .limit((pageSt - 1) * numItems, pageEd * numItems);
 
             List<JSONObject> commentJsonList = builder.execSelect();
 
@@ -396,7 +396,7 @@ public class DBCommander {
 	    return ret;
     }
 
-    public static List<Comment> querySubComments(Long parentId, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
+    public static List<Comment> querySubComments(Long parentId, Integer pageSt, Integer pageEd, String orderKey, String orientation, Integer numItems) {
         List<Comment> ret = new ArrayList<>();
 	try {
 		EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -406,7 +406,7 @@ public class DBCommander {
 			.from(Comment.TABLE)
 			.where(Comment.PARENT_ID, "=", parentId)
 			.order(orderKey, orientation)
-			.limit((page_st - 1) * numItems, page_ed * numItems);
+			.limit((pageSt - 1) * numItems, pageEd * numItems);
 
 		List<JSONObject> commentJsonList = builder.execSelect();
 
@@ -494,7 +494,7 @@ public class DBCommander {
 	    }
     }
 
-    public static List<Notification> queryNotifications(Long to, Integer isRead, Integer page_st, Integer page_ed, String orderKey, String orientation, Integer numItems) {
+    public static List<Notification> queryNotifications(Long to, Integer isRead, Integer pageSt, Integer pageEd, String orderKey, String orientation, Integer numItems) {
 	    List<Notification> ret = new ArrayList<>();
 
 	    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -504,7 +504,7 @@ public class DBCommander {
 		    .from(Notification.TABLE)
 		    .where(Notification.TO, "=", to)
 		    .order(orderKey, orientation)
-		    .limit((page_st - 1) * numItems, page_ed * numItems);
+		    .limit((pageSt - 1) * numItems, pageEd * numItems);
 
 	    if (isRead != null) builder.where(Notification.IS_READ, "=", isRead);
 

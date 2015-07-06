@@ -49,7 +49,7 @@ public class NotificationController extends Controller {
 		return badRequest();
 	}
 	
-	public static Result list(Integer page_st, Integer page_ed, Integer numItems, Integer orientation, String token, Integer isRead) {
+	public static Result list(Integer pageSt, Integer pageEd, Integer numItems, Integer orientation, String token, Integer isRead) {
 		try {
 			// anti-cracking by param order
 			if (orientation == null)  throw new NullPointerException();
@@ -61,13 +61,13 @@ public class NotificationController extends Controller {
 			Long to = DBCommander.queryUserId(token);
 
 			List<Notification> notifications = null;
-			notifications = DBCommander.queryNotifications(to, isRead, page_st, page_ed, Notification.ID, orientationStr, numItems);
+			notifications = DBCommander.queryNotifications(to, isRead, pageSt, pageEd, Notification.ID, orientationStr, numItems);
 
 			if (notifications == null) throw new NullPointerException();
 			ObjectNode result = Json.newObject();
 			result.put(Notification.COUNT, notifications.size());
-			result.put(Notification.PAGE_ST, page_st);
-			result.put(Notification.PAGE_ED, page_ed);
+			result.put(Notification.PAGE_ST, pageSt);
+			result.put(Notification.PAGE_ED, pageEd);
 
 			ArrayNode notificationArrayNode = new ArrayNode(JsonNodeFactory.instance);
 			for (Notification notification : notifications) {
