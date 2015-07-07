@@ -190,6 +190,7 @@ function generateCommentCell(par, commentJson, activity, single){
 		"class": "comment-from left"
 	}).appendTo(row);
 	var hrefFromName = $('<a>', {
+		"class": "patch-block-lambda",
 		href: "#",
 		text: comment.fromUser.name,
 		target: "_blank"
@@ -206,7 +207,7 @@ function generateCommentCell(par, commentJson, activity, single){
 
 	if (!single && comment.numChildren > 3) {
 		var spanView = $("<div>", {
-			"class": "comment-view left"
+			"class": "comment-view left patch-block-lambda"
 		}).appendTo(row);
 		var viewAll = $("<a>", {
 			text: TITLES["view_all_replies"].format(comment.numChildren)
@@ -268,6 +269,7 @@ function generateSubCommentCell(par, commentJson, activity){
 		"class": "comment-to left"
 	}).appendTo(row);
 	var hrefTo = $('<a>', {
+		"class": "patch-block-lambda",
 		href: "#",
 		text: TITLES["replied_to"].format(comment.toUser.name),
 		target: "_blank",
@@ -286,6 +288,7 @@ function generateSubCommentCell(par, commentJson, activity){
 		"class": "comment-from left"
 	}).appendTo(row);
 	var hrefFromName = $('<a>', {
+		"class": "patch-block-lambda",
 		href: "#",
 		text: comment.fromUser.name,
 		target: "_blank"

@@ -76,6 +76,11 @@
 	max-height: 35px;
 	overflow: hidden;
 }
+
+.username:hover {
+	cursor: default;
+}
+
 .menu-action-row {
 	margin-top: 5px;
 }

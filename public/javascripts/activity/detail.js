@@ -66,7 +66,7 @@ function displayActivityDetail(par){
 
 	var title = $("<div>", {
 		text: g_activity.title,
-		"class": "activity-title"
+		"class": "activity-title title-delta"
 	}).appendTo(ret);
 
 	var address = $("<div>", {
@@ -78,7 +78,7 @@ function displayActivityDetail(par){
 			var host = $('<a>', {
 					href: "#", 
 					text: TITLES["by_host"].format(g_activity.host.name),
-					"class": "activity-host"
+					"class": "activity-host patch-block-lambda"
 			}).appendTo(ret);
 			host.click(function(evt){
 				evt.preventDefault();
@@ -90,7 +90,7 @@ function displayActivityDetail(par){
 
 	var content = $("<div>",{
 		text: g_activity.content,
-		"class": "activity-content"
+		"class": "activity-content title-lambda"
 	}).appendTo(ret);
 
 	if(g_activity.images != null) {
@@ -125,7 +125,7 @@ function displayActivityDetail(par){
 
 	if (g_activity.hasBegun()) {
 		$("<p>", {
-			"class": "comment-not-permitted",
+			"class": "comment-not-permitted .warning",
 			text: MESSAGES["comment_disabled_activity_has_begun"]
 		}).appendTo(ret);
 		return ret;
@@ -134,7 +134,7 @@ function displayActivityDetail(par){
 	if (g_activity.status != null && g_activity.status != undefined && g_activity.status != g_statusAccepted) {
 		// for host viewing unaccepted activity
 		$("<p>", {
-			"class": "comment-not-permitted",
+			"class": "comment-not-permitted .warning",
 			text: MESSAGES["comment_disabled_activity_not_accepted"]
 		}).appendTo(ret);
 		return ret;
@@ -192,7 +192,7 @@ function requestActivityDetail(activityId) {
 	}).appendTo(tabCommentContent);
 	var btnBack = $("<button>", {
 		text: "< BACK",
-		"class": "purple back-button"
+		"class": "back-button patch-block-lambda"
 	}).appendTo(subCommentsContainer);
 	// note that the back button in sub-comments' container takes both pagers as input
 	btnBack.click(function(evt) {

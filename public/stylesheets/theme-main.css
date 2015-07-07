@@ -91,14 +91,12 @@ body {
   outline: none;
 }
 a {
-  color: black;
   text-decoration: none;
   cursor: pointer;
   outline: none;
 }
 a:hover,
 a:active {
-  color: darkcyan;
   text-decoration: none;
   outline: none;
 }
@@ -194,6 +192,14 @@ textarea {
   color: white;
   background-color: transparent;
 }
+.patch-block-lambda {
+  color: darkcyan;
+  background-color: transparent;
+}
+.patch-block-lambda:hover {
+  color: CornflowerBlue;
+  background-color: transparent;
+}
 .title-alpha {
   color: #3090a6;
 }
@@ -202,6 +208,15 @@ textarea {
 }
 .title-gamma {
   color: #888888;
+}
+.title-delta {
+  color: darkcyan;
+}
+.title-lambda {
+  color: black;
+}
+.title-sigma {
+  color: darkslateblue;
 }
 .label-active-alpha {
   color: white;
@@ -214,4 +229,7 @@ textarea {
 .label-disabled {
   color: #888888;
   background-color: #eeeeee;
+}
+.warning {
+  color: indianred;
 }

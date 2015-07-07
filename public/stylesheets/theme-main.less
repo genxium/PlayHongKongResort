@@ -34,9 +34,6 @@
 @caution-button-background: hotpink;
 @caution-button-background-hover: indianred;
 
-@hyperlink-font-color: black;
-@hyperlink-font-color-hover: darkcyan;
-
 @header-background: BurlyWood; 
 
 @disabled-button-font-color: #eee;
@@ -78,9 +75,17 @@
 @patch-block-delta-background: transparent;
 @patch-block-delta-background-hover: transparent;
 
+@patch-block-lambda-font-color: darkcyan;
+@patch-block-lambda-font-color-hover: CornflowerBlue;
+@patch-block-lambda-background: transparent;
+@patch-block-lambda-background-hover: transparent;
+
 @title-alpha-font-color: #3090a6;
 @title-beta-font-color: #e21e61;
 @title-gamma-font-color: #888;
+@title-delta-font-color: darkcyan;
+@title-lambda-font-color: black;
+@title-sigma-font-color: darkslateblue;
 
 @label-active-alpha-font-color: white;
 @label-active-alpha-background: darkslateblue;
@@ -90,6 +95,8 @@
 
 @label-disabled-font-color: #888;
 @label-disabled-background: #eee;
+
+@warning-font-color: indianred;
 
 .theme-element {
 	color: @theme-element-font-color;
@@ -194,24 +201,26 @@ body {
 }
 
 a {
-	color: @hyperlink-font-color;
 	text-decoration: none;
 	cursor: pointer;
 	outline: none;
 }
+
 a:hover, a:active {
-	color: @hyperlink-font-color-hover;
 	text-decoration: none;
 	outline: none;
 }
+
 p {
 	margin: 0;
 }
+
 ul {
 	padding: 0;
 	margin: 0;
 	list-style: none;
 }
+
 input, textarea {
 	margin: 0;
 	padding: 0;
@@ -305,6 +314,15 @@ input, textarea {
 	}	
 }
 
+.patch-block-lambda {
+	color: @patch-block-lambda-font-color;
+	background-color: @patch-block-lambda-background;
+	&:hover {
+		color: @patch-block-lambda-font-color-hover;
+		background-color: @patch-block-lambda-background-hover;
+	}	
+}
+
 .title-alpha {
 	color: 	@title-alpha-font-color;
 }
@@ -315,6 +333,18 @@ input, textarea {
 
 .title-gamma {
 	color:	@title-gamma-font-color;
+}
+
+.title-delta {
+	color:	@title-delta-font-color;
+}
+
+.title-lambda {
+	color:	@title-lambda-font-color;
+}
+
+.title-sigma {
+	color:	@title-sigma-font-color;
 }
 
 .label-active-alpha {
@@ -331,3 +361,7 @@ input, textarea {
 	color: @label-disabled-font-color;
 	background-color:	@label-disabled-background;
 }
+
+.warning {
+	color: @warning-font-color;
+} 
