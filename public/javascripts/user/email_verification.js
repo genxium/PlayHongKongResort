@@ -29,7 +29,7 @@ function routeByHash() {
 		return;
 	}
 	if (tag == "failure") {
-		$("#content").html(MESSAGES["email_verification_failure"].format(params[g_keyName], params[g_keyEmail]));
+		$("#content").html(MESSAGES["email_verification_failure"].format(params[g_keyName], params[g_keyEmail], g_adminEmail));
 		return;
 	}
 }

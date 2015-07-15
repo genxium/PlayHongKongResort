@@ -21,7 +21,7 @@ public class Constants {
 	public static final String ZH_CN = "zh_cn";
 
 	// field names
-	public static final String ADMIN_EMAIL = "hongkongresort@126.com";
+	public static final String ADMIN_EMAIL = "admin@qiutongqu.com";
 	public static final String HONGKONGRESORT_TEAM = "hongkongresort_team";
 	public static final String WELCOME = "welcome";
 	public static final String VERIFY_INSTRUCTION = "verify_instruction";
