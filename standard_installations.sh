@@ -29,8 +29,23 @@ yum install vim
 # install git
 yum install git
 
+# install SMTPS utility `stunnel`
+yum install stunnel
+
+# init `stunnel` configuration
+cat smtp/stunnel_template.conf > /etc/stunnel/stunnel.conf 
+
 # install mail utility `postfix`
+yum install yum-priorities
+
+# init CentOS-Base repo
+cat base_repo_template.conf > /etc/yum.repos.d/CentOS-Base.repo
+
+# install up-to-date `postfix` 
 yum install postfix
+
+# init `postfix` configuration
+cat smtp/postfix_main_template.conf > /etc/postfix/main.cf 
 
 # install other tools
 yum install unzip libtool autoconf automake
