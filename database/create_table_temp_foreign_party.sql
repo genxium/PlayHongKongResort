@@ -16,22 +16,29 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `image`
+-- Table structure for table `temp_foreign_party`
 --
 
-DROP TABLE IF EXISTS `image`;
+DROP TABLE IF EXISTS `temp_foreign_party`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `image` (
-  `id` int(32) NOT NULL AUTO_INCREMENT,
-  `url` varchar(128) NOT NULL,
-  `meta_id` int(32) NOT NULL,
-  `meta_type` int(32) NOT NULL,
-  `generated_time` bigint(20) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `url` (`url`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8;
+CREATE TABLE `temp_foreign_party` (
+  `access_token` varchar(32) NOT NULL,
+  `party` int(11) NOT NULL,
+  `party_id` int(11) NOT NULL,
+  `timestamp` bigint(20) DEFAULT NULL,
+  UNIQUE KEY `PK` (`access_token`,`party`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `temp_foreign_party`
+--
+
+LOCK TABLES `temp_foreign_party` WRITE;
+/*!40000 ALTER TABLE `temp_foreign_party` DISABLE KEYS */;
+/*!40000 ALTER TABLE `temp_foreign_party` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -42,4 +49,4 @@ CREATE TABLE `image` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-07-18 23:19:24
+-- Dump completed on 2015-07-18 23:19:25

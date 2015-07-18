@@ -6,5 +6,7 @@ mysqldump -uroot -d hongkongresort login>create_table_login.sql
 mysqldump -uroot -d hongkongresort notification>create_table_notification.sql 
 mysqldump -uroot -d hongkongresort user_activity_relation>create_table_user_activity_relation.sql
 mysqldump -uroot hongkongresort user>create_table_user.sql
+mysqldump -uroot hongkongresort perm_foreign_party>create_table_perm_foreign_party.sql
+mysqldump -uroot hongkongresort temp_foreign_party>create_table_temp_foreign_party.sql
  
 
