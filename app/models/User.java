@@ -138,7 +138,7 @@ public class User extends BasicUser {
 		m_groupId = VISITOR;
 	}
 
-	public User(JSONObject userJson) {
+	public User(final JSONObject userJson) {
 		super(userJson);
 		if (userJson.containsKey(PASSWORD)) m_password = (String) userJson.get(PASSWORD);
 		if (userJson.containsKey(SALT)) m_salt = (String) userJson.get(SALT);
@@ -151,7 +151,7 @@ public class User extends BasicUser {
 		if (userJson.containsKey(MOOD)) m_mood = (String) userJson.get(MOOD);
 	}
 
-	public ObjectNode toObjectNode(Long viewerId) {
+	public ObjectNode toObjectNode(final Long viewerId) {
 		ObjectNode ret = super.toObjectNode(viewerId);
 		try {
 			ret.put(GENDER, String.valueOf(m_gender));

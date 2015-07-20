@@ -31,7 +31,7 @@ public class UserActivityRelation extends AbstractModel {
 	public static String SID = "sid"; 
 	public static String CAPTCHA = "captcha";
 
-    public static int maskRelation(int relation, Integer originalRelation) {
+    public static int maskRelation(final int relation, final Integer originalRelation) {
         int ret = INVALID;
         if(originalRelation != null) ret = originalRelation;
         switch (relation) {

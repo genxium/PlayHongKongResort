@@ -63,7 +63,7 @@ public class Image extends AbstractModel {
         return getFolderPath() + baseName + "." + extension;
     }
 
-    public Image(JSONObject imageJson) {
+    public Image(final JSONObject imageJson) {
         super(imageJson);
         if (imageJson.containsKey(URL)) m_url = (String) imageJson.get(URL);
         if (imageJson.containsKey(META_ID)) m_metaId = Converter.toLong(imageJson.get(META_ID));

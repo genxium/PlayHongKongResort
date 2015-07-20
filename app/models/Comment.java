@@ -43,7 +43,7 @@ public class Comment extends AbstractActivityMessage {
 
     }
 
-    public ObjectNode toSubCommentObjectNode(Long viewerId) {
+    public ObjectNode toSubCommentObjectNode(final Long viewerId) {
 	    ObjectNode ret = super.toObjectNode();
 	    try {
 		    ret.put(PARENT_ID, m_parentId);
@@ -55,11 +55,13 @@ public class Comment extends AbstractActivityMessage {
 	    return ret;
     }
 
-    public ObjectNode toObjectNode(boolean single, Long viewerId) {
+    public ObjectNode toObjectNode(final boolean single, final Long viewerId) {
 	    ObjectNode ret = super.toObjectNode();
 	    try {
 		    ret.put(PARENT_ID, m_parentId);
-		    ret.put(FROM_USER, DBCommander.queryUser(m_from).toObjectNode(viewerId));
+			User fromUser = DBCommander.queryUser(m_from);
+			if (fromUser == null) return null;
+		    ret.put(FROM_USER, fromUser.toObjectNode(viewerId));
 		    ret.put(NUM_CHILDREN, m_numChildren.toString());
 
 		    if (single || m_subCommentList == null) return ret;

@@ -26,7 +26,7 @@ public abstract class AbstractModel {
         return m_id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         m_id = id;
     }
 
@@ -34,7 +34,7 @@ public abstract class AbstractModel {
 
     }
 
-    public AbstractModel(JSONObject json) {
+    public AbstractModel(final JSONObject json) {
         if (json.containsKey(ID)) m_id = Converter.toLong(json.get(ID));
     }
 

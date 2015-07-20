@@ -22,9 +22,9 @@ public class Login {
     }
 
     public Login(JSONObject loginJson) {
-        if(loginJson.containsKey(USER_ID)) m_userId = Converter.toLong(loginJson.get(USER_ID));
-        if(loginJson.containsKey(TOKEN)) m_token = (String)loginJson.get(TOKEN);
-        if(loginJson.containsKey(TIMESTAMP)) m_timestamp = (Timestamp) loginJson.get(TIMESTAMP);
+        if (loginJson.containsKey(USER_ID)) m_userId = Converter.toLong(loginJson.get(USER_ID));
+        if (loginJson.containsKey(TOKEN)) m_token = (String)loginJson.get(TOKEN);
+        if (loginJson.containsKey(TIMESTAMP)) m_timestamp = (Timestamp) loginJson.get(TIMESTAMP);
     }
 
     public boolean hasExpired() {
