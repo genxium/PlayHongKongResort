@@ -316,8 +316,8 @@ public class ActivityController extends Controller {
 				}
 				SQLHelper.commit(connection);
 			} catch (Exception e) {
-				transactionSucceeded = false;
 				Loggy.e(TAG, "save", e);
+				transactionSucceeded = false;
 				SQLHelper.rollback(connection);
 				for (String savedImagePath : savedImagePathList) {
 					File tmp = new File(savedImagePath);

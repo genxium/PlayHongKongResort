@@ -5,6 +5,7 @@
 package models;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import controllers.ForeignPartyController;
 import fixtures.Constants;
 import org.json.simple.JSONObject;
 import utilities.Converter;
@@ -38,9 +39,11 @@ public class User extends BasicUser {
 	public static final String UNREAD_COUNT = "unread_count";
 	public static final String UNASSESSED_COUNT = "unassessed_count";
 
+	public static final String PARTY = "party";
+
 	public static final String LANG = "lang";
 
-	public static final String[] QUERY_FILEDS = {ID, EMAIL, NAME, AVATAR, PASSWORD, PASSWORD_RESET_CODE, UNREAD_COUNT, UNASSESSED_COUNT, SALT, GROUP_ID, AUTHENTICATION_STATUS, GENDER, AGE, MOOD, VERIFICATION_CODE};
+	public static final String[] QUERY_FILEDS = {ID, EMAIL, NAME, AVATAR, PASSWORD, PASSWORD_RESET_CODE, UNREAD_COUNT, UNASSESSED_COUNT, SALT, GROUP_ID, AUTHENTICATION_STATUS, GENDER, AGE, MOOD, VERIFICATION_CODE, PARTY};
 
 	public static final Pattern PASSWORD_PATTERN = Pattern.compile("^[0-9a-zA-Z_#\\!]{6,32}$", Pattern.UNICODE_CHARACTER_CLASS);
 	public static final Pattern AGE_PATTERN = Pattern.compile(".{0,16}", Pattern.UNICODE_CHARACTER_CLASS);
@@ -73,6 +76,10 @@ public class User extends BasicUser {
 		return m_groupId;
 	}
 
+	public void setGroupId(final Integer groupId) {
+		m_groupId = groupId;
+	}
+
 	protected String m_verificationCode = null;
 
 	public String getVerificationCode() {
@@ -93,6 +100,16 @@ public class User extends BasicUser {
 
 	public int getUnassessedCount() {
 		return m_unassessedCount;
+	}
+
+	protected Integer m_party = ForeignPartyController.PARTY_NONE;
+
+	public Integer getParty() {
+		return m_party;
+	}
+
+	public void setParty(final Integer party) {
+		m_party = party;
 	}
 
 	protected String m_lang = null;
@@ -132,10 +149,10 @@ public class User extends BasicUser {
 		return m_mood;
 	}
 
-	public User(String email, String password, String name) {
+	public User(String email, String name) {
 		super(email, name);
-		m_password = password;
 		m_groupId = VISITOR;
+		m_password = "";
 	}
 
 	public User(final JSONObject userJson) {
@@ -160,6 +177,7 @@ public class User extends BasicUser {
 			ret.put(UNREAD_COUNT, String.valueOf(m_unreadCount));
 			ret.put(UNASSESSED_COUNT, String.valueOf(m_unassessedCount));
 			ret.put(GROUP_ID, String.valueOf(m_groupId));
+			ret.put(PARTY, String.valueOf(m_party));
 		} catch (Exception e) {
 			Loggy.e(TAG, "toObjectNode", e);
 		}

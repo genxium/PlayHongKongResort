@@ -107,7 +107,9 @@ public class UserController extends Controller {
 		    String code = DBCommander.generateVerificationCode(name);
 		    String salt = DBCommander.generateSalt(email, password);
 		    String passwordDigest = Converter.md5(password + salt);
-		    User user = new User(email, passwordDigest, name);
+		    User user = new User(email, name);
+			user.setPassword(passwordDigest);
+
 		    user.setVerificationCode(code);
 		    user.setSalt(salt);
 		    if (DBCommander.registerUser(user) == SQLHelper.INVALID) throw new NullPointerException();

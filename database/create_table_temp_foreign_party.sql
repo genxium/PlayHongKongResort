@@ -27,18 +27,10 @@ CREATE TABLE `temp_foreign_party` (
   `party` int(11) NOT NULL,
   `party_id` int(11) NOT NULL,
   `timestamp` bigint(20) DEFAULT NULL,
+  `email` varchar(32) DEFAULT NULL,
   UNIQUE KEY `PK` (`access_token`,`party`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `temp_foreign_party`
---
-
-LOCK TABLES `temp_foreign_party` WRITE;
-/*!40000 ALTER TABLE `temp_foreign_party` DISABLE KEYS */;
-/*!40000 ALTER TABLE `temp_foreign_party` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -49,4 +41,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-07-18 23:19:25
+-- Dump completed on 2015-07-28 14:49:05

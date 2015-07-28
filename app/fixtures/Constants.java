@@ -14,6 +14,8 @@ public class Constants {
 
 	public static final int INFO_CAPTCHA_NOT_MATCHED = 4001;
 
+	public static final int INFO_FOREIGN_PARTY_REGISTRATION_REQUIRED = 5001;
+
 	// language names
 	public static final String EN_GB = "en_gb";
 	public static final String EN_US = "en_us";

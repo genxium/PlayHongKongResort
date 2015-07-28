@@ -31,15 +31,6 @@ CREATE TABLE `perm_foreign_party` (
   CONSTRAINT `perm_foreign_party_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `perm_foreign_party`
---
-
-LOCK TABLES `perm_foreign_party` WRITE;
-/*!40000 ALTER TABLE `perm_foreign_party` DISABLE KEYS */;
-/*!40000 ALTER TABLE `perm_foreign_party` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -50,4 +41,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-07-18 23:19:25
+-- Dump completed on 2015-07-28 14:49:05

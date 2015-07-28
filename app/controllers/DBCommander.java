@@ -89,10 +89,10 @@ public class DBCommander {
     public static long registerUser(final User user) {
         try {
             String[] cols = {User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.VERIFICATION_CODE, User.SALT};
-            Object[] values = {user.getEmail(), user.getPassword(), user.getName(), user.getGroupId(), user.getVerificationCode(), user.getSalt()};
+            Object[] vals = {user.getEmail(), user.getPassword(), user.getName(), user.getGroupId(), user.getVerificationCode(), user.getSalt()};
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            return builder.insert(cols, values).into(User.TABLE).execInsert();
+            return builder.insert(cols, vals).into(User.TABLE).execInsert();
         } catch (Exception e) {
             Loggy.e(TAG, "registerUser", e);
         }
@@ -1031,5 +1031,17 @@ public class DBCommander {
             Loggy.e(TAG, "queryTempForeignParty", e);
         }
         return null;
+    }
+
+    public static boolean createTempForeignParty(final String accessToken, final Integer party, final Long partyId, final String email) {
+        try {
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            String[] cols = {TempForeignParty.ACCESS_TOKEN, TempForeignParty.PARTY, TempForeignParty.PARTY_ID, TempForeignParty.EMAIL, TempForeignParty.TIMESTAMP};
+            Object[] vals = {accessToken, party, partyId, email, General.millisec()};
+            builder.insert(cols, vals).into(TempForeignParty.TABLE).execInsert();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

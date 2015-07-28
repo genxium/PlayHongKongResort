@@ -151,5 +151,7 @@ var g_errActivityCreationLimit = 3010;
 
 var g_errCaptcha = 4001;
 
+var g_errForeignPartyRegistrationRequired = 5001;
+
 /* theme selection */
 var g_theme = "main";

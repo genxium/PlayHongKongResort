@@ -10,6 +10,7 @@ import utilities.Loggy;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
@@ -173,6 +174,19 @@ public class SQLHelper {
         boolean res = stat.execute();
         stat.close();
         return res;
+    }
+
+    public static Long executeInsertAndCloseStatement(final PreparedStatement stat) throws SQLException {
+        if (stat == null) return null;
+        Long ret = null;
+        stat.executeUpdate();
+        ResultSet rs = stat.getGeneratedKeys();
+        if (rs != null && rs.next()) {
+            ret = rs.getLong(1);
+            rs.close();
+        }
+        stat.close();
+        return ret;
     }
 
     public static boolean commit(final Connection connection) throws SQLException {
