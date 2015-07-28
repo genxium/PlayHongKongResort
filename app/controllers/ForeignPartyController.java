@@ -44,6 +44,7 @@ public class ForeignPartyController extends Controller {
         public String email = null;
         public ForeignPartySpecs(final Long aId, final Integer aParty, final String aEmail) {
             id = aId;
+			party = aParty;
             if (aEmail == null) email = String.format("%d@%s", aId, PARTY_DEFAULT_DOMAIN_NAME.get(aParty));
             else email = aEmail;
         }
@@ -54,7 +55,7 @@ public class ForeignPartyController extends Controller {
 
     protected static ForeignPartySpecs queryForeignPartySpecs (final String accessToken, final Integer party) {
         /**
-         * TODO: implement for major foreign parties
+         * TODO: implementation for major foreign parties
          * */
         ForeignPartySpecs ret = null;
         switch (party) {
