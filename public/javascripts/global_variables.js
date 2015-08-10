@@ -155,3 +155,6 @@ var g_errForeignPartyRegistrationRequired = 5001;
 
 /* theme selection */
 var g_theme = "main";
+
+/* foreign party app id list */
+var g_qqAppId = 101239106;

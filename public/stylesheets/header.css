@@ -108,3 +108,6 @@
 .menu-actions .action-logout a {
 	background: url("../icons/logout-button.png") left top no-repeat;
 }
+.foreign-party-logo {
+	width: 24px;
+}

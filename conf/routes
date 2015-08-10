@@ -10,6 +10,7 @@ GET	/wstest controllers.Application.wstest()
 # Account System
 POST /user/login controllers.UserController.login()
 POST /user/register controllers.UserController.register()
+GET /user/foreign/login controllers.ForeignPartyController.login()
 
 GET /user/status controllers.UserController.status(token: String ?=null)
 GET /user/name/duplicate controllers.UserController.duplicate(name: String ?=null)

@@ -164,8 +164,22 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 			text: TITLES["register"],
 			"class": "login-registry faketext-button"
 		}).appendTo(row2);	
+	} else {
+		/**
+		* TODO: make it adaptable to all 3rd party login workflow
+		**/
+        var href = window.location.href;
+		var redirectUri = href;
+		var qqLoginEntry = $("<img>", {
+			src: "/assets/icons/qq.png",
+			"class": "foreign-party-logo"
+		}).appendTo(row2);
+		qqLoginEntry.click(function(evt) {
+			evt.preventDefault();
+			window.location = "https://graph.qq.com/oauth2.0/authorize?response_type=token&client_id=" + g_qqAppId + "&redirect_uri=" + redirectUri + "&scope=get_user_info";
+		});
 	}
-	
+
 	return new PreLoginForm(handle, psw, btn, forgot, registry, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
 }
 
