@@ -192,7 +192,7 @@ public class DBCommander {
                     .from(Activity.TABLE)
                     .join(UserActivityRelation.TABLE, onCols, onOps, onVals)
                     .order(orderKey, orientation)
-                    .limit((pageSt - 1) * numItems, pageEd * numItems).execSelect();
+                    .limit((pageSt - 1) * numItems, (pageEd - pageSt + 1) * numItems).execSelect();
             if (activityJsonList == null) return null;
 
             for (JSONObject activityJson : activityJsonList) {
@@ -217,7 +217,7 @@ public class DBCommander {
                     .order(orderKey, orientation)
                     .where(Activity.STATUS, "=", status)
                     .where(Activity.PRIORITY, "=", 0)
-                    .limit((pageSt - 1) * numItems + offset, pageEd * numItems + offset);
+                    .limit((pageSt - 1) * numItems + offset, (pageEd - pageSt + 1) * numItems + offset);
             if (status == Activity.PENDING) {
                 // ONLY admin queries should be accessing this closure
                 builder.where(Activity.DEADLINE, ">", General.millisec());
@@ -245,7 +245,7 @@ public class DBCommander {
                     .from(Activity.TABLE)
                     .order(orderKey, orientation)
                     .where(Activity.HOST_ID, "=", hostId)
-                    .limit((pageSt - 1) * numItems, pageEd * numItems);
+                    .limit((pageSt - 1) * numItems, (pageEd - pageSt + 1) * numItems);
 
             if(viewerId == null || !hostId.equals(viewerId)) builder.where(Activity.STATUS, "=", Activity.ACCEPTED);
 
@@ -363,7 +363,7 @@ public class DBCommander {
                     .from(Comment.TABLE)
                     .where(whereCols, whereOps, whereVals)
                     .order(orderKey, orientation)
-                    .limit((pageSt - 1) * numItems, pageEd * numItems);
+                    .limit((pageSt - 1) * numItems, (pageEd - pageSt + 1) * numItems);
 
             List<JSONObject> commentJsonList = builder.execSelect();
 
@@ -406,7 +406,7 @@ public class DBCommander {
                     .from(Comment.TABLE)
                     .where(Comment.PARENT_ID, "=", parentId)
                     .order(orderKey, orientation)
-                    .limit((pageSt - 1) * numItems, pageEd * numItems);
+                    .limit((pageSt - 1) * numItems, (pageEd -pageSt + 1) * numItems);
 
             List<JSONObject> commentJsonList = builder.execSelect();
 
@@ -430,7 +430,7 @@ public class DBCommander {
                     .from(Assessment.TABLE)
                     .where(Assessment.TO, "=", to)
                     .order(orderKey, orientation)
-                    .limit((pageSt - 1) * numItems, pageEd * numItems).execSelect();
+                    .limit((pageSt - 1) * numItems, (pageEd - pageSt + 1) * numItems).execSelect();
 
             if (records == null) return ret;
             for (JSONObject record : records)	ret.add(new Assessment(record));
@@ -504,7 +504,7 @@ public class DBCommander {
                 .from(Notification.TABLE)
                 .where(Notification.TO, "=", to)
                 .order(orderKey, orientation)
-                .limit((pageSt - 1) * numItems, pageEd * numItems);
+                .limit((pageSt - 1) * numItems, (pageEd - pageSt + 1) * numItems);
 
         if (isRead != null) builder.where(Notification.IS_READ, "=", isRead);
 
