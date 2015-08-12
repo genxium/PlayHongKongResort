@@ -1,51 +1,57 @@
 # install epel repo
-yum install epel-release
+yum -y install epel-release
+
+# load CentOS-Base.repo
+cat base_repo_template.conf > /etc/yum.repos.d/CentOS-Base.repo
+
+# install PostgreSQL RPM file
+yum -y localinstall http://yum.postgresql.org/9.4/redhat/rhel-6-x86_64/pgdg-centos94-9.4-1.noarch.rpm
+
+# install PostgreSQL 9.4
+yum -y install postgresql94-server
 
 # install npm
-yum install npm
+yum -y install npm
 
 # install less via npm
 npm install -g less
 
 # install nginx by yum repo, reference: http://wiki.nginx.org/Install#Official_Red_Hat.2FCentOS_packages
 echo -e '[nginx]\nname=nginx repo\nbaseurl=http://nginx.org/packages/centos/$releasever/$basearch/\ngpgcheck=0\nenabled=1' >> /etc/yum.repos.d/nginx.repo
-yum install nginx
+yum -y install nginx
 
 # install mysql-server by yum repo, reference: http://dev.mysql.com/downloads/repo/yum/
-yum install wget
+yum -y install wget
 wget http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm
 rpm -Uvh mysql-community-release-el6-5.noarch.rpm
-yum install mysql-server
+yum -y install mysql-server
 
 # install system logging utility `sar`
-yum install sar
+yum -y install sar
 
 # install jdk
-yum install java-1.7.0-openjdk-devel
+yum -y install java-1.7.0-openjdk-devel
 
 # install vim editor
-yum install vim
+yum -y install vim
 
 # install git
-yum install git
+yum -y install git
 
 # install SMTPS utility `stunnel`
-yum install stunnel
+yum -y install stunnel
 
 # init `stunnel` configuration
 cat smtp/stunnel_template.conf > /etc/stunnel/stunnel.conf 
 
 # install mail utility `postfix`
-yum install yum-priorities
-
-# init CentOS-Base repo
-cat base_repo_template.conf > /etc/yum.repos.d/CentOS-Base.repo
+yum -y install yum-priorities
 
 # install up-to-date `postfix` 
-yum install postfix
+yum -y install postfix
 
 # init `postfix` configuration
 cat smtp/postfix_main_template.conf > /etc/postfix/main.cf 
 
 # install other tools
-yum install unzip libtool autoconf automake
+yum -y install unzip libtool autoconf automake
