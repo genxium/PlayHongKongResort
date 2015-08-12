@@ -1,4 +1,5 @@
 # Project specific files
+*.log
 */all_data.sql
 all_data.sql
 .target
