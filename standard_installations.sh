@@ -38,6 +38,9 @@ yum -y install vim
 # install git
 yum -y install git
 
+# install libplain.so & liblogin.so, reference http://www.postfix.org/SASL_README.html#client_sasl_policy
+yum -y install cyrus-sasl-plain
+
 # install SMTPS utility `stunnel`
 yum -y install stunnel
 
