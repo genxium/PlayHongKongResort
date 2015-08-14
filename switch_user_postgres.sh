@@ -1,1 +1,1 @@
-su - postgres
+sudo su - postgres

@@ -1,1 +1,1 @@
-kill $(ps aux | grep 'mysqld --user=mysql' | awk '{print $2}')
+sudo su - root -c "kill $(ps aux | grep 'mysqld --user=mysql' | awk '{print $2}')"
