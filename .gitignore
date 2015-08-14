@@ -1,4 +1,6 @@
 # Project specific files
+*.rpm
+*.rpm.*
 *.log
 */all_data.sql
 all_data.sql
