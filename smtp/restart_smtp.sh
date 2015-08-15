@@ -4,5 +4,5 @@ sudo su - root -c "service postfix restart"
 # sudo su - root -c "rm /etc/postfix/stunnel_passwd"
 # sudo su - root -c "rm /etc/postfix/sasl_passwd"
 
-sudo su - root -c "kill $(ps aux | grep 'stunnel' | awk '{print $2}')"
+sudo su - root -c "kill $(ps aux | grep 'stunnel$' | awk '{print $2}')"
 sudo su - root -c "stunnel"
