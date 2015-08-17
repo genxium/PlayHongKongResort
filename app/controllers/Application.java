@@ -6,6 +6,7 @@ import play.Logger;
 import play.mvc.Content;
 import play.mvc.Controller;
 import play.mvc.Result;
+import utilities.Loggy;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -15,12 +16,14 @@ import java.util.Properties;
 
 public class Application extends Controller {
 
+	public static final String TAG = Application.class.getName();
+
 	public static Result index(Integer dev, String theme) {
 		try {
 			Content html = views.html.homepage.render(dev, theme);
 			return ok(html);
 		} catch (Exception e) {
-
+			Loggy.e(TAG, "index", e);
 		}
 		return badRequest();
 	}

@@ -62,6 +62,7 @@ public class DataUtils {
 			Timestamp currentTime = new Timestamp(date.getTime());
 			Long epochTime = currentTime.getTime();
 			String tmp = Converter.md5(epochTime.toString() + seed);
+            if (tmp == null) throw new NullPointerException();
 			int length = tmp.length();
 			return tmp.substring(0, (length >> 1));
 		} catch (Exception e) {
@@ -81,4 +82,5 @@ public class DataUtils {
             return null;
         }
     }
+
 }

@@ -12,7 +12,6 @@ import models.PermForeignParty;
 import models.TempForeignParty;
 import models.User;
 import play.mvc.Controller;
-import play.mvc.Http;
 import play.mvc.Result;
 import utilities.Converter;
 import utilities.General;
@@ -57,22 +56,17 @@ public class ForeignPartyController extends Controller {
         /**
          * TODO: implementation for major foreign parties
          * */
-        ForeignPartySpecs ret = null;
         switch (party) {
             case PARTY_QQ:
-                ret = new ForeignPartySpecs(12345678L, party, null);
-                break;
+                return new ForeignPartySpecs(12345678L, party, null);
             default:
                 return null;
         }
-        return ret;
     }
 
     public static Result login() {
         try {
-            Http.RequestBody body = request().body();
-            Map<String, String[]> formData = body.asFormUrlEncoded();
-
+            Map<String, String[]> formData = request().body().asFormUrlEncoded();
             if (!formData.containsKey(TempForeignParty.ACCESS_TOKEN) || !formData.containsKey(TempForeignParty.PARTY))  return ok(StandardFailureResult.get());
 
             String accessToken = formData.get(TempForeignParty.ACCESS_TOKEN)[0];
