@@ -1,8 +1,5 @@
 basedir=$(pwd)
 
-# update yum 
-sudo su - root -c "yum -y update"
-
 # install development tools
 sudo su - root -c "yum -y groupinstall development"
 
