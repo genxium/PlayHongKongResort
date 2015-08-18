@@ -17,6 +17,7 @@ sudo su - root -c "yum -y localinstall http://yum.postgresql.org/9.4/redhat/rhel
 
 # install PostgreSQL 9.4
 sudo su - root -c "yum -y install postgresql94-server"
+sudo su - root -c "yum -y install postgresql-devel"
 
 # install npm
 sudo su - root -c "yum -y install npm"
