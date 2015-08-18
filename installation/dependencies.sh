@@ -1,5 +1,11 @@
 basedir=$(pwd)
 
+# update yum 
+sudo su - root -c "yum -y update"
+
+# install development tools
+sudo su - root -c "yum -y groupinstall development"
+
 # install epel repo
 sudo su - root -c "yum -y install epel-release"
 
