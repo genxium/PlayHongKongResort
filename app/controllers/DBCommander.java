@@ -13,7 +13,7 @@ import utilities.Loggy;
 import java.util.*;
 
 /*
- * Note that the relation (a.k.a UserActivityRelation.RELATION) in this class is always referring to masked relation
+ * Note that the relation (a.k.a PlayerActivityRelation.RELATION) in this class is always referring to masked relation
  * */
 
 public class DBCommander {
@@ -24,95 +24,95 @@ public class DBCommander {
     public static final int DIRECTION_FORWARD = (+1);
     public static final int DIRECTION_BACKWARD = (-1);
 
-    public static class SpecialUserRecord {
-        public BasicUser user;
+    public static class SpecialPlayerRecord {
+        public BasicPlayer player;
         public Long activityId;
-        public SpecialUserRecord(final JSONObject record) {
+        public SpecialPlayerRecord(final JSONObject record) {
             // record must be guaranteed to contain correct fields
-            user = new BasicUser(record);
-            activityId = Converter.toLong(record.get(UserActivityRelation.ACTIVITY_ID));
+            player = new BasicPlayer(record);
+            activityId = Converter.toLong(record.get(PlayerActivityRelation.ACTIVITY_ID));
         }
     }
 
-    public static User queryUser(final Long userId) {
+    public static Player queryPlayer(final Long playerId) {
 
         try {
-            String[] names = User.QUERY_FILEDS;
+            String[] names = Player.QUERY_FILEDS;
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            List<JSONObject> results = builder.select(names).from(User.TABLE).where(User.ID, "=", userId).execSelect();
+            List<JSONObject> results = builder.select(names).from(Player.TABLE).where(Player.ID, "=", playerId).execSelect();
             if (results == null || results.size() <= 0) return null;
             Iterator<JSONObject> it = results.iterator();
             if (!it.hasNext()) return null;
-            JSONObject userJson = it.next();
-            return new User(userJson);
+            JSONObject playerJson = it.next();
+            return new Player(playerJson);
         } catch (Exception e) {
-            Loggy.e(TAG, "queryUserList", e);
+            Loggy.e(TAG, "queryPlayerList", e);
         }
         return null;
     }
 
-    public static List<User> queryUserList(final List<Long> userIdList) {
-        List<User> ret = new ArrayList<>();
+    public static List<Player> queryPlayerList(final List<Long> playerIdList) {
+        List<Player> ret = new ArrayList<>();
         try {
-            if(userIdList == null || userIdList.size() == 0) return ret;
-            String[] names = User.QUERY_FILEDS;
+            if(playerIdList == null || playerIdList.size() == 0) return ret;
+            String[] names = Player.QUERY_FILEDS;
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            List<JSONObject> records = builder.select(names).from(User.TABLE).where(User.ID, "IN", userIdList).execSelect();
+            List<JSONObject> records = builder.select(names).from(Player.TABLE).where(Player.ID, "IN", playerIdList).execSelect();
             if (records == null || records.size() <= 0) return null;
             for (JSONObject record : records) {
-                ret.add(new User(record));
+                ret.add(new Player(record));
             }
         } catch (Exception e) {
-            Loggy.e(TAG, "queryUserList", e);
+            Loggy.e(TAG, "queryPlayerList", e);
         }
         return ret;
     }
 
-    public static User queryUserByEmail(String email) {
-        User user = null;
+    public static Player queryPlayerByEmail(String email) {
+        Player player = null;
         try {
-            String[] names = User.QUERY_FILEDS;
+            String[] names = Player.QUERY_FILEDS;
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            List<JSONObject> results = builder.select(names).from(User.TABLE).where(User.EMAIL, "=", email).execSelect();
+            List<JSONObject> results = builder.select(names).from(Player.TABLE).where(Player.EMAIL, "=", email).execSelect();
             if (results == null || results.size() <= 0) return null;
             Iterator<JSONObject> it = results.iterator();
             if (!it.hasNext()) return null;
-            JSONObject userJson = it.next();
-            user = new User(userJson);
+            JSONObject playerJson = it.next();
+            player = new Player(playerJson);
         } catch (Exception e) {
-            System.out.println(DBCommander.class.getName() + ".queryUserByEmail, " + e.getMessage());
+            System.out.println(DBCommander.class.getName() + ".queryPlayerByEmail, " + e.getMessage());
 
         }
-        return user;
+        return player;
     }
 
-    public static long registerUser(final User user) {
+    public static long registerPlayer(final Player player) {
         try {
-            String[] cols = {User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.VERIFICATION_CODE, User.SALT};
-            Object[] vals = {user.getEmail(), user.getPassword(), user.getName(), user.getGroupId(), user.getVerificationCode(), user.getSalt()};
+            String[] cols = {Player.EMAIL, Player.PASSWORD, Player.NAME, Player.GROUP_ID, Player.VERIFICATION_CODE, Player.SALT};
+            Object[] vals = {player.getEmail(), player.getPassword(), player.getName(), player.getGroupId(), player.getVerificationCode(), player.getSalt()};
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            return builder.insert(cols, vals).into(User.TABLE).execInsert();
+            return builder.insert(cols, vals).into(Player.TABLE).execInsert();
         } catch (Exception e) {
-            Loggy.e(TAG, "registerUser", e);
+            Loggy.e(TAG, "registerPlayer", e);
         }
         return SQLHelper.INVALID;
     }
 
-    public static boolean updateUser(final User user) {
+    public static boolean updatePlayer(final Player player) {
         try {
-            String[] cols = {User.EMAIL, User.PASSWORD, User.NAME, User.GROUP_ID, User.AGE, User.GENDER, User.MOOD, User.VERIFICATION_CODE};
-            Object[] values = {user.getEmail(), user.getPassword(), user.getName(), user.getGroupId(), user.getAge(), user.getGender(), user.getMood(), user.getVerificationCode()};
+            String[] cols = {Player.EMAIL, Player.PASSWORD, Player.NAME, Player.GROUP_ID, Player.AGE, Player.GENDER, Player.MOOD, Player.VERIFICATION_CODE};
+            Object[] values = {player.getEmail(), player.getPassword(), player.getName(), player.getGroupId(), player.getAge(), player.getGender(), player.getMood(), player.getVerificationCode()};
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            return builder.update(User.TABLE).set(cols, values).where(User.ID, "=", user.getId()).execUpdate();
+            return builder.update(Player.TABLE).set(cols, values).where(Player.ID, "=", player.getId()).execUpdate();
         } catch (Exception e) {
-            Loggy.e(TAG, "updateUser", e);
+            Loggy.e(TAG, "updatePlayer", e);
         }
         return false;
     }
 
-    public static Activity createActivity(final User host, final long now) throws ActivityCreationLimitException {
+    public static Activity createActivity(final Player host, final long now) throws ActivityCreationLimitException {
 
         if (!ableToCreateActivity(host, now)) throw new ActivityCreationLimitException();
 
@@ -130,17 +130,17 @@ public class DBCommander {
         activity.setHost(host);
         activity.setCreatedTime(now);
 
-        String[] names2 = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME};
-        Object[] values2 = {lastActivityId, host.getId(), UserActivityRelation.SELECTED | UserActivityRelation.PRESENT, now};
+        String[] names2 = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.USER_ID, PlayerActivityRelation.RELATION, PlayerActivityRelation.GENERATED_TIME};
+        Object[] values2 = {lastActivityId, host.getId(), PlayerActivityRelation.SELECTED | PlayerActivityRelation.PRESENT, now};
 
         EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
-        builderRelation.insert(names2, values2).into(UserActivityRelation.TABLE).execInsert();
+        builderRelation.insert(names2, values2).into(PlayerActivityRelation.TABLE).execInsert();
 
         return activity;
     }
 
-    protected static boolean ableToCreateActivity(final User host, final long now) {
-        if (host == null || host.getGroupId() == User.VISITOR) return false;
+    protected static boolean ableToCreateActivity(final Player host, final long now) {
+        if (host == null || host.getGroupId() == Player.VISITOR) return false;
         List<Activity> criticallyCreatedActivities = queryHostedActivities(host.getId(), host.getId(), 1, 1, Activity.CREATED_TIME, SQLHelper.DESCEND, Activity.CREATION_CRITICAL_NUMBER);
         if (criticallyCreatedActivities == null) return true;
         if (criticallyCreatedActivities.size() < Activity.CREATION_CRITICAL_NUMBER) return true;
@@ -168,7 +168,7 @@ public class DBCommander {
             List<JSONObject> results = builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId).execSelect();
             if (results == null || results.size() != 1) throw new ActivityNotFoundException();
             JSONObject activityJson = results.get(0);
-            User host = queryUser(Converter.toLong(activityJson.get(Activity.HOST_ID)));
+            Player host = queryPlayer(Converter.toLong(activityJson.get(Activity.HOST_ID)));
             Activity activity = new Activity(activityJson);
             activity.setHost(host);
             return activity;
@@ -183,14 +183,14 @@ public class DBCommander {
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             String[] names = Activity.QUERY_FIELDS;
-            String[] onCols = {UserActivityRelation.USER_ID, UserActivityRelation.ACTIVITY_ID, UserActivityRelation.RELATION};
+            String[] onCols = {PlayerActivityRelation.USER_ID, PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.RELATION};
             String[] onOps = {"=", "=", "IN"};
 
             Object[] onVals = {vieweeId, new EasyPreparedStatementBuilder.PrimaryTableField(Activity.ID), maskedRelationList};
 
             List<JSONObject> activityJsonList = builder.select(names)
                     .from(Activity.TABLE)
-                    .join(UserActivityRelation.TABLE, onCols, onOps, onVals)
+                    .join(PlayerActivityRelation.TABLE, onCols, onOps, onVals)
                     .order(orderKey, orientation)
                     .limit((pageSt - 1) * numItems, (pageEd - pageSt + 1) * numItems).execSelect();
             if (activityJsonList == null) return null;
@@ -200,7 +200,7 @@ public class DBCommander {
                 ret.add(activity);
             }
             if (ret.size() == 0) return ret;
-            appendUserInfoForActivity(ret, null);
+            appendPlayerInfoForActivity(ret, null);
         } catch (Exception e) {
             Loggy.e(TAG, "queryActivities", e);
         }
@@ -229,7 +229,7 @@ public class DBCommander {
                 ret.add(activity);
             }
             if (ret.size() == 0) return ret;
-            appendUserInfoForActivity(ret, null);
+            appendPlayerInfoForActivity(ret, null);
         } catch (Exception e) {
             Loggy.e(TAG, "queryActivities", e);
         }
@@ -257,7 +257,7 @@ public class DBCommander {
                 ret.add(activity);
             }
             if (ret.size() == 0) return ret;
-            appendUserInfoForActivity(ret, null);
+            appendPlayerInfoForActivity(ret, null);
         } catch (Exception e) {
             Loggy.e(TAG, "queryHostedActivities", e);
         }
@@ -285,52 +285,52 @@ public class DBCommander {
                 ret.add(activity);
             }
             if (ret.size() == 0) return ret;
-            appendUserInfoForActivity(ret, null);
+            appendPlayerInfoForActivity(ret, null);
         } catch (Exception e) {
             Loggy.e(TAG, "queryPrioritizedActivities", e);
         }
         return ret;
     }
 
-    public static int queryUserActivityRelation(Long userId, Long activityId) {
+    public static int queryPlayerActivityRelation(Long playerId, Long activityId) {
         try {
-            if (userId == null) throw new UserNotFoundException();
+            if (playerId == null) throw new PlayerNotFoundException();
             if (activityId == null) throw new ActivityNotFoundException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-            List<JSONObject> records = builder.select(UserActivityRelation.RELATION).from(UserActivityRelation.TABLE)
-                    .where(UserActivityRelation.USER_ID, "=", userId)
-                    .where(UserActivityRelation.ACTIVITY_ID, "=", activityId)
+            List<JSONObject> records = builder.select(PlayerActivityRelation.RELATION).from(PlayerActivityRelation.TABLE)
+                    .where(PlayerActivityRelation.USER_ID, "=", playerId)
+                    .where(PlayerActivityRelation.ACTIVITY_ID, "=", activityId)
                     .execSelect();
 
-            if (records == null) return UserActivityRelation.INVALID;
-            if (records.size() != 1) return UserActivityRelation.INVALID;
+            if (records == null) return PlayerActivityRelation.INVALID;
+            if (records.size() != 1) return PlayerActivityRelation.INVALID;
             JSONObject record = records.get(0);
-            return (Integer) record.get(UserActivityRelation.RELATION);
+            return (Integer) record.get(PlayerActivityRelation.RELATION);
         } catch (Exception e) {
-            Loggy.e(TAG, "queryUserActivityRelation", e);
+            Loggy.e(TAG, "queryPlayerActivityRelation", e);
         }
-        return UserActivityRelation.INVALID;
+        return PlayerActivityRelation.INVALID;
     }
 
-    public static List<Integer> queryUserActivityRelationList(List<Long> userIdList, Long activityId) {
+    public static List<Integer> queryPlayerActivityRelationList(List<Long> playerIdList, Long activityId) {
         try {
-            if (userIdList == null) throw new UserNotFoundException();
+            if (playerIdList == null) throw new PlayerNotFoundException();
             if (activityId == null) throw new ActivityNotFoundException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-            List<JSONObject> records = builder.select(UserActivityRelation.RELATION).from(UserActivityRelation.TABLE)
-                    .where(UserActivityRelation.USER_ID, "IN", userIdList)
-                    .where(UserActivityRelation.ACTIVITY_ID, "=", activityId)
+            List<JSONObject> records = builder.select(PlayerActivityRelation.RELATION).from(PlayerActivityRelation.TABLE)
+                    .where(PlayerActivityRelation.USER_ID, "IN", playerIdList)
+                    .where(PlayerActivityRelation.ACTIVITY_ID, "=", activityId)
                     .execSelect();
 
             if (records == null) return null;
 
             List<Integer> ret = new ArrayList<>();
-            for (JSONObject record : records) ret.add(Converter.toInteger(record.get(UserActivityRelation.RELATION)));
+            for (JSONObject record : records) ret.add(Converter.toInteger(record.get(PlayerActivityRelation.RELATION)));
             return ret;
         } catch (Exception e) {
-            Loggy.e(TAG, "queryUserActivityRelation", e);
+            Loggy.e(TAG, "queryPlayerActivityRelation", e);
         }
         return null;
     }
@@ -370,7 +370,7 @@ public class DBCommander {
             if (commentJsonList == null) throw new NullPointerException();
             for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
             if (ret.size() == 0) return ret;
-            appendUserInfoForTopLevelComment(ret);
+            appendPlayerInfoForTopLevelComment(ret);
 
         } catch (Exception e) {
             Loggy.e(TAG, "queryTopLevelComments", e);
@@ -389,7 +389,7 @@ public class DBCommander {
             if (commentJsonList == null) throw new NullPointerException();
             for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
             if (ret.size() == 0) return ret;
-            appendUserInfoForSubComment(ret);
+            appendPlayerInfoForSubComment(ret);
         } catch (Exception e) {
             Loggy.e(TAG, "querySubComments", e);
         }
@@ -413,7 +413,7 @@ public class DBCommander {
             if (commentJsonList == null) throw new NullPointerException();
             for (JSONObject commentJson : commentJsonList)	ret.add(new Comment(commentJson));
             if (ret.size() == 0) return ret;
-            appendUserInfoForSubComment(ret);
+            appendPlayerInfoForSubComment(ret);
         } catch (Exception e) {
             Loggy.e(TAG, "querySubComments", e);
         }
@@ -435,7 +435,7 @@ public class DBCommander {
             if (records == null) return ret;
             for (JSONObject record : records)	ret.add(new Assessment(record));
             if (ret.size() == 0) return ret;
-            appendUserInfoForAssessemnt(ret);
+            appendPlayerInfoForAssessemnt(ret);
         } catch(Exception e) {
             Loggy.e(TAG, "queryAssessmentList", e);
         }
@@ -459,7 +459,7 @@ public class DBCommander {
 
             for (JSONObject record : records)	ret.add(new Assessment(record));
             if (ret.size() == 0) return ret;
-            appendUserInfoForAssessemnt(ret);
+            appendPlayerInfoForAssessemnt(ret);
         } catch (Exception e) {
             Loggy.e(TAG, "queryAssessments", e);
         }
@@ -517,144 +517,144 @@ public class DBCommander {
         return ret;
     }
 
-    public static boolean validateOwnership(long userId, Activity activity) {
-        return (activity != null && activity.getHost().getId() == userId);
+    public static boolean validateOwnership(long playerId, Activity activity) {
+        return (activity != null && activity.getHost().getId() == playerId);
     }
 
-    public static boolean isActivityEditable(final Long userId, final Activity activity) throws UserNotFoundException, ActivityNotFoundException, AccessDeniedException, InvalidActivityStatusException {
-        if (userId == null) throw new UserNotFoundException();
+    public static boolean isActivityEditable(final Long playerId, final Activity activity) throws PlayerNotFoundException, ActivityNotFoundException, AccessDeniedException, InvalidActivityStatusException {
+        if (playerId == null) throw new PlayerNotFoundException();
         if (activity == null) throw new ActivityNotFoundException();
-        if (!validateOwnership(userId, activity)) throw new AccessDeniedException();
+        if (!validateOwnership(playerId, activity)) throw new AccessDeniedException();
         if (activity.getStatus() != Activity.CREATED && activity.getStatus() != Activity.REJECTED) throw new InvalidActivityStatusException();
         return true;
     }
 
-    public static boolean isActivityJoinable(final Long userId, final int activityId) throws UserNotFoundException, ActivityNotFoundException, InvalidActivityStatusException, InvalidUserActivityRelationException, DeadlineHasPassedException, AccessDeniedException {
-        if (userId == null) throw new UserNotFoundException();
-        User user = queryUser(userId);
-        if (user == null) throw new UserNotFoundException();
+    public static boolean isActivityJoinable(final Long playerId, final int activityId) throws PlayerNotFoundException, ActivityNotFoundException, InvalidActivityStatusException, InvalidPlayerActivityRelationException, DeadlineHasPassedException, AccessDeniedException {
+        if (playerId == null) throw new PlayerNotFoundException();
+        Player player = queryPlayer(playerId);
+        if (player == null) throw new PlayerNotFoundException();
         Activity activity = queryActivity(activityId);
         if (activity == null) throw new ActivityNotFoundException();
-        return isActivityJoinable(user, activity);
+        return isActivityJoinable(player, activity);
     }
 
-    public static boolean isActivityJoinable(final User user, final Activity activity) throws UserNotFoundException, InvalidUserActivityRelationException, InvalidActivityStatusException, ActivityNotFoundException, DeadlineHasPassedException, AccessDeniedException {
+    public static boolean isActivityJoinable(final Player player, final Activity activity) throws PlayerNotFoundException, InvalidPlayerActivityRelationException, InvalidActivityStatusException, ActivityNotFoundException, DeadlineHasPassedException, AccessDeniedException {
         /**
          * TODO: enable VISITOR group checking
          * */
-        if (user == null) throw new UserNotFoundException();
-//        if (user.getGroupId() == User.VISITOR) throw  new AccessDeniedException();
+        if (player == null) throw new PlayerNotFoundException();
+//        if (player.getGroupId() == Player.VISITOR) throw  new AccessDeniedException();
         if (activity.getStatus() != Activity.ACCEPTED) throw new InvalidActivityStatusException();
         if (activity.isDeadlineExpired()) throw new DeadlineHasPassedException();
-        int relation = queryUserActivityRelation(user.getId(), activity.getId());
-        if (relation != UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
+        int relation = queryPlayerActivityRelation(player.getId(), activity.getId());
+        if (relation != PlayerActivityRelation.INVALID) throw new InvalidPlayerActivityRelationException();
         return true;
     }
 
-    public static boolean isActivityCommentable(final Long from, Long activityId) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException, AccessDeniedException {
-        if (from == null) throw new UserNotFoundException();
+    public static boolean isActivityCommentable(final Long from, Long activityId) throws PlayerNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException, AccessDeniedException {
+        if (from == null) throw new PlayerNotFoundException();
         if (activityId == null) throw new ActivityNotFoundException();
-        User fromUser = queryUser(from);
-        if (fromUser == null) throw new UserNotFoundException();
+        Player fromPlayer = queryPlayer(from);
+        if (fromPlayer == null) throw new PlayerNotFoundException();
         Activity activity = queryActivity(activityId);
         if (activity == null) throw new ActivityNotFoundException();
-        return isActivityCommentable(fromUser, activity);
+        return isActivityCommentable(fromPlayer, activity);
     }
 
-    public static boolean isActivityCommentable(final User fromUser, final Activity activity) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException, AccessDeniedException {
+    public static boolean isActivityCommentable(final Player fromPlayer, final Activity activity) throws PlayerNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException, AccessDeniedException {
         /**
          * TODO: enable VISITOR group checking
          * */
-        if (fromUser == null) throw new UserNotFoundException();
+        if (fromPlayer == null) throw new PlayerNotFoundException();
         if (activity == null) throw new ActivityNotFoundException();
-//        if (fromUser.getGroupId() == User.VISITOR) throw new AccessDeniedException();
+//        if (fromPlayer.getGroupId() == Player.VISITOR) throw new AccessDeniedException();
         if (activity.hasBegun()) throw new ActivityHasNotBegunException();
         if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
         return true;
     }
 
-    public static boolean isActivityCommentable(final Long from, final Long to, final Long activityId) throws UserNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException, AccessDeniedException {
-        if (from == null) throw new UserNotFoundException();
-        if (to == null) throw new UserNotFoundException();
+    public static boolean isActivityCommentable(final Long from, final Long to, final Long activityId) throws PlayerNotFoundException, ActivityNotFoundException, ActivityHasNotBegunException, ActivityNotAcceptedException, AccessDeniedException {
+        if (from == null) throw new PlayerNotFoundException();
+        if (to == null) throw new PlayerNotFoundException();
         if (activityId == null) throw new ActivityNotFoundException();
-        User fromUser = queryUser(from);
-        User toUser = queryUser(to);
-        if (fromUser == null || toUser == null) throw new UserNotFoundException();
+        Player fromPlayer = queryPlayer(from);
+        Player toPlayer = queryPlayer(to);
+        if (fromPlayer == null || toPlayer == null) throw new PlayerNotFoundException();
         Activity activity = queryActivity(activityId);
         if (activity == null) throw new ActivityNotFoundException();
-        return isActivityCommentable(fromUser, toUser, activity);
+        return isActivityCommentable(fromPlayer, toPlayer, activity);
     }
 
-    public static boolean isActivityCommentable(final User fromUser, final User toUser, final Activity activity) throws UserNotFoundException, ActivityHasNotBegunException, ActivityNotFoundException, ActivityNotAcceptedException, AccessDeniedException {
+    public static boolean isActivityCommentable(final Player fromPlayer, final Player toPlayer, final Activity activity) throws PlayerNotFoundException, ActivityHasNotBegunException, ActivityNotFoundException, ActivityNotAcceptedException, AccessDeniedException {
         /**
          * TODO: enable VISITOR group checking
          * */
-        if (fromUser == null || toUser == null) throw new UserNotFoundException();
-//		if (fromUser.getGroupId() == User.VISITOR || toUser.getGroupId() == User.VISITOR) throw new AccessDeniedException();
+        if (fromPlayer == null || toPlayer == null) throw new PlayerNotFoundException();
+//		if (fromPlayer.getGroupId() == Player.VISITOR || toPlayer.getGroupId() == Player.VISITOR) throw new AccessDeniedException();
         if (activity == null) throw new ActivityNotFoundException();
         if (activity.hasBegun()) throw new ActivityHasNotBegunException();
         if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
         return true;
     }
 
-    public static boolean isUserAssessable(final Long from, final Long to, final Long activityId) throws UserNotFoundException, InvalidAssessmentBehaviourException, ActivityNotFoundException, ActivityHasNotBegunException, InvalidUserActivityRelationException, AccessDeniedException {
-        if (from == null) throw new UserNotFoundException();
-        if (to == null) throw new UserNotFoundException();
+    public static boolean isPlayerAssessable(final Long from, final Long to, final Long activityId) throws PlayerNotFoundException, InvalidAssessmentBehaviourException, ActivityNotFoundException, ActivityHasNotBegunException, InvalidPlayerActivityRelationException, AccessDeniedException {
+        if (from == null) throw new PlayerNotFoundException();
+        if (to == null) throw new PlayerNotFoundException();
         if (from.equals(to)) throw new InvalidAssessmentBehaviourException();
 
-        User fromUser = queryUser(from);
-        User toUser = queryUser(to);
-        if (fromUser == null || toUser == null) throw new UserNotFoundException();
+        Player fromPlayer = queryPlayer(from);
+        Player toPlayer = queryPlayer(to);
+        if (fromPlayer == null || toPlayer == null) throw new PlayerNotFoundException();
 
         if (activityId == null) throw new ActivityNotFoundException();
         Activity activity = queryActivity(activityId);
         if (activity == null) throw new ActivityNotFoundException();
-        return isUserAssessable(fromUser, toUser, activity);
+        return isPlayerAssessable(fromPlayer, toPlayer, activity);
     }
 
-    public static boolean isUserAssessable(final User fromUser, final User toUser, final Activity activity) throws UserNotFoundException, InvalidAssessmentBehaviourException, ActivityNotFoundException, ActivityHasNotBegunException, InvalidUserActivityRelationException, AccessDeniedException {
+    public static boolean isPlayerAssessable(final Player fromPlayer, final Player toPlayer, final Activity activity) throws PlayerNotFoundException, InvalidAssessmentBehaviourException, ActivityNotFoundException, ActivityHasNotBegunException, InvalidPlayerActivityRelationException, AccessDeniedException {
         /**
          * TODO: enable VISITOR group checking
          * */
-        if (fromUser == null || toUser == null) throw new UserNotFoundException();
-        if (fromUser.getId().equals(toUser.getId())) throw new InvalidAssessmentBehaviourException();
-//        if (fromUser.getGroupId() == User.VISITOR || toUser.getGroupId() == User.VISITOR) throw new AccessDeniedException();
+        if (fromPlayer == null || toPlayer == null) throw new PlayerNotFoundException();
+        if (fromPlayer.getId().equals(toPlayer.getId())) throw new InvalidAssessmentBehaviourException();
+//        if (fromPlayer.getGroupId() == Player.VISITOR || toPlayer.getGroupId() == Player.VISITOR) throw new AccessDeniedException();
         if (activity == null) throw new ActivityNotFoundException();
         if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
-        int relation1 = queryUserActivityRelation(fromUser.getId(), activity.getId());
-        int relation2 = queryUserActivityRelation(toUser.getId(), activity.getId());
-        if ((relation1 & UserActivityRelation.SELECTED) == 0 || (relation2 & UserActivityRelation.SELECTED) == 0)	throw new InvalidUserActivityRelationException();
+        int relation1 = queryPlayerActivityRelation(fromPlayer.getId(), activity.getId());
+        int relation2 = queryPlayerActivityRelation(toPlayer.getId(), activity.getId());
+        if ((relation1 & PlayerActivityRelation.SELECTED) == 0 || (relation2 & PlayerActivityRelation.SELECTED) == 0)	throw new InvalidPlayerActivityRelationException();
         return true;
     }
 
     /*
-       Method isActivityMarkable(...) returns UserActivityRelation.INVALID if the activity is not markable by
-       specified user, or the original relation otherwise.
+       Method isActivityMarkable(...) returns PlayerActivityRelation.INVALID if the activity is not markable by
+       specified player, or the original relation otherwise.
        */
-    public static int isActivityMarkable(Long userId, Long activityId, int relation) {
-        int ret = UserActivityRelation.INVALID;
+    public static int isActivityMarkable(Long playerId, Long activityId, int relation) {
+        int ret = PlayerActivityRelation.INVALID;
         try {
-            if (userId == null) throw new UserNotFoundException();
+            if (playerId == null) throw new PlayerNotFoundException();
             if (activityId == null) throw new ActivityNotFoundException();
             Activity activity = queryActivity(activityId);
             if (activity == null) throw new ActivityNotFoundException();
-            ret = isActivityMarkable(userId, activity, relation);
+            ret = isActivityMarkable(playerId, activity, relation);
         } catch (Exception e) {
             Loggy.e(TAG, "isActivityMarkable", e);
         }
         return ret;
     }
 
-    public static int isActivityMarkable(Long userId, Activity activity, int relation) {
-        int ret = UserActivityRelation.INVALID;
+    public static int isActivityMarkable(Long playerId, Activity activity, int relation) {
+        int ret = PlayerActivityRelation.INVALID;
         try {
-            if (userId == null) throw new UserNotFoundException();
+            if (playerId == null) throw new PlayerNotFoundException();
             if (activity == null) throw new ActivityNotFoundException();
             if (!activity.hasBegun()) throw new ActivityHasNotBegunException();
-            int originalRelation = queryUserActivityRelation(userId, activity.getId());
-            if (originalRelation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
-            if ((originalRelation & UserActivityRelation.SELECTED) == 0) throw new InvalidUserActivityRelationException();
-            if ((originalRelation & relation) > 0) throw new InvalidUserActivityRelationException();
+            int originalRelation = queryPlayerActivityRelation(playerId, activity.getId());
+            if (originalRelation == PlayerActivityRelation.INVALID) throw new InvalidPlayerActivityRelationException();
+            if ((originalRelation & PlayerActivityRelation.SELECTED) == 0) throw new InvalidPlayerActivityRelationException();
+            if ((originalRelation & relation) > 0) throw new InvalidPlayerActivityRelationException();
             ret = originalRelation;
         } catch (Exception e) {
             Loggy.e(TAG, "isActivityMarkable", e);
@@ -662,8 +662,8 @@ public class DBCommander {
         return ret;
     }
 
-    public static boolean acceptActivity(final User user, final Activity activity) {
-        if (user == null) return false;
+    public static boolean acceptActivity(final Player player, final Activity activity) {
+        if (player == null) return false;
         if (activity == null) return false;
         try {
             long now = General.millisec();
@@ -679,8 +679,8 @@ public class DBCommander {
         return false;
     }
 
-    public static boolean rejectActivity(final User user, final Activity activity) {
-        if (user == null) return false;
+    public static boolean rejectActivity(final Player player, final Activity activity) {
+        if (player == null) return false;
         if (activity == null) return false;
         try {
             long now = General.millisec();
@@ -696,110 +696,110 @@ public class DBCommander {
         return false;
     }
 
-    public static List<BasicUser> queryUsers(final long activityId, final List<Integer> maskedRelationList) {
-        List<BasicUser> users = new ArrayList<>();
-        if (maskedRelationList == null || maskedRelationList.size() == 0) return users;
+    public static List<BasicPlayer> queryPlayers(final long activityId, final List<Integer> maskedRelationList) {
+        List<BasicPlayer> players = new ArrayList<>();
+        if (maskedRelationList == null || maskedRelationList.size() == 0) return players;
         try {
-            String[] onCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION};
+            String[] onCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.USER_ID, PlayerActivityRelation.RELATION};
             String[] onOps = {"=", "=", "IN"};
-            Object[] onVals = {activityId, new EasyPreparedStatementBuilder.PrimaryTableField(User.ID), maskedRelationList};
+            Object[] onVals = {activityId, new EasyPreparedStatementBuilder.PrimaryTableField(Player.ID), maskedRelationList};
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            List<JSONObject> records = builder.select(User.QUERY_FILEDS)
-                    .from(User.TABLE)
-                    .join(UserActivityRelation.TABLE, onCols, onOps, onVals)
+            List<JSONObject> records = builder.select(Player.QUERY_FILEDS)
+                    .from(Player.TABLE)
+                    .join(PlayerActivityRelation.TABLE, onCols, onOps, onVals)
                     .execSelect();
 
             if (records == null) throw new NullPointerException();
 
-            for (JSONObject userJson : records) {
-                BasicUser user = new BasicUser(userJson);
-                users.add(user);
+            for (JSONObject playerJson : records) {
+                BasicPlayer player = new BasicPlayer(playerJson);
+                players.add(player);
             }
         } catch (Exception e) {
-            Loggy.e(TAG, "queryUsers", e);
+            Loggy.e(TAG, "queryPlayers", e);
         }
-        return users;
+        return players;
     }
 
-    public static List<SpecialUserRecord> queryUsers(final List<Long> activityIdList, final List<Integer> maskedRelationList) {
-        List<SpecialUserRecord> ret = new ArrayList<>();
+    public static List<SpecialPlayerRecord> queryPlayers(final List<Long> activityIdList, final List<Integer> maskedRelationList) {
+        List<SpecialPlayerRecord> ret = new ArrayList<>();
         if (activityIdList == null || activityIdList.size() == 0) return ret;
         if (maskedRelationList == null || maskedRelationList.size() == 0) return ret;
         try {
-            String[] onCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION};
+            String[] onCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.USER_ID, PlayerActivityRelation.RELATION};
             String[] onOps = {"IN", "=", "IN"};
-            Object[] onVals = {activityIdList, new EasyPreparedStatementBuilder.PrimaryTableField(User.ID), maskedRelationList};
+            Object[] onVals = {activityIdList, new EasyPreparedStatementBuilder.PrimaryTableField(Player.ID), maskedRelationList};
 
             List<String> fields = new ArrayList<>();
-            for (String field : User.QUERY_FILEDS) fields.add(field);
-            fields.add(UserActivityRelation.ACTIVITY_ID);
+            for (String field : Player.QUERY_FILEDS) fields.add(field);
+            fields.add(PlayerActivityRelation.ACTIVITY_ID);
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             List<JSONObject> records = builder.select(fields)
-                    .from(User.TABLE)
-                    .join(UserActivityRelation.TABLE, onCols, onOps, onVals).execSelect();
+                    .from(Player.TABLE)
+                    .join(PlayerActivityRelation.TABLE, onCols, onOps, onVals).execSelect();
 
             if (records == null) throw new NullPointerException();
 
             for (JSONObject record : records) {
-                ret.add(new SpecialUserRecord(record));
+                ret.add(new SpecialPlayerRecord(record));
             }
         } catch (Exception e) {
-            Loggy.e(TAG, "queryUsers", e);
+            Loggy.e(TAG, "queryPlayers", e);
         }
         return ret;
     }
 
-    public static boolean updateUserActivityRelation(Long userId, Long activityId, int relation) {
+    public static boolean updatePlayerActivityRelation(Long playerId, Long activityId, int relation) {
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            builder.update(UserActivityRelation.TABLE)
-                    .set(UserActivityRelation.RELATION, relation)
-                    .where(UserActivityRelation.ACTIVITY_ID, "=", activityId)
-                    .where(UserActivityRelation.USER_ID, "=", userId);
+            builder.update(PlayerActivityRelation.TABLE)
+                    .set(PlayerActivityRelation.RELATION, relation)
+                    .where(PlayerActivityRelation.ACTIVITY_ID, "=", activityId)
+                    .where(PlayerActivityRelation.USER_ID, "=", playerId);
 
-            if ((relation & UserActivityRelation.SELECTED) > 0) builder.set(UserActivityRelation.LAST_SELECTED_TIME, General.millisec());
+            if ((relation & PlayerActivityRelation.SELECTED) > 0) builder.set(PlayerActivityRelation.LAST_SELECTED_TIME, General.millisec());
             return builder.execUpdate();
 
         } catch (Exception e) {
-            Loggy.e(TAG, "updateUserActivityRelation", e);
+            Loggy.e(TAG, "updatePlayerActivityRelation", e);
         }
         return false;
     }
 
-    public static boolean updateUserActivityRelation(List<Long> userIdList, Long activityId, int relation) {
+    public static boolean updatePlayerActivityRelation(List<Long> playerIdList, Long activityId, int relation) {
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            builder.update(UserActivityRelation.TABLE)
-                    .set(UserActivityRelation.RELATION, relation)
-                    .where(UserActivityRelation.ACTIVITY_ID, "=", activityId)
-                    .where(UserActivityRelation.USER_ID, "IN", userIdList);
+            builder.update(PlayerActivityRelation.TABLE)
+                    .set(PlayerActivityRelation.RELATION, relation)
+                    .where(PlayerActivityRelation.ACTIVITY_ID, "=", activityId)
+                    .where(PlayerActivityRelation.USER_ID, "IN", playerIdList);
 
-            if ((relation & UserActivityRelation.SELECTED) > 0) builder.set(UserActivityRelation.LAST_SELECTED_TIME, General.millisec());
+            if ((relation & PlayerActivityRelation.SELECTED) > 0) builder.set(PlayerActivityRelation.LAST_SELECTED_TIME, General.millisec());
             return builder.execUpdate();
 
         } catch (Exception e) {
-            Loggy.e(TAG, "updateUserActivityRelation", e);
+            Loggy.e(TAG, "updatePlayerActivityRelation", e);
         }
         return false;
     }
 
-    public static List<BasicUser> queryAppliedParticipants(long activityId) {
+    public static List<BasicPlayer> queryAppliedParticipants(long activityId) {
         List<Integer> relationList = new ArrayList<>();
-        for (int relation : UserActivityRelation.APPLIED_STATES) relationList.add(relation);
-        return queryUsers(activityId, relationList);
+        for (int relation : PlayerActivityRelation.APPLIED_STATES) relationList.add(relation);
+        return queryPlayers(activityId, relationList);
     }
 
-    public static List<BasicUser> querySelectedParticipants(long activityId) {
+    public static List<BasicPlayer> querySelectedParticipants(long activityId) {
         List<Integer> relationList = new ArrayList<>();
-        for (int relation : UserActivityRelation.SELECTED_STATES) relationList.add(relation);
-        return queryUsers(activityId, relationList);
+        for (int relation : PlayerActivityRelation.SELECTED_STATES) relationList.add(relation);
+        return queryPlayers(activityId, relationList);
     }
 
-    public static List<BasicUser> queryPresentParticipants(long activityId) {
+    public static List<BasicPlayer> queryPresentParticipants(long activityId) {
         List<Integer> relationList = new ArrayList<>();
-        for (int relation : UserActivityRelation.PRESENT_STATES) relationList.add(relation);
-        return queryUsers(activityId, relationList);
+        for (int relation : PlayerActivityRelation.PRESENT_STATES) relationList.add(relation);
+        return queryPlayers(activityId, relationList);
     }
 
     static List<JSONObject> processAdvancedQuery(EasyPreparedStatementBuilder builder, String refIndex, String orderKey, String orientation, Integer direction, Integer nItems) {
@@ -826,7 +826,7 @@ public class DBCommander {
         return ret;
     }
 
-    public static Long queryUserId(String token) throws TokenExpiredException {
+    public static Long queryPlayerId(String token) throws TokenExpiredException {
 
         EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
         List<JSONObject> allJson = builder.select(Login.USER_ID).from(Login.TABLE).where(Login.TOKEN, "=", token).execSelect();
@@ -834,12 +834,12 @@ public class DBCommander {
         JSONObject loginJson = allJson.get(0);
         Login login = new Login(loginJson);
         if (login.hasExpired()) throw new TokenExpiredException();
-        return login.getUserId();
+        return login.getPlayerId();
 
     }
 
-    public static boolean validateAdminAccess(User user) {
-        return (user != null && user.getGroupId() == User.ADMIN);
+    public static boolean validateAdminAccess(Player player) {
+        return (player != null && player.getGroupId() == Player.ADMIN);
     }
 
     protected static String generateVerificationCode(String email) {
@@ -850,23 +850,23 @@ public class DBCommander {
         return DataUtils.encryptByTime(email + password);
     }
 
-    public static boolean appendUserInfoForActivity(final List<Activity> activityList, final Long viewerId) {
+    public static boolean appendPlayerInfoForActivity(final List<Activity> activityList, final Long viewerId) {
         // host and viewer
         List<Long> hostIdList = new ArrayList<>();
         for (Activity activity : activityList) {
             hostIdList.add(activity.getHostId());
         }
-        List<User> hostList = queryUserList(hostIdList);
+        List<Player> hostList = queryPlayerList(hostIdList);
         if (hostList == null) return false;
 
-        Map<Long, User> tmp = new HashMap<>();
-        for (User host : hostList) {
+        Map<Long, Player> tmp = new HashMap<>();
+        for (Player host : hostList) {
             tmp.put(host.getId(), host);
         }
 
-        User viewer = (viewerId == null ? null : queryUser(viewerId));
+        Player viewer = (viewerId == null ? null : queryPlayer(viewerId));
         for (Activity activity : activityList) {
-            User host = tmp.get(activity.getHostId());
+            Player host = tmp.get(activity.getHostId());
             activity.setHost(host);
             if (viewer != null) activity.setViewer(viewer);
         }
@@ -896,40 +896,40 @@ public class DBCommander {
             activityIdList.add(activity.getId());
         }
         List<Integer> selectedStates = new LinkedList<>();
-        for (Integer state : UserActivityRelation.SELECTED_STATES) selectedStates.add(state);
+        for (Integer state : PlayerActivityRelation.SELECTED_STATES) selectedStates.add(state);
 
-        List<SpecialUserRecord> selectedList = queryUsers(activityIdList, selectedStates);
-        for (SpecialUserRecord record : selectedList) {
+        List<SpecialPlayerRecord> selectedList = queryPlayers(activityIdList, selectedStates);
+        for (SpecialPlayerRecord record : selectedList) {
             Activity activity = tmp.get(record.activityId);
-            activity.addSelectedParticipant(record.user);
+            activity.addSelectedParticipant(record.player);
         }
         return true;
     }
 
-    public static boolean appendUserInfoForTopLevelComment(final List<Comment> commentList) {
-        List<Long> userIdList = new ArrayList<>();
+    public static boolean appendPlayerInfoForTopLevelComment(final List<Comment> commentList) {
+        List<Long> playerIdList = new ArrayList<>();
         for (Comment comment : commentList) {
-            userIdList.add(comment.getFrom());
+            playerIdList.add(comment.getFrom());
             // TODO: optimization by "GROUP BY" limits? reference: http://www.xaprb.com/blog/2006/12/07/how-to-select-the-firstleastmax-row-per-group-in-sql/
             comment.setSubCommentList(querySubComments(comment.getId(), DBCommander.INITIAL_REF_INDEX, Comment.ID, SQLHelper.DESCEND, 3, DBCommander.DIRECTION_FORWARD));
         }
 
         // for top level comments
-        List<User> userList = queryUserList(userIdList);
-        if (userList == null) return false;
-        Map<Long, User> tmp = new HashMap<>();
-        for (User fromUser : userList) {
-            tmp.put(fromUser.getId(), fromUser);
+        List<Player> playerList = queryPlayerList(playerIdList);
+        if (playerList == null) return false;
+        Map<Long, Player> tmp = new HashMap<>();
+        for (Player fromPlayer : playerList) {
+            tmp.put(fromPlayer.getId(), fromPlayer);
         }
         for (Comment comment : commentList) {
-            User user = tmp.get(comment.getFrom());
-            comment.setFromUser(user);
+            Player player = tmp.get(comment.getFrom());
+            comment.setFromPlayer(player);
         }
 
         return true;
     }
 
-    public static boolean appendUserInfoForSubComment(final List<Comment> subCommentList) {
+    public static boolean appendPlayerInfoForSubComment(final List<Comment> subCommentList) {
         if (subCommentList == null) return false;
 
         List<Long> fromList = new ArrayList<>();
@@ -941,29 +941,29 @@ public class DBCommander {
 
         if (fromList.size() != toList.size()) return false;
 
-        List<User> fromUserList = queryUserList(fromList);
-        List<User> toUserList = queryUserList(toList);
+        List<Player> fromPlayerList = queryPlayerList(fromList);
+        List<Player> toPlayerList = queryPlayerList(toList);
 
-        Map<Long, User> tmpFrom = new HashMap<>();
-        for (User fromUser : fromUserList) {
-            tmpFrom.put(fromUser.getId(), fromUser);
+        Map<Long, Player> tmpFrom = new HashMap<>();
+        for (Player fromPlayer : fromPlayerList) {
+            tmpFrom.put(fromPlayer.getId(), fromPlayer);
         }
 
-        Map<Long, User> tmpTo = new HashMap<>();
-        for (User toUser: toUserList) {
-            tmpTo.put(toUser.getId(), toUser);
+        Map<Long, Player> tmpTo = new HashMap<>();
+        for (Player toPlayer: toPlayerList) {
+            tmpTo.put(toPlayer.getId(), toPlayer);
         }
 
         for (Comment comment : subCommentList) {
-            User fromUser = tmpFrom.get(comment.getFrom());
-            User toUser = tmpTo.get(comment.getTo());
-            comment.setFromUser(fromUser);
-            comment.setToUser(toUser);
+            Player fromPlayer = tmpFrom.get(comment.getFrom());
+            Player toPlayer = tmpTo.get(comment.getTo());
+            comment.setFromPlayer(fromPlayer);
+            comment.setToPlayer(toPlayer);
         }
         return true;
     }
 
-    public static boolean appendUserInfoForAssessemnt(final List<Assessment> assessmentList) {
+    public static boolean appendPlayerInfoForAssessemnt(final List<Assessment> assessmentList) {
         if (assessmentList == null) return false;
 
         List<Long> fromList = new ArrayList<>();
@@ -975,24 +975,24 @@ public class DBCommander {
 
         if (fromList.size() != toList.size()) return false;
 
-        List<User> fromUserList = queryUserList(fromList);
-        List<User> toUserList = queryUserList(toList);
+        List<Player> fromPlayerList = queryPlayerList(fromList);
+        List<Player> toPlayerList = queryPlayerList(toList);
 
-        Map<Long, User> tmpFrom = new HashMap<>();
-        for (User fromUser : fromUserList) {
-            tmpFrom.put(fromUser.getId(), fromUser);
+        Map<Long, Player> tmpFrom = new HashMap<>();
+        for (Player fromPlayer : fromPlayerList) {
+            tmpFrom.put(fromPlayer.getId(), fromPlayer);
         }
 
-        Map<Long, User> tmpTo = new HashMap<>();
-        for (User toUser: toUserList) {
-            tmpTo.put(toUser.getId(), toUser);
+        Map<Long, Player> tmpTo = new HashMap<>();
+        for (Player toPlayer: toPlayerList) {
+            tmpTo.put(toPlayer.getId(), toPlayer);
         }
 
         for (Assessment assessment : assessmentList) {
-            User fromUser = tmpFrom.get(assessment.getFrom());
-            User toUser = tmpTo.get(assessment.getTo());
-            assessment.setFromUser(fromUser);
-            assessment.setToUser(toUser);
+            Player fromPlayer = tmpFrom.get(assessment.getFrom());
+            Player toPlayer = tmpTo.get(assessment.getTo());
+            assessment.setFromPlayer(fromPlayer);
+            assessment.setToPlayer(toPlayer);
         }
         return true;
     }

@@ -3,7 +3,7 @@
 	<DatabaseName>hongkongresort-devel</DatabaseName>
 	<Host>localhost</Host>
 	<Port>3306</Port>
-	<User>root</User>
+	<Player>root</Player>
 	<Password></Password>
 </MySQL>
 

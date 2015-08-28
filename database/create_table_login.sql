@@ -23,11 +23,11 @@ DROP TABLE IF EXISTS `login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `login` (
-  `user_id` int(32) NOT NULL,
+  `player_id` int(32) NOT NULL,
   `token` varchar(32) NOT NULL,
   `timestamp` bigint(20) DEFAULT NULL,
   UNIQUE KEY `token` (`token`),
-  KEY `login_ibfk_1` (`user_id`)
+  KEY `login_ibfk_1` (`player_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

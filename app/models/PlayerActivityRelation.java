@@ -1,6 +1,6 @@
 package models;
 
-public class UserActivityRelation extends AbstractModel {
+public class PlayerActivityRelation extends AbstractModel {
 
     public static final int FULLMASK = ((1 << 16) - 1);
     public static final int INVALID = 0;
@@ -18,8 +18,8 @@ public class UserActivityRelation extends AbstractModel {
 
     // (USER_ID, ACTIVITY_ID) is UNIQUE
     // RELATION is indexed
-    public static String TABLE = "user_activity_relation";
-    public static String USER_ID = "user_id";
+    public static String TABLE = "player_activity_relation";
+    public static String USER_ID = "player_id";
     public static String ACTIVITY_ID = "activity_id";
     public static String RELATION = "relation";
     public static String LAST_APPLYING_TIME = "last_applying_time";

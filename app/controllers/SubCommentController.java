@@ -9,7 +9,7 @@ import dao.SQLHelper;
 import exception.*;
 import models.Activity;
 import models.Comment;
-import models.User;
+import models.Player;
 import play.libs.Json;
 import play.mvc.Result;
 import utilities.Converter;
@@ -68,7 +68,7 @@ public class SubCommentController extends CommentController {
             Map<String, String[]> formData = request().body().asFormUrlEncoded();
 			if (!formData.containsKey(Comment.CONTENT)) throw new InvalidCommentParamsException();
 			if (!formData.containsKey(Comment.ACTIVITY_ID)) throw new InvalidCommentParamsException();
-			if (!formData.containsKey(User.TOKEN)) throw new InvalidCommentParamsException();
+			if (!formData.containsKey(Player.TOKEN)) throw new InvalidCommentParamsException();
             if (!formData.containsKey(Comment.PREDECESSOR_ID)) throw new InvalidCommentParamsException();
             if (!formData.containsKey(Comment.PARENT_ID)) throw new InvalidCommentParamsException();
 	        if (!formData.containsKey(Comment.TO)) throw new InvalidCommentParamsException();
@@ -76,11 +76,11 @@ public class SubCommentController extends CommentController {
             String content = formData.get(Comment.CONTENT)[0];
             if (content == null || !General.validateCommentContent(content)) throw new InvalidCommentParamsException();
 
-            String token = formData.get(User.TOKEN)[0];
+            String token = formData.get(Player.TOKEN)[0];
             if (token == null) throw new InvalidCommentParamsException();
 
-            Long from = DBCommander.queryUserId(token);
-            if (from == null) throw new UserNotFoundException();
+            Long from = DBCommander.queryPlayerId(token);
+            if (from == null) throw new PlayerNotFoundException();
 
             Long activityId = Converter.toLong(formData.get(Comment.ACTIVITY_ID)[0]);
             if (activityId == null) throw new InvalidCommentParamsException();

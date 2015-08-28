@@ -103,7 +103,7 @@ function removeReplyEditor(){
 function generateReplyEditor(par, activity, comment){
     var ret = $('<p>').appendTo(par);
     var input = $('<input>', {
-        placeholder: HINTS["reply"].format(comment.fromUser.name)
+        placeholder: HINTS["reply"].format(comment.fromPlayer.name)
     }).appendTo(ret);
     var btnSubmit = $('<button>',{
         text: TITLES["submit_comment_reply"],
@@ -192,7 +192,7 @@ function generateCommentCell(par, commentJson, activity, single){
 	var hrefFromName = $('<a>', {
 		"class": "patch-block-lambda",
 		href: "#",
-		text: comment.fromUser.name,
+		text: comment.fromPlayer.name,
 		target: "_blank"
 	}).appendTo(commentFrom);
 	hrefFromName.click(function(evt) {
@@ -271,7 +271,7 @@ function generateSubCommentCell(par, commentJson, activity){
 	var hrefTo = $('<a>', {
 		"class": "patch-block-lambda",
 		href: "#",
-		text: TITLES["replied_to"].format(comment.toUser.name),
+		text: TITLES["replied_to"].format(comment.toPlayer.name),
 		target: "_blank",
 	}).appendTo(commentTo);
 	hrefTo.click(function(evt) {
@@ -290,7 +290,7 @@ function generateSubCommentCell(par, commentJson, activity){
 	var hrefFromName = $('<a>', {
 		"class": "patch-block-lambda",
 		href: "#",
-		text: comment.fromUser.name,
+		text: comment.fromPlayer.name,
 		target: "_blank"
 	}).appendTo(commentFrom);
 	hrefFromName.click(function(evt) {

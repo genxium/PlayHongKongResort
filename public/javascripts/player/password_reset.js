@@ -65,7 +65,7 @@ $(document).ready(function(){
 		disableField(aButton);
 		$.ajax({
 			type: "POST",
-			url: "/user/password/confirm",
+			url: "/player/password/confirm",
 			data: params,
 			success: function(data, status, xhr) {
 				enableField(aButton);

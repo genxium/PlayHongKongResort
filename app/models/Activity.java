@@ -182,23 +182,23 @@ public class Activity extends AbstractSimpleMessage {
 		return m_hostId;
 	}
 
-	protected User m_host = null;
+	protected Player m_host = null;
 
-	public User getHost() {
+	public Player getHost() {
 		return m_host;
 	}
 
-	public void setHost(User host) {
+	public void setHost(Player host) {
 		m_host = host;
 	}
 
-	protected User m_viewer = null;
+	protected Player m_viewer = null;
 
-	public User getViewer() {
+	public Player getViewer() {
 		return m_viewer;
 	}
 
-	public void setViewer(final User viewer) {
+	public void setViewer(final Player viewer) {
 		m_viewer = viewer;
 	}
 
@@ -234,13 +234,13 @@ public class Activity extends AbstractSimpleMessage {
 		return General.millisec() > m_beginTime;
 	}
 
-	protected List<BasicUser> m_selectedParticipants = null;
-	public void setSelectedParticipants(final List<BasicUser> selectedParticipants) {
+	protected List<BasicPlayer> m_selectedParticipants = null;
+	public void setSelectedParticipants(final List<BasicPlayer> selectedParticipants) {
 		m_selectedParticipants = selectedParticipants;
 	}
-	public void addSelectedParticipant(final BasicUser user) {
+	public void addSelectedParticipant(final BasicPlayer player) {
 		if (m_selectedParticipants == null) m_selectedParticipants = new ArrayList<>();
-		m_selectedParticipants.add(user);
+		m_selectedParticipants.add(player);
 	}
 
 	public Activity() {
@@ -319,17 +319,17 @@ public class Activity extends AbstractSimpleMessage {
 
 			if (m_selectedParticipants != null && m_selectedParticipants.size() > 0) {
 				ArrayNode selectedParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
-				for (BasicUser participant : m_selectedParticipants)	selectedParticipantsNode.add(participant.toObjectNode(viewerId));
+				for (BasicPlayer participant : m_selectedParticipants)	selectedParticipantsNode.add(participant.toObjectNode(viewerId));
 				ret.put(SELECTED_PARTICIPANTS, selectedParticipantsNode);
 			}
 
 			ret.put(PRIORITY, String.valueOf(m_priority));
 
 			if (viewerId == null) return ret;
-			int relation = DBCommander.queryUserActivityRelation(viewerId, m_id);
-			if (relation != UserActivityRelation.INVALID)	ret.put(UserActivityRelation.RELATION, relation);
+			int relation = DBCommander.queryPlayerActivityRelation(viewerId, m_id);
+			if (relation != PlayerActivityRelation.INVALID)	ret.put(PlayerActivityRelation.RELATION, relation);
 			if (viewerId.equals(m_host.getId()))	ret.put(STATUS, String.valueOf(m_status));
-			if (m_viewer != null && m_viewer.getGroupId() == User.ADMIN)	{
+			if (m_viewer != null && m_viewer.getGroupId() == Player.ADMIN)	{
 				ret.put(ORDER_MASK, String.valueOf(m_orderMask));
 				ret.put(STATUS, String.valueOf(m_status));
 			}

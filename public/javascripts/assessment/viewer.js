@@ -68,11 +68,11 @@ function generateAssessmentsViewer(par, assessments) {
 		}).appendTo(row);
 		var fromCell = $("<td>").appendTo(row);
 		var iconSlot = $("<img>", {
-			src: assessment.fromUser.avatar,
+			src: assessment.fromPlayer.avatar,
 			"class": "assessments-viewer-avatar"
 		}).appendTo(fromCell);
 		var nameSlot = $("<span>", {
-			text: assessment.fromUser.name,
+			text: assessment.fromPlayer.name,
 			"class": "assessments-viewer-name"
 		}).appendTo(fromCell);
  	}

@@ -98,22 +98,22 @@ function validatePassword(password) {
 }
 
 function validateName(name) {
-	var regex = g_usernamePattern;
+	var regex = g_playernamePattern;
 	return regex.test(name);	
 }
 
-function validateUserAge(age) {
-	var regex = g_userAgePattern;
+function validatePlayerAge(age) {
+	var regex = g_playerAgePattern;
 	return regex.test(age);
 }
 
-function validateUserGender(gender) {
-	var regex = g_userGenderPattern;
+function validatePlayerGender(gender) {
+	var regex = g_playerGenderPattern;
 	return regex.test(gender);
 }
 
-function validateUserMood(mood) {
-	var regex = g_userMoodPattern;
+function validatePlayerMood(mood) {
+	var regex = g_playerMoodPattern;
 	return regex.test(mood);
 }
 
@@ -397,11 +397,11 @@ function isTokenExpired(data) {
 	return ret == g_errNotLoggedIn;
 }
 
-function isUserNotFound(data) {
+function isPlayerNotFound(data) {
 	if (data == null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
-	return ret == g_errUserNotFound;
+	return ret == g_errPlayerNotFound;
 }
 
 function isPswErr(data) {

@@ -4,8 +4,8 @@ import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
 import exception.*;
 import models.Activity;
-import models.User;
-import models.UserActivityRelation;
+import models.Player;
+import models.PlayerActivityRelation;
 import play.mvc.Controller;
 import play.mvc.Result;
 import utilities.Converter;
@@ -20,20 +20,20 @@ public class AdminController extends Controller {
     public static Result accept() {
 	    try {
 		    Map<String, String[]> formData = request().body().asFormUrlEncoded();
-		    String token = formData.get(User.TOKEN)[0];
+		    String token = formData.get(Player.TOKEN)[0];
 
-		    Long userId = DBCommander.queryUserId(token);
-		    if (userId == null) throw new UserNotFoundException();
-		    User user = DBCommander.queryUser(userId);
-		    if (user == null) throw new UserNotFoundException();
-		    if (!DBCommander.validateAdminAccess(user)) throw new AccessDeniedException();
+		    Long playerId = DBCommander.queryPlayerId(token);
+		    if (playerId == null) throw new PlayerNotFoundException();
+		    Player player = DBCommander.queryPlayer(playerId);
+		    if (player == null) throw new PlayerNotFoundException();
+		    if (!DBCommander.validateAdminAccess(player)) throw new AccessDeniedException();
 
-			Long activityId = Converter.toLong(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+			Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
 			if (activityId == null) throw new InvalidRequestParamsException();
 			Activity activity = DBCommander.queryActivity(activityId);
 		    if (activity == null) throw new ActivityNotFoundException();
 
-		    if(!DBCommander.acceptActivity(user, activity)) throw new NullPointerException();
+		    if(!DBCommander.acceptActivity(player, activity)) throw new NullPointerException();
 
 		    return ok();
 	    } catch (TokenExpiredException e) {
@@ -47,20 +47,20 @@ public class AdminController extends Controller {
     public static Result reject() {
 	    try {
             Map<String, String[]> formData = request().body().asFormUrlEncoded();
-            String token = formData.get(User.TOKEN)[0];
+            String token = formData.get(Player.TOKEN)[0];
 
-            Long userId = DBCommander.queryUserId(token);
-            if (userId == null) throw new UserNotFoundException();
-            User user = DBCommander.queryUser(userId);
-            if (user == null) throw new UserNotFoundException();
-            if (!DBCommander.validateAdminAccess(user)) throw new AccessDeniedException();
+            Long playerId = DBCommander.queryPlayerId(token);
+            if (playerId == null) throw new PlayerNotFoundException();
+            Player player = DBCommander.queryPlayer(playerId);
+            if (player == null) throw new PlayerNotFoundException();
+            if (!DBCommander.validateAdminAccess(player)) throw new AccessDeniedException();
 
-			Long activityId = Converter.toLong(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+			Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
 			if (activityId == null) throw new InvalidRequestParamsException();
 			Activity activity = DBCommander.queryActivity(activityId);
             if (activity == null) throw new ActivityNotFoundException();
 
-            if(!DBCommander.rejectActivity(user, activity)) throw new NullPointerException();
+            if(!DBCommander.rejectActivity(player, activity)) throw new NullPointerException();
             return ok();
         } catch (TokenExpiredException e) {
             return ok(TokenExpiredResult.get());
@@ -73,16 +73,16 @@ public class AdminController extends Controller {
     public static Result delete() {
 	    try {
 		    Map<String, String[]> formData = request().body().asFormUrlEncoded();
-		    String token = formData.get(User.TOKEN)[0];
+		    String token = formData.get(Player.TOKEN)[0];
 
-		    Long userId = DBCommander.queryUserId(token);
-		    if (userId == null) throw new UserNotFoundException();
+		    Long playerId = DBCommander.queryPlayerId(token);
+		    if (playerId == null) throw new PlayerNotFoundException();
 
-		    User user = DBCommander.queryUser(userId);
-		    if (user == null) throw new UserNotFoundException();
-		    if (!DBCommander.validateAdminAccess(user)) throw new AccessDeniedException();
+		    Player player = DBCommander.queryPlayer(playerId);
+		    if (player == null) throw new PlayerNotFoundException();
+		    if (!DBCommander.validateAdminAccess(player)) throw new AccessDeniedException();
 
-			Long activityId = Converter.toLong(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+			Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
 			if (activityId == null) throw new InvalidRequestParamsException();
 			if(!ExtraCommander.deleteActivity(activityId)) throw new NullPointerException();
 
@@ -98,14 +98,14 @@ public class AdminController extends Controller {
 	public static Result prioritize() {
 		try {
 			Map<String, String[]> formData = request().body().asFormUrlEncoded();
-			String token = formData.get(User.TOKEN)[0];
+			String token = formData.get(Player.TOKEN)[0];
 
-			Long userId = DBCommander.queryUserId(token);
-			if (userId == null) throw new UserNotFoundException();
+			Long playerId = DBCommander.queryPlayerId(token);
+			if (playerId == null) throw new PlayerNotFoundException();
 
-			User user = DBCommander.queryUser(userId);
-			if (user == null) throw new UserNotFoundException();
-			if (!DBCommander.validateAdminAccess(user)) throw new AccessDeniedException();
+			Player player = DBCommander.queryPlayer(playerId);
+			if (player == null) throw new PlayerNotFoundException();
+			if (!DBCommander.validateAdminAccess(player)) throw new AccessDeniedException();
 
 			Integer priority = Converter.toInteger(formData.get(Activity.PRIORITY)[0]);
 			if (priority == null) throw new InvalidRequestParamsException();
@@ -113,7 +113,7 @@ public class AdminController extends Controller {
 			Integer orderMask = Converter.toInteger(formData.get(Activity.ORDER_MASK)[0]);
 			if (orderMask == null) throw new InvalidRequestParamsException();
 
-			Long activityId = Converter.toLong(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+			Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
 			if (activityId == null) throw new InvalidRequestParamsException();
 
 			Activity activity = DBCommander.queryActivity(activityId);

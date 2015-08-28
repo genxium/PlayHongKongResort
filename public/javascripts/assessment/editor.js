@@ -53,7 +53,7 @@ function generateAssessmentEditor(par, participant, activity, batchEditor){
 	singleEditor.name = participant.name;
 	if ( activity.containsRelation() && ((activity.relation & assessed) == 0) )	generateUnassessedView(row, singleEditor, batchEditor);
 	else generateAssessedView(row, participant, activity);
-	if(g_loggedInUser != null && g_loggedInUser.id == participant.id) row.hide(); 
+	if(g_loggedInPlayer != null && g_loggedInPlayer.id == participant.id) row.hide(); 
 	return singleEditor;
 }
 
@@ -106,7 +106,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 
 	g_btnSubmit.click({editor: batchEditor, activity: activity}, function(evt){
 		evt.preventDefault();
-		if (g_loggedInUser == null) return;
+		if (g_loggedInPlayer == null) return;
 		var aBatchEditor = evt.data.editor;
 		var aActivity = evt.data.activity;
 		var assessments = new Array();
@@ -114,7 +114,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 			var editor = aBatchEditor.editors[i];
 			var content = editor.content;
 			var to = editor.participantId;
-			if(to == g_loggedInUser.id) continue;
+			if(to == g_loggedInPlayer.id) continue;
 			var assessment = createAssessment(content, to); 
 			assessments.push(assessment);	
 		}
@@ -169,7 +169,7 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 	var disabled = false;
 
 	// Determine attendance switch initial state based on viewer-activity-relation
-	if (g_loggedInUser != null && activity.host.id == g_loggedInUser.id) {
+	if (g_loggedInPlayer != null && activity.host.id == g_loggedInPlayer.id) {
 		// host cannot choose presence
 		initVal = true;
 		disabled = true;
@@ -192,9 +192,9 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 		style: "margin-top: 5pt"
 	}).appendTo(sectionAll);
 
-	if( g_loggedInUser != null && ( ((activity.relation & present) > 0) || (activity.containsRelation() == false) ) ) {
+	if( g_loggedInPlayer != null && ( ((activity.relation & present) > 0) || (activity.containsRelation() == false) ) ) {
 		/* 
- 		 * 	show list for logged-in users
+ 		 * 	show list for logged-in players
 		 */
 		refreshBatchEditor(activity);
 	}

@@ -25,10 +25,10 @@ DROP TABLE IF EXISTS `perm_foreign_party`;
 CREATE TABLE `perm_foreign_party` (
   `id` int(11) NOT NULL,
   `party` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `player_id` int(11) NOT NULL,
   UNIQUE KEY `PK` (`id`,`party`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `perm_foreign_party_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  KEY `player_id` (`player_id`),
+  CONSTRAINT `perm_foreign_party_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

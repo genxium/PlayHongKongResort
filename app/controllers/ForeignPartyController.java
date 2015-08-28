@@ -5,12 +5,12 @@ import components.StandardFailureResult;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import exception.InvalidRegistrationParamsException;
-import exception.UserNotFoundException;
+import exception.PlayerNotFoundException;
 import fixtures.Constants;
 import models.Login;
 import models.PermForeignParty;
 import models.TempForeignParty;
-import models.User;
+import models.Player;
 import play.mvc.Controller;
 import play.mvc.Result;
 import utilities.Converter;
@@ -71,12 +71,12 @@ public class ForeignPartyController extends Controller {
 
             String accessToken = formData.get(TempForeignParty.ACCESS_TOKEN)[0];
             Integer party = Converter.toInteger(formData.get(TempForeignParty.PARTY)[0]);
-            User user = null;
+            Player player = null;
 
-            if (formData.containsKey(User.NAME) && formData.containsKey(User.EMAIL)) {
+            if (formData.containsKey(Player.NAME) && formData.containsKey(Player.EMAIL)) {
 
-                String name = formData.get(User.NAME)[0];
-                String email = formData.get(User.EMAIL)[0];
+                String name = formData.get(Player.NAME)[0];
+                String email = formData.get(Player.EMAIL)[0];
 
                 if ((name == null || !General.validateName(name)) || (email == null || !General.validateEmail(email)) )  throw new InvalidRegistrationParamsException();
 
@@ -93,23 +93,23 @@ public class ForeignPartyController extends Controller {
                 try {
                     if (connection == null) throw new NullPointerException();
 
-                    // insert record into `user`
+                    // insert record into `player`
 
                     String code = DBCommander.generateVerificationCode(name);
 
-                    String[] cols = {User.EMAIL, User.NAME, User.GROUP_ID, User.VERIFICATION_CODE};
-                    Object[] values = {email, name, User.USER, code};
+                    String[] cols = {Player.EMAIL, Player.NAME, Player.GROUP_ID, Player.VERIFICATION_CODE};
+                    Object[] values = {email, name, Player.USER, code};
 
-                    EasyPreparedStatementBuilder createUserBuilder = new EasyPreparedStatementBuilder();
-                    PreparedStatement createUserStat = createUserBuilder.insert(cols, values)
-                            .into(User.TABLE)
+                    EasyPreparedStatementBuilder createPlayerBuilder = new EasyPreparedStatementBuilder();
+                    PreparedStatement createPlayerStat = createPlayerBuilder.insert(cols, values)
+                            .into(Player.TABLE)
                             .toInsert(connection);
 
-                    Long userId = SQLHelper.executeInsertAndCloseStatement(createUserStat);
+                    Long playerId = SQLHelper.executeInsertAndCloseStatement(createPlayerStat);
 
                     // insert record into `perm_foreign_party`
                     String[] cols2 = {PermForeignParty.ID, PermForeignParty.PARTY, PermForeignParty.USER_ID};
-                    Object[] vals2 = {tempForeignPartyRecord.getPartyId(), tempForeignPartyRecord.getParty(), userId};
+                    Object[] vals2 = {tempForeignPartyRecord.getPartyId(), tempForeignPartyRecord.getParty(), playerId};
 
                     EasyPreparedStatementBuilder createPermForeignPartyBuilder = new EasyPreparedStatementBuilder();
                     PreparedStatement createPermForeignPartyStat = createPermForeignPartyBuilder.insert(cols2, vals2)
@@ -139,14 +139,14 @@ public class ForeignPartyController extends Controller {
                  * */
 
                 if (transactionSucceeded) {
-                    user = new User(email, name);
+                    player = new Player(email, name);
                     /**
-                     * TODO: the following 2 lines are used for adaptation of User.toObjectNode method, however this might be better covered by the initialization of `User`
+                     * TODO: the following 2 lines are used for adaptation of Player.toObjectNode method, however this might be better covered by the initialization of `Player`
                      * */
-                    user.setParty(party);
-                    user.setGroupId(User.USER);
+                    player.setParty(party);
+                    player.setGroupId(Player.USER);
                     /**
-                     * TODO: send verification email to user, but by far `foreign party account verified` and `email verified` states are not separated
+                     * TODO: send verification email to player, but by far `foreign party account verified` and `email verified` states are not separated
                      * */
                 }
             } else {
@@ -158,19 +158,19 @@ public class ForeignPartyController extends Controller {
                     DBCommander.createTempForeignParty(accessToken, party, specs.id, specs.email);
                     return ok(StandardFailureResult.get(Constants.INFO_FOREIGN_PARTY_REGISTRATION_REQUIRED));
                 }
-                user = DBCommander.queryUser(record.getUserId());
+                player = DBCommander.queryPlayer(record.getPlayerId());
             }
 
-            if (user == null) throw new UserNotFoundException();
+            if (player == null) throw new PlayerNotFoundException();
 
-            String token = Converter.generateToken(user.getEmail(), user.getName());
+            String token = Converter.generateToken(player.getEmail(), player.getName());
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             String[] cols = {Login.USER_ID, Login.TOKEN, Login.TIMESTAMP};
-            Object[] vals = {user.getId(), token, General.millisec()};
+            Object[] vals = {player.getId(), token, General.millisec()};
             builder.insert(cols, vals).into(Login.TABLE).execInsert();
-            ObjectNode result = user.toObjectNode(user.getId());
-            result.put(User.TOKEN, token);
+            ObjectNode result = player.toObjectNode(player.getId());
+            result.put(Player.TOKEN, token);
 
             return ok(result);
         } catch (Exception e) {

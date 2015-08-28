@@ -55,19 +55,19 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 
 	this.btn.click(this, function(evt) {
 		var widget = evt.data;
-		var username = widget.name.val();
+		var playername = widget.name.val();
 		var email = widget.email.val();
 		var password = widget.psw.val();
 		var passwordConfirm = widget.pswConfirm.val();
 
-		if(username == null || username.length == 0 || !validateName(username)
+		if(playername == null || playername.length == 0 || !validateName(playername)
 		    || email == null || email.length == 0 || !validateEmail(email)
 		    || password == null || password.length == 0 || !validatePassword(password) || !validatePasswordConfirm(password, passwordConfirm)) return;
 
 		var btnRegister = $(this);
 		disableField(btnRegister);
 		var params = {};
-		params[g_keyName] = username;
+		params[g_keyName] = playername;
 		params[g_keyEmail] = email;
 		params[g_keyPassword] = password;
 		params[g_keySid] = widget.captcha.sid;
@@ -75,7 +75,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 
 		$.ajax({
 		    type: "POST",
-		    url: "/user/register",
+		    url: "/player/register",
 		    data: params,
 		    success: function(data, status, xhr){
 				enableField(btnRegister);
@@ -105,7 +105,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var nameVal = $(this).val();
 		if(nameVal == null || nameVal.length == 0) return;
 		if(!validateName(nameVal)) {
-			nameCheck.html("<p>" + MESSAGES["username_requirement"] + "</p>");
+			nameCheck.html("<p>" + MESSAGES["playername_requirement"] + "</p>");
 			nameCheck.addClass("warning");
 			return;
 		}
@@ -114,14 +114,14 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		params[g_keyName] = nameVal;
 		$.ajax({
 			type: "GET",
-			url: "/user/name/duplicate",
+			url: "/player/name/duplicate",
 			data: params,
 			success: function(data, status, xhr){
 				if (isStandardSuccess(data)){
-					nameCheck.html("<p>" + MESSAGES["username_valid"] + "</p>");        
+					nameCheck.html("<p>" + MESSAGES["playername_valid"] + "</p>");        
 			    }else{
 					nameCheck.addClass("warning");
-					nameCheck.html("<p>" + MESSAGES["username_invalid"] + "</p>");
+					nameCheck.html("<p>" + MESSAGES["playername_invalid"] + "</p>");
 				}        
 			},
 			error: function(xhr, status, err){
@@ -147,7 +147,7 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		params[g_keyEmail] = emailVal;
 		$.ajax({
 			type: "GET",
-			url: "/user/email/duplicate",
+			url: "/player/email/duplicate",
 			data: params,
 			success: function(data, status, xhr){
 				if (isStandardSuccess(data)){
@@ -224,7 +224,7 @@ function generateRegisterWidget(container, isModal, onSuccess, onError){
 	}).appendTo(registerBox);
 	var fieldName = $('<input>', {
 		type: "text",
-		placeHolder: HINTS["username"],	
+		placeHolder: HINTS["playername"],	
 	}).appendTo(rowName);
 	var spName = $('<div>', {
 		"class": "message"

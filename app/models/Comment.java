@@ -47,8 +47,8 @@ public class Comment extends AbstractActivityMessage {
 	    ObjectNode ret = super.toObjectNode();
 	    try {
 		    ret.put(PARENT_ID, m_parentId);
-		    ret.put(FROM_USER, m_fromUser.toObjectNode(viewerId));
-		    ret.put(TO_USER, m_toUser.toObjectNode(viewerId));
+		    ret.put(FROM_USER, m_fromPlayer.toObjectNode(viewerId));
+		    ret.put(TO_USER, m_toPlayer.toObjectNode(viewerId));
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "toSubCommentObjectNode", e);
 	    }
@@ -59,9 +59,9 @@ public class Comment extends AbstractActivityMessage {
 	    ObjectNode ret = super.toObjectNode();
 	    try {
 		    ret.put(PARENT_ID, m_parentId);
-			User fromUser = DBCommander.queryUser(m_from);
-			if (fromUser == null) return null;
-		    ret.put(FROM_USER, fromUser.toObjectNode(viewerId));
+			Player fromPlayer = DBCommander.queryPlayer(m_from);
+			if (fromPlayer == null) return null;
+		    ret.put(FROM_USER, fromPlayer.toObjectNode(viewerId));
 		    ret.put(NUM_CHILDREN, m_numChildren.toString());
 
 		    if (single || m_subCommentList == null) return ret;

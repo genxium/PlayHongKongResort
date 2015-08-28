@@ -6,26 +6,26 @@ var absent = (1<<3);
 var assessed = (1<<4);
 var hosted = (1<<5);
 
-function User(userJson){
-	this.id = parseInt(userJson["id"]);
-	if (userJson.hasOwnProperty("email"))	this.email = userJson["email"];
-	this.name = userJson["name"];
-	this.avatar =  (userJson.hasOwnProperty("avatar") ? userJson["avatar"] : "/assets/icons/anonymous.png");
-	if (userJson.hasOwnProperty("unread_count"))	this.unreadCount = parseInt(userJson["unread_count"]);
+function Player(playerJson){
+	this.id = parseInt(playerJson["id"]);
+	if (playerJson.hasOwnProperty("email"))	this.email = playerJson["email"];
+	this.name = playerJson["name"];
+	this.avatar =  (playerJson.hasOwnProperty("avatar") ? playerJson["avatar"] : "/assets/icons/anonymous.png");
+	if (playerJson.hasOwnProperty("unread_count"))	this.unreadCount = parseInt(playerJson["unread_count"]);
 	this.hasAvatar = function() {
 		return (this.avatar != null && this.avatar != undefined);
 	}
-	if (userJson.hasOwnProperty("group_id")) this.groupId = parseInt(userJson["group_id"]);
+	if (playerJson.hasOwnProperty("group_id")) this.groupId = parseInt(playerJson["group_id"]);
 	this.isVisitor = function() {
 	    return (this.groupId == null || this.groupId == undefined || this.groupId == 0);
 	}
-	if (userJson.hasOwnProperty("age")) this.age = userJson["age"];
+	if (playerJson.hasOwnProperty("age")) this.age = playerJson["age"];
 	else this.age = "";
 
-	if (userJson.hasOwnProperty("gender")) this.gender = userJson["gender"];
+	if (playerJson.hasOwnProperty("gender")) this.gender = playerJson["gender"];
 	else this.gender = "";
 
-	if (userJson.hasOwnProperty("mood")) this.mood = userJson["mood"];
+	if (playerJson.hasOwnProperty("mood")) this.mood = playerJson["mood"];
 	else this.mood = "";
 }
 
@@ -78,7 +78,7 @@ function Activity(activityJson) {
 		var participantsJson = activityJson["applied_participants"];
 		for (var key in participantsJson){
 			var participantJson = participantsJson[key];
-			var participant = new User(participantJson);
+			var participant = new Player(participantJson);
 			participants.push(participant);
 		}
 		this.appliedParticipants = participants;
@@ -89,7 +89,7 @@ function Activity(activityJson) {
 		var participantsJson = activityJson["selected_participants"];
 		for (var key in participantsJson){
 			var participantJson = participantsJson[key];
-			var participant = new User(participantJson);
+			var participant = new Player(participantJson);
 			participants.push(participant);
 		}
 		this.selectedParticipants = participants;
@@ -100,7 +100,7 @@ function Activity(activityJson) {
 		var participantsJson = activityJson["present_participants"];
 		for (var key in participantsJson){
 			var participantJson = participantsJson[key];
-			var participant = new User(participantJson);
+			var participant = new Player(participantJson);
 			participants.push(participant);
 		}
 		this.presentParticipants = participants;
@@ -108,13 +108,13 @@ function Activity(activityJson) {
 
 	if (activityJson.hasOwnProperty("host")) {
 		var hostJson = activityJson["host"];
-		var host = new User(hostJson);
+		var host = new Player(hostJson);
 		this.host = host;
 	}
 
 	if (activityJson.hasOwnProperty("viewer")) {
 		var viewerJson = activityJson["viewer"];
-		var viewer = new User(viewerJson);
+		var viewer = new Player(viewerJson);
 		this.viewer = viewer;
 	}
 	
@@ -139,10 +139,10 @@ function Comment(commentJson) {
         if (commentJson.hasOwnProperty("num_children")) this.numChildren = parseInt(commentJson["num_children"]);
 
         if (commentJson.hasOwnProperty("from")) this.from = parseInt(commentJson["from"]);
-        if (commentJson.hasOwnProperty("from_user")) this.fromUser = new User(commentJson["from_user"]);
+        if (commentJson.hasOwnProperty("from_player")) this.fromPlayer = new Player(commentJson["from_player"]);
 
         if (commentJson.hasOwnProperty("to")) this.to = parseInt(commentJson["to"]);
-        if (commentJson.hasOwnProperty("to_user")) this.toUser = new User(commentJson["to_user"]);
+        if (commentJson.hasOwnProperty("to_player")) this.toPlayer = new Player(commentJson["to_player"]);
 }
 
 function Assessment(assessmentJson) {
@@ -152,8 +152,8 @@ function Assessment(assessmentJson) {
 
 	if (assessmentJson.hasOwnProperty("from")) this.from = parseInt(assessmentJson["from"]);
 	if (assessmentJson.hasOwnProperty("to")) this.to = parseInt(assessmentJson["to"]);
-	if (assessmentJson.hasOwnProperty("from_user")) this.fromUser = new User(assessmentJson["from_user"]);
-	if (assessmentJson.hasOwnProperty("to_user")) this.toUser = new User(assessmentJson["to_user"]);
+	if (assessmentJson.hasOwnProperty("from_player")) this.fromPlayer = new Player(assessmentJson["from_player"]);
+	if (assessmentJson.hasOwnProperty("to_player")) this.toPlayer = new Player(assessmentJson["to_player"]);
 
 }
 

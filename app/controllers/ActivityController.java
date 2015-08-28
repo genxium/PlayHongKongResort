@@ -45,19 +45,19 @@ public class ActivityController extends Controller {
 			String orientationStr = SQLHelper.convertOrientation(orientation);
 			if (orientationStr == null)   throw new InvalidRequestParamsException();
 			Set<Integer> validRelations = new HashSet<>();
-			validRelations.add(UserActivityRelation.HOSTED);
-			validRelations.add(UserActivityRelation.PRESENT);
-			validRelations.add(UserActivityRelation.ABSENT);
-			validRelations.add(UserActivityRelation.PRESENT);
+			validRelations.add(PlayerActivityRelation.HOSTED);
+			validRelations.add(PlayerActivityRelation.PRESENT);
+			validRelations.add(PlayerActivityRelation.ABSENT);
+			validRelations.add(PlayerActivityRelation.PRESENT);
 
 			if (relation != null && !validRelations.contains(relation)) throw new InvalidRequestParamsException();
 
 			// anti=cracking by param token
 			Long viewerId = null;
-			User viewer = null;
+			Player viewer = null;
 			if (token != null) {
-				viewerId = DBCommander.queryUserId(token);
-				viewer = DBCommander.queryUser(viewerId);
+				viewerId = DBCommander.queryPlayerId(token);
+				viewer = DBCommander.queryPlayer(viewerId);
 			}
 			if (vieweeId.equals(0L)) vieweeId = null;
 
@@ -73,25 +73,25 @@ public class ActivityController extends Controller {
 				orderKey = Activity.CREATED_TIME;
 			}
 
-			if (relation != null && relation != UserActivityRelation.HOSTED && vieweeId != null) {
+			if (relation != null && relation != PlayerActivityRelation.HOSTED && vieweeId != null) {
 				List<Integer> maskedRelationList = new LinkedList<>();
-				if (relation == UserActivityRelation.PRESENT) {
-					for (int aRelation : UserActivityRelation.PRESENT_STATES) {
+				if (relation == PlayerActivityRelation.PRESENT) {
+					for (int aRelation : PlayerActivityRelation.PRESENT_STATES) {
 						maskedRelationList.add(aRelation);
 					}
 				}
-				if (relation == UserActivityRelation.ABSENT) {
-					for (int aRelation : UserActivityRelation.ABSENT_STATES) {
+				if (relation == PlayerActivityRelation.ABSENT) {
+					for (int aRelation : PlayerActivityRelation.ABSENT_STATES) {
 						maskedRelationList.add(aRelation);
 					}
 				}
-				if (relation == UserActivityRelation.PRESENT) {
-					for (int aRelation : UserActivityRelation.PRESENT_STATES) {
+				if (relation == PlayerActivityRelation.PRESENT) {
+					for (int aRelation : PlayerActivityRelation.PRESENT_STATES) {
 						maskedRelationList.add(aRelation);
 					}
 				}
 				activities = DBCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, vieweeId, maskedRelationList);
-			} else if (relation != null && relation == UserActivityRelation.HOSTED && vieweeId != null) {
+			} else if (relation != null && relation == PlayerActivityRelation.HOSTED && vieweeId != null) {
 				activities = DBCommander.queryHostedActivities(vieweeId, viewerId, pageSt, pageEd, Activity.ID, orientationStr, numItems);
 			} else {
 				int offset = 0;
@@ -154,10 +154,10 @@ public class ActivityController extends Controller {
 		try {
 			ActivityDetail activityDetail = ExtraCommander.queryActivityDetail(activityId);
 			if (activityDetail == null) throw new ActivityNotFoundException();
-			Long userId = null;
-			if (token != null) userId = DBCommander.queryUserId(token);
-			if ((userId == null || !userId.equals(activityDetail.getHost().getId())) && activityDetail.getStatus() != Activity.ACCEPTED) return badRequest();
-			return ok(activityDetail.toObjectNode(userId));
+			Long playerId = null;
+			if (token != null) playerId = DBCommander.queryPlayerId(token);
+			if ((playerId == null || !playerId.equals(activityDetail.getHost().getId())) && activityDetail.getStatus() != Activity.ACCEPTED) return badRequest();
+			return ok(activityDetail.toObjectNode(playerId));
 		} catch (Exception e) {
 			Loggy.e(TAG, "detail", e);
 		}
@@ -193,33 +193,33 @@ public class ActivityController extends Controller {
 				}
 			}
 
-			String token = formData.get(User.TOKEN)[0];
+			String token = formData.get(Player.TOKEN)[0];
 			if (token == null) throw new NullPointerException();
 
 			boolean isNewActivity = true;
 			Long activityId = null;
-			if (formData.containsKey(UserActivityRelation.ACTIVITY_ID)) {
-				activityId = Converter.toLong(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+			if (formData.containsKey(PlayerActivityRelation.ACTIVITY_ID)) {
+				activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
 				isNewActivity = false;
 			}
 			if (isNewActivity) {
-				String sid = formData.get(UserActivityRelation.SID)[0];
-				String captcha = formData.get(UserActivityRelation.CAPTCHA)[0];  
+				String sid = formData.get(PlayerActivityRelation.SID)[0];
+				String captcha = formData.get(PlayerActivityRelation.CAPTCHA)[0];  
 				if (sid == null || captcha == null) throw new CaptchaNotMatchedException(); 
 				if (session(sid) == null || !captcha.equalsIgnoreCase(session(sid))) throw new CaptchaNotMatchedException(); 
 			}
 
-			Long userId = DBCommander.queryUserId(token);
-			if (userId == null) throw new UserNotFoundException();
-			User user = DBCommander.queryUser(userId);
-			if (user == null) throw new UserNotFoundException();
+			Long playerId = DBCommander.queryPlayerId(token);
+			if (playerId == null) throw new PlayerNotFoundException();
+			Player player = DBCommander.queryPlayer(playerId);
+			if (player == null) throw new PlayerNotFoundException();
 
-			if (user.getGroupId() == User.VISITOR) throw new AccessDeniedException();
+			if (player.getGroupId() == Player.VISITOR) throw new AccessDeniedException();
 
 			Activity activity = null;
 			long now = General.millisec();
 			if (isNewActivity) {
-				activity = DBCommander.createActivity(user, now);
+				activity = DBCommander.createActivity(player, now);
 				if (activity == null) throw new ActivityNotFoundException();
 				activityId = activity.getId();
 			} else if (activityId != null) {
@@ -230,7 +230,7 @@ public class ActivityController extends Controller {
 			if (activity == null || activityId == null || activityId.equals(SQLHelper.INVALID)) throw new ActivityNotFoundException();
 
 			// update activity
-			if (!DBCommander.isActivityEditable(userId, activity)) throw new AccessDeniedException();
+			if (!DBCommander.isActivityEditable(playerId, activity)) throw new AccessDeniedException();
 			activity.setTitle(activityTitle);
 			activity.setAddress(activityAddress);
 			activity.setContent(activityContent);
@@ -280,7 +280,7 @@ public class ActivityController extends Controller {
 						String fileName = imageFile.getFilename();
 						File file = imageFile.getFile();
 
-						String newImageName = DataUtils.generateUploadedImageName(fileName, user.getId());
+						String newImageName = DataUtils.generateUploadedImageName(fileName, player.getId());
 						String imageURL = Image.getUrlPrefix() + newImageName;
 
 						String imageAbsolutePath = Image.getFolderPath() + newImageName;
@@ -347,7 +347,7 @@ public class ActivityController extends Controller {
 			tmp.add(activity);
 			DBCommander.appendImageInfoForActivity(tmp);
 
-			return ok(activity.toObjectNode(userId));
+			return ok(activity.toObjectNode(playerId));
 		} catch (TokenExpiredException e) {
 			return ok(TokenExpiredResult.get());
 		} catch (CaptchaNotMatchedException e) {
@@ -364,17 +364,17 @@ public class ActivityController extends Controller {
 		try {
 			Http.RequestBody body = request().body();
 
-			// get user token and activity id from request body stream
+			// get player token and activity id from request body stream
 			Map<String, String[]> formData = body.asFormUrlEncoded();
 
-			String token = formData.get(User.TOKEN)[0];
-			Integer activityId = Integer.valueOf(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
+			String token = formData.get(Player.TOKEN)[0];
+			Integer activityId = Integer.valueOf(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
 
-			Long userId = DBCommander.queryUserId(token);
-			if (userId == null) throw new UserNotFoundException();
+			Long playerId = DBCommander.queryPlayerId(token);
+			if (playerId == null) throw new PlayerNotFoundException();
 
 			Activity activity = DBCommander.queryActivity(activityId);
-			if (!DBCommander.isActivityEditable(userId, activity)) throw new Exception();
+			if (!DBCommander.isActivityEditable(playerId, activity)) throw new Exception();
 
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
@@ -397,17 +397,17 @@ public class ActivityController extends Controller {
 	public static Result delete() {
 		try {
 			Map<String, String[]> formData = request().body().asFormUrlEncoded();
-			String[] ids = formData.get(UserActivityRelation.ACTIVITY_ID);
-			String[] tokens = formData.get(User.TOKEN);
+			String[] ids = formData.get(PlayerActivityRelation.ACTIVITY_ID);
+			String[] tokens = formData.get(Player.TOKEN);
 
 			Long activityId = Long.valueOf(ids[0]);
 			String token = tokens[0];
 
-			Long userId = DBCommander.queryUserId(token);
-			if (userId == null) throw new UserNotFoundException();
+			Long playerId = DBCommander.queryPlayerId(token);
+			if (playerId == null) throw new PlayerNotFoundException();
 
 			Activity activity = DBCommander.queryActivity(activityId);
-			if (!DBCommander.isActivityEditable(userId, activity)) throw new NullPointerException();
+			if (!DBCommander.isActivityEditable(playerId, activity)) throw new NullPointerException();
 
 			/**
 			 * TODO: clean up these codes
@@ -421,10 +421,10 @@ public class ActivityController extends Controller {
 			try {
 				SQLHelper.disableAutoCommit(connection);
 
-				// delete associated user-activity-relation records
+				// delete associated player-activity-relation records
 				EasyPreparedStatementBuilder relationBuilder = new EasyPreparedStatementBuilder();
-				PreparedStatement relationStat = relationBuilder.from(UserActivityRelation.TABLE)
-																.where(UserActivityRelation.ACTIVITY_ID, "=", activityId)
+				PreparedStatement relationStat = relationBuilder.from(PlayerActivityRelation.TABLE)
+																.where(PlayerActivityRelation.ACTIVITY_ID, "=", activityId)
 																.toDelete(connection);
 				SQLHelper.executeAndCloseStatement(relationStat);
 
@@ -495,19 +495,19 @@ public class ActivityController extends Controller {
 	public static Result join() {
 		try {
 			Map<String, String[]> formData = request().body().asFormUrlEncoded();
-			Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-			String token = formData.get(User.TOKEN)[0];
+			Integer activityId = Integer.parseInt(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
+			String token = formData.get(Player.TOKEN)[0];
 			if (token == null) throw new InvalidRequestParamsException();
-			Long userId = DBCommander.queryUserId(token);
-			if (userId == null) throw new UserNotFoundException();
-            User user = DBCommander.queryUser(userId);
-            if (user == null) throw new UserNotFoundException();
+			Long playerId = DBCommander.queryPlayerId(token);
+			if (playerId == null) throw new PlayerNotFoundException();
+            Player player = DBCommander.queryPlayer(playerId);
+            if (player == null) throw new PlayerNotFoundException();
 
 			Activity activity = DBCommander.queryActivity(activityId);
 			if (activity == null) throw new ActivityNotFoundException();
 
 			if (activity.getNumApplied() + 1 > Activity.MAX_APPLIED) throw new NumberLimitExceededException();
-			if (!DBCommander.isActivityJoinable(user, activity)) return ok(StandardFailureResult.get());
+			if (!DBCommander.isActivityJoinable(player, activity)) return ok(StandardFailureResult.get());
 
 			/**
 			 * begin SQL-transaction guard
@@ -515,15 +515,15 @@ public class ActivityController extends Controller {
 			Connection connection = SQLHelper.getConnection();
 
 			long now = General.millisec();
-			String[] names = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID, UserActivityRelation.RELATION, UserActivityRelation.GENERATED_TIME, UserActivityRelation.LAST_APPLYING_TIME};
-			Object[] values = {activityId, userId, UserActivityRelation.maskRelation(UserActivityRelation.APPLIED, null), now, now};
+			String[] names = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.USER_ID, PlayerActivityRelation.RELATION, PlayerActivityRelation.GENERATED_TIME, PlayerActivityRelation.LAST_APPLYING_TIME};
+			Object[] values = {activityId, playerId, PlayerActivityRelation.maskRelation(PlayerActivityRelation.APPLIED, null), now, now};
 
 			try {
 				SQLHelper.disableAutoCommit(connection);
 
 				EasyPreparedStatementBuilder relationBuilder = new EasyPreparedStatementBuilder();
 				PreparedStatement relationStat = relationBuilder.insert(names, values)
-                                                                .into(UserActivityRelation.TABLE)
+                                                                .into(PlayerActivityRelation.TABLE)
                                                                 .toInsert(connection);
 				SQLHelper.executeAndCloseStatement(relationStat);
 
@@ -557,33 +557,33 @@ public class ActivityController extends Controller {
 	public static Result mark() {
 		try {
 			Map<String, String[]> formData = request().body().asFormUrlEncoded();
-			Integer activityId = Integer.parseInt(formData.get(UserActivityRelation.ACTIVITY_ID)[0]);
-			String token = formData.get(User.TOKEN)[0];
+			Integer activityId = Integer.parseInt(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
+			String token = formData.get(Player.TOKEN)[0];
 			if (token == null) throw new NullPointerException();
-			Integer relation = Converter.toInteger(formData.get(UserActivityRelation.RELATION)[0]);
-			Long userId = DBCommander.queryUserId(token);
-			if (userId == null) throw new UserNotFoundException();
+			Integer relation = Converter.toInteger(formData.get(PlayerActivityRelation.RELATION)[0]);
+			Long playerId = DBCommander.queryPlayerId(token);
+			if (playerId == null) throw new PlayerNotFoundException();
 
 			Activity activity = DBCommander.queryActivity(activityId);
 			if (activity == null) throw new ActivityNotFoundException();
-			int originalRelation = DBCommander.isActivityMarkable(userId, activity, relation);
-			if (originalRelation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
+			int originalRelation = DBCommander.isActivityMarkable(playerId, activity, relation);
+			if (originalRelation == PlayerActivityRelation.INVALID) throw new InvalidPlayerActivityRelationException();
 
-			int newRelation = UserActivityRelation.maskRelation(relation, originalRelation);
+			int newRelation = PlayerActivityRelation.maskRelation(relation, originalRelation);
 
-			String[] names = {UserActivityRelation.RELATION};
+			String[] names = {PlayerActivityRelation.RELATION};
 			Object[] values = {newRelation};
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-			String[] whereCols = {UserActivityRelation.ACTIVITY_ID, UserActivityRelation.USER_ID};
+			String[] whereCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.USER_ID};
 			String[] whereOps = {"=", "="};
-			Object[] whereVals = {activityId, userId};
-			builder.update(UserActivityRelation.TABLE).set(names, values).where(whereCols, whereOps, whereVals);
+			Object[] whereVals = {activityId, playerId};
+			builder.update(PlayerActivityRelation.TABLE).set(names, values).where(whereCols, whereOps, whereVals);
 
 			if(!builder.execUpdate()) throw new NullPointerException();
 
 			ObjectNode ret = Json.newObject();
-			ret.put(UserActivityRelation.RELATION, newRelation);
+			ret.put(PlayerActivityRelation.RELATION, newRelation);
 			return ok(ret);
 		} catch (TokenExpiredException e) {
             return ok(TokenExpiredResult.get());

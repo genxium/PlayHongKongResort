@@ -1,4 +1,4 @@
-var g_sectionUser = null
+var g_sectionPlayer = null
 var g_viewee = null;
 var g_profileEditor = null;
 
@@ -36,8 +36,8 @@ function ProfileEditor() {
 		return true;
 	};
 
-	this.refresh = function(user) {
-		if (user == null) return null;
+	this.refresh = function(player) {
+		if (player == null) return null;
 
 		this.content.empty();
 		var form = $("<div>", {
@@ -47,7 +47,7 @@ function ProfileEditor() {
 		$("<br>").appendTo(this.content);
 		
 		var tbl = $("<table>", {
-			"class": "user-profile-table"
+			"class": "player-profile-table"
 		}).appendTo(this.content);
 		var ageRow = $("<tr>").appendTo(tbl); 
 		var ageTitle = $("<td>", {
@@ -72,7 +72,7 @@ function ProfileEditor() {
 
 		if (this.mode == this.EDITING) {
 			this.age = $("<input>").appendTo(ageValue); 
-			this.age.val(user.age);
+			this.age.val(player.age);
 			this.ageHint = $("<span>").appendTo(ageHintCell);
 			
 			this.age.on("input keyup paste", this.ageHint, function(evt){
@@ -83,13 +83,13 @@ function ProfileEditor() {
 				hint.removeClass("warn");
 				var val = $(this).val();
 				if(val == null || val.length ==0 ) return;
-				if(validateUserAge(val))	return;
+				if(validatePlayerAge(val))	return;
 				hint.addClass("warn");
 				hint.html(MESSAGES["age_requirement"]);
 			});	
 
 			this.gender = $("<input>").appendTo(genderValue);
-			this.gender.val(user.gender);
+			this.gender.val(player.gender);
 			this.genderHint = $("<span>").appendTo(genderHintCell);
 			this.gender.on("input keyup paste", this.genderHint, function(evt){
 				evt.preventDefault();
@@ -99,13 +99,13 @@ function ProfileEditor() {
 				hint.removeClass("warn");
 				var val = $(this).val();
 				if(val == null || val.length ==0 ) return;
-				if(validateUserGender(val))	return;
+				if(validatePlayerGender(val))	return;
 				hint.addClass("warn");
 				hint.html(MESSAGES["gender_requirement"]);
 			});	
 			
 			this.mood = $("<input>").appendTo(moodValue);
-			this.mood.val(user.mood);
+			this.mood.val(player.mood);
 			this.moodHint = $("<span>").appendTo(moodHintCell);
 			this.mood.on("input keyup paste", this.moodHint, function(evt){
 				evt.preventDefault();
@@ -115,22 +115,22 @@ function ProfileEditor() {
 				hint.removeClass("warn");
 				var val = $(this).val();
 				if(val == null || val.length ==0 ) return;
-				if(validateUserMood(val))	return;
+				if(validatePlayerMood(val))	return;
 				hint.addClass("warn");
 				hint.html(MESSAGES["mood_requirement"]);
 			});	
 		} else if (this.mode == this.NORMAL) {
 			this.age = $("<span>", {
-				"class": "user-profile-table-plain-value",
-				text: user.age
+				"class": "player-profile-table-plain-value",
+				text: player.age
 			}).appendTo(ageValue);
 			this.gender = $("<span>", {
-				"class": "user-profile-table-plain-value",
-				text: user.gender
+				"class": "player-profile-table-plain-value",
+				text: player.gender
 			}).appendTo(genderValue);
 			this.mood = $("<span>", {
-				"class": "user-profile-table-plain-value",
-				text: user.mood
+				"class": "player-profile-table-plain-value",
+				text: player.mood
 			}).appendTo(moodValue);
 		} else;
 
@@ -143,10 +143,10 @@ function ProfileEditor() {
 		}).appendTo(picContainer);
 
 		this.image = $("<img>", {
-			src: user.avatar
+			src: player.avatar
 		}).appendTo(picContainer); 
 
-		if (g_loggedInUser == null || user.id != g_loggedInUser.id) return;
+		if (g_loggedInPlayer == null || player.id != g_loggedInPlayer.id) return;
 
 		var box = $("<div>", {
 			"class": "upload left"
@@ -179,7 +179,7 @@ function ProfileEditor() {
 		}).click(this, function(evt) {
 			var editor = evt.data;
 			editor.mode = editor.EDITING;
-			editor.refresh(user);
+			editor.refresh(player);
 		}).hide().appendTo(controlButtonsRow);
 		if (this.mode == this.NORMAL) this.btnEdit.show();
 
@@ -189,7 +189,7 @@ function ProfileEditor() {
 		}).click(this, function(evt) {
 			var editor = evt.data;
 			editor.mode = editor.NORMAL;
-			editor.refresh(user);
+			editor.refresh(player);
 		}).hide().appendTo(controlButtonsRow);
 		if (this.mode == this.EDITING) this.btnCancel.show();
 
@@ -218,15 +218,15 @@ function ProfileEditor() {
 			
 			$.ajax({
 				method: "POST",
-				url: "/user/save", 
+				url: "/player/save", 
 				data: formData,
 				mimeType: "mutltipart/form-data",
 				contentType: false,
 				processData: false,
 				success: function(data, status, xhr){
-					// update logged in user profile
-					var userJson = JSON.parse(data);
-					user = g_viewee = g_loggedInUser = new User(userJson);
+					// update logged in player profile
+					var playerJson = JSON.parse(data);
+					player = g_viewee = g_loggedInPlayer = new Player(playerJson);
 					enableField(aButton);	
 					editor.hint.text(MESSAGES["saved"]);
 				},
@@ -272,38 +272,38 @@ function clearProfile() {
 	$("#pager-filters").empty();
 	$("#pager-bar-activities").empty();
 	$("#pager-screen-activities").empty();
-	if (g_sectionUser == null) return;
-	g_sectionUser.empty();
+	if (g_sectionPlayer == null) return;
+	g_sectionPlayer.empty();
 }
 
-function queryUserDetail(){
+function queryPlayerDetail(){
 	var params={};
 	params[g_keyVieweeId] = g_vieweeId;
 	var token = $.cookie(g_keyToken);
 	if(token != null) params[g_keyToken] = token;
 	$.ajax({
 		type: "GET",
-		url: "/user/detail",
+		url: "/player/detail",
 		data: params,
 		success: function(data, status, xhr){
-			if(g_sectionUser == null) return;
-			var userJson = data;
-			g_viewee = new User(userJson);
-			var username = g_viewee.name;
-			g_sectionUser.empty();
+			if(g_sectionPlayer == null) return;
+			var playerJson = data;
+			g_viewee = new Player(playerJson);
+			var playername = g_viewee.name;
+			g_sectionPlayer.empty();
 
 			var profile = $("<div>", {
-				"class": "user-profile clearfix"
-			}).appendTo(g_sectionUser);
+				"class": "player-profile clearfix"
+			}).appendTo(g_sectionPlayer);
 
-			var userInfo = $("<div>", {
-				"class": "section-user-info left"
+			var playerInfo = $("<div>", {
+				"class": "section-player-info left"
 			}).appendTo(profile);
 
 			var name = $("<div>", {
-				text: username,
-				"class": "section-user-name"
-			}).appendTo(userInfo);
+				text: playername,
+				"class": "section-player-name"
+			}).appendTo(playerInfo);
 
 
 			if (g_profileEditor == null) g_profileEditor = new ProfileEditor();
@@ -314,17 +314,17 @@ function queryUserDetail(){
 			if (g_pagerAssessments != null) g_pagerAssessments.remove();
 			var pagerBar = $("<div>", {
 				id: "pager-bar-assessments"
-			}).appendTo(g_sectionUser);
+			}).appendTo(g_sectionPlayer);
 			var pagerScreen = $("<div>", {
 				id: "pager-screen-assessments"
-			}).appendTo(g_sectionUser);
+			}).appendTo(g_sectionPlayer);
 			var pagerCache = new PagerCache(5);
 			var extraParams = {
 				to: g_viewee.id
 			};
 			g_pagerAssessments = new Pager(pagerScreen, pagerBar, 10, "/assessment/list", generateAssessmentsListParams, extraParams, pagerCache, null, onQueryAssessmentsSuccess, onQueryAssessmentsError); 	
-			if (g_loggedInUser == null) return;
-			if (g_loggedInUser.isVisitor() && g_vieweeId == g_loggedInUser.id) {
+			if (g_loggedInPlayer == null) return;
+			if (g_loggedInPlayer.isVisitor() && g_vieweeId == g_loggedInPlayer.id) {
 				var hintResend = null;
 				var extraParams = {};
 				extraParams[g_keyToken] = $.cookie(g_keyToken);
@@ -339,15 +339,15 @@ function queryUserDetail(){
 				var onError = function(err) {
 					hintResend.text(MESSAGES["email_verification_not_sent"]);
 				};
-				var btnResend = new AjaxButton(TITLES["resend_email_verification"], "/user/email/resend", null, "POST", extraParams, onSuccess, onError);
-				btnResend.appendTo(g_sectionUser);
+				var btnResend = new AjaxButton(TITLES["resend_email_verification"], "/player/email/resend", null, "POST", extraParams, onSuccess, onError);
+				btnResend.appendTo(g_sectionPlayer);
 				hintResend = $("<p>", {
 					text: "",
 					style: "padding: 10px;"
-				}).appendTo(g_sectionUser);
+				}).appendTo(g_sectionPlayer);
 			}
 
-			if (g_loggedInUser.id == g_vieweeId) return;
+			if (g_loggedInPlayer.id == g_vieweeId) return;
 			listAssessmentsAndRefresh();
 		}
 	});
@@ -359,7 +359,7 @@ function requestProfile(vieweeId) {
 	clearNotifications();
 	g_vieweeId = vieweeId;
 
-	g_sectionUser = $("#section-user");
+	g_sectionPlayer = $("#section-player");
 
 	var relationSelector = createSelector($("#pager-filters"), [TITLES["hosted_activities"], TITLES["joined_activities"]], [hosted, present], null, null, null, null);
 	var orientationSelector = createSelector($("#pager-filters"), [TITLES["time_descendant"], TITLES["time_ascendant"]], [g_orderDescend, g_orderAscend], null, null, null, null);
@@ -372,17 +372,17 @@ function requestProfile(vieweeId) {
 	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
 	
 	var onLoginSuccess = function(data) {
-		queryUserDetail();
+		queryPlayerDetail();
 		listActivitiesAndRefresh();
 	};
 
 	var onLoginError = function(err) {
-		queryUserDetail();
+		queryPlayerDetail();
 		listActivitiesAndRefresh();
 	};
 
 	var onLogoutSuccess = function(data) {
-		queryUserDetail();
+		queryPlayerDetail();
 		listActivitiesAndRefresh();
 	};
 	

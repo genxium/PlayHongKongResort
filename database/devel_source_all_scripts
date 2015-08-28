@@ -1,10 +1,13 @@
-basedir=$(pwd)
-mysql -uroot hongkongresort-devel < $basedir/create_table_user.sql
+#!/bin/bash
+
+basedir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+mysql -uroot hongkongresort-devel < $basedir/create_table_player.sql
 mysql -uroot hongkongresort-devel < $basedir/create_table_activity.sql
 mysql -uroot hongkongresort-devel < $basedir/create_table_image.sql
 mysql -uroot hongkongresort-devel < $basedir/create_table_comment.sql
 mysql -uroot hongkongresort-devel < $basedir/create_table_assessment.sql
 mysql -uroot hongkongresort-devel < $basedir/create_table_login.sql
 mysql -uroot hongkongresort-devel < $basedir/create_table_notification.sql
-mysql -uroot hongkongresort-devel < $basedir/create_table_user_activity_relation.sql
+mysql -uroot hongkongresort-devel < $basedir/create_table_player_activity_relation.sql
 

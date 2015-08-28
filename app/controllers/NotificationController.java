@@ -10,10 +10,10 @@ import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
 import exception.InvalidRequestParamsException;
 import exception.TokenExpiredException;
-import exception.UserNotFoundException;
+import exception.PlayerNotFoundException;
 import models.AbstractMessage;
 import models.Notification;
-import models.User;
+import models.Player;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -35,11 +35,11 @@ public class NotificationController extends Controller {
 	public static Result count(String token, Integer isRead) {
 		try {
 			if (token == null) throw new InvalidRequestParamsException();
-			Long userId = DBCommander.queryUserId(token);
-			User user = DBCommander.queryUser(userId);
-			if (user == null) throw new UserNotFoundException();
+			Long playerId = DBCommander.queryPlayerId(token);
+			Player player = DBCommander.queryPlayer(playerId);
+			if (player == null) throw new PlayerNotFoundException();
 			ObjectNode result = Json.newObject();
-			result.put(Notification.COUNT, user.getUnreadCount());
+			result.put(Notification.COUNT, player.getUnreadCount());
 			return ok(result);
 		} catch (TokenExpiredException e) {
 			return ok(TokenExpiredResult.get());
@@ -58,7 +58,7 @@ public class NotificationController extends Controller {
 
 			// anti=cracking by param token
 			if (token == null) throw new InvalidRequestParamsException();
-			Long to = DBCommander.queryUserId(token);
+			Long to = DBCommander.queryPlayerId(token);
 
 			List<Notification> notifications = null;
 			notifications = DBCommander.queryNotifications(to, isRead, pageSt, pageEd, Notification.ID, orientationStr, numItems);
@@ -91,12 +91,12 @@ public class NotificationController extends Controller {
 			// get file data from request body stream
 			Map<String, String[]> formData = body.asFormUrlEncoded();
 
-			String token = formData.get(User.TOKEN)[0];
+			String token = formData.get(Player.TOKEN)[0];
 			if (token == null) throw new NullPointerException();
-			Long userId = DBCommander.queryUserId(token);
-			if (userId == null) throw new UserNotFoundException();
-			User user = DBCommander.queryUser(userId);
-			if (user == null) throw new UserNotFoundException();
+			Long playerId = DBCommander.queryPlayerId(token);
+			if (playerId == null) throw new PlayerNotFoundException();
+			Player player = DBCommander.queryPlayer(playerId);
+			if (player == null) throw new PlayerNotFoundException();
 			
 			List<Long> notificationIdList = new LinkedList<Long>();
 			
@@ -110,7 +110,7 @@ public class NotificationController extends Controller {
 			List<JSONObject> results = query.select(Notification.QUERY_FIELDS)
 					.from(Notification.TABLE)
 					.where(Notification.ID, "IN", notificationIdList)
-					.where(Notification.TO, "=", userId)
+					.where(Notification.TO, "=", playerId)
 					.where(Notification.IS_READ, "=", 0)
 					.execSelect();
 			if (results == null) throw new NullPointerException();
@@ -119,14 +119,14 @@ public class NotificationController extends Controller {
 			 * TODO: begin SQL-transaction guard
 			 * */
 			EasyPreparedStatementBuilder decrement = new EasyPreparedStatementBuilder();
-			boolean rs = decrement.update(User.TABLE).decrease(User.UNREAD_COUNT, results.size()).where(User.ID, "=", userId).execUpdate();
+			boolean rs = decrement.update(Player.TABLE).decrease(Player.UNREAD_COUNT, results.size()).where(Player.ID, "=", playerId).execUpdate();
 			if (!rs) throw new NullPointerException();
 
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 			
 			builder.from(Notification.TABLE)
 					.where(Notification.ID, "IN", notificationIdList)
-					.where(Notification.TO, "=", userId);		
+					.where(Notification.TO, "=", playerId);		
 
 			boolean res = builder.execDelete();
 			/**

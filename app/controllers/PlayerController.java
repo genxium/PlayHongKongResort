@@ -11,8 +11,8 @@ import exception.*;
 import fixtures.Constants;
 import models.Image;
 import models.Login;
-import models.User;
-import models.UserActivityRelation;
+import models.Player;
+import models.PlayerActivityRelation;
 import org.json.simple.JSONObject;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -34,9 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class UserController extends Controller {
+public class PlayerController extends Controller {
 
-    public static final String TAG = UserController.class.getName();
+    public static final String TAG = PlayerController.class.getName();
 
     protected static void sendVerificationEmail(final String lang, final String name, final String recipient, final String code) {
         Properties props = new Properties();
@@ -47,7 +47,7 @@ public class UserController extends Controller {
             msg.setFrom(new InternetAddress(Constants.ADMIN_EMAIL, targetMap.get(Constants.HONGKONGRESORT_TEAM)));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient, name));
             msg.setSubject(targetMap.get(Constants.WELCOME));
-            String link = "http://" + request().host() + "/user/email/verify?email=" + recipient + "&code=" + code;
+            String link = "http://" + request().host() + "/player/email/verify?email=" + recipient + "&code=" + code;
 			String text = String.format(targetMap.get(Constants.VERIFY_INSTRUCTION), name, link);
             msg.setText(text);
             Transport.send(msg);
@@ -60,28 +60,28 @@ public class UserController extends Controller {
 	    try {
 		    Http.RequestBody body = request().body();
 		    Map<String, String[]> formData = body.asFormUrlEncoded();
-		    String email = formData.get(User.EMAIL)[0];
-		    String password = formData.get(User.PASSWORD)[0];
+		    String email = formData.get(Player.EMAIL)[0];
+		    String password = formData.get(Player.PASSWORD)[0];
 
 		    if ((email == null || !General.validateEmail(email)) || (password == null || !General.validatePassword(password)))  throw new InvalidLoginParamsException();
 
-		    User user = DBCommander.queryUserByEmail(email);
-		    if (user == null) throw new UserNotFoundException();
+		    Player player = DBCommander.queryPlayerByEmail(email);
+		    if (player == null) throw new PlayerNotFoundException();
 
-		    String passwordDigest = Converter.md5(password + user.getSalt());
-		    if (!user.getPassword().equals(passwordDigest)) throw new PswErrException();
+		    String passwordDigest = Converter.md5(password + player.getSalt());
+		    if (!player.getPassword().equals(passwordDigest)) throw new PswErrException();
 
 		    String token = Converter.generateToken(email, password);
-		    Long userId = user.getId();
+		    Long playerId = player.getId();
 
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 		    String[] cols = {Login.USER_ID, Login.TOKEN, Login.TIMESTAMP};
-		    Object[] vals = {userId, token, General.millisec()};
+		    Object[] vals = {playerId, token, General.millisec()};
 		    builder.insert(cols, vals).into(Login.TABLE).execInsert();
-		    ObjectNode result = user.toObjectNode(userId);
-		    result.put(User.TOKEN, token);
+		    ObjectNode result = player.toObjectNode(playerId);
+		    result.put(Player.TOKEN, token);
 		    return ok(result);
-	    } catch (UserNotFoundException e) {
+	    } catch (PlayerNotFoundException e) {
 		    return ok(StandardFailureResult.get(Constants.INFO_USER_NOT_FOUND));
 	    } catch (PswErrException e) {
 		    return ok(StandardFailureResult.get(Constants.INFO_PSW_ERR));
@@ -94,12 +94,12 @@ public class UserController extends Controller {
 	    try {
 		    RequestBody body = request().body();
 		    Map<String, String[]> formData = body.asFormUrlEncoded();
-		    String name = formData.get(User.NAME)[0];
-		    String email = formData.get(User.EMAIL)[0];
-		    String password = formData.get(User.PASSWORD)[0];
+		    String name = formData.get(Player.NAME)[0];
+		    String email = formData.get(Player.EMAIL)[0];
+		    String password = formData.get(Player.PASSWORD)[0];
 
-		    String sid = formData.get(UserActivityRelation.SID)[0];
-		    String captcha = formData.get(UserActivityRelation.CAPTCHA)[0];  
+		    String sid = formData.get(PlayerActivityRelation.SID)[0];
+		    String captcha = formData.get(PlayerActivityRelation.CAPTCHA)[0];  
 		    if (sid == null || captcha == null) throw new CaptchaNotMatchedException(); 
 		    if (session(sid) == null || !captcha.equalsIgnoreCase(session(sid))) throw new CaptchaNotMatchedException(); 
 
@@ -107,13 +107,13 @@ public class UserController extends Controller {
 		    String code = DBCommander.generateVerificationCode(name);
 		    String salt = DBCommander.generateSalt(email, password);
 		    String passwordDigest = Converter.md5(password + salt);
-		    User user = new User(email, name);
-			user.setPassword(passwordDigest);
+		    Player player = new Player(email, name);
+			player.setPassword(passwordDigest);
 
-		    user.setVerificationCode(code);
-		    user.setSalt(salt);
-		    if (DBCommander.registerUser(user) == SQLHelper.INVALID) throw new NullPointerException();
-		    sendVerificationEmail(user.getLang(), user.getName(), user.getEmail(), code);
+		    player.setVerificationCode(code);
+		    player.setSalt(salt);
+		    if (DBCommander.registerPlayer(player) == SQLHelper.INVALID) throw new NullPointerException();
+		    sendVerificationEmail(player.getLang(), player.getName(), player.getEmail(), code);
 		    return ok();
 	    } catch (CaptchaNotMatchedException e) {
 		    return ok(CaptchaNotMatchedResult.get());
@@ -126,13 +126,13 @@ public class UserController extends Controller {
     public static Result status(String token) {
 	    try {
 		    if (token == null) throw new NullPointerException();
-		    Long userId = DBCommander.queryUserId(token);
-		    if (userId == null) throw new UserNotFoundException();
-		    User user = DBCommander.queryUser(userId);
-		    if (user == null) throw new UserNotFoundException();
-		    return ok(user.toObjectNode(userId));
+		    Long playerId = DBCommander.queryPlayerId(token);
+		    if (playerId == null) throw new PlayerNotFoundException();
+		    Player player = DBCommander.queryPlayer(playerId);
+		    if (player == null) throw new PlayerNotFoundException();
+		    return ok(player.toObjectNode(playerId));
 	    } catch (Exception e) {
-		    if (e instanceof UserNotFoundException)	return ok(StandardFailureResult.get());
+		    if (e instanceof PlayerNotFoundException)	return ok(StandardFailureResult.get());
 		    Loggy.e(TAG, "status", e);
 	    }
 	    return ok(StandardFailureResult.get());
@@ -140,11 +140,11 @@ public class UserController extends Controller {
 
     public static Result relation(Long activityId, String token) {
 	    try {
-		    Long userId = DBCommander.queryUserId(token);
-		    int relation = DBCommander.queryUserActivityRelation(userId, activityId);
-		    if (relation == UserActivityRelation.INVALID) throw new InvalidUserActivityRelationException();
+		    Long playerId = DBCommander.queryPlayerId(token);
+		    int relation = DBCommander.queryPlayerActivityRelation(playerId, activityId);
+		    if (relation == PlayerActivityRelation.INVALID) throw new InvalidPlayerActivityRelationException();
 		    ObjectNode ret = Json.newObject();
-		    ret.put(UserActivityRelation.RELATION, String.valueOf(relation));
+		    ret.put(PlayerActivityRelation.RELATION, String.valueOf(relation));
 		    return ok(ret);
 	    } catch (TokenExpiredException e) {
 		    return ok(TokenExpiredResult.get());
@@ -158,7 +158,7 @@ public class UserController extends Controller {
 
         try {
             Map<String, String[]> formData = request().body().asFormUrlEncoded();
-            String token = formData.get(User.TOKEN)[0];
+            String token = formData.get(Player.TOKEN)[0];
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.from(Login.TABLE).where(Login.TOKEN, "=", token);
             if (!builder.execDelete()) throw new NullPointerException();
@@ -173,8 +173,8 @@ public class UserController extends Controller {
         try {
             if (name == null) throw new NullPointerException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            List<JSONObject> userJsons = builder.select(User.ID).from(User.TABLE).where(User.NAME, "=", name).execSelect();
-            if (userJsons != null && userJsons.size() > 0) throw new DuplicateException();
+            List<JSONObject> playerJsons = builder.select(Player.ID).from(Player.TABLE).where(Player.NAME, "=", name).execSelect();
+            if (playerJsons != null && playerJsons.size() > 0) throw new DuplicateException();
             return ok(StandardSuccessResult.get());
         } catch (DuplicateException e) {
             ok(StandardFailureResult.get());
@@ -188,11 +188,11 @@ public class UserController extends Controller {
         try {
             if (vieweeId.equals(0L)) vieweeId = null;
             Long viewerId = null;
-            if (token != null)  viewerId = DBCommander.queryUserId(token);
-            User viewee = DBCommander.queryUser(vieweeId);
-			if (viewee == null) throw new UserNotFoundException();
+            if (token != null)  viewerId = DBCommander.queryPlayerId(token);
+            Player viewee = DBCommander.queryPlayer(vieweeId);
+			if (viewee == null) throw new PlayerNotFoundException();
             return ok(viewee.toObjectNode(viewerId));
-        } catch (TokenExpiredException | UserNotFoundException e) {
+        } catch (TokenExpiredException | PlayerNotFoundException e) {
             Loggy.e(TAG, "detail", e);
         }
 		return badRequest();
@@ -204,49 +204,49 @@ public class UserController extends Controller {
 
 			// get file data from request body stream
 			Http.MultipartFormData data = body.asMultipartFormData();
-			Http.MultipartFormData.FilePart avatarFile = data.getFile(User.AVATAR);
+			Http.MultipartFormData.FilePart avatarFile = data.getFile(Player.AVATAR);
 			if (avatarFile != null && !DataUtils.validateImage(avatarFile)) throw new InvalidRequestParamsException();
 
-			// get user token from request body stream
-			String token = DataUtils.getUserToken(data);
-			Long userId = DBCommander.queryUserId(token);
-			if (userId == null) throw new UserNotFoundException();
-			User user = DBCommander.queryUser(userId);
-			if (user == null) throw new UserNotFoundException();
+			// get player token from request body stream
+			String token = DataUtils.getPlayerToken(data);
+			Long playerId = DBCommander.queryPlayerId(token);
+			if (playerId == null) throw new PlayerNotFoundException();
+			Player player = DBCommander.queryPlayer(playerId);
+			if (player == null) throw new PlayerNotFoundException();
 
 			Map<String, String[]> formData = data.asFormUrlEncoded();
 
-			String age = formData.get(User.AGE)[0];
-			String gender = formData.get(User.GENDER)[0];
-			String mood = formData.get(User.MOOD)[0];
+			String age = formData.get(Player.AGE)[0];
+			String gender = formData.get(Player.GENDER)[0];
+			String mood = formData.get(Player.MOOD)[0];
 
-			if (!General.validateUserAge(age) || !General.validateUserGender(gender) || !General.validateUserMood(mood)) throw new InvalidRequestParamsException();
+			if (!General.validatePlayerAge(age) || !General.validatePlayerGender(gender) || !General.validatePlayerMood(mood)) throw new InvalidRequestParamsException();
 
-			user.setAge(age);
-			user.setGender(gender);
-			user.setMood(mood);
+			player.setAge(age);
+			player.setGender(gender);
+			player.setMood(mood);
 
 			if (avatarFile == null) {
-				DBCommander.updateUser(user);
-				return ok(user.toObjectNode(userId));
+				DBCommander.updatePlayer(player);
+				return ok(player.toObjectNode(playerId));
 			}
 
 
 			/**
 			 * TODO: begin SQL-transaction guard (resembling ActivityController.save)
 			 * */
-			long previousAvatarId = user.getAvatar();
-			long newAvatarId = ExtraCommander.saveAvatar(avatarFile, user);
+			long previousAvatarId = player.getAvatar();
+			long newAvatarId = ExtraCommander.saveAvatar(avatarFile, player);
 			if (newAvatarId == SQLHelper.INVALID) throw new NullPointerException();
 
-			user.setAvatar(newAvatarId);
+			player.setAvatar(newAvatarId);
 				
 			// delete previous avatar record and file
 			Image previousAvatar = ExtraCommander.queryImage(previousAvatarId);
 			if (previousAvatar == null) {
 				// no previous avatar
-				DBCommander.updateUser(user);
-				return ok(user.toObjectNode(userId));
+				DBCommander.updatePlayer(player);
+				return ok(player.toObjectNode(playerId));
 			}
 
 			boolean isPreviousAvatarDeleted = ExtraCommander.deleteImageRecordAndFile(previousAvatar);
@@ -257,11 +257,11 @@ public class UserController extends Controller {
 			}
 			
 			// previous avatar deleted
-			DBCommander.updateUser(user);
+			DBCommander.updatePlayer(player);
 			/**
 			 * TODO: end SQL-transaction guard
 			 * */
-			return ok(user.toObjectNode(userId));
+			return ok(player.toObjectNode(playerId));
 
 		} catch (Exception e) {
 			Loggy.e(TAG, "upload", e);

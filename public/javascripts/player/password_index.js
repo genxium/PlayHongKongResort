@@ -17,11 +17,11 @@ function onEmailInput(evt) {
 	params[g_keyEmail] = email;
 	$.ajax({
 		type: "GET",
-		url: "/user/email/duplicate",
+		url: "/player/email/duplicate",
 		data: params,
 		success: function(data, status, xhr){
 			if (isStandardSuccess(data)) {
-				g_spanHint.text(ALERTS["user_not_existing"]);        
+				g_spanHint.text(ALERTS["player_not_existing"]);        
 				return;
 			}
 			if (isStandardFailure(data)) {
@@ -43,7 +43,7 @@ function onEmailRequest(evt) {
 	disableField(aButton);
 	$.ajax({
 		type: "GET",
-		url: "/user/password/request",
+		url: "/player/password/request",
 		data: params,
 		success: function(data, status, xhr) {
 			enableField(aButton);

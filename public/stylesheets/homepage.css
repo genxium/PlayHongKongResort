@@ -1,38 +1,38 @@
 #section-register {
 	background-color: #eee;
 }
-.user-profile {
+.player-profile {
 	padding: 10px;
 }
 
-table.user-profile-table tr {
+table.player-profile-table tr {
 	width: 256px;
 	height: 64px;
 }
 
-table.user-profile-table td {
+table.player-profile-table td {
 	padding: 10px;
 }
 
-table.user-profile-table span.user-profile-table-plain-value {
+table.player-profile-table span.player-profile-table-plain-value {
 	padding: 5px;
 }
 
-.section-user-avatar {
+.section-player-avatar {
 	width: 180px;
 	height: 180px;
 	text-align: center;
 	vertical-align: middle;
 }
-.section-user-avatar img {
+.section-player-avatar img {
 	max-width: 100%;
 	max-height: 100%;
 	margin: auto;
 }
-.section-user-info {
+.section-player-info {
 	margin-left: 10px;
 }
-.section-user-name {
+.section-player-name {
 	font-size: 18px;
 }
 #register-box {

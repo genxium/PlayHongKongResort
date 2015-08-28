@@ -148,7 +148,7 @@ function displayParticipantStatistics(par, activity) {
 	}).appendTo(attend);
 
 	var spanApplied = $("<li>", {
-		text: (activity.numApplied + activity.numSelected).toString() + " " + TITLES["applied"], // display the total number of applied users including the selected ones
+		text: (activity.numApplied + activity.numSelected).toString() + " " + TITLES["applied"], // display the total number of applied players including the selected ones
 		"class": "applied left"
 	}).appendTo(attend);
 
@@ -221,7 +221,7 @@ function attachJoinButton(par, activity) {
 
 function attachRelationIndicator(par, activity, inListCell) {
 
-	if(activity.relation == null || g_loggedInUser == null || g_loggedInUser.id == activity.host.id) return;
+	if(activity.relation == null || g_loggedInPlayer == null || g_loggedInPlayer.id == activity.host.id) return;
 
 	var mapRelationName = {};
 	mapRelationName[applied] = RELATION_NAMES["applied"];

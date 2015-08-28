@@ -1,7 +1,7 @@
 package utilities;
 
 import models.Image;
-import models.User;
+import models.Player;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
 
@@ -34,13 +34,13 @@ public class DataUtils {
         return (isImage && file.length() <= Image.SINGLE_FILE_SIZE_LIMIT);
     }
 
-    public static String getUserToken(MultipartFormData data) {
+    public static String getPlayerToken(MultipartFormData data) {
         Map<String, String[]> formData = data.asFormUrlEncoded();
-        String[] tokens = formData.get(User.TOKEN);
+        String[] tokens = formData.get(Player.TOKEN);
         return tokens[0];
     }
 
-    public static String generateUploadedImageName(String originalName, Long userId) {
+    public static String generateUploadedImageName(String originalName, Long playerId) {
         String ret = null;
         try {
             java.util.Date date = new java.util.Date();
@@ -49,7 +49,7 @@ public class DataUtils {
             String[] nameComponents = originalName.split("\\.(?=[^\\.]+$)");
             String base = nameComponents[0];
             String ext = nameComponents[1];
-            ret = "UID" + userId.toString() + "_" + epochTime.toString() + "_" + Converter.md5(base) + "." + ext;
+            ret = "UID" + playerId.toString() + "_" + epochTime.toString() + "_" + Converter.md5(base) + "." + ext;
         } catch (Exception e) {
             System.out.println(DataUtils.class.getName() + ".generateUploadedImageName, " + e.getMessage());
         }

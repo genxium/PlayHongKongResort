@@ -28,13 +28,13 @@ function countNotifications() {
 		url: "/notification/count",
 		data: paramsBubble,
 		success: function(data, status, xhr) {
-			if (g_loggedInUser == null) return;
+			if (g_loggedInPlayer == null) return;
 			if (isTokenExpired(data)) {
 				logout(null);
 				return;
 			}
 			var count = parseInt(data[g_keyCount]);
-			g_loggedInUser.unreadCount = count;
+			g_loggedInPlayer.unreadCount = count;
 			g_postLoginMenu.bubble.update(count);
 		}, 
 		error: function(xhr, status, err) {
@@ -191,7 +191,7 @@ function listNotifications(page, onSuccess, onError){
 
 function generateNotificationsListParams(pager, page) {
 	var params = {};
-	if (g_loggedInUser == null) return null;
+	if (g_loggedInPlayer == null) return null;
 	var token = $.cookie(g_keyToken);
 	params[g_keyToken] = token;
 	var pageSt = page - 2;

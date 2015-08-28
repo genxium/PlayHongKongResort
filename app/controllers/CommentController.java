@@ -80,18 +80,18 @@ public class CommentController extends Controller {
 		    Map<String, String[]> formData = request().body().asFormUrlEncoded();
 			if (!formData.containsKey(Comment.CONTENT)) throw new InvalidCommentParamsException();
 			if (!formData.containsKey(Comment.ACTIVITY_ID)) throw new InvalidCommentParamsException();
-			if (!formData.containsKey(User.TOKEN)) throw new InvalidCommentParamsException();
+			if (!formData.containsKey(Player.TOKEN)) throw new InvalidCommentParamsException();
 
 		    String content = formData.get(Comment.CONTENT)[0];
 		    if (content == null || !General.validateCommentContent(content)) throw new InvalidCommentParamsException();
 
-		    String token = formData.get(User.TOKEN)[0];
+		    String token = formData.get(Player.TOKEN)[0];
 		    if (token == null) throw new InvalidCommentParamsException();
 
-		    Long from = DBCommander.queryUserId(token);
-		    if (from == null) throw new UserNotFoundException();
-            User fromUser = DBCommander.queryUser(from);
-            if (fromUser == null) throw new UserNotFoundException();
+		    Long from = DBCommander.queryPlayerId(token);
+		    if (from == null) throw new PlayerNotFoundException();
+            Player fromPlayer = DBCommander.queryPlayer(from);
+            if (fromPlayer == null) throw new PlayerNotFoundException();
 
 		    Long activityId = Converter.toLong(formData.get(Comment.ACTIVITY_ID)[0]);
             if (activityId == null) throw new InvalidCommentParamsException();
@@ -99,7 +99,7 @@ public class CommentController extends Controller {
 
 		    if (activity == null) throw new ActivityNotFoundException();
 
-            DBCommander.isActivityCommentable(fromUser, activity);
+            DBCommander.isActivityCommentable(fromPlayer, activity);
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 

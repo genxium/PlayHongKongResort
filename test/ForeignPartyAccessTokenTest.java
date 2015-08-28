@@ -29,7 +29,7 @@ public class ForeignPartyAccessTokenTest extends WithApplication {
         HashedMap data = new HashedMap();
         data.put(TempForeignParty.ACCESS_TOKEN, "qyi32789urjwkqefn");
         data.put(TempForeignParty.PARTY, String.valueOf(ForeignPartyController.PARTY_QQ));
-        final FakeRequest fakeRequest = new FakeRequest(POST, "/user/foreign/login").withFormUrlEncodedBody(data);
+        final FakeRequest fakeRequest = new FakeRequest(POST, "/player/foreign/login").withFormUrlEncodedBody(data);
         Result result = route(fakeRequest);
         assertThat(status(result)).isEqualTo(OK);
 

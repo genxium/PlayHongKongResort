@@ -14,22 +14,22 @@ public class ActivityDetail extends Activity {
     public static String APPLIED_PARTICIPANTS = "applied_participants";
     public static String PRESENT_PARTICIPANTS = "present_participants";
 
-    protected List<BasicUser> m_appliedParticipants = null;
-    public void setAppliedParticipants(final List<BasicUser> appliedParticipants) {
+    protected List<BasicPlayer> m_appliedParticipants = null;
+    public void setAppliedParticipants(final List<BasicPlayer> appliedParticipants) {
         m_appliedParticipants = appliedParticipants;
     }
-    public void addAppliedParticipant(final BasicUser user) {
+    public void addAppliedParticipant(final BasicPlayer player) {
         if (m_appliedParticipants == null) m_appliedParticipants = new ArrayList<>();
-        m_appliedParticipants.add(user);
+        m_appliedParticipants.add(player);
     }
 
-    protected List<BasicUser> m_presentParticipants = null;
-    public void setPresentParticipants(final List<BasicUser> presentParticipants) {
+    protected List<BasicPlayer> m_presentParticipants = null;
+    public void setPresentParticipants(final List<BasicPlayer> presentParticipants) {
         m_presentParticipants = presentParticipants;
     }
-    public void addPresentParticipant(final BasicUser user) {
+    public void addPresentParticipant(final BasicPlayer player) {
         if (m_presentParticipants == null) m_presentParticipants = new ArrayList<>();
-        m_presentParticipants.add(user);
+        m_presentParticipants.add(player);
     }
 
     public ActivityDetail(final JSONObject activityJson) {
@@ -41,13 +41,13 @@ public class ActivityDetail extends Activity {
         try {
 
             ArrayNode appliedParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
-            for (BasicUser participant : m_appliedParticipants) {
+            for (BasicPlayer participant : m_appliedParticipants) {
                 appliedParticipantsNode.add(participant.toObjectNode(viewerId));
             }
             ret.put(APPLIED_PARTICIPANTS, appliedParticipantsNode);
 
             ArrayNode presentParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
-            for (BasicUser participant : m_presentParticipants) {
+            for (BasicPlayer participant : m_presentParticipants) {
                 if (viewerId != null && viewerId.equals(participant.getId()))	continue; // viewer cannot assess himself/herself
                 presentParticipantsNode.add(participant.toObjectNode(viewerId));
             }

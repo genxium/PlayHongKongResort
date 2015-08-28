@@ -8,8 +8,8 @@ import dao.EasyPreparedStatementBuilder;
 import exception.DuplicateException;
 import exception.InvalidRequestParamsException;
 import exception.TokenExpiredException;
-import exception.UserNotFoundException;
-import models.User;
+import exception.PlayerNotFoundException;
+import models.Player;
 import org.json.simple.JSONObject;
 import play.libs.Json;
 import play.mvc.Content;
@@ -23,27 +23,27 @@ import views.html.email_verification;
 import java.util.List;
 import java.util.Map;
 
-public class EmailController extends UserController {
+public class EmailController extends PlayerController {
 
     public static final String TAG = EmailController.class.getName();
 
     public static Result resend() {
         try {
             Http.RequestBody body = request().body();
-            // get user token and activity id from request body stream
+            // get player token and activity id from request body stream
             Map<String, String[]> formData = body.asFormUrlEncoded();
-            final String token = formData.get(User.TOKEN)[0];
+            final String token = formData.get(Player.TOKEN)[0];
             if (token == null) throw new NullPointerException();
-            Long userId = DBCommander.queryUserId(token);
-            if (userId == null) throw new UserNotFoundException();
-            User user = DBCommander.queryUser(userId);
-            if (user == null) throw new UserNotFoundException();
-            final String code = DBCommander.generateVerificationCode(user.getName());
-            user.setVerificationCode(code);
-            if (!DBCommander.updateUser(user)) throw new NullPointerException();
-            sendVerificationEmail(user.getLang(), user.getName(), user.getEmail(), code);
+            Long playerId = DBCommander.queryPlayerId(token);
+            if (playerId == null) throw new PlayerNotFoundException();
+            Player player = DBCommander.queryPlayer(playerId);
+            if (player == null) throw new PlayerNotFoundException();
+            final String code = DBCommander.generateVerificationCode(player.getName());
+            player.setVerificationCode(code);
+            if (!DBCommander.updatePlayer(player)) throw new NullPointerException();
+            sendVerificationEmail(player.getLang(), player.getName(), player.getEmail(), code);
             ObjectNode ret = Json.newObject();
-            ret.put(User.EMAIL, user.getEmail());
+            ret.put(Player.EMAIL, player.getEmail());
             return ok(ret);
         } catch (TokenExpiredException e) {
             return ok(TokenExpiredResult.get());
@@ -57,8 +57,8 @@ public class EmailController extends UserController {
         try {
             if (email == null || !General.validateEmail(email)) throw new InvalidRequestParamsException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            List<JSONObject> userJsons = builder.select(User.ID).from(User.TABLE).where(User.EMAIL, "=", email).execSelect();
-            if (userJsons != null && userJsons.size() > 0) throw new DuplicateException();
+            List<JSONObject> playerJsons = builder.select(Player.ID).from(Player.TABLE).where(Player.EMAIL, "=", email).execSelect();
+            if (playerJsons != null && playerJsons.size() > 0) throw new DuplicateException();
             return ok(StandardSuccessResult.get());
         } catch (DuplicateException e) {
             return ok(StandardFailureResult.get());
@@ -75,23 +75,23 @@ public class EmailController extends UserController {
 		if (!General.validateEmail(email)) throw new InvalidRequestParamsException();
 
 		EasyPreparedStatementBuilder builderUpdate = new EasyPreparedStatementBuilder();
-		boolean res = builderUpdate.update(User.TABLE)
-			.set(User.GROUP_ID, User.USER)
-			.set(User.VERIFICATION_CODE, "")
-			.where(User.EMAIL, "=", email)
-			.where(User.VERIFICATION_CODE, "=", code).execUpdate();
+		boolean res = builderUpdate.update(Player.TABLE)
+			.set(Player.GROUP_ID, Player.USER)
+			.set(Player.VERIFICATION_CODE, "")
+			.where(Player.EMAIL, "=", email)
+			.where(Player.VERIFICATION_CODE, "=", code).execUpdate();
 
-		String[] names = {User.ID, User.EMAIL, User.NAME, User.PASSWORD, User.GROUP_ID, User.AVATAR};
+		String[] names = {Player.ID, Player.EMAIL, Player.NAME, Player.PASSWORD, Player.GROUP_ID, Player.AVATAR};
 		EasyPreparedStatementBuilder builderSelect = new EasyPreparedStatementBuilder();
-		List<JSONObject> userJsons = builderSelect.select(names).from(User.TABLE).where(User.EMAIL, "=", email).execSelect();
+		List<JSONObject> playerJsons = builderSelect.select(names).from(Player.TABLE).where(Player.EMAIL, "=", email).execSelect();
 
-		if(userJsons == null || userJsons.size() != 1) throw new UserNotFoundException();
+		if(playerJsons == null || playerJsons.size() != 1) throw new PlayerNotFoundException();
 
-		User user = new User(userJsons.get(0));
+		Player player = new Player(playerJsons.get(0));
 		if (res) {
-			return redirect("http://" + request().host() + "/user/email#success?name=" + DataUtils.encodeUtf8(user.getName()) + "&email=" + DataUtils.encodeUtf8(user.getEmail()));
+			return redirect("http://" + request().host() + "/player/email#success?name=" + DataUtils.encodeUtf8(player.getName()) + "&email=" + DataUtils.encodeUtf8(player.getEmail()));
 		} else {
-			return redirect("http://" + request().host() + "/user/email#failure?name=" + DataUtils.encodeUtf8(user.getName()) + "&email=" + DataUtils.encodeUtf8(user.getEmail()));
+			return redirect("http://" + request().host() + "/player/email#failure?name=" + DataUtils.encodeUtf8(player.getName()) + "&email=" + DataUtils.encodeUtf8(player.getEmail()));
 		}	
         } catch (Exception e) {
             Loggy.e(TAG, "verify", e);

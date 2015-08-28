@@ -659,8 +659,8 @@ function AvatarEditor() {
 	this.btnUpload = null;
 	this.hint = null;
 
-	this.refresh = function(user) {
-		if (user == null) return null;
+	this.refresh = function(player) {
+		if (player == null) return null;
 		this.content.empty();
 		var form = $("<div>", {
 			"class": "avatar-editor-form clearfix"
@@ -674,7 +674,7 @@ function AvatarEditor() {
 		}).appendTo(picContainer);
 
 		this.image = $("<img>", {
-			src: user.avatar
+			src: player.avatar
 		}).appendTo(picContainer); 
 
 		var uploadContainer = $("<div>", {
@@ -723,7 +723,7 @@ function AvatarEditor() {
 			
 			$.ajax({
 				method: "POST",
-				url: "/user/avatar/upload", 
+				url: "/player/avatar/upload", 
 				data: formData,
 				mimeType: "mutltipart/form-data",
 				contentType: false,

@@ -17,7 +17,7 @@ function generateParticipantsSelectionForm(par, activity) {
 	}).appendTo(par);
 
 	var currentGmtMillis = currentMillis();
-	var editable = (g_loggedInUser != null && g_loggedInUser.id == activity.host.id && currentGmtMillis < activity.beginTime);
+	var editable = (g_loggedInPlayer != null && g_loggedInPlayer.id == activity.host.id && currentGmtMillis < activity.beginTime);
 
 	var labels = new Array();
 	var boxes = new Array();
@@ -108,7 +108,7 @@ function generateParticipantsSelectionForm(par, activity) {
 		}
 		if (participantIdList.length == 0) return;
 
-		// append user token and activity id for identity
+		// append player token and activity id for identity
 		var token = $.cookie(g_keyToken);
 		if (token == null) return;
 

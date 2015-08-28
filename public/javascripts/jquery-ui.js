@@ -244,7 +244,7 @@ if ( $( "<a>" ).data( "a-b", "a" ).removeData( "a-b" ).data( "a-b" ) ) {
 
 
 // deprecated
-$.ui.ie = !!/msie [\w.]+/.exec( navigator.userAgent.toLowerCase() );
+$.ui.ie = !!/msie [\w.]+/.exec( navigator.playerAgent.toLowerCase() );
 
 $.support.selectstart = "onselectstart" in document.createElement( "div" );
 $.fn.extend({
@@ -289,7 +289,7 @@ $.extend( $.ui, {
 	// only used by resizable
 	hasScroll: function( el, a ) {
 
-		//If overflow is hidden, the element might have extra content, but the user wants to hide it
+		//If overflow is hidden, the element might have extra content, but the player wants to hide it
 		if ( $( el ).css( "overflow" ) === "hidden") {
 			return false;
 		}
@@ -2577,7 +2577,7 @@ $.widget("ui.resizable", $.ui.mouse, {
 		// Calculate the attrs that will be change
 		data = trigger.apply(this, [event, dx, dy]);
 
-		// Put this in the mouseDrag handler since the user can start pressing shift while resizing
+		// Put this in the mouseDrag handler since the player can start pressing shift while resizing
 		this._updateVirtualBoundaries(event.shiftKey);
 		if (this._aspectRatio || event.shiftKey) {
 			data = this._updateRatio(data, event);
@@ -2608,7 +2608,7 @@ $.widget("ui.resizable", $.ui.mouse, {
 			this._proportionallyResize();
 		}
 
-		// Call the user callback if the element was resized
+		// Call the player callback if the element was resized
 		if ( ! $.isEmptyObject(props) ) {
 			this._trigger("resize", event, this.ui());
 		}
@@ -4624,7 +4624,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 			delayedTriggers = [];
 
 		// We first have to update the dom position of the actual currentItem
-		// Note: don't do it if the current item is already removed (by a user), or it gets reappended (see #4088)
+		// Note: don't do it if the current item is already removed (by a player), or it gets reappended (see #4088)
 		if(!this._noFinalSort && this.currentItem.parent().length) {
 			this.placeholder.before(this.currentItem);
 		}
@@ -6786,7 +6786,7 @@ $.widget( "ui.autocomplete", {
 				// clicking on the scrollbar causes focus to shift to the body
 				// but we can't detect a mouseup or a click immediately afterward
 				// so we have to track the next mousedown and close the menu if
-				// the user clicks somewhere outside of the autocomplete
+				// the player clicks somewhere outside of the autocomplete
 				var menuElement = this.menu.element[ 0 ];
 				if ( !$( event.target ).closest( ".ui-menu-item" ).length ) {
 					this._delay(function() {
@@ -9305,7 +9305,7 @@ $.extend(Datepicker.prototype, {
 						tbody += "<td class='" +
 							((dow + firstDay + 6) % 7 >= 5 ? " ui-datepicker-week-end" : "") + // highlight weekends
 							(otherMonth ? " ui-datepicker-other-month" : "") + // highlight days from other months
-							((printDate.getTime() === selectedDate.getTime() && drawMonth === inst.selectedMonth && inst._keyEvent) || // user pressed key
+							((printDate.getTime() === selectedDate.getTime() && drawMonth === inst.selectedMonth && inst._keyEvent) || // player pressed key
 							(defaultDate.getTime() === printDate.getTime() && defaultDate.getTime() === selectedDate.getTime()) ?
 							// or defaultDate is current printedDate and defaultDate is selectedDate
 							" " + this._dayOverClass : "") + // highlight selected day
@@ -10230,7 +10230,7 @@ $.widget( "ui.dialog", {
 	},
 
 	_size: function() {
-		// If the user has resized the dialog, the .ui-dialog and .ui-dialog-content
+		// If the player has resized the dialog, the .ui-dialog and .ui-dialog-content
 		// divs will both have width and height set, so we need to reset them
 		var nonContentHeight, minContentHeight, maxContentHeight,
 			options = this.options;
@@ -13401,7 +13401,7 @@ $.widget( "ui.spinner", {
 		"mousedown .ui-spinner-button": function( event ) {
 			var previous;
 
-			// We never want the buttons to have focus; whenever the user is
+			// We never want the buttons to have focus; whenever the player is
 			// interacting with the spinner, the focus should be on the input.
 			// If the input is focused then this.previous is properly set from
 			// when the input first received focus. If the input is not focused
@@ -13415,7 +13415,7 @@ $.widget( "ui.spinner", {
 					this.previous = previous;
 					// support: IE
 					// IE sets focus asynchronously, so we need to check if focus
-					// moved off of the input because the user clicked on the button.
+					// moved off of the input because the player clicked on the button.
 					this._delay(function() {
 						this.previous = previous;
 					});
@@ -13807,7 +13807,7 @@ $.widget( "ui.tabs", {
 		this.element
 			.addClass( "ui-tabs ui-widget ui-widget-content ui-corner-all" )
 			.toggleClass( "ui-tabs-collapsible", options.collapsible )
-			// Prevent users from focusing disabled tabs via click
+			// Prevent players from focusing disabled tabs via click
 			.delegate( ".ui-tabs-nav > li", "mousedown" + this.eventNamespace, function( event ) {
 				if ( $( this ).is( ".ui-state-disabled" ) ) {
 					event.preventDefault();
@@ -13953,7 +13953,7 @@ $.widget( "ui.tabs", {
 		// Navigating with control key will prevent automatic activation
 		if ( !event.ctrlKey ) {
 			// Update aria-selected immediately so that AT think the tab is already selected.
-			// Otherwise AT may confuse the user by stating that they need to activate the tab,
+			// Otherwise AT may confuse the player by stating that they need to activate the tab,
 			// but the tab will already be activated by the time the announcement finishes.
 			focusedTab.attr( "aria-selected", "false" );
 			this.tabs.eq( selectedIndex ).attr( "aria-selected", "true" );
@@ -14419,7 +14419,7 @@ $.widget( "ui.tabs", {
 	},
 
 	_getIndex: function( index ) {
-		// meta-function to give users option to provide a href string instead of a numerical index.
+		// meta-function to give players option to provide a href string instead of a numerical index.
 		if ( typeof index === "string" ) {
 			index = this.anchors.index( this.anchors.filter( "[href$='" + index + "']" ) );
 		}

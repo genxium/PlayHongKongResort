@@ -1,3 +1,5 @@
+#!/bin/bash
+
 basedir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 sudo su - root -c "$basedir/../../play dist"
 # always assume that /var/www/html is (over-)writable by the calling party

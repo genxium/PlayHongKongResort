@@ -37,10 +37,10 @@ var g_keyCount = "count";
 var g_keyData = "data";
 
 // structured data keys (should be consistent with server-side in a protocol manner)
-var g_keyUser = "user";
+var g_keyPlayer = "player";
 var g_keyCode = "code";
 
-var g_keyUserId = "user_id";
+var g_keyPlayerId = "player_id";
 var g_keyVieweeId = "viewee_id";
 var g_keyName = "name";
 var g_keyEmail = "email";
@@ -126,11 +126,11 @@ var g_maxSelected = 250;
 // regex patterns
 var g_emailPattern = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i; // referred to https://jqueryui.com/resources/demos/dialog/modal-form.html
 var g_passwordPattern = /^[0-9a-zA-Z_#\\!]{6,32}$/;
-var g_usernamePattern = /^[0-9a-zA-Z_]{6,32}$/;
+var g_playernamePattern = /^[0-9a-zA-Z_]{6,32}$/;
 
-var g_userAgePattern = /^.{0,16}$/;
-var g_userGenderPattern = /^.{0,16}$/;
-var g_userMoodPattern = /^.{0,64}$/;
+var g_playerAgePattern = /^.{0,16}$/;
+var g_playerGenderPattern = /^.{0,16}$/;
+var g_playerMoodPattern = /^.{0,64}$/;
 
 /* The following patterns should follow Unicode standard */
 var g_activityTitlePattern = /^.{5,64}$/;  
@@ -141,7 +141,7 @@ var g_assessmentContentPattern = /^.{0,64}$/;
 
 /* Error codes reference: https://www.evernote.com/shard/s50/sh/62bbc660-3794-403c-98d1-a8134c868589/ad7b98b93af61deb774e1154ff08dfd7 */
 var g_errNotLoggedIn = 1001;
-var g_errUserNotFound = 1003;
+var g_errPlayerNotFound = 1003;
 var g_errPswErr = 1004;
 
 var g_errActivityHasBegun = 3007;

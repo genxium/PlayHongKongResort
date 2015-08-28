@@ -9,27 +9,27 @@ public class Login {
     public static final String TAG = Login.class.getName();
 
     public static final String TABLE = "login";
-    public static final String USER_ID = "user_id";
+    public static final String USER_ID = "player_id";
     public static final String TOKEN = "token";
     public static final String TIMESTAMP = "timestamp";
 
-    protected Long m_userId = null;
+    protected Long m_playerId = null;
     protected String m_token = null;
     protected Timestamp m_timestamp = null;
 
-    public Long getUserId() {
-        return m_userId;
+    public Long getPlayerId() {
+        return m_playerId;
     }
 
     public Login(JSONObject loginJson) {
-        if (loginJson.containsKey(USER_ID)) m_userId = Converter.toLong(loginJson.get(USER_ID));
+        if (loginJson.containsKey(USER_ID)) m_playerId = Converter.toLong(loginJson.get(USER_ID));
         if (loginJson.containsKey(TOKEN)) m_token = (String)loginJson.get(TOKEN);
         if (loginJson.containsKey(TIMESTAMP)) m_timestamp = (Timestamp) loginJson.get(TIMESTAMP);
     }
 
     public boolean hasExpired() {
         /*
-        * TODO: check expiry by current time and User.TOKEN_LIFE
+        * TODO: check expiry by current time and Player.TOKEN_LIFE
         * TODO: if token has expired, delete the entry in table `login`
         * */
         return false;

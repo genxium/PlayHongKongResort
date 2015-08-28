@@ -372,7 +372,7 @@ function onSave(evt){
 	if (g_activityEditor == null || !g_activityEditor.savable) return;
 	var formData = new FormData();
 
-	// append user token and activity id for identity
+	// append player token and activity id for identity
 	var token = $.cookie(g_keyToken.toString());
 	if (token == null) {
 		alert(ALERTS["please_log_in"]);
@@ -510,7 +510,7 @@ function onSubmit(evt){
 
         var params = {};
 
-        // append user token and activity id for identity
+        // append player token and activity id for identity
         var token = $.cookie(g_keyToken);
         if(token == null) {
             alert(ALERTS["please_log_in"]);

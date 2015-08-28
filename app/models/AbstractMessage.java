@@ -13,8 +13,8 @@ public abstract class AbstractMessage extends AbstractSimpleMessage {
     public static final String FROM = "from";
     public static final String TO = "to";
 
-    public static final String FROM_USER = "from_user";
-    public static final String TO_USER = "to_user";
+    public static final String FROM_USER = "from_player";
+    public static final String TO_USER = "to_player";
 
     public static final String GENERATED_TIME = "generated_time";
 
@@ -34,23 +34,23 @@ public abstract class AbstractMessage extends AbstractSimpleMessage {
         return m_to;
     }
 
-    protected User m_fromUser = null;
-    protected User m_toUser = null;
+    protected Player m_fromPlayer = null;
+    protected Player m_toPlayer = null;
 
-    public User getFromUser() {
-        return m_fromUser;
+    public Player getFromPlayer() {
+        return m_fromPlayer;
     }
 
-    public void setFromUser(final User user) {
-        m_fromUser = user;
+    public void setFromPlayer(final Player player) {
+        m_fromPlayer = player;
     }
 
-    public User getToUser() {
-        return m_toUser;
+    public Player getToPlayer() {
+        return m_toPlayer;
     }
 
-    public void setToUser(final User user) {
-        m_toUser = user;
+    public void setToPlayer(final Player player) {
+        m_toPlayer = player;
     }
 
     public AbstractMessage() {

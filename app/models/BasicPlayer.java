@@ -8,9 +8,9 @@ import utilities.Loggy;
 
 import java.util.regex.Pattern;
 
-public class BasicUser extends AbstractModel {
+public class BasicPlayer extends AbstractModel {
 
-    public static String TAG = BasicUser.class.getName();
+    public static String TAG = BasicPlayer.class.getName();
 
     public static String EMAIL = "email";
     public static String NAME = "name";
@@ -51,16 +51,16 @@ public class BasicUser extends AbstractModel {
         m_avatar = avatar;
     }
 
-    public BasicUser(String email, String name) {
+    public BasicPlayer(String email, String name) {
         m_email = email;
         m_name = name;
     }
 
-    public BasicUser(JSONObject userJson) {
-        super(userJson);
-        if (userJson.containsKey(NAME)) m_name = (String) userJson.get(NAME);
-        if (userJson.containsKey(EMAIL)) m_email = (String) userJson.get(EMAIL);
-        if (userJson.containsKey(AVATAR)) m_avatar = Converter.toLong(userJson.get(AVATAR));
+    public BasicPlayer(JSONObject playerJson) {
+        super(playerJson);
+        if (playerJson.containsKey(NAME)) m_name = (String) playerJson.get(NAME);
+        if (playerJson.containsKey(EMAIL)) m_email = (String) playerJson.get(EMAIL);
+        if (playerJson.containsKey(AVATAR)) m_avatar = Converter.toLong(playerJson.get(AVATAR));
     }
 
     public ObjectNode toObjectNode(Long viewerId) {

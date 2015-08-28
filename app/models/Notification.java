@@ -25,7 +25,7 @@ public class Notification extends AbstractActivityMessage {
 	protected Integer m_commentId = INVALID;
 	protected Integer m_assessmentId = INVALID;
 	protected Long m_cmd = (long)INVALID;
-	protected Integer m_relation = UserActivityRelation.INVALID;
+	protected Integer m_relation = PlayerActivityRelation.INVALID;
 	protected Integer m_status = INVALID;
 
 	public Notification(JSONObject notificationJson) {

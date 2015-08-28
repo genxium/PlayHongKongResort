@@ -1,5 +1,5 @@
 /*
- * This is the base class of user model
+ * This is the base class of player model
  * */
 
 package models;
@@ -13,7 +13,7 @@ import utilities.Loggy;
 
 import java.util.regex.Pattern;
 
-public class User extends BasicUser {
+public class Player extends BasicPlayer {
 
 	public static final int TOKEN_LIFE = 7889230; // in seconds, this equals 3 months
 
@@ -22,7 +22,7 @@ public class User extends BasicUser {
 	public static int MANAGER = 2;
 	public static int ADMIN = 3;
 
-	public static final String TABLE = "user";
+	public static final String TABLE = "player";
 
 	public static final String PASSWORD = "password";
 	public static final String SALT = "salt";
@@ -149,23 +149,23 @@ public class User extends BasicUser {
 		return m_mood;
 	}
 
-	public User(String email, String name) {
+	public Player(String email, String name) {
 		super(email, name);
 		m_groupId = VISITOR;
 		m_password = "";
 	}
 
-	public User(final JSONObject userJson) {
-		super(userJson);
-		if (userJson.containsKey(PASSWORD)) m_password = (String) userJson.get(PASSWORD);
-		if (userJson.containsKey(SALT)) m_salt = (String) userJson.get(SALT);
-		if (userJson.containsKey(GROUP_ID)) m_groupId = Converter.toInteger(userJson.get(GROUP_ID));
-		if (userJson.containsKey(UNREAD_COUNT)) m_unreadCount = Converter.toInteger(userJson.get(UNREAD_COUNT));
-		if (userJson.containsKey(UNASSESSED_COUNT)) m_unassessedCount = Converter.toInteger(userJson.get(UNASSESSED_COUNT));
-		if (userJson.containsKey(LANG)) m_lang = (String) userJson.get(LANG);
-		if (userJson.containsKey(GENDER)) m_gender = (String) userJson.get(GENDER);
-		if (userJson.containsKey(AGE)) m_age = (String) userJson.get(AGE);
-		if (userJson.containsKey(MOOD)) m_mood = (String) userJson.get(MOOD);
+	public Player(final JSONObject playerJson) {
+		super(playerJson);
+		if (playerJson.containsKey(PASSWORD)) m_password = (String) playerJson.get(PASSWORD);
+		if (playerJson.containsKey(SALT)) m_salt = (String) playerJson.get(SALT);
+		if (playerJson.containsKey(GROUP_ID)) m_groupId = Converter.toInteger(playerJson.get(GROUP_ID));
+		if (playerJson.containsKey(UNREAD_COUNT)) m_unreadCount = Converter.toInteger(playerJson.get(UNREAD_COUNT));
+		if (playerJson.containsKey(UNASSESSED_COUNT)) m_unassessedCount = Converter.toInteger(playerJson.get(UNASSESSED_COUNT));
+		if (playerJson.containsKey(LANG)) m_lang = (String) playerJson.get(LANG);
+		if (playerJson.containsKey(GENDER)) m_gender = (String) playerJson.get(GENDER);
+		if (playerJson.containsKey(AGE)) m_age = (String) playerJson.get(AGE);
+		if (playerJson.containsKey(MOOD)) m_mood = (String) playerJson.get(MOOD);
 	}
 
 	public ObjectNode toObjectNode(final Long viewerId) {

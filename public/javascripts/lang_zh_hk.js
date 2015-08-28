@@ -101,9 +101,9 @@ var MESSAGES = {
 	uploaded: "上傳成功",
 	upload_failed: "上傳失敗",
 	delete_activity_confirmation: "確定要刪除此活動嗎？",
-	username_requirement: "用戶名需為6-32位由英文字母， 數字或符號'_'組成",
-	username_valid: "此用戶名可以使用",
-	username_invalid: "此用戶名已被佔用",
+	playername_requirement: "用戶名需為6-32位由英文字母， 數字或符號'_'組成",
+	playername_valid: "此用戶名可以使用",
+	playername_invalid: "此用戶名已被佔用",
 	email_valid: "此電郵地址可以使用",
 	email_invalid: "此電郵地址已被佔用",
 	email_requirement: "請填寫有效的電郵地址",
@@ -141,7 +141,7 @@ var MESSAGES = {
 };
 
 var HINTS = {
-	username: "用戶名",
+	playername: "用戶名",
 	email: "電郵地址",
 	password: "密碼",
 	confirm_password: "確認密碼",
@@ -164,7 +164,7 @@ var ALERTS = {
 	image_selection_limit_exceeded: "請選擇{0}張以內圖片",
 	invalid_email_format: "無效的電郵地址",
 	wrong_password: "密碼錯誤",
-	user_not_existing: "用戶不存在",
+	player_not_existing: "用戶不存在",
 	comment_requirement: "請填寫5～128個字",
 	comment_question_not_submitted: "問題未提交",
 	registered: "註冊成功",

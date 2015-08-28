@@ -1,5 +1,5 @@
 var g_sectionLogin = null;
-var g_loggedInUser = null;
+var g_loggedInPlayer = null;
 var g_preLoginForm = null;
 var g_postLoginMenu = null;
 
@@ -52,20 +52,20 @@ function PreLoginForm(handle, psw, btn, forgot, registry, onLoginSuccess, onLogi
 		
 		$.ajax({
 		    type: "POST",
-		    url: "/user/login",
+		    url: "/player/login",
 		    data: params,
 		    success: function(data, status, xhr){
 				enableField(aButton);
-				if (isUserNotFound(data)) {
-					alert(ALERTS["user_not_existing"]);
+				if (isPlayerNotFound(data)) {
+					alert(ALERTS["player_not_existing"]);
 					return;
 				} 
 				if (isPswErr(data)) {
 					alert(ALERTS["wrong_password"]);
 					return;
 				}
-				g_loggedInUser = new User(data);
-				if (g_loggedInUser == null) return;
+				g_loggedInPlayer = new Player(data);
+				if (g_loggedInPlayer == null) return;
 				// store token in cookie iff query succeeds
 				$.cookie(g_keyToken, data[g_keyToken], {path: '/'});
 				wsConnect();	
@@ -84,7 +84,7 @@ function PreLoginForm(handle, psw, btn, forgot, registry, onLoginSuccess, onLogi
 
 	this.forgot.click(function(evt){
 		evt.preventDefault();
-		window.open("/user/password/index");
+		window.open("/player/password/index");
 	});
 
 	if (this.registry) {
@@ -176,7 +176,7 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 		}).appendTo(row2);
 		qqLoginEntry.click(function(evt) {
 			evt.preventDefault();
-			window.location = "https://graph.qq.com/oauth2.0/authorize?response_type=token&client_id=" + g_qqAppId + "&redirect_uri=" + redirectUri + "&scope=get_user_info";
+			window.location = "https://graph.qq.com/oauth2.0/authorize?response_type=token&client_id=" + g_qqAppId + "&redirect_uri=" + redirectUri + "&scope=get_player_info";
 		});
 	}
 
@@ -200,11 +200,11 @@ function logout(evt) {
 	disableField(aButton);
 	$.ajax({
 		type: "POST",
-		url: "/user/logout",
+		url: "/player/logout",
 		data: params,
 		success: function(data, status, xhr){
 			enableField(aButton);
-			g_loggedInUser = null;
+			g_loggedInPlayer = null;
 			$.removeCookie(g_keyToken, {path: '/'});
 			wsDisconnect();
 			if (g_sectionLogin == null) return;
@@ -225,13 +225,13 @@ function logout(evt) {
 
 function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
 	if (par == null) return null;
-	if (g_loggedInUser == null) return null;
+	if (g_loggedInPlayer == null) return null;
 	par.empty();
 
 	var createReact = function(evt){
 		evt.preventDefault();
-		if (g_loggedInUser == null) return;
-		if (g_loggedInUser.isVisitor()) {
+		if (g_loggedInPlayer == null) return;
+		if (g_loggedInPlayer.isVisitor()) {
 			alert(ALERTS["email_not_authenticated"]);
 			return;
 		}	
@@ -242,20 +242,20 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 
 	var profileReact = function(evt){
 		evt.preventDefault();
-		if (g_loggedInUser == null) return;
-		window.location.hash = ("profile?" + g_keyVieweeId + "=" + g_loggedInUser.id.toString());
+		if (g_loggedInPlayer == null) return;
+		window.location.hash = ("profile?" + g_keyVieweeId + "=" + g_loggedInPlayer.id.toString());
 	};
 	
 	var logoutReact = logout;
 	
-	var userBox = $("<div>", {
-		"class": "user-box clearfix"
+	var playerBox = $("<div>", {
+		"class": "player-box clearfix"
 	}).appendTo(par);
 	var avatarContainer = $("<div>", {
 		"class": "post-login-avatar left patch-block-alpha"
-	}).appendTo(userBox);
+	}).appendTo(playerBox);
 	var avatarImage = $("<img>", {
-		src: g_loggedInUser.avatar
+		src: g_loggedInPlayer.avatar
 	}).appendTo(avatarContainer);
 
 	var avatarSpan = $("<span>", {
@@ -263,19 +263,19 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	}).appendTo(avatarContainer);
 	avatarContainer.click(profileReact);
 	
-	var userBoxLeft = $("<div>", {
-		"class": "user-box-left left clearfix patch-block-gamma"
-	}).appendTo(userBox);
+	var playerBoxLeft = $("<div>", {
+		"class": "player-box-left left clearfix patch-block-gamma"
+	}).appendTo(playerBox);
 	var leftFirstRow = $("<div>", {
 		"class": "left-first-row clearfix"
-	}).appendTo(userBoxLeft);
+	}).appendTo(playerBoxLeft);
 	var noti = $("<div>", {
 		"class": "noti-container left"
 	}).appendTo(leftFirstRow);
 
 	noti.click(function(evt){
 		evt.preventDefault();		
-		if (g_loggedInUser == null) return;
+		if (g_loggedInPlayer == null) return;
 		window.location.hash = "notifications";
 	}); 
 
@@ -284,23 +284,23 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 		text: "0"
 	}).appendTo(noti);
 	var bubble = new NotiBubble(0, spBubble);
-	bubble.update(g_loggedInUser.unreadCount);
+	bubble.update(g_loggedInPlayer.unreadCount);
 
-	var userName = $("<div>", {
-		"class": "username left patch-block-delta",
-		html: g_loggedInUser.name
+	var playerName = $("<div>", {
+		"class": "playername left patch-block-delta",
+		html: g_loggedInPlayer.name
 	}).appendTo(leftFirstRow);
 
 	var postLoginMenuContainer = $("<div>", {
 		"class": "menu-action-row"
-	}).appendTo(userBoxLeft);
+	}).appendTo(playerBoxLeft);
 
 	var icons = ["/assets/icons/new_activity.png", "/assets/icons/profile.png", "/assets/icons/logout.png"];
 	var actionNames = ["create", "profile", "logout"];
 	var titles = [TITLES["create"], TITLES["profile"], TITLES["logout"]];
 	var reactions = [createReact, profileReact, logoutReact]; 
 
-	var dropdownMenu = createDropdownMenu(postLoginMenuContainer, "menu-post-login", g_loggedInUser.name, icons, actionNames, titles, reactions);
+	var dropdownMenu = createDropdownMenu(postLoginMenuContainer, "menu-post-login", g_loggedInPlayer.name, icons, actionNames, titles, reactions);
 	var menu = new PostLoginMenu(bubble, dropdownMenu, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
 	var params = [menu, menu, menu];
 	dropdownMenu.setReactionParams(params);
@@ -317,7 +317,7 @@ function checkLoginStatus(){
 		return;
 	}
 
-	if (g_loggedInUser != null) {
+	if (g_loggedInPlayer != null) {
 		if (g_preLoginForm == null) return;
 		g_postLoginMenu = generatePostLoginMenu(g_sectionLogin, g_preLoginForm.onLoginSuccess, g_preLoginForm.onLoginError, g_preLoginForm.onLogoutSuccess, g_preLoginForm.onLogoutError);
 		if (g_preLoginForm.onLoginSuccess == null)	return;
@@ -329,7 +329,7 @@ function checkLoginStatus(){
 	params[g_keyToken] = token;
 	$.ajax({
 		type: "GET",
-		url: "/user/status",
+		url: "/player/status",
 		data: params,
 		success: function(data, status, xhr){
 			if (isStandardFailure(data)) {
@@ -339,10 +339,10 @@ function checkLoginStatus(){
 				g_preLoginForm.onLoginError(null);		
 				return;
 			}
-			var userJson = data;
-			g_loggedInUser = new User(userJson);
-			if (g_loggedInUser == null) return;
-			$.cookie(g_keyToken, userJson[g_keyToken], {path: '/'});
+			var playerJson = data;
+			g_loggedInPlayer = new Player(playerJson);
+			if (g_loggedInPlayer == null) return;
+			$.cookie(g_keyToken, playerJson[g_keyToken], {path: '/'});
 			wsConnect();	
 			if (g_preLoginForm == null) return;
 			g_postLoginMenu = generatePostLoginMenu(g_sectionLogin, g_preLoginForm.onLoginSuccess, g_preLoginForm.onLoginError, g_preLoginForm.onLogoutSuccess, g_preLoginForm.onLogoutError);

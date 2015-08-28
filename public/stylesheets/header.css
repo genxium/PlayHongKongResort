@@ -54,7 +54,7 @@
 	padding: 2px;
 	opacity: 0.8;
 }
-.user-box-left {
+.player-box-left {
 	margin: 10px 10px 10px 0;
 }
 
@@ -69,7 +69,7 @@
 	background-position: left -36px;
 }
 
-.user-box-left .username {
+.player-box-left .playername {
 	margin: 5px 0 0 15px;
 	font-size: 24px;
 	max-width: 160px;
@@ -77,7 +77,7 @@
 	overflow: hidden;
 }
 
-.username:hover {
+.playername:hover {
 	cursor: default;
 }
 

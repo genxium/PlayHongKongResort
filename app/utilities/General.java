@@ -3,7 +3,7 @@ package utilities;
 import models.Activity;
 import models.Assessment;
 import models.Comment;
-import models.User;
+import models.Player;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -19,7 +19,7 @@ public class General {
 
     public static boolean validateEmail(final String email) {
         try {
-            return User.EMAIL_PATTERN.matcher(email).matches();
+            return Player.EMAIL_PATTERN.matcher(email).matches();
         } catch (Exception e) {
 	        return false;
         }
@@ -27,7 +27,7 @@ public class General {
 	
     public static boolean validateName(final String name) {
         try {
-            return User.NAME_PATTERN.matcher(name).matches();
+            return Player.NAME_PATTERN.matcher(name).matches();
         } catch (Exception e) {
 	        return false;
         }
@@ -35,7 +35,7 @@ public class General {
 
     public static boolean validatePassword(final String password) {
         try {
-            return User.PASSWORD_PATTERN.matcher(password).matches();
+            return Player.PASSWORD_PATTERN.matcher(password).matches();
         } catch (Exception e) {
 	        return false;
         }
@@ -81,25 +81,25 @@ public class General {
         }
     }
 
-    public static boolean validateUserAge(final String age) {
+    public static boolean validatePlayerAge(final String age) {
         try {
-            return User.AGE_PATTERN.matcher(age).matches();
+            return Player.AGE_PATTERN.matcher(age).matches();
         } catch (Exception e) {
             return false;
         }
     }
 
-    public static boolean validateUserGender(final String gender) {
+    public static boolean validatePlayerGender(final String gender) {
         try {
-            return User.GENDER_PATTERN.matcher(gender).matches();
+            return Player.GENDER_PATTERN.matcher(gender).matches();
         } catch (Exception e) {
             return false;
         }
     }
 
-    public static boolean validateUserMood(final String mood) {
+    public static boolean validatePlayerMood(final String mood) {
         try {
-            return User.MOOD_PATTERN.matcher(mood).matches();
+            return Player.MOOD_PATTERN.matcher(mood).matches();
         } catch (Exception e) {
             return false;
         }

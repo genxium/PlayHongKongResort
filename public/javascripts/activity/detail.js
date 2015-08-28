@@ -35,7 +35,7 @@ function queryActivityDetail(activityId){
 				var activityJson = data;
 				g_activity = new Activity(activityJson);
 				displayActivityDetail(g_sectionActivity);
-				if (g_loggedInUser == null || g_loggedInUser.id == g_activity.host.id) {
+				if (g_loggedInPlayer == null || g_loggedInPlayer.id == g_activity.host.id) {
 					emptyBarButtons();
 					return;
 				}
@@ -168,7 +168,7 @@ function requestActivityDetail(activityId) {
 	g_sectionActivity = $("#section-activity");
 	g_sectionNav = $("#section-nav")
 	g_sectionPanes = $("#section-panes");
-	g_barButtons = $("#section-user");
+	g_barButtons = $("#section-player");
 
 	var refs = ["tab-comments", "tab-participants", "tab-assessments"];
 	var titles = [TITLES["question"], TITLES["participant"], TITLES["assessment"]];

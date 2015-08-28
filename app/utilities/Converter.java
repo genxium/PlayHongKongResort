@@ -34,10 +34,10 @@ public class Converter {
 
     }
 
-    public static String generateToken(String username, String password) {
+    public static String generateToken(String playername, String password) {
         java.util.Date date = new java.util.Date();
         String dateStr = date.toString();
-        String base = username + dateStr + password;
+        String base = playername + dateStr + password;
         return md5(base);
     }
 

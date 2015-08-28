@@ -1,0 +1,5 @@
+#!/bin/bash
+
+basedir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+mysql -uroot hongkongresort-devel < $basedir/all_data.sql
