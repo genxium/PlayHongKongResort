@@ -4,15 +4,18 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import components.StandardFailureResult;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
-import exception.InvalidRegistrationParamsException;
+import exception.ForeignPartyRegistrationRequiredException;
+import exception.TempForeignPartyRecordNotFoundException;
 import exception.PlayerNotFoundException;
 import fixtures.Constants;
 import models.Login;
 import models.PermForeignParty;
 import models.TempForeignParty;
 import models.Player;
+import play.Play;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.libs.Json;
 import utilities.Converter;
 import utilities.General;
 import utilities.Loggy;
@@ -26,156 +29,187 @@ import java.util.Map;
 
 public class ForeignPartyController extends Controller {
 
-    public static String TAG = ForeignPartyController.class.getName();
+	public static String TAG = ForeignPartyController.class.getName();
 
-    public static final int PARTY_NONE = 0;
-    public static final int PARTY_QQ = 1;
+	public static final int PARTY_NONE = 0;
+	public static final int PARTY_QQ = 1;
 
-    public static final HashMap<Integer, String> PARTY_DEFAULT_DOMAIN_NAME = new HashMap<>();
-    static {
-        PARTY_DEFAULT_DOMAIN_NAME.put(PARTY_QQ, "qq.com");
-    }
+	public static final HashMap<Integer, String> PARTY_DEFAULT_DOMAIN_NAME = new HashMap<>();
+	static {
+		PARTY_DEFAULT_DOMAIN_NAME.put(PARTY_QQ, "qq.com");
+	}
 
-    public static class ForeignPartySpecs {
-        public String TAG = ForeignPartySpecs.class.getName();
-        public Long id = null;
-        public Integer party = null;
-        public String email = null;
-        public ForeignPartySpecs(final Long aId, final Integer aParty, final String aEmail) {
-            id = aId;
+	public static class ForeignPartySpecs {
+		public String TAG = ForeignPartySpecs.class.getName();
+		public Long id = null;
+		public Integer party = null;
+		public String email = null;
+		public ForeignPartySpecs(final Long aId, final Integer aParty, final String aEmail) {
+			id = aId;
 			party = aParty;
-            if (aEmail == null) email = String.format("%d@%s", aId, PARTY_DEFAULT_DOMAIN_NAME.get(aParty));
-            else email = aEmail;
-        }
-        public boolean isValid() {
-            return (id != null && party != null);
-        }
-    }
+			if (aEmail == null) email = String.format("%d@%s", aId, PARTY_DEFAULT_DOMAIN_NAME.get(aParty));
+			else email = aEmail;
+		}
+		public boolean isValid() {
+			return (id != null && party != null);
+		}
+	}
 
-    protected static ForeignPartySpecs queryForeignPartySpecs (final String accessToken, final Integer party) {
-        /**
-         * TODO: implementation for major foreign parties
-         * */
-        switch (party) {
-            case PARTY_QQ:
-                return new ForeignPartySpecs(12345678L, party, null);
-            default:
-                return null;
-        }
-    }
+	protected static ForeignPartySpecs queryForeignPartySpecs (final String accessToken, final Integer party) {
+		/**
+		 * TODO: implementation for major foreign parties
+		 * */
+		switch (party) {
+			case PARTY_QQ:
+				if (Play.application().isProd())	return null; 
+				else if (Play.application().isDev())	return null;
+				else {
+					Map<String, Long> testAccessTokenMap = new HashMap<>();
+					testAccessTokenMap.put("qyi32789urjwkqefn", 12345678L); // should NOT be in test table `perm_foreign_party`
+					testAccessTokenMap.put("a7s89dfhaaskdfja89", 87654321L); // should be in test table `perm_foreign_party` and `player`
+					if (!testAccessTokenMap.containsKey(accessToken)) return null;
+					return new ForeignPartySpecs(testAccessTokenMap.get(accessToken), party, null);
+				}
+			default:
+				return null;
+		}
+	}
 
-    public static Result login() {
-        try {
-            Map<String, String[]> formData = request().body().asFormUrlEncoded();
-            if (!formData.containsKey(TempForeignParty.ACCESS_TOKEN) || !formData.containsKey(TempForeignParty.PARTY))  return ok(StandardFailureResult.get());
+	protected static Player loginWithNameCompletion(final String accessToken, final Integer party, final String name, String email) throws ForeignPartyRegistrationRequiredException, TempForeignPartyRecordNotFoundException, SQLException, NullPointerException {
 
-            String accessToken = formData.get(TempForeignParty.ACCESS_TOKEN)[0];
-            Integer party = Converter.toInteger(formData.get(TempForeignParty.PARTY)[0]);
-            Player player = null;
+		// player should re-submit valid name and email(if not empty) 
+		if (name == null || !General.validateName(name)) throw new ForeignPartyRegistrationRequiredException();
+		if (email != null && !General.validateEmail(email)) throw new ForeignPartyRegistrationRequiredException();
 
-            if (formData.containsKey(Player.NAME) && formData.containsKey(Player.EMAIL)) {
+		TempForeignParty tempForeignPartyRecord = DBCommander.queryTempForeignParty(accessToken, party);
 
-                String name = formData.get(Player.NAME)[0];
-                String email = formData.get(Player.EMAIL)[0];
+		// player should re-submit access-token and party-id 
+		if (tempForeignPartyRecord == null)	throw new TempForeignPartyRecordNotFoundException(); 
 
-                if ((name == null || !General.validateName(name)) || (email == null || !General.validateEmail(email)) )  throw new InvalidRegistrationParamsException();
+		if (email == null) email = tempForeignPartyRecord.getEmail(); 
 
-                TempForeignParty tempForeignPartyRecord = DBCommander.queryTempForeignParty(accessToken, party);
-                if (tempForeignPartyRecord == null) return ok(StandardFailureResult.get());
+		Connection connection = SQLHelper.getConnection();
+		if (connection == null)	throw new NullPointerException(); 
 
-                /**
-                 * TODO: clean up these codes
-                 * Transaction begins
-                 * */
-                boolean transactionSucceeded = true;
-                Connection connection = SQLHelper.getConnection();
-                SQLHelper.disableAutoCommit(connection);
-                try {
-                    if (connection == null) throw new NullPointerException();
+		/**
+		 * TODO: clean up these codes
+		 * Transaction begins
+		 * */
 
-                    // insert record into `player`
+		boolean transactionSucceeded = true;
 
-                    String code = DBCommander.generateVerificationCode(name);
+		SQLHelper.disableAutoCommit(connection);
+		try {
 
-                    String[] cols = {Player.EMAIL, Player.NAME, Player.GROUP_ID, Player.VERIFICATION_CODE};
-                    Object[] values = {email, name, Player.USER, code};
+			// insert record into `player`
 
-                    EasyPreparedStatementBuilder createPlayerBuilder = new EasyPreparedStatementBuilder();
-                    PreparedStatement createPlayerStat = createPlayerBuilder.insert(cols, values)
-                            .into(Player.TABLE)
-                            .toInsert(connection);
+			String code = DBCommander.generateVerificationCode(name);
 
-                    Long playerId = SQLHelper.executeInsertAndCloseStatement(createPlayerStat);
+			String[] cols = {Player.EMAIL, Player.NAME, Player.GROUP_ID, Player.VERIFICATION_CODE};
+			Object[] values = {email, name, Player.USER, code};
 
-                    // insert record into `perm_foreign_party`
-                    String[] cols2 = {PermForeignParty.ID, PermForeignParty.PARTY, PermForeignParty.PLAYER_ID};
-                    Object[] vals2 = {tempForeignPartyRecord.getPartyId(), tempForeignPartyRecord.getParty(), playerId};
+			EasyPreparedStatementBuilder createPlayerBuilder = new EasyPreparedStatementBuilder();
+			PreparedStatement createPlayerStat = createPlayerBuilder.insert(cols, values)
+				.into(Player.TABLE)
+				.toInsert(connection);
 
-                    EasyPreparedStatementBuilder createPermForeignPartyBuilder = new EasyPreparedStatementBuilder();
-                    PreparedStatement createPermForeignPartyStat = createPermForeignPartyBuilder.insert(cols2, vals2)
-                            .into(PermForeignParty.TABLE)
-                            .toInsert(connection);
+			Long playerId = SQLHelper.executeInsertAndCloseStatement(createPlayerStat);
 
-                    SQLHelper.executeAndCloseStatement(createPermForeignPartyStat);
+			// insert record into `perm_foreign_party`
+			String[] cols2 = {PermForeignParty.ID, PermForeignParty.PARTY, PermForeignParty.PLAYER_ID};
+			Object[] vals2 = {tempForeignPartyRecord.getPartyId(), tempForeignPartyRecord.getParty(), playerId};
 
-                    // remove record from `temp_foreign_party`
-                    EasyPreparedStatementBuilder deleteTempForeignPartyBuilder = new EasyPreparedStatementBuilder();
-                    PreparedStatement deleteTempForeignPartyStat = deleteTempForeignPartyBuilder.from(TempForeignParty.TABLE)
-                            .where(TempForeignParty.ACCESS_TOKEN, "=", tempForeignPartyRecord.getAccessToken())
-                            .toDelete(connection);
-                    SQLHelper.executeAndCloseStatement(deleteTempForeignPartyStat);
+			EasyPreparedStatementBuilder createPermForeignPartyBuilder = new EasyPreparedStatementBuilder();
+			PreparedStatement createPermForeignPartyStat = createPermForeignPartyBuilder.insert(cols2, vals2)
+				.into(PermForeignParty.TABLE)
+				.toInsert(connection);
 
-                } catch (SQLException e) {
-                    transactionSucceeded = false;
-                    SQLHelper.rollback(connection);
-                    Loggy.e(TAG, "login", e);
-                } catch (Exception e) {
-                    Loggy.e(TAG, "login", e);
-                } finally {
-                    SQLHelper.enableAutoCommitAndClose(connection);
-                }
-                /**
-                 * Transaction ends
-                 * */
+			SQLHelper.executeAndCloseStatement(createPermForeignPartyStat);
 
-                if (transactionSucceeded) {
-                    player = new Player(email, name);
-                    /**
-                     * TODO: the following 2 lines are used for adaptation of Player.toObjectNode method, however this might be better covered by the initialization of `Player`
-                     * */
-                    player.setParty(party);
-                    player.setGroupId(Player.USER);
-                    /**
-                     * TODO: send verification email to player, but by far `foreign party account verified` and `email verified` states are not separated
-                     * */
-                }
-            } else {
-                ForeignPartySpecs specs = queryForeignPartySpecs(accessToken, party);
-                if (specs == null || !specs.isValid()) return ok(StandardFailureResult.get());
+			// remove record from `temp_foreign_party`
+			EasyPreparedStatementBuilder deleteTempForeignPartyBuilder = new EasyPreparedStatementBuilder();
+			PreparedStatement deleteTempForeignPartyStat = deleteTempForeignPartyBuilder.from(TempForeignParty.TABLE)
+				.where(TempForeignParty.ACCESS_TOKEN, "=", tempForeignPartyRecord.getAccessToken())
+				.toDelete(connection);
+			SQLHelper.executeAndCloseStatement(deleteTempForeignPartyStat);
 
-                PermForeignParty record = DBCommander.queryPermForeignParty(specs.id, party);
-                if (record == null) {
-                    DBCommander.createTempForeignParty(accessToken, party, specs.id, specs.email);
-                    return ok(StandardFailureResult.get(Constants.INFO_FOREIGN_PARTY_REGISTRATION_REQUIRED));
-                }
-                player = DBCommander.queryPlayer(record.getPlayerId());
-            }
+		} catch (SQLException e) {
+			transactionSucceeded = false;
+			SQLHelper.rollback(connection);
+			Loggy.e(TAG, "loginWithNameCompletion", e);
+		} catch (Exception e) {
+			Loggy.e(TAG, "loginWithNameCompletion", e);
+		} finally {
+			SQLHelper.enableAutoCommitAndClose(connection);
+		}
+		/**
+		 * Transaction ends
+		 * */
 
-            if (player == null) throw new PlayerNotFoundException();
+		if (!transactionSucceeded)	throw new NullPointerException();
+		Player player = new Player(email, name);
+		/**
+		 * TODO: the following 2 lines are used for adaptation of Player.toObjectNode method, however this might be better covered by the initialization of `Player`
+		 * */
+		player.setParty(party);
+		player.setGroupId(Player.USER);
+		return player;
+		/**
+		 * TODO: send verification email to player, but by far `foreign party account verified` and `email verified` states are not separated
+		 * */
+	}
 
-            String token = Converter.generateToken(player.getEmail(), player.getName());
+	protected static Player loginWithoutNameCompletion(final String accessToken, final Integer party) throws ForeignPartyRegistrationRequiredException {
+		ForeignPartySpecs specs = queryForeignPartySpecs(accessToken, party);
+		if (specs == null || !specs.isValid())	return null; 
 
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] cols = {Login.PLAYER_ID, Login.TOKEN, Login.TIMESTAMP};
-            Object[] vals = {player.getId(), token, General.millisec()};
-            builder.insert(cols, vals).into(Login.TABLE).execInsert();
-            ObjectNode result = player.toObjectNode(player.getId());
-            result.put(Player.TOKEN, token);
+		PermForeignParty record = DBCommander.queryPermForeignParty(specs.id, party);
+		if (record != null)	return DBCommander.queryPlayer(record.getPlayerId());
+		
+		// player should submit valid name and email(if not empty)
+		DBCommander.createTempForeignParty(accessToken, party, specs.id, specs.email);
+		throw new ForeignPartyRegistrationRequiredException();
+	}
 
-            return ok(result);
-        } catch (Exception e) {
-            Loggy.e(TAG, "login", e);
-        }
-        return badRequest();
-    }
+	public static Result login() {
+		try {
+			Map<String, String[]> formData = request().body().asFormUrlEncoded();
+			if (!formData.containsKey(TempForeignParty.ACCESS_TOKEN) || !formData.containsKey(TempForeignParty.PARTY))  return ok(StandardFailureResult.get());
+
+			String accessToken = formData.get(TempForeignParty.ACCESS_TOKEN)[0];
+			Integer party = Converter.toInteger(formData.get(TempForeignParty.PARTY)[0]);
+
+			String name = (formData.containsKey(Player.NAME) ? formData.get(Player.NAME)[0] : null);
+			String email = (formData.containsKey(Player.EMAIL) ? formData.get(Player.EMAIL)[0] : null);
+			Player player = null;
+
+			if (name != null)	player = loginWithNameCompletion(accessToken, party, name, email);
+			else	player = loginWithoutNameCompletion(accessToken, party);
+
+			if (player == null) throw new PlayerNotFoundException();
+	
+			// auto-login
+			String token = Converter.generateToken(player.getEmail(), player.getName());
+
+			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			String[] cols = {Login.PLAYER_ID, Login.TOKEN, Login.TIMESTAMP};
+			Object[] vals = {player.getId(), token, General.millisec()};
+			builder.insert(cols, vals).into(Login.TABLE).execInsert();
+
+			ObjectNode result = Json.newObject();
+			result.put(Player.TABLE, player.toObjectNode(player.getId()));
+			result.put(Player.TOKEN, token);
+
+			return ok(result);
+		} catch (TempForeignPartyRecordNotFoundException e) {
+			return ok(StandardFailureResult.get(Constants.INFO_TEMP_FOREIGN_PARTY_RECORD_NOT_FOUND));
+		} catch (ForeignPartyRegistrationRequiredException e) {
+			return ok(StandardFailureResult.get(Constants.INFO_FOREIGN_PARTY_REGISTRATION_REQUIRED));	
+		} catch (PlayerNotFoundException e) {
+			return ok(StandardFailureResult.get(Constants.INFO_PLAYER_NOT_FOUND));	
+		} catch (Exception e) {
+			Loggy.e(TAG, "login", e);
+		}
+		return badRequest();
+	}
 }

@@ -51,7 +51,8 @@ public class SQLHelper {
 	    try {
 		    String fullPath = Play.application().path() + "/conf/";
 			if (Play.application().isProd())    fullPath += "database_config.xml";
-			else    fullPath += "devel_database_config.xml";
+			else if (Play.application().isDev())    fullPath += "devel_database_config.xml";
+			else    fullPath += "test_database_config.xml";
 		    Map<String, String> attributes = XMLHelper.readDatabaseConfig(fullPath);
 		    s_databaseName = attributes.get(DATABASE_NAME);
 		    s_host = attributes.get(HOST);

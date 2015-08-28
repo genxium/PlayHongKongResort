@@ -49,10 +49,6 @@ public class TempForeignParty {
         return m_email;
     }
 
-    public TempForeignParty () {
-
-    }
-
     public TempForeignParty (final JSONObject json) {
         if (json.containsKey(ACCESS_TOKEN)) m_accessToken = (String)(json.get(ACCESS_TOKEN));
         if (json.containsKey(PARTY)) m_party = Converter.toInteger(json.get(PARTY));

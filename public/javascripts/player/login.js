@@ -168,8 +168,7 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 		/**
 		* TODO: make it adaptable to all 3rd party login workflow
 		**/
-        var href = window.location.href;
-		var redirectUri = href;
+		var redirectUri = window.location.host;
 		var qqLoginEntry = $("<img>", {
 			src: "/assets/icons/qq.png",
 			"class": "foreign-party-logo"

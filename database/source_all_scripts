@@ -10,7 +10,8 @@ mysql -uroot hongkongresort < $basedir/create_table_assessment.sql
 mysql -uroot hongkongresort < $basedir/create_table_login.sql
 mysql -uroot hongkongresort < $basedir/create_table_notification.sql
 mysql -uroot hongkongresort < $basedir/create_table_player_activity_relation.sql
-
+mysql -uroot hongkongresort < $basedir/create_table_temp_foreign_party.sql
+mysql -uroot hongkongresort < $basedir/create_table_perm_foreign_party.sql
 
 
 

@@ -3,7 +3,7 @@ package exception;
 public class AccessDeniedException extends Exception {
 	
 	public AccessDeniedException() {
-		super("Access Denied");
+		super("Access denied");
 	}
 
 } 
