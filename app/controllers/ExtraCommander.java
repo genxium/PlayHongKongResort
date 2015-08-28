@@ -117,7 +117,7 @@ public class ExtraCommander extends DBCommander {
 		try {
 			EasyPreparedStatementBuilder builderImage = new EasyPreparedStatementBuilder();
 			String[] names = {Image.URL, Image.META_ID, Image.META_TYPE, Image.GENERATED_TIME};
-			Object[] vals = {imageURL, player.getId(), Image.TYPE_USER, General.millisec()};
+			Object[] vals = {imageURL, player.getId(), Image.TYPE_PLAYER, General.millisec()};
 			long lastImageId = builderImage.insert(names, vals)
 										.into(Image.TABLE)
 										.execInsert();

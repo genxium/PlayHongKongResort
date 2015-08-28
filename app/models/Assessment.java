@@ -22,8 +22,8 @@ public class Assessment extends AbstractActivityMessage {
     public ObjectNode toObjectNode(Long viewerId) {
         ObjectNode ret = toObjectNode();
         try {
-            ret.put(FROM_USER, m_fromPlayer.toObjectNode(viewerId));
-            ret.put(TO_USER, m_toPlayer.toObjectNode(viewerId));
+            ret.put(FROM_PLAYER, m_fromPlayer.toObjectNode(viewerId));
+            ret.put(TO_PLAYER, m_toPlayer.toObjectNode(viewerId));
         } catch (Exception e) {
             Loggy.e(TAG, "toObjectNodeWithNames", e);
         }

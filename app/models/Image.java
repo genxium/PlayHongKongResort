@@ -27,7 +27,7 @@ public class Image extends AbstractModel {
 
     public static final String[] QUERY_FIELDS = {ID, URL, META_ID};
 
-    public static final int TYPE_USER = 1;
+    public static final int TYPE_PLAYER = 1;
     public static final int TYPE_ACTIVITY = 2;
 
     private String m_url = null;

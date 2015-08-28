@@ -75,14 +75,14 @@ public class PlayerController extends Controller {
 		    Long playerId = player.getId();
 
 		    EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-		    String[] cols = {Login.USER_ID, Login.TOKEN, Login.TIMESTAMP};
+		    String[] cols = {Login.PLAYER_ID, Login.TOKEN, Login.TIMESTAMP};
 		    Object[] vals = {playerId, token, General.millisec()};
 		    builder.insert(cols, vals).into(Login.TABLE).execInsert();
 		    ObjectNode result = player.toObjectNode(playerId);
 		    result.put(Player.TOKEN, token);
 		    return ok(result);
 	    } catch (PlayerNotFoundException e) {
-		    return ok(StandardFailureResult.get(Constants.INFO_USER_NOT_FOUND));
+		    return ok(StandardFailureResult.get(Constants.INFO_PLAYER_NOT_FOUND));
 	    } catch (PswErrException e) {
 		    return ok(StandardFailureResult.get(Constants.INFO_PSW_ERR));
 	    } catch (Exception e) {

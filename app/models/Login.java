@@ -9,7 +9,7 @@ public class Login {
     public static final String TAG = Login.class.getName();
 
     public static final String TABLE = "login";
-    public static final String USER_ID = "player_id";
+    public static final String PLAYER_ID = "player_id";
     public static final String TOKEN = "token";
     public static final String TIMESTAMP = "timestamp";
 
@@ -22,7 +22,7 @@ public class Login {
     }
 
     public Login(JSONObject loginJson) {
-        if (loginJson.containsKey(USER_ID)) m_playerId = Converter.toLong(loginJson.get(USER_ID));
+        if (loginJson.containsKey(PLAYER_ID)) m_playerId = Converter.toLong(loginJson.get(PLAYER_ID));
         if (loginJson.containsKey(TOKEN)) m_token = (String)loginJson.get(TOKEN);
         if (loginJson.containsKey(TIMESTAMP)) m_timestamp = (Timestamp) loginJson.get(TIMESTAMP);
     }

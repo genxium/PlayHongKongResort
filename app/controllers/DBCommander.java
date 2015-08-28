@@ -130,7 +130,7 @@ public class DBCommander {
         activity.setHost(host);
         activity.setCreatedTime(now);
 
-        String[] names2 = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.USER_ID, PlayerActivityRelation.RELATION, PlayerActivityRelation.GENERATED_TIME};
+        String[] names2 = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.PLAYER_ID, PlayerActivityRelation.RELATION, PlayerActivityRelation.GENERATED_TIME};
         Object[] values2 = {lastActivityId, host.getId(), PlayerActivityRelation.SELECTED | PlayerActivityRelation.PRESENT, now};
 
         EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
@@ -183,7 +183,7 @@ public class DBCommander {
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             String[] names = Activity.QUERY_FIELDS;
-            String[] onCols = {PlayerActivityRelation.USER_ID, PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.RELATION};
+            String[] onCols = {PlayerActivityRelation.PLAYER_ID, PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.RELATION};
             String[] onOps = {"=", "=", "IN"};
 
             Object[] onVals = {vieweeId, new EasyPreparedStatementBuilder.PrimaryTableField(Activity.ID), maskedRelationList};
@@ -299,7 +299,7 @@ public class DBCommander {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
             List<JSONObject> records = builder.select(PlayerActivityRelation.RELATION).from(PlayerActivityRelation.TABLE)
-                    .where(PlayerActivityRelation.USER_ID, "=", playerId)
+                    .where(PlayerActivityRelation.PLAYER_ID, "=", playerId)
                     .where(PlayerActivityRelation.ACTIVITY_ID, "=", activityId)
                     .execSelect();
 
@@ -320,7 +320,7 @@ public class DBCommander {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
             List<JSONObject> records = builder.select(PlayerActivityRelation.RELATION).from(PlayerActivityRelation.TABLE)
-                    .where(PlayerActivityRelation.USER_ID, "IN", playerIdList)
+                    .where(PlayerActivityRelation.PLAYER_ID, "IN", playerIdList)
                     .where(PlayerActivityRelation.ACTIVITY_ID, "=", activityId)
                     .execSelect();
 
@@ -700,7 +700,7 @@ public class DBCommander {
         List<BasicPlayer> players = new ArrayList<>();
         if (maskedRelationList == null || maskedRelationList.size() == 0) return players;
         try {
-            String[] onCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.USER_ID, PlayerActivityRelation.RELATION};
+            String[] onCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.PLAYER_ID, PlayerActivityRelation.RELATION};
             String[] onOps = {"=", "=", "IN"};
             Object[] onVals = {activityId, new EasyPreparedStatementBuilder.PrimaryTableField(Player.ID), maskedRelationList};
 
@@ -727,7 +727,7 @@ public class DBCommander {
         if (activityIdList == null || activityIdList.size() == 0) return ret;
         if (maskedRelationList == null || maskedRelationList.size() == 0) return ret;
         try {
-            String[] onCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.USER_ID, PlayerActivityRelation.RELATION};
+            String[] onCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.PLAYER_ID, PlayerActivityRelation.RELATION};
             String[] onOps = {"IN", "=", "IN"};
             Object[] onVals = {activityIdList, new EasyPreparedStatementBuilder.PrimaryTableField(Player.ID), maskedRelationList};
 
@@ -756,7 +756,7 @@ public class DBCommander {
             builder.update(PlayerActivityRelation.TABLE)
                     .set(PlayerActivityRelation.RELATION, relation)
                     .where(PlayerActivityRelation.ACTIVITY_ID, "=", activityId)
-                    .where(PlayerActivityRelation.USER_ID, "=", playerId);
+                    .where(PlayerActivityRelation.PLAYER_ID, "=", playerId);
 
             if ((relation & PlayerActivityRelation.SELECTED) > 0) builder.set(PlayerActivityRelation.LAST_SELECTED_TIME, General.millisec());
             return builder.execUpdate();
@@ -773,7 +773,7 @@ public class DBCommander {
             builder.update(PlayerActivityRelation.TABLE)
                     .set(PlayerActivityRelation.RELATION, relation)
                     .where(PlayerActivityRelation.ACTIVITY_ID, "=", activityId)
-                    .where(PlayerActivityRelation.USER_ID, "IN", playerIdList);
+                    .where(PlayerActivityRelation.PLAYER_ID, "IN", playerIdList);
 
             if ((relation & PlayerActivityRelation.SELECTED) > 0) builder.set(PlayerActivityRelation.LAST_SELECTED_TIME, General.millisec());
             return builder.execUpdate();
@@ -829,7 +829,7 @@ public class DBCommander {
     public static Long queryPlayerId(String token) throws TokenExpiredException {
 
         EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-        List<JSONObject> allJson = builder.select(Login.USER_ID).from(Login.TABLE).where(Login.TOKEN, "=", token).execSelect();
+        List<JSONObject> allJson = builder.select(Login.PLAYER_ID).from(Login.TABLE).where(Login.TOKEN, "=", token).execSelect();
         if (allJson == null || allJson.size() != 1) return null;
         JSONObject loginJson = allJson.get(0);
         Login login = new Login(loginJson);

@@ -13,9 +13,9 @@ public class PermForeignParty extends AbstractModel {
     public static final String TABLE = "perm_foreign_party";
 
     public static final String PARTY = "party";
-    public static final String USER_ID = "player_id";
+    public static final String PLAYER_ID = "player_id";
 
-    public static String[] QUERY_FIELDS = {ID, PARTY, USER_ID};
+    public static String[] QUERY_FIELDS = {ID, PARTY, PLAYER_ID};
 
     protected Integer m_party = null;
 
@@ -43,8 +43,8 @@ public class PermForeignParty extends AbstractModel {
         if (json.containsKey(PARTY))
             m_party = Converter.toInteger(json.get(PARTY));
 
-        if (json.containsKey(USER_ID))
-            m_playerId = Converter.toLong(json.get(USER_ID));
+        if (json.containsKey(PLAYER_ID))
+            m_playerId = Converter.toLong(json.get(PLAYER_ID));
     }
 
     public ObjectNode toObjectNode(final Long viewerId) {
@@ -52,7 +52,7 @@ public class PermForeignParty extends AbstractModel {
         try {
             if (viewerId == null || !viewerId.equals(m_playerId)) throw new AccessDeniedException();
             ret.put(PARTY, String.valueOf(m_party));
-            ret.put(USER_ID, String.valueOf(m_playerId));
+            ret.put(PLAYER_ID, String.valueOf(m_playerId));
         } catch (Exception e) {
             Loggy.e(TAG, "toObjectNode", e);
         }

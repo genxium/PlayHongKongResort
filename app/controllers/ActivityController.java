@@ -515,7 +515,7 @@ public class ActivityController extends Controller {
 			Connection connection = SQLHelper.getConnection();
 
 			long now = General.millisec();
-			String[] names = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.USER_ID, PlayerActivityRelation.RELATION, PlayerActivityRelation.GENERATED_TIME, PlayerActivityRelation.LAST_APPLYING_TIME};
+			String[] names = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.PLAYER_ID, PlayerActivityRelation.RELATION, PlayerActivityRelation.GENERATED_TIME, PlayerActivityRelation.LAST_APPLYING_TIME};
 			Object[] values = {activityId, playerId, PlayerActivityRelation.maskRelation(PlayerActivityRelation.APPLIED, null), now, now};
 
 			try {
@@ -575,7 +575,7 @@ public class ActivityController extends Controller {
 			Object[] values = {newRelation};
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
-			String[] whereCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.USER_ID};
+			String[] whereCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.PLAYER_ID};
 			String[] whereOps = {"=", "="};
 			Object[] whereVals = {activityId, playerId};
 			builder.update(PlayerActivityRelation.TABLE).set(names, values).where(whereCols, whereOps, whereVals);

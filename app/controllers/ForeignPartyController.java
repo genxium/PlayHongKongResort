@@ -108,7 +108,7 @@ public class ForeignPartyController extends Controller {
                     Long playerId = SQLHelper.executeInsertAndCloseStatement(createPlayerStat);
 
                     // insert record into `perm_foreign_party`
-                    String[] cols2 = {PermForeignParty.ID, PermForeignParty.PARTY, PermForeignParty.USER_ID};
+                    String[] cols2 = {PermForeignParty.ID, PermForeignParty.PARTY, PermForeignParty.PLAYER_ID};
                     Object[] vals2 = {tempForeignPartyRecord.getPartyId(), tempForeignPartyRecord.getParty(), playerId};
 
                     EasyPreparedStatementBuilder createPermForeignPartyBuilder = new EasyPreparedStatementBuilder();
@@ -166,7 +166,7 @@ public class ForeignPartyController extends Controller {
             String token = Converter.generateToken(player.getEmail(), player.getName());
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] cols = {Login.USER_ID, Login.TOKEN, Login.TIMESTAMP};
+            String[] cols = {Login.PLAYER_ID, Login.TOKEN, Login.TIMESTAMP};
             Object[] vals = {player.getId(), token, General.millisec()};
             builder.insert(cols, vals).into(Login.TABLE).execInsert();
             ObjectNode result = player.toObjectNode(player.getId());

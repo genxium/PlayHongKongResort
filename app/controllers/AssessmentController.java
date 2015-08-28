@@ -126,7 +126,7 @@ public class AssessmentController extends Controller {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.update(PlayerActivityRelation.TABLE)
                     .set(PlayerActivityRelation.RELATION, newRelation)
-                    .where(PlayerActivityRelation.USER_ID, "=", playerId)
+                    .where(PlayerActivityRelation.PLAYER_ID, "=", playerId)
                     .where(PlayerActivityRelation.ACTIVITY_ID, "=", activityId);
             if(!builder.execUpdate()) throw new NullPointerException();
 

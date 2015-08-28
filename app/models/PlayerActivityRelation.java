@@ -16,10 +16,10 @@ public class PlayerActivityRelation extends AbstractModel {
     public static final int[] APPLIED_STATES = {APPLIED};
     public static final int[] SELECTED_STATES = {SELECTED, SELECTED|PRESENT, SELECTED|ABSENT, SELECTED|PRESENT|ASSESSED, SELECTED|ABSENT|ASSESSED};
 
-    // (USER_ID, ACTIVITY_ID) is UNIQUE
+    // (PLAYER_ID, ACTIVITY_ID) is UNIQUE
     // RELATION is indexed
     public static String TABLE = "player_activity_relation";
-    public static String USER_ID = "player_id";
+    public static String PLAYER_ID = "player_id";
     public static String ACTIVITY_ID = "activity_id";
     public static String RELATION = "relation";
     public static String LAST_APPLYING_TIME = "last_applying_time";
