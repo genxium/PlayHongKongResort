@@ -53,16 +53,16 @@ public class SQLHelper {
 			if (Play.application().isProd())    fullPath += "database_config.xml";
 			else if (Play.application().isDev())    fullPath += "devel_database_config.xml";
 			else    fullPath += "test_database_config.xml";
-		    Map<String, String> attributes = XMLHelper.readDatabaseConfig(fullPath);
-		    s_databaseName = attributes.get(DATABASE_NAME);
-		    s_host = attributes.get(HOST);
-		    s_port = Integer.parseInt(attributes.get(PORT));
-		    s_user = attributes.get(USER);
-		    s_password = attributes.get(PASSWORD);
-		    s_charsetResult = attributes.get(CHARSET_RESULT);
-		    s_charsetEncoding = attributes.get(CHARSET_ENCODING);
-		    s_useUnicode = attributes.get(USE_UNICODE);
-		    ret = true;
+			Map<String, String> attributes = XMLHelper.readDatabaseConfig(fullPath);
+			s_databaseName = attributes.get(DATABASE_NAME);
+			s_host = attributes.get(HOST);
+			s_port = Integer.parseInt(attributes.get(PORT));
+			s_user = attributes.get(USER);
+			s_password = attributes.get(PASSWORD);
+			s_charsetResult = attributes.get(CHARSET_RESULT);
+			s_charsetEncoding = attributes.get(CHARSET_ENCODING);
+			s_useUnicode = attributes.get(USE_UNICODE);
+			ret = true;
 	    } catch (Exception e) {
 		    Loggy.e(TAG, "readMySQLConfig", e);
 	    }

@@ -15,16 +15,16 @@ public class Login {
 
     protected Long m_playerId = null;
     protected String m_token = null;
-    protected Timestamp m_timestamp = null;
+    protected Long m_timestamp = null;
 
     public Long getPlayerId() {
         return m_playerId;
     }
 
-    public Login(JSONObject loginJson) {
-        if (loginJson.containsKey(PLAYER_ID)) m_playerId = Converter.toLong(loginJson.get(PLAYER_ID));
-        if (loginJson.containsKey(TOKEN)) m_token = (String)loginJson.get(TOKEN);
-        if (loginJson.containsKey(TIMESTAMP)) m_timestamp = (Timestamp) loginJson.get(TIMESTAMP);
+    public Login(final JSONObject json) {
+        if (json.containsKey(PLAYER_ID)) m_playerId = Converter.toLong(json.get(PLAYER_ID));
+        if (json.containsKey(TOKEN)) m_token = (String)json.get(TOKEN);
+        if (json.containsKey(TIMESTAMP)) m_timestamp = Converter.toLong(json.get(TIMESTAMP));
     }
 
     public boolean hasExpired() {

@@ -90,6 +90,8 @@ public class ForeignPartyController extends Controller {
 
 		Connection connection = SQLHelper.getConnection();
 		if (connection == null)	throw new NullPointerException(); 
+	
+		Long playerId = null;
 
 		/**
 		 * TODO: clean up these codes
@@ -105,15 +107,15 @@ public class ForeignPartyController extends Controller {
 
 			String code = DBCommander.generateVerificationCode(name);
 
-			String[] cols = {Player.EMAIL, Player.NAME, Player.GROUP_ID, Player.VERIFICATION_CODE};
-			Object[] values = {email, name, Player.USER, code};
+			String[] cols = {Player.EMAIL, Player.NAME, Player.PASSWORD, Player.GROUP_ID, Player.PARTY, Player.VERIFICATION_CODE};
+			Object[] values = {email, name, "", Player.USER, party, code};
 
 			EasyPreparedStatementBuilder createPlayerBuilder = new EasyPreparedStatementBuilder();
 			PreparedStatement createPlayerStat = createPlayerBuilder.insert(cols, values)
-				.into(Player.TABLE)
-				.toInsert(connection);
+										.into(Player.TABLE)
+										.toInsert(connection);
 
-			Long playerId = SQLHelper.executeInsertAndCloseStatement(createPlayerStat);
+			playerId = SQLHelper.executeInsertAndCloseStatement(createPlayerStat);
 
 			// insert record into `perm_foreign_party`
 			String[] cols2 = {PermForeignParty.ID, PermForeignParty.PARTY, PermForeignParty.PLAYER_ID};
@@ -130,6 +132,7 @@ public class ForeignPartyController extends Controller {
 			EasyPreparedStatementBuilder deleteTempForeignPartyBuilder = new EasyPreparedStatementBuilder();
 			PreparedStatement deleteTempForeignPartyStat = deleteTempForeignPartyBuilder.from(TempForeignParty.TABLE)
 				.where(TempForeignParty.ACCESS_TOKEN, "=", tempForeignPartyRecord.getAccessToken())
+				.where(TempForeignParty.PARTY, "=", tempForeignPartyRecord.getParty())
 				.toDelete(connection);
 			SQLHelper.executeAndCloseStatement(deleteTempForeignPartyStat);
 
@@ -151,6 +154,7 @@ public class ForeignPartyController extends Controller {
 		/**
 		 * TODO: the following 2 lines are used for adaptation of Player.toObjectNode method, however this might be better covered by the initialization of `Player`
 		 * */
+		player.setId(playerId);
 		player.setParty(party);
 		player.setGroupId(Player.USER);
 		return player;
