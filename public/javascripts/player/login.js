@@ -166,7 +166,7 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 		}).appendTo(row2);	
 	} else {
 		/**
-		* TODO: make it adaptable to all 3rd party login workflow
+		* TODO: make it adaptable to all foreign party login workflow
 		**/
 		var qqLoginEntry = $("<img>", {
 			src: "/assets/icons/qq.png",
@@ -183,11 +183,11 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 			var currentParams = currentBundle["params"];
 			currentParams[g_keyParty] = g_partyQQ;
 			currentParamsList = [];
-			for (var k in currentParams)	currentParamsList.push(key + "=" + currentParams[key]);
+			for (var k in currentParams)	currentParamsList.push(k + "=" + currentParams[k]);
 
-			var redirectUri = encodeURIComponent(window.location.protocol + "//" + window.location.host + "#" + currentTag + "?" + currentParamsList.join('&'));
+			var redirectUri = (window.location.protocol + "//" + window.location.host + "#" + currentTag + "?" + currentParamsList.join('&'));
 			var oauthTarget = 'https://graph.qq.com/oauth2.0/authorize?';
-			var oauthParams = ['client_id=' + g_appIdQQ, 'redirect_uri=' + redirectURI, 'scope=get_user_info','response_type=token'];
+			var oauthParams = ['client_id=' + g_appIdQQ, 'redirect_uri=' + redirectUri, 'scope=get_user_info','response_type=token'];
         
 			window.location.assign(oauthTarget + oauthParams.join('&'));
 		});

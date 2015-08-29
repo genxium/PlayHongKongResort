@@ -53,7 +53,10 @@ function requestHome() {
 function routeByHash() {
 	var href = window.location.href;
 	var bundle = extractTagAndParams(href);
-	if (bundle == null)	return;
+	if (bundle == null) {
+		window.location.hash = "home";
+		return;
+	}
 
 	var tag = bundle["tag"];	
 	var params = bundle["params"];
@@ -95,5 +98,5 @@ $(document).ready(function(){
 		routeByHash();
 	});
 
-	window.location.hash = "home";
+	routeByHash();
 });
