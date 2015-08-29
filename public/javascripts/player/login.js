@@ -168,7 +168,6 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 		/**
 		* TODO: make it adaptable to all 3rd party login workflow
 		**/
-		
 		var qqLoginEntry = $("<img>", {
 			src: "/assets/icons/qq.png",
 			"class": "foreign-party-logo"
