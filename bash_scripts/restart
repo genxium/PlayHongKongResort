@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!bin/bash
-
 basedir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 $basedir/../../play compile
 $basedir/../../play stop

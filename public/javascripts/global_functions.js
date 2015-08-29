@@ -432,3 +432,16 @@ function isCreationLimitExceeded(data) {
 	return ret == g_errActivityCreationLimit;
 }
 
+function isForeignPartyRegistrationRequired(data) {
+	if (data == null) return false;
+	if (!data.hasOwnProperty(g_keyRet)) return false;
+	var ret = parseInt(data[g_keyRet]);
+	return ret == g_errForeignPartyRegistrationRequired;
+}
+
+function isTempForeignPartyRecordNotFound(data) {
+	if (data == null) return false;
+	if (!data.hasOwnProperty(g_keyRet)) return false;
+	var ret = parseInt(data[g_keyRet]);
+	return ret == g_errTempForeignPartyRecordNotFound;
+}

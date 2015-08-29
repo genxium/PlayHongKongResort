@@ -168,14 +168,28 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 		/**
 		* TODO: make it adaptable to all 3rd party login workflow
 		**/
-		var redirectUri = window.location.host;
+		
 		var qqLoginEntry = $("<img>", {
 			src: "/assets/icons/qq.png",
 			"class": "foreign-party-logo"
 		}).appendTo(row2);
 		qqLoginEntry.click(function(evt) {
 			evt.preventDefault();
-			window.location = "https://graph.qq.com/oauth2.0/authorize?response_type=token&client_id=" + g_qqAppId + "&redirect_uri=" + redirectUri + "&scope=get_player_info";
+
+			var currentHref = window.location.href;
+			var currentBundle = extractTagAndParams(currentHref);
+			if (currentBundle == null)	return;
+
+			var currentTag = currentBundle["tag"];	
+			var currentParams = currentBundle["params"];
+			currentParams[g_keyParty] = g_partyQQ;
+
+			var redirectUri = encodeURI(window.location.protocol + "//" + window.location.host + "#" + currentTag + "?" + currentParams.join('&'));
+
+			var oauthTarget = 'https://graph.qq.com/oauth2.0/authorize?';
+			var oauthParams = ['client_id=' + g_appIdQQ, 'redirect_uri=' + redirectURI, 'scope=get_user_info','response_type=token'];
+        
+			window.location.assign(oauthTarget + oauthParams.join('&'));
 		});
 	}
 
@@ -304,14 +318,82 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	var params = [menu, menu, menu];
 	dropdownMenu.setReactionParams(params);
 	return menu;
+}
+
+function showForeignPartyNameCompletion(par) {
 
 }
 
-function checkLoginStatus(){
+function hideForeignPartyNameCompletion() {
+
+}
+
+function checkForeignPartyLoginStatus() {
+
+	var accessToken = $.cookie(g_keyAccessToken);	
+	var party = $.cookie(g_keyParty);	
+	
+	if (accessToken == null || party == null) {
+		$.removeCookie(g_keyAccessToken, {path: '/'});
+		$.removeCookie(g_keyParty, {path: '/'});
+		checkLoginStatus(false);
+		return;
+	}
+
+	var params={};
+	params[g_keyAccessToken] = accessToken;
+	params[g_keyParty] = party;
+	$.ajax({
+		type: "POST",
+		url: "/player/foreign/login",
+		data: params,
+		success: function(data, status, xhr){
+			if (isPlayerNotFound(data)) {
+				alert("Player not found!");
+				checkLoginStatus(false);
+				return;
+			}
+			if (isForeignPartyRegistrationRequired(data)) {
+				alert("Name completion required");
+				showForeignPartyNameCompletion();
+				return;
+			}
+			if (isTempForeignPartyRecordNotFound(data)) {
+				alert("Re-login required");
+				checkLoginStatus(false);
+				return;
+			}
+			if (isStandardFailure(data)) {
+				alert("Unknown error!");
+				checkLoginStatus(false);
+				return;
+			}
+
+			var playerJson = data;
+			$.removeCookie(g_keyAccessToken, {path: '/'});
+			$.removeCookie(g_keyParty, {path: '/'});
+			$.cookie(g_keyToken, playerJson[g_keyToken], {path: '/'});
+
+			checkLoginStatus(false);	
+		},
+		error: function(xhr, status, err){
+			checkLoginStatus(false);	
+		}
+	});
+}
+
+function checkLoginStatus(willAttemptForeignPartyLogin) {
+	
+	willAttemptForeignPartyLogin = (willAttemptForeignPartyLogin == undefined ? true : willAttemptForeignPartyLogin);
 
 	var token = $.cookie(g_keyToken);
-	if(token == null) {
-		if(g_preLoginForm == null) return;
+
+	if(token == null) {		
+		if (willAttemptForeignPartyLogin) {
+			checkForeignPartyLoginStatus();
+			return;
+		}
+		if (g_preLoginForm == null) return;
 		g_preLoginForm.onLoginError(null);
 		return;
 	}

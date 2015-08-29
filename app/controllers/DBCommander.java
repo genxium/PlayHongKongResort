@@ -1033,16 +1033,16 @@ public class DBCommander {
 		return null;
 	}
 
-	public static boolean createTempForeignParty(final String accessToken, final Integer party, final Long partyId, final String email) {
+	public static long createTempForeignParty(final String accessToken, final Integer party, final Long partyId, final String email) {
 		try {
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 			String[] cols = {TempForeignParty.ACCESS_TOKEN, TempForeignParty.PARTY, TempForeignParty.PARTY_ID, TempForeignParty.EMAIL, TempForeignParty.TIMESTAMP};
 			Object[] vals = {accessToken, party, partyId, email, General.millisec()};
-			builder.insert(cols, vals).into(TempForeignParty.TABLE).execInsert();
-			return true;
+			return builder.insert(cols, vals).into(TempForeignParty.TABLE).execInsert();
 		} catch (Exception e) {
-			return false;
+			Loggy.e(TAG, "createTempForeignParty", e);
 		}
+		return SQLHelper.INVALID;
 	}
 
 	public static boolean deleteTempForeignParty(final String accessToken, final Integer party) {

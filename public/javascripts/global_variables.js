@@ -24,6 +24,8 @@ var g_idKeyboardEnter=13;
 
 // cookie keys
 var g_keyToken="token";
+var g_keyAccessToken="access_token";
+var g_keyParty="party";
 
 // extra request keys 
 var g_keyId = "id";
@@ -157,5 +159,8 @@ var g_errTempForeignPartyRecordNotFound = 5002;
 /* theme selection */
 var g_theme = "main";
 
+/* foreign party code list */
+var g_partyQQ = 1;
+
 /* foreign party app id list */
-var g_qqAppId = 101239106;
+var g_appIdQQ = 101239106;

@@ -31,6 +31,9 @@ public class ForeignPartyController extends Controller {
 
 	public static String TAG = ForeignPartyController.class.getName();
 
+	public static String APP_ID = "AppId";
+	public static String APP_KEY = "AppKey";
+
 	public static final int PARTY_NONE = 0;
 	public static final int PARTY_QQ = 1;
 
@@ -170,8 +173,10 @@ public class ForeignPartyController extends Controller {
 		PermForeignParty record = DBCommander.queryPermForeignParty(specs.id, party);
 		if (record != null)	return DBCommander.queryPlayer(record.getPlayerId());
 		
-		// player should submit valid name and email(if not empty)
+		// record creation failure might indicate that there's an existing record
 		DBCommander.createTempForeignParty(accessToken, party, specs.id, specs.email);
+
+		// player should submit valid name and email(if not empty)
 		throw new ForeignPartyRegistrationRequiredException();
 	}
 
@@ -201,7 +206,6 @@ public class ForeignPartyController extends Controller {
 			builder.insert(cols, vals).into(Login.TABLE).execInsert();
 
 			ObjectNode result = Json.newObject();
-			result.put(Player.TABLE, player.toObjectNode(player.getId()));
 			result.put(Player.TOKEN, token);
 
 			return ok(result);
@@ -213,7 +217,7 @@ public class ForeignPartyController extends Controller {
 			return ok(StandardFailureResult.get(Constants.INFO_PLAYER_NOT_FOUND));	
 		} catch (Exception e) {
 			Loggy.e(TAG, "login", e);
+			return ok(StandardFailureResult.get());	
 		}
-		return badRequest();
 	}
 }

@@ -53,14 +53,18 @@ function requestHome() {
 function routeByHash() {
 	var href = window.location.href;
 	var bundle = extractTagAndParams(href);
-	if (bundle == null) {
-		requestHome();	
-		return;
-	}
+	if (bundle == null)	return;
+
 	var tag = bundle["tag"];	
 	var params = bundle["params"];
 
-	if (tag == null || tag == "" || tag == "home") {
+	if (params.hasOwnProperty(g_keyParty) && params.hasOwnProperty(g_keyAccessToken)) {
+		$.cookie(g_keyParty, params[g_keyParty], {path: '/'});
+		$.cookie(g_keyAccessToken, params[g_keyAccessToken], {path: '/'});
+		// will be used when invoking `checkForeignPartyLoginStatus`
+	}
+
+	if (tag == "home") {
 		requestHome();
 		return;
 	}
@@ -89,5 +93,6 @@ $(document).ready(function(){
 	$(window).on("hashchange", function(evt) {
 		routeByHash();
 	});
-	routeByHash();
+
+	window.location.hash = "home";
 });
