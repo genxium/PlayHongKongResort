@@ -59,6 +59,7 @@ function routeByHash() {
 	var params = bundle["params"];
 
 	if (params.hasOwnProperty(g_keyParty) && params.hasOwnProperty(g_keyAccessToken)) {
+		alert("access token is " +  params[g_keyAccessToken]);
 		$.cookie(g_keyParty, params[g_keyParty], {path: '/'});
 		$.cookie(g_keyAccessToken, params[g_keyAccessToken], {path: '/'});
 		// will be used when invoking `checkForeignPartyLoginStatus`

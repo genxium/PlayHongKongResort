@@ -182,9 +182,10 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 			var currentTag = currentBundle["tag"];	
 			var currentParams = currentBundle["params"];
 			currentParams[g_keyParty] = g_partyQQ;
+			currentParamsList = [];
+			for (var k in currentParams)	currentParamsList.push(key + "=" + currentParams[key]);
 
-			var redirectUri = encodeURI(window.location.protocol + "//" + window.location.host + "#" + currentTag + "?" + currentParams.join('&'));
-
+			var redirectUri = encodeURIComponent(window.location.protocol + "//" + window.location.host + "#" + currentTag + "?" + currentParamsList.join('&'));
 			var oauthTarget = 'https://graph.qq.com/oauth2.0/authorize?';
 			var oauthParams = ['client_id=' + g_appIdQQ, 'redirect_uri=' + redirectURI, 'scope=get_user_info','response_type=token'];
         
