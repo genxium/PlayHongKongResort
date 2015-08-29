@@ -58,14 +58,41 @@ function routeByHash() {
 		return;
 	}
 
-	var tag = bundle["tag"];	
-	var params = bundle["params"];
+	var tag = bundle[g_keyTag];	
+	var params = bundle[g_keyParams];
 
-	if (params.hasOwnProperty(g_keyParty) && params.hasOwnProperty(g_keyAccessToken)) {
-		alert("access token is " +  params[g_keyAccessToken]);
-		$.cookie(g_keyParty, params[g_keyParty], {path: '/'});
-		$.cookie(g_keyAccessToken, params[g_keyAccessToken], {path: '/'});
-		// will be used when invoking `checkForeignPartyLoginStatus`
+	var cbfuncName = null;
+	var args = null;
+
+	if (typeof tag == "object") {
+		// for QQ only
+		var stateWithAction = decodeStateWithAction(params[g_keyState]);
+		if (stateWithAction.hasOwnProperty(g_keyCbfunc)) cbfuncName = stateWithAction[g_keyCbfunc];
+		if (stateWithAction.hasOwnProperty(g_keyArgs)) args = stateWithAction[g_keyArgs];
+
+		var party = stateWithAction[g_keyParty];
+		var accessToken = tag[g_keyAccessToken]; 	
+
+		$.cookie(g_keyParty, party, {path: '/'});
+		$.cookie(g_keyAccessToken, accessToken, {path: '/'});
+
+		var state = stateWithAction[g_keyState];
+		tag = state[g_keyTag];			
+		var toRecoverHash = tag;
+		 
+		if (Object.keys(state).length > 1) {
+			var toRecoverParamList = [];
+			for (var k in state) {
+				if (k == g_keyTag) continue;
+				toRecoverParamList.push(k + "=" + state[k]);
+			}
+			toRecoverHash += ("?" + toRecoverParamList.join('&'));
+		}
+
+		// TODO: proceed accordingly with `cbfuncName` and `args` 
+		alert("accessToken is " + accessToken + ", toRecoverHash is " + toRecoverHash);
+		window.location.hash = toRecoverHash;
+		return;
 	}
 
 	if (tag == "home") {

@@ -102,6 +102,12 @@ var g_keyNotifications = "notifications";
 var g_keyIsRead = "is_read";
 
 // general keys
+var g_keyTag = "tag";
+var g_keyState = "state"; 
+var g_keyCbfunc = "cbfunc";
+var g_keyArgs = "args";
+var g_keyParams = "params";
+
 var g_keyPage = "page";
 var g_keyPageSt = "page_st";
 var g_keyPageEd = "page_ed";

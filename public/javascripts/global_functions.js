@@ -143,22 +143,33 @@ function validateAssessmentContent(content) {
 }
 
 function extractTagAndParams(url) {
-	var urlRegex = /https?:\/\/(.+)#(default|profile|detail|home|search|notifications|success|failure)\??(.*)/i;
+	var urlRegex = /https?:\/\/(.+)#(default|profile|detail|home|search|notifications|success|failure|access_token=[\w\d]+)\??\&?(.*)/i;
 	var matchUrl = urlRegex.exec(url);
 
 	if (matchUrl == null) return null;
 
 	var ret = {};
-	ret["tag"] = matchUrl[2];
-	ret["params"] = {};
-	var params = matchUrl[3];
-
-	var paramRegex = /(\w+)=([@\.\w]+)/g; // get all matches
-	matchParams = paramRegex.exec(params);
+	var tag = matchUrl[2];
+	var tagRegex = /(\w+)=([@\.\w]+)/g;
+	var matchTag = tagRegex.exec(tag)
+	if (matchTag != null) {
+		var key = matchTag[1];
+		var val = matchTag[2];
+		tag = {};
+		tag[key] = val;	
+	}
+	
+	ret[g_keyTag] = tag;
+	ret[g_keyParams] = {};
+	
+	// TODO: this imposes an assumption on `params` that none of its component values contains character '='
+	var params = decodeURIComponent(matchUrl[3]);
+	var paramRegex = /(\w+)=([:,\[\]{}"@\.\w]+)/g; 
+	var matchParams = paramRegex.exec(params);
 	while (matchParams != null) {
 		var key = matchParams[1];
 		var val = matchParams[2];
-		ret["params"][key] = val;
+		ret[g_keyParams][key] = val;
 		matchParams = paramRegex.exec(params)
 	}
 	return ret;
