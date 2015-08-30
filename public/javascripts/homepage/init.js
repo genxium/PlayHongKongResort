@@ -90,7 +90,6 @@ function routeByHash() {
 		}
 
 		// TODO: proceed accordingly with `cbfuncName` and `args` 
-		alert("accessToken is " + accessToken + ", toRecoverHash is " + toRecoverHash);
 		window.location.hash = toRecoverHash;
 		return;
 	}

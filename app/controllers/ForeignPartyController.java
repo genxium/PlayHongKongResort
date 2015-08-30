@@ -53,14 +53,14 @@ public class ForeignPartyController extends Controller {
 
     public static class ForeignPartySpecs {
         public String TAG = ForeignPartySpecs.class.getName();
-        public Long id = null;
+        public String id = null;
         public Integer party = null;
         public String email = null;
 
-        public ForeignPartySpecs(final Long aId, final Integer aParty, final String aEmail) {
+        public ForeignPartySpecs(final String aId, final Integer aParty, final String aEmail) {
             id = aId;
             party = aParty;
-            if (aEmail == null) email = String.format("%d@%s", aId, PARTY_DEFAULT_DOMAIN_NAME.get(aParty));
+            if (aEmail == null) email = String.format("%s@%s", aId, PARTY_DEFAULT_DOMAIN_NAME.get(aParty));
             else email = aEmail;
         }
 
@@ -82,15 +82,15 @@ public class ForeignPartyController extends Controller {
                     String line = in.readLine();
                     in.close();
 
-                    Pattern resPattern = Pattern.compile("^callback([\\s\\S]*\\{\"client_id\":\"([\\w\\d]+)\",\"openid\":\"([\\w\\d]+)\"\\}[\\s\\S]*);$", Pattern.UNICODE_CHARACTER_CLASS);
+                    Pattern resPattern = Pattern.compile("^callback\\([\\s\\S]*\\{\"client_id\":\"([\\w\\d]+)\",\"openid\":\"([\\w\\d]+)\"\\}[\\s\\S]*\\);$", Pattern.UNICODE_CHARACTER_CLASS);
                     Matcher matcher = resPattern.matcher(line);
                     if (!matcher.matches()) return null;
-                    Long openid = Converter.toLong(matcher.group(2));
+                    String openid = matcher.group(2);
                     return new ForeignPartySpecs(openid, party, null);
                 } else {
-                    Map<String, Long> testAccessTokenMap = new HashMap<>();
-                    testAccessTokenMap.put("qyi32789urjwkqefn", 12345678L); // should NOT be in test table `perm_foreign_party`
-                    testAccessTokenMap.put("a7s89dfhaaskdfja89", 87654321L); // should be in test table `perm_foreign_party` and `player`
+                    Map<String, String> testAccessTokenMap = new HashMap<>();
+                    testAccessTokenMap.put("qyi32789urjwkqefn", "12345678"); // should NOT be in test table `perm_foreign_party`
+                    testAccessTokenMap.put("a7s89dfhaaskdfja89", "87654321"); // should be in test table `perm_foreign_party` and `player`
                     if (!testAccessTokenMap.containsKey(accessToken)) return null;
                     return new ForeignPartySpecs(testAccessTokenMap.get(accessToken), party, null);
                 }
@@ -147,8 +147,8 @@ public class ForeignPartyController extends Controller {
 
             EasyPreparedStatementBuilder createPermForeignPartyBuilder = new EasyPreparedStatementBuilder();
             PreparedStatement createPermForeignPartyStat = createPermForeignPartyBuilder.insert(cols2, vals2)
-                    .into(PermForeignParty.TABLE)
-                    .toInsert(connection);
+										    .into(PermForeignParty.TABLE)
+										    .toInsert(connection);
 
             SQLHelper.executeAndCloseStatement(createPermForeignPartyStat);
 

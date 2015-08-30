@@ -27,7 +27,7 @@ CREATE TABLE `player` (
   `name` varchar(32) DEFAULT NULL,
   `display_name` varchar(32) DEFAULT NULL,
   `password` varchar(32) NOT NULL,
-  `email` varchar(32) NOT NULL,
+  `email` varchar(64) NOT NULL,
   `group_id` int(2) NOT NULL DEFAULT '0',
   `authentication_status` int(2) NOT NULL DEFAULT '0',
   `gender` varchar(16) NOT NULL DEFAULT '',
@@ -56,4 +56,4 @@ CREATE TABLE `player` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-08-29  3:19:08
+-- Dump completed on 2015-08-30 12:19:47

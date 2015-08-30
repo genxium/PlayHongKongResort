@@ -1003,7 +1003,7 @@ public class DBCommander {
         return true;
     }
 
-    public static PermForeignParty queryPermForeignParty(final Long partyId, final Integer party) {
+    public static PermForeignParty queryPermForeignParty(final String partyId, final Integer party) {
         try {
             String[] names = PermForeignParty.QUERY_FIELDS;
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
@@ -1039,7 +1039,7 @@ public class DBCommander {
         return null;
     }
 
-    public static long createTempForeignParty(final String accessToken, final Integer party, final Long partyId, final String email) {
+    public static long createTempForeignParty(final String accessToken, final Integer party, final String partyId, final String email) {
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             String[] cols = {TempForeignParty.ACCESS_TOKEN, TempForeignParty.PARTY, TempForeignParty.PARTY_ID, TempForeignParty.EMAIL, TempForeignParty.TIMESTAMP};

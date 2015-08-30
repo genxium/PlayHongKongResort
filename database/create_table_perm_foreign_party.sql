@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `perm_foreign_party`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `perm_foreign_party` (
-  `id` int(11) NOT NULL,
+  `id` varchar(32) NOT NULL,
   `party` int(11) NOT NULL,
   `player_id` int(11) NOT NULL,
   UNIQUE KEY `PK` (`id`,`party`),
@@ -41,4 +41,4 @@ CREATE TABLE `perm_foreign_party` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-08-29  3:19:08
+-- Dump completed on 2015-08-30 12:19:47

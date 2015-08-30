@@ -137,7 +137,8 @@ function NameCompletionForm() {
 	this.nameCheck = null;
 	this.email = null;
 	this.emailCheck = null;
-	this.btn = null;
+	this.btnSubmit = null;
+	this.btnCancel = null;
 	this.onSuccess = null;
 	this.onError = null;
 
@@ -235,11 +236,14 @@ function NameCompletionForm() {
 		    });
 		});
 
-		this.btn = $('<div>', {
-			text: TITLES['submit']
+		var buttons = $("<div>", {
+			"class": "edit-button-rows"
 		}).appendTo(registerBox);
 
-		this.btn.click(this, function(evt) {
+		this.btnSubmit = $('<button>',{
+			"class": "btn-submit positive-button",
+			text: TITLES["submit"]
+		}).appendTo(buttons).click(this, function(evt) {
 		    var widget = evt.data;
 		    var playername = widget.name.val();
 		    var email = widget.email.val();
@@ -258,7 +262,7 @@ function NameCompletionForm() {
 
 		    var params = {};
 		    params[g_keyName] = playername;
-		    params[g_keyEmail] = email;
+		    if (email != null && email.length > 0 && validateEmail(email)) params[g_keyEmail] = email;
 		    params[g_keyAccessToken] = accessToken;
 		    params[g_keyParty] = party;
 
@@ -300,6 +304,14 @@ function NameCompletionForm() {
 			    widget.hide();
 			}
 		    });
+		});
+
+		this.btnCancel = $('<button>',{
+			"class": "btn-cancel negative-button",
+			text: TITLES["cancel"]
+		}).appendTo(buttons).click(this, function(evt) {
+			var widget = evt.data;
+			widget.hide();
 		});
 	};
 
@@ -602,6 +614,7 @@ function checkForeignPartyLoginStatus() {
 				return;
 			}
 			if (isForeignPartyRegistrationRequired(data)) {
+				g_nameCompletionForm.refresh();
 				g_nameCompletionForm.show();
 				return;
 			}

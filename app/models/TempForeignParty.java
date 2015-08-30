@@ -35,9 +35,9 @@ public class TempForeignParty {
         m_party = party;
     }
 
-    protected Long m_partyId = null;
+    protected String m_partyId = null;
 
-    public Long getPartyId() {
+    public String getPartyId() {
         return m_partyId;
     }
 
@@ -52,7 +52,7 @@ public class TempForeignParty {
     public TempForeignParty(final JSONObject json) {
         if (json.containsKey(ACCESS_TOKEN)) m_accessToken = (String) (json.get(ACCESS_TOKEN));
         if (json.containsKey(PARTY)) m_party = Converter.toInteger(json.get(PARTY));
-        if (json.containsKey(PARTY_ID)) m_partyId = Converter.toLong(json.get(PARTY_ID));
+        if (json.containsKey(PARTY_ID)) m_partyId = (String) json.get(PARTY_ID);
         if (json.containsKey(EMAIL)) m_email = (String) (json.get(EMAIL));
         if (json.containsKey(TIMESTAMP)) m_timestamp = Converter.toLong(json.get(TIMESTAMP));
     }

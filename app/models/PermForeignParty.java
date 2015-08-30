@@ -6,56 +6,44 @@ import org.json.simple.JSONObject;
 import utilities.Converter;
 import utilities.Loggy;
 
-public class PermForeignParty extends AbstractModel {
+public class PermForeignParty {
 
-    public static final String TAG = PermForeignParty.class.getName();
+	public static final String TAG = PermForeignParty.class.getName();
 
-    public static final String TABLE = "perm_foreign_party";
+	public static final String TABLE = "perm_foreign_party";
 
-    public static final String PARTY = "party";
-    public static final String PLAYER_ID = "player_id";
+	public static final String ID = "id";
+	public static final String PARTY = "party";
+	public static final String PLAYER_ID = "player_id";
 
-    public static String[] QUERY_FIELDS = {ID, PARTY, PLAYER_ID};
+	public static String[] QUERY_FIELDS = {ID, PARTY, PLAYER_ID};
 
-    protected Integer m_party = null;
+	protected String m_id = null;
+	public String getId() {
+		return m_id;
+	}
 
-    public Integer getParty() {
-        return m_party;
-    }
+	protected Integer m_party = null;
+	public Integer getParty() {
+		return m_party;
+	}
+	public void setParty(final Integer party) {
+		m_party = party;
+	}
 
-    public void setParty(final Integer party) {
-        m_party = party;
-    }
+	protected Long m_playerId = null;
 
-    protected Long m_playerId = null;
+	public Long getPlayerId() {
+		return m_playerId;
+	}
 
-    public Long getPlayerId() {
-        return m_playerId;
-    }
+	public void setPlayerId(final Long playerId) {
+		m_playerId = playerId;
+	}
 
-    public void setPlayerId(final Long playerId) {
-        m_playerId = playerId;
-    }
-
-    public PermForeignParty(final JSONObject json) {
-        super(json);
-
-        if (json.containsKey(PARTY))
-            m_party = Converter.toInteger(json.get(PARTY));
-
-        if (json.containsKey(PLAYER_ID))
-            m_playerId = Converter.toLong(json.get(PLAYER_ID));
-    }
-
-    public ObjectNode toObjectNode(final Long viewerId) {
-        ObjectNode ret = super.toObjectNode();
-        try {
-            if (viewerId == null || !viewerId.equals(m_playerId)) throw new AccessDeniedException();
-            ret.put(PARTY, String.valueOf(m_party));
-            ret.put(PLAYER_ID, String.valueOf(m_playerId));
-        } catch (Exception e) {
-            Loggy.e(TAG, "toObjectNode", e);
-        }
-        return ret;
-    }
+	public PermForeignParty(final JSONObject json) {
+		if (json.containsKey(ID))	m_id = (String) json.get(ID);
+		if (json.containsKey(PARTY))	m_party = Converter.toInteger(json.get(PARTY));
+		if (json.containsKey(PLAYER_ID))	m_playerId = Converter.toLong(json.get(PLAYER_ID));
+	}
 }
