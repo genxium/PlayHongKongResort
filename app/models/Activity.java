@@ -16,327 +16,339 @@ import java.util.regex.Pattern;
 
 public class Activity extends AbstractSimpleMessage {
 
-	public static final String TAG = Activity.class.getName();
-
-	public static final Pattern TITLE_PATTERN = Pattern.compile(".{5,64}", Pattern.UNICODE_CHARACTER_CLASS);
-	public static final Pattern ADDR_PATTERN = Pattern.compile(".{5,128}", Pattern.UNICODE_CHARACTER_CLASS);
-	public static final Pattern CONTENT_PATTERN = Pattern.compile("[\\s\\S]{15,1024}", Pattern.UNICODE_CHARACTER_CLASS);
-
-	public static final int CREATED = 0;
-	public static final int PENDING = 1;
-	public static final int REJECTED = 2;
-	public static final int ACCEPTED = 3;
-
-	public static final int CREATION_CRITICAL_NUMBER = 2;
-	public static final int CREATION_CRITICAL_TIME_INTERVAL_MILLIS = 43200000; // 12 hours 
-
-	public static final String TABLE = "activity";
-	public static final String TITLE = "title";
-	public static final String ADDRESS = "address";
-	public static final String CREATED_TIME = "created_time";
-	public static final String BEGIN_TIME = "begin_time";
-	public static final String DEADLINE = "application_deadline";
-	public static final String CAPACITY = "capacity";
-	public static final String NUM_APPLIED = "num_applied";
-	public static final String NUM_SELECTED = "num_selected";
-	public static final String STATUS = "status";
-	public static final String HOST_ID = "host_id";
-	public static final String HOST = "host";
-	public static final String VIEWER = "viewer";
+    public static final String TAG = Activity.class.getName();
 
-	public static final String LAST_ACCEPTED_TIME = "last_accepted_time";
-	public static final String LAST_REJECTED_TIME = "last_rejected_time";
+    public static final Pattern TITLE_PATTERN = Pattern.compile(".{5,64}", Pattern.UNICODE_CHARACTER_CLASS);
+    public static final Pattern ADDR_PATTERN = Pattern.compile(".{5,128}", Pattern.UNICODE_CHARACTER_CLASS);
+    public static final Pattern CONTENT_PATTERN = Pattern.compile("[\\s\\S]{15,1024}", Pattern.UNICODE_CHARACTER_CLASS);
 
-	public static final String PRIORITY = "priority";
-	public static final String FILTER_MASK = "filter_mask";
-	public static final String ORDER_MASK = "order_mask";
+    public static final int CREATED = 0;
+    public static final int PENDING = 1;
+    public static final int REJECTED = 2;
+    public static final int ACCEPTED = 3;
 
-	public static String SELECTED_PARTICIPANTS = "selected_participants";
+    public static final int CREATION_CRITICAL_NUMBER = 2;
+    public static final int CREATION_CRITICAL_TIME_INTERVAL_MILLIS = 43200000; // 12 hours
 
-	public static String IMAGES = "images";
+    public static final String TABLE = "activity";
+    public static final String TITLE = "title";
+    public static final String ADDRESS = "address";
+    public static final String CREATED_TIME = "created_time";
+    public static final String BEGIN_TIME = "begin_time";
+    public static final String DEADLINE = "application_deadline";
+    public static final String CAPACITY = "capacity";
+    public static final String NUM_APPLIED = "num_applied";
+    public static final String NUM_SELECTED = "num_selected";
+    public static final String STATUS = "status";
+    public static final String HOST_ID = "host_id";
+    public static final String HOST = "host";
+    public static final String VIEWER = "viewer";
 
-	public static final String ACTIVITIES = "activities";
+    public static final String LAST_ACCEPTED_TIME = "last_accepted_time";
+    public static final String LAST_REJECTED_TIME = "last_rejected_time";
 
-	public static String[] QUERY_FIELDS = {ID, TITLE, ADDRESS, CONTENT, CREATED_TIME, BEGIN_TIME, DEADLINE, CAPACITY, NUM_APPLIED, NUM_SELECTED, STATUS, HOST_ID, PRIORITY, ORDER_MASK};
-	public static final int MAX_APPLIED = 500;
-	public static final int MAX_SELECTED = 250;
+    public static final String PRIORITY = "priority";
+    public static final String FILTER_MASK = "filter_mask";
+    public static final String ORDER_MASK = "order_mask";
 
-	// indexed fields
-	public static HashMap<Integer, String> ORDER_MAP = new HashMap<>();
-	static {
-		ORDER_MAP.put(1, LAST_ACCEPTED_TIME);
-		ORDER_MAP.put(2, BEGIN_TIME);
-		ORDER_MAP.put(4, DEADLINE);
-	}
+    public static String SELECTED_PARTICIPANTS = "selected_participants";
 
-	public static HashMap<String, Integer> REVERSE_ORDER_MAP = new HashMap<>();
-	static {
-		REVERSE_ORDER_MAP.put(LAST_ACCEPTED_TIME, 1);
-		REVERSE_ORDER_MAP.put(BEGIN_TIME, 2);
-		REVERSE_ORDER_MAP.put(DEADLINE, 4);
-	}
+    public static String IMAGES = "images";
 
-	public static final int[] LAST_ACCEPTED_TIME_MASK_LIST = {1, 1|2, 1|4, 1|2|4};
-	public static final int[] BEGIN_TIME_MASK_LIST = {2, 1|2, 2|4, 1|2|4};
-	public static final int[] DEADLINE_MASK_LIST = {4, 1|4, 2|4, 1|2|4};
+    public static final String ACTIVITIES = "activities";
 
-	protected String m_title = null;
+    public static String[] QUERY_FIELDS = {ID, TITLE, ADDRESS, CONTENT, CREATED_TIME, BEGIN_TIME, DEADLINE, CAPACITY, NUM_APPLIED, NUM_SELECTED, STATUS, HOST_ID, PRIORITY, ORDER_MASK};
+    public static final int MAX_APPLIED = 500;
+    public static final int MAX_SELECTED = 250;
 
-	public String getTitle() {
-		return m_title;
-	}
+    // indexed fields
+    public static HashMap<Integer, String> ORDER_MAP = new HashMap<>();
 
-	public void setTitle(final String title) {
-		m_title = title;
-	}
+    static {
+        ORDER_MAP.put(1, LAST_ACCEPTED_TIME);
+        ORDER_MAP.put(2, BEGIN_TIME);
+        ORDER_MAP.put(4, DEADLINE);
+    }
 
-	protected Long m_createdTime = null;
+    public static HashMap<String, Integer> REVERSE_ORDER_MAP = new HashMap<>();
 
-	public long getCreatedTime() {
-		return m_createdTime;
-	}
-	public void setCreatedTime(final long createdTime) {
-		m_createdTime = createdTime;
-	}
+    static {
+        REVERSE_ORDER_MAP.put(LAST_ACCEPTED_TIME, 1);
+        REVERSE_ORDER_MAP.put(BEGIN_TIME, 2);
+        REVERSE_ORDER_MAP.put(DEADLINE, 4);
+    }
 
-	protected Long m_beginTime = null;
+    public static final int[] LAST_ACCEPTED_TIME_MASK_LIST = {1, 1 | 2, 1 | 4, 1 | 2 | 4};
+    public static final int[] BEGIN_TIME_MASK_LIST = {2, 1 | 2, 2 | 4, 1 | 2 | 4};
+    public static final int[] DEADLINE_MASK_LIST = {4, 1 | 4, 2 | 4, 1 | 2 | 4};
 
-	public long getBeginTime() {
-		return m_beginTime;
-	}
+    protected String m_title = null;
 
-	public void setBeginTime(final long beginTime) {
-		m_beginTime = beginTime;
-	}
+    public String getTitle() {
+        return m_title;
+    }
 
-	protected Long m_deadline = null;
+    public void setTitle(final String title) {
+        m_title = title;
+    }
 
-	public long getDeadline() {
-		return m_deadline;
-	}
+    protected Long m_createdTime = null;
 
-	public void setDeadline(long deadline) {
-		m_deadline = deadline;
-	}
+    public long getCreatedTime() {
+        return m_createdTime;
+    }
 
-	protected Long m_lastAcceptedTime = null;
+    public void setCreatedTime(final long createdTime) {
+        m_createdTime = createdTime;
+    }
 
-	public void setLastAcceptedTime(final long time) {
-		m_lastAcceptedTime = time;
-	}
+    protected Long m_beginTime = null;
 
-	protected Long m_lastRejectedTime = null;
+    public long getBeginTime() {
+        return m_beginTime;
+    }
 
-	public void setLastRejectedTime(final long time) {
-		m_lastRejectedTime = time;
-	}
+    public void setBeginTime(final long beginTime) {
+        m_beginTime = beginTime;
+    }
 
-	protected Integer m_capacity = 0;
+    protected Long m_deadline = null;
 
-	public int getCapacity() {
-		return m_capacity;
-	}
+    public long getDeadline() {
+        return m_deadline;
+    }
 
-	protected Integer m_numApplied = 0;
+    public void setDeadline(long deadline) {
+        m_deadline = deadline;
+    }
 
-	public int getNumApplied() {
-		return m_numApplied;
-	}
+    protected Long m_lastAcceptedTime = null;
 
-	public boolean exceededAppliedLimit() {
-		return m_numApplied > MAX_APPLIED;
-	}
+    public void setLastAcceptedTime(final long time) {
+        m_lastAcceptedTime = time;
+    }
 
-	protected Integer m_numSelected = 0;
+    protected Long m_lastRejectedTime = null;
 
-	public int getNumSelected() {
-		return m_numSelected;
-	} 
+    public void setLastRejectedTime(final long time) {
+        m_lastRejectedTime = time;
+    }
 
-	public boolean exceededSelectedLimit() {
-		return m_numSelected > MAX_SELECTED;	
-	}
+    protected Integer m_capacity = 0;
 
-	protected Integer m_status = CREATED;
+    public int getCapacity() {
+        return m_capacity;
+    }
 
-	public int getStatus() {
-		return m_status;
-	}
+    protected Integer m_numApplied = 0;
 
-	public void setStatus(final int status) {
-		m_status = status;
-	}
+    public int getNumApplied() {
+        return m_numApplied;
+    }
 
-	protected String m_address = null;	
+    public boolean exceededAppliedLimit() {
+        return m_numApplied > MAX_APPLIED;
+    }
 
-	public String getAddress() {
-		return m_address;
-	}
+    protected Integer m_numSelected = 0;
 
-	public void setAddress(final String address) {
-		m_address = address;
-	}
+    public int getNumSelected() {
+        return m_numSelected;
+    }
 
-	protected Long m_hostId = null;
-	public Long getHostId() {
-		return m_hostId;
-	}
+    public boolean exceededSelectedLimit() {
+        return m_numSelected > MAX_SELECTED;
+    }
 
-	protected Player m_host = null;
+    protected Integer m_status = CREATED;
 
-	public Player getHost() {
-		return m_host;
-	}
+    public int getStatus() {
+        return m_status;
+    }
 
-	public void setHost(Player host) {
-		m_host = host;
-	}
+    public void setStatus(final int status) {
+        m_status = status;
+    }
 
-	protected Player m_viewer = null;
+    protected String m_address = null;
 
-	public Player getViewer() {
-		return m_viewer;
-	}
+    public String getAddress() {
+        return m_address;
+    }
 
-	public void setViewer(final Player viewer) {
-		m_viewer = viewer;
-	}
+    public void setAddress(final String address) {
+        m_address = address;
+    }
 
-	protected List<Image> m_imageList = null;
-	public void setImageList(final List<Image> imageList) {
-		m_imageList = imageList;
-	}
-	public void addImage(final Image image) {
-		if (m_imageList == null) m_imageList = new ArrayList<>();
-		m_imageList.add(image);
-	}
+    protected Long m_hostId = null;
 
-	protected Integer m_priority = 0;
-	public int getPriority() {
-		return m_priority;
-	}
+    public Long getHostId() {
+        return m_hostId;
+    }
 
-	protected Integer m_filterMask = 0;
-	public int getFilterMask() {
-		return m_filterMask;
-	}
+    protected Player m_host = null;
 
-	protected Integer m_orderMask = 0;
-	public int getOrderMask() {
-		return m_orderMask;
-	}
+    public Player getHost() {
+        return m_host;
+    }
 
-	public boolean isDeadlineExpired() {
-		return General.millisec() > m_deadline;
-	}
+    public void setHost(Player host) {
+        m_host = host;
+    }
 
-	public boolean hasBegun() {
-		return General.millisec() > m_beginTime;
-	}
+    protected Player m_viewer = null;
 
-	protected List<BasicPlayer> m_selectedParticipants = null;
-	public void setSelectedParticipants(final List<BasicPlayer> selectedParticipants) {
-		m_selectedParticipants = selectedParticipants;
-	}
-	public void addSelectedParticipant(final BasicPlayer player) {
-		if (m_selectedParticipants == null) m_selectedParticipants = new ArrayList<>();
-		m_selectedParticipants.add(player);
-	}
+    public Player getViewer() {
+        return m_viewer;
+    }
 
-	public Activity() {
-		super();
-	}
+    public void setViewer(final Player viewer) {
+        m_viewer = viewer;
+    }
 
-	public Activity(JSONObject activityJson) {
-		super(activityJson);
+    protected List<Image> m_imageList = null;
 
-		if (activityJson.containsKey(TITLE))
-			m_title = (String) activityJson.get(TITLE);
+    public void setImageList(final List<Image> imageList) {
+        m_imageList = imageList;
+    }
 
-		if (activityJson.containsKey(CREATED_TIME))
-			m_createdTime = Converter.toLong(activityJson.get(CREATED_TIME));
+    public void addImage(final Image image) {
+        if (m_imageList == null) m_imageList = new ArrayList<>();
+        m_imageList.add(image);
+    }
 
-		if (activityJson.containsKey(BEGIN_TIME))
-			m_beginTime = Converter.toLong(activityJson.get(BEGIN_TIME));
+    protected Integer m_priority = 0;
 
-		if (activityJson.containsKey(DEADLINE))
-			m_deadline = Converter.toLong(activityJson.get(DEADLINE));
+    public int getPriority() {
+        return m_priority;
+    }
 
-		if (activityJson.containsKey(CAPACITY))
-			m_capacity = Converter.toInteger(activityJson.get(CAPACITY));
+    protected Integer m_filterMask = 0;
 
-		if (activityJson.containsKey(NUM_APPLIED))
-			m_numApplied = Converter.toInteger(activityJson.get(NUM_APPLIED));
+    public int getFilterMask() {
+        return m_filterMask;
+    }
 
-		if (activityJson.containsKey(NUM_SELECTED))
-			m_numSelected = Converter.toInteger(activityJson.get(NUM_SELECTED));
+    protected Integer m_orderMask = 0;
 
-		if (activityJson.containsKey(STATUS))
-			m_status = Converter.toInteger(activityJson.get(STATUS));
+    public int getOrderMask() {
+        return m_orderMask;
+    }
 
-		if (activityJson.containsKey(LAST_ACCEPTED_TIME))
-			m_lastAcceptedTime = Converter.toLong(activityJson.get(LAST_ACCEPTED_TIME));
+    public boolean isDeadlineExpired() {
+        return General.millisec() > m_deadline;
+    }
 
-		if (activityJson.containsKey(LAST_REJECTED_TIME))
-			m_lastRejectedTime = Converter.toLong(activityJson.get(LAST_REJECTED_TIME));
+    public boolean hasBegun() {
+        return General.millisec() > m_beginTime;
+    }
 
-		if (activityJson.containsKey(ADDRESS)) 
-			m_address = (String) activityJson.get(ADDRESS);
+    protected List<BasicPlayer> m_selectedParticipants = null;
 
-		if (activityJson.containsKey(HOST_ID))
-			m_hostId = Converter.toLong(activityJson.get(HOST_ID));
+    public void setSelectedParticipants(final List<BasicPlayer> selectedParticipants) {
+        m_selectedParticipants = selectedParticipants;
+    }
 
-		if (activityJson.containsKey(PRIORITY))
-			m_priority = Converter.toInteger(activityJson.get(PRIORITY));
+    public void addSelectedParticipant(final BasicPlayer player) {
+        if (m_selectedParticipants == null) m_selectedParticipants = new ArrayList<>();
+        m_selectedParticipants.add(player);
+    }
 
-		if (activityJson.containsKey(FILTER_MASK))
-			m_filterMask = Converter.toInteger(activityJson.get(FILTER_MASK));
+    public Activity() {
+        super();
+    }
 
-		if (activityJson.containsKey(ORDER_MASK))
-			m_orderMask = Converter.toInteger(activityJson.get(ORDER_MASK));
-	}
+    public Activity(JSONObject activityJson) {
+        super(activityJson);
 
-	public ObjectNode toObjectNode(Long viewerId) {
-		ObjectNode ret = super.toObjectNode();
-		try {
-			ret.put(TITLE, m_title);
-			ret.put(ADDRESS, m_address);
+        if (activityJson.containsKey(TITLE))
+            m_title = (String) activityJson.get(TITLE);
 
-			ret.put(CREATED_TIME, String.valueOf(m_createdTime));
-			ret.put(BEGIN_TIME, String.valueOf(m_beginTime));
-			ret.put(DEADLINE, String.valueOf(m_deadline));
+        if (activityJson.containsKey(CREATED_TIME))
+            m_createdTime = Converter.toLong(activityJson.get(CREATED_TIME));
 
-			ret.put(CAPACITY, String.valueOf(m_capacity));
-			ret.put(NUM_APPLIED, String.valueOf(m_numApplied));
-			ret.put(NUM_SELECTED, String.valueOf(m_numSelected));
-			if (m_host != null) ret.put(HOST, m_host.toObjectNode(viewerId));
+        if (activityJson.containsKey(BEGIN_TIME))
+            m_beginTime = Converter.toLong(activityJson.get(BEGIN_TIME));
 
-			if (m_imageList != null && m_imageList.size() > 0) {
-				ArrayNode imagesNode = new ArrayNode(JsonNodeFactory.instance);
-				for (Image image : m_imageList)	imagesNode.add(image.toObjectNode());
-				ret.put(ActivityDetail.IMAGES, imagesNode);
-			}
+        if (activityJson.containsKey(DEADLINE))
+            m_deadline = Converter.toLong(activityJson.get(DEADLINE));
 
-			if (m_selectedParticipants != null && m_selectedParticipants.size() > 0) {
-				ArrayNode selectedParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
-				for (BasicPlayer participant : m_selectedParticipants)	selectedParticipantsNode.add(participant.toObjectNode(viewerId));
-				ret.put(SELECTED_PARTICIPANTS, selectedParticipantsNode);
-			}
+        if (activityJson.containsKey(CAPACITY))
+            m_capacity = Converter.toInteger(activityJson.get(CAPACITY));
 
-			ret.put(PRIORITY, String.valueOf(m_priority));
+        if (activityJson.containsKey(NUM_APPLIED))
+            m_numApplied = Converter.toInteger(activityJson.get(NUM_APPLIED));
 
-			if (viewerId == null) return ret;
-			int relation = DBCommander.queryPlayerActivityRelation(viewerId, m_id);
-			if (relation != PlayerActivityRelation.INVALID)	ret.put(PlayerActivityRelation.RELATION, relation);
-			if (viewerId.equals(m_host.getId()))	ret.put(STATUS, String.valueOf(m_status));
-			if (m_viewer != null && m_viewer.getGroupId() == Player.ADMIN)	{
-				ret.put(ORDER_MASK, String.valueOf(m_orderMask));
-				ret.put(STATUS, String.valueOf(m_status));
-			}
+        if (activityJson.containsKey(NUM_SELECTED))
+            m_numSelected = Converter.toInteger(activityJson.get(NUM_SELECTED));
 
-		} catch (Exception e) {
-			Loggy.e(TAG, "toObjectNode", e);
-		}
-		return ret;
-	}
+        if (activityJson.containsKey(STATUS))
+            m_status = Converter.toInteger(activityJson.get(STATUS));
+
+        if (activityJson.containsKey(LAST_ACCEPTED_TIME))
+            m_lastAcceptedTime = Converter.toLong(activityJson.get(LAST_ACCEPTED_TIME));
+
+        if (activityJson.containsKey(LAST_REJECTED_TIME))
+            m_lastRejectedTime = Converter.toLong(activityJson.get(LAST_REJECTED_TIME));
+
+        if (activityJson.containsKey(ADDRESS))
+            m_address = (String) activityJson.get(ADDRESS);
+
+        if (activityJson.containsKey(HOST_ID))
+            m_hostId = Converter.toLong(activityJson.get(HOST_ID));
+
+        if (activityJson.containsKey(PRIORITY))
+            m_priority = Converter.toInteger(activityJson.get(PRIORITY));
+
+        if (activityJson.containsKey(FILTER_MASK))
+            m_filterMask = Converter.toInteger(activityJson.get(FILTER_MASK));
+
+        if (activityJson.containsKey(ORDER_MASK))
+            m_orderMask = Converter.toInteger(activityJson.get(ORDER_MASK));
+    }
+
+    public ObjectNode toObjectNode(Long viewerId) {
+        ObjectNode ret = super.toObjectNode();
+        try {
+            ret.put(TITLE, m_title);
+            ret.put(ADDRESS, m_address);
+
+            ret.put(CREATED_TIME, String.valueOf(m_createdTime));
+            ret.put(BEGIN_TIME, String.valueOf(m_beginTime));
+            ret.put(DEADLINE, String.valueOf(m_deadline));
+
+            ret.put(CAPACITY, String.valueOf(m_capacity));
+            ret.put(NUM_APPLIED, String.valueOf(m_numApplied));
+            ret.put(NUM_SELECTED, String.valueOf(m_numSelected));
+            if (m_host != null) ret.put(HOST, m_host.toObjectNode(viewerId));
+
+            if (m_imageList != null && m_imageList.size() > 0) {
+                ArrayNode imagesNode = new ArrayNode(JsonNodeFactory.instance);
+                for (Image image : m_imageList) imagesNode.add(image.toObjectNode());
+                ret.put(ActivityDetail.IMAGES, imagesNode);
+            }
+
+            if (m_selectedParticipants != null && m_selectedParticipants.size() > 0) {
+                ArrayNode selectedParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
+                for (BasicPlayer participant : m_selectedParticipants)
+                    selectedParticipantsNode.add(participant.toObjectNode(viewerId));
+                ret.put(SELECTED_PARTICIPANTS, selectedParticipantsNode);
+            }
+
+            ret.put(PRIORITY, String.valueOf(m_priority));
+
+            if (viewerId == null) return ret;
+            int relation = DBCommander.queryPlayerActivityRelation(viewerId, m_id);
+            if (relation != PlayerActivityRelation.INVALID) ret.put(PlayerActivityRelation.RELATION, relation);
+            if (viewerId.equals(m_host.getId())) ret.put(STATUS, String.valueOf(m_status));
+            if (m_viewer != null && m_viewer.getGroupId() == Player.ADMIN) {
+                ret.put(ORDER_MASK, String.valueOf(m_orderMask));
+                ret.put(STATUS, String.valueOf(m_status));
+            }
+
+        } catch (Exception e) {
+            Loggy.e(TAG, "toObjectNode", e);
+        }
+        return ret;
+    }
 }

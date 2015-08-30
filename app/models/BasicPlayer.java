@@ -70,7 +70,7 @@ public class BasicPlayer extends AbstractModel {
             ret.put(NAME, m_name);
             if (viewerId != null && viewerId.equals(m_id)) ret.put(EMAIL, m_email);
             Image image = ExtraCommander.queryImage(m_avatar);
-            if (image != null)  ret.put(AVATAR, image.getUrl());
+            if (image != null) ret.put(AVATAR, image.getUrl());
         } catch (Exception e) {
             Loggy.e(TAG, "toObjectNode", e);
         }

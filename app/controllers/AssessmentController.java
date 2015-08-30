@@ -29,7 +29,8 @@ public class AssessmentController extends Controller {
 
     public static Result list(Long to, Integer pageSt, Integer pageEd, Integer numItems, String token) {
         try {
-            if (to == null || to.equals(0L) || pageSt == null || pageEd == null || numItems == null) throw new InvalidRequestParamsException();
+            if (to == null || to.equals(0L) || pageSt == null || pageEd == null || numItems == null)
+                throw new InvalidRequestParamsException();
 
             // anti=cracking by param token
             if (token == null) throw new InvalidRequestParamsException();
@@ -40,7 +41,7 @@ public class AssessmentController extends Controller {
             if (viewerId.equals(to)) return ok(result);
 
             List<Assessment> assessmentList = DBCommander.queryAssessmentList(pageSt, pageEd, numItems, Assessment.GENERATED_TIME, SQLHelper.DESCEND, viewerId, to);
-            for (Assessment assessment : assessmentList)   result.add(assessment.toObjectNode(viewerId));
+            for (Assessment assessment : assessmentList) result.add(assessment.toObjectNode(viewerId));
             return ok(result);
         } catch (TokenExpiredException e) {
             return ok(TokenExpiredResult.get());
@@ -55,13 +56,13 @@ public class AssessmentController extends Controller {
             if (token == null) throw new InvalidRequestParamsException();
             if (to.equals(0L)) to = null;
             Long viewerId = DBCommander.queryPlayerId(token);
-            if(viewerId.equals(to)) throw new AccessDeniedException();
+            if (viewerId.equals(to)) throw new AccessDeniedException();
             List<Assessment> assessments = DBCommander.queryAssessments(refIndex, Assessment.GENERATED_TIME, SQLHelper.DESCEND, numItems, direction, null, to, activityId);
             ArrayNode result = new ArrayNode(JsonNodeFactory.instance);
-            for (Assessment assessment : assessments)   result.add(assessment.toObjectNode(viewerId));
+            for (Assessment assessment : assessments) result.add(assessment.toObjectNode(viewerId));
             return ok(result);
         } catch (Exception e) {
-		    Loggy.e(TAG, "query", e);
+            Loggy.e(TAG, "query", e);
         }
         return badRequest();
     }
@@ -91,19 +92,21 @@ public class AssessmentController extends Controller {
             if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
 
             int originalRelation = DBCommander.queryPlayerActivityRelation(playerId, activityId);
-            if(originalRelation == PlayerActivityRelation.INVALID) throw new InvalidPlayerActivityRelationException();
+            if (originalRelation == PlayerActivityRelation.INVALID) throw new InvalidPlayerActivityRelationException();
 
             // Only PRESENT participants can submit assessments (host must be present)
-            if ( (originalRelation & PlayerActivityRelation.PRESENT) == 0) throw new InvalidPlayerActivityRelationException();
+            if ((originalRelation & PlayerActivityRelation.PRESENT) == 0)
+                throw new InvalidPlayerActivityRelationException();
 
             List<Long> playerIdList = new LinkedList<>();
             List<Assessment> assessmentList = new LinkedList<>();
             playerIdList.add(playerId); // validate whether the submitting participant has been selected
 
-            JSONArray bundle= (JSONArray) JSONValue.parse(formData.get(AbstractMessage.BUNDLE)[0]);
+            JSONArray bundle = (JSONArray) JSONValue.parse(formData.get(AbstractMessage.BUNDLE)[0]);
             for (Object obj : bundle) {
                 Assessment assessment = new Assessment((JSONObject) obj);
-                if (!General.validateAssessmentContent(assessment.getContent())) throw new InvalidRequestParamsException();
+                if (!General.validateAssessmentContent(assessment.getContent()))
+                    throw new InvalidRequestParamsException();
                 if (assessment.getTo().equals(playerId)) throw new InvalidAssessmentBehaviourException();
                 assessment.setActivityId(activityId);
                 assessment.setFrom(playerId);
@@ -116,7 +119,8 @@ public class AssessmentController extends Controller {
             // validation loop
             for (Integer relation : relationList) {
                 if (relation == PlayerActivityRelation.INVALID) throw new InvalidPlayerActivityRelationException();
-                if ((relation & PlayerActivityRelation.SELECTED) == 0) throw new InvalidPlayerActivityRelationException();
+                if ((relation & PlayerActivityRelation.SELECTED) == 0)
+                    throw new InvalidPlayerActivityRelationException();
             }
 
             DBCommander.createAssessments(assessmentList);
@@ -128,7 +132,7 @@ public class AssessmentController extends Controller {
                     .set(PlayerActivityRelation.RELATION, newRelation)
                     .where(PlayerActivityRelation.PLAYER_ID, "=", playerId)
                     .where(PlayerActivityRelation.ACTIVITY_ID, "=", activityId);
-            if(!builder.execUpdate()) throw new NullPointerException();
+            if (!builder.execUpdate()) throw new NullPointerException();
 
             ObjectNode ret = Json.newObject();
             ret.put(PlayerActivityRelation.RELATION, newRelation);
@@ -136,8 +140,8 @@ public class AssessmentController extends Controller {
         } catch (TokenExpiredException e) {
             return ok(TokenExpiredResult.get());
         } catch (Exception e) {
-		    Loggy.e(TAG, "submit", e);
+            Loggy.e(TAG, "submit", e);
         }
-		return badRequest();
+        return badRequest();
     }
 }

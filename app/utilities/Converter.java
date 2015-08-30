@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 public class Converter {
 
     protected static SimpleDateFormat s_dateFormat = null;
+
     public static SimpleDateFormat getDateFormat() {
         if (s_dateFormat == null) {
             s_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

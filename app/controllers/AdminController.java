@@ -18,34 +18,7 @@ public class AdminController extends Controller {
     public static final String TAG = AdminController.class.getName();
 
     public static Result accept() {
-	    try {
-		    Map<String, String[]> formData = request().body().asFormUrlEncoded();
-		    String token = formData.get(Player.TOKEN)[0];
-
-		    Long playerId = DBCommander.queryPlayerId(token);
-		    if (playerId == null) throw new PlayerNotFoundException();
-		    Player player = DBCommander.queryPlayer(playerId);
-		    if (player == null) throw new PlayerNotFoundException();
-		    if (!DBCommander.validateAdminAccess(player)) throw new AccessDeniedException();
-
-			Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
-			if (activityId == null) throw new InvalidRequestParamsException();
-			Activity activity = DBCommander.queryActivity(activityId);
-		    if (activity == null) throw new ActivityNotFoundException();
-
-		    if(!DBCommander.acceptActivity(player, activity)) throw new NullPointerException();
-
-		    return ok();
-	    } catch (TokenExpiredException e) {
-            return ok(TokenExpiredResult.get());
-        } catch (Exception e) {
-		    Loggy.e(TAG, "accept", e);
-	    }
-	    return badRequest("");
-    }
-
-    public static Result reject() {
-	    try {
+        try {
             Map<String, String[]> formData = request().body().asFormUrlEncoded();
             String token = formData.get(Player.TOKEN)[0];
 
@@ -55,84 +28,111 @@ public class AdminController extends Controller {
             if (player == null) throw new PlayerNotFoundException();
             if (!DBCommander.validateAdminAccess(player)) throw new AccessDeniedException();
 
-			Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
-			if (activityId == null) throw new InvalidRequestParamsException();
-			Activity activity = DBCommander.queryActivity(activityId);
+            Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
+            if (activityId == null) throw new InvalidRequestParamsException();
+            Activity activity = DBCommander.queryActivity(activityId);
             if (activity == null) throw new ActivityNotFoundException();
 
-            if(!DBCommander.rejectActivity(player, activity)) throw new NullPointerException();
+            if (!DBCommander.acceptActivity(player, activity)) throw new NullPointerException();
+
+            return ok();
+        } catch (TokenExpiredException e) {
+            return ok(TokenExpiredResult.get());
+        } catch (Exception e) {
+            Loggy.e(TAG, "accept", e);
+        }
+        return badRequest("");
+    }
+
+    public static Result reject() {
+        try {
+            Map<String, String[]> formData = request().body().asFormUrlEncoded();
+            String token = formData.get(Player.TOKEN)[0];
+
+            Long playerId = DBCommander.queryPlayerId(token);
+            if (playerId == null) throw new PlayerNotFoundException();
+            Player player = DBCommander.queryPlayer(playerId);
+            if (player == null) throw new PlayerNotFoundException();
+            if (!DBCommander.validateAdminAccess(player)) throw new AccessDeniedException();
+
+            Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
+            if (activityId == null) throw new InvalidRequestParamsException();
+            Activity activity = DBCommander.queryActivity(activityId);
+            if (activity == null) throw new ActivityNotFoundException();
+
+            if (!DBCommander.rejectActivity(player, activity)) throw new NullPointerException();
             return ok();
         } catch (TokenExpiredException e) {
             return ok(TokenExpiredResult.get());
         } catch (Exception e) {
             Loggy.e(TAG, "reject", e);
         }
-	    return badRequest();
+        return badRequest();
     }
 
     public static Result delete() {
-	    try {
-		    Map<String, String[]> formData = request().body().asFormUrlEncoded();
-		    String token = formData.get(Player.TOKEN)[0];
+        try {
+            Map<String, String[]> formData = request().body().asFormUrlEncoded();
+            String token = formData.get(Player.TOKEN)[0];
 
-		    Long playerId = DBCommander.queryPlayerId(token);
-		    if (playerId == null) throw new PlayerNotFoundException();
+            Long playerId = DBCommander.queryPlayerId(token);
+            if (playerId == null) throw new PlayerNotFoundException();
 
-		    Player player = DBCommander.queryPlayer(playerId);
-		    if (player == null) throw new PlayerNotFoundException();
-		    if (!DBCommander.validateAdminAccess(player)) throw new AccessDeniedException();
+            Player player = DBCommander.queryPlayer(playerId);
+            if (player == null) throw new PlayerNotFoundException();
+            if (!DBCommander.validateAdminAccess(player)) throw new AccessDeniedException();
 
-			Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
-			if (activityId == null) throw new InvalidRequestParamsException();
-			if(!ExtraCommander.deleteActivity(activityId)) throw new NullPointerException();
+            Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
+            if (activityId == null) throw new InvalidRequestParamsException();
+            if (!ExtraCommander.deleteActivity(activityId)) throw new NullPointerException();
 
-		    return ok();
-	    } catch (TokenExpiredException e) {
+            return ok();
+        } catch (TokenExpiredException e) {
             return ok(TokenExpiredResult.get());
         } catch (Exception e) {
             Loggy.e(TAG, "delete", e);
-	    }
-	    return badRequest();
+        }
+        return badRequest();
     }
 
-	public static Result prioritize() {
-		try {
-			Map<String, String[]> formData = request().body().asFormUrlEncoded();
-			String token = formData.get(Player.TOKEN)[0];
+    public static Result prioritize() {
+        try {
+            Map<String, String[]> formData = request().body().asFormUrlEncoded();
+            String token = formData.get(Player.TOKEN)[0];
 
-			Long playerId = DBCommander.queryPlayerId(token);
-			if (playerId == null) throw new PlayerNotFoundException();
+            Long playerId = DBCommander.queryPlayerId(token);
+            if (playerId == null) throw new PlayerNotFoundException();
 
-			Player player = DBCommander.queryPlayer(playerId);
-			if (player == null) throw new PlayerNotFoundException();
-			if (!DBCommander.validateAdminAccess(player)) throw new AccessDeniedException();
+            Player player = DBCommander.queryPlayer(playerId);
+            if (player == null) throw new PlayerNotFoundException();
+            if (!DBCommander.validateAdminAccess(player)) throw new AccessDeniedException();
 
-			Integer priority = Converter.toInteger(formData.get(Activity.PRIORITY)[0]);
-			if (priority == null) throw new InvalidRequestParamsException();
+            Integer priority = Converter.toInteger(formData.get(Activity.PRIORITY)[0]);
+            if (priority == null) throw new InvalidRequestParamsException();
 
-			Integer orderMask = Converter.toInteger(formData.get(Activity.ORDER_MASK)[0]);
-			if (orderMask == null) throw new InvalidRequestParamsException();
+            Integer orderMask = Converter.toInteger(formData.get(Activity.ORDER_MASK)[0]);
+            if (orderMask == null) throw new InvalidRequestParamsException();
 
-			Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
-			if (activityId == null) throw new InvalidRequestParamsException();
+            Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
+            if (activityId == null) throw new InvalidRequestParamsException();
 
-			Activity activity = DBCommander.queryActivity(activityId);
-			if (activity == null) throw new ActivityNotFoundException();
+            Activity activity = DBCommander.queryActivity(activityId);
+            if (activity == null) throw new ActivityNotFoundException();
 
-			if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
+            if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
 
-			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-			builder.update(Activity.TABLE)
-					.set(Activity.PRIORITY, priority)
-					.set(Activity.ORDER_MASK, orderMask)
-					.where(Activity.ID, "=", activityId);
-			if (!builder.execUpdate()) throw new NullPointerException();
-			return ok();
-		} catch (TokenExpiredException e) {
-			return ok(TokenExpiredResult.get());
-		} catch (Exception e) {
-			Loggy.e(TAG, "prioritize", e);
-		}
-		return badRequest();
-	}
+            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            builder.update(Activity.TABLE)
+                    .set(Activity.PRIORITY, priority)
+                    .set(Activity.ORDER_MASK, orderMask)
+                    .where(Activity.ID, "=", activityId);
+            if (!builder.execUpdate()) throw new NullPointerException();
+            return ok();
+        } catch (TokenExpiredException e) {
+            return ok(TokenExpiredResult.get());
+        } catch (Exception e) {
+            Loggy.e(TAG, "prioritize", e);
+        }
+        return badRequest();
+    }
 }

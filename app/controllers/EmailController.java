@@ -70,38 +70,38 @@ public class EmailController extends PlayerController {
 
     public static Result verify(final String email, final String code) {
         try {
-		if (email == null || code == null) throw new NullPointerException();
-		if (email.isEmpty() || code.isEmpty()) throw new InvalidRequestParamsException();
-		if (!General.validateEmail(email)) throw new InvalidRequestParamsException();
+            if (email == null || code == null) throw new NullPointerException();
+            if (email.isEmpty() || code.isEmpty()) throw new InvalidRequestParamsException();
+            if (!General.validateEmail(email)) throw new InvalidRequestParamsException();
 
-		EasyPreparedStatementBuilder builderUpdate = new EasyPreparedStatementBuilder();
-		boolean res = builderUpdate.update(Player.TABLE)
-			.set(Player.GROUP_ID, Player.USER)
-			.set(Player.VERIFICATION_CODE, "")
-			.where(Player.EMAIL, "=", email)
-			.where(Player.VERIFICATION_CODE, "=", code).execUpdate();
+            EasyPreparedStatementBuilder builderUpdate = new EasyPreparedStatementBuilder();
+            boolean res = builderUpdate.update(Player.TABLE)
+                    .set(Player.GROUP_ID, Player.USER)
+                    .set(Player.VERIFICATION_CODE, "")
+                    .where(Player.EMAIL, "=", email)
+                    .where(Player.VERIFICATION_CODE, "=", code).execUpdate();
 
-		String[] names = {Player.ID, Player.EMAIL, Player.NAME, Player.PASSWORD, Player.GROUP_ID, Player.AVATAR};
-		EasyPreparedStatementBuilder builderSelect = new EasyPreparedStatementBuilder();
-		List<JSONObject> playerJsons = builderSelect.select(names).from(Player.TABLE).where(Player.EMAIL, "=", email).execSelect();
+            String[] names = {Player.ID, Player.EMAIL, Player.NAME, Player.PASSWORD, Player.GROUP_ID, Player.AVATAR};
+            EasyPreparedStatementBuilder builderSelect = new EasyPreparedStatementBuilder();
+            List<JSONObject> playerJsons = builderSelect.select(names).from(Player.TABLE).where(Player.EMAIL, "=", email).execSelect();
 
-		if(playerJsons == null || playerJsons.size() != 1) throw new PlayerNotFoundException();
+            if (playerJsons == null || playerJsons.size() != 1) throw new PlayerNotFoundException();
 
-		Player player = new Player(playerJsons.get(0));
-		if (res) {
-			return redirect("http://" + request().host() + "/player/email#success?name=" + DataUtils.encodeUtf8(player.getName()) + "&email=" + DataUtils.encodeUtf8(player.getEmail()));
-		} else {
-			return redirect("http://" + request().host() + "/player/email#failure?name=" + DataUtils.encodeUtf8(player.getName()) + "&email=" + DataUtils.encodeUtf8(player.getEmail()));
-		}	
+            Player player = new Player(playerJsons.get(0));
+            if (res) {
+                return redirect("http://" + request().host() + "/player/email#success?name=" + DataUtils.encodeUtf8(player.getName()) + "&email=" + DataUtils.encodeUtf8(player.getEmail()));
+            } else {
+                return redirect("http://" + request().host() + "/player/email#failure?name=" + DataUtils.encodeUtf8(player.getName()) + "&email=" + DataUtils.encodeUtf8(player.getEmail()));
+            }
         } catch (Exception e) {
             Loggy.e(TAG, "verify", e);
         }
         return badRequest();
     }
 
-	public static Result index() {
-		Content html = email_verification.render();
-		return ok(html);
-	}
+    public static Result index() {
+        Content html = email_verification.render();
+        return ok(html);
+    }
 
 }

@@ -49,11 +49,11 @@ public class TempForeignParty {
         return m_email;
     }
 
-    public TempForeignParty (final JSONObject json) {
-        if (json.containsKey(ACCESS_TOKEN)) m_accessToken = (String)(json.get(ACCESS_TOKEN));
+    public TempForeignParty(final JSONObject json) {
+        if (json.containsKey(ACCESS_TOKEN)) m_accessToken = (String) (json.get(ACCESS_TOKEN));
         if (json.containsKey(PARTY)) m_party = Converter.toInteger(json.get(PARTY));
         if (json.containsKey(PARTY_ID)) m_partyId = Converter.toLong(json.get(PARTY_ID));
-        if (json.containsKey(EMAIL)) m_email = (String)(json.get(EMAIL));
+        if (json.containsKey(EMAIL)) m_email = (String) (json.get(EMAIL));
         if (json.containsKey(TIMESTAMP)) m_timestamp = Converter.toLong(json.get(TIMESTAMP));
     }
 }

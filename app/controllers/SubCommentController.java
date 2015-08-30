@@ -34,7 +34,7 @@ public class SubCommentController extends CommentController {
             result.put(Comment.PAGE_ED, pageEd);
 
             ArrayNode commentsNode = new ArrayNode(JsonNodeFactory.instance);
-            for (Comment comment : comments)	commentsNode.add(comment.toSubCommentObjectNode(null));
+            for (Comment comment : comments) commentsNode.add(comment.toSubCommentObjectNode(null));
             result.put(Comment.SUB_COMMENTS, commentsNode);
             return ok(result);
         } catch (Exception e) {
@@ -53,8 +53,8 @@ public class SubCommentController extends CommentController {
             result.put(Comment.PAGE, page);
 
             ArrayNode commentsNode = new ArrayNode(JsonNodeFactory.instance);
-            for (Comment comment : comments)	commentsNode.add(comment.toSubCommentObjectNode(null));
-	        result.put(Comment.SUB_COMMENTS, commentsNode);
+            for (Comment comment : comments) commentsNode.add(comment.toSubCommentObjectNode(null));
+            result.put(Comment.SUB_COMMENTS, commentsNode);
             return ok(result);
         } catch (Exception e) {
             Loggy.e(TAG, "query", e);
@@ -66,12 +66,12 @@ public class SubCommentController extends CommentController {
         // define response attributes
         try {
             Map<String, String[]> formData = request().body().asFormUrlEncoded();
-			if (!formData.containsKey(Comment.CONTENT)) throw new InvalidCommentParamsException();
-			if (!formData.containsKey(Comment.ACTIVITY_ID)) throw new InvalidCommentParamsException();
-			if (!formData.containsKey(Player.TOKEN)) throw new InvalidCommentParamsException();
+            if (!formData.containsKey(Comment.CONTENT)) throw new InvalidCommentParamsException();
+            if (!formData.containsKey(Comment.ACTIVITY_ID)) throw new InvalidCommentParamsException();
+            if (!formData.containsKey(Player.TOKEN)) throw new InvalidCommentParamsException();
             if (!formData.containsKey(Comment.PREDECESSOR_ID)) throw new InvalidCommentParamsException();
             if (!formData.containsKey(Comment.PARENT_ID)) throw new InvalidCommentParamsException();
-	        if (!formData.containsKey(Comment.TO)) throw new InvalidCommentParamsException();
+            if (!formData.containsKey(Comment.TO)) throw new InvalidCommentParamsException();
 
             String content = formData.get(Comment.CONTENT)[0];
             if (content == null || !General.validateCommentContent(content)) throw new InvalidCommentParamsException();
@@ -86,9 +86,9 @@ public class SubCommentController extends CommentController {
             if (activityId == null) throw new InvalidCommentParamsException();
             Activity activity = DBCommander.queryActivity(activityId);
 
-            if(activity == null) throw new ActivityNotFoundException();
-            if(activity.hasBegun()) throw new ActivityHasBegunException();
-            if(activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
+            if (activity == null) throw new ActivityNotFoundException();
+            if (activity.hasBegun()) throw new ActivityHasBegunException();
+            if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
 
             Long to = Converter.toLong(formData.get(Comment.TO)[0]);
             if (to == null) throw new InvalidCommentParamsException();

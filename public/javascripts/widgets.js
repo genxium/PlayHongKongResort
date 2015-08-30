@@ -271,6 +271,8 @@ function PagerButton(pager, page) {
 }
 
 function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, pagerCache, filters, onSuccess, onError) {
+
+	// TODO: refactor with container-dialog-appendTo-refresh pattern
 	this.screen = screen; // screen of the pager
 	this.nItems = numItemsPerPage; // number of items per page
 
@@ -471,6 +473,7 @@ function disableBinarySwitch(container){
  * */
 
 function DropdownMenu(toggle, items, reactions) {
+	// TODO: refactor with container-dialog-appendTo-refresh pattern
 	this.toggle = toggle; // toggle is button element
 	this.items = items; // items are <li> elements
 	this.reactions = reactions; // reactions are onClick(evt) functions
@@ -641,136 +644,5 @@ function WordCounter(text, min, max, regex, violationHint) {
 	};
 	this.valid = function() {
 		return (regex.test(this.text));
-	};
-}
-
-var g_avatarEditor = null;
-function initAvatarEditor(par) {
-	g_avatarEditor = new AvatarEditor();
-	g_avatarEditor.appendTo(par);
-}
-
-function AvatarEditor() {
-	this.container = null;
-	this.dialog = null;
-	this.content = null;
-	this.image = null;
-	this.btnChoose = null;
-	this.btnUpload = null;
-	this.hint = null;
-
-	this.refresh = function(player) {
-		if (player == null) return null;
-		this.content.empty();
-		var form = $("<div>", {
-			"class": "avatar-editor-form clearfix"
-		}).appendTo(this.content);
-
-		var picContainer = $("<div>", {
-			"class": "avatar left"
-		}).appendTo(form);
-		var picHelper = $("<span>", {
-			"class": "image-helper"
-		}).appendTo(picContainer);
-
-		this.image = $("<img>", {
-			src: player.avatar
-		}).appendTo(picContainer); 
-
-		var uploadContainer = $("<div>", {
-			"class": "upload left"
-		}).appendTo(form);
-
-		this.btnChoose = $("<input>", {
-			type: "file",
-			text: TITLES["choose_picture"]
-		}).appendTo(uploadContainer);
-
-		this.btnUpload = $("<button>", {
-			text: TITLES["upload"],	
-			"class": "purple"
-		}).appendTo(uploadContainer);	
-		
-		this.hint = $("<p>").appendTo(uploadContainer);
-
-		this.btnChoose.change(this, function(evt) {
-			evt.preventDefault();
-			var editor = evt.data;
-			var file = editor.getFile();
-			if (file == null) return;
-			if (!validateImage(file)) return;
-			var reader = new FileReader();
-			reader.onload = function (e) {
-				editor.image.attr("src", e.target.result);
-			}
-			reader.readAsDataURL(file);
-		});
-		this.btnUpload.click(this, function(evt) {
-			evt.preventDefault();
-			var editor = evt.data;	
-			var file = editor.getFile();
-			if (!validateImage(file))	return;
-
-			var token = $.cookie(g_keyToken);
-			if (token == null) return;
-
-			var formData = new FormData();
-			formData.append(g_keyAvatar, file);
-			formData.append(g_keyToken, token);
-			var aButton = $(this);
-			disableField(aButton);	
-			editor.hint.text(MESSAGES["uploading"]);
-			
-			$.ajax({
-				method: "POST",
-				url: "/player/avatar/upload", 
-				data: formData,
-				mimeType: "mutltipart/form-data",
-				contentType: false,
-				processData: false,
-				success: function(data, status, xhr){
-					enableField(aButton);	
-					editor.hint.text(MESSAGES["uploaded"]);
-				},
-				error: function(xhr, status, err){
-					enableField(aButton);	
-					editor.hint.text(MESSAGES["upload_failed"]);
-				}
-			});
-		});
-
-	};
-	
-	this.appendTo = function(par) {
-		this.container = $("<div class='modal fade avatar-editor' tabindex='-1' role='dialog' aria-labelledby='AvatarEditor' aria-hidden='true'>").appendTo(par);
-	 
-		this.dialog = $("<div>", {
-			"class": "modal-dialog modal-lg"
-		}).appendTo(this.container);
-
-		this.content = $("<div>", {
-			"class": "modal-content"
-		}).appendTo(this.dialog);
-	};	
-	this.show = function() {
-		this.container.modal("show");
-	};
-
-	this.hide = function() {
-		this.container.modal("hide");
-	};
-
-	this.remove = function() {
-		this.container.remove();
-	};	
-	this.getFile = function() {
-		if (this.btnChoose == null) return null;	
-		var files = this.btnChoose[0].files;
-		if (files == null) return null;	
-		if (files.length != 1) {
-			alert(ALERTS["choose_one_image"]);
-			return null;
-		}
-		return files[0];
 	};
 }

@@ -2,8 +2,10 @@ var g_sectionLogin = null;
 var g_loggedInPlayer = null;
 var g_preLoginForm = null;
 var g_postLoginMenu = null;
+var g_nameCompletionForm = null;
 
 function PreLoginForm(handle, psw, btn, forgot, registry, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
+	// TODO: refactor with container-dialog-appendTo-refresh pattern
 	this.handle = handle;
 	this.psw = psw;
 	this.btn = btn;
@@ -117,12 +119,220 @@ function NotiBubble(num, view) {
 }
 
 function PostLoginMenu(bubble, dropdownMenu, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
+	// TODO: refactor with container-dialog-appendTo-refresh pattern
 	this.bubble = bubble;
 	this.dropdownMenu = dropdownMenu;
 	this.onLoginSuccess = onLoginSuccess;
 	this.onLoginError = onLoginError;
 	this.onLogoutSuccess = onLogoutSuccess;
 	this.onLogoutError = onLogoutError;
+}
+
+function NameCompletionForm() {
+
+	this.container = null;
+	this.dialog = null;
+
+	this.name = null;
+	this.nameCheck = null;
+	this.email = null;
+	this.emailCheck = null;
+	this.btn = null;
+	this.onSuccess = null;
+	this.onError = null;
+
+	this.refresh = function() {
+		this.content.empty();
+
+		var registerBox = $('<div>', {
+		    id: "register-box"
+		}).appendTo(this.content);
+		var rowName = $('<div>', {
+		    "class": "register-name"
+		}).appendTo(registerBox);
+		this.name = $('<input>', {
+		    type: "text",
+		    placeHolder: HINTS["playername"],
+		}).appendTo(rowName);
+		this.nameCheck = $('<div>', {
+		    "class": "message"
+		}).appendTo(rowName);
+
+		var rowEmail = $('<div>', {
+		    "class": "register-email"
+		}).appendTo(registerBox);
+		this.email = $('<input>', {
+		    type: "text",
+		    placeHolder: HINTS["email"],
+		}).appendTo(rowEmail);
+		this.emailCheck = $('<div>', {
+		    "class": "message"
+		}).appendTo(rowEmail);
+
+		this.name.on("focusin focusout", this.nameCheck, function(evt) {
+		    evt.preventDefault();
+		    var nameCheck = evt.data;
+		    nameCheck.empty();
+		    nameCheck.html("");
+		    nameCheck.removeClass("warning");
+		    var nameVal = $(this).val();
+		    if(nameVal == null || nameVal.length == 0) return;
+		    if(!validateName(nameVal)) {
+			nameCheck.html("<p>" + MESSAGES["playername_requirement"] + "</p>");
+			nameCheck.addClass("warning");
+			return;
+		    }
+
+		    var params={};
+		    params[g_keyName] = nameVal;
+		    $.ajax({
+			type: "GET",
+			url: "/player/name/duplicate",
+			data: params,
+			success: function(data, status, xhr){
+			    if (isStandardSuccess(data)){
+				nameCheck.html("<p>" + MESSAGES["playername_valid"] + "</p>");
+			    }else{
+				nameCheck.addClass("warning");
+				nameCheck.html("<p>" + MESSAGES["playername_invalid"] + "</p>");
+			    }
+			},
+			error: function(xhr, status, err){
+			}
+		    });
+		});
+
+		this.email.on("focusin focusout", this.emailCheck, function(evt){
+		    evt.preventDefault();
+		    var emailCheck = evt.data;
+		    emailCheck.empty();
+		    emailCheck.html("");
+		    emailCheck.removeClass("warning");
+		    var emailVal = $(this).val();
+		    if(emailVal == null || emailVal.length == 0) return;
+		    if(!validateEmail(emailVal)) {
+			emailCheck.addClass("warning");
+			emailCheck.html("<p>" + MESSAGES["email_requirement"] + "</p>");
+			return;
+		    }
+
+		    var params = {};
+		    params[g_keyEmail] = emailVal;
+		    $.ajax({
+			type: "GET",
+			url: "/player/email/duplicate",
+			data: params,
+			success: function(data, status, xhr){
+			    if (isStandardSuccess(data)){
+				emailCheck.html("<p>" + MESSAGES["email_valid"] + "</p>");
+			    }else{
+				emailCheck.addClass("warning");
+				emailCheck.html("<p>" + MESSAGES["email_invalid"] + "</p>");
+			    }
+			},
+			error: function(xhr, status, err){
+			}
+		    });
+		});
+
+		this.btn = $('<div>', {
+			text: TITLES['submit']
+		}).appendTo(registerBox);
+
+		this.btn.click(this, function(evt) {
+		    var widget = evt.data;
+		    var playername = widget.name.val();
+		    var email = widget.email.val();
+
+		    if (playername == null || playername.length == 0 || !validateName(playername)) return;
+		    if (email != null && email.length > 0 && !validateEmail(email)) return;
+
+		    var accessToken = $.cookie(g_keyAccessToken);
+		    if (accessToken == null) return;
+
+		    var party = $.cookie(g_keyParty);
+		    if (party == null) return;
+
+		    var btnSubmit = getTarget(evt);
+		    disableField(btnSubmit);
+
+		    var params = {};
+		    params[g_keyName] = playername;
+		    params[g_keyEmail] = email;
+		    params[g_keyAccessToken] = accessToken;
+		    params[g_keyParty] = party;
+
+		    $.ajax({
+			type: "POST",
+			url: "/player/foreign/login",
+			data: params,
+			success: function(data, status, xhr){
+			    enableField(btnSubmit);
+			    if (isPlayerNotFound(data)) {
+				alert("Player not found!");
+				widget.hide();
+				return;
+			    }
+			    if (isForeignPartyRegistrationRequired(data)) {
+				widget.refresh();
+				return;
+			    }
+			    if (isTempForeignPartyRecordNotFound(data)) {
+				alert("Re-login required");
+				widget.hide();
+				return;
+			    }
+			    if (isStandardFailure(data)) {
+				alert("Unknown error!");
+				widget.refresh();
+				return;
+			    }
+			    var playerJson = data;
+			    $.removeCookie(g_keyAccessToken, {path: '/'});
+			    $.removeCookie(g_keyParty, {path: '/'});
+			    $.cookie(g_keyToken, playerJson[g_keyToken], {path: '/'});
+
+			    widget.hide();
+			    checkLoginStatus(false);
+			},
+			error: function(xhr, status, err){
+			    enableField(btnSubmit);
+			    widget.hide();
+			}
+		    });
+		});
+	};
+
+	this.appendTo = function(par) {
+		// DOM elements
+		this.container = $("<div class='modal fade activity-editor' data-keyboard='false' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='create' aria-hidden='true'>").appendTo(par);
+		this.dialog = $("<div class='modal-dialog modal-lg'>").appendTo(this.container);
+		this.content= $("<div class='modal-content'>").appendTo(this.dialog);
+	};
+
+	this.show = function() {
+		this.container.modal("show");
+	};
+
+	this.hide = function() {
+		this.container.modal("hide");
+	};
+
+	this.remove = function() {
+		this.container.remove();
+	};
+
+	this.empty = function() {
+		this.name.val("");
+		this.nameCheck.text("");
+		this.email.val("");
+		this.emailCheck.text("");
+	};
+}
+
+function initNameCompletionForm(par) {
+	g_nameCompletionForm = new NameCompletionForm();
+	g_nameCompletionForm.appendTo(par);
 }
 
 function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError, attachRegistry) {
@@ -175,7 +385,7 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 		qqLoginEntry.click(function(evt) {
 			evt.preventDefault();
 			
-			var rawBundle = encodeStateWithAction(g_partyQQ, checkLoginStatus, [false]);		
+			var rawBundle = encodeStateWithAction(g_partyQQ, checkLoginStatus, [false]);
 			
 			var redirectUri = (window.location.protocol + "//" + window.location.host);
 			var oauthTarget = 'https://graph.qq.com/oauth2.0/authorize?';
@@ -312,14 +522,6 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	return menu;
 }
 
-function showForeignPartyNameCompletion(par) {
-
-}
-
-function hideForeignPartyNameCompletion() {
-
-}
-
 function encodeStateWithAction(party, cbfunc, argList) {
 
 	/**
@@ -400,8 +602,7 @@ function checkForeignPartyLoginStatus() {
 				return;
 			}
 			if (isForeignPartyRegistrationRequired(data)) {
-				alert("Name completion required");
-				showForeignPartyNameCompletion();
+				g_nameCompletionForm.show();
 				return;
 			}
 			if (isTempForeignPartyRecordNotFound(data)) {

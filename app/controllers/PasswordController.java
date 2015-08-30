@@ -39,11 +39,11 @@ public class PasswordController extends PlayerController {
     public static Result request(String email) {
         try {
             Player player = DBCommander.queryPlayerByEmail(email);
-            if(player == null) throw new PlayerNotFoundException();
+            if (player == null) throw new PlayerNotFoundException();
             String code = DBCommander.generateVerificationCode(email);
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.update(Player.TABLE).set(Player.PASSWORD_RESET_CODE, code).where(Player.EMAIL, "=", email);
-            if(!builder.execUpdate()) throw new NullPointerException();
+            if (!builder.execUpdate()) throw new NullPointerException();
             sendResetEmail(player.getLang(), player.getName(), player.getEmail(), code);
             return ok();
         } catch (Exception e) {
@@ -87,13 +87,13 @@ public class PasswordController extends PlayerController {
             String code = formData.get(Player.PASSWORD_RESET_CODE)[0];
             String password = formData.get(Player.PASSWORD)[0];
 
-            if(!General.validatePassword(password)) throw new InvalidPasswordException();
+            if (!General.validatePassword(password)) throw new InvalidPasswordException();
 
             Player player = DBCommander.queryPlayerByEmail(email);
             if (player == null) throw new PlayerNotFoundException();
 
             String passwordDigest = Converter.md5(password + player.getSalt());
-	    Loggy.d(TAG, "confirm", password + ", " + passwordDigest);
+            Loggy.d(TAG, "confirm", password + ", " + passwordDigest);
 
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.update(Player.TABLE)

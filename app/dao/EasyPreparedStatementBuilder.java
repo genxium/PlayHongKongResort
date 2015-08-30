@@ -14,12 +14,13 @@ public class EasyPreparedStatementBuilder {
     public static final String TAG = EasyPreparedStatementBuilder.class.getName();
     public static final String ALIAS_PREFIX = "bsajkfhoi";
 
-	public static class PrimaryTableField {
-		public String name;
-		public PrimaryTableField(final String aName) {
-			name = aName;
-		}
-	} 
+    public static class PrimaryTableField {
+        public String name;
+
+        public PrimaryTableField(final String aName) {
+            name = aName;
+        }
+    }
 
     public static class OnCondition {
         public String key; // the key bound to the joining table
@@ -37,10 +38,10 @@ public class EasyPreparedStatementBuilder {
     protected List<String> m_selectCols = null;
 
     protected List<String> m_insertCols = null;
-    protected List< List<Object> > m_insertVals = null;
+    protected List<List<Object>> m_insertVals = null;
 
     protected List<String> m_replaceCols = null;
-    protected List< List<Object> > m_replaceVals = null;
+    protected List<List<Object>> m_replaceVals = null;
 
     protected List<String> m_updateCols = null;
     protected List<Object> m_updateVals = null;
@@ -125,8 +126,8 @@ public class EasyPreparedStatementBuilder {
     }
 
     public EasyPreparedStatementBuilder ignore(boolean val) {
-	    m_ignore = val;
-	    return this;
+        m_ignore = val;
+        return this;
     }
 
     public EasyPreparedStatementBuilder set(String col, Object val) {
@@ -195,19 +196,19 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-	/**
-	 * Note that `appendJoin` always translates the `ON` conditions as 
-	 * <`secondary_table_alias`.`secondary_table_field`> <operator> <value>.
-	 * If <value> is to be filled in with associative field name, it could ONLY
-	 * be a primary table (i.e. m_table) field.
-	 * */
+    /**
+     * Note that `appendJoin` always translates the `ON` conditions as
+     * <`secondary_table_alias`.`secondary_table_field`> <operator> <value>.
+     * If <value> is to be filled in with associative field name, it could ONLY
+     * be a primary table (i.e. m_table) field.
+     */
     public EasyPreparedStatementBuilder join(String table, String[] keys, String[] ops, Object[] vals) {
         if (table == null || keys == null || ops == null || vals == null) return this;
         if (keys.length != vals.length || ops.length != vals.length) return this;
         int length = keys.length;
         if (m_join == null) m_join = new HashMap<>();
         List<OnCondition> conditionList = new ArrayList<>();
-        for (int i = 0; i < length; ++i)    conditionList.add(new OnCondition(keys[i], ops[i], vals[i]));
+        for (int i = 0; i < length; ++i) conditionList.add(new OnCondition(keys[i], ops[i], vals[i]));
         m_join.put(table, conditionList);
         return this;
     }
@@ -322,13 +323,13 @@ public class EasyPreparedStatementBuilder {
                     List<?> castedVals = (List<?>) condition.val;
                     query += "(";
                     for (int j = 0; j < castedVals.size(); ++j) {
-						query += "?";
+                        query += "?";
                         if (j < castedVals.size() - 1) query += ", ";
                     }
                     query += ")";
                 } else if (condition.val instanceof PrimaryTableField) {
-					query += ("`" + m_table + "`.`" + ((PrimaryTableField) condition.val).name + "`"); // special case for joining
-				} else {
+                    query += ("`" + m_table + "`.`" + ((PrimaryTableField) condition.val).name + "`"); // special case for joining
+                } else {
                     query += "?";
                 }
                 if (i < length - 1) query += " AND ";
@@ -348,14 +349,13 @@ public class EasyPreparedStatementBuilder {
             query += ("`" + col + "` " + op + " ");
             if (val instanceof List) {
                 query += "(";
-                List<?> castedVals = (List<?>)(m_whereVals.get(i));
+                List<?> castedVals = (List<?>) (m_whereVals.get(i));
                 for (int j = 0; j < castedVals.size(); ++j) {
                     query += "?";
                     if (j < castedVals.size() - 1) query += ", ";
                 }
                 query += ")";
-            }
-            else query += "?";
+            } else query += "?";
             if (i < m_whereCols.size() - 1) {
                 if (m_whereLink == null) query += " AND ";
                 else query += (" " + m_whereLink + " ");
@@ -415,10 +415,10 @@ public class EasyPreparedStatementBuilder {
                     for (OnCondition condition : conditionList) {
                         if (condition.val instanceof List) {
                             List<?> castedVals = (List<?>) condition.val;
-                            for (Object castedVal : castedVals)	statement.setObject(index++, castedVal);
+                            for (Object castedVal : castedVals) statement.setObject(index++, castedVal);
                         } else if (condition.val instanceof PrimaryTableField) {
-							continue; // special case for joining
-						} else {
+                            continue; // special case for joining
+                        } else {
                             statement.setObject(index++, condition.val);
                         }
                     }
@@ -431,8 +431,7 @@ public class EasyPreparedStatementBuilder {
                         for (Object castedVal : castedVals) {
                             statement.setObject(index++, castedVal);
                         }
-                    }
-                    else statement.setObject(index++, val);
+                    } else statement.setObject(index++, val);
                 }
             }
             if (m_limits != null) {
@@ -452,7 +451,7 @@ public class EasyPreparedStatementBuilder {
         PreparedStatement statement = null;
         try {
             String query = "INSERT";
-	    if (m_ignore) query += " IGNORE";
+            if (m_ignore) query += " IGNORE";
             query = appendIntoTable(query);
 
             query += "(";
@@ -550,8 +549,7 @@ public class EasyPreparedStatementBuilder {
                         for (Object castedVal : castedVals) {
                             statement.setObject(index++, castedVal);
                         }
-                    }
-                    else statement.setObject(index++, val);
+                    } else statement.setObject(index++, val);
                 }
             }
 
@@ -624,8 +622,7 @@ public class EasyPreparedStatementBuilder {
                         for (Object castedVal : castedVals) {
                             statement.setObject(index++, castedVal);
                         }
-                    }
-                    else statement.setObject(index++, val);
+                    } else statement.setObject(index++, val);
                 }
             }
 

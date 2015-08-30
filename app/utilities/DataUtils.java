@@ -55,21 +55,21 @@ public class DataUtils {
         }
         return ret;
     }
-	
+
     public static String encryptByTime(String seed) {
-		try {
-			java.util.Date date = new java.util.Date();
-			Timestamp currentTime = new Timestamp(date.getTime());
-			Long epochTime = currentTime.getTime();
-			String tmp = Converter.md5(epochTime.toString() + seed);
+        try {
+            java.util.Date date = new java.util.Date();
+            Timestamp currentTime = new Timestamp(date.getTime());
+            Long epochTime = currentTime.getTime();
+            String tmp = Converter.md5(epochTime.toString() + seed);
             if (tmp == null) throw new NullPointerException();
-			int length = tmp.length();
-			return tmp.substring(0, (length >> 1));
-		} catch (Exception e) {
-			Loggy.e(TAG, "encryptByTime", e);
-		}
-		return null;
-    } 
+            int length = tmp.length();
+            return tmp.substring(0, (length >> 1));
+        } catch (Exception e) {
+            Loggy.e(TAG, "encryptByTime", e);
+        }
+        return null;
+    }
 
     public static String appendCacheKey(final String cacheKey, final String key, final Object val) {
         return cacheKey + "|" + key + ":" + String.valueOf(val);

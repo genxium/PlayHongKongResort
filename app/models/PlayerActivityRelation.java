@@ -11,10 +11,10 @@ public class PlayerActivityRelation extends AbstractModel {
     public static final int ASSESSED = (1 << 4);
     public static final int HOSTED = (1 << 5);
 
-    public static final int[] PRESENT_STATES = {SELECTED|PRESENT, SELECTED|PRESENT|ASSESSED};
-    public static final int[] ABSENT_STATES = {SELECTED|ABSENT, SELECTED|ABSENT|ASSESSED};
+    public static final int[] PRESENT_STATES = {SELECTED | PRESENT, SELECTED | PRESENT | ASSESSED};
+    public static final int[] ABSENT_STATES = {SELECTED | ABSENT, SELECTED | ABSENT | ASSESSED};
     public static final int[] APPLIED_STATES = {APPLIED};
-    public static final int[] SELECTED_STATES = {SELECTED, SELECTED|PRESENT, SELECTED|ABSENT, SELECTED|PRESENT|ASSESSED, SELECTED|ABSENT|ASSESSED};
+    public static final int[] SELECTED_STATES = {SELECTED, SELECTED | PRESENT, SELECTED | ABSENT, SELECTED | PRESENT | ASSESSED, SELECTED | ABSENT | ASSESSED};
 
     // (PLAYER_ID, ACTIVITY_ID) is UNIQUE
     // RELATION is indexed
@@ -28,27 +28,27 @@ public class PlayerActivityRelation extends AbstractModel {
 
     public static String VIEWEE_ID = "viewee_id";
 
-	public static String SID = "sid"; 
-	public static String CAPTCHA = "captcha";
+    public static String SID = "sid";
+    public static String CAPTCHA = "captcha";
 
     public static int maskRelation(final int relation, final Integer originalRelation) {
         int ret = INVALID;
-        if(originalRelation != null) ret = originalRelation;
+        if (originalRelation != null) ret = originalRelation;
         switch (relation) {
             case SELECTED:
-                if((ret & APPLIED) > 0) ret &= (FULLMASK ^ APPLIED);
+                if ((ret & APPLIED) > 0) ret &= (FULLMASK ^ APPLIED);
                 ret |= SELECTED;
                 break;
             case APPLIED:
-                if((ret & SELECTED) > 0) ret &= (FULLMASK ^ SELECTED);
+                if ((ret & SELECTED) > 0) ret &= (FULLMASK ^ SELECTED);
                 ret |= APPLIED;
                 break;
             case PRESENT:
-                if((ret & ABSENT) > 0) ret &= (FULLMASK ^ ABSENT);
+                if ((ret & ABSENT) > 0) ret &= (FULLMASK ^ ABSENT);
                 ret |= PRESENT;
                 break;
             case ABSENT:
-                if((ret & PRESENT) > 0) ret &= (FULLMASK ^ PRESENT);
+                if ((ret & PRESENT) > 0) ret &= (FULLMASK ^ PRESENT);
                 ret |= ABSENT;
                 break;
             case ASSESSED:

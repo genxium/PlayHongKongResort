@@ -21,15 +21,15 @@ public class General {
         try {
             return Player.EMAIL_PATTERN.matcher(email).matches();
         } catch (Exception e) {
-	        return false;
+            return false;
         }
     }
-	
+
     public static boolean validateName(final String name) {
         try {
             return Player.NAME_PATTERN.matcher(name).matches();
         } catch (Exception e) {
-	        return false;
+            return false;
         }
     }
 
@@ -37,7 +37,7 @@ public class General {
         try {
             return Player.PASSWORD_PATTERN.matcher(password).matches();
         } catch (Exception e) {
-	        return false;
+            return false;
         }
     }
 
@@ -106,7 +106,7 @@ public class General {
     }
 
     public static long millisec() {
-	    return System.currentTimeMillis();
+        return System.currentTimeMillis();
     }
 
 }

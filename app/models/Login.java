@@ -23,7 +23,7 @@ public class Login {
 
     public Login(final JSONObject json) {
         if (json.containsKey(PLAYER_ID)) m_playerId = Converter.toLong(json.get(PLAYER_ID));
-        if (json.containsKey(TOKEN)) m_token = (String)json.get(TOKEN);
+        if (json.containsKey(TOKEN)) m_token = (String) json.get(TOKEN);
         if (json.containsKey(TIMESTAMP)) m_timestamp = Converter.toLong(json.get(TIMESTAMP));
     }
 

@@ -1,5 +1,6 @@
-package dao;
+package utilities;
 
+import dao.SQLHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

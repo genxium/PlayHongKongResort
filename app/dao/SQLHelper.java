@@ -6,6 +6,7 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import play.Play;
 import utilities.Loggy;
+import utilities.XMLHelper;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -47,38 +48,38 @@ public class SQLHelper {
     private static String s_useUnicode = null;
 
     public static boolean readMySQLConfig() {
-	    boolean ret = false;
-	    try {
-		    String fullPath = Play.application().path() + "/conf/";
-			if (Play.application().isProd())    fullPath += "database_config.xml";
-			else if (Play.application().isDev())    fullPath += "devel_database_config.xml";
-			else    fullPath += "test_database_config.xml";
-			Map<String, String> attributes = XMLHelper.readDatabaseConfig(fullPath);
-			s_databaseName = attributes.get(DATABASE_NAME);
-			s_host = attributes.get(HOST);
-			s_port = Integer.parseInt(attributes.get(PORT));
-			s_user = attributes.get(USER);
-			s_password = attributes.get(PASSWORD);
-			s_charsetResult = attributes.get(CHARSET_RESULT);
-			s_charsetEncoding = attributes.get(CHARSET_ENCODING);
-			s_useUnicode = attributes.get(USE_UNICODE);
-			ret = true;
-	    } catch (Exception e) {
-		    Loggy.e(TAG, "readMySQLConfig", e);
-	    }
-	    return ret;
+        boolean ret = false;
+        try {
+            String fullPath = Play.application().path() + "/conf/";
+            if (Play.application().isProd()) fullPath += "database_config.xml";
+            else if (Play.application().isDev()) fullPath += "devel_database_config.xml";
+            else fullPath += "test_database_config.xml";
+            Map<String, String> attributes = XMLHelper.readDatabaseConfig(fullPath);
+            s_databaseName = attributes.get(DATABASE_NAME);
+            s_host = attributes.get(HOST);
+            s_port = Integer.parseInt(attributes.get(PORT));
+            s_user = attributes.get(USER);
+            s_password = attributes.get(PASSWORD);
+            s_charsetResult = attributes.get(CHARSET_RESULT);
+            s_charsetEncoding = attributes.get(CHARSET_ENCODING);
+            s_useUnicode = attributes.get(USE_UNICODE);
+            ret = true;
+        } catch (Exception e) {
+            Loggy.e(TAG, "readMySQLConfig", e);
+        }
+        return ret;
     }
 
     public static String getConnectionURI() {
-	    String ret = null;
-	    try {
-		    if(!readMySQLConfig()) return null;
-		    Class.forName("com.mysql.jdbc.Driver");
+        String ret = null;
+        try {
+            if (!readMySQLConfig()) return null;
+            Class.forName("com.mysql.jdbc.Driver");
             ret = "jdbc:mysql://" + s_host + ":" + s_port.toString() + "/" + s_databaseName;
-	    } catch (Exception e) {
-		    Loggy.e(TAG, "getConnectionURI", e);
-	    }
-	    return ret;
+        } catch (Exception e) {
+            Loggy.e(TAG, "getConnectionURI", e);
+        }
+        return ret;
 
     }
 
@@ -109,7 +110,7 @@ public class SQLHelper {
              * TODO: optimize these numbers!
              * */
             GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
-             poolConfig.setMaxIdle(10);
+            poolConfig.setMaxIdle(10);
             poolConfig.setMinIdle(5);
             poolConfig.setTimeBetweenEvictionRunsMillis(60000); // validate every minute
             poolConfig.setNumTestsPerEvictionRun(1);
@@ -123,7 +124,7 @@ public class SQLHelper {
         } catch (Exception e) {
             Loggy.e(TAG, "setupDataSource", e);
         }
-		return null;
+        return null;
     }
 
     public static Connection getConnection() {
@@ -142,8 +143,8 @@ public class SQLHelper {
 
     public static boolean closeConnection(final Connection connection) {
         try {
-            if (connection == null)	return false;
-	        connection.close();
+            if (connection == null) return false;
+            connection.close();
             return true;
         } catch (Exception e) {
             Loggy.e(TAG, "closeConnection", e);

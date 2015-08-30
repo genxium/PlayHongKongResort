@@ -119,7 +119,7 @@ $(document).ready(function(){
 	initFooter($("#footer-content"));
 
 	initActivityEditor($("#content"));
-	initAvatarEditor($("#content"));
+	initNameCompletionForm($("#content"));
 
 	$(window).on("hashchange", function(evt) {
 		routeByHash();

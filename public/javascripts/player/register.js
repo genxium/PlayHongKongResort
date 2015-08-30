@@ -3,6 +3,7 @@ var g_modalRegister = null;
 var g_sectionRegister = null;
 
 function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswConfirm, pswConfirmCheck, btn, onSuccess, onError, captcha) {
+	// TODO: refactor with container-dialog-appendTo-refresh pattern
 	// prototypes: onSuccess(data), onError(err)		
 	this.name = name;
 	this.nameCheck = nameCheck;
@@ -60,11 +61,11 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var password = widget.psw.val();
 		var passwordConfirm = widget.pswConfirm.val();
 
-		if(playername == null || playername.length == 0 || !validateName(playername)
+		if (playername == null || playername.length == 0 || !validateName(playername)
 		    || email == null || email.length == 0 || !validateEmail(email)
 		    || password == null || password.length == 0 || !validatePassword(password) || !validatePasswordConfirm(password, passwordConfirm)) return;
 
-		var btnRegister = $(this);
+		var btnRegister = getTarget(evt);
 		disableField(btnRegister);
 		var params = {};
 		params[g_keyName] = playername;

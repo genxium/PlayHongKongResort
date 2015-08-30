@@ -14,9 +14,9 @@ public abstract class AbstractSimpleMessage extends AbstractModel {
         return m_content;
     }
 
-	public void setContent(final String content) {
-		m_content = content;
-	}
+    public void setContent(final String content) {
+        m_content = content;
+    }
 
     public AbstractSimpleMessage() {
         super();
@@ -24,7 +24,7 @@ public abstract class AbstractSimpleMessage extends AbstractModel {
 
     public AbstractSimpleMessage(JSONObject json) {
         super(json);
-        if (json.containsKey(CONTENT)) m_content = (String)json.get(CONTENT);
+        if (json.containsKey(CONTENT)) m_content = (String) json.get(CONTENT);
     }
 
     public ObjectNode toObjectNode() {
