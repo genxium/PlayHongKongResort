@@ -1023,9 +1023,9 @@ public class DBCommander {
 
     public static TempForeignParty queryTempForeignParty(final String accessToken, final Integer party) {
         try {
-            String[] names = TempForeignParty.QUERY_FIELDS;
+            String[] cols = TempForeignParty.QUERY_FIELDS;
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            List<JSONObject> results = builder.select(names)
+            List<JSONObject> results = builder.select(cols)
                     .from(TempForeignParty.TABLE)
                     .where(TempForeignParty.ACCESS_TOKEN, "=", accessToken)
                     .where(TempForeignParty.PARTY, "=", party)
@@ -1039,11 +1039,11 @@ public class DBCommander {
         return null;
     }
 
-    public static long createTempForeignParty(final String accessToken, final Integer party, final String partyId, final String email) {
+    public static long createTempForeignParty(final String accessToken, final Integer party, final String partyId) {
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            String[] cols = {TempForeignParty.ACCESS_TOKEN, TempForeignParty.PARTY, TempForeignParty.PARTY_ID, TempForeignParty.EMAIL, TempForeignParty.TIMESTAMP};
-            Object[] vals = {accessToken, party, partyId, email, General.millisec()};
+            String[] cols = {TempForeignParty.ACCESS_TOKEN, TempForeignParty.PARTY, TempForeignParty.PARTY_ID, TempForeignParty.TIMESTAMP};
+            Object[] vals = {accessToken, party, partyId, General.millisec()};
             return builder.insert(cols, vals).into(TempForeignParty.TABLE).execInsert();
         } catch (Exception e) {
             Loggy.e(TAG, "createTempForeignParty", e);

@@ -26,8 +26,7 @@ CREATE TABLE `temp_foreign_party` (
   `access_token` varchar(32) NOT NULL,
   `party` int(11) NOT NULL,
   `party_id` varchar(32) NOT NULL,
-  `timestamp` bigint(20) DEFAULT NULL,
-  `email` varchar(64) NOT NULL,
+  `timestamp` bigint(20) NOT NULL,
   UNIQUE KEY `PK` (`access_token`,`party`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -41,4 +40,4 @@ CREATE TABLE `temp_foreign_party` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-08-30 12:19:47
+-- Dump completed on 2015-08-30 21:27:27

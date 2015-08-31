@@ -45,23 +45,15 @@ public class ForeignPartyController extends Controller {
     public static final int PARTY_NONE = 0;
     public static final int PARTY_QQ = 1;
 
-    public static final HashMap<Integer, String> PARTY_DEFAULT_DOMAIN_NAME = new HashMap<>();
-
-    static {
-        PARTY_DEFAULT_DOMAIN_NAME.put(PARTY_QQ, "qq.com");
-    }
-
     public static class ForeignPartySpecs {
         public String TAG = ForeignPartySpecs.class.getName();
         public String id = null;
         public Integer party = null;
         public String email = null;
 
-        public ForeignPartySpecs(final String aId, final Integer aParty, final String aEmail) {
+        public ForeignPartySpecs(final String aId, final Integer aParty) {
             id = aId;
             party = aParty;
-            if (aEmail == null) email = String.format("%s@%s", aId, PARTY_DEFAULT_DOMAIN_NAME.get(aParty));
-            else email = aEmail;
         }
 
         public boolean isValid() {
@@ -86,13 +78,13 @@ public class ForeignPartyController extends Controller {
                     Matcher matcher = resPattern.matcher(line);
                     if (!matcher.matches()) return null;
                     String openid = matcher.group(2);
-                    return new ForeignPartySpecs(openid, party, null);
+                    return new ForeignPartySpecs(openid, party);
                 } else {
                     Map<String, String> testAccessTokenMap = new HashMap<>();
                     testAccessTokenMap.put("qyi32789urjwkqefn", "12345678"); // should NOT be in test table `perm_foreign_party`
                     testAccessTokenMap.put("a7s89dfhaaskdfja89", "87654321"); // should be in test table `perm_foreign_party` and `player`
                     if (!testAccessTokenMap.containsKey(accessToken)) return null;
-                    return new ForeignPartySpecs(testAccessTokenMap.get(accessToken), party, null);
+                    return new ForeignPartySpecs(testAccessTokenMap.get(accessToken), party);
                 }
             default:
                 return null;
@@ -110,8 +102,6 @@ public class ForeignPartyController extends Controller {
         // player should re-submit access-token and party-id
         if (tempForeignPartyRecord == null) throw new TempForeignPartyRecordNotFoundException();
 
-        if (email == null) email = tempForeignPartyRecord.getEmail();
-
         Connection connection = SQLHelper.getConnection();
         if (connection == null) throw new NullPointerException();
 
@@ -128,11 +118,10 @@ public class ForeignPartyController extends Controller {
         try {
 
             // insert record into `player`
-
             String code = DBCommander.generateVerificationCode(name);
 
-            String[] cols = {Player.EMAIL, Player.NAME, Player.PASSWORD, Player.GROUP_ID, Player.PARTY, Player.VERIFICATION_CODE};
-            Object[] values = {email, name, "", Player.USER, party, code};
+            String[] cols = {Player.EMAIL, Player.NAME, Player.GROUP_ID, Player.PARTY, Player.VERIFICATION_CODE};
+            Object[] values = {email, name, Player.USER, party, code};
 
             EasyPreparedStatementBuilder createPlayerBuilder = new EasyPreparedStatementBuilder();
             PreparedStatement createPlayerStat = createPlayerBuilder.insert(cols, values)
@@ -155,9 +144,9 @@ public class ForeignPartyController extends Controller {
             // remove record from `temp_foreign_party`
             EasyPreparedStatementBuilder deleteTempForeignPartyBuilder = new EasyPreparedStatementBuilder();
             PreparedStatement deleteTempForeignPartyStat = deleteTempForeignPartyBuilder.from(TempForeignParty.TABLE)
-                    .where(TempForeignParty.ACCESS_TOKEN, "=", tempForeignPartyRecord.getAccessToken())
-                    .where(TempForeignParty.PARTY, "=", tempForeignPartyRecord.getParty())
-                    .toDelete(connection);
+										    .where(TempForeignParty.ACCESS_TOKEN, "=", tempForeignPartyRecord.getAccessToken())
+										    .where(TempForeignParty.PARTY, "=", tempForeignPartyRecord.getParty())
+										    .toDelete(connection);
             SQLHelper.executeAndCloseStatement(deleteTempForeignPartyStat);
 
         } catch (SQLException e) {
@@ -195,7 +184,7 @@ public class ForeignPartyController extends Controller {
         if (record != null) return DBCommander.queryPlayer(record.getPlayerId());
 
         // record creation failure might indicate that there's an existing record
-        DBCommander.createTempForeignParty(accessToken, party, specs.id, specs.email);
+        DBCommander.createTempForeignParty(accessToken, party, specs.id);
 
         // player should submit valid name and email(if not empty)
         throw new ForeignPartyRegistrationRequiredException();

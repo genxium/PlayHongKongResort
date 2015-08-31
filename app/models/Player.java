@@ -149,24 +149,24 @@ public class Player extends BasicPlayer {
         return m_mood;
     }
 
-    public Player(String email, String name) {
+    public Player(final String email, final String name) {
         super(email, name);
         m_groupId = VISITOR;
         m_password = "";
     }
 
-    public Player(final JSONObject playerJson) {
-        super(playerJson);
-        if (playerJson.containsKey(PASSWORD)) m_password = (String) playerJson.get(PASSWORD);
-        if (playerJson.containsKey(SALT)) m_salt = (String) playerJson.get(SALT);
-        if (playerJson.containsKey(GROUP_ID)) m_groupId = Converter.toInteger(playerJson.get(GROUP_ID));
-        if (playerJson.containsKey(UNREAD_COUNT)) m_unreadCount = Converter.toInteger(playerJson.get(UNREAD_COUNT));
-        if (playerJson.containsKey(UNASSESSED_COUNT))
-            m_unassessedCount = Converter.toInteger(playerJson.get(UNASSESSED_COUNT));
-        if (playerJson.containsKey(LANG)) m_lang = (String) playerJson.get(LANG);
-        if (playerJson.containsKey(GENDER)) m_gender = (String) playerJson.get(GENDER);
-        if (playerJson.containsKey(AGE)) m_age = (String) playerJson.get(AGE);
-        if (playerJson.containsKey(MOOD)) m_mood = (String) playerJson.get(MOOD);
+    public Player(final JSONObject json) {
+        super(json);
+        if (json.containsKey(PASSWORD)) m_password = (String) json.get(PASSWORD);
+        if (json.containsKey(SALT)) m_salt = (String) json.get(SALT);
+        if (json.containsKey(GROUP_ID)) m_groupId = Converter.toInteger(json.get(GROUP_ID));
+        if (json.containsKey(UNREAD_COUNT)) m_unreadCount = Converter.toInteger(json.get(UNREAD_COUNT));
+        if (json.containsKey(UNASSESSED_COUNT))
+            m_unassessedCount = Converter.toInteger(json.get(UNASSESSED_COUNT));
+        if (json.containsKey(LANG)) m_lang = (String) json.get(LANG);
+        if (json.containsKey(GENDER)) m_gender = (String) json.get(GENDER);
+        if (json.containsKey(AGE)) m_age = (String) json.get(AGE);
+        if (json.containsKey(MOOD)) m_mood = (String) json.get(MOOD);
     }
 
     public ObjectNode toObjectNode(final Long viewerId) {

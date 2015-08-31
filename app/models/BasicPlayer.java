@@ -51,16 +51,16 @@ public class BasicPlayer extends AbstractModel {
         m_avatar = avatar;
     }
 
-    public BasicPlayer(String email, String name) {
+    public BasicPlayer(final String email, final String name) {
         m_email = email;
         m_name = name;
     }
 
-    public BasicPlayer(JSONObject playerJson) {
-        super(playerJson);
-        if (playerJson.containsKey(NAME)) m_name = (String) playerJson.get(NAME);
-        if (playerJson.containsKey(EMAIL)) m_email = (String) playerJson.get(EMAIL);
-        if (playerJson.containsKey(AVATAR)) m_avatar = Converter.toLong(playerJson.get(AVATAR));
+    public BasicPlayer(final JSONObject json) {
+        super(json);
+        if (json.containsKey(NAME)) m_name = (String) json.get(NAME);
+        if (json.containsKey(EMAIL)) m_email = (String) json.get(EMAIL);
+        if (json.containsKey(AVATAR)) m_avatar = Converter.toLong(json.get(AVATAR));
     }
 
     public ObjectNode toObjectNode(Long viewerId) {
