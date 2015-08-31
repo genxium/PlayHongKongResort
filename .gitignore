@@ -1,4 +1,5 @@
 # Project specific files
+conf/*.xml
 *.min.js
 *.min.css
 *.rpm
