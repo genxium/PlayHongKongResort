@@ -2,4 +2,8 @@
 
 basedir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-mysql -uroot hongkongresort < $basedir/rotate_login_table.sql
+host='localhost'
+dbname='hongkongresort'
+user='root'
+
+mysql -h $host -u $user $dbname < $basedir/rotate_login_table.sql

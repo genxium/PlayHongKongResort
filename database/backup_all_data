@@ -2,4 +2,8 @@
 
 basedir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-mysqldump -uroot --default-character-set=utf8 hongkongresort -r $basedir/all_data.sql
+host='localhost'
+dbname='hongkongresort'
+user='root'
+
+mysqldump -u $user -h $host --default-character-set=utf8 $dbname -r $basedir/all_data.sql
