@@ -6,26 +6,36 @@ var absent = (1<<3);
 var assessed = (1<<4);
 var hosted = (1<<5);
 
-function Player(playerJson){
-	this.id = parseInt(playerJson["id"]);
-	if (playerJson.hasOwnProperty("email"))	this.email = playerJson["email"];
-	this.name = playerJson["name"];
-	this.avatar =  (playerJson.hasOwnProperty("avatar") ? playerJson["avatar"] : "/assets/icons/anonymous.png");
-	if (playerJson.hasOwnProperty("unread_count"))	this.unreadCount = parseInt(playerJson["unread_count"]);
+function Player(json){
+	this.id = parseInt(json["id"]);
+	if (json.hasOwnProperty("email"))	this.email = json["email"];
+	this.name = json["name"];
+	this.avatar =  (json.hasOwnProperty("avatar") ? json["avatar"] : "/assets/icons/anonymous.png");
+	if (json.hasOwnProperty("unread_count"))	this.unreadCount = parseInt(json["unread_count"]);
 	this.hasAvatar = function() {
-		return (this.avatar != null && this.avatar != undefined);
-	}
-	if (playerJson.hasOwnProperty("group_id")) this.groupId = parseInt(playerJson["group_id"]);
+		return !(!this.avatar);
+	};
+	if (json.hasOwnProperty("group_id")) this.groupId = parseInt(json["group_id"]);
+	if (json.hasOwnProperty("authentication_status")) this.authenticationStatus = parseInt(json["authentication_status"]);
+
 	this.isVisitor = function() {
-	    return (this.groupId == null || this.groupId == undefined || this.groupId == 0);
-	}
-	if (playerJson.hasOwnProperty("age")) this.age = playerJson["age"];
+	    return (!this.groupId || this.groupId == 0);
+	};
+
+	this.hasEmail = function() {
+		return !(!this.email);
+	};
+	this.isEmailAuthenticated = function() {
+		return (!(!this.authenticationStatus) && ((this.authenticationStatus & 1) > 0));
+	};
+
+	if (json.hasOwnProperty("age")) this.age = json["age"];
 	else this.age = "";
 
-	if (playerJson.hasOwnProperty("gender")) this.gender = playerJson["gender"];
+	if (json.hasOwnProperty("gender")) this.gender = json["gender"];
 	else this.gender = "";
 
-	if (playerJson.hasOwnProperty("mood")) this.mood = playerJson["mood"];
+	if (json.hasOwnProperty("mood")) this.mood = json["mood"];
 	else this.mood = "";
 }
 

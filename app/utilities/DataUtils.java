@@ -51,7 +51,7 @@ public class DataUtils {
             String ext = nameComponents[1];
             ret = "UID" + playerId.toString() + "_" + epochTime.toString() + "_" + Converter.md5(base) + "." + ext;
         } catch (Exception e) {
-            System.out.println(DataUtils.class.getName() + ".generateUploadedImageName, " + e.getMessage());
+            Loggy.e(TAG, "generateUploadedImageName", e);
         }
         return ret;
     }

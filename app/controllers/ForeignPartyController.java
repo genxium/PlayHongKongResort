@@ -216,7 +216,7 @@ public class ForeignPartyController extends Controller {
             Object[] vals = {player.getId(), token, General.millisec()};
             builder.insert(cols, vals).into(Login.TABLE).execInsert();
 
-            ObjectNode result = Json.newObject();
+            ObjectNode result = player.toObjectNode(player.getId());
             result.put(Player.TOKEN, token);
 
             return ok(result);

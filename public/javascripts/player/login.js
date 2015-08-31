@@ -291,10 +291,12 @@ function NameCompletionForm() {
 				widget.refresh();
 				return;
 			    }
-			    var playerJson = data;
+
 			    $.removeCookie(g_keyAccessToken, {path: '/'});
 			    $.removeCookie(g_keyParty, {path: '/'});
-			    $.cookie(g_keyToken, playerJson[g_keyToken], {path: '/'});
+
+			    g_loggedInPlayer = new Player(data); 
+			    $.cookie(g_keyToken, data[g_keyToken], {path: '/'});
 
 			    widget.hide();
 			    checkLoginStatus(false);
@@ -629,10 +631,10 @@ function checkForeignPartyLoginStatus() {
 				return;
 			}
 
-			var playerJson = data;
 			$.removeCookie(g_keyAccessToken, {path: '/'});
 			$.removeCookie(g_keyParty, {path: '/'});
-			$.cookie(g_keyToken, playerJson[g_keyToken], {path: '/'});
+			g_loggedInPlayer = new Player(data);
+			$.cookie(g_keyToken, data[g_keyToken], {path: '/'});
 
 			checkLoginStatus(false);	
 		},
@@ -680,10 +682,9 @@ function checkLoginStatus(willAttemptForeignPartyLogin) {
 				g_preLoginForm.onLoginError(null);		
 				return;
 			}
-			var playerJson = data;
-			g_loggedInPlayer = new Player(playerJson);
+			g_loggedInPlayer = new Player(data);
 			if (g_loggedInPlayer == null) return;
-			$.cookie(g_keyToken, playerJson[g_keyToken], {path: '/'});
+			$.cookie(g_keyToken, data[g_keyToken], {path: '/'});
 			wsConnect();	
 			if (g_preLoginForm == null) return;
 			g_postLoginMenu = generatePostLoginMenu(g_sectionLogin, g_preLoginForm.onLoginSuccess, g_preLoginForm.onLoginError, g_preLoginForm.onLogoutSuccess, g_preLoginForm.onLogoutError);

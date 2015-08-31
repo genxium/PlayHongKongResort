@@ -324,7 +324,7 @@ function queryPlayerDetail(){
 			};
 			g_pagerAssessments = new Pager(pagerScreen, pagerBar, 10, "/assessment/list", generateAssessmentsListParams, extraParams, pagerCache, null, onQueryAssessmentsSuccess, onQueryAssessmentsError); 	
 			if (g_loggedInPlayer == null) return;
-			if (g_loggedInPlayer.isVisitor() && g_vieweeId == g_loggedInPlayer.id) {
+			if (g_loggedInPlayer.hasEmail() && !g_loggedInPlayer.isEmailAuthenticated() && g_vieweeId == g_loggedInPlayer.id) {
 				var hintResend = null;
 				var extraParams = {};
 				extraParams[g_keyToken] = $.cookie(g_keyToken);
