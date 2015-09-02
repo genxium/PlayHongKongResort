@@ -78,9 +78,9 @@ public class Activity extends AbstractSimpleMessage {
         REVERSE_ORDER_MAP.put(DEADLINE, 4);
     }
 
-    public static final int[] LAST_ACCEPTED_TIME_MASK_LIST = {1, 1 | 2, 1 | 4, 1 | 2 | 4};
-    public static final int[] BEGIN_TIME_MASK_LIST = {2, 1 | 2, 2 | 4, 1 | 2 | 4};
-    public static final int[] DEADLINE_MASK_LIST = {4, 1 | 4, 2 | 4, 1 | 2 | 4};
+    public static final int[] LAST_ACCEPTED_TIME_MASK_LIST = {1, (1 | 2), (1 | 4), (1 | 2 | 4)};
+    public static final int[] BEGIN_TIME_MASK_LIST = {2, (1 | 2), (2 | 4), (1 | 2 | 4)};
+    public static final int[] DEADLINE_MASK_LIST = {4, (1 | 4), (2 | 4), (1 | 2 | 4)};
 
     protected String m_title = null;
 

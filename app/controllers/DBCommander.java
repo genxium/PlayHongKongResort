@@ -218,13 +218,14 @@ public class DBCommander {
                     .order(orderKey, orientation)
                     .where(Activity.STATUS, "=", status)
                     .where(Activity.PRIORITY, "=", 0)
-                    .limit((pageSt - 1) * numItems + offset, (pageEd - pageSt + 1) * numItems + offset);
+                    .limit((pageSt - 1) * numItems, (pageEd - pageSt + 1) * numItems - offset);
             if (status == Activity.PENDING) {
                 // ONLY admin queries should be accessing this closure
                 builder.where(Activity.DEADLINE, ">", General.millisec());
             }
             List<JSONObject> activityJsonList = builder.execSelect();
-            if (activityJsonList == null) return null;
+            if (activityJsonList == null) return ret;
+
             for (JSONObject activityJson : activityJsonList) {
                 Activity activity = new Activity(activityJson);
                 ret.add(activity);
@@ -280,12 +281,11 @@ public class DBCommander {
 
             List<JSONObject> activityJsonList = builder.execSelect();
 
-            if (activityJsonList == null) return null;
+            if (activityJsonList == null || activityJsonList.size() == 0) return ret;
             for (JSONObject activityJson : activityJsonList) {
                 Activity activity = new Activity(activityJson);
                 ret.add(activity);
             }
-            if (ret.size() == 0) return ret;
             appendPlayerInfoForActivity(ret, null);
         } catch (Exception e) {
             Loggy.e(TAG, "queryPrioritizedActivities", e);

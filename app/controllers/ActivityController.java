@@ -52,7 +52,7 @@ public class ActivityController extends Controller {
 
             if (relation != null && !validRelations.contains(relation)) throw new InvalidRequestParamsException();
 
-            // anti=cracking by param token
+            // anti-cracking by param token
             Long viewerId = null;
             Player viewer = null;
             if (token != null) {
@@ -95,24 +95,24 @@ public class ActivityController extends Controller {
                 activities = DBCommander.queryHostedActivities(vieweeId, viewerId, pageSt, pageEd, Activity.ID, orientationStr, numItems);
             } else {
                 int offset = 0;
-                List<Activity> prioritizedActivities = null;
-                if (status == null || status == Activity.ACCEPTED) {
-                    // when status == null, case falls in general homepage query, set it to Activity.ACCEPTED first
-                    status = Activity.ACCEPTED;
-                    // trial for querying prioritized activities
-                    List<Integer> maskList = new LinkedList<>();
-                    for (int orderMask : Activity.LAST_ACCEPTED_TIME_MASK_LIST) {
-                        maskList.add(orderMask);
+				List<Activity> prioritizedActivities = null;
+				if (status == null || status == Activity.ACCEPTED) {
+					// when status == null, case falls in general homepage query, set it to Activity.ACCEPTED first
+					status = Activity.ACCEPTED;
+					// trial for querying prioritized activities
+					List<Integer> maskList = new LinkedList<>();
+                    for (int mask : Activity.LAST_ACCEPTED_TIME_MASK_LIST) {
+                        maskList.add(mask);
                     }
                     prioritizedActivities = DBCommander.queryPrioritizedActivities(maskList, numItems);
-                    if (prioritizedActivities != null) {
-                        // NOTE: hereby assumes that number of prioritized activities doesn't exceed numItems
-                        if (pageSt.equals(1)) numItems -= prioritizedActivities.size();
-                        else offset -= prioritizedActivities.size();
-                    }
+                    // 'prioritizedActivities' is never null after the above query
+                    // NOTE: hereby assumes that number of prioritized activities doesn't exceed numItems
+                    offset = prioritizedActivities.size();
                 }
                 activities = DBCommander.queryActivities(pageSt, pageEd, orderKey, orientationStr, numItems, status, offset);
-                if (activities != null && prioritizedActivities != null && prioritizedActivities.size() > 0) {
+                // 'activities' is never null after the above query
+
+                if (prioritizedActivities != null) {
                     prioritizedActivities.addAll(activities);
                     activities = prioritizedActivities;
                 }

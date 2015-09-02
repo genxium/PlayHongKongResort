@@ -312,6 +312,8 @@ function NameCompletionForm() {
 			"class": "btn-cancel negative-button",
 			text: TITLES["cancel"]
 		}).appendTo(buttons).click(this, function(evt) {
+			$.removeCookie(g_keyAccessToken, {path: '/'});
+			$.removeCookie(g_keyParty, {path: '/'});
 			var widget = evt.data;
 			widget.hide();
 		});
