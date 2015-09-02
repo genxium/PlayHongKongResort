@@ -80,6 +80,11 @@
 @patch-block-lambda-background: transparent;
 @patch-block-lambda-background-hover: transparent;
 
+@patch-block-sigma-font-color: green;
+@patch-block-sigma-font-color-hover: green;
+@patch-block-sigma-background: transparent;
+@patch-block-sigma-background-hover: transparent;
+
 @title-alpha-font-color: #3090a6;
 @title-beta-font-color: #e21e61;
 @title-gamma-font-color: #888;
@@ -320,6 +325,15 @@ input, textarea {
 	&:hover {
 		color: @patch-block-lambda-font-color-hover;
 		background-color: @patch-block-lambda-background-hover;
+	}	
+}
+
+.patch-block-sigma {
+	color: @patch-block-sigma-font-color;
+	background-color: @patch-block-sigma-background;
+	&:hover {
+		color: @patch-block-sigma-font-color-hover;
+		background-color: @patch-block-sigma-background-hover;
 	}	
 }
 

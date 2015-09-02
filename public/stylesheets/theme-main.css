@@ -200,6 +200,14 @@ textarea {
   color: CornflowerBlue;
   background-color: transparent;
 }
+.patch-block-sigma {
+  color: green;
+  background-color: transparent;
+}
+.patch-block-sigma:hover {
+  color: green;
+  background-color: transparent;
+}
 .title-alpha {
   color: #3090a6;
 }

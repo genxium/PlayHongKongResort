@@ -143,97 +143,102 @@ function NameCompletionForm() {
 	this.onError = null;
 
 	this.refresh = function() {
-		this.content.empty();
+			this.content.empty();
+		
+			var title = $('<div>', {
+				'class':	"title-alpha first-foreign-party-registration-title",
+				text: TITLES['first_foreign_party_registration']
+			}).appendTo(this.content);
 
-		var registerBox = $('<div>', {
-		    id: "register-box"
-		}).appendTo(this.content);
-		var rowName = $('<div>', {
-		    "class": "register-name"
-		}).appendTo(registerBox);
-		this.name = $('<input>', {
-		    type: "text",
-		    placeHolder: HINTS["playername"],
-		}).appendTo(rowName);
-		this.nameCheck = $('<div>', {
-		    "class": "message"
-		}).appendTo(rowName);
+			var registerBox = $('<div>', {
+				id: "register-box"
+			}).appendTo(this.content);
+			var rowName = $('<div>', {
+				"class": "register-name"
+			}).appendTo(registerBox);
+			this.name = $('<input>', {
+				type: "text",
+				placeHolder: HINTS["playername"],
+			}).appendTo(rowName);
+			this.nameCheck = $('<div>', {
+				"class": "message"
+			}).appendTo(rowName);
 
-		var rowEmail = $('<div>', {
-		    "class": "register-email"
-		}).appendTo(registerBox);
-		this.email = $('<input>', {
-		    type: "text",
-		    placeHolder: HINTS["email"],
-		}).appendTo(rowEmail);
-		this.emailCheck = $('<div>', {
-		    "class": "message"
-		}).appendTo(rowEmail);
+			var rowEmail = $('<div>', {
+				"class": "register-email"
+			}).appendTo(registerBox);
+			this.email = $('<input>', {
+				type: "text",
+				placeHolder: HINTS["email"],
+			}).appendTo(rowEmail);
+			this.emailCheck = $('<div>', {
+				"class": "message"
+			}).appendTo(rowEmail);
 
-		this.name.on("focusin focusout", this.nameCheck, function(evt) {
-		    evt.preventDefault();
-		    var nameCheck = evt.data;
-		    nameCheck.empty();
-		    nameCheck.html("");
-		    nameCheck.removeClass("warning");
-		    var nameVal = $(this).val();
-		    if(nameVal == null || nameVal.length == 0) return;
-		    if(!validateName(nameVal)) {
-			nameCheck.html("<p>" + MESSAGES["playername_requirement"] + "</p>");
-			nameCheck.addClass("warning");
-			return;
-		    }
+			this.name.on("focusin focusout", this.nameCheck, function(evt) {
+				evt.preventDefault();
+				var nameCheck = evt.data;
+				nameCheck.empty();
+				nameCheck.html("");
+				var nameVal = $(this).val();
+				if(nameVal == null || nameVal.length == 0) return;
+				if(!validateName(nameVal)) {
+					addWarningStyle(nameCheck);
+					nameCheck.html("<p>" + MESSAGES["playername_requirement"] + "</p>");
+					return;
+				}
 
-		    var params={};
-		    params[g_keyName] = nameVal;
-		    $.ajax({
-			type: "GET",
-			url: "/player/name/duplicate",
-			data: params,
-			success: function(data, status, xhr){
-			    if (isStandardSuccess(data)){
-				nameCheck.html("<p>" + MESSAGES["playername_valid"] + "</p>");
-			    }else{
-				nameCheck.addClass("warning");
-				nameCheck.html("<p>" + MESSAGES["playername_invalid"] + "</p>");
-			    }
-			},
-			error: function(xhr, status, err){
-			}
-		    });
-		});
+				var params={};
+				params[g_keyName] = nameVal;
+				$.ajax({
+					type: "GET",
+					url: "/player/name/duplicate",
+					data: params,
+					success: function(data, status, xhr){
+						if (isStandardSuccess(data)){
+							removeWarningStyle(nameCheck);	
+							nameCheck.html("<p>" + MESSAGES["playername_valid"] + "</p>");
+						}else{
+							addWarningStyle(nameCheck);
+							nameCheck.html("<p>" + MESSAGES["playername_invalid"] + "</p>");
+						}
+					},
+					error: function(xhr, status, err){
+					}
+				});
+			});
 
-		this.email.on("focusin focusout", this.emailCheck, function(evt){
-		    evt.preventDefault();
-		    var emailCheck = evt.data;
-		    emailCheck.empty();
-		    emailCheck.html("");
-		    emailCheck.removeClass("warning");
-		    var emailVal = $(this).val();
-		    if(emailVal == null || emailVal.length == 0) return;
-		    if(!validateEmail(emailVal)) {
-			emailCheck.addClass("warning");
-			emailCheck.html("<p>" + MESSAGES["email_requirement"] + "</p>");
-			return;
-		    }
+			this.email.on("focusin focusout", this.emailCheck, function(evt){
+				evt.preventDefault();
+				var emailCheck = evt.data;
+				emailCheck.empty();
+				emailCheck.html("");
+				var emailVal = $(this).val();
+				if(emailVal == null || emailVal.length == 0) return;
+				if(!validateEmail(emailVal)) {
+					addWarningStyle(emailCheck);
+					emailCheck.html("<p>" + MESSAGES["email_requirement"] + "</p>");
+					return;
+				}
 
-		    var params = {};
-		    params[g_keyEmail] = emailVal;
-		    $.ajax({
-			type: "GET",
-			url: "/player/email/duplicate",
-			data: params,
-			success: function(data, status, xhr){
-			    if (isStandardSuccess(data)){
-				emailCheck.html("<p>" + MESSAGES["email_valid"] + "</p>");
-			    }else{
-				emailCheck.addClass("warning");
-				emailCheck.html("<p>" + MESSAGES["email_invalid"] + "</p>");
-			    }
-			},
-			error: function(xhr, status, err){
-			}
-		    });
+				var params = {};
+				params[g_keyEmail] = emailVal;
+				$.ajax({
+					type: "GET",
+					url: "/player/email/duplicate",
+					data: params,
+					success: function(data, status, xhr){
+						if (isStandardSuccess(data)){
+							removeWarningStyle(emailCheck);
+							emailCheck.html("<p>" + MESSAGES["email_valid"] + "</p>");
+						}else{
+							addWarningStyle(emailCheck);
+							emailCheck.html("<p>" + MESSAGES["email_invalid"] + "</p>");
+						}
+					},
+					error: function(xhr, status, err){
+					}
+				});
 		});
 
 		var buttons = $("<div>", {
@@ -267,44 +272,44 @@ function NameCompletionForm() {
 		    params[g_keyParty] = party;
 
 		    $.ajax({
-			type: "POST",
-			url: "/player/foreign/login",
-			data: params,
-			success: function(data, status, xhr){
-			    enableField(btnSubmit);
-			    if (isPlayerNotFound(data)) {
-				alert("Player not found!");
-				widget.hide();
-				return;
-			    }
-			    if (isForeignPartyRegistrationRequired(data)) {
-				widget.refresh();
-				return;
-			    }
-			    if (isTempForeignPartyRecordNotFound(data)) {
-				alert("Re-login required");
-				widget.hide();
-				return;
-			    }
-			    if (isStandardFailure(data)) {
-				alert("Unknown error!");
-				widget.refresh();
-				return;
-			    }
+				type: "POST",
+				url: "/player/foreign/login",
+				data: params,
+				success: function(data, status, xhr){
+					enableField(btnSubmit);
+					if (isPlayerNotFound(data)) {
+						alert(ALERTS['player_not_existing']);
+						widget.hide();
+						return;
+					}
+					if (isForeignPartyRegistrationRequired(data)) {
+						widget.refresh();
+						return;
+					}
+					if (isTempForeignPartyRecordNotFound(data)) {
+						alert(ALERTS['relogin_required']);
+						widget.hide();
+						return;
+					}
+					if (isStandardFailure(data)) {
+						alert(ALERTS['unknown_error']);
+						widget.refresh();
+						return;
+					}
 
-			    $.removeCookie(g_keyAccessToken, {path: '/'});
-			    $.removeCookie(g_keyParty, {path: '/'});
+					$.removeCookie(g_keyAccessToken, {path: '/'});
+					$.removeCookie(g_keyParty, {path: '/'});
 
-			    g_loggedInPlayer = new Player(data); 
-			    $.cookie(g_keyToken, data[g_keyToken], {path: '/'});
+					g_loggedInPlayer = new Player(data); 
+					$.cookie(g_keyToken, data[g_keyToken], {path: '/'});
 
-			    widget.hide();
-			    checkLoginStatus(false);
-			},
-			error: function(xhr, status, err){
-			    enableField(btnSubmit);
-			    widget.hide();
-			}
+					widget.hide();
+					checkLoginStatus(false);
+				},
+				error: function(xhr, status, err){
+					enableField(btnSubmit);
+					widget.hide();
+				}
 		    });
 		});
 
@@ -337,18 +342,32 @@ function NameCompletionForm() {
 	this.remove = function() {
 		this.container.remove();
 	};
-
-	this.empty = function() {
-		this.name.val("");
-		this.nameCheck.text("");
-		this.email.val("");
-		this.emailCheck.text("");
-	};
 }
 
 function initNameCompletionForm(par) {
 	g_nameCompletionForm = new NameCompletionForm();
 	g_nameCompletionForm.appendTo(par);
+}
+
+function appendForeignPartyLoginEntry(par, party) {
+	if (par == null) return;
+	if (party == g_partyQQ) {
+		var qqLoginEntry = $("<img>", {
+			src: "/assets/icons/qq.png",
+			"class": "foreign-party-logo"
+		}).appendTo(par);
+		qqLoginEntry.click(function(evt) {
+			evt.preventDefault();
+			
+			var rawBundle = encodeStateWithAction(g_partyQQ, checkLoginStatus, [false]);
+			
+			var redirectUri = (window.location.protocol + "//" + window.location.host);
+			var oauthTarget = 'https://graph.qq.com/oauth2.0/authorize?';
+			var oauthParams = ['client_id=' + g_appIdQQ, 'redirect_uri=' + redirectUri, 'scope=get_user_info','response_type=token', 'state=' + rawBundle];
+        
+			window.location.assign(oauthTarget + oauthParams.join('&'));
+		});
+	}
 }
 
 function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError, attachRegistry) {
@@ -390,26 +409,8 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 			text: TITLES["register"],
 			"class": "login-registry faketext-button"
 		}).appendTo(row2);	
-	} else {
-		/**
-		* TODO: make it adaptable to all foreign party login workflow
-		**/
-		var qqLoginEntry = $("<img>", {
-			src: "/assets/icons/qq.png",
-			"class": "foreign-party-logo"
-		}).appendTo(row2);
-		qqLoginEntry.click(function(evt) {
-			evt.preventDefault();
-			
-			var rawBundle = encodeStateWithAction(g_partyQQ, checkLoginStatus, [false]);
-			
-			var redirectUri = (window.location.protocol + "//" + window.location.host);
-			var oauthTarget = 'https://graph.qq.com/oauth2.0/authorize?';
-			var oauthParams = ['client_id=' + g_appIdQQ, 'redirect_uri=' + redirectUri, 'scope=get_user_info','response_type=token', 'state=' + rawBundle];
-        
-			window.location.assign(oauthTarget + oauthParams.join('&'));
-		});
-	}
+	} 
+	appendForeignPartyLoginEntry(row2, g_partyQQ);
 
 	return new PreLoginForm(handle, psw, btn, forgot, registry, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
 }
@@ -613,7 +614,7 @@ function checkForeignPartyLoginStatus() {
 		data: params,
 		success: function(data, status, xhr){
 			if (isPlayerNotFound(data)) {
-				alert("Player not found!");
+				alert(ALERTS['player_not_existing']);
 				checkLoginStatus(false);
 				return;
 			}
@@ -623,12 +624,12 @@ function checkForeignPartyLoginStatus() {
 				return;
 			}
 			if (isTempForeignPartyRecordNotFound(data)) {
-				alert("Re-login required");
+				alert(ALERTS['relogin_required']);
 				checkLoginStatus(false);
 				return;
 			}
 			if (isStandardFailure(data)) {
-				alert("Unknown error!");
+				alert(ALERTS['unknown_error']);
 				checkLoginStatus(false);
 				return;
 			}

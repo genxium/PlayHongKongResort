@@ -90,7 +90,8 @@ var TITLES = {
 	"default": "默認",
 	age: "年齡",
 	gender: "性別",
-	mood: "心情"
+	mood: "心情",
+	first_foreign_party_registration: "這是你的首次登入, 請填寫一個用戶名以完成註冊, 同時建議填寫電郵地址"
 };
 
 var MESSAGES = {
@@ -181,5 +182,8 @@ var ALERTS = {
 	please_follow_activity_field_instructions: "請根據字數要求填寫各項",
 	not_updated: "更新不成功",
 	email_not_authenticated: "註冊郵箱尚未完成驗證無法進行此操作， 如未收到驗證郵件請在個人主頁點擊重新發送",
-	invalid_image_type: "圖片類型應為jpg, jpeg或png"
+	invalid_image_type: "圖片類型應為jpg, jpeg或png",
+	player_not_found: "未找到用戶記錄",
+	relogin_required: "請重新登入",
+	unknown_error: "未知錯誤"	
 };

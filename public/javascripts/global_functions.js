@@ -456,3 +456,13 @@ function isTempForeignPartyRecordNotFound(data) {
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errTempForeignPartyRecordNotFound;
 }
+
+function addWarningStyle(field) {
+	field.removeClass('patch-block-sigma');
+	field.addClass('warning');
+}
+
+function removeWarningStyle(field) {
+	field.removeClass('warning');
+	field.addClass('patch-block-sigma');
+}

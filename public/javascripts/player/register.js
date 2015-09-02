@@ -102,12 +102,11 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var nameCheck = evt.data;
 		nameCheck.empty();
 		nameCheck.html("");
-		nameCheck.removeClass("warning");
 		var nameVal = $(this).val();
 		if(nameVal == null || nameVal.length == 0) return;
 		if(!validateName(nameVal)) {
+			addWarningStyle(nameCheck);
 			nameCheck.html("<p>" + MESSAGES["playername_requirement"] + "</p>");
-			nameCheck.addClass("warning");
 			return;
 		}
 
@@ -119,9 +118,10 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 			data: params,
 			success: function(data, status, xhr){
 				if (isStandardSuccess(data)){
+					removeWarningStyle(nameCheck);
 					nameCheck.html("<p>" + MESSAGES["playername_valid"] + "</p>");        
 			    }else{
-					nameCheck.addClass("warning");
+					addWarningStyle(nameCheck);
 					nameCheck.html("<p>" + MESSAGES["playername_invalid"] + "</p>");
 				}        
 			},
@@ -135,11 +135,10 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var emailCheck = evt.data;
 		emailCheck.empty();
 		emailCheck.html("");
-		emailCheck.removeClass("warning");
 		var emailVal = $(this).val();
 		if(emailVal == null || emailVal.length == 0) return;
 		if(!validateEmail(emailVal)) {
-			emailCheck.addClass("warning");
+			addWarningStyle(emailCheck);
 			emailCheck.html("<p>" + MESSAGES["email_requirement"] + "</p>");
 			return;
 		}
@@ -152,9 +151,10 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 			data: params,
 			success: function(data, status, xhr){
 				if (isStandardSuccess(data)){
+					removeWarningStyle(emailCheck);
 					emailCheck.html("<p>" + MESSAGES["email_valid"] + "</p>");        
 				}else{
-					emailCheck.addClass("warning");
+					addWarningStyle(emailCheck);
 					emailCheck.html("<p>" + MESSAGES["email_invalid"] + "</p>");
 				}        
 			},
@@ -168,24 +168,22 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 		var pswCheck = evt.data;
 		pswCheck.empty();
 		pswCheck.html("");
-		pswCheck.removeClass("warning");
 		var pswVal = $(this).val();
 		if(pswVal == null || pswVal.length ==0 ) return;
 		if(validatePassword(pswVal))	return;
-		pswCheck.addClass("warning");
+		addWarningStyle(pswCheck);
 		pswCheck.html("<p>" + MESSAGES["password_requirement"] + "</p>");
 	});	
  
-	this.pswConfirm.on("input keyup paste", {0: this.pswConfirmCheck, 1: this.psw}, function(evt){
+	this.pswConfirm.on("input keyup paste", {0: this.pswConfirmCheck, 1: this.psw}, function(evt) {
 		evt.preventDefault();
 		var pswConfirmCheck = evt.data[0];
 		var pswConfirmVal = $(this).val();
 		var pswVal = evt.data[1].val();
 		pswConfirmCheck.empty();
 		pswConfirmCheck.html("");
-		pswConfirmCheck.removeClass("warning");
 		if(validatePasswordConfirm(pswVal, pswConfirmVal))	return;
-		pswConfirmCheck.addClass("warning");
+		addWarningStyle(pswConfirmCheck);
 		pswConfirmCheck.html("<p>" + MESSAGES["password_confirm_requirement"] + "</p>");
 	});	
 }
