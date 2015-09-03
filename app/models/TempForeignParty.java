@@ -1,9 +1,6 @@
 package models;
 
-import org.json.simple.JSONObject;
-import utilities.Converter;
-
-import java.sql.Timestamp;
+import dao.SimpleMap;
 
 public class TempForeignParty {
 
@@ -42,10 +39,10 @@ public class TempForeignParty {
 
     protected Long m_timestamp = null;
 
-    public TempForeignParty(final JSONObject json) {
-        if (json.containsKey(ACCESS_TOKEN)) m_accessToken = (String) (json.get(ACCESS_TOKEN));
-        if (json.containsKey(PARTY)) m_party = Converter.toInteger(json.get(PARTY));
-        if (json.containsKey(PARTY_ID)) m_partyId = (String) json.get(PARTY_ID);
-        if (json.containsKey(TIMESTAMP)) m_timestamp = Converter.toLong(json.get(TIMESTAMP));
+    public TempForeignParty(final SimpleMap data) {
+        m_accessToken = data.getStr(ACCESS_TOKEN);
+        m_party = data.getInt(PARTY);
+        m_partyId = data.getStr(PARTY_ID);
+        m_timestamp = data.getLong(TIMESTAMP);
     }
 }

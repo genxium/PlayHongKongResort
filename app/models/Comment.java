@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.DBCommander;
-import org.json.simple.JSONObject;
-import utilities.Converter;
+import dao.SimpleMap;
 import utilities.Loggy;
 
 import java.util.List;
@@ -36,13 +35,11 @@ public class Comment extends AbstractActivityMessage {
         m_subCommentList = subCommentList;
     }
 
-    public Comment(JSONObject commentJson) {
-        super(commentJson);
-        if (commentJson.containsKey(PARENT_ID)) m_parentId = Converter.toInteger(commentJson.get(PARENT_ID));
-        if (commentJson.containsKey(PREDECESSOR_ID))
-            m_predecessorId = Converter.toInteger(commentJson.get(PREDECESSOR_ID));
-        if (commentJson.containsKey(NUM_CHILDREN)) m_numChildren = Converter.toInteger(commentJson.get(NUM_CHILDREN));
-
+    public Comment(final SimpleMap data) {
+        super(data);
+        m_parentId = data.getInt(PARENT_ID);
+        m_predecessorId = data.getInt(PREDECESSOR_ID);
+        m_numChildren = data.getInt(NUM_CHILDREN);
     }
 
     public ObjectNode toSubCommentObjectNode(final Long viewerId) {

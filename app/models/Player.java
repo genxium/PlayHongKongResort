@@ -2,9 +2,8 @@ package models;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.ForeignPartyController;
+import dao.SimpleMap;
 import fixtures.Constants;
-import org.json.simple.JSONObject;
-import utilities.Converter;
 import utilities.Loggy;
 
 import java.util.regex.Pattern;
@@ -160,19 +159,19 @@ public class Player extends BasicPlayer {
 		m_password = "";
 	}
 
-	public Player(final JSONObject json) {
-		super(json);
-		if (json.containsKey(PASSWORD)) m_password = (String) json.get(PASSWORD);
-		if (json.containsKey(SALT)) m_salt = (String) json.get(SALT);
-		if (json.containsKey(GROUP_ID)) m_groupId = Converter.toInteger(json.get(GROUP_ID));
-		if (json.containsKey(AUTHENTICATION_STATUS)) m_authenticationStatus = Converter.toInteger(json.get(AUTHENTICATION_STATUS));
-		if (json.containsKey(UNREAD_COUNT)) m_unreadCount = Converter.toInteger(json.get(UNREAD_COUNT));
-		if (json.containsKey(UNASSESSED_COUNT)) m_unassessedCount = Converter.toInteger(json.get(UNASSESSED_COUNT));
-		if (json.containsKey(LANG)) m_lang = (String) json.get(LANG);
-		if (json.containsKey(GENDER)) m_gender = (String) json.get(GENDER);
-		if (json.containsKey(AGE)) m_age = (String) json.get(AGE);
-		if (json.containsKey(MOOD)) m_mood = (String) json.get(MOOD);
-		if (json.containsKey(PARTY)) m_party = Converter.toInteger(json.get(PARTY));
+	public Player(final SimpleMap data) {
+		super(data);
+		m_password = data.getStr(PASSWORD);
+		m_salt = data.getStr(SALT);
+		m_groupId = data.getInt(GROUP_ID);
+		m_authenticationStatus = data.getInt(AUTHENTICATION_STATUS);
+		m_unreadCount = data.getInt(UNREAD_COUNT);
+		m_unassessedCount = data.getInt(UNASSESSED_COUNT);
+		m_lang = data.getStr(LANG);
+		m_gender = data.getStr(GENDER);
+		m_age = data.getStr(AGE);
+		m_mood = data.getStr(MOOD);
+		m_party = data.getInt(PARTY);
 	}
 
 	public ObjectNode toObjectNode(final Long viewerId) {

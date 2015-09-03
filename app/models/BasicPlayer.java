@@ -2,8 +2,7 @@ package models;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.ExtraCommander;
-import org.json.simple.JSONObject;
-import utilities.Converter;
+import dao.SimpleMap;
 import utilities.Loggy;
 
 import java.util.regex.Pattern;
@@ -56,14 +55,14 @@ public class BasicPlayer extends AbstractModel {
         m_name = name;
     }
 
-    public BasicPlayer(final JSONObject json) {
-        super(json);
-        if (json.containsKey(NAME)) m_name = (String) json.get(NAME);
-        if (json.containsKey(EMAIL)) m_email = (String) json.get(EMAIL);
-        if (json.containsKey(AVATAR)) m_avatar = Converter.toLong(json.get(AVATAR));
+    public BasicPlayer(final SimpleMap data) {
+        super(data);
+        m_name = data.getStr(NAME);
+        m_email = data.getStr(EMAIL);
+        m_avatar = data.getLong(AVATAR);
     }
 
-    public ObjectNode toObjectNode(Long viewerId) {
+    public ObjectNode toObjectNode(final Long viewerId) {
         ObjectNode ret = super.toObjectNode();
         try {
             ret.put(ID, m_id);

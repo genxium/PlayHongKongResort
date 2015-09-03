@@ -1,10 +1,6 @@
 package models;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import exception.AccessDeniedException;
-import org.json.simple.JSONObject;
-import utilities.Converter;
-import utilities.Loggy;
+import dao.SimpleMap;
 
 public class PermForeignParty {
 
@@ -41,9 +37,9 @@ public class PermForeignParty {
 		m_playerId = playerId;
 	}
 
-	public PermForeignParty(final JSONObject json) {
-		if (json.containsKey(ID))	m_id = (String) json.get(ID);
-		if (json.containsKey(PARTY))	m_party = Converter.toInteger(json.get(PARTY));
-		if (json.containsKey(PLAYER_ID))	m_playerId = Converter.toLong(json.get(PLAYER_ID));
+	public PermForeignParty(final SimpleMap data) {
+		m_id = data.getStr(ID);
+		m_party = data.getInt(PARTY);
+		m_playerId = data.getLong(PLAYER_ID);
 	}
 }

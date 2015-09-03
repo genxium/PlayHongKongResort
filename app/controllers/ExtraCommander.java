@@ -2,13 +2,13 @@ package controllers;
 
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
+import dao.SimpleMap;
 import exception.ActivityNotFoundException;
 import exception.FileIOException;
 import exception.ImageNotFoundException;
 import exception.PlayerNotFoundException;
 import models.*;
 import org.apache.commons.io.FileUtils;
-import org.json.simple.JSONObject;
 import play.mvc.Http.MultipartFormData.FilePart;
 import utilities.Converter;
 import utilities.DataUtils;
@@ -26,11 +26,11 @@ public class ExtraCommander extends DBCommander {
         try {
             String[] names = Activity.QUERY_FIELDS;
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            List<JSONObject> results = builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId).execSelect();
+            List<SimpleMap> results = builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId).execSelect();
             if (results == null || results.size() != 1) throw new ActivityNotFoundException();
-            JSONObject activityJson = results.get(0);
-            Player host = queryPlayer(Converter.toLong(activityJson.get(Activity.HOST_ID)));
-            ActivityDetail activityDetail = new ActivityDetail(activityJson);
+            SimpleMap data = results.get(0);
+            Player host = queryPlayer(data.getLong(Activity.HOST_ID));
+            ActivityDetail activityDetail = new ActivityDetail(data);
             activityDetail.setHost(host);
 
             List<Image> images = queryImages(activityId);
@@ -143,7 +143,7 @@ public class ExtraCommander extends DBCommander {
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             String[] names = {Image.ID, Image.URL};
-            List<JSONObject> records = builder.select(names)
+            List<SimpleMap> records = builder.select(names)
                     .from(Image.TABLE)
                     .where(Image.ID, "=", imageId)
                     .execSelect();
@@ -159,12 +159,12 @@ public class ExtraCommander extends DBCommander {
         List<Image> images = new LinkedList<>();
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            List<JSONObject> records = builder.select(Image.QUERY_FIELDS)
+            List<SimpleMap> records = builder.select(Image.QUERY_FIELDS)
                     .from(Image.TABLE)
                     .where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
                     .where(Image.META_ID, "=", activityId).execSelect();
 
-            for (JSONObject record : records) {
+            for (SimpleMap record : records) {
                 Image image = new Image(record);
                 images.add(image);
             }
@@ -179,12 +179,12 @@ public class ExtraCommander extends DBCommander {
         if (activityIdList == null || activityIdList.isEmpty()) return images;
         try {
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            List<JSONObject> records = builder.select(Image.QUERY_FIELDS)
+            List<SimpleMap> records = builder.select(Image.QUERY_FIELDS)
                     .from(Image.TABLE)
                     .where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
                     .where(Image.META_ID, "IN", activityIdList).execSelect();
 
-            for (JSONObject record : records) {
+            for (SimpleMap record : records) {
                 Image image = new Image(record);
                 images.add(image);
             }

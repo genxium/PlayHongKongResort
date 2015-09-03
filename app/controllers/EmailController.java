@@ -5,12 +5,12 @@ import components.StandardFailureResult;
 import components.StandardSuccessResult;
 import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
+import dao.SimpleMap;
 import exception.DuplicateException;
 import exception.InvalidRequestParamsException;
-import exception.TokenExpiredException;
 import exception.PlayerNotFoundException;
+import exception.TokenExpiredException;
 import models.Player;
-import org.json.simple.JSONObject;
 import play.libs.Json;
 import play.mvc.Content;
 import play.mvc.Http;
@@ -20,6 +20,7 @@ import utilities.General;
 import utilities.Loggy;
 import views.html.email_verification;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,8 +58,8 @@ public class EmailController extends PlayerController {
 		try {
 			if (email == null || !General.validateEmail(email)) throw new InvalidRequestParamsException();
 			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-			List<JSONObject> jsons = builder.select(Player.ID).from(Player.TABLE).where(Player.EMAIL, "=", email).execSelect();
-			if (jsons != null && jsons.size() > 0) throw new DuplicateException();
+			List<SimpleMap> data = builder.select(Player.ID).from(Player.TABLE).where(Player.EMAIL, "=", email).execSelect();
+			if (data != null && data.size() > 0) throw new DuplicateException();
 			return ok(StandardSuccessResult.get());
 		} catch (DuplicateException e) {
 			return ok(StandardFailureResult.get());
@@ -75,11 +76,11 @@ public class EmailController extends PlayerController {
 			if (!General.validateEmail(email)) throw new InvalidRequestParamsException();
 
 			String[] names = Player.QUERY_FILEDS;            EasyPreparedStatementBuilder builderSelect = new EasyPreparedStatementBuilder();
-			List<JSONObject> jsons = builderSelect.select(names).from(Player.TABLE).where(Player.EMAIL, "=", email).execSelect();
+			List<SimpleMap> data = builderSelect.select(names).from(Player.TABLE).where(Player.EMAIL, "=", email).execSelect();
 
-			if (jsons == null || jsons.size() != 1) throw new PlayerNotFoundException();
+			if (data == null || data.size() != 1) throw new PlayerNotFoundException();
 
-			Player player = new Player(jsons.get(0));
+			Player player = new Player(data.get(0));
 
 			EasyPreparedStatementBuilder builderUpdate = new EasyPreparedStatementBuilder();
 			boolean res = builderUpdate.update(Player.TABLE)
@@ -89,10 +90,22 @@ public class EmailController extends PlayerController {
 				.where(Player.EMAIL, "=", email)
 				.where(Player.VERIFICATION_CODE, "=", code).execUpdate();
 
+                        final String protocolPrefix = "http://";
+                        final String host = request().host();
+                        final String path = "/player/email";
+
+                        final Map<String, Object> params = new HashMap<>();
+                        params.put(Player.NAME, player.getName());
+                        params.put(Player.EMAIL, player.getEmail());
+
 			if (res) {
-				return redirect("http://" + request().host() + "/player/email#success?name=" + DataUtils.encodeUtf8(player.getName()) + "&email=" + DataUtils.encodeUtf8(player.getEmail()));
+                                final String hash = "success";
+                                final String url = protocolPrefix + host + path + "#" + hash + "?" + DataUtils.toUrlParams(params);
+				return redirect(url);
 			} else {
-				return redirect("http://" + request().host() + "/player/email#failure?name=" + DataUtils.encodeUtf8(player.getName()) + "&email=" + DataUtils.encodeUtf8(player.getEmail()));
+                                final String hash = "failure";
+                                final String url = protocolPrefix + host + path + "#" + hash + "?" + DataUtils.toUrlParams(params);
+				return redirect(url);
 			}
 		} catch (Exception e) {
 			Loggy.e(TAG, "verify", e);

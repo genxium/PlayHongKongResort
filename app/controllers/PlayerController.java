@@ -7,13 +7,13 @@ import components.StandardSuccessResult;
 import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
+import dao.SimpleMap;
 import exception.*;
 import fixtures.Constants;
 import models.Image;
 import models.Login;
 import models.Player;
 import models.PlayerActivityRelation;
-import org.json.simple.JSONObject;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -175,8 +175,8 @@ public class PlayerController extends Controller {
         try {
             if (name == null) throw new NullPointerException();
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
-            List<JSONObject> playerJsons = builder.select(Player.ID).from(Player.TABLE).where(Player.NAME, "=", name).execSelect();
-            if (playerJsons != null && playerJsons.size() > 0) throw new DuplicateException();
+            List<SimpleMap> data = builder.select(Player.ID).from(Player.TABLE).where(Player.NAME, "=", name).execSelect();
+            if (data != null && data.size() > 0) throw new DuplicateException();
             return ok(StandardSuccessResult.get());
         } catch (DuplicateException e) {
             ok(StandardFailureResult.get());

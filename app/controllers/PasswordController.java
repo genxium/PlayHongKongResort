@@ -93,8 +93,6 @@ public class PasswordController extends PlayerController {
             if (player == null) throw new PlayerNotFoundException();
 
             String passwordDigest = Converter.md5(password + player.getSalt());
-            Loggy.d(TAG, "confirm", password + ", " + passwordDigest);
-
             EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
             builder.update(Player.TABLE)
                     .set(Player.PASSWORD, passwordDigest)

@@ -1,5 +1,6 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -8,23 +9,19 @@ import components.StandardSuccessResult;
 import components.TokenExpiredResult;
 import dao.EasyPreparedStatementBuilder;
 import dao.SQLHelper;
+import dao.SimpleMap;
 import exception.InvalidRequestParamsException;
-import exception.TokenExpiredException;
 import exception.PlayerNotFoundException;
+import exception.TokenExpiredException;
 import models.AbstractMessage;
 import models.Notification;
 import models.Player;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import utilities.Converter;
 import utilities.Loggy;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -98,16 +95,11 @@ public class NotificationController extends Controller {
             Player player = DBCommander.queryPlayer(playerId);
             if (player == null) throw new PlayerNotFoundException();
 
-            List<Long> notificationIdList = new LinkedList<Long>();
-
-            JSONArray bundle = (JSONArray) JSONValue.parse(formData.get(AbstractMessage.BUNDLE)[0]);
-            for (Object obj : bundle) {
-                Long notificationId = Converter.toLong(obj);
-                notificationIdList.add(notificationId);
-            }
+            ObjectMapper mapper = new ObjectMapper();
+            List<Long> notificationIdList = mapper.readValue(formData.get(AbstractMessage.BUNDLE)[0], mapper.getTypeFactory().constructCollectionType(List.class, Long.class));
 
             EasyPreparedStatementBuilder query = new EasyPreparedStatementBuilder();
-            List<JSONObject> results = query.select(Notification.QUERY_FIELDS)
+            List<SimpleMap> results = query.select(Notification.QUERY_FIELDS)
                     .from(Notification.TABLE)
                     .where(Notification.ID, "IN", notificationIdList)
                     .where(Notification.TO, "=", playerId)

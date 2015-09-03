@@ -1,6 +1,5 @@
 package dao;
 
-import org.json.simple.JSONObject;
 import utilities.Loggy;
 
 import java.sql.Connection;
@@ -569,27 +568,27 @@ public class EasyPreparedStatementBuilder {
             boolean hasPrevFields = false;
 
             if (m_updateCols != null) {
-                for (int i = 0; i < m_updateCols.size(); i++) {
-                    if (hasPrevFields) query += ", ";
-                    hasPrevFields = true;
-                    query += ("`" + m_updateCols.get(i) + "`" + "=?");
-                }
+                    for (String col : m_updateCols) {
+                            if (hasPrevFields) query += ", ";
+                            hasPrevFields = true;
+                            query += ("`" + col + "`" + "=?");
+                    }
             }
 
             if (m_increaseCols != null) {
-                for (int i = 0; i < m_increaseCols.size(); i++) {
-                    if (hasPrevFields) query += ", ";
-                    hasPrevFields = true;
-                    query += ("`" + m_increaseCols.get(i) + "`" + "=" + "`" + m_increaseCols.get(i) + "`" + "+?");
-                }
+                    for (String col : m_increaseCols) {
+                            if (hasPrevFields) query += ", ";
+                            hasPrevFields = true;
+                            query += ("`" + col + "`" + "=" + "`" + col + "`" + "+?");
+                    }
             }
 
             if (m_decreaseCols != null) {
-                for (int i = 0; i < m_decreaseCols.size(); i++) {
-                    if (hasPrevFields) query += ", ";
-                    hasPrevFields = true;
-                    query += ("`" + m_decreaseCols.get(i) + "`" + "=" + "`" + m_decreaseCols.get(i) + "`" + "-?");
-                }
+                    for (String col : m_decreaseCols) {
+                            if (hasPrevFields) query += ", ";
+                            hasPrevFields = true;
+                            query += ("`" + col + "`" + "=" + "`" + col + "`" + "-?");
+                    }
             }
 
             query = appendWhere(query);
@@ -637,14 +636,14 @@ public class EasyPreparedStatementBuilder {
         return statement;
     }
 
-    public List<JSONObject> execSelect() {
-        List<JSONObject> ret = new ArrayList<>();
+    public List<SimpleMap> execSelect() {
+        List<SimpleMap> ret = new ArrayList<>();
         try {
             Connection connection = SQLHelper.getConnection();
             PreparedStatement statement = this.toSelect(connection);
             ResultSet rs = statement.executeQuery();
             if (rs != null) {
-                ret = ResultSetUtil.convertToJSON(rs);
+                ret = ResultSetUtil.convertToSimpleMap(rs);
                 rs.close();
             }
             statement.close();

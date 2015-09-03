@@ -1,7 +1,8 @@
 package models;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.json.simple.JSONObject;
+import dao.SimpleMap;
 import utilities.Loggy;
 
 import java.util.regex.Pattern;
@@ -15,11 +16,11 @@ public class Assessment extends AbstractActivityMessage {
     public static final String TABLE = "assessment";
     public static final String ASSESSMENT_ID = "assessment_id";
 
-    public Assessment(JSONObject assessmentJson) {
-        super(assessmentJson);
+    public Assessment(final SimpleMap data) {
+        super(data);
     }
 
-    public ObjectNode toObjectNode(Long viewerId) {
+    public ObjectNode toObjectNode(final Long viewerId) {
         ObjectNode ret = toObjectNode();
         try {
             ret.put(FROM_PLAYER, m_fromPlayer.toObjectNode(viewerId));

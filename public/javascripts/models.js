@@ -39,53 +39,53 @@ function Player(json){
 	else this.mood = "";
 }
 
-function Image(imageJson){
-	this.id = parseInt(imageJson["id"]);
-	this.url = imageJson["url"];
+function Image(json){
+	this.id = parseInt(json["id"]);
+	this.url = json["url"];
 }
 
-function Activity(activityJson) {
-	this.id = parseInt(activityJson["id"]);
-	this.title = activityJson["title"];
-	this.address = activityJson["address"];
-	this.content = activityJson["content"];
-	this.createdTime = parseInt(activityJson["created_time"]);
-	this.applicationDeadline = parseInt(activityJson["application_deadline"]);
+function Activity(json) {
+	this.id = parseInt(json["id"]);
+	this.title = json["title"];
+	this.address = json["address"];
+	this.content = json["content"];
+	this.createdTime = parseInt(json["created_time"]);
+	this.applicationDeadline = parseInt(json["application_deadline"]);
 	this.isDeadlineExpired = function() {
 	    var date = new Date();
 	    var localNow = 1000 * moment().zone(date.getTimezoneOffset()).unix(); 
 	    return localNow > this.applicationDeadline;
 	};
-	this.beginTime = parseInt(activityJson["begin_time"]);
+	this.beginTime = parseInt(json["begin_time"]);
 	this.hasBegun = function() {
 	    var date = new Date();
 	    var localNow = 1000 * moment().zone(date.getTimezoneOffset()).unix(); 
 	    return localNow > this.beginTime;
 	};
 
-	if (activityJson.hasOwnProperty("capacity")) this.capacity = parseInt(activityJson["capacity"]);
-	if (activityJson.hasOwnProperty("num_applied")) this.numApplied = parseInt(activityJson["num_applied"]);
-	if (activityJson.hasOwnProperty("num_selected")) this.numSelected = parseInt(activityJson["num_selected"]);
-	if (activityJson.hasOwnProperty("status")) this.status = parseInt(activityJson["status"]);
+	if (json.hasOwnProperty("capacity")) this.capacity = parseInt(json["capacity"]);
+	if (json.hasOwnProperty("num_applied")) this.numApplied = parseInt(json["num_applied"]);
+	if (json.hasOwnProperty("num_selected")) this.numSelected = parseInt(json["num_selected"]);
+	if (json.hasOwnProperty("status")) this.status = parseInt(json["status"]);
 	this.relation = null;
 	this.containsRelation = function() {
 		return (this.relation != null && this.relation != undefined);	
 	};
-	if (activityJson.hasOwnProperty("relation")) this.relation = parseInt(activityJson["relation"]);
-	if (activityJson.hasOwnProperty("images")) {
+	if (json.hasOwnProperty("relation")) this.relation = parseInt(json["relation"]);
+	if (json.hasOwnProperty("images")) {
 		var images = new Array();
-		var imagesJson = activityJson["images"];
+		var imagesJson = json["images"];
 		for(var key in imagesJson){
-			var imageJson = imagesJson[key];
-			var image = new Image(imageJson);
+			var json = imagesJson[key];
+			var image = new Image(json);
 			images.push(image);
 		}
 		this.images = images;
 	}
 
-	if (activityJson.hasOwnProperty("applied_participants")) {
+	if (json.hasOwnProperty("applied_participants")) {
 		var participants = new Array();
-		var participantsJson = activityJson["applied_participants"];
+		var participantsJson = json["applied_participants"];
 		for (var key in participantsJson){
 			var participantJson = participantsJson[key];
 			var participant = new Player(participantJson);
@@ -94,9 +94,9 @@ function Activity(activityJson) {
 		this.appliedParticipants = participants;
 	}
 
-	if (activityJson.hasOwnProperty("selected_participants")) {
+	if (json.hasOwnProperty("selected_participants")) {
 		var participants = new Array();
-		var participantsJson = activityJson["selected_participants"];
+		var participantsJson = json["selected_participants"];
 		for (var key in participantsJson){
 			var participantJson = participantsJson[key];
 			var participant = new Player(participantJson);
@@ -105,9 +105,9 @@ function Activity(activityJson) {
 		this.selectedParticipants = participants;
 	}
 
-	if (activityJson.hasOwnProperty("present_participants")) {
+	if (json.hasOwnProperty("present_participants")) {
 		var participants = new Array();
-		var participantsJson = activityJson["present_participants"];
+		var participantsJson = json["present_participants"];
 		for (var key in participantsJson){
 			var participantJson = participantsJson[key];
 			var participant = new Player(participantJson);
@@ -116,70 +116,70 @@ function Activity(activityJson) {
 		this.presentParticipants = participants;
 	}
 
-	if (activityJson.hasOwnProperty("host")) {
-		var hostJson = activityJson["host"];
+	if (json.hasOwnProperty("host")) {
+		var hostJson = json["host"];
 		var host = new Player(hostJson);
 		this.host = host;
 	}
 
-	if (activityJson.hasOwnProperty("viewer")) {
-		var viewerJson = activityJson["viewer"];
+	if (json.hasOwnProperty("viewer")) {
+		var viewerJson = json["viewer"];
 		var viewer = new Player(viewerJson);
 		this.viewer = viewer;
 	}
 	
-	if (activityJson.hasOwnProperty("priority")) {
-		this.priority = parseInt(activityJson["priority"]);
+	if (json.hasOwnProperty("priority")) {
+		this.priority = parseInt(json["priority"]);
 	}
 
-	if (activityJson.hasOwnProperty("order_mask")) {
-		this.orderMask = parseInt(activityJson["order_mask"]);
+	if (json.hasOwnProperty("order_mask")) {
+		this.orderMask = parseInt(json["order_mask"]);
 	}
 }
 
-function Comment(commentJson) {
+function Comment(json) {
 
-        if (commentJson.hasOwnProperty("id")) this.id = parseInt(commentJson["id"]);
-        if (commentJson.hasOwnProperty("content")) this.content = commentJson["content"];
+        if (json.hasOwnProperty("id")) this.id = parseInt(json["id"]);
+        if (json.hasOwnProperty("content")) this.content = json["content"];
 
-        if (commentJson.hasOwnProperty("activity_id")) this.activityId = parseInt(commentJson["activity_id"]);
-        if (commentJson.hasOwnProperty("parent_id")) this.parentId = parseInt(commentJson["parent_id"]);
-        if (commentJson.hasOwnProperty("predecessor_id")) this.predecessorId = parseInt(commentJson["predecessor_id"]);
-        if (commentJson.hasOwnProperty("generated_time")) this.generatedTime = parseInt(commentJson["generated_time"]);
-        if (commentJson.hasOwnProperty("num_children")) this.numChildren = parseInt(commentJson["num_children"]);
+        if (json.hasOwnProperty("activity_id")) this.activityId = parseInt(json["activity_id"]);
+        if (json.hasOwnProperty("parent_id")) this.parentId = parseInt(json["parent_id"]);
+        if (json.hasOwnProperty("predecessor_id")) this.predecessorId = parseInt(json["predecessor_id"]);
+        if (json.hasOwnProperty("generated_time")) this.generatedTime = parseInt(json["generated_time"]);
+        if (json.hasOwnProperty("num_children")) this.numChildren = parseInt(json["num_children"]);
 
-        if (commentJson.hasOwnProperty("from")) this.from = parseInt(commentJson["from"]);
-        if (commentJson.hasOwnProperty("from_player")) this.fromPlayer = new Player(commentJson["from_player"]);
+        if (json.hasOwnProperty("from")) this.from = parseInt(json["from"]);
+        if (json.hasOwnProperty("from_player")) this.fromPlayer = new Player(json["from_player"]);
 
-        if (commentJson.hasOwnProperty("to")) this.to = parseInt(commentJson["to"]);
-        if (commentJson.hasOwnProperty("to_player")) this.toPlayer = new Player(commentJson["to_player"]);
+        if (json.hasOwnProperty("to")) this.to = parseInt(json["to"]);
+        if (json.hasOwnProperty("to_player")) this.toPlayer = new Player(json["to_player"]);
 }
 
-function Assessment(assessmentJson) {
+function Assessment(json) {
 
-	if (assessmentJson.hasOwnProperty("content")) this.content = assessmentJson["content"];
-	if (assessmentJson.hasOwnProperty("activity_id")) this.activityId = parseInt(assessmentJson["activity_id"]);
+	if (json.hasOwnProperty("content")) this.content = json["content"];
+	if (json.hasOwnProperty("activity_id")) this.activityId = parseInt(json["activity_id"]);
 
-	if (assessmentJson.hasOwnProperty("from")) this.from = parseInt(assessmentJson["from"]);
-	if (assessmentJson.hasOwnProperty("to")) this.to = parseInt(assessmentJson["to"]);
-	if (assessmentJson.hasOwnProperty("from_player")) this.fromPlayer = new Player(assessmentJson["from_player"]);
-	if (assessmentJson.hasOwnProperty("to_player")) this.toPlayer = new Player(assessmentJson["to_player"]);
+	if (json.hasOwnProperty("from")) this.from = parseInt(json["from"]);
+	if (json.hasOwnProperty("to")) this.to = parseInt(json["to"]);
+	if (json.hasOwnProperty("from_player")) this.fromPlayer = new Player(json["from_player"]);
+	if (json.hasOwnProperty("to_player")) this.toPlayer = new Player(json["to_player"]);
 
 }
 
-function Notification(notificationJson) {
+function Notification(json) {
 
-	if (notificationJson.hasOwnProperty("id")) this.id = parseInt(notificationJson["id"]);
-	if (notificationJson.hasOwnProperty("is_read")) this.isRead = parseInt(notificationJson["is_read"]);
-	if (notificationJson.hasOwnProperty("from")) this.from = parseInt(notificationJson["from"]);
-	if (notificationJson.hasOwnProperty("to")) this.to = parseInt(notificationJson["to"]);
-	if (notificationJson.hasOwnProperty("content")) this.content = notificationJson["content"];
-	if (notificationJson.hasOwnProperty("activity_id")) this.activityId = parseInt(notificationJson["activity_id"]);
-	if (notificationJson.hasOwnProperty("comment_id")) this.commentId = parseInt(notificationJson["comment_id"]);
-	if (notificationJson.hasOwnProperty("assessment_id")) this.assessmentId = parseInt(notificationJson["assessment_id"]);
-	if (notificationJson.hasOwnProperty("cmd")) this.cmd = parseInt(notificationJson["cmd"]);
-	if (notificationJson.hasOwnProperty("relation")) this.relation = parseInt(notificationJson["relation"]);
-	if (notificationJson.hasOwnProperty("status")) this.status = parseInt(notificationJson["status"]);
-	if (notificationJson.hasOwnProperty("generated_time")) this.generatedTime = parseInt(notificationJson["generated_time"]);
+	if (json.hasOwnProperty("id")) this.id = parseInt(json["id"]);
+	if (json.hasOwnProperty("is_read")) this.isRead = parseInt(json["is_read"]);
+	if (json.hasOwnProperty("from")) this.from = parseInt(json["from"]);
+	if (json.hasOwnProperty("to")) this.to = parseInt(json["to"]);
+	if (json.hasOwnProperty("content")) this.content = json["content"];
+	if (json.hasOwnProperty("activity_id")) this.activityId = parseInt(json["activity_id"]);
+	if (json.hasOwnProperty("comment_id")) this.commentId = parseInt(json["comment_id"]);
+	if (json.hasOwnProperty("assessment_id")) this.assessmentId = parseInt(json["assessment_id"]);
+	if (json.hasOwnProperty("cmd")) this.cmd = parseInt(json["cmd"]);
+	if (json.hasOwnProperty("relation")) this.relation = parseInt(json["relation"]);
+	if (json.hasOwnProperty("status")) this.status = parseInt(json["status"]);
+	if (json.hasOwnProperty("generated_time")) this.generatedTime = parseInt(json["generated_time"]);
 
 } 

@@ -10,10 +10,10 @@ var g_sectionAssessmentEditors = null;
 var g_sectionAssessmentButtons = null;
 
 function createAssessment(content, to) {
-	var assessmentJson = {};
-	assessmentJson["content"] = content;
-	assessmentJson["to"] = to;
-	return new Assessment(assessmentJson);
+	var json = {};
+	json["content"] = content;
+	json["to"] = to;
+	return new Assessment(json);
 }
 
 function SingleAssessmentEditor(){
@@ -90,8 +90,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 	var btnUncheckAll = $("<button>", {
 	    text: TITLES["uncheck_all"],
 	    "class": "gray assessment-button"
-	}).appendTo(row);
-	btnUncheckAll.click(batchEditor, function(evt){
+	}).appendTo(row).click(batchEditor, function(evt){
 		evt.preventDefault();
 		for(var i = 0; i < evt.data.editors.length; i++) {
 			var editor = evt.data.editors[i];
@@ -102,9 +101,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 	g_btnSubmit = $("<button>", {
 		text: TITLES["submit"],
 		"class": "assessment-button positive-button"
-	}).appendTo(row);
-
-	g_btnSubmit.click({editor: batchEditor, activity: activity}, function(evt){
+	}).appendTo(row).click({editor: batchEditor, activity: activity}, function(evt){
 		evt.preventDefault();
 		if (g_loggedInPlayer == null) return;
 		var aBatchEditor = evt.data.editor;
@@ -154,12 +151,12 @@ function generateAssessmentButtons(par, activity, batchEditor){
 function generateBatchAssessmentEditor(par, activity, onRefresh){
 	par.empty();
 
-	if(g_onRefresh == null)	g_onRefresh = onRefresh;
+	if (g_onRefresh == null)	g_onRefresh = onRefresh;
 
 	g_lockedCount = 0; // clear lock count on batch editor generated
 	g_batchAssessmentEditor = new BatchAssessmentEditor();
 
-	if(activity == null) return g_batchAssessmentEditor;
+	if (activity == null) return g_batchAssessmentEditor;
 	var editors = [];
 	var sectionAll = $('<div>', {
 		"class": "assessment-container"
@@ -192,7 +189,7 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 		style: "margin-top: 5pt"
 	}).appendTo(sectionAll);
 
-	if( g_loggedInPlayer != null && ( ((activity.relation & present) > 0) || (activity.containsRelation() == false) ) ) {
+	if (g_loggedInPlayer != null && ( ((activity.relation & present) > 0) || (activity.containsRelation() == false) ) ) {
 		/* 
  		 * 	show list for logged-in players
 		 */
@@ -301,11 +298,11 @@ function generateUnassessedView(row, singleEditor, batchEditor) {
 		if(!checked) {
 			enableField(aInput);
 			--g_lockedCount;
-			if(g_btnSubmit != null) disableField(g_btnSubmit);
+			if (g_btnSubmit != null) disableField(g_btnSubmit);
 		} else {
 			disableField(aInput);
 			++g_lockedCount;
-			if(g_lockedCount >= (aBatchEditor.editors.length - 1) && g_btnSubmit != null) enableField(g_btnSubmit);
+			if (g_lockedCount >= (aBatchEditor.editors.length - 1) && g_btnSubmit != null) enableField(g_btnSubmit);
 		}
 	});
 	singleEditor.lock = lock;

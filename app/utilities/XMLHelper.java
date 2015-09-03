@@ -1,5 +1,6 @@
 package utilities;
 
+import controllers.ForeignPartyController;
 import dao.SQLHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -9,8 +10,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
-import controllers.ForeignPartyController;
 
 public class XMLHelper {
 
