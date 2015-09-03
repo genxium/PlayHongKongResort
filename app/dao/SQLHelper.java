@@ -20,7 +20,7 @@ public class SQLHelper {
 
     public static final String TAG = SQLHelper.class.getName();
 
-    protected static DataSource s_dataSource = null;
+    private static DataSource s_dataSource = null;
 
     public static String DATABASE_NAME = "DatabaseName";
     public static String HOST = "Host";
@@ -47,7 +47,7 @@ public class SQLHelper {
     private static String s_charsetEncoding = null;
     private static String s_useUnicode = null;
 
-    public static boolean readMySQLConfig() {
+    private static boolean readMySQLConfig() {
         boolean ret = false;
         try {
             String fullPath = Play.application().path() + "/conf/";
@@ -70,7 +70,7 @@ public class SQLHelper {
         return ret;
     }
 
-    public static String getConnectionURI() {
+    private static String getConnectionURI() {
         String ret = null;
         try {
             if (!readMySQLConfig()) return null;
@@ -80,7 +80,6 @@ public class SQLHelper {
             Loggy.e(TAG, "getConnectionURI", e);
         }
         return ret;
-
     }
 
     public static DataSource setupDataSource(String connectURI) {

@@ -13,54 +13,72 @@ import java.util.Map;
 
 public class XMLHelper {
 
-    public static Map<String, String> readDatabaseConfig(String fileName) {
+        public static final String TAG = XMLHelper.class.getName();
 
-        Map<String, String> ret = null;
+        public static Map<String, String> readDatabaseConfig(final String filepath) {
 
-        try {
+                Map<String, String> ret = null;
 
-            File fXmlFile = new File(fileName);
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fXmlFile);
+                try {
+                        File fXmlFile = new File(filepath);
+                        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                        Document doc = dBuilder.parse(fXmlFile);
 
-            Element root = doc.getDocumentElement();
+                        Element root = doc.getDocumentElement();
 
-            ret = new HashMap<String, String>();
+                        ret = new HashMap<>();
 
-            ret.put(SQLHelper.DATABASE_NAME, root.getElementsByTagName(SQLHelper.DATABASE_NAME).item(0).getTextContent());
-            ret.put(SQLHelper.HOST, root.getElementsByTagName(SQLHelper.HOST).item(0).getTextContent());
-            ret.put(SQLHelper.PORT, root.getElementsByTagName(SQLHelper.PORT).item(0).getTextContent());
-            ret.put(SQLHelper.USER, root.getElementsByTagName(SQLHelper.USER).item(0).getTextContent());
-            ret.put(SQLHelper.PASSWORD, root.getElementsByTagName(SQLHelper.PASSWORD).item(0).getTextContent());
+                        ret.put(SQLHelper.DATABASE_NAME, root.getElementsByTagName(SQLHelper.DATABASE_NAME).item(0).getTextContent());
+                        ret.put(SQLHelper.HOST, root.getElementsByTagName(SQLHelper.HOST).item(0).getTextContent());
+                        ret.put(SQLHelper.PORT, root.getElementsByTagName(SQLHelper.PORT).item(0).getTextContent());
+                        ret.put(SQLHelper.USER, root.getElementsByTagName(SQLHelper.USER).item(0).getTextContent());
+                        ret.put(SQLHelper.PASSWORD, root.getElementsByTagName(SQLHelper.PASSWORD).item(0).getTextContent());
 
-        } catch (Exception e) {
-            e.printStackTrace();
+                } catch (Exception e) {
+                        Loggy.e(TAG, "readDatabaseConfig", e);
+                }
+                return ret;
         }
-        return ret;
-    }
 
-    public static Map<String, String> readForeignPartyConfig(String fileName) {
+        public static Map<String, String> readForeignPartyConfig(final String filepath) {
 
-        Map<String, String> ret = null;
+                Map<String, String> ret = null;
 
-        try {
+                try {
+                        File fXmlFile = new File(filepath);
+                        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                        Document doc = dBuilder.parse(fXmlFile);
 
-            File fXmlFile = new File(fileName);
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fXmlFile);
+                        Element root = doc.getDocumentElement();
 
-            Element root = doc.getDocumentElement();
-
-            ret = new HashMap<String, String>();
-
-            ret.put(ForeignPartyController.APP_ID, root.getElementsByTagName(ForeignPartyController.APP_ID).item(0).getTextContent());
-            ret.put(ForeignPartyController.APP_KEY, root.getElementsByTagName(ForeignPartyController.APP_KEY).item(0).getTextContent());
-
-        } catch (Exception e) {
-            e.printStackTrace();
+                        ret = new HashMap<>();
+                        ret.put(ForeignPartyController.APP_ID, root.getElementsByTagName(ForeignPartyController.APP_ID).item(0).getTextContent());
+                        ret.put(ForeignPartyController.APP_KEY, root.getElementsByTagName(ForeignPartyController.APP_KEY).item(0).getTextContent());
+                } catch (Exception e) {
+                        Loggy.e(TAG, "readForeignPartyConfig", e);
+                }
+                return ret;
         }
-        return ret;
-    }
-};
+
+        public static Map<String, String> readCdnConfig(final String filepath) {
+                Map<String, String> ret = null;
+                try {
+                        File fXmlFile = new File(filepath);
+                        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                        Document doc = dBuilder.parse(fXmlFile);
+
+                        Element root = doc.getDocumentElement();
+
+                        ret = new HashMap<>();
+                        ret.put(CDNHelper.APP_ID, root.getElementsByTagName(ForeignPartyController.APP_ID).item(0).getTextContent());
+                        ret.put(CDNHelper.APP_KEY, root.getElementsByTagName(ForeignPartyController.APP_KEY).item(0).getTextContent());
+                        ret.put(CDNHelper.BUCKET, root.getElementsByTagName(ForeignPartyController.APP_KEY).item(0).getTextContent());
+                } catch (Exception e) {
+                        Loggy.e(TAG, "readForeignPartyConfig", e);
+                }
+                return ret;
+        }
+}

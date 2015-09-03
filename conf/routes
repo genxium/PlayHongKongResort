@@ -70,6 +70,9 @@ POST /notification/delete controllers.NotificationController.delete()
 # Captcha
 GET /captcha controllers.Application.captcha(sid: String ?=null)
 
+# Image CDN
+POST /image/cdn/qiniu/uptoken controllers.ImageController.qiniuUptoken()
+
 # Play websocket test
 GET /ws controllers.Websocket.connect(token: String ?=null)
 

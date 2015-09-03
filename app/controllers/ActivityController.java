@@ -369,7 +369,7 @@ public class ActivityController extends Controller {
                         Map<String, String[]> formData = body.asFormUrlEncoded();
 
                         String token = formData.get(Player.TOKEN)[0];
-                        Integer activityId = Integer.valueOf(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
+                        Integer activityId = Converter.toInteger(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
 
                         Long playerId = DBCommander.queryPlayerId(token);
                         if (playerId == null) throw new PlayerNotFoundException();
@@ -397,12 +397,10 @@ public class ActivityController extends Controller {
 
         public static Result delete() {
                 try {
-                        Map<String, String[]> formData = request().body().asFormUrlEncoded();
-                        String[] ids = formData.get(PlayerActivityRelation.ACTIVITY_ID);
-                        String[] tokens = formData.get(Player.TOKEN);
+                        final Map<String, String[]> formData = request().body().asFormUrlEncoded();
 
-                        Long activityId = Long.valueOf(ids[0]);
-                        String token = tokens[0];
+                        final Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID));
+                        String token = formData.get(Player.TOKEN)[0];
 
                         Long playerId = DBCommander.queryPlayerId(token);
                         if (playerId == null) throw new PlayerNotFoundException();
@@ -557,16 +555,21 @@ public class ActivityController extends Controller {
 
         public static Result mark() {
                 try {
-                        Map<String, String[]> formData = request().body().asFormUrlEncoded();
-                        Integer activityId = Integer.parseInt(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
-                        String token = formData.get(Player.TOKEN)[0];
+                        final Map<String, String[]> formData = request().body().asFormUrlEncoded();
+                        final Integer activityId = Converter.toInteger(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
+
+                        final String token = formData.get(Player.TOKEN)[0];
                         if (token == null) throw new NullPointerException();
-                        Integer relation = Converter.toInteger(formData.get(PlayerActivityRelation.RELATION)[0]);
-                        Long playerId = DBCommander.queryPlayerId(token);
+
+                        final Integer relation = Converter.toInteger(formData.get(PlayerActivityRelation.RELATION)[0]);
+                        if (relation == null) throw new NullPointerException();
+
+                        final Long playerId = DBCommander.queryPlayerId(token);
                         if (playerId == null) throw new PlayerNotFoundException();
 
                         Activity activity = DBCommander.queryActivity(activityId);
                         if (activity == null) throw new ActivityNotFoundException();
+
                         int originalRelation = DBCommander.isActivityMarkable(playerId, activity, relation);
                         if (originalRelation == PlayerActivityRelation.INVALID) throw new InvalidPlayerActivityRelationException();
 
@@ -574,7 +577,7 @@ public class ActivityController extends Controller {
 
                         String[] names = {PlayerActivityRelation.RELATION};
                         Object[] values = {newRelation};
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        final EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
 
                         String[] whereCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.PLAYER_ID};
                         String[] whereOps = {"=", "="};
@@ -583,7 +586,7 @@ public class ActivityController extends Controller {
 
                         if (!builder.execUpdate()) throw new NullPointerException();
 
-                        ObjectNode ret = Json.newObject();
+                        final ObjectNode ret = Json.newObject();
                         ret.put(PlayerActivityRelation.RELATION, newRelation);
                         return ok(ret);
                 } catch (TokenExpiredException e) {
