@@ -141,11 +141,11 @@ function ActivityEditor() {
 
 		var onChange = function(evt) {
 			evt.preventDefault();
-					if (g_activityEditor == null) return;
-					if (countImages(g_activityEditor) >= g_imagesLimit) {
-						alert(ALERTS["image_selection_limit_exceeded"].format(g_imagesLimit));	
-						return;
-					}
+			if (g_activityEditor == null) return;
+			if (countImages(g_activityEditor) >= g_imagesLimit) {
+				alert(ALERTS["image_selection_limit_exceeded"].format(g_imagesLimit));	
+				return;
+			}
 			g_activityEditor.setSavable();
 			g_activityEditor.setNonSubmittable();
 			previewImage(newImagesRow, g_activityEditor);
@@ -558,6 +558,8 @@ function previewImage(par, editor) {
 
 			var offset = Object.keys(editor.newImageFiles).length;
 			editor.newImageFiles[key] = newImage; // add new image to file map
+			
+			// TODO: refactor this part by ImageRow and ImageNode	
 			var node = $('<div>', {
 				"class": "preview-container left"
 			}).appendTo(par);
@@ -572,11 +574,7 @@ function previewImage(par, editor) {
 			var btnDelete = $("<button>", {
 				text: TITLES["delete"],
 				"class": "image-delete positive-button"
-			}).appendTo(node);
-			
-			editor.explorerTrigger.shift(+1, g_wImageCell);
-			
-			btnDelete.click(function(evt){
+			}).appendTo(node).click(function(evt){
 				evt.preventDefault();
 				editor.setSavable();
 				editor.setNonSubmittable();
@@ -593,6 +591,9 @@ function previewImage(par, editor) {
 				}
 				editor.explorerTrigger.shift(-1, g_wImageCell);
 			});
+
+			editor.explorerTrigger.shift(+1, g_wImageCell);
+			
         }
 
         reader.readAsDataURL(newImage);

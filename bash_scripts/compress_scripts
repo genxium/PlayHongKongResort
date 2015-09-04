@@ -11,21 +11,21 @@ PLAYER=$PREFIX/player
 HOMEPAGE=$PREFIX/homepage
 WS=$PREFIX/ws
 TARGET=$PREFIX/home.min.js
-cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.js $PREFIX/animations.js $PREFIX/models.js $PREFIX/participant.js > $TARGET
+cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.js $PREFIX/models.js $PREFIX/widgets.js $PREFIX/participant.js > $TARGET
 cat $COMMENT/viewer.js $COMMENT/editor.js >> $TARGET
 cat $ASSESSMENT/editor.js $ASSESSMENT/viewer.js >> $TARGET
 cat $PREFIX/notification.js >> $TARGET
 cat $PREFIX/activity/functions.js $PREFIX/activity/editor.js $PREFIX/activity/detail.js >> $TARGET
 cat $PREFIX/profile.js >> $TARGET
 cat $PLAYER/register.js $PLAYER/login.js >> $TARGET
-cat $PREFIX/topbar.js $PREFIX/footer.js $PREFIX/widgets.js >> $TARGET
+cat $PREFIX/topbar.js $PREFIX/footer.js >> $TARGET
 cat $WS/websocket.js >> $TARGET
 cat $HOMEPAGE/init.js >> $TARGET
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.js$:.js' $TARGET 
 
 ADMIN=$PREFIX/admin
 TARGET=$PREFIX/admin.min.js
-cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.js $PREFIX/animations.js $PREFIX/models.js $PREFIX/participant.js > $TARGET
+cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.js $PREFIX/models.js $PREFIX/widgets.js $PREFIX/participant.js > $TARGET
 cat $COMMENT/viewer.js $COMMENT/editor.js >> $TARGET
 cat $ASSESSMENT/editor.js $ASSESSMENT/viewer.js >> $TARGET
 cat $PREFIX/notification.js >> $TARGET
@@ -38,18 +38,18 @@ cat $ADMIN/init.js >> $TARGET
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.js$:.js' $TARGET 
 
 TARGET=$PREFIX/email_verification.min.js
-cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.js $PREFIX/animations.js $PREFIX/models.js $PREFIX/participant.js > $TARGET
+cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.js $PREFIX/models.js $PREFIX/widgets.js $PREFIX/participant.js > $TARGET
 cat $PLAYER/email_verification.js >> $TARGET
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.js$:.js' $TARGET 
 
 TARGET=$PREFIX/password_index.min.js
-cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.js $PREFIX/animations.js $PREFIX/models.js $PREFIX/participant.js > $TARGET
+cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.js $PREFIX/models.js $PREFIX/widgets.js $PREFIX/participant.js > $TARGET
 cat $PREFIX/topbar.js $PREFIX/footer.js >> $TARGET
 cat $PLAYER/password_index.js >> $TARGET
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.js$:.js' $TARGET 
 
 TARGET=$PREFIX/password_reset.min.js
-cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.js $PREFIX/animations.js $PREFIX/models.js $PREFIX/participant.js > $TARGET
+cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.js $PREFIX/models.js $PREFIX/widgets.js $PREFIX/participant.js > $TARGET
 cat $PLAYER/password_reset.js >> $TARGET
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.js$:.js' $TARGET 
 

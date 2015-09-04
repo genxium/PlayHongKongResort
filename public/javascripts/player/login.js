@@ -129,10 +129,6 @@ function PostLoginMenu(bubble, dropdownMenu, onLoginSuccess, onLoginError, onLog
 }
 
 function NameCompletionForm() {
-
-	this.container = null;
-	this.dialog = null;
-
 	this.name = null;
 	this.nameCheck = null;
 	this.email = null;
@@ -142,9 +138,7 @@ function NameCompletionForm() {
 	this.onSuccess = null;
 	this.onError = null;
 
-	this.refresh = function() {
-			this.content.empty();
-		
+	this.composeContent = function(data) {
 			var title = $('<div>', {
 				'class':	"title-alpha first-foreign-party-registration-title",
 				text: TITLES['first_foreign_party_registration']
@@ -322,27 +316,10 @@ function NameCompletionForm() {
 			var widget = evt.data;
 			widget.hide();
 		});
-	};
-
-	this.appendTo = function(par) {
-		// DOM elements
-		this.container = $("<div class='modal fade activity-editor' data-keyboard='false' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='create' aria-hidden='true'>").appendTo(par);
-		this.dialog = $("<div class='modal-dialog modal-lg'>").appendTo(this.container);
-		this.content= $("<div class='modal-content'>").appendTo(this.dialog);
-	};
-
-	this.show = function() {
-		this.container.modal("show");
-	};
-
-	this.hide = function() {
-		this.container.modal("hide");
-	};
-
-	this.remove = function() {
-		this.container.remove();
-	};
+	}
 }
+
+NameCompletionForm.inherits(BaseModalWidget);
 
 function initNameCompletionForm(par) {
 	g_nameCompletionForm = new NameCompletionForm();

@@ -1,4 +1,143 @@
 /**
+ * BaseWidget
+ * */
+
+function BaseWidget() {
+	this.content = null;
+		
+	this.refresh = function(data) {
+		if (this.content == null) return;
+		this.content.empty();
+		// method variable 'composeContent(data)' should be implemented by subclasses 
+		this.composeContent(data);
+	};
+
+	this.appendTo = function(par) {
+		this.content= $('<div>').appendTo(par);
+	};	
+
+	this.show = function() {
+		this.content.show();
+	};
+
+	this.hide = function() {
+		this.content.hide();
+	};
+
+	this.remove = function() {
+		this.content.remove();
+	};
+}
+
+/**
+ * BaseModalWidget 
+ */
+
+function BaseModalWidget() {
+	this.container = null;
+	this.dialog = null;
+}
+
+BaseModalWidget.inherits(BaseWidget);
+BaseModalWidget.method('appendTo', function(par) {
+		this.container = $("<div class='modal fade activity-editor' data-keyboard='false' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='create' aria-hidden='true'>").appendTo(par);
+		this.dialog = $("<div class='modal-dialog modal-lg'>").appendTo(this.container);
+		this.content= $("<div class='modal-content'>").appendTo(this.dialog);
+});
+BaseModalWidget.method('show', function() {
+		this.container.modal("show");
+});
+BaseModalWidget.method('hide', function() {
+		this.container.modal("hide");
+});
+BaseModalWidget.method('remove', function() {
+		this.container.remove();
+});
+
+/**
+ * ImageNode
+ * */
+
+var SLOT_IDLE = 0;
+var SLOT_AJAX_PENDING = 0;
+var SLOT_UPLOADING = 1;
+
+function ImageNode(remoteName) {
+	this.state = SLOT_IDLE; 
+	this.remoteName = remoteName; 
+	this.requestUptoken = function(onSuccess, onError) {
+		// async process
+		var token = $.cookie(g_keyToken);				
+		if (token == null) return;
+		if (remoteName == null) return;
+	};
+	this.requestDel = function(onSuccess, onError) {
+		// async process
+		var token = $.cookie(g_keyToken);				
+		if (token == null) return;
+		if (remoteName == null) return;
+		if (this.state != SLOT_IDLE) return;
+			
+		$.ajax({
+			type: 'POST',
+			url: '/image/cdn/qiniu/delete',
+			data: params,
+			success: function(data, status, xhr) {
+				
+			},
+			error: function(xhr, status, err) {
+				
+			}
+		})
+	};
+
+	this.composeContent = function(data) {
+		
+		var nodekey = evt.data.key; 
+		var editor = evt.data.editor; // profile or activity editor
+		var fileref = evt.data.fileref; // from 'e.target.result' of reader(FileReader) 'onload' event 'e' invoked by 'reader.readAsDataURL(<file>)' 
+
+		this.content = $('<div>', {
+			"class": "preview-container left"
+		});
+
+		var imgHelper = $('<span>', {
+			"class": "image-helper"
+		}).appendTo(this.content);
+
+		var img = $('<img>', {
+			src: fileref 
+		}).appendTo(this.content);
+
+		var btnDelete = $("<button>", {
+			text: TITLES["delete"],
+			"class": "image-delete positive-button"
+		}).appendTo(this.content).click(function(evt){
+			evt.preventDefault();
+			editor.setSavable();
+			editor.setNonSubmittable();
+
+			if(!editor.newImageNodes.hasOwnProperty(key)) return;
+			var thatNode = editor.newImageNodes[nodekey];
+			thatNode.requestDel();
+			thatNode.remove();
+			delete editor.newImageNodes[key];
+
+			for(var otherKey in editor.newImageNodes) {
+				if(otherKey < key) continue;
+				var otherNode = editor.newImageNodes[otherKey];	
+				var offset = getOffset(otherNode);
+				setOffset(otherNode, offset.left - g_wImageCell, null);
+			}
+			editor.explorerTrigger.shift(-1, g_wImageCell);
+		});
+
+	};
+}
+
+ImageNode.inherits(BaseWidget);
+
+/**
  * AjaxButton
  * */
 
