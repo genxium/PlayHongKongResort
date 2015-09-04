@@ -9,6 +9,7 @@ public class CDNHelper {
         public static final Integer QINIU = 1;
 
         public static String UPTOKEN = "uptoken";
+        public static String REMOTE_NAME = "remote_name";
 
         public static String APP_ID = "AppId";
         public static String APP_KEY = "AppKey";

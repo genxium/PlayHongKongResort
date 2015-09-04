@@ -6,17 +6,17 @@ var absent = (1<<3);
 var assessed = (1<<4);
 var hosted = (1<<5);
 
-function Player(json){
-	this.id = parseInt(json["id"]);
-	if (json.hasOwnProperty("email"))	this.email = json["email"];
-	this.name = json["name"];
-	this.avatar =  (json.hasOwnProperty("avatar") ? json["avatar"] : "/assets/icons/anonymous.png");
-	if (json.hasOwnProperty("unread_count"))	this.unreadCount = parseInt(json["unread_count"]);
+function Player(data){
+	this.id = parseInt(data["id"]);
+	if (data.hasOwnProperty("email"))	this.email = data["email"];
+	this.name = data["name"];
+	this.avatar =  (data.hasOwnProperty("avatar") ? data["avatar"] : "/assets/icons/anonymous.png");
+	if (data.hasOwnProperty("unread_count"))	this.unreadCount = parseInt(data["unread_count"]);
 	this.hasAvatar = function() {
 		return !(!this.avatar);
 	};
-	if (json.hasOwnProperty("group_id")) this.groupId = parseInt(json["group_id"]);
-	if (json.hasOwnProperty("authentication_status")) this.authenticationStatus = parseInt(json["authentication_status"]);
+	if (data.hasOwnProperty("group_id")) this.groupId = parseInt(data["group_id"]);
+	if (data.hasOwnProperty("authentication_status")) this.authenticationStatus = parseInt(data["authentication_status"]);
 
 	this.isVisitor = function() {
 	    return (!this.groupId || this.groupId == 0);
@@ -29,63 +29,63 @@ function Player(json){
 		return (!(!this.authenticationStatus) && ((this.authenticationStatus & 1) > 0));
 	};
 
-	if (json.hasOwnProperty("age")) this.age = json["age"];
+	if (data.hasOwnProperty("age")) this.age = data["age"];
 	else this.age = "";
 
-	if (json.hasOwnProperty("gender")) this.gender = json["gender"];
+	if (data.hasOwnProperty("gender")) this.gender = data["gender"];
 	else this.gender = "";
 
-	if (json.hasOwnProperty("mood")) this.mood = json["mood"];
+	if (data.hasOwnProperty("mood")) this.mood = data["mood"];
 	else this.mood = "";
 }
 
-function Image(json){
-	this.id = parseInt(json["id"]);
-	this.url = json["url"];
+function Image(data){
+	this.id = parseInt(data["id"]);
+	this.url = data["url"];
 }
 
-function Activity(json) {
-	this.id = parseInt(json["id"]);
-	this.title = json["title"];
-	this.address = json["address"];
-	this.content = json["content"];
-	this.createdTime = parseInt(json["created_time"]);
-	this.applicationDeadline = parseInt(json["application_deadline"]);
+function Activity(data) {
+	this.id = parseInt(data["id"]);
+	this.title = data["title"];
+	this.address = data["address"];
+	this.content = data["content"];
+	this.createdTime = parseInt(data["created_time"]);
+	this.applicationDeadline = parseInt(data["application_deadline"]);
 	this.isDeadlineExpired = function() {
 	    var date = new Date();
 	    var localNow = 1000 * moment().zone(date.getTimezoneOffset()).unix(); 
 	    return localNow > this.applicationDeadline;
 	};
-	this.beginTime = parseInt(json["begin_time"]);
+	this.beginTime = parseInt(data["begin_time"]);
 	this.hasBegun = function() {
 	    var date = new Date();
 	    var localNow = 1000 * moment().zone(date.getTimezoneOffset()).unix(); 
 	    return localNow > this.beginTime;
 	};
 
-	if (json.hasOwnProperty("capacity")) this.capacity = parseInt(json["capacity"]);
-	if (json.hasOwnProperty("num_applied")) this.numApplied = parseInt(json["num_applied"]);
-	if (json.hasOwnProperty("num_selected")) this.numSelected = parseInt(json["num_selected"]);
-	if (json.hasOwnProperty("status")) this.status = parseInt(json["status"]);
+	if (data.hasOwnProperty("capacity")) this.capacity = parseInt(data["capacity"]);
+	if (data.hasOwnProperty("num_applied")) this.numApplied = parseInt(data["num_applied"]);
+	if (data.hasOwnProperty("num_selected")) this.numSelected = parseInt(data["num_selected"]);
+	if (data.hasOwnProperty("status")) this.status = parseInt(data["status"]);
 	this.relation = null;
 	this.containsRelation = function() {
 		return (this.relation != null && this.relation != undefined);	
 	};
-	if (json.hasOwnProperty("relation")) this.relation = parseInt(json["relation"]);
-	if (json.hasOwnProperty("images")) {
+	if (data.hasOwnProperty("relation")) this.relation = parseInt(data["relation"]);
+	if (data.hasOwnProperty("images")) {
 		var images = new Array();
-		var imagesJson = json["images"];
+		var imagesJson = data["images"];
 		for(var key in imagesJson){
-			var json = imagesJson[key];
-			var image = new Image(json);
+			var imageJson = imagesJson[key];
+			var image = new Image(data);
 			images.push(image);
 		}
 		this.images = images;
 	}
 
-	if (json.hasOwnProperty("applied_participants")) {
+	if (data.hasOwnProperty("applied_participants")) {
 		var participants = new Array();
-		var participantsJson = json["applied_participants"];
+		var participantsJson = data["applied_participants"];
 		for (var key in participantsJson){
 			var participantJson = participantsJson[key];
 			var participant = new Player(participantJson);
@@ -94,9 +94,9 @@ function Activity(json) {
 		this.appliedParticipants = participants;
 	}
 
-	if (json.hasOwnProperty("selected_participants")) {
+	if (data.hasOwnProperty("selected_participants")) {
 		var participants = new Array();
-		var participantsJson = json["selected_participants"];
+		var participantsJson = data["selected_participants"];
 		for (var key in participantsJson){
 			var participantJson = participantsJson[key];
 			var participant = new Player(participantJson);
@@ -105,9 +105,9 @@ function Activity(json) {
 		this.selectedParticipants = participants;
 	}
 
-	if (json.hasOwnProperty("present_participants")) {
+	if (data.hasOwnProperty("present_participants")) {
 		var participants = new Array();
-		var participantsJson = json["present_participants"];
+		var participantsJson = data["present_participants"];
 		for (var key in participantsJson){
 			var participantJson = participantsJson[key];
 			var participant = new Player(participantJson);
@@ -116,70 +116,70 @@ function Activity(json) {
 		this.presentParticipants = participants;
 	}
 
-	if (json.hasOwnProperty("host")) {
-		var hostJson = json["host"];
+	if (data.hasOwnProperty("host")) {
+		var hostJson = data["host"];
 		var host = new Player(hostJson);
 		this.host = host;
 	}
 
-	if (json.hasOwnProperty("viewer")) {
-		var viewerJson = json["viewer"];
+	if (data.hasOwnProperty("viewer")) {
+		var viewerJson = data["viewer"];
 		var viewer = new Player(viewerJson);
 		this.viewer = viewer;
 	}
 	
-	if (json.hasOwnProperty("priority")) {
-		this.priority = parseInt(json["priority"]);
+	if (data.hasOwnProperty("priority")) {
+		this.priority = parseInt(data["priority"]);
 	}
 
-	if (json.hasOwnProperty("order_mask")) {
-		this.orderMask = parseInt(json["order_mask"]);
+	if (data.hasOwnProperty("order_mask")) {
+		this.orderMask = parseInt(data["order_mask"]);
 	}
 }
 
-function Comment(json) {
+function Comment(data) {
 
-        if (json.hasOwnProperty("id")) this.id = parseInt(json["id"]);
-        if (json.hasOwnProperty("content")) this.content = json["content"];
+        if (data.hasOwnProperty("id")) this.id = parseInt(data["id"]);
+        if (data.hasOwnProperty("content")) this.content = data["content"];
 
-        if (json.hasOwnProperty("activity_id")) this.activityId = parseInt(json["activity_id"]);
-        if (json.hasOwnProperty("parent_id")) this.parentId = parseInt(json["parent_id"]);
-        if (json.hasOwnProperty("predecessor_id")) this.predecessorId = parseInt(json["predecessor_id"]);
-        if (json.hasOwnProperty("generated_time")) this.generatedTime = parseInt(json["generated_time"]);
-        if (json.hasOwnProperty("num_children")) this.numChildren = parseInt(json["num_children"]);
+        if (data.hasOwnProperty("activity_id")) this.activityId = parseInt(data["activity_id"]);
+        if (data.hasOwnProperty("parent_id")) this.parentId = parseInt(data["parent_id"]);
+        if (data.hasOwnProperty("predecessor_id")) this.predecessorId = parseInt(data["predecessor_id"]);
+        if (data.hasOwnProperty("generated_time")) this.generatedTime = parseInt(data["generated_time"]);
+        if (data.hasOwnProperty("num_children")) this.numChildren = parseInt(data["num_children"]);
 
-        if (json.hasOwnProperty("from")) this.from = parseInt(json["from"]);
-        if (json.hasOwnProperty("from_player")) this.fromPlayer = new Player(json["from_player"]);
+        if (data.hasOwnProperty("from")) this.from = parseInt(data["from"]);
+        if (data.hasOwnProperty("from_player")) this.fromPlayer = new Player(data["from_player"]);
 
-        if (json.hasOwnProperty("to")) this.to = parseInt(json["to"]);
-        if (json.hasOwnProperty("to_player")) this.toPlayer = new Player(json["to_player"]);
+        if (data.hasOwnProperty("to")) this.to = parseInt(data["to"]);
+        if (data.hasOwnProperty("to_player")) this.toPlayer = new Player(data["to_player"]);
 }
 
-function Assessment(json) {
+function Assessment(data) {
 
-	if (json.hasOwnProperty("content")) this.content = json["content"];
-	if (json.hasOwnProperty("activity_id")) this.activityId = parseInt(json["activity_id"]);
+	if (data.hasOwnProperty("content")) this.content = data["content"];
+	if (data.hasOwnProperty("activity_id")) this.activityId = parseInt(data["activity_id"]);
 
-	if (json.hasOwnProperty("from")) this.from = parseInt(json["from"]);
-	if (json.hasOwnProperty("to")) this.to = parseInt(json["to"]);
-	if (json.hasOwnProperty("from_player")) this.fromPlayer = new Player(json["from_player"]);
-	if (json.hasOwnProperty("to_player")) this.toPlayer = new Player(json["to_player"]);
+	if (data.hasOwnProperty("from")) this.from = parseInt(data["from"]);
+	if (data.hasOwnProperty("to")) this.to = parseInt(data["to"]);
+	if (data.hasOwnProperty("from_player")) this.fromPlayer = new Player(data["from_player"]);
+	if (data.hasOwnProperty("to_player")) this.toPlayer = new Player(data["to_player"]);
 
 }
 
-function Notification(json) {
+function Notification(data) {
 
-	if (json.hasOwnProperty("id")) this.id = parseInt(json["id"]);
-	if (json.hasOwnProperty("is_read")) this.isRead = parseInt(json["is_read"]);
-	if (json.hasOwnProperty("from")) this.from = parseInt(json["from"]);
-	if (json.hasOwnProperty("to")) this.to = parseInt(json["to"]);
-	if (json.hasOwnProperty("content")) this.content = json["content"];
-	if (json.hasOwnProperty("activity_id")) this.activityId = parseInt(json["activity_id"]);
-	if (json.hasOwnProperty("comment_id")) this.commentId = parseInt(json["comment_id"]);
-	if (json.hasOwnProperty("assessment_id")) this.assessmentId = parseInt(json["assessment_id"]);
-	if (json.hasOwnProperty("cmd")) this.cmd = parseInt(json["cmd"]);
-	if (json.hasOwnProperty("relation")) this.relation = parseInt(json["relation"]);
-	if (json.hasOwnProperty("status")) this.status = parseInt(json["status"]);
-	if (json.hasOwnProperty("generated_time")) this.generatedTime = parseInt(json["generated_time"]);
+	if (data.hasOwnProperty("id")) this.id = parseInt(data["id"]);
+	if (data.hasOwnProperty("is_read")) this.isRead = parseInt(data["is_read"]);
+	if (data.hasOwnProperty("from")) this.from = parseInt(data["from"]);
+	if (data.hasOwnProperty("to")) this.to = parseInt(data["to"]);
+	if (data.hasOwnProperty("content")) this.content = data["content"];
+	if (data.hasOwnProperty("activity_id")) this.activityId = parseInt(data["activity_id"]);
+	if (data.hasOwnProperty("comment_id")) this.commentId = parseInt(data["comment_id"]);
+	if (data.hasOwnProperty("assessment_id")) this.assessmentId = parseInt(data["assessment_id"]);
+	if (data.hasOwnProperty("cmd")) this.cmd = parseInt(data["cmd"]);
+	if (data.hasOwnProperty("relation")) this.relation = parseInt(data["relation"]);
+	if (data.hasOwnProperty("status")) this.status = parseInt(data["status"]);
+	if (data.hasOwnProperty("generated_time")) this.generatedTime = parseInt(data["generated_time"]);
 
 } 

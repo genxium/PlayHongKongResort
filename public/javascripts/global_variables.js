@@ -170,3 +170,8 @@ var g_partyQQ = 1;
 
 /* foreign party app id list */
 var g_appIdQQ = 101239106;
+
+/* CDN */
+var g_keyRemoteName = "remote_name";
+var g_keyUptoken = "uptoken";
+var g_keyFileref = "fileref";

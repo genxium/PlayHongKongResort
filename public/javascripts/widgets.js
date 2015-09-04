@@ -69,69 +69,105 @@ function ImageNode(remoteName) {
 		// async process
 		var token = $.cookie(g_keyToken);				
 		if (token == null) return;
-		if (remoteName == null) return;
+		if (this.remoteName == null) return;
+		if (this.state != SLOT_IDLE) return;
+
+                // remote name is required for uptoken generation due to the need of CDN validation
+		var params = {};
+		params[g_keyToken] = token;
+		params[g_keyRemoteName] = remoteName;
+
+		this.state = SLOT_AJAX_PENDING;
+
+		$.ajax({
+			type: 'POST',
+			url: '/image/cdn/qiniu/uptoken',
+			data: params,
+			success: function(data, status, xhr) {
+			        this.state = SLOT_IDLE;
+			        if (onSuccess == null) return;
+			        onSuccess(data);
+			},
+			error: function(xhr, status, err) {
+			        this.state = SLOT_IDLE;
+				if (onError == null) return;
+				onError(err);
+			}
+		})
 	};
+	this.upload = function() {
+	}
 	this.requestDel = function(onSuccess, onError) {
 		// async process
 		var token = $.cookie(g_keyToken);				
 		if (token == null) return;
-		if (remoteName == null) return;
+		if (this.remoteName == null) return;
 		if (this.state != SLOT_IDLE) return;
-			
+
+		var params = {};
+		params[g_keyToken] = token;
+		params[g_keyRemoteName] = remoteName;
+
+		this.state = SLOT_AJAX_PENDING;
+
 		$.ajax({
 			type: 'POST',
 			url: '/image/cdn/qiniu/delete',
 			data: params,
 			success: function(data, status, xhr) {
-				
+			        this.state = SLOT_IDLE;
+			        if (onSuccess == null) return;
+			        onSuccess(data);
 			},
 			error: function(xhr, status, err) {
-				
+			        this.state = SLOT_IDLE;
+				if (onError == null) return;
+				onError(err);
 			}
 		})
 	};
 
 	this.composeContent = function(data) {
 		
-		var nodekey = evt.data.key; 
-		var editor = evt.data.editor; // profile or activity editor
-		var fileref = evt.data.fileref; // from 'e.target.result' of reader(FileReader) 'onload' event 'e' invoked by 'reader.readAsDataURL(<file>)' 
-
-		this.content = $('<div>', {
+		var editor = data.editor; // profile or activity editor
+		var fileref = data.fileref; // from 'e.target.result' of reader(FileReader) 'onload' event 'e' invoked by 'reader.readAsDataURL(<file>)' 
+		var preview = $('<div>', {
 			"class": "preview-container left"
-		});
+		}).appendTo(this.content);
 
 		var imgHelper = $('<span>', {
 			"class": "image-helper"
-		}).appendTo(this.content);
+		}).appendTo(preview);
 
 		var img = $('<img>', {
 			src: fileref 
-		}).appendTo(this.content);
+		}).appendTo(preview);
 
 		var btnDelete = $("<button>", {
 			text: TITLES["delete"],
 			"class": "image-delete positive-button"
-		}).appendTo(this.content).click(function(evt){
+		}).appendTo(preview).click(this.remoteName, function(evt){
 			evt.preventDefault();
 			editor.setSavable();
 			editor.setNonSubmittable();
 
-			if(!editor.newImageNodes.hasOwnProperty(key)) return;
-			var thatNode = editor.newImageNodes[nodekey];
-			thatNode.requestDel();
-			thatNode.remove();
-			delete editor.newImageNodes[key];
+			var remoteName = evt.data;
 
-			for(var otherKey in editor.newImageNodes) {
-				if(otherKey < key) continue;
-				var otherNode = editor.newImageNodes[otherKey];	
-				var offset = getOffset(otherNode);
-				setOffset(otherNode, offset.left - g_wImageCell, null);
+			if(!editor.newImageNodes.hasOwnProperty(remoteName)) return;
+			var thatNode = editor.newImageNodes[remoteName];
+			var aButton = getTarget(evt);
+			var onSuccess = function(data) {
+                                enableField(aButton);
 			}
+			var onError = function(err) {
+                                enableField(aButton);
+			}
+			disableField(aButton);
+			thatNode.requestDel(onSuccess, onError);
+			thatNode.remove();
+			delete editor.newImageNodes[remoteName];
 			editor.explorerTrigger.shift(-1, g_wImageCell);
 		});
-
 	};
 }
 

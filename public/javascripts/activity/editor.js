@@ -43,7 +43,6 @@ function ActivityEditor() {
 	this.addressCounter = null;
 	this.contentField = null;
 	this.contentCounter = null;
-	this.newImageFiles = null;
 	this.newImageNodes = null;
 	this.imageSelectors = null;
 	this.beginTimePicker = null;
@@ -127,7 +126,6 @@ function ActivityEditor() {
 			html: MESSAGES["image_selection_requirement"]
 		}).appendTo(form);
 
-		this.newImageFiles = {};
 		this.newImageNodes = {};
 		this.imageSelectors = new Array();
 
@@ -357,7 +355,7 @@ function reformatDate(date){
 }
 
 function countImages(editor){
-	var ret = Object.keys(editor.newImageFiles).length;
+	var ret = Object.keys(editor.newImageNodes).length;
 	for(var key in editor.imageSelectors) {
 		var selector = editor.imageSelectors[key];
 		if(!selector.checked) continue;
@@ -380,19 +378,8 @@ function onSave(evt){
 	}
 	formData.append(g_keyToken, token);
 
-	var countImages = 0;
-	
-	// check files
-	for (var key in g_activityEditor.newImageFiles) {
-		var file = g_activityEditor.newImageFiles[key];
-		if (!validateImage(file)) {
-			formData = null;
-			return;
-		} 
-		formData.append(g_indexNewImage + "-" + key.toString(), file);
-	}
-	
-	countImages = Object.keys(g_activityEditor.newImageFiles).length;
+	// TODO: add new images CDN references, e.g. remote names (together with user token to be verified by server cache)
+	var countImages = Object.keys(g_activityEditor.newImageNodes).length;
 
 	var selectedOldImages = new Array();
 	for(var i = 0; i < g_activityEditor.imageSelectors.length; i++){
@@ -552,48 +539,23 @@ function previewImage(par, editor) {
 	if (!validateImage(newImage)) return;
 
         var reader = new FileReader();
-
         reader.onload = function (e) {
-			var key = new Date().getTime(); // the key which identifies an image in the map newImages
+			var tick = currentMillis(); // the key which identifies an image in the map newImages
 
-			var offset = Object.keys(editor.newImageFiles).length;
-			editor.newImageFiles[key] = newImage; // add new image to file map
-			
-			// TODO: refactor this part by ImageRow and ImageNode	
-			var node = $('<div>', {
-				"class": "preview-container left"
-			}).appendTo(par);
-			editor.newImageNodes[key] = node; // add new image node to view map		
-			var imgHelper = $('<span>', {
-				"class": "image-helper"
-			}).appendTo(node);
-			var img = $('<img>', {
-				src: e.target.result
-			}).appendTo(node);
+			var remoteName = '{0}_{1}'.format(g_loggedInPlayer.id, tick); 
+			var node = new ImageNode(remoteName);
+			var fileref = e.target.result;
 
-			var btnDelete = $("<button>", {
-				text: TITLES["delete"],
-				"class": "image-delete positive-button"
-			}).appendTo(node).click(function(evt){
-				evt.preventDefault();
-				editor.setSavable();
-				editor.setNonSubmittable();
-				if(!editor.newImageFiles.hasOwnProperty(key)) return;
-				delete editor.newImageFiles[key];	
-				if(!editor.newImageNodes.hasOwnProperty(key)) return;
-				editor.newImageNodes[key].remove();
-				delete editor.newImageNodes[key];
-				for(var otherKey in editor.newImageNodes) {
-					if(otherKey < key) continue;
-					var newImageNode = editor.newImageNodes[otherKey];	
-					//var offset = getOffset(newImageNode);
-					//setOffset(newImageNode, offset.left - g_wImageCell, null);
-				}
-				editor.explorerTrigger.shift(-1, g_wImageCell);
-			});
+			// TODO: refactor magic words
+			var params = {
+				'editor': editor,
+				'fileref': fileref	
+			};	
 
+			node.appendTo(par);
+			node.refresh(params);
+			editor.newImageNodes[remoteName] = node;
 			editor.explorerTrigger.shift(+1, g_wImageCell);
-			
         }
 
         reader.readAsDataURL(newImage);

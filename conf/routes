@@ -72,6 +72,7 @@ GET /captcha controllers.Application.captcha(sid: String ?=null)
 
 # Image CDN
 POST /image/cdn/qiniu/uptoken controllers.ImageController.qiniuUptoken()
+POST /image/cdn/qiniu/delete controllers.ImageController.qiniuDelete()
 
 # Play websocket test
 GET /ws controllers.Websocket.connect(token: String ?=null)
