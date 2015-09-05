@@ -45,10 +45,10 @@ Function.method('swiss', function (parent) {
 // ends inheritance sugar
 
 function callbackOnPageLoaded(windowHandle, callbackFunc){
-        if (callbackFunc == null) return;
+        if (callbackFunc === null) return;
         var signaled=false;
         windowHandle.onload = windowHandle.onreadystatechange = function() {
-            var completed = (this.readyState == null || this.readyState == 'complete');
+            var completed = (this.readyState === null || this.readyState == 'complete');
             if(signaled || !completed) return;
             signaled = true;
             callbackFunc();
@@ -57,15 +57,15 @@ function callbackOnPageLoaded(windowHandle, callbackFunc){
 
 function loadJavaScript(windowHandle, script, callbackFunc) {
         var doc = windowHandle.document;
-        if(doc == null) return;
+        if(doc === null) return;
         var scriptNode = doc.createElement('script');
         var textNode = doc.createTextNode(script);
         scriptNode.appendChild(textNode);
 
-        if(callbackFunc != null) {
+        if(callbackFunc !== null) {
             var signaled = false;
             scriptNode.onload = scriptNode.onreadystatechange = function() {
-                var completed = (this.readyState == null || this.readyState == 'complete');
+                var completed = (this.readyState === null || this.readyState == 'complete');
                 if(signaled || !completed) return;
                 signaled = true;
                 callbackFunc();
@@ -73,9 +73,9 @@ function loadJavaScript(windowHandle, script, callbackFunc) {
 		}
 
         var heads = doc.getElementsByTagName("head");
-        if(heads == null) return;
+        if(heads === null) return;
         var head = heads[0];
-        if(head == null) return;
+        if(head === null) return;
         head.appendChild(scriptNode);
 }
 
@@ -97,10 +97,10 @@ function loadScriptFile(windowHandle, path, filetype, callbackFunc) {
 
 	if (typeof fileRef == "undefined") return;
 
-	if(callbackFunc != null) {
+	if(callbackFunc !== null) {
 		var signaled = false;
 		scriptNode.onload = scriptNode.onreadystatechange = function() {
-			var completed = (this.readyState == null || this.readyState == 'complete');
+			var completed = (this.readyState === null || this.readyState == 'complete');
 			if(signaled || !completed) return;
 			signaled = true;
 			callbackFunc();
@@ -108,9 +108,9 @@ function loadScriptFile(windowHandle, path, filetype, callbackFunc) {
 	}
 
 	var heads = windowHandle.document.getElementsByTagName("head");
-    if(heads == null) return;
+    if(heads === null) return;
     var head = heads[0];
-    if(head == null) return;
+    if(head === null) return;
     head.appendChild(fileRef);
 
 }
@@ -192,17 +192,15 @@ function extractTagAndParams(url) {
 	var urlRegex = /https?:\/\/(.+)#(default|profile|detail|home|search|notifications|success|failure|access_token=[\w\d]+)\??\&?(.*)/i;
 	var matchUrl = urlRegex.exec(url);
 
-	if (matchUrl == null) return null;
+	if (matchUrl === null) return null;
 
 	var ret = {};
 	var tag = matchUrl[2];
 	var tagRegex = /(\w+)=([@\.\w]+)/g;
-	var matchTag = tagRegex.exec(tag)
-	if (matchTag != null) {
-		var key = matchTag[1];
-		var val = matchTag[2];
+	var matchTag = tagRegex.exec(tag);
+	if (matchTag !== null) {
 		tag = {};
-		tag[key] = val;	
+		tag[matchTag[1]] = matchTag[2];	
 	}
 	
 	ret[g_keyTag] = tag;
@@ -212,11 +210,9 @@ function extractTagAndParams(url) {
 	var params = decodeURIComponent(matchUrl[3]);
 	var paramRegex = /(\w+)=([:,\[\]{}"@\.\w]+)/g; 
 	var matchParams = paramRegex.exec(params);
-	while (matchParams != null) {
-		var key = matchParams[1];
-		var val = matchParams[2];
-		ret[g_keyParams][key] = val;
-		matchParams = paramRegex.exec(params)
+	while (matchParams !== null) {
+		ret[g_keyParams][matchParams[1]] = matchParams[2];
+		matchParams = paramRegex.exec(params);
 	}
 	return ret;
 }
@@ -243,8 +239,8 @@ function getCurrentYmdhisDate() {
 }
 
 function compareYmdhisDate(foo, bar) {
-	var first = new Array();	
-	var second = new Array();
+	var first = [];	
+	var second = [];
 	{
 		var parts = foo.split(" ");
 		var ymd = parts[0].split("-"); 
@@ -271,48 +267,48 @@ function getTarget(evt) {
 }
 
 function isChecked(checkbox) {
-	return (checkbox != null && checkbox.is(":checked"));
+	return (checkbox !== null && checkbox.is(":checked"));
 }
 
 function isHidden(field) {
-	return (field != null && field.is(":hidden"));
+	return (field !== null && field.is(":hidden"));
 }
 
 function checkField(field) {
-	if (field == null) return;
+	if (field === null) return;
 	field.prop("checked", true);
 }
 
 function uncheckField(field) {
-	if (field == null) return;
+	if (field === null) return;
 	field.prop("checked", false);
 }
 
 function disableField(field) {
-	if (field == null) return;
+	if (field === null) return;
 	field.prop('disabled', true);
 }
 
 function enableField(field) {
-	if (field == null) return;
+	if (field === null) return;
 	field.prop('disabled', false);
 }
 
 function setMargin(field, left, top, right, bottom) {
-	if (field == null) return;
-	if (left != null)	field.css("margin-left", left);
-	if (top != null)	field.css("margin-top", top);
-	if (right != null)	field.css("margin-right", right);
-	if (bottom != null)	field.css("margin-bottom", bottom);
+	if (field === null) return;
+	if (left !== null)	field.css("margin-left", left);
+	if (top !== null)	field.css("margin-top", top);
+	if (right !== null)	field.css("margin-right", right);
+	if (bottom !== null)	field.css("margin-bottom", bottom);
 }
 
 function setBackgroundImageDefault(field, url) {
-	if (field == null) return;
+	if (field === null) return;
 	setBackgroundImage(field, url, "contain", "no-repeat", "center");
 }
 
 function setBackgroundImage(field, url, size, repeat, position) {
-	if (field == null) return;
+	if (field === null) return;
 	
 	field.css("background-image", "url(" + url + ")");	
 
@@ -327,16 +323,16 @@ function setBackgroundImage(field, url, size, repeat, position) {
 }
 
 function setDimensions(field, width, height) {
-	if (field == null) return;
-	if (width != null)	field.css("width", width);
+	if (field === null) return;
+	if (width !== null)	field.css("width", width);
 	else field.css("width", "auto");
 
-	if (height != null)	field.css("height", height);
+	if (height !== null)	field.css("height", height);
 	else field.css("height", "auto");
 }
 
 function getDimensions(field) {
-	if (field == null) return {
+	if (field === null) return {
 		width: "0px",
 		height: "0px"
 	};
@@ -347,17 +343,17 @@ function getDimensions(field) {
 }
 
 function setOffset(field, left, top) {
-	if (field == null) return;
+	if (field === null) return;
 
-	if (left != null)	field.css("left", left);
+	if (left !== null)	field.css("left", left);
 	else field.css("left", "auto");
 	
-	if (top != null)	field.css("top", top);
+	if (top !== null)	field.css("top", top);
 	else field.css("top", "auto"); 
 }
 
 function getOffset(field) {
-	if (field == null) return {
+	if (field === null) return {
 		left: "0px",
 		top: "0px"
 	};
@@ -368,25 +364,25 @@ function getOffset(field) {
 }
 
 function stencilize(field) {
-	if (field == null) return;
+	if (field === null) return;
 	field.css("background-color", "DimGray");
 	field.css("color", "Gainsboro");
 }
 
 function isFileValid(file){
-	if (file == null) return false;
-	var fileSizeLimit = (1 << 21)// 2 mega bytes
+	if (file === null) return false;
+	var fileSizeLimit = (1 << 21);// 2 mega bytes
 	if (file.size > fileSizeLimit) return false;
 	return true;
 }
 
 function validateImage(file){
-	if (file == null) return false;
+	if (file === null) return false;
 	if (!isFileValid(file)) {
 		alert("Please choose an image that is less the 2MB(2048KB) in size");
 		return false;
 	}
-	var fileName = file.value == null ? file.name : file.value;
+	var fileName = (file.value === null ? file.name : file.value);
 	var ext = fileName.split('.').pop().toLowerCase();
 	if ($.inArray(ext, ['png','jpg','jpeg']) == -1) {
 		alert(ALERTS["invalid_image_type"]);
@@ -427,77 +423,77 @@ function generateUuid() {
 }
 
 function isStandardSuccess(data) {
-	if (data == null) return false;
+	if (data === null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
-	return ret == 0;
+	return ret === 0;
 }
 
 function isStandardFailure(data) {
-	if (data == null) return false;
+	if (data === null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == 1;
 }
 
 function isCaptchaNotMatched(data) {
-	if (data == null) return false;
+	if (data === null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errCaptcha;
 }
 
 function isTokenExpired(data) {
-	if (data == null) return false;
+	if (data === null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errNotLoggedIn;
 }
 
 function isPlayerNotFound(data) {
-	if (data == null) return false;
+	if (data === null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errPlayerNotFound;
 }
 
 function isPswErr(data) {
-	if (data == null) return false;
+	if (data === null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errPswErr;
 }
 
 function isApplicantLimitExceeded(data) {
-	if (data == null) return false;
+	if (data === null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errActivityAppliedLimit;
 }
 
 function isSelectedLimitExceeded(data) {
-	if (data == null) return false;
+	if (data === null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errActivitySelectedLimit;
 }
 
 function isCreationLimitExceeded(data) {
-	if (data == null) return false;
+	if (data === null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errActivityCreationLimit;
 }
 
 function isForeignPartyRegistrationRequired(data) {
-	if (data == null) return false;
+	if (data === null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errForeignPartyRegistrationRequired;
 }
 
 function isTempForeignPartyRecordNotFound(data) {
-	if (data == null) return false;
+	if (data === null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errTempForeignPartyRecordNotFound;
