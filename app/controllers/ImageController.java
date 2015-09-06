@@ -33,6 +33,7 @@ public class ImageController extends Controller {
                         final Auth auth = Auth.create(attrs.get(CDNHelper.APP_ID), attrs.get(CDNHelper.APP_KEY));
 
                         // TODO: add maxSizeInt constraint to token
+                        final String bucket = attrs.get(CDNHelper.BUCKET);
                         final String uploadToken = auth.uploadToken(attrs.get(CDNHelper.BUCKET), remoteName);
 
                         // TODO: add <token, remote_name> mapping in database for delete-validation

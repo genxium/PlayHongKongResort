@@ -159,12 +159,11 @@ function ProfileEditor() {
 			evt.preventDefault();
 			var editor = evt.data;
 			var file = editor.getFile();
-			if (file == null) return;
 			if (!validateImage(file)) return;
 			var reader = new FileReader();
 			reader.onload = function (e) {
 				editor.image.attr("src", e.target.result);
-			}
+			};
 			reader.readAsDataURL(file);
 		}).appendTo(box);
 		

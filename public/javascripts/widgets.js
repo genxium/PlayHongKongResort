@@ -60,7 +60,8 @@ BaseModalWidget.method('remove', function() {
 
 var SLOT_IDLE = 0;
 var SLOT_UPLOADING = 1;
-var SLOT_AJAX_PENDING = 2;
+var SLOT_UPLOAD_FAILED = 2;
+var SLOT_AJAX_PENDING = 3;
 
 function ImageNode(cdn, bucketDomain) {
 	this.state = SLOT_IDLE; 
@@ -69,6 +70,7 @@ function ImageNode(cdn, bucketDomain) {
 
 	this.remoteName = null;
 	this.uploader = null;
+	this.wrap = null;
 	this.preview = null;
 	this.editor = null;
 	this.btnChoose = null;
@@ -106,19 +108,22 @@ function ImageNode(cdn, bucketDomain) {
 	this.composeContent = function(data) {
 		
 		this.editor = data.editor;
-		this.preview = $('<div>', {
+		this.wrap = $('<div>', {
 			"class": "preview-container left"
 		}).appendTo(this.content);
+
+		this.preview = $('<img>').appendTo(this.wrap);
+		setDimensions(this.preview, g_wImageCell, g_hImageCell);
 		
 		this.btnChoose = $('<button>', {
 			text: TITLES['choose_picture'],
 			'class': 'positive-button'
-		}).appendTo(this.preview);
+		}).appendTo(this.wrap);
 
 		this.btnDel = $('<button>', {
 			text: TITLES["delete"],
 			"class": "positive-button"
-		}).appendTo(this.preview).click(this.remoteName, function(evt){
+		}).appendTo(this.wrap).click(this.remoteName, function(evt){
 			evt.preventDefault();
 			editor.setSavable();
 			editor.setNonSubmittable();
@@ -156,11 +161,11 @@ function ImageNode(cdn, bucketDomain) {
 				unique_names: false,
 				save_key: false,
 				domain: node.bucketDomain,
-				container: node.preview[0],
+				container: node.wrap[0],
 				max_file_size: '2mb',
 				max_retries: 2,
 				dragdrop: false, 
-				drop_element: node.preview[0],
+				drop_element: node.wrap[0],
 				chunk_size: '4mb',
 				auto_start: true, 
 				init: {
@@ -170,19 +175,32 @@ function ImageNode(cdn, bucketDomain) {
 							alert(ALERTS["choose_one_image"]);
 							return;
 						}
+
+						var file = files[0];
+						if (!validateImage(file)) return;
+
+						node.state = SLOT_UPLOADING; 
+						disableField(node.btnChoose);
+
+						var reader = new FileReader();
+						reader.onload = function (e) {
+							node.preview.attr("src", e.target.result);
+						};
+						reader.readAsDataURL(file);
 					},
 					'BeforeUpload': function(up, file) {
-						node.state = SLOT_UPLOADING; 
+						node.state = SLOT_IDLE;
 					},
 					'UploadProgress': function(up, file) {
 					},
 					'FileUploaded': function(up, file, info) {
 					},
 					'Error': function(up, err, errTip) {
-						node.state = SLOT_IDLE; 
-						console.log(err);
+						node.state = SLOT_UPLOAD_FAILED; 
 					},
 					'UploadComplete': function() {
+						enableField(node.btnChoose);
+						if (node.state == SLOT_UPLOAD_FAILED) return;
 						node.state = SLOT_IDLE; 
 						node.btnChoose.hide();
 						node.btnDel.show();	 

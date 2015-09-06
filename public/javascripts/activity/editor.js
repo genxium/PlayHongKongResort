@@ -559,6 +559,7 @@ function onDelete(evt){
 
 function onCancel(evt){
 
+	// TODO: delete all uploaded images when editor is savable
 	evt.preventDefault();
 	g_activityEditor.hide();
 
