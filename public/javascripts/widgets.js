@@ -6,7 +6,7 @@ function BaseWidget() {
 	this.content = null;
 		
 	this.refresh = function(data) {
-		if (this.content == null) return;
+		if (!this.content) return;
 		this.content.empty();
 		// method variable 'composeContent(data)' should be implemented by subclasses 
 		this.composeContent(data);
@@ -59,49 +59,25 @@ BaseModalWidget.method('remove', function() {
  * */
 
 var SLOT_IDLE = 0;
-var SLOT_AJAX_PENDING = 0;
 var SLOT_UPLOADING = 1;
+var SLOT_AJAX_PENDING = 2;
 
-function ImageNode(remoteName) {
+function ImageNode(cdn, bucketDomain) {
 	this.state = SLOT_IDLE; 
-	this.remoteName = remoteName; 
-	this.requestUptoken = function(onSuccess, onError) {
-		// async process
-		var token = $.cookie(g_keyToken);				
-		if (token == null) return;
-		if (this.remoteName == null) return;
-		if (this.state != SLOT_IDLE) return;
+	this.cdn = cdn;
+	this.bucketDomain = bucketDomain;
 
-                // remote name is required for uptoken generation due to the need of CDN validation
-		var params = {};
-		params[g_keyToken] = token;
-		params[g_keyRemoteName] = remoteName;
-
-		this.state = SLOT_AJAX_PENDING;
-
-		$.ajax({
-			type: 'POST',
-			url: '/image/cdn/qiniu/uptoken',
-			data: params,
-			success: function(data, status, xhr) {
-			        this.state = SLOT_IDLE;
-			        if (onSuccess == null) return;
-			        onSuccess(data);
-			},
-			error: function(xhr, status, err) {
-			        this.state = SLOT_IDLE;
-				if (onError == null) return;
-				onError(err);
-			}
-		})
-	};
-	this.upload = function() {
-	}
+	this.remoteName = null;
+	this.uploader = null;
+	this.preview = null;
+	this.editor = null;
+	this.btnChoose = null;
+	this.btnDel = null;
 	this.requestDel = function(onSuccess, onError) {
 		// async process
 		var token = $.cookie(g_keyToken);				
-		if (token == null) return;
-		if (this.remoteName == null) return;
+		if (!token) return;
+		if (!this.remoteName) return;
 		if (this.state != SLOT_IDLE) return;
 
 		var params = {};
@@ -116,58 +92,108 @@ function ImageNode(remoteName) {
 			data: params,
 			success: function(data, status, xhr) {
 			        this.state = SLOT_IDLE;
-			        if (onSuccess == null) return;
+			        if (!onSuccess) return;
 			        onSuccess(data);
 			},
 			error: function(xhr, status, err) {
 			        this.state = SLOT_IDLE;
-				if (onError == null) return;
+				if (!onError) return;
 				onError(err);
 			}
-		})
+		});
 	};
 
 	this.composeContent = function(data) {
 		
-		var editor = data.editor; // profile or activity editor
-		var fileref = data.fileref; // from 'e.target.result' of reader(FileReader) 'onload' event 'e' invoked by 'reader.readAsDataURL(<file>)' 
-		var preview = $('<div>', {
+		this.editor = data.editor;
+		this.preview = $('<div>', {
 			"class": "preview-container left"
 		}).appendTo(this.content);
+		
+		this.btnChoose = $('<button>', {
+			text: TITLES['choose_picture'],
+			'class': 'positive-button'
+		}).appendTo(this.preview);
 
-		var imgHelper = $('<span>', {
-			"class": "image-helper"
-		}).appendTo(preview);
-
-		var img = $('<img>', {
-			src: fileref 
-		}).appendTo(preview);
-
-		var btnDelete = $("<button>", {
+		this.btnDel = $('<button>', {
 			text: TITLES["delete"],
-			"class": "image-delete positive-button"
-		}).appendTo(preview).click(this.remoteName, function(evt){
+			"class": "positive-button"
+		}).appendTo(this.preview).click(this.remoteName, function(evt){
 			evt.preventDefault();
 			editor.setSavable();
 			editor.setNonSubmittable();
 
 			var remoteName = evt.data;
-
 			if(!editor.newImageNodes.hasOwnProperty(remoteName)) return;
 			var thatNode = editor.newImageNodes[remoteName];
 			var aButton = getTarget(evt);
 			var onSuccess = function(data) {
                                 enableField(aButton);
-			}
+				delete editor.newImageNodes[remoteName];
+				editor.explorerTrigger.shift(-1, g_wImageCell);
+				thatNode.remove();
+			};
 			var onError = function(err) {
                                 enableField(aButton);
-			}
+			};
 			disableField(aButton);
 			thatNode.requestDel(onSuccess, onError);
-			thatNode.remove();
-			delete editor.newImageNodes[remoteName];
-			editor.explorerTrigger.shift(-1, g_wImageCell);
-		});
+		}).hide();
+
+		if (cdn == g_cdnQiniu) {
+			var tick = currentMillis();
+			var remoteName =  '{0}_{1}'.format(g_loggedInPlayer.id, tick);
+			this.remoteName = remoteName;
+			var maxSize = (1 << 21); // in bytes
+			var uptokenParams = [g_keyToken + '=' + $.cookie(g_keyToken), g_keyRemoteName + '=' + remoteName, g_keyMaxSize + '=' + maxSize]; 
+			var uptokenUrl = '/image/cdn/qiniu/uptoken?' + uptokenParams.join('&'); 
+			// reference http://developer.qiniu.com/docs/v6/sdk/javascript-sdk.html
+			var node = this;
+			this.uploader = Qiniu.uploader({
+				runtimes: 'html5,flash,html4',		    
+				browse_button: node.btnChoose[0],
+				uptoken_url: uptokenUrl,
+				unique_names: false,
+				save_key: false,
+				domain: node.bucketDomain,
+				container: node.preview[0],
+				max_file_size: '2mb',
+				max_retries: 2,
+				dragdrop: false, 
+				drop_element: node.preview[0],
+				chunk_size: '4mb',
+				auto_start: true, 
+				init: {
+					'FilesAdded': function(up, files) {
+						if (!files) return null;
+						if (files.length != 1) {
+							alert(ALERTS["choose_one_image"]);
+							return;
+						}
+					},
+					'BeforeUpload': function(up, file) {
+						node.state = SLOT_UPLOADING; 
+					},
+					'UploadProgress': function(up, file) {
+					},
+					'FileUploaded': function(up, file, info) {
+					},
+					'Error': function(up, err, errTip) {
+						node.state = SLOT_IDLE; 
+						console.log(err);
+					},
+					'UploadComplete': function() {
+						node.state = SLOT_IDLE; 
+						node.btnChoose.hide();
+						node.btnDel.show();	 
+					},
+					 'Key': function(up, file) {
+						// would ONLY be invoked when {unique_names: false , save_key: false}
+						return node.remoteName;
+					 }
+				}
+			});
+		}	
 	};
 }
 
@@ -216,115 +242,22 @@ function AjaxButton(text, url, clickData, method, extraParams, onSuccess, onErro
 				data: aExtraParams,
 				success: function(data, status, xhr) {
 					enableField(aButton);
-					if (aOnSuccess == null) return;
+					if (!aOnSuccess) return;
 					aOnSuccess(data);
 				},
 				error: function(xhr, status, err) {
 					enableField(aButton);
-					if (aOnError == null) return;
+					if (!aOnError) return;
 					aOnError(err);
 				}
 			});
 		});
 	};
 	this.remove = function() {
-		if (this.button == null) return;
+		if (!this.button) return;
 		this.button.remove();
 		this.button = null;
 	};
-}
-
-/*
- * ExplorerTrigger
- * */
-
-function ExplorerTrigger(node, pic, btn) {
-	this.node = node;
-	this.pic = pic;
-	this.btn = btn;
-	this.disable = function() {
-		disableField(btn);
-	};
-	this.enable = function() {
-		enableField(btn);
-	};
-	this.getFile = function() {
-		if (this.btn == null) return null;	
-		var files = this.btn[0].files;
-		if (files == null) return null;	
-		if (files.length != 1) {
-			alert(ALERTS["choose_one_image"]);
-			return null;
-		}
-		return files[0];
-	}
-	this.hide = function() {
-		if (this.node == null)	return;
-		this.node.hide();
-	};
-	this.show = function() {
-		if (this.node == null)	return;
-		this.node.show();
-	};
-	this.remove = function() {
-		if (this.pic == null) return;
-		this.pic.remove();
-		this.pic = null;
-		if (this.btn == null)	return;
-		this.btn.remove();
-		this.btn = null;
-		if (this.node == null)	return;
-		this.node.empty();
-		this.node.remove();
-		this.node = null;
-	};
-	this.shift = function(direction, distance) {
-		// direction {
-		//	left: -1,
-		//	right: +1
-		// }
-		//
-		// distance is an integer
-		var currentOffset = getOffset(this.node);
-		switch (direction) {
-			case -1:
-				var left = currentOffset.left - distance;
-				setOffset(this.node, left, null);
-			break;
-			case +1:
-				var left = currentOffset.left + distance;
-				setOffset(this.node, left, null);
-			break;
-		}
-
-	};
-	this.changePic = function(imgSrc) {
-		this.pic.attr("src", imgSrc);
-	};
-}
-
-function generateExplorerTriggerSpan(par, onChange, imgSrc, nodeW, nodeH, picW, picH) {
-	var node = $("<div>", {
-		"class": "add-image"
-	}).appendTo(par);
-	setDimensions(node, nodeW, nodeH);
-	setOffset(node, 0, 0); 	
-	
-	var pic = $("<span>", {
-		"class": "pic"
-	}).appendTo(node); 
-	setBackgroundImageDefault(pic, imgSrc);
-	setDimensions(pic, picW, picH);
-	setOffset(pic, (nodeW - picW)/2, (nodeH - picH)/2); 	
-
-	// btn should have the same dimensions as node to be clickable
-	var btn = $("<input>", {
-		type: "file"
-	}).appendTo(node);
-	setDimensions(btn, nodeW, nodeH);
-
-	btn.change(onChange);
-	return new ExplorerTrigger(node, pic, btn); 
 }
 
 /*
@@ -334,9 +267,9 @@ function DatetimePicker(input) {
 	this.input = input;	
 	this.getDatetime = function() {
 		var dateStr = this.input.val();
-		if (dateStr == null || dateStr == "" || dateStr.length == 0) return null;
+		if (!dateStr || dateStr === "" || dateStr.length === 0) return null;
 		return dateStr + ":00";
-	}
+	};
 }
 
 function generateDatePicker(par, time, onEdit) {
@@ -436,7 +369,7 @@ function PagerCache(size) {
 		if (page > this.last) this.appendPage(content);
 		else if (page < this.first) this.prependPage(content);
 		else this.map[page] = content;
-	}
+	};
 }
 
 function PagerButton(pager, page) {
@@ -474,7 +407,7 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 
 	// pager bar
 	this.bar = bar; // control bar of the pager
-	if (bar == null) return;
+	if (!this.bar) return;
 	this.refreshBar = function() {
 		var pager = this;
 		var page = pager.page;
@@ -483,6 +416,28 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 		pager.bar.empty();
 		var length = Object.keys(pagerCache.map).length;
 		if (length <= 1) return;
+		var indicatorOnClick = function(evt) {
+			if (!pager.url) return;
+			var pagerButton = evt.data;
+			pager.page = pagerButton.page;
+			var params = pager.paramsGenerator(pager, pagerButton.page);
+			if (!params) return;
+			var indicator = getTarget(evt);
+			disableField(indicator);
+			$.ajax({
+				type: "GET",
+				url: pager.url,
+				data: params,
+				success: function(data, status, xhr) {
+					enableField(indicator);
+					pager.onSuccess(data);
+				},
+				error: function(xhr, status, err) {
+					enableField(indicator);
+					pager.onError(err);
+				}
+			});
+		};
 		for(var key in pagerCache.map) {
 
 			var index = parseInt(key);
@@ -492,28 +447,7 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 			}).appendTo(pager.bar);
 		
 			var pagerButton = new PagerButton(pager, index);
-			indicator.click(pagerButton, function(evt) {
-				if (pager.url == null) return;
-				var button = evt.data;
-				pager.page = button.page;
-				var params = pager.paramsGenerator(pager, button.page);
-				if (params == null) return;
-				var indicator = $(this);
-				disableField(indicator);
-				$.ajax({
-				    type: "GET",
-				    url: pager.url,
-				    data: params,
-				    success: function(data, status, xhr) {
-						enableField(indicator);
-						pager.onSuccess(data);
-				    },
-				    error: function(xhr, status, err) {
-						enableField(indicator);
-						pager.onError(err);
-				    }
-				});
-			});
+			indicator.click(pagerButton, indicatorOnClick);
 			
 			if (index != page) continue;
 			indicator.off("mouseenter mouseleave");
@@ -529,45 +463,46 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 
 	this.expand = function(width) {
 		// encapsulated for convenience
-		if (width == null) width = "100%";
+		if (!width) width = "100%";
 		setDimensions(this.screen.parent(), width, null);
 		this.screen.parent().show();
 	};
 		
 	this.remove = function() {
-		if (this.screen == null) return;
+		if (!this.screen) return;
 		this.screen.remove();
 	};
 	
 	// multi-level filters
 	this.filters = filters;
 	
-	if (filters == null) return;
+	if (!filters) return;
 	var pager = this;
+	var selectorOnChange = function(evt){
+		var pager = evt.data;
+		var params = pager.paramsGenerator(pager, 1);	
+		if (!params) return;
+		var selector = filter.selector;
+		disableField(selector);
+		$.ajax({
+		    type: "GET",
+		    url: pager.url,
+		    data: params,
+		    success: function(data, status, xhr) {
+				var size = pager.cache.size;
+				pager.cache = new PagerCache(size);
+				enableField(selector);
+				pager.onSuccess(data);
+		    },
+		    error: function(xhr, status, err) {
+				enableField(selector);
+				pager.onError(err);
+		    }
+		});
+	};
 	for (var i = 0; i < filters.length; ++i) {
 		var filter = filters[i];
-		filter.selector.change(pager, function(evt){
-			var pager = evt.data;
-			var params = pager.paramsGenerator(pager, 1);	
-			if (params == null) return;
-			var selector = filter.selector;
-			disableField(selector);
-			$.ajax({
-			    type: "GET",
-			    url: pager.url,
-			    data: params,
-			    success: function(data, status, xhr) {
-					var size = pager.cache.size;
-					pager.cache = new PagerCache(size);
-					enableField(selector);
-					pager.onSuccess(data);
-			    },
-			    error: function(xhr, status, err) {
-					enableField(selector);
-					pager.onError(err);
-			    }
-			});
-		});	
+		filter.selector.change(pager, selectorOnChange);	
 	}
 }
 
@@ -732,7 +667,7 @@ function createNavTabPane(par, ref, isPreactive, content) {
 	var pane = null;	
 	if (isPreactive) pane = $("<div role ='tabpanel' class='tab-pane fade in active' id='" + ref + "'>").appendTo(par);
 	else pane = $("<div role='tabpanel' class='tab-pane' fade id='" + ref + "'>").appendTo(par);
-	if (content == null) return pane;
+	if (!content) return pane;
 	pane.append(content);
 	return pane;	
 }
@@ -774,7 +709,7 @@ function Captcha(sid) {
 			var captcha = evt.data;	
 			captcha.img.attr("src", "/captcha?" + g_keySid + "=" + captcha.sid + "&ts=" + new Date().getTime());
 		});
-	}
+	};
 }
 
 /*

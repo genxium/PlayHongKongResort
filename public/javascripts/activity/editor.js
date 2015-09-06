@@ -136,20 +136,10 @@ function ActivityEditor() {
 		if(activity != null && activity.images != null)	generateOldImagesRow(form, this, activity);
 
 		newImagesRow.appendTo(form);
-
-		var onChange = function(evt) {
-			evt.preventDefault();
-			if (g_activityEditor == null) return;
-			if (countImages(g_activityEditor) >= g_imagesLimit) {
-				alert(ALERTS["image_selection_limit_exceeded"].format(g_imagesLimit));	
-				return;
-			}
-			g_activityEditor.setSavable();
-			g_activityEditor.setNonSubmittable();
-			previewImage(newImagesRow, g_activityEditor);
-		};
-
-		this.explorerTrigger = generateExplorerTriggerSpan(newImagesRow, onChange, "/assets/icons/add.png", g_wImageCell, g_hImageCell, g_wImageCell*2/3, g_hImageCell*2/3);
+		var domain = '';
+		var node = new ImageNode(g_cdnQiniu, domain);
+		node.appendTo(newImagesRow);
+		node.refresh(this);
 
 		// Schedules
 		var deadline = reformatDate(new Date());
@@ -532,33 +522,6 @@ function onSubmit(evt){
                         g_activityEditor.setSubmittable();
                 }
         });
-}
-
-function previewImage(par, editor) {
-        var newImage = editor.explorerTrigger.getFile();
-	if (!validateImage(newImage)) return;
-
-        var reader = new FileReader();
-        reader.onload = function (e) {
-			var tick = currentMillis(); // the key which identifies an image in the map newImages
-
-			var remoteName = '{0}_{1}'.format(g_loggedInPlayer.id, tick); 
-			var node = new ImageNode(remoteName);
-			var fileref = e.target.result;
-
-			// TODO: refactor magic words
-			var params = {
-				'editor': editor,
-				'fileref': fileref	
-			};	
-
-			node.appendTo(par);
-			node.refresh(params);
-			editor.newImageNodes[remoteName] = node;
-			editor.explorerTrigger.shift(+1, g_wImageCell);
-        }
-
-        reader.readAsDataURL(newImage);
 }
 
 function onDelete(evt){

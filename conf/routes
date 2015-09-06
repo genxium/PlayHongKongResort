@@ -71,7 +71,7 @@ POST /notification/delete controllers.NotificationController.delete()
 GET /captcha controllers.Application.captcha(sid: String ?=null)
 
 # Image CDN
-POST /image/cdn/qiniu/uptoken controllers.ImageController.qiniuUptoken()
+GET /image/cdn/qiniu/uptoken controllers.ImageController.qiniuUptoken(token: String ?=null, remote_name: String ?=null, max_size: String ?=null)
 POST /image/cdn/qiniu/delete controllers.ImageController.qiniuDelete()
 
 # Play websocket test

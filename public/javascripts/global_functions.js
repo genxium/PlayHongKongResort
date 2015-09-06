@@ -377,11 +377,8 @@ function isFileValid(file){
 }
 
 function validateImage(file){
-	if (file === null) return false;
-	if (!isFileValid(file)) {
-		alert("Please choose an image that is less the 2MB(2048KB) in size");
-		return false;
-	}
+	if (!file) return false;
+	if (!isFileValid(file))	return false;
 	var fileName = (file.value === null ? file.name : file.value);
 	var ext = fileName.split('.').pop().toLowerCase();
 	if ($.inArray(ext, ['png','jpg','jpeg']) == -1) {

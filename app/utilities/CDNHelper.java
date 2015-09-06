@@ -21,7 +21,7 @@ public class CDNHelper {
                 if (provider == QINIU) {
                         if (s_qiniuMap == null) {
                                 String fullPath = Play.application().path() + "/conf/" + "qiniu_config.xml";
-                                s_qiniuMap = XMLHelper.readCdnConfig(fullPath);
+                                s_qiniuMap = XMLHelper.readCDNConfig(fullPath);
                         }
                         return s_qiniuMap;
                 }

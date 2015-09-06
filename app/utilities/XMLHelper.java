@@ -62,7 +62,7 @@ public class XMLHelper {
                 return ret;
         }
 
-        public static Map<String, String> readCdnConfig(final String filepath) {
+        public static Map<String, String> readCDNConfig(final String filepath) {
                 Map<String, String> ret = null;
                 try {
                         File fXmlFile = new File(filepath);
@@ -77,7 +77,7 @@ public class XMLHelper {
                         ret.put(CDNHelper.APP_KEY, root.getElementsByTagName(ForeignPartyController.APP_KEY).item(0).getTextContent());
                         ret.put(CDNHelper.BUCKET, root.getElementsByTagName(ForeignPartyController.APP_KEY).item(0).getTextContent());
                 } catch (Exception e) {
-                        Loggy.e(TAG, "readForeignPartyConfig", e);
+                        Loggy.e(TAG, "readCDNConfig", e);
                 }
                 return ret;
         }
