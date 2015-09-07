@@ -1,6 +1,6 @@
 package controllers;
 
-import dao.EasyPreparedStatementBuilder;
+import dao.SQLBuilder;
 import exception.InvalidPasswordException;
 import exception.PlayerNotFoundException;
 import fixtures.Constants;
@@ -41,7 +41,7 @@ public class PasswordController extends PlayerController {
             Player player = DBCommander.queryPlayerByEmail(email);
             if (player == null) throw new PlayerNotFoundException();
             String code = DBCommander.generateVerificationCode(email);
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            SQLBuilder builder = new SQLBuilder();
             builder.update(Player.TABLE).set(Player.PASSWORD_RESET_CODE, code).where(Player.EMAIL, "=", email);
             if (!builder.execUpdate()) throw new NullPointerException();
             sendResetEmail(player.getLang(), player.getName(), player.getEmail(), code);
@@ -93,7 +93,7 @@ public class PasswordController extends PlayerController {
             if (player == null) throw new PlayerNotFoundException();
 
             String passwordDigest = Converter.md5(password + player.getSalt());
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            SQLBuilder builder = new SQLBuilder();
             builder.update(Player.TABLE)
                     .set(Player.PASSWORD, passwordDigest)
                     .set(Player.PASSWORD_RESET_CODE, "")

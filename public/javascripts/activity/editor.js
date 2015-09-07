@@ -136,7 +136,7 @@ function ActivityEditor() {
 		if(activity != null && activity.images != null)	generateOldImagesRow(form, this, activity);
 
 		newImagesRow.appendTo(form);
-		var domain = '';
+		var domain = '7xljmm.dl1.z0.glb.clouddn.com';
 		var node = new ImageNode(g_cdnQiniu, domain);
 		node.appendTo(newImagesRow);
 		node.refresh(this);
@@ -370,17 +370,23 @@ function onSave(evt){
 
 	// TODO: add new images CDN references, e.g. remote names (together with user token to be verified by server cache)
 	var countImages = Object.keys(g_activityEditor.newImageNodes).length;
+        var newImages = [];
+        for (var k in newImageNodes) {
+                var node = newImageNodes[k];
+                newImages.push(node.remoteName);
+        }
+	formData.append(g_indexNewImage, JSON.stringify(newImages));
 
-	var selectedOldImages = new Array();
-	for(var i = 0; i < g_activityEditor.imageSelectors.length; i++){
+	var selectedOldImages = [];
+	for (var i = 0; i < g_activityEditor.imageSelectors.length; ++i){
 		var selector = g_activityEditor.imageSelectors[i];
 		if(!selector.checked) continue;
 		selectedOldImages.push(selector.id);
 		++countImages;
 	}
 	formData.append(g_indexOldImage, JSON.stringify(selectedOldImages));
-	
-	if(countImages > g_imagesLimit) {
+
+	if (countImages > g_imagesLimit) {
 		alert(ALERTS["image_selection_requirement"]);
 		return;
 	}
@@ -394,7 +400,7 @@ function onSave(evt){
 	var addressCounter = g_activityEditor.addressCounter;
 	var contentCounter = g_activityEditor.contentCounter;
 
-	if(!titleCounter.valid() || !addressCounter.valid() || !contentCounter.valid()) {
+	if (!titleCounter.valid() || !addressCounter.valid() || !contentCounter.valid()) {
 		alert(ALERTS["please_follow_activity_field_instructions"]);
 		return;
 	}
@@ -406,7 +412,7 @@ function onSave(evt){
 	var beginTime = localYmdhisToGmtMillisec(g_activityEditor.beginTimePicker.getDatetime());
 	var deadline = localYmdhisToGmtMillisec(g_activityEditor.deadlinePicker.getDatetime());
 		
-	if(deadline < 0 || beginTime < 0 || deadline > beginTime) {
+	if (deadline < 0 || beginTime < 0 || deadline > beginTime) {
 		alert(ALERTS["deadline_behind_begin_time"]);
 		return;
 	}
@@ -416,9 +422,9 @@ function onSave(evt){
 
 	var isNewActivity = false;
 	var activityId = g_activityEditor.id; 
-	if(activityId == null) isNewActivity = true;
+	if (activityId == null) isNewActivity = true;
 
-	if(!isNewActivity)	formData.append(g_keyActivityId, activityId);
+	if (!isNewActivity)	formData.append(g_keyActivityId, activityId);
 	else {
 		formData.append(g_keySid, g_activityEditor.captcha.sid);
 		formData.append(g_keyCaptcha, g_activityEditor.captcha.input.val());
@@ -433,23 +439,19 @@ function onSave(evt){
 			method: "POST",
 			url: "/activity/save",
 			data: formData,
-			mimeType: "mutltipart/form-data",
-			contentType: false, // tell jQuery not to set contentType
-			processData: false, // tell jQuery not to process the data
 			success: function(data, status, xhr){
-				var activityJson = JSON.parse(data);
-				if (isTokenExpired(activityJson)) {
+				if (isTokenExpired(data)) {
 					logout(null);
 					return;
 				}
-				if (isCaptchaNotMatched(activityJson)) {
+				if (isCaptchaNotMatched(data)) {
 					alert(ALERTS["captcha_not_matched"]);
 					g_activityEditor.setSavable();
 					g_activityEditor.enableEditorButtons();
 					g_activityEditor.hint.text(MESSAGES["activity_not_saved"]);
 					return;
 				}
-				if (isCreationLimitExceeded(activityJson)) {
+				if (isCreationLimitExceeded(data)) {
 					alert(ALERTS["creation_limit_exceeded"]);
 					g_activityEditor.setSavable();
 					g_activityEditor.enableEditorButtons();
@@ -554,14 +556,41 @@ function onDelete(evt){
 			enableField(aButton);
 		}
 	});
-
 }
 
 function onCancel(evt){
 
-	// TODO: delete all uploaded images when editor is savable
 	evt.preventDefault();
 	g_activityEditor.hide();
+
+	var token = $.cookie(g_keyToken);
+	if (token == null)	return; 
+
+	var newImageNodes = g_activityEditor.newImageNodes;
+	if (Object.keys(newImageNodes).length === 0) return;
+
+        var newImages = [];
+        for (var k in newImageNodes) {
+                var node = newImageNodes[k];
+                newImages.push(node.remoteName);
+        }
+	var params = {};
+	params[g_keyBundle] = JSON.stringify(newImages);
+	params[g_keyToken] = token;
+
+	$.ajax({
+		type: 'POST',
+		url: '/image/cdn/qiniu/delete',
+		data: params,
+		success: function(data, status, xhr) {
+			if (!isStandardSuccess(data)) {
+				// do sth...
+			} 
+		},
+		error: function(xhr, status, err) {
+
+		}
+	});	
 
 }
 

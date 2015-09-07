@@ -8,9 +8,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
 
-public class EasyPreparedStatementBuilder {
+public class SQLBuilder {
 
-    public static final String TAG = EasyPreparedStatementBuilder.class.getName();
+    public static final String TAG = SQLBuilder.class.getName();
     public static final String ALIAS_PREFIX = "bsajkfhoi";
 
     public static class PrimaryTableField {
@@ -63,42 +63,42 @@ public class EasyPreparedStatementBuilder {
     protected List<Integer> m_limits = null;
     protected boolean m_ignore = false;
 
-    public EasyPreparedStatementBuilder() {
+    public SQLBuilder() {
 
     }
 
-    public EasyPreparedStatementBuilder from(String table) {
+    public SQLBuilder from(String table) {
         m_table = table;
         return this;
     }
 
-    public EasyPreparedStatementBuilder into(String table) {
+    public SQLBuilder into(String table) {
         m_table = table;
         return this;
     }
 
-    public EasyPreparedStatementBuilder update(String table) {
+    public SQLBuilder update(String table) {
         m_table = table;
         return this;
     }
 
-    public EasyPreparedStatementBuilder select(String col) {
+    public SQLBuilder select(String col) {
         if (m_selectCols == null) m_selectCols = new LinkedList<String>();
         m_selectCols.add(col);
         return this;
     }
 
-    public EasyPreparedStatementBuilder select(List<String> cols) {
+    public SQLBuilder select(List<String> cols) {
         for (String col : cols) select(col);
         return this;
     }
 
-    public EasyPreparedStatementBuilder select(String[] cols) {
+    public SQLBuilder select(String[] cols) {
         for (String col : cols) select(col);
         return this;
     }
 
-    public EasyPreparedStatementBuilder insert(String[] cols, Object[] vals) {
+    public SQLBuilder insert(String[] cols, Object[] vals) {
         if (cols == null || vals == null || cols.length != vals.length) return this;
         if (m_insertCols == null) {
             m_insertCols = new ArrayList<>(); // lazy init
@@ -111,7 +111,7 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder replace(String[] cols, Object[] vals) {
+    public SQLBuilder replace(String[] cols, Object[] vals) {
         if (cols == null || vals == null || cols.length != vals.length) return this;
         if (m_replaceCols == null) {
             m_replaceCols = new ArrayList<>(); // lazy init
@@ -124,12 +124,12 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder ignore(boolean val) {
+    public SQLBuilder ignore(boolean val) {
         m_ignore = val;
         return this;
     }
 
-    public EasyPreparedStatementBuilder set(String col, Object val) {
+    public SQLBuilder set(String col, Object val) {
         if (m_updateCols == null) m_updateCols = new LinkedList<String>();
         if (m_updateVals == null) m_updateVals = new LinkedList<Object>();
         m_updateCols.add(col);
@@ -137,7 +137,7 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder set(List<String> cols, List<Object> vals) {
+    public SQLBuilder set(List<String> cols, List<Object> vals) {
         if (cols == null || vals == null) return this;
         if (cols.size() != vals.size()) return this;
         int n = cols.size();
@@ -149,7 +149,7 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder set(String[] cols, Object[] vals) {
+    public SQLBuilder set(String[] cols, Object[] vals) {
         if (cols == null || vals == null) return this;
         if (cols.length != vals.length) return this;
         int n = cols.length;
@@ -159,7 +159,7 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder increase(String col, Object val) {
+    public SQLBuilder increase(String col, Object val) {
         if (m_increaseCols == null) m_increaseCols = new LinkedList<String>();
         if (m_increaseVals == null) m_increaseVals = new LinkedList<Object>();
         m_increaseCols.add(col);
@@ -167,7 +167,7 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder increase(String[] cols, Object[] vals) {
+    public SQLBuilder increase(String[] cols, Object[] vals) {
         if (cols == null || vals == null) return this;
         if (cols.length != vals.length) return this;
         int n = cols.length;
@@ -177,7 +177,7 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder decrease(String col, Object val) {
+    public SQLBuilder decrease(String col, Object val) {
         if (m_decreaseCols == null) m_decreaseCols = new LinkedList<String>();
         if (m_decreaseVals == null) m_decreaseVals = new LinkedList<Object>();
         m_decreaseCols.add(col);
@@ -185,7 +185,7 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder decrease(String[] cols, Object[] vals) {
+    public SQLBuilder decrease(String[] cols, Object[] vals) {
         if (cols == null || vals == null) return this;
         if (cols.length != vals.length) return this;
         int n = cols.length;
@@ -201,7 +201,7 @@ public class EasyPreparedStatementBuilder {
      * If <value> is to be filled in with associative field name, it could ONLY
      * be a primary table (i.e. m_table) field.
      */
-    public EasyPreparedStatementBuilder join(String table, String[] keys, String[] ops, Object[] vals) {
+    public SQLBuilder join(String table, String[] keys, String[] ops, Object[] vals) {
         if (table == null || keys == null || ops == null || vals == null) return this;
         if (keys.length != vals.length || ops.length != vals.length) return this;
         int length = keys.length;
@@ -212,7 +212,7 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder where(String col, String op, Object val) {
+    public SQLBuilder where(String col, String op, Object val) {
         if (m_whereCols == null) m_whereCols = new LinkedList<>();
         if (m_whereOps == null) m_whereOps = new LinkedList<>();
         if (m_whereVals == null) m_whereVals = new LinkedList<>();
@@ -222,7 +222,7 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder where(String[] cols, String[] ops, Object[] vals) {
+    public SQLBuilder where(String[] cols, String[] ops, Object[] vals) {
         if (cols == null || ops == null || vals == null) return this;
         if (cols.length != ops.length || cols.length != vals.length) return this;
         int n = cols.length;
@@ -232,7 +232,7 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder order(String col, String orientation) {
+    public SQLBuilder order(String col, String orientation) {
         if (m_orderBy == null) m_orderBy = new LinkedList<String>();
         m_orderBy.add(col);
 
@@ -242,12 +242,12 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder order(String col) {
+    public SQLBuilder order(String col) {
         order(col, null);
         return this;
     }
 
-    public EasyPreparedStatementBuilder order(List<String> cols, List<String> orientations) {
+    public SQLBuilder order(List<String> cols, List<String> orientations) {
         if (cols == null) return this;
         int n = cols.size();
         for (int i = 0; i < n; i++) {
@@ -261,7 +261,7 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder order(String[] cols, String[] orientations) {
+    public SQLBuilder order(String[] cols, String[] orientations) {
         if (cols == null) return this;
         int n = cols.length;
         for (int i = 0; i < n; i++) {
@@ -275,15 +275,15 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder order(List<String> cols) {
+    public SQLBuilder order(List<String> cols) {
         return order(cols, null);
     }
 
-    public EasyPreparedStatementBuilder order(String[] cols) {
+    public SQLBuilder order(String[] cols) {
         return order(cols, null);
     }
 
-    public EasyPreparedStatementBuilder limit(int st, int ed) {
+    public SQLBuilder limit(int st, int ed) {
         if (m_limits == null) m_limits = new LinkedList<Integer>();
         m_limits.clear();
         m_limits.add(st);
@@ -291,7 +291,7 @@ public class EasyPreparedStatementBuilder {
         return this;
     }
 
-    public EasyPreparedStatementBuilder limit(int num) {
+    public SQLBuilder limit(int num) {
         if (m_limits == null) m_limits = new LinkedList<Integer>();
         m_limits.clear();
         m_limits.add(num);

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import components.StandardFailureResult;
 import components.StandardSuccessResult;
 import components.TokenExpiredResult;
-import dao.EasyPreparedStatementBuilder;
+import dao.SQLBuilder;
 import dao.SimpleMap;
 import exception.DuplicateException;
 import exception.InvalidRequestParamsException;
@@ -57,7 +57,7 @@ public class EmailController extends PlayerController {
 	public static Result duplicate(final String email) {
 		try {
 			if (email == null || !General.validateEmail(email)) throw new InvalidRequestParamsException();
-			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			SQLBuilder builder = new SQLBuilder();
 			List<SimpleMap> data = builder.select(Player.ID).from(Player.TABLE).where(Player.EMAIL, "=", email).execSelect();
 			if (data != null && data.size() > 0) throw new DuplicateException();
 			return ok(StandardSuccessResult.get());
@@ -75,14 +75,14 @@ public class EmailController extends PlayerController {
 			if (email.isEmpty() || code.isEmpty()) throw new InvalidRequestParamsException();
 			if (!General.validateEmail(email)) throw new InvalidRequestParamsException();
 
-			String[] names = Player.QUERY_FILEDS;            EasyPreparedStatementBuilder builderSelect = new EasyPreparedStatementBuilder();
+			String[] names = Player.QUERY_FILEDS;            SQLBuilder builderSelect = new SQLBuilder();
 			List<SimpleMap> data = builderSelect.select(names).from(Player.TABLE).where(Player.EMAIL, "=", email).execSelect();
 
 			if (data == null || data.size() != 1) throw new PlayerNotFoundException();
 
 			Player player = new Player(data.get(0));
 
-			EasyPreparedStatementBuilder builderUpdate = new EasyPreparedStatementBuilder();
+			SQLBuilder builderUpdate = new SQLBuilder();
 			boolean res = builderUpdate.update(Player.TABLE)
 				.set(Player.GROUP_ID, Player.USER)
 				.set(Player.AUTHENTICATION_STATUS, (player.getAuthenticationStatus() | Player.EMAIL_AUTHENTICATED))

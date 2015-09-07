@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import components.TokenExpiredResult;
-import dao.EasyPreparedStatementBuilder;
+import dao.SQLBuilder;
 import dao.SQLHelper;
 import dao.SimpleMap;
 import exception.*;
@@ -128,7 +128,7 @@ public class AssessmentController extends Controller {
 
                         int newRelation = PlayerActivityRelation.maskRelation(PlayerActivityRelation.ASSESSED, originalRelation);
 
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         builder.update(PlayerActivityRelation.TABLE)
                                 .set(PlayerActivityRelation.RELATION, newRelation)
                                 .where(PlayerActivityRelation.PLAYER_ID, "=", playerId)

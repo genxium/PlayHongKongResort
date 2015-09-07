@@ -1,7 +1,7 @@
 package controllers;
 
 import components.TokenExpiredResult;
-import dao.EasyPreparedStatementBuilder;
+import dao.SQLBuilder;
 import exception.*;
 import models.Activity;
 import models.Player;
@@ -121,7 +121,7 @@ public class AdminController extends Controller {
 
             if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
 
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            SQLBuilder builder = new SQLBuilder();
             builder.update(Activity.TABLE)
                     .set(Activity.PRIORITY, priority)
                     .set(Activity.ORDER_MASK, orderMask)

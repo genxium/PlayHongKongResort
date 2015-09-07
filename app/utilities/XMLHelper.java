@@ -76,6 +76,7 @@ public class XMLHelper {
                         ret.put(CDNHelper.APP_ID, root.getElementsByTagName(ForeignPartyController.APP_ID).item(0).getTextContent());
                         ret.put(CDNHelper.APP_KEY, root.getElementsByTagName(ForeignPartyController.APP_KEY).item(0).getTextContent());
                         ret.put(CDNHelper.BUCKET, root.getElementsByTagName(CDNHelper.BUCKET).item(0).getTextContent());
+                        ret.put(CDNHelper.DOMAIN, root.getElementsByTagName(CDNHelper.BUCKET).item(0).getTextContent());
                 } catch (Exception e) {
                         Loggy.e(TAG, "readCDNConfig", e);
                 }

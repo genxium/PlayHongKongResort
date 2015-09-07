@@ -2,7 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import components.StandardFailureResult;
-import dao.EasyPreparedStatementBuilder;
+import dao.SQLBuilder;
 import dao.SQLHelper;
 import exception.ForeignPartyRegistrationRequiredException;
 import exception.PlayerNotFoundException;
@@ -111,7 +111,7 @@ public class ForeignPartyController extends Controller {
 			String[] cols = {Player.EMAIL, Player.NAME, Player.GROUP_ID, Player.PARTY, Player.VERIFICATION_CODE};
 			Object[] values = {email, name, Player.USER, party, code};
 
-			EasyPreparedStatementBuilder createPlayerBuilder = new EasyPreparedStatementBuilder();
+			SQLBuilder createPlayerBuilder = new SQLBuilder();
 			PreparedStatement createPlayerStat = createPlayerBuilder.insert(cols, values)
 				.into(Player.TABLE)
 				.toInsert(connection);
@@ -122,7 +122,7 @@ public class ForeignPartyController extends Controller {
 			String[] cols2 = {PermForeignParty.ID, PermForeignParty.PARTY, PermForeignParty.PLAYER_ID};
 			Object[] vals2 = {tempForeignPartyRecord.getPartyId(), tempForeignPartyRecord.getParty(), playerId};
 
-			EasyPreparedStatementBuilder createPermForeignPartyBuilder = new EasyPreparedStatementBuilder();
+			SQLBuilder createPermForeignPartyBuilder = new SQLBuilder();
 			PreparedStatement createPermForeignPartyStat = createPermForeignPartyBuilder.insert(cols2, vals2)
 				.into(PermForeignParty.TABLE)
 				.toInsert(connection);
@@ -130,7 +130,7 @@ public class ForeignPartyController extends Controller {
 			SQLHelper.executeAndCloseStatement(createPermForeignPartyStat);
 
 			// remove record from `temp_foreign_party`
-			EasyPreparedStatementBuilder deleteTempForeignPartyBuilder = new EasyPreparedStatementBuilder();
+			SQLBuilder deleteTempForeignPartyBuilder = new SQLBuilder();
 			PreparedStatement deleteTempForeignPartyStat = deleteTempForeignPartyBuilder.from(TempForeignParty.TABLE)
 				.where(TempForeignParty.ACCESS_TOKEN, "=", tempForeignPartyRecord.getAccessToken())
 				.where(TempForeignParty.PARTY, "=", tempForeignPartyRecord.getParty())
@@ -199,7 +199,7 @@ public class ForeignPartyController extends Controller {
 			// auto-login
 			String token = Converter.generateToken(player.getEmail(), player.getName());
 
-			EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+			SQLBuilder builder = new SQLBuilder();
 			String[] cols = {Login.PLAYER_ID, Login.TOKEN, Login.TIMESTAMP};
 			Object[] vals = {player.getId(), token, General.millisec()};
 			builder.insert(cols, vals).into(Login.TABLE).execInsert();

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import components.StandardFailureResult;
 import components.StandardSuccessResult;
 import components.TokenExpiredResult;
-import dao.EasyPreparedStatementBuilder;
+import dao.SQLBuilder;
 import dao.SQLHelper;
 import dao.SimpleMap;
 import exception.InvalidRequestParamsException;
@@ -98,7 +98,7 @@ public class NotificationController extends Controller {
             ObjectMapper mapper = new ObjectMapper();
             List<Long> notificationIdList = mapper.readValue(formData.get(AbstractMessage.BUNDLE)[0], mapper.getTypeFactory().constructCollectionType(List.class, Long.class));
 
-            EasyPreparedStatementBuilder query = new EasyPreparedStatementBuilder();
+            SQLBuilder query = new SQLBuilder();
             List<SimpleMap> results = query.select(Notification.QUERY_FIELDS)
                     .from(Notification.TABLE)
                     .where(Notification.ID, "IN", notificationIdList)
@@ -110,11 +110,11 @@ public class NotificationController extends Controller {
             /**
              * TODO: begin SQL-transaction guard
              * */
-            EasyPreparedStatementBuilder decrement = new EasyPreparedStatementBuilder();
+            SQLBuilder decrement = new SQLBuilder();
             boolean rs = decrement.update(Player.TABLE).decrease(Player.UNREAD_COUNT, results.size()).where(Player.ID, "=", playerId).execUpdate();
             if (!rs) throw new NullPointerException();
 
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            SQLBuilder builder = new SQLBuilder();
 
             builder.from(Notification.TABLE)
                     .where(Notification.ID, "IN", notificationIdList)

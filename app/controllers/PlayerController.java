@@ -5,7 +5,7 @@ import components.CaptchaNotMatchedResult;
 import components.StandardFailureResult;
 import components.StandardSuccessResult;
 import components.TokenExpiredResult;
-import dao.EasyPreparedStatementBuilder;
+import dao.SQLBuilder;
 import dao.SQLHelper;
 import dao.SimpleMap;
 import exception.*;
@@ -19,20 +19,16 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Http.RequestBody;
 import play.mvc.Result;
-import utilities.Converter;
-import utilities.DataUtils;
-import utilities.General;
-import utilities.Loggy;
+import utilities.*;
 
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.*;
 
 public class PlayerController extends Controller {
 
@@ -50,7 +46,7 @@ public class PlayerController extends Controller {
 
                         final String protocolPrefix = "http://";
                         final String host = request().host();
-                        final String path = "/player/email/veriy";
+                        final String path = "/player/email/verify";
 
                         final Map<String, Object> params = new HashMap<>();
                         params.put(Player.EMAIL, recipient);
@@ -83,7 +79,7 @@ public class PlayerController extends Controller {
                         String token = Converter.generateToken(email, password);
                         Long playerId = player.getId();
 
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         String[] cols = {Login.PLAYER_ID, Login.TOKEN, Login.TIMESTAMP};
                         Object[] vals = {playerId, token, General.millisec()};
                         builder.insert(cols, vals).into(Login.TABLE).execInsert();
@@ -169,7 +165,7 @@ public class PlayerController extends Controller {
                 try {
                         Map<String, String[]> formData = request().body().asFormUrlEncoded();
                         String token = formData.get(Player.TOKEN)[0];
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         builder.from(Login.TABLE).where(Login.TOKEN, "=", token);
                         if (!builder.execDelete()) throw new NullPointerException();
                         return ok();
@@ -182,7 +178,7 @@ public class PlayerController extends Controller {
         public static Result duplicate(String name) {
                 try {
                         if (name == null) throw new NullPointerException();
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         List<SimpleMap> data = builder.select(Player.ID).from(Player.TABLE).where(Player.NAME, "=", name).execSelect();
                         if (data != null && data.size() > 0) throw new DuplicateException();
                         return ok(StandardSuccessResult.get());
@@ -210,25 +206,18 @@ public class PlayerController extends Controller {
 
         public static Result save() {
                 try {
-                        Http.RequestBody body = request().body();
+                        Map<String, String[]> formData = request().body().asFormUrlEncoded();
+                        final String token = formData.get(Player.TOKEN)[0];
 
-                        // get file data from request body stream
-                        Http.MultipartFormData data = body.asMultipartFormData();
-                        Http.MultipartFormData.FilePart avatarFile = data.getFile(Player.AVATAR);
-                        if (avatarFile != null && !DataUtils.validateImage(avatarFile)) throw new InvalidRequestParamsException();
-
-                        // get player token from request body stream
-                        String token = DataUtils.getPlayerToken(data);
-                        Long playerId = DBCommander.queryPlayerId(token);
+                        final Long playerId = DBCommander.queryPlayerId(token);
                         if (playerId == null) throw new PlayerNotFoundException();
-                        Player player = DBCommander.queryPlayer(playerId);
+
+                        final Player player = DBCommander.queryPlayer(playerId);
                         if (player == null) throw new PlayerNotFoundException();
 
-                        Map<String, String[]> formData = data.asFormUrlEncoded();
-
-                        String age = formData.get(Player.AGE)[0];
-                        String gender = formData.get(Player.GENDER)[0];
-                        String mood = formData.get(Player.MOOD)[0];
+                        final String age = formData.get(Player.AGE)[0];
+                        final String gender = formData.get(Player.GENDER)[0];
+                        final String mood = formData.get(Player.MOOD)[0];
 
                         if (!General.validatePlayerAge(age) || !General.validatePlayerGender(gender) || !General.validatePlayerMood(mood))
                                 throw new InvalidRequestParamsException();
@@ -237,45 +226,82 @@ public class PlayerController extends Controller {
                         player.setGender(gender);
                         player.setMood(mood);
 
-                        if (avatarFile == null) {
+                        if (!formData.containsKey(Player.AVATAR)) {
                                 DBCommander.updatePlayer(player);
                                 return ok(player.toObjectNode(playerId));
                         }
 
+                        final String avatarRemoteName = formData.get(Player.AVATAR)[0];
 
-                        /**
-                         * TODO: begin SQL-transaction guard (resembling ActivityController.save)
-                         * */
                         long previousAvatarId = player.getAvatar();
-                        long newAvatarId = ExtraCommander.saveAvatar(avatarFile, player);
-                        if (newAvatarId == SQLHelper.INVALID) throw new NullPointerException();
+                        // TODO: combine to transaction block
+                        final Image previousAvatar = ExtraCommander.queryImage(previousAvatarId);
+                        final List<Image> toDeleteImageList = new LinkedList<>();
+                        toDeleteImageList.add(previousAvatar);
 
-                        player.setAvatar(newAvatarId);
+                        // TODO: combine into transaction block
+                        final Image avatar = ExtraCommander.queryImage(playerId, Image.TYPE_OWNER, avatarRemoteName);
+                        if (avatar == null) throw new NullPointerException();
 
-                        // delete previous avatar record and file
-                        Image previousAvatar = ExtraCommander.queryImage(previousAvatarId);
-                        if (previousAvatar == null) {
-                                // no previous avatar
-                                DBCommander.updatePlayer(player);
-                                return ok(player.toObjectNode(playerId));
-                        }
+                        final Connection connection = SQLHelper.getConnection();
+                        boolean transactionSucceeded = true;
 
-                        boolean isPreviousAvatarDeleted = ExtraCommander.deleteImageRecordAndFile(previousAvatar);
-                        if (!isPreviousAvatarDeleted) {
-                                // previous avatar not deleted
-                                Loggy.e(TAG, "upload", "previous avatar file or record NOT deleted for image id:" + previousAvatarId);
-                                throw new NullPointerException();
-                        }
-
-                        // previous avatar deleted
-                        DBCommander.updatePlayer(player);
                         /**
-                         * TODO: end SQL-transaction guard
+                         * begin SQL-transaction guard
                          * */
-                        return ok(player.toObjectNode(playerId));
+                        try {
+                                SQLHelper.disableAutoCommit(connection);
 
+                                final Map<String, String> attr = CDNHelper.getAttr(CDNHelper.QINIU);
+                                if (attr == null) throw new NullPointerException();
+                                final String urlProtocolPrefix = "http://";
+                                final String domain = attr.get(CDNHelper.DOMAIN);
+
+                                final String url = urlProtocolPrefix + domain + "/" + avatarRemoteName;
+
+                                String[] cols = {Image.URL, Image.META_ID, Image.META_TYPE};
+                                Object[] vals = {url, player.getId(), Image.TYPE_PLAYER};
+
+                                final SQLBuilder builderUpdate = new SQLBuilder();
+                                final PreparedStatement statUpdate = builderUpdate.update(Image.TABLE)
+                                                                                .set(cols, vals)
+                                                                                .where(Image.META_ID, "=", playerId)
+                                                                                .where(Image.META_TYPE, "=", Image.TYPE_OWNER)
+                                                                                .where(Image.REMOTE_NAME, "=", avatarRemoteName)
+                                                                                .toUpdate(connection);
+                                SQLHelper.executeAndCloseStatement(statUpdate);
+
+                                // delete previous avatar
+                                final SQLBuilder builderDeletion = new SQLBuilder();
+                                final PreparedStatement statDeletion = builderDeletion.from(Image.TABLE)
+                                                                                .where(Image.ID, "=", previousAvatarId)
+                                                                                .where(Image.META_ID, "=", playerId)
+                                                                                .where(Image.META_TYPE, "=", Image.TYPE_PLAYER)
+                                                                                .toDelete(connection);
+                                SQLHelper.executeAndCloseStatement(statDeletion);
+
+                                SQLHelper.commit(connection);
+
+                        } catch (Exception e) {
+                                Loggy.e(TAG, "save", e);
+                                transactionSucceeded = false;
+                                SQLHelper.rollback(connection);
+                        } finally {
+                                SQLHelper.enableAutoCommitAndClose(connection);
+                        }
+                        /**
+                         * end SQL-transaction guard
+                         * */
+
+                        // TODO: combine into transaction block
+                        if (transactionSucceeded) {
+                                CDNHelper.deleteRemoteImages(CDNHelper.QINIU, toDeleteImageList);
+                                player.setAvatar(avatar.getId());
+                        }
+                        DBCommander.updatePlayer(player);
+                        return ok(player.toObjectNode(playerId));
                 } catch (Exception e) {
-                        Loggy.e(TAG, "upload", e);
+                        Loggy.e(TAG, "save", e);
                 }
                 return badRequest();
 

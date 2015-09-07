@@ -16,5 +16,3 @@ mysqldump -h $host -u $user -d $dbname player_activity_relation > $basedir/creat
 mysqldump -h $host -u $user -d $dbname player > $basedir/create_table_player.sql
 mysqldump -h $host -u $user -d $dbname perm_foreign_party > $basedir/create_table_perm_foreign_party.sql
 mysqldump -h $host -u $user -d $dbname temp_foreign_party > $basedir/create_table_temp_foreign_party.sql
- 
-

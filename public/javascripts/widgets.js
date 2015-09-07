@@ -84,7 +84,9 @@ function ImageNode(cdn, bucketDomain) {
 
 		var params = {};
 		params[g_keyToken] = token;
-		params[g_keyRemoteName] = remoteName;
+		var remoteNameList = [];
+		remoteNameList.push(this.remoteName);
+		params[g_keyBundle] = JSON.stringify(remoteNameList);
 
 		this.state = SLOT_AJAX_PENDING;
 
@@ -107,7 +109,7 @@ function ImageNode(cdn, bucketDomain) {
 
 	this.composeContent = function(data) {
 		
-		this.editor = data.editor;
+		this.editor = data;
 		this.wrap = $('<div>', {
 			"class": "preview-container left"
 		}).appendTo(this.content);
@@ -123,19 +125,19 @@ function ImageNode(cdn, bucketDomain) {
 		this.btnDel = $('<button>', {
 			text: TITLES["delete"],
 			"class": "positive-button"
-		}).appendTo(this.wrap).click(this.remoteName, function(evt){
+		}).appendTo(this.wrap).click(this, function(evt){
 			evt.preventDefault();
+			var remoteName = evt.data.remoteName;
+			var editor = evt.data.editor;
 			editor.setSavable();
 			editor.setNonSubmittable();
 
-			var remoteName = evt.data;
 			if(!editor.newImageNodes.hasOwnProperty(remoteName)) return;
 			var thatNode = editor.newImageNodes[remoteName];
 			var aButton = getTarget(evt);
 			var onSuccess = function(data) {
                                 enableField(aButton);
 				delete editor.newImageNodes[remoteName];
-				editor.explorerTrigger.shift(-1, g_wImageCell);
 				thatNode.remove();
 			};
 			var onError = function(err) {
@@ -149,8 +151,7 @@ function ImageNode(cdn, bucketDomain) {
 			var tick = currentMillis();
 			var remoteName =  '{0}_{1}'.format(g_loggedInPlayer.id, tick);
 			this.remoteName = remoteName;
-			var maxSize = (1 << 21); // in bytes
-			var uptokenParams = [g_keyToken + '=' + $.cookie(g_keyToken), g_keyRemoteName + '=' + remoteName, g_keyMaxSize + '=' + maxSize]; 
+			var uptokenParams = [g_keyToken + '=' + $.cookie(g_keyToken), g_keyRemoteName + '=' + remoteName]; 
 			var uptokenUrl = '/image/cdn/qiniu/uptoken?' + uptokenParams.join('&'); 
 			// reference http://developer.qiniu.com/docs/v6/sdk/javascript-sdk.html
 			var node = this;
@@ -181,17 +182,12 @@ function ImageNode(cdn, bucketDomain) {
 
 						node.state = SLOT_UPLOADING; 
 						disableField(node.btnChoose);
-
-						var reader = new FileReader();
-						reader.onload = function (e) {
-							node.preview.attr("src", e.target.result);
-						};
-						reader.readAsDataURL(file);
 					},
 					'BeforeUpload': function(up, file) {
 						node.state = SLOT_IDLE;
 					},
 					'UploadProgress': function(up, file) {
+						// TODO: show progress
 					},
 					'FileUploaded': function(up, file, info) {
 					},
@@ -201,9 +197,15 @@ function ImageNode(cdn, bucketDomain) {
 					'UploadComplete': function() {
 						enableField(node.btnChoose);
 						if (node.state == SLOT_UPLOAD_FAILED) return;
+						var protocolPrefix = "http://";
+						var imageUrl = protocolPrefix + node.bucketDomain + "/" + node.remoteName;
+						node.preview.attr("src", imageUrl);
+						node.editor.newImageNodes[node.remoteName] = node;
 						node.state = SLOT_IDLE; 
-						node.btnChoose.hide();
+						node.btnChoose.remove();
 						node.btnDel.show();	 
+						
+						// TODO: show a new ImageNode instance to the right most of the row for ActivityEditor
 					},
 					 'Key': function(up, file) {
 						// would ONLY be invoked when {unique_names: false , save_key: false}

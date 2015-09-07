@@ -13,7 +13,7 @@ public class TempForeignParty {
     public static final String PARTY_ID = "party_id";
     public static final String TIMESTAMP = "timestamp";
 
-    public static String[] QUERY_FIELDS = {ACCESS_TOKEN, PARTY, PARTY_ID, TIMESTAMP};
+    public static final String[] QUERY_FIELDS = {ACCESS_TOKEN, PARTY, PARTY_ID, TIMESTAMP};
 
     protected String m_accessToken = null;
 

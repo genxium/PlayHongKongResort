@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import components.StandardFailureResult;
 import components.StandardSuccessResult;
 import components.TokenExpiredResult;
-import dao.EasyPreparedStatementBuilder;
+import dao.SQLBuilder;
 import exception.*;
 import fixtures.Constants;
 import models.AbstractMessage;
@@ -63,7 +63,7 @@ public class ParticipantController extends PlayerController {
                                 throw new NullPointerException();
 
                         int count = playerIdList.size();
-                        EasyPreparedStatementBuilder change = new EasyPreparedStatementBuilder();
+                        SQLBuilder change = new SQLBuilder();
                         change.update(Activity.TABLE)
                                 .decrease(Activity.NUM_APPLIED, count)
                                 .increase(Activity.NUM_SELECTED, count)

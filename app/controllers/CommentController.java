@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import components.TokenExpiredResult;
-import dao.EasyPreparedStatementBuilder;
+import dao.SQLBuilder;
 import dao.SQLHelper;
 import exception.*;
 import models.*;
@@ -102,7 +102,7 @@ public class CommentController extends Controller {
 
             DBCommander.isActivityCommentable(fromPlayer, activity);
 
-            EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+            SQLBuilder builder = new SQLBuilder();
 
             String[] cols = {Comment.CONTENT, Comment.ACTIVITY_ID, Comment.FROM, Comment.GENERATED_TIME};
             Object[] vals = {content, activityId, from, General.millisec()};

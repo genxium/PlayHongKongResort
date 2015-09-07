@@ -1,7 +1,8 @@
 package controllers;
 
-import dao.EasyPreparedStatementBuilder;
+import dao.SQLBuilder;
 import dao.SQLHelper;
+import dao.SimpleMap;
 import exception.*;
 import models.*;
 import utilities.Converter;
@@ -10,7 +11,6 @@ import utilities.General;
 import utilities.Loggy;
 
 import java.util.*;
-import dao.SimpleMap;
 
 /*
  * Note that the relation (a.k.a PlayerActivityRelation.RELATION) in this class is always referring to masked relation
@@ -39,7 +39,7 @@ public class DBCommander {
 
                 try {
                         String[] names = Player.QUERY_FILEDS;
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         List<SimpleMap> results = builder.select(names).from(Player.TABLE).where(Player.ID, "=", playerId).execSelect();
                         if (results == null || results.size() <= 0) return null;
                         Iterator<SimpleMap> it = results.iterator();
@@ -57,7 +57,7 @@ public class DBCommander {
                 try {
                         if (playerIdList == null || playerIdList.size() == 0) return ret;
                         String[] names = Player.QUERY_FILEDS;
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         List<SimpleMap> records = builder.select(names).from(Player.TABLE).where(Player.ID, "IN", playerIdList).execSelect();
                         if (records == null || records.size() <= 0) return null;
                         for (SimpleMap record : records) {
@@ -73,7 +73,7 @@ public class DBCommander {
                 Player player = null;
                 try {
                         String[] names = Player.QUERY_FILEDS;
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         List<SimpleMap> results = builder.select(names).from(Player.TABLE).where(Player.EMAIL, "=", email).execSelect();
                         if (results == null || results.size() <= 0) return null;
                         Iterator<SimpleMap> it = results.iterator();
@@ -92,7 +92,7 @@ public class DBCommander {
                         String[] cols = {Player.EMAIL, Player.PASSWORD, Player.NAME, Player.GROUP_ID, Player.VERIFICATION_CODE, Player.SALT};
                         Object[] vals = {player.getEmail(), player.getPassword(), player.getName(), player.getGroupId(), player.getVerificationCode(), player.getSalt()};
 
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         return builder.insert(cols, vals).into(Player.TABLE).execInsert();
                 } catch (Exception e) {
                         Loggy.e(TAG, "registerPlayer", e);
@@ -105,7 +105,7 @@ public class DBCommander {
                         String[] cols = {Player.EMAIL, Player.PASSWORD, Player.NAME, Player.GROUP_ID, Player.AGE, Player.GENDER, Player.MOOD, Player.VERIFICATION_CODE};
                         Object[] values = {player.getEmail(), player.getPassword(), player.getName(), player.getGroupId(), player.getAge(), player.getGender(), player.getMood(), player.getVerificationCode()};
 
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         return builder.update(Player.TABLE).set(cols, values).where(Player.ID, "=", player.getId()).execUpdate();
                 } catch (Exception e) {
                         Loggy.e(TAG, "updatePlayer", e);
@@ -122,7 +122,7 @@ public class DBCommander {
                 String[] names = {Activity.HOST_ID, Activity.CREATED_TIME};
                 Object[] values = {host.getId(), now};
 
-                EasyPreparedStatementBuilder builderActivity = new EasyPreparedStatementBuilder();
+                SQLBuilder builderActivity = new SQLBuilder();
                 lastActivityId = Converter.toLong(builderActivity.insert(names, values).into(Activity.TABLE).execInsert());
                 if (lastActivityId == null || lastActivityId.equals(SQLHelper.INVALID)) return null;
 
@@ -134,7 +134,7 @@ public class DBCommander {
                 String[] names2 = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.PLAYER_ID, PlayerActivityRelation.RELATION, PlayerActivityRelation.GENERATED_TIME};
                 Object[] values2 = {lastActivityId, host.getId(), PlayerActivityRelation.SELECTED | PlayerActivityRelation.PRESENT, now};
 
-                EasyPreparedStatementBuilder builderRelation = new EasyPreparedStatementBuilder();
+                SQLBuilder builderRelation = new SQLBuilder();
                 builderRelation.insert(names2, values2).into(PlayerActivityRelation.TABLE).execInsert();
 
                 return activity;
@@ -153,7 +153,7 @@ public class DBCommander {
                 try {
                         String[] cols = {Activity.TITLE, Activity.ADDRESS, Activity.CONTENT, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
                         Object[] values = {activity.getTitle(), activity.getAddress(), activity.getContent(), activity.getBeginTime(), activity.getDeadline(), activity.getCapacity()};
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         return builder.update(Activity.TABLE).set(cols, values).where(Activity.ID, "=", activity.getId()).execUpdate();
                 } catch (Exception e) {
                         Loggy.e(TAG, "updateActivity", e);
@@ -165,7 +165,7 @@ public class DBCommander {
         public static Activity queryActivity(final long activityId) {
                 try {
                         String[] names = Activity.QUERY_FIELDS;
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         List<SimpleMap> results = builder.select(names).from(Activity.TABLE).where(Activity.ID, "=", activityId).execSelect();
                         if (results == null || results.size() != 1) throw new ActivityNotFoundException();
                         SimpleMap activityData = results.get(0);
@@ -182,12 +182,12 @@ public class DBCommander {
         public static List<Activity> queryActivities(final Integer pageSt, final Integer pageEd, final String orderKey, final String orientation, final Integer numItems, final Long vieweeId, final List<Integer> maskedRelationList) {
                 List<Activity> ret = new ArrayList<>();
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         String[] names = Activity.QUERY_FIELDS;
                         String[] onCols = {PlayerActivityRelation.PLAYER_ID, PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.RELATION};
                         String[] onOps = {"=", "=", "IN"};
 
-                        Object[] onVals = {vieweeId, new EasyPreparedStatementBuilder.PrimaryTableField(Activity.ID), maskedRelationList};
+                        Object[] onVals = {vieweeId, new SQLBuilder.PrimaryTableField(Activity.ID), maskedRelationList};
 
                         List<SimpleMap> activityDataList = builder.select(names)
                                 .from(Activity.TABLE)
@@ -211,7 +211,7 @@ public class DBCommander {
         public static List<Activity> queryActivities(final Integer pageSt, final Integer pageEd, final String orderKey, final String orientation, final Integer numItems, final int status, final int offset) {
                 List<Activity> ret = new ArrayList<>();
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         String[] names = Activity.QUERY_FIELDS;
                         builder.select(names)
                                 .from(Activity.TABLE)
@@ -241,7 +241,7 @@ public class DBCommander {
         public static List<Activity> queryHostedActivities(final Long hostId, final Long viewerId, final Integer pageSt, final Integer pageEd, final String orderKey, final String orientation, final Integer numItems) {
                 List<Activity> ret = new ArrayList<>();
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         String[] names = Activity.QUERY_FIELDS;
                         builder.select(names)
                                 .from(Activity.TABLE)
@@ -269,7 +269,7 @@ public class DBCommander {
         public static List<Activity> queryPrioritizedActivities(final List<Integer> orderMaskList, final Integer numberItems) {
                 List<Activity> ret = new ArrayList<>();
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         String[] names = Activity.QUERY_FIELDS;
                         builder.select(names)
                                 .from(Activity.TABLE)
@@ -297,7 +297,7 @@ public class DBCommander {
                 try {
                         if (playerId == null) throw new PlayerNotFoundException();
                         if (activityId == null) throw new ActivityNotFoundException();
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
 
                         List<SimpleMap> records = builder.select(PlayerActivityRelation.RELATION).from(PlayerActivityRelation.TABLE)
                                 .where(PlayerActivityRelation.PLAYER_ID, "=", playerId)
@@ -319,7 +319,7 @@ public class DBCommander {
                 try {
                         if (playerIdList == null) throw new PlayerNotFoundException();
                         if (activityId == null) throw new ActivityNotFoundException();
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
 
                         List<SimpleMap> records = builder.select(PlayerActivityRelation.RELATION).from(PlayerActivityRelation.TABLE)
                                 .where(PlayerActivityRelation.PLAYER_ID, "IN", playerIdList)
@@ -336,7 +336,7 @@ public class DBCommander {
 
         public static Comment queryComment(Integer commentId) {
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.NUM_CHILDREN, Comment.GENERATED_TIME};
                         List<SimpleMap> commentDataList = builder.select(names).from(Comment.TABLE).where(Comment.ID, "=", commentId).execSelect();
                         if (commentDataList == null || commentDataList.size() <= 0) throw new NullPointerException();
@@ -350,7 +350,7 @@ public class DBCommander {
         public static List<Comment> queryTopLevelComments(Long activityId, Integer pageSt, Integer pageEd, String orderKey, String orientation, Integer numItems) {
                 List<Comment> ret = new ArrayList<>();
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
 
                         // query table Comment
                         String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.NUM_CHILDREN, Comment.GENERATED_TIME};
@@ -380,7 +380,7 @@ public class DBCommander {
         public static List<Comment> querySubComments(Long parentId, String refIndex, String orderKey, String orientation, Integer numItems, Integer direction) {
                 List<Comment> ret = new ArrayList<>();
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
                         builder.select(names).from(Comment.TABLE).where(Comment.PARENT_ID, "=", parentId);
                         List<SimpleMap> commentDataList = processAdvancedQuery(builder, refIndex, orderKey, orientation, direction, numItems);
@@ -398,7 +398,7 @@ public class DBCommander {
         public static List<Comment> querySubComments(Long parentId, Integer pageSt, Integer pageEd, String orderKey, String orientation, Integer numItems) {
                 List<Comment> ret = new ArrayList<>();
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
 
                         String[] names = {Comment.ID, Comment.CONTENT, Comment.FROM, Comment.TO, Comment.PARENT_ID, Comment.PREDECESSOR_ID, Comment.ACTIVITY_ID, Comment.GENERATED_TIME};
                         builder.select(names)
@@ -422,7 +422,7 @@ public class DBCommander {
         public static List<Assessment> queryAssessmentList(Integer pageSt, Integer pageEd, Integer numItems, String orderKey, String orientation, Long viewerId, Long to) {
                 List<Assessment> ret = new ArrayList<>();
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         String[] names = {Assessment.ID, Assessment.CONTENT, Assessment.CONTENT, Assessment.FROM, Assessment.ACTIVITY_ID, Assessment.TO, Assessment.GENERATED_TIME};
 
                         List<SimpleMap> records = builder.select(names)
@@ -444,7 +444,7 @@ public class DBCommander {
         public static List<Assessment> queryAssessments(String refIndex, String orderKey, String orientation, Integer numItems, Integer direction, Long from, Long to, Long activityId) {
                 List<Assessment> ret = new ArrayList<>();
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         String[] names = {Assessment.ID, Assessment.CONTENT, Assessment.CONTENT, Assessment.FROM, Assessment.ACTIVITY_ID, Assessment.TO, Assessment.GENERATED_TIME};
                         builder.select(names).from(Assessment.TABLE)
                                 .where(Assessment.ACTIVITY_ID, "=", activityId);
@@ -467,7 +467,7 @@ public class DBCommander {
 
         public static boolean updateAssessment(Integer activityId, Integer from, Integer to, String content) {
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         String[] whereCols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO};
                         String[] whereOps = {"=", "=", "="};
                         Object[] whereVals = {activityId, from, to};
@@ -480,7 +480,7 @@ public class DBCommander {
 
         public static void createAssessments(List<Assessment> assessmentList) {
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         long now = General.millisec();
                         String[] cols = {Assessment.ACTIVITY_ID, Assessment.FROM, Assessment.TO, Assessment.CONTENT, Assessment.GENERATED_TIME};
                         for (Assessment assessment : assessmentList) {
@@ -496,7 +496,7 @@ public class DBCommander {
         public static List<Notification> queryNotifications(Long to, Integer isRead, Integer pageSt, Integer pageEd, String orderKey, String orientation, Integer numItems) {
                 List<Notification> ret = new ArrayList<>();
 
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                SQLBuilder builder = new SQLBuilder();
 
                 String[] names = {Notification.ID, Notification.IS_READ, Notification.ACTIVITY_ID, Notification.CONTENT, Notification.FROM, Notification.TO, Notification.CMD, Notification.GENERATED_TIME};
                 builder.select(names)
@@ -669,7 +669,7 @@ public class DBCommander {
                 if (activity == null) return false;
                 try {
                         long now = General.millisec();
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         return builder.update(Activity.TABLE)
                                 .set(Activity.STATUS, Activity.ACCEPTED)
                                 .set(Activity.LAST_ACCEPTED_TIME, now)
@@ -686,7 +686,7 @@ public class DBCommander {
                 if (activity == null) return false;
                 try {
                         long now = General.millisec();
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         return builder.update(Activity.TABLE)
                                 .set(Activity.STATUS, Activity.REJECTED)
                                 .set(Activity.LAST_REJECTED_TIME, now)
@@ -704,9 +704,9 @@ public class DBCommander {
                 try {
                         String[] onCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.PLAYER_ID, PlayerActivityRelation.RELATION};
                         String[] onOps = {"=", "=", "IN"};
-                        Object[] onVals = {activityId, new EasyPreparedStatementBuilder.PrimaryTableField(Player.ID), maskedRelationList};
+                        Object[] onVals = {activityId, new SQLBuilder.PrimaryTableField(Player.ID), maskedRelationList};
 
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         List<SimpleMap> records = builder.select(Player.QUERY_FILEDS)
                                 .from(Player.TABLE)
                                 .join(PlayerActivityRelation.TABLE, onCols, onOps, onVals)
@@ -731,12 +731,12 @@ public class DBCommander {
                 try {
                         String[] onCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.PLAYER_ID, PlayerActivityRelation.RELATION};
                         String[] onOps = {"IN", "=", "IN"};
-                        Object[] onVals = {activityIdList, new EasyPreparedStatementBuilder.PrimaryTableField(Player.ID), maskedRelationList};
+                        Object[] onVals = {activityIdList, new SQLBuilder.PrimaryTableField(Player.ID), maskedRelationList};
 
                         List<String> fields = new ArrayList<>();
                         for (String field : Player.QUERY_FILEDS) fields.add(field);
                         fields.add(PlayerActivityRelation.ACTIVITY_ID);
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         List<SimpleMap> records = builder.select(fields)
                                 .from(Player.TABLE)
                                 .join(PlayerActivityRelation.TABLE, onCols, onOps, onVals).execSelect();
@@ -754,7 +754,7 @@ public class DBCommander {
 
         public static boolean updatePlayerActivityRelation(Long playerId, Long activityId, int relation) {
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         builder.update(PlayerActivityRelation.TABLE)
                                 .set(PlayerActivityRelation.RELATION, relation)
                                 .where(PlayerActivityRelation.ACTIVITY_ID, "=", activityId)
@@ -772,7 +772,7 @@ public class DBCommander {
 
         public static boolean updatePlayerActivityRelation(List<Long> playerIdList, Long activityId, int relation) {
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         builder.update(PlayerActivityRelation.TABLE)
                                 .set(PlayerActivityRelation.RELATION, relation)
                                 .where(PlayerActivityRelation.ACTIVITY_ID, "=", activityId)
@@ -806,7 +806,7 @@ public class DBCommander {
                 return queryPlayers(activityId, relationList);
         }
 
-        static List<SimpleMap> processAdvancedQuery(EasyPreparedStatementBuilder builder, String refIndex, String orderKey, String orientation, Integer direction, Integer nItems) {
+        static List<SimpleMap> processAdvancedQuery(SQLBuilder builder, String refIndex, String orderKey, String orientation, Integer direction, Integer nItems) {
                 if (refIndex.equals(INITIAL_REF_INDEX)) {
                         builder.where(orderKey, ">=", Integer.valueOf(INITIAL_REF_INDEX));
                         builder.order(orderKey, orientation);
@@ -832,7 +832,7 @@ public class DBCommander {
 
         public static Long queryPlayerId(String token) throws TokenExpiredException {
 
-                EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                SQLBuilder builder = new SQLBuilder();
                 List<SimpleMap> allData = builder.select(Login.PLAYER_ID).from(Login.TABLE).where(Login.TOKEN, "=", token).execSelect();
                 if (allData == null || allData.size() != 1) return null;
                 SimpleMap loginData = allData.get(0);
@@ -857,9 +857,7 @@ public class DBCommander {
         public static boolean appendPlayerInfoForActivity(final List<Activity> activityList, final Long viewerId) {
                 // host and viewer
                 List<Long> hostIdList = new ArrayList<>();
-                for (Activity activity : activityList) {
-                        hostIdList.add(activity.getHostId());
-                }
+                for (Activity activity : activityList)  hostIdList.add(activity.getHostId());
                 List<Player> hostList = queryPlayerList(hostIdList);
                 if (hostList == null) return false;
 
@@ -1004,7 +1002,7 @@ public class DBCommander {
         public static PermForeignParty queryPermForeignParty(final String partyId, final Integer party) {
                 try {
                         String[] names = PermForeignParty.QUERY_FIELDS;
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         List<SimpleMap> results = builder.select(names)
                                 .from(PermForeignParty.TABLE)
                                 .where(PermForeignParty.ID, "=", partyId)
@@ -1022,7 +1020,7 @@ public class DBCommander {
         public static TempForeignParty queryTempForeignParty(final String accessToken, final Integer party) {
                 try {
                         String[] cols = TempForeignParty.QUERY_FIELDS;
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         List<SimpleMap> results = builder.select(cols)
                                 .from(TempForeignParty.TABLE)
                                 .where(TempForeignParty.ACCESS_TOKEN, "=", accessToken)
@@ -1039,7 +1037,7 @@ public class DBCommander {
 
         public static long createTempForeignParty(final String accessToken, final Integer party, final String partyId) {
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         String[] cols = {TempForeignParty.ACCESS_TOKEN, TempForeignParty.PARTY, TempForeignParty.PARTY_ID, TempForeignParty.TIMESTAMP};
                         Object[] vals = {accessToken, party, partyId, General.millisec()};
                         return builder.insert(cols, vals).into(TempForeignParty.TABLE).execInsert();
@@ -1051,7 +1049,7 @@ public class DBCommander {
 
         public static boolean deleteTempForeignParty(final String accessToken, final Integer party) {
                 try {
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
                         return builder.from(TempForeignParty.TABLE)
                                 .where(TempForeignParty.ACCESS_TOKEN, "=", accessToken)
                                 .where(TempForeignParty.PARTY, "=", party)

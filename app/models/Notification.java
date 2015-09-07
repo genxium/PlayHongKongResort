@@ -18,7 +18,7 @@ public class Notification extends AbstractActivityMessage {
         public static final String TABLE = "notification";
         public static final String NOTIFICATIONS = "notifications";
 
-        public static String[] QUERY_FIELDS = {ID, IS_READ, COMMENT_ID, ASSESSMENT_ID, CMD, RELATION, STATUS};
+        public static final String[] QUERY_FIELDS = {ID, IS_READ, COMMENT_ID, ASSESSMENT_ID, CMD, RELATION, STATUS};
 
         protected Integer m_isRead = 0;
         protected Integer m_commentId = INVALID;
@@ -38,7 +38,7 @@ public class Notification extends AbstractActivityMessage {
         }
 
         public ObjectNode toObjectNode() {
-                ObjectNode ret = super.toObjectNode();
+                final ObjectNode ret = super.toObjectNode();
                 try {
                         ret.put(CMD, String.valueOf(m_cmd));
                         ret.put(IS_READ, String.valueOf(m_isRead));

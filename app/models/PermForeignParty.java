@@ -12,7 +12,7 @@ public class PermForeignParty {
 	public static final String PARTY = "party";
 	public static final String PLAYER_ID = "player_id";
 
-	public static String[] QUERY_FIELDS = {ID, PARTY, PLAYER_ID};
+	public static final String[] QUERY_FIELDS = {ID, PARTY, PLAYER_ID};
 
 	protected String m_id = null;
 	public String getId() {

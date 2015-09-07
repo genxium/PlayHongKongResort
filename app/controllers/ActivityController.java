@@ -8,22 +8,20 @@ import components.CaptchaNotMatchedResult;
 import components.StandardFailureResult;
 import components.StandardSuccessResult;
 import components.TokenExpiredResult;
-import dao.EasyPreparedStatementBuilder;
+import dao.SQLBuilder;
 import dao.SQLHelper;
 import exception.*;
 import fixtures.Constants;
 import models.*;
-import org.apache.commons.io.FileUtils;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.CDNHelper;
 import utilities.Converter;
-import utilities.DataUtils;
 import utilities.General;
 import utilities.Loggy;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -34,6 +32,7 @@ public class ActivityController extends Controller {
         public static final String TAG = ActivityController.class.getName();
 
         public static final String OLD_IMAGE = "old_image";
+        public static final String NEW_IMAGE = "new_image";
 
         public static Result list(Integer pageSt, Integer pageEd, Integer numItems, String orderKey, Integer orientation, String token, Long vieweeId, Integer relation, Integer status) {
                 try {
@@ -166,36 +165,24 @@ public class ActivityController extends Controller {
 
         public static Result save() {
                 try {
-                        Http.RequestBody body = request().body();
+                        final Http.RequestBody body = request().body();
+                        final Map<String, String[]> formData = body.asFormUrlEncoded();
 
-                        // get file data from request body stream
-                        Http.MultipartFormData data = body.asMultipartFormData();
-                        List<Http.MultipartFormData.FilePart> imageFiles = data.getFiles();
-
-                        Map<String, String[]> formData = data.asFormUrlEncoded();
-
-                        String activityTitle = formData.get(Activity.TITLE)[0];
-                        String activityAddress = formData.get(Activity.ADDRESS)[0];
-                        String activityContent = formData.get(Activity.CONTENT)[0];
+                        final String activityTitle = formData.get(Activity.TITLE)[0];
+                        final String activityAddress = formData.get(Activity.ADDRESS)[0];
+                        final String activityContent = formData.get(Activity.CONTENT)[0];
 
                         if (!General.validateActivityTitle(activityTitle) || !General.validateActivityAddress(activityAddress) || !General.validateActivityContent(activityContent))
                                 throw new InvalidRequestParamsException();
 
-                        Long beginTime = Converter.toLong(formData.get(Activity.BEGIN_TIME)[0]);
-                        Long deadline = Converter.toLong(formData.get(Activity.DEADLINE)[0]);
+                        final Long beginTime = Converter.toLong(formData.get(Activity.BEGIN_TIME)[0]);
+                        final Long deadline = Converter.toLong(formData.get(Activity.DEADLINE)[0]);
 
                         if (beginTime == null || deadline == null || deadline < 0 || beginTime < 0)
                                 throw new InvalidRequestParamsException();
                         if (deadline > beginTime) throw new DeadlineAfterBeginTimeException();
 
-                        // check new images
-                        if (imageFiles != null && imageFiles.size() > 0) {
-                                for (Http.MultipartFormData.FilePart imageFile : imageFiles) {
-                                        if (!DataUtils.validateImage(imageFile)) throw new InvalidImageException();
-                                }
-                        }
-
-                        String token = formData.get(Player.TOKEN)[0];
+                        final String token = formData.get(Player.TOKEN)[0];
                         if (token == null) throw new NullPointerException();
 
                         boolean isNewActivity = true;
@@ -214,10 +201,11 @@ public class ActivityController extends Controller {
 
                         Long playerId = DBCommander.queryPlayerId(token);
                         if (playerId == null) throw new PlayerNotFoundException();
+
                         Player player = DBCommander.queryPlayer(playerId);
                         if (player == null) throw new PlayerNotFoundException();
 
-                        if (player.getGroupId() == Player.VISITOR) throw new AccessDeniedException();
+                        if (isNewActivity && player.getGroupId() == Player.VISITOR) throw new AccessDeniedException();
 
                         Activity activity = null;
                         long now = General.millisec();
@@ -243,23 +231,26 @@ public class ActivityController extends Controller {
 
                         Set<Long> selectedOldImagesSet = new HashSet<>();
                         if (formData.containsKey(OLD_IMAGE)) {
-                                ObjectMapper mapper = new ObjectMapper();
-                                selectedOldImagesSet = mapper.readValue(formData.get(AbstractMessage.BUNDLE)[0], mapper.getTypeFactory().constructCollectionType(Set.class, Long.class));
+                                final ObjectMapper mapper = new ObjectMapper();
+                                selectedOldImagesSet = mapper.readValue(formData.get(OLD_IMAGE)[0], mapper.getTypeFactory().constructCollectionType(Set.class, Long.class));
                         }
-                        List<Image> previousImages = ExtraCommander.queryImages(activityId);
+                        List<Image> previousImageList = ExtraCommander.queryImages(activityId);
+                        final List<Image> toDeleteImageList = new LinkedList<>();
+
+                        List<String> newRemoteNameList = new LinkedList<>();
+                        List<Image> newImageList = new LinkedList<>();
+                        if (formData.containsKey(NEW_IMAGE)) {
+                                final ObjectMapper mapper = new ObjectMapper();
+                                newRemoteNameList.addAll(mapper.readValue(formData.get(NEW_IMAGE)[0], mapper.getTypeFactory().constructCollectionType(List.class, String.class)));
+                                newImageList = ExtraCommander.queryImages(playerId, Image.TYPE_OWNER, newRemoteNameList);
+                        }
 
                         /**
-                         * TODO: clean up these codes
-                         * begin SQL-transaction guard, major concerns are
-                         * 1. expose SQLException(s) of all SQL commands, e.g. "saveImageOfActivity" and "deleteImageRecordAndFile", to enable transaction rollback;
-                         * 2. use java.sql.PrepareStatement instead of "execSelect", "execUpdate", "execReplace", "execInsert" and "execDelete" methods because the SQL connection has to be kept till transaction commitment and rollback;
-                         * 3. all java.sql.PrepareStatement instances can be closed BEFORE committing transactions.
-                         * 4. images to be deleted can be handled after the SQL-transaction guard or maybe ASYNCHRONOUSLY
+                         * begin SQL-transaction guard
                          * */
-
                         boolean transactionSucceeded = true;
                         Connection connection = SQLHelper.getConnection();
-                        List<String> savedImagePathList = new ArrayList<>();
+
                         try {
                                 if (connection == null) throw new NullPointerException();
                                 SQLHelper.disableAutoCommit(connection);
@@ -267,82 +258,61 @@ public class ActivityController extends Controller {
                                 // update activity
                                 String[] cols1 = {Activity.TITLE, Activity.ADDRESS, Activity.CONTENT, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
                                 Object[] values1 = {activity.getTitle(), activity.getAddress(), activity.getContent(), activity.getBeginTime(), activity.getDeadline(), activity.getCapacity()};
-                                EasyPreparedStatementBuilder updateActivityBuilder = new EasyPreparedStatementBuilder();
-                                PreparedStatement updateActivityStat = updateActivityBuilder.update(Activity.TABLE)
+                                SQLBuilder builderUpdate = new SQLBuilder();
+                                PreparedStatement statUpdate = builderUpdate.update(Activity.TABLE)
                                         .set(cols1, values1)
                                         .where(Activity.ID, "=", activity.getId())
                                         .toUpdate(connection);
-                                SQLHelper.executeAndCloseStatement(updateActivityStat);
+                                SQLHelper.executeAndCloseStatement(statUpdate);
 
-                                // save new images
-                                if (imageFiles != null && imageFiles.size() > 0) {
-                                        for (Http.MultipartFormData.FilePart imageFile : imageFiles) {
-
-                                                String fileName = imageFile.getFilename();
-                                                File file = imageFile.getFile();
-
-                                                String newImageName = DataUtils.generateUploadedImageName(fileName, player.getId());
-                                                String imageURL = Image.getUrlPrefix() + newImageName;
-
-                                                String imageAbsolutePath = Image.getFolderPath() + newImageName;
-
-                                                EasyPreparedStatementBuilder createImageBuilder = new EasyPreparedStatementBuilder();
-                                                String[] cols2 = {Image.URL, Image.META_ID, Image.META_TYPE, Image.GENERATED_TIME};
-                                                Object[] values2 = {imageURL, activity.getId(), Image.TYPE_ACTIVITY, General.millisec()};
-                                                PreparedStatement createImageStat = createImageBuilder.insert(cols2, values2)
-                                                        .into(Image.TABLE)
-                                                        .toInsert(connection);
-                                                SQLHelper.executeAndCloseStatement(createImageStat);
-
-                                                // Save renamed file to server storage at the final step
-                                                FileUtils.moveFile(file, new File(imageAbsolutePath));
-                                                savedImagePathList.add(imageAbsolutePath);
+                                if (newImageList.size() > 0) {
+                                        String[] cols2 = {Image.URL, Image.META_ID, Image.META_TYPE};
+                                        final Map<String, String> attr = CDNHelper.getAttr(CDNHelper.QINIU);
+                                        if (attr == null) throw new NullPointerException();
+                                        final String urlProtocolPrefix = "http://";
+                                        final String domain = attr.get(CDNHelper.DOMAIN);
+                                        for (Image newImage : newImageList) {
+                                                final String url = urlProtocolPrefix + domain + "/" + newImage.getRemoteName();
+                                                final SQLBuilder builderUpdate2 = new SQLBuilder();
+                                                Object[] values2 = {url, activity.getId(), Image.TYPE_ACTIVITY};
+                                                final PreparedStatement statUpdate2 = builderUpdate2.update(Image.TABLE)
+                                                                                                        .set(cols2, values2)
+                                                                                                        .where(Image.META_ID, "=", playerId)
+                                                                                                        .where(Image.META_TYPE, "=", Image.TYPE_OWNER)
+                                                                                                        .where(Image.REMOTE_NAME, "=", newImage.getRemoteName())
+                                                                                                        .toUpdate(connection);
+                                                SQLHelper.executeAndCloseStatement(statUpdate2);
                                         }
                                 }
 
                                 // delete selected old images RECORDS
-                                if (previousImages != null && previousImages.size() > 0) {
-                                        for (Image previousImage : previousImages) {
+                                if (previousImageList.size() > 0) {
+                                        for (Image previousImage : previousImageList) {
                                                 if (selectedOldImagesSet.contains(previousImage.getId())) continue;
-
-                                                EasyPreparedStatementBuilder previousImageDeletebuilder = new EasyPreparedStatementBuilder();
-                                                PreparedStatement previousImageDeleteStat = previousImageDeletebuilder.from(Image.TABLE)
-                                                        .where(Image.ID, "=", previousImage.getId())
-                                                        .where(Image.META_ID, "=", activityId)
-                                                        .where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
-                                                        .toDelete(connection);
-
-                                                SQLHelper.executeAndCloseStatement(previousImageDeleteStat);
+                                                toDeleteImageList.add(previousImage);
                                         }
+                                        final SQLBuilder builderDeletion = new SQLBuilder();
+                                        final PreparedStatement statDeletion = builderDeletion.from(Image.TABLE)
+                                                                                        .where(Image.ID, "IN", toDeleteImageList)
+                                                                                        .where(Image.META_ID, "=", activityId)
+                                                                                        .where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
+                                                                                        .toDelete(connection);
+
+                                        SQLHelper.executeAndCloseStatement(statDeletion);
                                 }
                                 SQLHelper.commit(connection);
                         } catch (Exception e) {
                                 Loggy.e(TAG, "save", e);
                                 transactionSucceeded = false;
                                 SQLHelper.rollback(connection);
-                                for (String savedImagePath : savedImagePathList) {
-                                        File tmp = new File(savedImagePath);
-                                        if (tmp.exists()) tmp.delete();
-                                }
                         } finally {
                                 SQLHelper.enableAutoCommitAndClose(connection);
                         }
-
                         /**
                          * end SQL-transaction guard
                          * */
 
-                        // delete selected old images FILES when transaction succeeded
-                        if (transactionSucceeded && previousImages != null && previousImages.size() > 0) {
-                                for (Image previousImage : previousImages) {
-                                        if (selectedOldImagesSet.contains(previousImage.getId())) continue;
-                                        File previousImageFile = new File(previousImage.getAbsolutePath());
-                                        boolean isFileDeleted = (previousImageFile.exists() && previousImageFile.delete());
-                                        /**
-                                         * TODO: add non-deleted image files to an async-deletion pool
-                                         * */
-                                }
-                        }
+                        if (transactionSucceeded) CDNHelper.deleteRemoteImages(CDNHelper.QINIU, toDeleteImageList);
 
                         List<Activity> tmp = new LinkedList<>();
                         tmp.add(activity);
@@ -377,7 +347,7 @@ public class ActivityController extends Controller {
                         Activity activity = DBCommander.queryActivity(activityId);
                         if (!DBCommander.isActivityEditable(playerId, activity)) throw new Exception();
 
-                        EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        SQLBuilder builder = new SQLBuilder();
 
                         String[] names = {Activity.STATUS};
                         Object[] values = {Activity.PENDING};
@@ -409,11 +379,9 @@ public class ActivityController extends Controller {
                         if (!DBCommander.isActivityEditable(playerId, activity)) throw new NullPointerException();
 
                         /**
-                         * TODO: clean up these codes
                          * begin SQL-transaction guard
                          * */
 
-                        boolean transactionSucceeded = true;
                         List<Image> previousImages = ExtraCommander.queryImages(activity.getId());
 
                         Connection connection = SQLHelper.getConnection();
@@ -421,7 +389,7 @@ public class ActivityController extends Controller {
                                 SQLHelper.disableAutoCommit(connection);
 
                                 // delete associated player-activity-relation records
-                                EasyPreparedStatementBuilder relationBuilder = new EasyPreparedStatementBuilder();
+                                SQLBuilder relationBuilder = new SQLBuilder();
                                 PreparedStatement relationStat = relationBuilder.from(PlayerActivityRelation.TABLE)
                                         .where(PlayerActivityRelation.ACTIVITY_ID, "=", activityId)
                                         .toDelete(connection);
@@ -430,7 +398,7 @@ public class ActivityController extends Controller {
                                 if (previousImages != null && previousImages.size() > 0) {
                                         // delete associated images RECORDS
                                         for (Image previousImage : previousImages) {
-                                                EasyPreparedStatementBuilder imageBuilder = new EasyPreparedStatementBuilder();
+                                                SQLBuilder imageBuilder = new SQLBuilder();
                                                 PreparedStatement imageStat = imageBuilder.from(Image.TABLE)
                                                         .where(Image.ID, "=", previousImage.getId())
                                                         .where(Image.META_ID, "=", activityId)
@@ -441,21 +409,21 @@ public class ActivityController extends Controller {
                                 }
 
                                 // delete associated comments
-                                EasyPreparedStatementBuilder commentsBuilder = new EasyPreparedStatementBuilder();
+                                SQLBuilder commentsBuilder = new SQLBuilder();
                                 PreparedStatement commentsStat = commentsBuilder.from(Comment.TABLE)
                                         .where(Comment.ACTIVITY_ID, "=", activityId)
                                         .toDelete(connection);
                                 SQLHelper.executeAndCloseStatement(commentsStat);
 
                                 // delete associated assessments
-                                EasyPreparedStatementBuilder assessmentsBuilder = new EasyPreparedStatementBuilder();
+                                SQLBuilder assessmentsBuilder = new SQLBuilder();
                                 PreparedStatement assessmentsStat = assessmentsBuilder.from(Assessment.TABLE)
                                         .where(Assessment.ACTIVITY_ID, "=", activityId)
                                         .toDelete(connection);
                                 SQLHelper.executeAndCloseStatement(assessmentsStat);
 
                                 // delete record in table activity
-                                EasyPreparedStatementBuilder activityBuilder = new EasyPreparedStatementBuilder();
+                                SQLBuilder activityBuilder = new SQLBuilder();
                                 PreparedStatement activityStat = activityBuilder.from(Activity.TABLE)
                                         .where(Activity.ID, "=", activityId)
                                         .toDelete(connection);
@@ -463,7 +431,6 @@ public class ActivityController extends Controller {
 
                                 SQLHelper.commit(connection);
                         } catch (SQLException e) {
-                                transactionSucceeded = false;
                                 SQLHelper.rollback(connection);
                         } finally {
                                 SQLHelper.enableAutoCommitAndClose(connection);
@@ -471,17 +438,6 @@ public class ActivityController extends Controller {
                         /**
                          * end SQL-transaction guard
                          * */
-
-                        // delete images FILES associated with the activity when transaction succeeded
-                        if (transactionSucceeded && previousImages != null && previousImages.size() > 0) {
-                                for (Image previousImage : previousImages) {
-                                        File previousImageFile = new File(previousImage.getAbsolutePath());
-                                        boolean isFileDeleted = (previousImageFile.exists() && previousImageFile.delete());
-                                        /**
-                                         * TODO: add non-deleted image files to an async-deletion pool
-                                         * */
-                                }
-                        }
                         return ok();
                 } catch (TokenExpiredException e) {
                         return ok(TokenExpiredResult.get());
@@ -520,13 +476,13 @@ public class ActivityController extends Controller {
                         try {
                                 SQLHelper.disableAutoCommit(connection);
 
-                                EasyPreparedStatementBuilder relationBuilder = new EasyPreparedStatementBuilder();
+                                SQLBuilder relationBuilder = new SQLBuilder();
                                 PreparedStatement relationStat = relationBuilder.insert(names, values)
                                         .into(PlayerActivityRelation.TABLE)
                                         .toInsert(connection);
                                 SQLHelper.executeAndCloseStatement(relationStat);
 
-                                EasyPreparedStatementBuilder incrementBuilder = new EasyPreparedStatementBuilder();
+                                SQLBuilder incrementBuilder = new SQLBuilder();
                                 PreparedStatement incrementStat = incrementBuilder.update(Activity.TABLE)
                                         .increase(Activity.NUM_APPLIED, 1)
                                         .where(Activity.ID, "=", activityId)
@@ -577,7 +533,7 @@ public class ActivityController extends Controller {
 
                         String[] names = {PlayerActivityRelation.RELATION};
                         Object[] values = {newRelation};
-                        final EasyPreparedStatementBuilder builder = new EasyPreparedStatementBuilder();
+                        final SQLBuilder builder = new SQLBuilder();
 
                         String[] whereCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.PLAYER_ID};
                         String[] whereOps = {"=", "="};
