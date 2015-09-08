@@ -32,8 +32,9 @@ CREATE TABLE `image` (
   `remote_name` varchar(32) DEFAULT NULL,
   `bucket` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `url` (`url`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
+  UNIQUE KEY `url` (`url`),
+  UNIQUE KEY `image_cdn_key` (`remote_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -45,4 +46,4 @@ CREATE TABLE `image` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-09-08 13:39:15
+-- Dump completed on 2015-09-08 23:42:09
