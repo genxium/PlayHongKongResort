@@ -177,3 +177,4 @@ var g_keyUptoken = "uptoken";
 var g_keyFileref = "fileref";
 
 var g_cdnQiniu = 1;
+var g_cdnDomain = '7xljmm.dl1.z0.glb.clouddn.com';

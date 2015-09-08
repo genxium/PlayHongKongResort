@@ -86,6 +86,7 @@ public class ImageController extends Controller {
 
                         final ObjectMapper mapper = new ObjectMapper();
                         final List<String> remoteNameList = mapper.readValue(formData.get(AbstractMessage.BUNDLE)[0], mapper.getTypeFactory().constructCollectionType(List.class, String.class));
+			if (remoteNameList == null || remoteNameList.size() == 0) return ok(StandardSuccessResult.get());
 
                         final Map<String, String> attrs = CDNHelper.getAttr(CDNHelper.QINIU);
                         if (attrs == null) throw new NullPointerException();

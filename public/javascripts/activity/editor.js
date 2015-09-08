@@ -71,7 +71,6 @@ function ActivityEditor() {
 			activityContent = activity.content;
 		}
 
-		this.content.empty();
 		var form = $('<form>', {
 			"class": "activity-editor-form"
 		}).appendTo(this.content);
@@ -136,8 +135,7 @@ function ActivityEditor() {
 		if(activity != null && activity.images != null)	generateOldImagesRow(form, this, activity);
 
 		newImagesRow.appendTo(form);
-		var domain = '7xljmm.dl1.z0.glb.clouddn.com';
-		var node = new ImageNode(g_cdnQiniu, domain);
+		var node = new ActivityEditorImageNode(g_cdnQiniu, g_cdnDomain);
 		node.appendTo(newImagesRow);
 		node.refresh(this);
 
@@ -358,24 +356,24 @@ function onSave(evt){
 	evt.preventDefault();
 	
 	if (g_activityEditor == null || !g_activityEditor.savable) return;
-	var formData = new FormData();
+	var formData = {};
 
 	// append player token and activity id for identity
-	var token = $.cookie(g_keyToken.toString());
+	var token = $.cookie(g_keyToken);
 	if (token == null) {
 		alert(ALERTS["please_log_in"]);
 		return;
 	}
-	formData.append(g_keyToken, token);
+	formData[g_keyToken] = token;
 
 	// TODO: add new images CDN references, e.g. remote names (together with user token to be verified by server cache)
 	var countImages = Object.keys(g_activityEditor.newImageNodes).length;
         var newImages = [];
-        for (var k in newImageNodes) {
-                var node = newImageNodes[k];
+        for (var k in g_activityEditor.newImageNodes) {
+                var node = g_activityEditor.newImageNodes[k];
                 newImages.push(node.remoteName);
         }
-	formData.append(g_indexNewImage, JSON.stringify(newImages));
+	formData[g_indexNewImage] = JSON.stringify(newImages);
 
 	var selectedOldImages = [];
 	for (var i = 0; i < g_activityEditor.imageSelectors.length; ++i){
@@ -384,7 +382,7 @@ function onSave(evt){
 		selectedOldImages.push(selector.id);
 		++countImages;
 	}
-	formData.append(g_indexOldImage, JSON.stringify(selectedOldImages));
+	formData[g_indexOldImage] = JSON.stringify(selectedOldImages);
 
 	if (countImages > g_imagesLimit) {
 		alert(ALERTS["image_selection_requirement"]);
@@ -404,9 +402,9 @@ function onSave(evt){
 		alert(ALERTS["please_follow_activity_field_instructions"]);
 		return;
 	}
-	formData.append(g_keyTitle, title);
-	formData.append(g_keyAddress, address);
-	formData.append(g_keyContent, content);
+	formData[g_keyTitle] = title;
+	formData[g_keyAddress] = address;
+	formData[g_keyContent] = content;
 
 	// append activity begin time and deadline
 	var beginTime = localYmdhisToGmtMillisec(g_activityEditor.beginTimePicker.getDatetime());
@@ -417,17 +415,17 @@ function onSave(evt){
 		return;
 	}
 
-	formData.append(g_keyBeginTime, beginTime);
-	formData.append(g_keyDeadline, deadline);
+	formData[g_keyBeginTime] = beginTime;
+	formData[g_keyDeadline] = deadline;
 
 	var isNewActivity = false;
 	var activityId = g_activityEditor.id; 
 	if (activityId == null) isNewActivity = true;
 
-	if (!isNewActivity)	formData.append(g_keyActivityId, activityId);
+	if (!isNewActivity)	formData[g_keyActivityId] = activityId;
 	else {
-		formData.append(g_keySid, g_activityEditor.captcha.sid);
-		formData.append(g_keyCaptcha, g_activityEditor.captcha.input.val());
+		formData[g_keySid] = g_activityEditor.captcha.sid;
+		formData[g_keyCaptcha] = g_activityEditor.captcha.input.val();
 	}
 
 	g_activityEditor.disableEditorButtons();
@@ -436,7 +434,7 @@ function onSave(evt){
 	g_activityEditor.hint.text(MESSAGES["activity_saving"]);
 
 	$.ajax({
-			method: "POST",
+			type: "POST",
 			url: "/activity/save",
 			data: formData,
 			success: function(data, status, xhr){
@@ -460,7 +458,7 @@ function onSave(evt){
 				}
 				g_activityEditor.setSubmittable();
 				g_activityEditor.enableEditorButtons();
-				var activity = new Activity(activityJson);
+				var activity = new Activity(data);
 				if (g_activityEditor.id == null) {
 					g_activityEditor.hint.text(MESSAGES["activity_created"]);
 				} else {
@@ -500,12 +498,12 @@ function onSubmit(evt){
         var activityId = g_activityEditor.id;
         params[g_keyActivityId] = activityId;
 
-		g_activityEditor.disableEditorButtons();
+	g_activityEditor.disableEditorButtons();
         g_activityEditor.setNonSavable();
         g_activityEditor.setNonSubmittable();
 
         $.ajax({
-                method: "POST",
+                type: "POST",
                 url: "/activity/submit",
                 data: params,
                 success: function(data, status, xhr){
@@ -583,9 +581,7 @@ function onCancel(evt){
 		url: '/image/cdn/qiniu/delete',
 		data: params,
 		success: function(data, status, xhr) {
-			if (!isStandardSuccess(data)) {
-				// do sth...
-			} 
+			if (!isStandardSuccess(data))	return;
 		},
 		error: function(xhr, status, err) {
 

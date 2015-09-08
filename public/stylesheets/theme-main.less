@@ -25,6 +25,7 @@
 @positive-button-font-color: white;
 @positive-button-background: orange;
 @positive-button-background-hover: gold;
+@positive-button-background-disabled: gray;
 
 @negative-button-font-color: black;
 @negative-button-background: gray;
@@ -147,6 +148,9 @@ button {
 	background-color: @positive-button-background;
 	&:hover {
 		background-color: @positive-button-background-hover; 
+	}
+	&:disabled {
+		background-color: @positive-button-background-disabled; 
 	}
 }
 

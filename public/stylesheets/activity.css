@@ -309,29 +309,6 @@
 .add-image input {
   opacity: 0;
 }
-.preview-container {
-  width: 180px;
-  height: 180px;
-  vertical-align: middle;
-  text-align: center;
-  margin-right: 5px;
-  position: relative;
-}
-.preview-container img {
-  max-width: 100%;
-  max-height: 100%;
-}
-.preview-container .checked-image {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 50px;
-  height: 50px;
-}
-.preview-container button {
-  width: 180px;
-  height: 20px;
-}
 .edit-deadline,
 .edit-begin {
   margin-bottom: 5px;

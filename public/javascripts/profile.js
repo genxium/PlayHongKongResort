@@ -3,13 +3,13 @@ var g_viewee = null;
 var g_profileEditor = null;
 
 function ProfileEditor() {
-	this.container = null;
-	this.dialog = null;
-	this.content = null;
+	// player
+	this.player = null;
 
 	// avatar
-	this.image = null;
-	this.btnChoose = null;
+	this.avatarNode = null;
+
+	// hint
 	this.hint = null;
 
 	// text fields
@@ -29,17 +29,9 @@ function ProfileEditor() {
 	this.EDITING = 1;
 	this.mode = this.NORMAL; 
 
-	this.validate = function(age, gender, mood) {
-		/*
-			NEED regex checking for these items
-		*/
-		return true;
-	};
-
-	this.refresh = function(player) {
+	this.composeContent = function(player) {
 		if (player == null) return null;
-
-		this.content.empty();
+		this.player = player;
 		var form = $("<div>", {
 			"class": "avatar-editor-form clearfix"
 		}).appendTo(this.content);
@@ -134,17 +126,11 @@ function ProfileEditor() {
 			}).appendTo(moodValue);
 		} else;
 
-		var picContainer = $("<div>", {
-			"class": "avatar left"
-		}).appendTo(form);
-
-		var picHelper = $("<span>", {
-			"class": "image-helper"
-		}).appendTo(picContainer);
-
-		this.image = $("<img>", {
+		this.avatarNormalView = $('<img>', {
+			"class": "image-helper left",
 			src: player.avatar
-		}).appendTo(picContainer); 
+		}).hide().appendTo(this.content);			
+		if (this.mode == this.EDITING) this.avatarNormalView.show();	
 
 		if (g_loggedInPlayer == null || player.id != g_loggedInPlayer.id) return;
 
@@ -152,21 +138,9 @@ function ProfileEditor() {
 			"class": "upload left"
 		}).hide().appendTo(form);
 
-		this.btnChoose = $("<input>", {
-			type: "file",
-			text: TITLES["choose_picture"]
-		}).change(this, function(evt) {
-			evt.preventDefault();
-			var editor = evt.data;
-			var file = editor.getFile();
-			if (!validateImage(file)) return;
-			var reader = new FileReader();
-			reader.onload = function (e) {
-				editor.image.attr("src", e.target.result);
-			};
-			reader.readAsDataURL(file);
-		}).appendTo(box);
-		
+		this.avatarNode = new ProfileEditorImageNode(g_cdnQiniu, g_cdnDomain); 
+		this.avatarNode.appendTo(box);	
+
 		this.hint = $("<p>").appendTo(box);
 		if (this.mode == this.EDITING) box.show();
 	
@@ -175,41 +149,57 @@ function ProfileEditor() {
 		this.btnEdit = $("<button>", {
 			text: TITLES["edit"],
 			"class": "btn-edit positive-button" 
-		}).click(this, function(evt) {
+		}).hide().appendTo(controlButtonsRow).click(this, function(evt) {
 			var editor = evt.data;
 			editor.mode = editor.EDITING;
 			editor.refresh(player);
-		}).hide().appendTo(controlButtonsRow);
+		});
 		if (this.mode == this.NORMAL) this.btnEdit.show();
 
 		this.btnCancel = $("<button>", {
 			text: TITLES["cancel"],
-			"class": "btn-cancel gray"
-		}).click(this, function(evt) {
+			"class": "btn-cancel negative-button"
+		}).hide().appendTo(controlButtonsRow).click(this, function(evt) {
 			var editor = evt.data;
 			editor.mode = editor.NORMAL;
 			editor.refresh(player);
-		}).hide().appendTo(controlButtonsRow);
+
+			var token = $.cookie(g_keyToken);
+			if (token == null)	return; 
+
+			var params = {};
+			params[g_keyBundle] = JSON.stringify([editor.avatarNode.remoteName]);
+			params[g_keyToken] = token;
+
+			$.ajax({
+				type: 'POST',
+				url: '/image/cdn/qiniu/delete',
+				data: params,
+				success: function(data, status, xhr) {
+					if (!isStandardSuccess(data))	return;
+				},
+				error: function(xhr, status, err) {
+
+				}
+			});	
+		});
 		if (this.mode == this.EDITING) this.btnCancel.show();
 
 		this.btnSave = $("<button>", {
 			text: TITLES["save"],	
 			"class": "btn-save positive-button"
-		}).click(this, function(evt) {
+		}).hide().appendTo(controlButtonsRow).click(this, function(evt) {
 			evt.preventDefault();
 			var editor = evt.data;	
-			var file = editor.getFile();
-			if (file != null && !validateImage(file))	return;
-
 			var token = $.cookie(g_keyToken);
 			if (token == null) return;
 
-			var formData = new FormData();
-			formData.append(g_keyToken, token);
-			formData.append(g_keyAvatar, file);
-			formData.append(g_keyAge, editor.age.val());
-			formData.append(g_keyGender, editor.gender.val());
-			formData.append(g_keyMood, editor.mood.val());
+			var formData = {};
+			formData[g_keyToken] = token;
+			formData[g_keyAvatar] = editor.avatarNode.remoteName;
+			formData[g_keyAge] =  editor.age.val();
+			formData[g_keyGender] =  editor.gender.val();
+			formData[g_keyMood] =  editor.mood.val();
 
 			var aButton = getTarget(evt);
 			disableField(aButton);	
@@ -219,14 +209,10 @@ function ProfileEditor() {
 				method: "POST",
 				url: "/player/save", 
 				data: formData,
-				mimeType: "mutltipart/form-data",
-				contentType: false,
-				processData: false,
 				success: function(data, status, xhr){
-					// update logged in player profile
-					var playerJson = JSON.parse(data);
-					player = g_viewee = g_loggedInPlayer = new Player(playerJson);
 					enableField(aButton);	
+					// update logged in player profile
+					player = g_viewee = g_loggedInPlayer = new Player(data);
 					editor.hint.text(MESSAGES["saved"]);
 				},
 				error: function(xhr, status, err){
@@ -234,9 +220,8 @@ function ProfileEditor() {
 					editor.hint.text(MESSAGES["save_failed"]);
 				}
 			});
-		}).hide().appendTo(controlButtonsRow);	
+		});	
 		if (this.mode == this.EDITING) this.btnSave.show();
-	
 	};
 	
 	this.appendTo = function(par) {
@@ -244,28 +229,9 @@ function ProfileEditor() {
 		this.dialog = $("<div>").appendTo(this.container);
 		this.content = $("<div>").appendTo(this.dialog);
 	};	
-	this.show = function() {
-		this.container.show();
-	};
-
-	this.hide = function() {
-		this.container.hide();
-	};
-
-	this.remove = function() {
-		this.container.remove();
-	};	
-	this.getFile = function() {
-		if (this.btnChoose == null) return null;	
-		var files = this.btnChoose[0].files;
-		if (files == null) return null;	
-		if (files.length > 1) {
-			alert(ALERTS["choose_one_image"]);
-			return null;
-		}
-		return files[0];
-	};
 }
+
+ProfileEditor.inherits(BaseWidget);
 
 function clearProfile() {
 	$("#pager-filters").empty();

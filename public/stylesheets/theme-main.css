@@ -38,12 +38,18 @@ button {
 .positive-button:hover {
   background-color: gold;
 }
+.positive-button:disabled {
+  background-color: gray;
+}
 .big-positive-button {
   color: white;
   background-color: orange;
 }
 .big-positive-button:hover {
   background-color: gold;
+}
+.big-positive-button:disabled {
+  background-color: gray;
 }
 .negative-button {
   color: black;

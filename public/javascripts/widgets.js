@@ -63,17 +63,35 @@ var SLOT_UPLOADING = 1;
 var SLOT_UPLOAD_FAILED = 2;
 var SLOT_AJAX_PENDING = 3;
 
-function ImageNode(cdn, bucketDomain) {
-	this.state = SLOT_IDLE; 
-	this.cdn = cdn;
-	this.bucketDomain = bucketDomain;
+function ImageNode() {
 
-	this.remoteName = null;
+	// TODO: only supports ProfileEditor and ActivityEditor at the moment
+	this.state = SLOT_IDLE; 
+	this.cdn = null;
+	this.bucketDomain = null;
 	this.uploader = null;
 	this.wrap = null;
 	this.preview = null;
 	this.editor = null;
 	this.btnChoose = null;
+
+	this.setCDNCredentials = function(cdn, bucketDomain, token, player) {
+		this.cdn = cdn;
+		this.bucketDomain = bucketDomain;
+		var tick = currentMillis();
+		this.remoteName =  '{0}_{1}'.format(player.id, tick);
+		var uptokenParams = [g_keyToken + '=' + token, g_keyRemoteName + '=' + this.remoteName]; 
+		this.uptokenUrl = '/image/cdn/qiniu/uptoken?' + uptokenParams.join('&'); 
+	};
+}
+
+ImageNode.inherits(BaseWidget);
+
+/**
+ * ActivityEditorImageNode
+ * */
+
+function ActivityEditorImageNode(cdn, domain) {
 	this.btnDel = null;
 	this.requestDel = function(onSuccess, onError) {
 		// async process
@@ -108,24 +126,26 @@ function ImageNode(cdn, bucketDomain) {
 	};
 
 	this.composeContent = function(data) {
-		
+		this.setCDNCredentials(cdn, domain, $.cookie(g_keyToken), g_loggedInPlayer);	
 		this.editor = data;
 		this.wrap = $('<div>', {
 			"class": "preview-container left"
 		}).appendTo(this.content);
 
-		this.preview = $('<img>').appendTo(this.wrap);
-		setDimensions(this.preview, g_wImageCell, g_hImageCell);
+		setDimensions(this.wrap, g_wImageCell, g_hImageCell);
+
+		this.preview = $('<img>').hide().appendTo(this.wrap);
 		
 		this.btnChoose = $('<button>', {
 			text: TITLES['choose_picture'],
 			'class': 'positive-button'
 		}).appendTo(this.wrap);
+		setDimensions(this.btnChoose, g_wImageCell, g_hImageCell);
 
 		this.btnDel = $('<button>', {
 			text: TITLES["delete"],
 			"class": "positive-button"
-		}).appendTo(this.wrap).click(this, function(evt){
+		}).hide().appendTo(this.wrap).click(this, function(evt){
 			evt.preventDefault();
 			var remoteName = evt.data.remoteName;
 			var editor = evt.data.editor;
@@ -145,20 +165,107 @@ function ImageNode(cdn, bucketDomain) {
 			};
 			disableField(aButton);
 			thatNode.requestDel(onSuccess, onError);
-		}).hide();
+		});
+		setDimensions(this.btnDel, g_wImageCell, null);
 
 		if (cdn == g_cdnQiniu) {
-			var tick = currentMillis();
-			var remoteName =  '{0}_{1}'.format(g_loggedInPlayer.id, tick);
-			this.remoteName = remoteName;
-			var uptokenParams = [g_keyToken + '=' + $.cookie(g_keyToken), g_keyRemoteName + '=' + remoteName]; 
-			var uptokenUrl = '/image/cdn/qiniu/uptoken?' + uptokenParams.join('&'); 
 			// reference http://developer.qiniu.com/docs/v6/sdk/javascript-sdk.html
 			var node = this;
 			this.uploader = Qiniu.uploader({
 				runtimes: 'html5,flash,html4',		    
 				browse_button: node.btnChoose[0],
-				uptoken_url: uptokenUrl,
+				uptoken_url: node.uptokenUrl,
+				unique_names: false,
+				save_key: false,
+				domain: node.bucketDomain,
+				container: node.wrap[0],
+				max_file_size: '2mb',
+				max_retries: 2,
+				dragdrop: false, 
+				drop_element: node.wrap[0],
+				chunk_size: '4mb',
+				auto_start: true, 
+				init: {
+					'FilesAdded': function(up, files) {
+						if (!files) return null;
+						if (files.length != 1) {
+							alert(ALERTS["choose_one_image"]);
+							return;
+						}
+
+						var file = files[0];
+						if (!validateImage(file)) return;
+
+						node.state = SLOT_UPLOADING; 
+						disableField(node.btnChoose);
+					},
+					'BeforeUpload': function(up, file) {
+						node.state = SLOT_IDLE;
+					},
+					'UploadProgress': function(up, file) {
+						// TODO: show progress
+					},
+					'FileUploaded': function(up, file, info) {
+					},
+					'Error': function(up, err, errTip) {
+						node.state = SLOT_UPLOAD_FAILED; 
+					},
+					'UploadComplete': function() {
+						enableField(node.btnChoose);
+						if (node.state == SLOT_UPLOAD_FAILED) return;
+						var protocolPrefix = "http://";
+						var imageUrl = protocolPrefix + node.bucketDomain + "/" + node.remoteName;
+						node.preview.show();
+						node.preview.attr("src", imageUrl);
+						node.editor.newImageNodes[node.remoteName] = node;
+						node.state = SLOT_IDLE; 
+						node.btnChoose.remove();
+						node.btnDel.show();	 
+						
+						// TODO: show a new ActivityEditorImageNode instance to the right most of the row for ActivityEditor
+					},
+					 'Key': function(up, file) {
+						// would ONLY be invoked when {unique_names: false , save_key: false}
+						return node.remoteName;
+					 }
+				}
+			});
+		}	
+	};
+}
+
+ActivityEditorImageNode.inherits(ImageNode);
+
+/**
+ * ProfileEditorImageNode
+ * */
+
+function ProfileEditorImageNode(cdn, domain) {
+	this.composeContent = function(data) {
+		this.setCDNCredentials(cdn, domain, $.cookie(g_keyToken), g_loggedInPlayer);	
+		this.editor = data;
+		this.wrap = $('<div>', {
+			"class": "preview-container left"
+		}).appendTo(this.content);
+		setDimensions(this.wrap, g_wImageCell, g_hImageCell);
+
+		this.preview = $('<img>', {
+			src: editor.player.avatar
+		}).hide().appendTo(this.wrap);
+		
+		this.btnChoose = $('<button>', {
+			text: TITLES['choose_picture'],
+			'class': 'positive-button'
+		}).appendTo(this.wrap);
+		setDimensions(this.btnChoose, g_wImageCell, null);
+
+		if (cdn == g_cdnQiniu) {
+			// reference http://developer.qiniu.com/docs/v6/sdk/javascript-sdk.html
+			var node = this;
+			this.uploader = Qiniu.uploader({
+				runtimes: 'html5,flash,html4',		    
+				browse_button: node.btnChoose[0],
+				uptoken_url: node.uptokenUrl,
 				unique_names: false,
 				save_key: false,
 				domain: node.bucketDomain,
@@ -200,12 +307,7 @@ function ImageNode(cdn, bucketDomain) {
 						var protocolPrefix = "http://";
 						var imageUrl = protocolPrefix + node.bucketDomain + "/" + node.remoteName;
 						node.preview.attr("src", imageUrl);
-						node.editor.newImageNodes[node.remoteName] = node;
 						node.state = SLOT_IDLE; 
-						node.btnChoose.remove();
-						node.btnDel.show();	 
-						
-						// TODO: show a new ImageNode instance to the right most of the row for ActivityEditor
 					},
 					 'Key': function(up, file) {
 						// would ONLY be invoked when {unique_names: false , save_key: false}
@@ -216,8 +318,8 @@ function ImageNode(cdn, bucketDomain) {
 		}	
 	};
 }
-
-ImageNode.inherits(BaseWidget);
+ 
+ProfileEditorImageNode.inherits(ImageNode);
 
 /**
  * AjaxButton
@@ -400,7 +502,6 @@ function PagerButton(pager, page) {
 
 function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, pagerCache, filters, onSuccess, onError) {
 
-	// TODO: refactor with container-dialog-appendTo-refresh pattern
 	this.screen = screen; // screen of the pager
 	this.nItems = numItemsPerPage; // number of items per page
 
@@ -603,7 +704,6 @@ function disableBinarySwitch(container){
  * */
 
 function DropdownMenu(toggle, items, reactions) {
-	// TODO: refactor with container-dialog-appendTo-refresh pattern
 	this.toggle = toggle; // toggle is button element
 	this.items = items; // items are <li> elements
 	this.reactions = reactions; // reactions are onClick(evt) functions
