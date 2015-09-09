@@ -72,3 +72,6 @@ table.player-profile-table span.player-profile-table-plain-value {
 	padding: 5px;
 	font-size: 18px;
 }
+.hint-resend {
+	padding: 5px;
+}

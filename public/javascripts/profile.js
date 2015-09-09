@@ -8,9 +8,7 @@ function ProfileEditor() {
 
 	// avatar
 	this.avatarNode = null;
-
-	// hint
-	this.hint = null;
+	this.avatarHint = null;
 
 	// text fields
 	this.age = null;
@@ -32,14 +30,22 @@ function ProfileEditor() {
 	this.composeContent = function(player) {
 		if (!player) return null;
 		this.player = player;
-		var form = $("<div>", {
-			"class": "avatar-editor-form clearfix"
-		}).appendTo(this.content);
 
+		// avatar 
+		var avatarBox = $('<div>').hide().appendTo(this.content);
+		if (this.mode == this.EDITING) avatarBox.show();
+
+		var avatarNormalView = $('<img>', {
+			"class": "image-helper",
+			src: player.avatar
+		}).hide().appendTo(this.content);			
+		if (this.mode == this.NORMAL) avatarNormalView.show();	
+
+		// misc
 		$("<br>").appendTo(this.content);
 		
 		var tbl = $("<table>", {
-			"class": "player-profile-table"
+			"class": "player-profile-table clear"
 		}).appendTo(this.content);
 		var ageRow = $("<tr>").appendTo(tbl); 
 		var ageTitle = $("<td>", {
@@ -126,30 +132,21 @@ function ProfileEditor() {
 			}).appendTo(moodValue);
 		} else;
 
-		this.avatarNormalView = $('<img>', {
-			"class": "image-helper left",
-			src: player.avatar
-		}).hide().appendTo(this.content);			
-		if (this.mode == this.EDITING) this.avatarNormalView.show();	
-
 		if (!g_loggedInPlayer || player.id != g_loggedInPlayer.id) return;
 
-		var box = $("<div>", {
-			"class": "upload left"
-		}).hide().appendTo(form);
-
+		// avatar
 		this.avatarNode = new ProfileEditorImageNode(g_cdnQiniu, g_cdnDomain); 
-		this.avatarNode.appendTo(box);	
-
-		this.hint = $("<p>").appendTo(box);
-		if (this.mode == this.EDITING) box.show();
+		this.avatarNode.appendTo(avatarBox);	
+		this.avatarNode.refresh(this);
+		this.avatarHint = $("<p>").appendTo(this.avatarBox);
 	
-		var controlButtonsRow = $("<p>").appendTo(this.content);
+		// buttons
+		var buttonRow = $("<p>").appendTo(this.content);
 
 		this.btnEdit = $("<button>", {
 			text: TITLES.edit,
 			"class": "btn-edit positive-button" 
-		}).hide().appendTo(controlButtonsRow).click(this, function(evt) {
+		}).hide().appendTo(buttonRow).click(this, function(evt) {
 			var editor = evt.data;
 			editor.mode = editor.EDITING;
 			editor.refresh(player);
@@ -159,7 +156,7 @@ function ProfileEditor() {
 		this.btnCancel = $("<button>", {
 			text: TITLES.cancel,
 			"class": "btn-cancel negative-button"
-		}).hide().appendTo(controlButtonsRow).click(this, function(evt) {
+		}).hide().appendTo(buttonRow).click(this, function(evt) {
 			var editor = evt.data;
 			editor.mode = editor.NORMAL;
 			editor.refresh(player);
@@ -188,7 +185,7 @@ function ProfileEditor() {
 		this.btnSave = $("<button>", {
 			text: TITLES.save,	
 			"class": "btn-save positive-button"
-		}).hide().appendTo(controlButtonsRow).click(this, function(evt) {
+		}).hide().appendTo(buttonRow).click(this, function(evt) {
 			evt.preventDefault();
 			var editor = evt.data;	
 			var token = $.cookie(g_keyToken);
@@ -223,12 +220,6 @@ function ProfileEditor() {
 		});	
 		if (this.mode == this.EDITING) this.btnSave.show();
 	};
-	
-	this.appendTo = function(par) {
-		this.container = $("<div>").appendTo(par);
-		this.dialog = $("<div>").appendTo(this.container);
-		this.content = $("<div>").appendTo(this.dialog);
-	};	
 }
 
 ProfileEditor.inherits(BaseWidget);
@@ -252,8 +243,7 @@ function queryPlayerDetail(){
 		data: params,
 		success: function(data, status, xhr){
 			if(!g_sectionPlayer) return;
-			var playerJson = data;
-			g_viewee = new Player(playerJson);
+			g_viewee = new Player(data);
 			var playername = g_viewee.name;
 			g_sectionPlayer.empty();
 
@@ -262,14 +252,13 @@ function queryPlayerDetail(){
 			}).appendTo(g_sectionPlayer);
 
 			var playerInfo = $("<div>", {
-				"class": "section-player-info left"
+				"class": "section-player-info"
 			}).appendTo(profile);
 
 			var name = $("<div>", {
 				text: playername,
 				"class": "section-player-name"
 			}).appendTo(playerInfo);
-
 
 			if (!g_profileEditor) g_profileEditor = new ProfileEditor();
 			g_profileEditor.appendTo(profile);	
@@ -290,7 +279,7 @@ function queryPlayerDetail(){
 			g_pagerAssessments = new Pager(pagerScreen, pagerBar, 10, "/assessment/list", generateAssessmentsListParams, extraParams, pagerCache, null, onQueryAssessmentsSuccess, onQueryAssessmentsError); 	
 			if (!g_loggedInPlayer) return;
 			if (g_loggedInPlayer.hasEmail() && !g_loggedInPlayer.isEmailAuthenticated() && g_vieweeId == g_loggedInPlayer.id) {
-				var hintResend = null;
+				var resendHint = null;
 				var extraParams2 = {};
 				extraParams2[g_keyToken] = $.cookie(g_keyToken);
 				var onSuccess = function(data) {
@@ -299,16 +288,16 @@ function queryPlayerDetail(){
 						logout(null);
 						return;
 					}
-					hintResend.text(MESSAGES.email_verification_sent.format(data[g_keyEmail]));
+					resendHint.text(MESSAGES.email_verification_sent.format(data[g_keyEmail]));
 				};
 				var onError = function(err) {
-					hintResend.text(MESSAGES.email_verification_not_sent);
+					resendHint.text(MESSAGES.email_verification_not_sent);
 				};
 				var btnResend = new AjaxButton(TITLES.resend_email_verification, "/player/email/resend", null, "POST", extraParams2, onSuccess, onError);
-				btnResend.appendTo(g_sectionPlayer);
-				hintResend = $("<p>", {
-					text: "",
-					style: "padding: 10px;"
+				btnResend.appendTo(g_sectionPlayer)
+				btnResend.button.addClass("caution-button");
+				resendHint = $("<p>", {
+					"class": "hint-resend"
 				}).appendTo(g_sectionPlayer);
 			}
 

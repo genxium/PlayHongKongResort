@@ -251,12 +251,12 @@ function ProfileEditorImageNode(cdn, domain) {
 		this.setCDNCredentials(cdn, domain, $.cookie(g_keyToken), g_loggedInPlayer);	
 		this.editor = data;
 		this.wrap = $('<div>', {
-			"class": "preview-container left"
+			"class": "preview-container"
 		}).appendTo(this.content);
 
 		this.preview = $('<img>', {
-			src: editor.player.avatar
-		}).hide().appendTo(this.wrap);
+			src: this.editor.player.avatar
+		}).appendTo(this.wrap);
 		
 		this.btnChoose = $('<button>', {
 			text: TITLES.choose_picture,
@@ -343,7 +343,6 @@ function AjaxButton(text, url, clickData, method, extraParams, onSuccess, onErro
 		this.remove();
 		this.button = $("<button>", {
 			text: this.text,
-			"class": "indianred"
 		}).appendTo(par);
 		var dButton = {
 			url: this.url,
