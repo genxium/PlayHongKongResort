@@ -1,4 +1,4 @@
-var g_sectionPlayer = null
+var g_sectionPlayer = null;
 var g_viewee = null;
 var g_profileEditor = null;
 
@@ -30,7 +30,7 @@ function ProfileEditor() {
 	this.mode = this.NORMAL; 
 
 	this.composeContent = function(player) {
-		if (player == null) return null;
+		if (!player) return null;
 		this.player = player;
 		var form = $("<div>", {
 			"class": "avatar-editor-form clearfix"
@@ -43,21 +43,21 @@ function ProfileEditor() {
 		}).appendTo(this.content);
 		var ageRow = $("<tr>").appendTo(tbl); 
 		var ageTitle = $("<td>", {
-			text: TITLES["age"]
+			text: TITLES.age
 		}).appendTo(ageRow);
 		var ageValue = $("<td>").appendTo(ageRow);
 		var ageHintCell = $("<td>").appendTo(ageRow);
 
 		var genderRow = $("<tr>").appendTo(tbl);
 		var genderTitle = $("<td>", {
-			text: TITLES["gender"]
+			text: TITLES.gender
 		}).appendTo(genderRow);	
 		var genderValue = $("<td>").appendTo(genderRow);
 		var genderHintCell = $("<td>").appendTo(genderRow);
 	
 		var moodRow = $("<tr>").appendTo(tbl);
 		var moodTitle = $("<td>", {
-			text: TITLES["mood"]
+			text: TITLES.mood
 		}).appendTo(moodRow);
 		var moodValue = $("<td>").appendTo(moodRow);
 		var moodHintCell = $("<td>").appendTo(moodRow);
@@ -74,10 +74,10 @@ function ProfileEditor() {
 				hint.html("");
 				hint.removeClass("warn");
 				var val = $(this).val();
-				if(val == null || val.length ==0 ) return;
+				if(!val || val.length === 0) return;
 				if(validatePlayerAge(val))	return;
 				hint.addClass("warn");
-				hint.html(MESSAGES["age_requirement"]);
+				hint.html(MESSAGES.age_requirement);
 			});	
 
 			this.gender = $("<input>").appendTo(genderValue);
@@ -90,10 +90,10 @@ function ProfileEditor() {
 				hint.html("");
 				hint.removeClass("warn");
 				var val = $(this).val();
-				if(val == null || val.length ==0 ) return;
+				if(!val || val.length === 0) return;
 				if(validatePlayerGender(val))	return;
 				hint.addClass("warn");
-				hint.html(MESSAGES["gender_requirement"]);
+				hint.html(MESSAGES.gender_requirement);
 			});	
 			
 			this.mood = $("<input>").appendTo(moodValue);
@@ -106,10 +106,10 @@ function ProfileEditor() {
 				hint.html("");
 				hint.removeClass("warn");
 				var val = $(this).val();
-				if(val == null || val.length ==0 ) return;
+				if(!val || val.length === 0 ) return;
 				if(validatePlayerMood(val))	return;
 				hint.addClass("warn");
-				hint.html(MESSAGES["mood_requirement"]);
+				hint.html(MESSAGES.mood_requirement);
 			});	
 		} else if (this.mode == this.NORMAL) {
 			this.age = $("<span>", {
@@ -132,7 +132,7 @@ function ProfileEditor() {
 		}).hide().appendTo(this.content);			
 		if (this.mode == this.EDITING) this.avatarNormalView.show();	
 
-		if (g_loggedInPlayer == null || player.id != g_loggedInPlayer.id) return;
+		if (!g_loggedInPlayer || player.id != g_loggedInPlayer.id) return;
 
 		var box = $("<div>", {
 			"class": "upload left"
@@ -147,7 +147,7 @@ function ProfileEditor() {
 		var controlButtonsRow = $("<p>").appendTo(this.content);
 
 		this.btnEdit = $("<button>", {
-			text: TITLES["edit"],
+			text: TITLES.edit,
 			"class": "btn-edit positive-button" 
 		}).hide().appendTo(controlButtonsRow).click(this, function(evt) {
 			var editor = evt.data;
@@ -157,7 +157,7 @@ function ProfileEditor() {
 		if (this.mode == this.NORMAL) this.btnEdit.show();
 
 		this.btnCancel = $("<button>", {
-			text: TITLES["cancel"],
+			text: TITLES.cancel,
 			"class": "btn-cancel negative-button"
 		}).hide().appendTo(controlButtonsRow).click(this, function(evt) {
 			var editor = evt.data;
@@ -165,7 +165,7 @@ function ProfileEditor() {
 			editor.refresh(player);
 
 			var token = $.cookie(g_keyToken);
-			if (token == null)	return; 
+			if (!token)	return; 
 
 			var params = {};
 			params[g_keyBundle] = JSON.stringify([editor.avatarNode.remoteName]);
@@ -186,13 +186,13 @@ function ProfileEditor() {
 		if (this.mode == this.EDITING) this.btnCancel.show();
 
 		this.btnSave = $("<button>", {
-			text: TITLES["save"],	
+			text: TITLES.save,	
 			"class": "btn-save positive-button"
 		}).hide().appendTo(controlButtonsRow).click(this, function(evt) {
 			evt.preventDefault();
 			var editor = evt.data;	
 			var token = $.cookie(g_keyToken);
-			if (token == null) return;
+			if (!token) return;
 
 			var formData = {};
 			formData[g_keyToken] = token;
@@ -203,7 +203,7 @@ function ProfileEditor() {
 
 			var aButton = getTarget(evt);
 			disableField(aButton);	
-			editor.hint.text(MESSAGES["saving"]);
+			editor.hint.text(MESSAGES.saving);
 			
 			$.ajax({
 				method: "POST",
@@ -213,11 +213,11 @@ function ProfileEditor() {
 					enableField(aButton);	
 					// update logged in player profile
 					player = g_viewee = g_loggedInPlayer = new Player(data);
-					editor.hint.text(MESSAGES["saved"]);
+					editor.hint.text(MESSAGES.saved);
 				},
 				error: function(xhr, status, err){
 					enableField(aButton);	
-					editor.hint.text(MESSAGES["save_failed"]);
+					editor.hint.text(MESSAGES.save_failed);
 				}
 			});
 		});	
@@ -237,7 +237,7 @@ function clearProfile() {
 	$("#pager-filters").empty();
 	$("#pager-bar-activities").empty();
 	$("#pager-screen-activities").empty();
-	if (g_sectionPlayer == null) return;
+	if (!g_sectionPlayer) return;
 	g_sectionPlayer.empty();
 }
 
@@ -245,13 +245,13 @@ function queryPlayerDetail(){
 	var params={};
 	params[g_keyVieweeId] = g_vieweeId;
 	var token = $.cookie(g_keyToken);
-	if(token != null) params[g_keyToken] = token;
+	if(!(!token)) params[g_keyToken] = token;
 	$.ajax({
 		type: "GET",
 		url: "/player/detail",
 		data: params,
 		success: function(data, status, xhr){
-			if(g_sectionPlayer == null) return;
+			if(!g_sectionPlayer) return;
 			var playerJson = data;
 			g_viewee = new Player(playerJson);
 			var playername = g_viewee.name;
@@ -271,12 +271,12 @@ function queryPlayerDetail(){
 			}).appendTo(playerInfo);
 
 
-			if (g_profileEditor == null) g_profileEditor = new ProfileEditor();
+			if (!g_profileEditor) g_profileEditor = new ProfileEditor();
 			g_profileEditor.appendTo(profile);	
 			g_profileEditor.refresh(g_viewee);
 			
 			// refresh pager for assessments
-			if (g_pagerAssessments != null) g_pagerAssessments.remove();
+			if (!(!g_pagerAssessments)) g_pagerAssessments.remove();
 			var pagerBar = $("<div>", {
 				id: "pager-bar-assessments"
 			}).appendTo(g_sectionPlayer);
@@ -288,23 +288,23 @@ function queryPlayerDetail(){
 				to: g_viewee.id
 			};
 			g_pagerAssessments = new Pager(pagerScreen, pagerBar, 10, "/assessment/list", generateAssessmentsListParams, extraParams, pagerCache, null, onQueryAssessmentsSuccess, onQueryAssessmentsError); 	
-			if (g_loggedInPlayer == null) return;
+			if (!g_loggedInPlayer) return;
 			if (g_loggedInPlayer.hasEmail() && !g_loggedInPlayer.isEmailAuthenticated() && g_vieweeId == g_loggedInPlayer.id) {
 				var hintResend = null;
-				var extraParams = {};
-				extraParams[g_keyToken] = $.cookie(g_keyToken);
+				var extraParams2 = {};
+				extraParams2[g_keyToken] = $.cookie(g_keyToken);
 				var onSuccess = function(data) {
-					if (data == null) return;
+					if (!data) return;
 					if (isTokenExpired(data)) {
 						logout(null);
 						return;
 					}
-					hintResend.text(MESSAGES["email_verification_sent"].format(data[g_keyEmail]));
+					hintResend.text(MESSAGES.email_verification_sent.format(data[g_keyEmail]));
 				};
 				var onError = function(err) {
-					hintResend.text(MESSAGES["email_verification_not_sent"]);
+					hintResend.text(MESSAGES.email_verification_not_sent);
 				};
-				var btnResend = new AjaxButton(TITLES["resend_email_verification"], "/player/email/resend", null, "POST", extraParams, onSuccess, onError);
+				var btnResend = new AjaxButton(TITLES.resend_email_verification, "/player/email/resend", null, "POST", extraParams2, onSuccess, onError);
 				btnResend.appendTo(g_sectionPlayer);
 				hintResend = $("<p>", {
 					text: "",
@@ -326,8 +326,8 @@ function requestProfile(vieweeId) {
 
 	g_sectionPlayer = $("#section-player");
 
-	var relationSelector = createSelector($("#pager-filters"), [TITLES["hosted_activities"], TITLES["joined_activities"]], [hosted, present], null, null, null, null);
-	var orientationSelector = createSelector($("#pager-filters"), [TITLES["time_descendant"], TITLES["time_ascendant"]], [g_orderDescend, g_orderAscend], null, null, null, null);
+	var relationSelector = createSelector($("#pager-filters"), [TITLES.hosted_activities, TITLES.joined_activities], [hosted, present], null, null, null, null);
+	var orientationSelector = createSelector($("#pager-filters"), [TITLES.time_descendant, TITLES.time_ascendant], [g_orderDescend, g_orderAscend], null, null, null, null);
 	var relationFilter = new PagerFilter(g_keyRelation, relationSelector);
 	var orientationFilter = new PagerFilter(g_keyOrientation, orientationSelector); 
 	var filters = [relationFilter, orientationFilter];	

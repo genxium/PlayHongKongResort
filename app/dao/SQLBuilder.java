@@ -67,77 +67,77 @@ public class SQLBuilder {
 
     }
 
-    public SQLBuilder from(String table) {
+    public SQLBuilder from(final String table) {
         m_table = table;
         return this;
     }
 
-    public SQLBuilder into(String table) {
+    public SQLBuilder into(final String table) {
         m_table = table;
         return this;
     }
 
-    public SQLBuilder update(String table) {
+    public SQLBuilder update(final String table) {
         m_table = table;
         return this;
     }
 
-    public SQLBuilder select(String col) {
-        if (m_selectCols == null) m_selectCols = new LinkedList<String>();
+    public SQLBuilder select(final String col) {
+        if (m_selectCols == null) m_selectCols = new LinkedList<>();
         m_selectCols.add(col);
         return this;
     }
 
-    public SQLBuilder select(List<String> cols) {
+    public SQLBuilder select(final List<String> cols) {
         for (String col : cols) select(col);
         return this;
     }
 
-    public SQLBuilder select(String[] cols) {
+    public SQLBuilder select(final String[] cols) {
         for (String col : cols) select(col);
         return this;
     }
 
-    public SQLBuilder insert(String[] cols, Object[] vals) {
+    public SQLBuilder insert(final String[] cols, final Object[] vals) {
         if (cols == null || vals == null || cols.length != vals.length) return this;
         if (m_insertCols == null) {
             m_insertCols = new ArrayList<>(); // lazy init
             Collections.addAll(m_insertCols, cols);
         }
-        if (m_insertVals == null) m_insertVals = new ArrayList<List<Object>>(); // lazy init
-        List<Object> tmp = new ArrayList<Object>();
+        if (m_insertVals == null) m_insertVals = new ArrayList<>(); // lazy init
+        List<Object> tmp = new ArrayList<>();
         Collections.addAll(tmp, vals);
         m_insertVals.add(tmp);
         return this;
     }
 
-    public SQLBuilder replace(String[] cols, Object[] vals) {
+    public SQLBuilder replace(final String[] cols, final Object[] vals) {
         if (cols == null || vals == null || cols.length != vals.length) return this;
         if (m_replaceCols == null) {
             m_replaceCols = new ArrayList<>(); // lazy init
             Collections.addAll(m_replaceCols, cols);
         }
-        if (m_replaceVals == null) m_replaceVals = new ArrayList<List<Object>>(); // lazy init
-        List<Object> tmp = new ArrayList<Object>();
+        if (m_replaceVals == null) m_replaceVals = new ArrayList<>(); // lazy init
+        List<Object> tmp = new ArrayList<>();
         Collections.addAll(tmp, vals);
         m_replaceVals.add(tmp);
         return this;
     }
 
-    public SQLBuilder ignore(boolean val) {
+    public SQLBuilder ignore(final boolean val) {
         m_ignore = val;
         return this;
     }
 
-    public SQLBuilder set(String col, Object val) {
-        if (m_updateCols == null) m_updateCols = new LinkedList<String>();
-        if (m_updateVals == null) m_updateVals = new LinkedList<Object>();
+    public SQLBuilder set(final String col, final Object val) {
+        if (m_updateCols == null) m_updateCols = new LinkedList<>();
+        if (m_updateVals == null) m_updateVals = new LinkedList<>();
         m_updateCols.add(col);
         m_updateVals.add(val);
         return this;
     }
 
-    public SQLBuilder set(List<String> cols, List<Object> vals) {
+    public SQLBuilder set(final List<String> cols, final List<Object> vals) {
         if (cols == null || vals == null) return this;
         if (cols.size() != vals.size()) return this;
         int n = cols.size();
@@ -149,7 +149,7 @@ public class SQLBuilder {
         return this;
     }
 
-    public SQLBuilder set(String[] cols, Object[] vals) {
+    public SQLBuilder set(final String[] cols, final Object[] vals) {
         if (cols == null || vals == null) return this;
         if (cols.length != vals.length) return this;
         int n = cols.length;
@@ -159,15 +159,15 @@ public class SQLBuilder {
         return this;
     }
 
-    public SQLBuilder increase(String col, Object val) {
-        if (m_increaseCols == null) m_increaseCols = new LinkedList<String>();
-        if (m_increaseVals == null) m_increaseVals = new LinkedList<Object>();
+    public SQLBuilder increase(final String col, final Object val) {
+        if (m_increaseCols == null) m_increaseCols = new LinkedList<>();
+        if (m_increaseVals == null) m_increaseVals = new LinkedList<>();
         m_increaseCols.add(col);
         m_increaseVals.add(val);
         return this;
     }
 
-    public SQLBuilder increase(String[] cols, Object[] vals) {
+    public SQLBuilder increase(final String[] cols, final Object[] vals) {
         if (cols == null || vals == null) return this;
         if (cols.length != vals.length) return this;
         int n = cols.length;
@@ -177,15 +177,15 @@ public class SQLBuilder {
         return this;
     }
 
-    public SQLBuilder decrease(String col, Object val) {
-        if (m_decreaseCols == null) m_decreaseCols = new LinkedList<String>();
-        if (m_decreaseVals == null) m_decreaseVals = new LinkedList<Object>();
+    public SQLBuilder decrease(final String col, final Object val) {
+        if (m_decreaseCols == null) m_decreaseCols = new LinkedList<>();
+        if (m_decreaseVals == null) m_decreaseVals = new LinkedList<>();
         m_decreaseCols.add(col);
         m_decreaseVals.add(val);
         return this;
     }
 
-    public SQLBuilder decrease(String[] cols, Object[] vals) {
+    public SQLBuilder decrease(final String[] cols, final Object[] vals) {
         if (cols == null || vals == null) return this;
         if (cols.length != vals.length) return this;
         int n = cols.length;
@@ -201,7 +201,7 @@ public class SQLBuilder {
      * If <value> is to be filled in with associative field name, it could ONLY
      * be a primary table (i.e. m_table) field.
      */
-    public SQLBuilder join(String table, String[] keys, String[] ops, Object[] vals) {
+    public SQLBuilder join(final String table, final String[] keys, final String[] ops, final Object[] vals) {
         if (table == null || keys == null || ops == null || vals == null) return this;
         if (keys.length != vals.length || ops.length != vals.length) return this;
         int length = keys.length;
@@ -212,7 +212,7 @@ public class SQLBuilder {
         return this;
     }
 
-    public SQLBuilder where(String col, String op, Object val) {
+    public SQLBuilder where(final String col, final String op, final Object val) {
         if (m_whereCols == null) m_whereCols = new LinkedList<>();
         if (m_whereOps == null) m_whereOps = new LinkedList<>();
         if (m_whereVals == null) m_whereVals = new LinkedList<>();
@@ -222,7 +222,7 @@ public class SQLBuilder {
         return this;
     }
 
-    public SQLBuilder where(String[] cols, String[] ops, Object[] vals) {
+    public SQLBuilder where(final String[] cols, final String[] ops, final Object[] vals) {
         if (cols == null || ops == null || vals == null) return this;
         if (cols.length != ops.length || cols.length != vals.length) return this;
         int n = cols.length;
@@ -232,22 +232,22 @@ public class SQLBuilder {
         return this;
     }
 
-    public SQLBuilder order(String col, String orientation) {
-        if (m_orderBy == null) m_orderBy = new LinkedList<String>();
+    public SQLBuilder order(final String col, final String orientation) {
+        if (m_orderBy == null) m_orderBy = new LinkedList<>();
         m_orderBy.add(col);
 
         if (orientation == null) return this;
-        if (m_orientations == null) m_orientations = new LinkedList<String>();
+        if (m_orientations == null) m_orientations = new LinkedList<>();
         m_orientations.add(orientation);
         return this;
     }
 
-    public SQLBuilder order(String col) {
+    public SQLBuilder order(final String col) {
         order(col, null);
         return this;
     }
 
-    public SQLBuilder order(List<String> cols, List<String> orientations) {
+    public SQLBuilder order(final List<String> cols, final List<String> orientations) {
         if (cols == null) return this;
         int n = cols.size();
         for (int i = 0; i < n; i++) {
@@ -261,7 +261,7 @@ public class SQLBuilder {
         return this;
     }
 
-    public SQLBuilder order(String[] cols, String[] orientations) {
+    public SQLBuilder order(final String[] cols, final String[] orientations) {
         if (cols == null) return this;
         int n = cols.length;
         for (int i = 0; i < n; i++) {
@@ -275,24 +275,24 @@ public class SQLBuilder {
         return this;
     }
 
-    public SQLBuilder order(List<String> cols) {
+    public SQLBuilder order(final List<String> cols) {
         return order(cols, null);
     }
 
-    public SQLBuilder order(String[] cols) {
+    public SQLBuilder order(final String[] cols) {
         return order(cols, null);
     }
 
-    public SQLBuilder limit(int st, int ed) {
-        if (m_limits == null) m_limits = new LinkedList<Integer>();
+    public SQLBuilder limit(final int st, final int count) {
+        if (m_limits == null) m_limits = new LinkedList<>();
         m_limits.clear();
         m_limits.add(st);
-        m_limits.add(ed);
+        m_limits.add(count);
         return this;
     }
 
-    public SQLBuilder limit(int num) {
-        if (m_limits == null) m_limits = new LinkedList<Integer>();
+    public SQLBuilder limit(final int num) {
+        if (m_limits == null) m_limits = new LinkedList<>();
         m_limits.clear();
         m_limits.add(num);
         return this;
@@ -388,7 +388,7 @@ public class SQLBuilder {
         return query;
     }
 
-    public PreparedStatement toSelect(Connection connection) {
+    public PreparedStatement toSelect(final Connection connection) {
 
         if (connection == null) return null;
         PreparedStatement statement = null;
@@ -445,7 +445,7 @@ public class SQLBuilder {
         return statement;
     }
 
-    public PreparedStatement toInsert(Connection connection) {
+    public PreparedStatement toInsert(final Connection connection) {
         if (connection == null) return null;
         PreparedStatement statement = null;
         try {
@@ -488,7 +488,7 @@ public class SQLBuilder {
         return statement;
     }
 
-    public PreparedStatement toReplace(Connection connection) {
+    public PreparedStatement toReplace(final Connection connection) {
         if (connection == null) return null;
         PreparedStatement statement = null;
         try {
@@ -530,7 +530,7 @@ public class SQLBuilder {
         return statement;
     }
 
-    public PreparedStatement toDelete(Connection connection) {
+    public PreparedStatement toDelete(final Connection connection) {
         if (connection == null) return null;
         PreparedStatement statement = null;
         try {
@@ -552,13 +552,14 @@ public class SQLBuilder {
                 }
             }
 
+
         } catch (Exception e) {
 
         }
         return statement;
     }
 
-    public PreparedStatement toUpdate(Connection connection) {
+    public PreparedStatement toUpdate(final Connection connection) {
         if (connection == null) return null;
         PreparedStatement statement = null;
         try {

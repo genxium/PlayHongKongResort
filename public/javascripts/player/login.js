@@ -35,13 +35,13 @@ function PreLoginForm(handle, psw, btn, forgot, registry, onLoginSuccess, onLogi
 		var email = form.handle.val();
 		var password = form.psw.val();
 
-		if ( email == null || email.length == 0 || !validateEmail(email) ) {
-			alert(ALERTS["invalid_email_format"])
+		if ( !email || email.length === 0 || !validateEmail(email) ) {
+			alert(ALERTS.invalid_email_format);
 			return;
 		}
 
-		if ( password == null || password.length == 0 || !validatePassword(password) ) {
-			alert(ALERTS["wrong_password"]);
+		if ( !password || password.length === 0 || !validatePassword(password) ) {
+			alert(ALERTS.wrong_password);
 			return;
 		}
 
@@ -59,26 +59,26 @@ function PreLoginForm(handle, psw, btn, forgot, registry, onLoginSuccess, onLogi
 		    success: function(data, status, xhr){
 				enableField(aButton);
 				if (isPlayerNotFound(data)) {
-					alert(ALERTS["player_not_existing"]);
+					alert(ALERTS.player_not_existing);
 					return;
 				} 
 				if (isPswErr(data)) {
-					alert(ALERTS["wrong_password"]);
+					alert(ALERTS.wrong_password);
 					return;
 				}
 				g_loggedInPlayer = new Player(data);
-				if (g_loggedInPlayer == null) return;
+				if (!g_loggedInPlayer) return;
 				// store token in cookie iff query succeeds
 				$.cookie(g_keyToken, data[g_keyToken], {path: '/'});
 				wsConnect();	
-				if(g_sectionLogin == null) return;
+				if(!g_sectionLogin) return;
 				g_postLoginMenu = generatePostLoginMenu(g_sectionLogin, form.onLoginSuccess, form.onLoginError, form.onLogoutSuccess, form.onLogoutError);
-				if(form.onLoginSuccess == null) return;
+				if(!form.onLoginSuccess) return;
 				form.onLoginSuccess(data);
 		    },
 		    error: function(xhr, status, err){
 				enableField(aButton);
-				if(form.onLoginError == null) return;
+				if(!form.onLoginError) return;
 				form.onLoginError(err);
 		    }
 		});
@@ -141,7 +141,7 @@ function NameCompletionForm() {
 	this.composeContent = function(data) {
 			var title = $('<div>', {
 				'class':	"title-alpha first-foreign-party-registration-title",
-				text: TITLES['first_foreign_party_registration']
+				text: TITLES.first_foreign_party_registration
 			}).appendTo(this.content);
 
 			var registerBox = $('<div>', {
@@ -152,7 +152,7 @@ function NameCompletionForm() {
 			}).appendTo(registerBox);
 			this.name = $('<input>', {
 				type: "text",
-				placeHolder: HINTS["playername"],
+				placeHolder: HINTS.playername,
 			}).appendTo(rowName);
 			this.nameCheck = $('<div>', {
 				"class": "message"
@@ -163,7 +163,7 @@ function NameCompletionForm() {
 			}).appendTo(registerBox);
 			this.email = $('<input>', {
 				type: "text",
-				placeHolder: HINTS["email"],
+				placeHolder: HINTS.email,
 			}).appendTo(rowEmail);
 			this.emailCheck = $('<div>', {
 				"class": "message"
@@ -175,10 +175,10 @@ function NameCompletionForm() {
 				nameCheck.empty();
 				nameCheck.html("");
 				var nameVal = $(this).val();
-				if(nameVal == null || nameVal.length == 0) return;
+				if(!nameVal || nameVal.length === 0) return;
 				if(!validateName(nameVal)) {
 					addWarningStyle(nameCheck);
-					nameCheck.html("<p>" + MESSAGES["playername_requirement"] + "</p>");
+					nameCheck.html("<p>" + MESSAGES.playername_requirement + "</p>");
 					return;
 				}
 
@@ -191,10 +191,10 @@ function NameCompletionForm() {
 					success: function(data, status, xhr){
 						if (isStandardSuccess(data)){
 							removeWarningStyle(nameCheck);	
-							nameCheck.html("<p>" + MESSAGES["playername_valid"] + "</p>");
+							nameCheck.html("<p>" + MESSAGES.playername_valid + "</p>");
 						}else{
 							addWarningStyle(nameCheck);
-							nameCheck.html("<p>" + MESSAGES["playername_invalid"] + "</p>");
+							nameCheck.html("<p>" + MESSAGES.playername_invalid + "</p>");
 						}
 					},
 					error: function(xhr, status, err){
@@ -208,10 +208,10 @@ function NameCompletionForm() {
 				emailCheck.empty();
 				emailCheck.html("");
 				var emailVal = $(this).val();
-				if(emailVal == null || emailVal.length == 0) return;
+				if(!emailVal || emailVal.length === 0) return;
 				if(!validateEmail(emailVal)) {
 					addWarningStyle(emailCheck);
-					emailCheck.html("<p>" + MESSAGES["email_requirement"] + "</p>");
+					emailCheck.html("<p>" + MESSAGES.email_requirement + "</p>");
 					return;
 				}
 
@@ -224,10 +224,10 @@ function NameCompletionForm() {
 					success: function(data, status, xhr){
 						if (isStandardSuccess(data)){
 							removeWarningStyle(emailCheck);
-							emailCheck.html("<p>" + MESSAGES["email_valid"] + "</p>");
+							emailCheck.html("<p>" + MESSAGES.email_valid + "</p>");
 						}else{
 							addWarningStyle(emailCheck);
-							emailCheck.html("<p>" + MESSAGES["email_invalid"] + "</p>");
+							emailCheck.html("<p>" + MESSAGES.email_invalid + "</p>");
 						}
 					},
 					error: function(xhr, status, err){
@@ -241,27 +241,27 @@ function NameCompletionForm() {
 
 		this.btnSubmit = $('<button>',{
 			"class": "btn-submit positive-button",
-			text: TITLES["submit"]
+			text: TITLES.submit
 		}).appendTo(buttons).click(this, function(evt) {
 		    var widget = evt.data;
 		    var playername = widget.name.val();
 		    var email = widget.email.val();
 
-		    if (playername == null || playername.length == 0 || !validateName(playername)) return;
-		    if (email != null && email.length > 0 && !validateEmail(email)) return;
+		    if (!playername || playername.length === 0 || !validateName(playername)) return;
+		    if (!(!email) && email.length > 0 && !validateEmail(email)) return;
 
 		    var accessToken = $.cookie(g_keyAccessToken);
-		    if (accessToken == null) return;
+		    if (!accessToken) return;
 
 		    var party = $.cookie(g_keyParty);
-		    if (party == null) return;
+		    if (!party) return;
 
 		    var btnSubmit = getTarget(evt);
 		    disableField(btnSubmit);
 
 		    var params = {};
 		    params[g_keyName] = playername;
-		    if (email != null && email.length > 0 && validateEmail(email)) params[g_keyEmail] = email;
+		    if (!(!email) && email.length > 0 && validateEmail(email)) params[g_keyEmail] = email;
 		    params[g_keyAccessToken] = accessToken;
 		    params[g_keyParty] = party;
 
@@ -272,7 +272,7 @@ function NameCompletionForm() {
 				success: function(data, status, xhr){
 					enableField(btnSubmit);
 					if (isPlayerNotFound(data)) {
-						alert(ALERTS['player_not_existing']);
+						alert(ALERTS.player_not_existing);
 						widget.hide();
 						return;
 					}
@@ -281,12 +281,12 @@ function NameCompletionForm() {
 						return;
 					}
 					if (isTempForeignPartyRecordNotFound(data)) {
-						alert(ALERTS['relogin_required']);
+						alert(ALERTS.relogin_required);
 						widget.hide();
 						return;
 					}
 					if (isStandardFailure(data)) {
-						alert(ALERTS['unknown_error']);
+						alert(ALERTS.unknown_error);
 						widget.refresh();
 						return;
 					}
@@ -309,14 +309,14 @@ function NameCompletionForm() {
 
 		this.btnCancel = $('<button>',{
 			"class": "btn-cancel negative-button",
-			text: TITLES["cancel"]
+			text: TITLES.cancel
 		}).appendTo(buttons).click(this, function(evt) {
 			$.removeCookie(g_keyAccessToken, {path: '/'});
 			$.removeCookie(g_keyParty, {path: '/'});
 			var widget = evt.data;
 			widget.hide();
 		});
-	}
+	};
 }
 
 NameCompletionForm.inherits(BaseModalWidget);
@@ -327,7 +327,7 @@ function initNameCompletionForm(par) {
 }
 
 function appendForeignPartyLoginEntry(par, party) {
-	if (par == null) return;
+	if (!par) return;
 	if (party == g_partyQQ) {
 		var qqLoginEntry = $("<img>", {
 			src: "/assets/icons/qq.png",
@@ -348,7 +348,7 @@ function appendForeignPartyLoginEntry(par, party) {
 }
 
 function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError, attachRegistry) {
-	if (par == null) return null;
+	if (!par) return null;
 	par.empty();
 	var container = $('<div>', {
 		id: "login-box"
@@ -360,30 +360,30 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 		"class": "login-inputs left plain-input"
 	}).appendTo(row1);
 	var handle = $('<input>', {
-		placeHolder: HINTS["email"],
+		placeHolder: HINTS.email,
 		type: "text",
 		"class": "login-email"
 	}).appendTo(inputs);
 	var psw = $('<input>', {
-		placeHolder: HINTS["password"],
+		placeHolder: HINTS.password,
 		type: "password",
 		"class": "login-pw"
 	}).appendTo(inputs);
 	var btn = $('<button>',{
-		text: TITLES["login"],
+		text: TITLES.login,
 		"class": "login-btn right positive-button"
 	}).appendTo(row1);
 	var row2 = $("<div>", {
 		"class": "accessory-row"
 	}).appendTo(container);
 	var forgot = $("<button>", {
-		text: TITLES["forgot_password"],
+		text: TITLES.forgot_password,
 		"class": "login-forgot faketext-button"
 	}).appendTo(row2);	
 	var registry = null;
 	if (attachRegistry) {
 		registry = $("<button>", {
-			text: TITLES["register"],
+			text: TITLES.register,
 			"class": "login-registry faketext-button"
 		}).appendTo(row2);	
 	} 
@@ -399,7 +399,7 @@ function logout(evt) {
 
 	evt.preventDefault();
 	var menu = ((evt && evt.data) ? evt.data : g_postLoginMenu);
-	if (menu == null) return;
+	if (!menu) return;
 
 	var token = $.cookie(g_keyToken);
 	var params = {};
@@ -416,9 +416,9 @@ function logout(evt) {
 			g_loggedInPlayer = null;
 			$.removeCookie(g_keyToken, {path: '/'});
 			wsDisconnect();
-			if (g_sectionLogin == null) return;
+			if (!g_sectionLogin) return;
 			g_preLoginForm = generatePreLoginForm(g_sectionLogin, menu.onLoginSuccess, menu.onLoginError, menu.onLogoutSuccess, menu.onLogoutError);
-			if (menu.onLogoutSuccess == null) return;
+			if (!menu.onLogoutSuccess) return;
 			menu.onLogoutSuccess(data);
 		},
 		error: function(xhr, status, err){
@@ -426,32 +426,32 @@ function logout(evt) {
 			enableField(aButton);
 			wsDisconnect();
 			$.removeCookie(g_keyToken, {path: '/'});
-			if (menu.onLogoutError == null) return;
+			if (!menu.onLogoutError) return;
 			menu.onLogoutError(err);
 		}	
 	});
 }
 
 function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
-	if (par == null) return null;
-	if (g_loggedInPlayer == null) return null;
+	if (!par) return null;
+	if (!g_loggedInPlayer) return null;
 	par.empty();
 
 	var createReact = function(evt){
 		evt.preventDefault();
-		if (g_loggedInPlayer == null) return;
+		if (!g_loggedInPlayer) return;
 		if (g_loggedInPlayer.isVisitor()) {
-			alert(ALERTS["email_not_authenticated"]);
+			alert(ALERTS.email_not_authenticated);
 			return;
 		}	
-		if (g_activityEditor == null) return;
+		if (!g_activityEditor) return;
 		g_activityEditor.refresh(null);
 		g_activityEditor.show();
 	};
 
 	var profileReact = function(evt){
 		evt.preventDefault();
-		if (g_loggedInPlayer == null) return;
+		if (!g_loggedInPlayer) return;
 		window.location.hash = ("profile?" + g_keyVieweeId + "=" + g_loggedInPlayer.id.toString());
 	};
 	
@@ -468,7 +468,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	}).appendTo(avatarContainer);
 
 	var avatarSpan = $("<span>", {
-		text: TITLES["profile"]
+		text: TITLES.profile
 	}).appendTo(avatarContainer);
 	avatarContainer.click(profileReact);
 	
@@ -484,7 +484,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 
 	noti.click(function(evt){
 		evt.preventDefault();		
-		if (g_loggedInPlayer == null) return;
+		if (!g_loggedInPlayer) return;
 		window.location.hash = "notifications";
 	}); 
 
@@ -506,7 +506,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 
 	var icons = ["/assets/icons/new_activity.png", "/assets/icons/profile.png", "/assets/icons/logout.png"];
 	var actionNames = ["create", "profile", "logout"];
-	var titles = [TITLES["create"], TITLES["profile"], TITLES["logout"]];
+	var titles = [TITLES.create, TITLES.profile, TITLES.logout];
 	var reactions = [createReact, profileReact, logoutReact]; 
 
 	var dropdownMenu = createDropdownMenu(postLoginMenuContainer, "menu-post-login", g_loggedInPlayer.name, icons, actionNames, titles, reactions);
@@ -539,7 +539,7 @@ function encodeStateWithAction(party, cbfunc, argList) {
 	 * */ 
 	var currentHref = window.location.href;
 	var currentBundle = extractTagAndParams(currentHref);
-	if (currentBundle == null)	return;
+	if (!currentBundle)	return;
 
 	var currentTag = currentBundle[g_keyTag];	
 	var currentParams = currentBundle[g_keyParams];
@@ -549,7 +549,7 @@ function encodeStateWithAction(party, cbfunc, argList) {
 	for (var k in currentParams) state[k] = currentParams[k];
 
 	var args = [];
-	for (var k in argList)	args.push(argList[k]); 
+	for (var u in argList)	args.push(argList[u]); 
 
 	var ret = {};
 	ret[g_keyState] = state;
@@ -575,7 +575,7 @@ function checkForeignPartyLoginStatus() {
 	var accessToken = $.cookie(g_keyAccessToken);	
 	var party = $.cookie(g_keyParty);	
 	
-	if (accessToken == null || party == null) {
+	if (!accessToken || !party) {
 		$.removeCookie(g_keyAccessToken, {path: '/'});
 		$.removeCookie(g_keyParty, {path: '/'});
 		checkLoginStatus(false);
@@ -591,7 +591,7 @@ function checkForeignPartyLoginStatus() {
 		data: params,
 		success: function(data, status, xhr){
 			if (isPlayerNotFound(data)) {
-				alert(ALERTS['player_not_existing']);
+				alert(ALERTS.player_not_existing);
 				checkLoginStatus(false);
 				return;
 			}
@@ -601,12 +601,12 @@ function checkForeignPartyLoginStatus() {
 				return;
 			}
 			if (isTempForeignPartyRecordNotFound(data)) {
-				alert(ALERTS['relogin_required']);
+				alert(ALERTS.relogin_required);
 				checkLoginStatus(false);
 				return;
 			}
 			if (isStandardFailure(data)) {
-				alert(ALERTS['unknown_error']);
+				alert(ALERTS.unknown_error);
 				checkLoginStatus(false);
 				return;
 			}
@@ -626,24 +626,24 @@ function checkForeignPartyLoginStatus() {
 
 function checkLoginStatus(willAttemptForeignPartyLogin) {
 	
-	willAttemptForeignPartyLogin = (willAttemptForeignPartyLogin == undefined ? true : willAttemptForeignPartyLogin);
+	willAttemptForeignPartyLogin = (willAttemptForeignPartyLogin === undefined ? true : willAttemptForeignPartyLogin);
 
 	var token = $.cookie(g_keyToken);
 
-	if(token == null) {		
+	if(!token) {		
 		if (willAttemptForeignPartyLogin) {
 			checkForeignPartyLoginStatus();
 			return;
 		}
-		if (g_preLoginForm == null) return;
+		if (!g_preLoginForm) return;
 		g_preLoginForm.onLoginError(null);
 		return;
 	}
 
-	if (g_loggedInPlayer != null) {
-		if (g_preLoginForm == null) return;
+	if (!(!g_loggedInPlayer)) {
+		if (!g_preLoginForm) return;
 		g_postLoginMenu = generatePostLoginMenu(g_sectionLogin, g_preLoginForm.onLoginSuccess, g_preLoginForm.onLoginError, g_preLoginForm.onLogoutSuccess, g_preLoginForm.onLogoutError);
-		if (g_preLoginForm.onLoginSuccess == null)	return;
+		if (!g_preLoginForm.onLoginSuccess)	return;
 		g_preLoginForm.onLoginSuccess(null);
 		return;
 	}
@@ -658,17 +658,17 @@ function checkLoginStatus(willAttemptForeignPartyLogin) {
 			if (isStandardFailure(data)) {
 				wsDisconnect();	
 				$.removeCookie(g_keyToken, {path: '/'});
-				if(g_preLoginForm.onLoginError == null) return;
+				if(!g_preLoginForm.onLoginError) return;
 				g_preLoginForm.onLoginError(null);		
 				return;
 			}
 			g_loggedInPlayer = new Player(data);
-			if (g_loggedInPlayer == null) return;
+			if (!g_loggedInPlayer) return;
 			$.cookie(g_keyToken, data[g_keyToken], {path: '/'});
 			wsConnect();	
-			if (g_preLoginForm == null) return;
+			if (!g_preLoginForm) return;
 			g_postLoginMenu = generatePostLoginMenu(g_sectionLogin, g_preLoginForm.onLoginSuccess, g_preLoginForm.onLoginError, g_preLoginForm.onLogoutSuccess, g_preLoginForm.onLogoutError);
-			if (g_preLoginForm.onLoginSuccess == null)	return;
+			if (!g_preLoginForm.onLoginSuccess)	return;
 			g_preLoginForm.onLoginSuccess(data);
 		},
 		error: function(xhr, status, err){

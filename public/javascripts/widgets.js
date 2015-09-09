@@ -128,6 +128,7 @@ function ActivityEditorImageNode(cdn, domain) {
 	this.composeContent = function(data) {
 		this.setCDNCredentials(cdn, domain, $.cookie(g_keyToken), g_loggedInPlayer);	
 		this.editor = data;
+		this.editor.newImageNodes[this.remoteName] = this;
 		this.wrap = $('<div>', {
 			"class": "preview-container left"
 		}).appendTo(this.content);
@@ -135,13 +136,13 @@ function ActivityEditorImageNode(cdn, domain) {
 		this.preview = $('<img>').hide().appendTo(this.wrap);
 		
 		this.btnChoose = $('<button>', {
-			text: TITLES['choose_picture'],
+			text: TITLES.choose_picture,
 			'class': 'positive-button'
 		}).appendTo(this.wrap);
 		setDimensions(this.btnChoose, "100%", "100%");
 
 		this.btnDel = $('<button>', {
-			text: TITLES["delete"],
+			text: TITLES.del,
 			"class": "positive-button"
 		}).hide().appendTo(this.wrap).click(this, function(evt){
 			evt.preventDefault();
@@ -155,6 +156,7 @@ function ActivityEditorImageNode(cdn, domain) {
                                 enableField(aButton);
 				delete editor.newImageNodes[remoteName];
 				thatNode.remove();
+				editor.addNewImageNode(false, true);
 			};
 			var onError = function(err) {
                                 enableField(aButton);
@@ -185,7 +187,7 @@ function ActivityEditorImageNode(cdn, domain) {
 					'FilesAdded': function(up, files) {
 						if (!files) return null;
 						if (files.length != 1) {
-							alert(ALERTS["choose_one_image"]);
+							alert(ALERTS.choose_one_image);
 							return;
 						}
 
@@ -211,7 +213,7 @@ function ActivityEditorImageNode(cdn, domain) {
 					'UploadComplete': function() {
 						if (node.state == SLOT_UPLOAD_FAILED) {
 						        node.uploader.disableBrowse(false);
-						        enableField(node.btnChoose)
+						        enableField(node.btnChoose);
 						        return;
 						}
 						node.btnChoose.remove();
@@ -220,14 +222,13 @@ function ActivityEditorImageNode(cdn, domain) {
 						var imageUrl = protocolPrefix + node.bucketDomain + "/" + node.remoteName + "?" + refreshParams.join('&');
 						node.preview.show();
 						node.preview.attr("src", imageUrl);
-						node.editor.newImageNodes[node.remoteName] = node;
 						node.state = SLOT_IDLE; 
 						node.btnDel.show();
 
 						node.editor.setNonSubmittable();
 						node.editor.setSavable();
 						
-						// TODO: show a new ActivityEditorImageNode instance to the right most of the row for ActivityEditor
+						node.editor.addNewImageNode(false);
 					},
 					 'Key': function(up, file) {
 						// would ONLY be invoked when {unique_names: false , save_key: false}
@@ -258,8 +259,8 @@ function ProfileEditorImageNode(cdn, domain) {
 		}).hide().appendTo(this.wrap);
 		
 		this.btnChoose = $('<button>', {
-			text: TITLES['choose_picture'],
-			'class': 'positive-button'
+			text: TITLES.choose_picture,
+			"class": "positive-button"
 		}).appendTo(this.wrap);
 		setDimensions(this.btnChoose, "100%", null);
 
@@ -284,7 +285,7 @@ function ProfileEditorImageNode(cdn, domain) {
 					'FilesAdded': function(up, files) {
 						if (!files) return null;
 						if (files.length != 1) {
-							alert(ALERTS["choose_one_image"]);
+							alert(ALERTS.choose_one_image);
 							return;
 						}
 
@@ -779,9 +780,9 @@ function createNavTab(par, refs, titles, preactiveRef, sectionPanes, contents) {
 		href.text(titles[i]);	
 	}
 	var panes = [];
-	for (var i = 0; i < length; i++) {
-		var isPreactive = (refs[i] == preactiveRef); 
-		var pane = createNavTabPane(sectionPanes, refs[i], isPreactive, contents[i]);
+	for (var j = 0; j < length; j++) {
+		var isPreactive = (refs[j] == preactiveRef); 
+		var pane = createNavTabPane(sectionPanes, refs[j], isPreactive, contents[j]);
 		panes.push(pane);
 	}
 	return new NavTab(panes);
@@ -819,7 +820,7 @@ function Captcha(sid) {
 			"class": "captcha"
 		}).appendTo(par);
 		this.input = $("<input>", {
-			placeHolder: HINTS["captcha"]
+			placeHolder: HINTS.captcha
 		}).appendTo(row);
 		this.img = $("<img>", {
 			src: "/captcha?" + g_keySid + "=" + this.sid

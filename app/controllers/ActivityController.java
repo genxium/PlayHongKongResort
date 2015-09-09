@@ -236,6 +236,7 @@ public class ActivityController extends Controller {
                         }
                         List<Image> previousImageList = ExtraCommander.queryImages(activityId);
                         final List<Image> toDeleteImageList = new LinkedList<>();
+                        final List<Long> toDeleteImageIdList = new LinkedList<>();
 
                         List<String> newRemoteNameList = new LinkedList<>();
                         List<Image> newImageList = new LinkedList<>();
@@ -289,14 +290,15 @@ public class ActivityController extends Controller {
                                 for (Image previousImage : previousImageList) {
                                         if (selectedOldImagesSet.contains(previousImage.getId())) continue;
                                         toDeleteImageList.add(previousImage);
+                                        toDeleteImageIdList.add(previousImage.getId());
                                 }
                                 if (toDeleteImageList.size() > 0) {
                                         final SQLBuilder builderDeletion = new SQLBuilder();
                                         final PreparedStatement statDeletion = builderDeletion.from(Image.TABLE)
-                                                .where(Image.ID, "IN", toDeleteImageList)
-                                                .where(Image.META_ID, "=", activityId)
-                                                .where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
-                                                .toDelete(connection);
+                                                                                        .where(Image.ID, "IN", toDeleteImageIdList)
+                                                                                        .where(Image.META_ID, "=", activityId)
+                                                                                        .where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
+                                                                                        .toDelete(connection);
 
                                         SQLHelper.executeAndCloseStatement(statDeletion);
                                 }
@@ -313,7 +315,6 @@ public class ActivityController extends Controller {
                          * */
 
                         if (transactionSucceeded) CDNHelper.deleteRemoteImages(CDNHelper.QINIU, toDeleteImageList);
-
                         List<Activity> tmp = new LinkedList<>();
                         tmp.add(activity);
                         DBCommander.appendImageInfoForActivity(tmp);

@@ -11,13 +11,13 @@ function requestHome() {
 	clearNotifications();
 	g_registerWidget = generateRegisterWidget($("#section-register"), false, 
 						function(data) {
-							alert(ALERTS["registered"]);
+							alert(ALERTS.registered);
 						},
 						function(err) {
-							alert(ALERTS["not_registered"]);
+							alert(ALERTS.not_registered);
 						});
-	var keySelector = createSelector($("#pager-filters"), [TITLES["default"], TITLES["begin_time"], TITLES["deadline"]], ["", g_keyBeginTime, g_keyDeadline], null, null, null, null);
-	var orientationSelector = createSelector($("#pager-filters"), [TITLES["descendant"], TITLES["ascendant"]], [g_orderDescend, g_orderAscend], null, null, null, null);
+	var keySelector = createSelector($("#pager-filters"), [TITLES.defaulted, TITLES.begin_time, TITLES.deadline], ["", g_keyBeginTime, g_keyDeadline], null, null, null, null);
+	var orientationSelector = createSelector($("#pager-filters"), [TITLES.descendant, TITLES.ascendant], [g_orderDescend, g_orderAscend], null, null, null, null);
 	var keyFilter = new PagerFilter(g_keyOrderKey, keySelector);
 	var orientationFilter = new PagerFilter(g_keyOrientation, orientationSelector); 
 	var filters = [keyFilter, orientationFilter];	
@@ -27,18 +27,18 @@ function requestHome() {
 	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
 
 	var onLoginSuccess = function(data) {
-		if (g_registerWidget != null) g_registerWidget.hide();
+		if (!(!g_registerWidget)) g_registerWidget.hide();
 		listActivitiesAndRefresh();
 	};
 
 	var onLoginError = function(err) {
-		if (g_registerWidget != null) g_registerWidget.show();
+		if (!(!g_registerWidget)) g_registerWidget.show();
 		g_pager.screen.show();
 		listActivitiesAndRefresh();
 	};
 
 	var onLogoutSuccess = function(data) {
-		if (g_registerWidget != null) g_registerWidget.show();
+		if (!(!g_registerWidget)) g_registerWidget.show();
 		g_pager.screen.show();
 		listActivitiesAndRefresh();
 	}; 
@@ -53,7 +53,7 @@ function requestHome() {
 function routeByHash() {
 	var href = window.location.href;
 	var bundle = extractTagAndParams(href);
-	if (bundle == null) {
+	if (!bundle) {
 		window.location.hash = "home";
 		return;
 	}
@@ -103,11 +103,11 @@ function routeByHash() {
 		return;
 	}
 	if (tag == "detail") {
-		requestActivityDetail(parseInt(params["activity_id"]));
+		requestActivityDetail(parseInt(params.activity_id));
 		return;
 	}
 	if (tag == "profile") {
-		requestProfile(parseInt(params["viewee_id"]));
+		requestProfile(parseInt(params.viewee_id));
 		return;
 	}
 }

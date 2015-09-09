@@ -6,4 +6,4 @@ host='localhost'
 dbname='hongkongresort'
 user='cu'
 
-mysql -h $host -u $user $dbname < $basedir/rotate_login_table.sql
+mysql -h $host -u $user $dbname < $basedir/rotate_image_table.sql

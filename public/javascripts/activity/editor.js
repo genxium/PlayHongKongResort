@@ -37,6 +37,7 @@ function ActivityEditor() {
 	this.addressCounter = null;
 	this.contentField = null;
 	this.contentCounter = null;
+	this.newImageRow = null;
 	this.newImageNodes = null;
 	this.imageSelectors = null;
 	this.beginTimePicker = null;
@@ -47,10 +48,42 @@ function ActivityEditor() {
 	this.explorerTrigger = null;
 	this.hint = null;
 	this.captcha = null;
+
+	this.addNewImageNode = function(fromImageSelector, fromDeletion) {
+		// Note that in any valid state, there should be a node for selection on the form
+		fromImageSelector = (fromImageSelector === undefined ? false : fromImageSelector);
+		fromDeletion = (fromDeletion === undefined ? false : fromDeletion);
+		if (!fromImageSelector && !fromDeletion) {
+			var node = new ActivityEditorImageNode(g_cdnQiniu, g_cdnDomain);
+			node.appendTo(this.newImageRow);
+			node.refresh(this);
+		}
+
+		var countNew = Object.keys(this.newImageNodes).length;
+		var countTot = countImages(this);
+		var countOld = countTot - countTot;
+
+		var lastKey = null;
+		for (var key in this.newImageNodes) {
+			if (!lastKey) lastKey = key;
+			else if (key > lastKey) lastKey = key;	
+			else;
+		}
+		var lastNewImageNode = this.newImageNodes[lastKey]; 
+		
+		if (countTot - 1 >= g_imagesLimit) {
+			lastNewImageNode.uploader.disableBrowse();
+			disableField(lastNewImageNode.btnChoose);
+		} else {
+			lastNewImageNode.uploader.disableBrowse(false);
+			enableField(lastNewImageNode.btnChoose);
+		}
+	};
+
 	this.composeContent = function(activity) {
 		this.id = null;
 		var isNewActivity = false;
-		if(activity == null || activity.id == null) isNewActivity = true;
+		if(!activity || !activity.id) isNewActivity = true;
 
 		var activityId = null;
 		var activityTitle = "";
@@ -70,7 +103,7 @@ function ActivityEditor() {
 		}).appendTo(this.content);
 
 		this.titleField = $('<input>', {
-			placeholder: HINTS["activity_title"],
+			placeholder: HINTS.activity_title,
 			"class": "input-title",
 			type: 'text',
 			value: activityTitle
@@ -85,7 +118,7 @@ function ActivityEditor() {
 		});
 
 		var addressInput = $("<input>", {
-			placeholder: HINTS["activity_address"],
+			placeholder: HINTS.activity_address,
 			"class": "input-address",
 			type: "text",
 			value: activityAddress
@@ -102,7 +135,7 @@ function ActivityEditor() {
 		this.addressField = new AddressField(addressInput, null);
 
 		this.contentField = $("<textarea>",	{
-			placeholder: HINTS["activity_content"],
+			placeholder: HINTS.activity_content,
 			"class": "input-content" 
 		}).appendTo(form);
 		this.contentField.val(activityContent);
@@ -116,35 +149,31 @@ function ActivityEditor() {
 
 		$("<div>", {
 			"class": "warning",
-			html: MESSAGES["image_selection_requirement"]
+			html: MESSAGES.image_selection_requirement
 		}).appendTo(form);
 
 		this.newImageNodes = {};
-		this.imageSelectors = new Array();
+		this.imageSelectors = [];
 
-		var newImagesRow = $("<div>", {
+		this.newImageRow = $("<div>", {
 			"class": "image-row clear"
-		});
+		}).appendTo(form);
+		if(!(!activity) && !(!activity.images))	generateOldImagesRow(form, this, activity);
 
-		if(activity != null && activity.images != null)	generateOldImagesRow(form, this, activity);
-
-		newImagesRow.appendTo(form);
-		var node = new ActivityEditorImageNode(g_cdnQiniu, g_cdnDomain);
-		node.appendTo(newImagesRow);
-		node.refresh(this);
+		this.addNewImageNode(false, false);
 
 		// Schedules
 		var deadline = reformatDate(new Date());
-		if(activity != null && activity.applicationDeadline != null) deadline = activity.applicationDeadline;
+		if(!(!activity) && !(!activity.applicationDeadline)) deadline = activity.applicationDeadline;
 
 		var beginTime = reformatDate(new Date());
-		if(activity != null && activity.beginTime != null) beginTime = activity.beginTime;
+		if(!(!activity) && !(!activity.beginTime)) beginTime = activity.beginTime;
 
 		var scheduleRow1 = $("<div>", {
 			"class": "edit-deadline clearfix"
 		}).appendTo(form);
 		var scheduleCell11 = $("<div>", {
-			text: TITLES["deadline"],
+			text: TITLES.deadline,
 			"class": "left edit-label"
 		}).appendTo(scheduleRow1);
 		var scheduleCell12 = $("<div>", {
@@ -156,7 +185,7 @@ function ActivityEditor() {
 			"class": "edit-begin clearfix"
 		}).appendTo(form);
 		var scheduleCell21 = $("<div>", {
-			text: TITLES["begin_time"],
+			text: TITLES.begin_time,
 			"class": "left edit-label"
 		}).appendTo(scheduleRow2);
 		var scheduleCell22 = $("<div>", {
@@ -179,13 +208,13 @@ function ActivityEditor() {
 		/* Associated Buttons */
 		this.btnSave = $('<button>',{
 			"class": "btn-save positive-button",
-			text: TITLES["save"]
+			text: TITLES.save
 		}).appendTo(buttons);
 		this.btnSave.click(onSave);
 
 		this.btnSubmit = $('<button>',{
 			"class": "btn-submit positive-button",
-			text: TITLES["submit"]
+			text: TITLES.submit
 		}).appendTo(buttons);
 		var dSubmit = {};
 		dSubmit[g_keyActivityId] = activityId;
@@ -193,7 +222,7 @@ function ActivityEditor() {
 
 		this.btnCancel = $('<button>',{
 			"class": "btn-cancel negative-button",
-			text: TITLES["cancel"]
+			text: TITLES.cancel
 		}).appendTo(buttons);
 		this.btnCancel.click(onCancel);
 
@@ -201,11 +230,11 @@ function ActivityEditor() {
 		if(!isNewActivity){
 			this.btnDelete = $('<button>',{
 				"class": "btn-delete caution-button",
-				text: TITLES["delete"]
+				text: TITLES.del
 			}).appendTo(buttons);
 			this.btnDelete.click(function(evt) {
 				evt.preventDefault();
-				if (g_deleteConfirmation != null) g_deleteConfirmation.remove();
+				if (!(!g_deleteConfirmation)) g_deleteConfirmation.remove();
 				g_deleteConfirmation = generateDeleteConfirmation(g_activityEditor.content, activity);
 			});
 		}
@@ -227,7 +256,7 @@ function ActivityEditor() {
 		this.btnSave.addClass("disabled-button");
 		disableField(this.btnSubmit);
 		this.btnSubmit.addClass("disabled-button");
-		if (this.btnDelete == null) return;
+		if (!this.btnDelete) return;
 		disableField(this.btnDelete);
 		this.btnDelete.addClass("disabled-button");
 	};
@@ -241,7 +270,7 @@ function ActivityEditor() {
 			enableField(this.btnSubmit);
 			this.btnSubmit.removeClass("disabled-button");
 		}	
-		if (this.btnDelete != null) {
+		if (!(!this.btnDelete)) {
 			enableField(this.btnDelete);
 			this.btnDelete.removeClass("disabled-button");
 		}
@@ -333,21 +362,29 @@ function countImages(editor){
 function onSave(evt){
 	evt.preventDefault();
 	
-	if (g_activityEditor == null || !g_activityEditor.savable) return;
+	if (!g_activityEditor || !g_activityEditor.savable) return;
 	var formData = {};
 
 	// append player token and activity id for identity
 	var token = $.cookie(g_keyToken);
-	if (token == null) {
-		alert(ALERTS["please_log_in"]);
+	if (!token) {
+		alert(ALERTS.please_log_in);
 		return;
 	}
+
+
 	formData[g_keyToken] = token;
 
-	// TODO: add new images CDN references, e.g. remote names (together with user token to be verified by server cache)
-	var countImages = Object.keys(g_activityEditor.newImageNodes).length;
+	var countTot = Object.keys(g_activityEditor.newImageNodes).length - 1;
+	var lastKey = null;
+	for (var key in g_activityEditor.newImageNodes) {
+		if (!lastKey) lastKey = key;
+		else if (key > lastKey) lastKey = key;	
+		else;
+	}
         var newImages = [];
         for (var k in g_activityEditor.newImageNodes) {
+		if (k == lastKey) continue;
                 var node = g_activityEditor.newImageNodes[k];
                 newImages.push(node.remoteName);
         }
@@ -358,12 +395,12 @@ function onSave(evt){
 		var selector = g_activityEditor.imageSelectors[i];
 		if(!selector.checked) continue;
 		selectedOldImages.push(selector.id);
-		++countImages;
+		++countTot;
 	}
 	formData[g_keyOldImage] = JSON.stringify(selectedOldImages);
 
-	if (countImages > g_imagesLimit) {
-		alert(ALERTS["image_selection_requirement"]);
+	if (countTot > g_imagesLimit) {
+		alert(ALERTS.image_selection_requirement);
 		return;
 	}
 
@@ -377,7 +414,7 @@ function onSave(evt){
 	var contentCounter = g_activityEditor.contentCounter;
 
 	if (!titleCounter.valid() || !addressCounter.valid() || !contentCounter.valid()) {
-		alert(ALERTS["please_follow_activity_field_instructions"]);
+		alert(ALERTS.please_follow_activity_field_instructions);
 		return;
 	}
 	formData[g_keyTitle] = title;
@@ -389,7 +426,7 @@ function onSave(evt){
 	var deadline = localYmdhisToGmtMillisec(g_activityEditor.deadlinePicker.getDatetime());
 		
 	if (deadline < 0 || beginTime < 0 || deadline > beginTime) {
-		alert(ALERTS["deadline_behind_begin_time"]);
+		alert(ALERTS.deadline_behind_begin_time);
 		return;
 	}
 
@@ -398,7 +435,7 @@ function onSave(evt){
 
 	var isNewActivity = false;
 	var activityId = g_activityEditor.id; 
-	if (activityId == null) isNewActivity = true;
+	if (!activityId) isNewActivity = true;
 
 	if (!isNewActivity)	formData[g_keyActivityId] = activityId;
 	else {
@@ -409,7 +446,7 @@ function onSave(evt){
 	g_activityEditor.disableEditorButtons();
 	g_activityEditor.setNonSavable();
 	g_activityEditor.setNonSubmittable();
-	g_activityEditor.hint.text(MESSAGES["activity_saving"]);
+	g_activityEditor.hint.text(MESSAGES.activity_saving);
 
 	$.ajax({
 			type: "POST",
@@ -421,36 +458,36 @@ function onSave(evt){
 					return;
 				}
 				if (isCaptchaNotMatched(data)) {
-					alert(ALERTS["captcha_not_matched"]);
+					alert(ALERTS.captcha_not_matched);
 					g_activityEditor.setSavable();
 					g_activityEditor.enableEditorButtons();
-					g_activityEditor.hint.text(MESSAGES["activity_not_saved"]);
+					g_activityEditor.hint.text(MESSAGES.activity_not_saved);
 					return;
 				}
 				if (isCreationLimitExceeded(data)) {
-					alert(ALERTS["creation_limit_exceeded"]);
+					alert(ALERTS.creation_limit_exceeded);
 					g_activityEditor.setSavable();
 					g_activityEditor.enableEditorButtons();
-					g_activityEditor.hint.text(MESSAGES["activity_not_saved"]);
+					g_activityEditor.hint.text(MESSAGES.activity_not_saved);
 					return;
 				}
 				g_activityEditor.setSubmittable();
 				g_activityEditor.enableEditorButtons();
 				var activity = new Activity(data);
-				if (g_activityEditor.id == null) {
-					g_activityEditor.hint.text(MESSAGES["activity_created"]);
+				if (!g_activityEditor.id) {
+					g_activityEditor.hint.text(MESSAGES.activity_created);
 				} else {
-					g_activityEditor.hint.text(MESSAGES["activity_saved"]);
+					g_activityEditor.hint.text(MESSAGES.activity_saved);
 				}
 				g_activityEditor.id = activity.id;
 				g_activityEditor.refresh(activity);
-				if(g_onActivitySaveSuccess == null) return;
+				if(!g_onActivitySaveSuccess) return;
 				g_onActivitySaveSuccess();
 			},
 			error: function(xhr, status, err){
 				g_activityEditor.setSavable();
 				g_activityEditor.enableEditorButtons();
-				g_activityEditor.hint.text(MESSAGES["activity_not_saved"]);
+				g_activityEditor.hint.text(MESSAGES.activity_not_saved);
 			}
 	});
 }
@@ -459,7 +496,7 @@ function onSubmit(evt){
 
 	evt.preventDefault();
 
-	if (g_activityEditor == null || !g_activityEditor.submittable) return;
+	if (!g_activityEditor || !g_activityEditor.submittable) return;
 
         var data = evt.data;
 
@@ -467,8 +504,8 @@ function onSubmit(evt){
 
         // append player token and activity id for identity
         var token = $.cookie(g_keyToken);
-        if(token == null) {
-            alert(ALERTS["please_log_in"]);
+        if(!token) {
+            alert(ALERTS.please_log_in);
             return;
         }
         params[g_keyToken] = token;
@@ -492,7 +529,7 @@ function onSubmit(evt){
                     if (!isStandardSuccess(data)) return;
                     g_activityEditor.enableEditorButtons();
                     g_activityEditor.hide();
-                    if (g_onActivitySaveSuccess == null) return;
+                    if (!g_onActivitySaveSuccess) return;
                     g_onActivitySaveSuccess();
                 },
                 error: function(xhr, status, err){
@@ -525,7 +562,7 @@ function onDelete(evt){
 				return;	
 			}
 			g_activityEditor.hide();
-			if (g_onActivitySaveSuccess == null) return;
+			if (!g_onActivitySaveSuccess) return;
 			g_onActivitySaveSuccess();
 		},
 		error: function(xhr, status, err){
@@ -540,13 +577,21 @@ function onCancel(evt){
 	g_activityEditor.hide();
 
 	var token = $.cookie(g_keyToken);
-	if (token == null)	return; 
+	if (!token)	return; 
 
 	var newImageNodes = g_activityEditor.newImageNodes;
-	if (Object.keys(newImageNodes).length === 0) return;
+	if (Object.keys(newImageNodes).length <= 1) return;
+
+	var lastKey = null;
+	for (var key in this.newImageNodes) {
+		if (!lastKey) lastKey = key;
+		else if (key > lastKey) lastKey = key;	
+		else;
+	}
 
         var newImages = [];
         for (var k in newImageNodes) {
+		if (k == lastKey) continue;
                 var node = newImageNodes[k];
                 newImages.push(node.remoteName);
         }
@@ -575,7 +620,19 @@ function generateOldImagesRow(par, editor, activity) {
 	}).appendTo(par);
 
 	var countOldImages = Object.keys(activity.images).length;
-	for(var i =0; i < countOldImages; i++) {
+	var nodeOnClick = function(evt) {
+		evt.preventDefault();
+		var selector = evt.data;
+		var val = !(selector.checked);
+		if (val && countImages(editor) >= g_imagesLimit) return;
+		selector.checked = val;
+		if (val) selector.indicator.show();
+		else selector.indicator.hide();
+		editor.setSavable();
+		editor.setNonSubmittable();
+		editor.addNewImageNode(true, false);
+	};
+	for (var i =0; i < countOldImages; ++i) {
 		var node = $("<div>", {
 			"class": "preview-container left"
 		}).appendTo(oldImagesRow);
@@ -592,17 +649,7 @@ function generateOldImagesRow(par, editor, activity) {
 		}).appendTo(node);
 
 		var selector = new ImageSelector(activity.images[i].id, image, indicator);
-		node.click(selector, function(evt) {
-			evt.preventDefault();
-			var selector = evt.data;
-			var val = !(selector.checked);
-			if (val && countImages(editor) >= g_imagesLimit) return;
-			selector.checked = val;
-			if (val) selector.indicator.show();
-			else selector.indicator.hide();
-			editor.setSavable();
-			editor.setNonSubmittable();
-		});
+		node.click(selector, nodeOnClick);
 		editor.imageSelectors.push(selector);
 	}
 }
@@ -616,24 +663,24 @@ function generateDateSelection(par, time){
 }
 
 function generateDeleteConfirmation(par, activity) {
-	if (g_activityEditor == null) return;
+	if (!g_activityEditor) return;
 
 	var ret = $("<div>", {
 		style: "padding: 5pt;"
 	}).appendTo(par);
 	
 	var title = $("<p>", {
-		text: MESSAGES["delete_activity_confirmation"],
+		text: MESSAGES.delete_activity_confirmation,
 		"class": "delete-confirmation-question"
 	}).appendTo(ret);
 
 	var buttons = $("<p>").appendTo(ret);
 	var btnYes = $("<button>", {
-		text: TITLES["yes"],
+		text: TITLES.yes,
 		"class": "delete-confirmation-button negative-button"
 	}).appendTo(buttons);
 	var btnNo = $("<button>", {
-		text: TITLES["no"],
+		text: TITLES.no,
 		"class": "delete-confirmation-button positive-button"
 	}).appendTo(buttons);
 	
