@@ -322,7 +322,7 @@
   width: 200px;
 }
 .edit-button-rows {
-  margin-top: 5px;
+  padding-top: 5px;
 }
 .edit-button-rows button {
   margin-right: 10px;

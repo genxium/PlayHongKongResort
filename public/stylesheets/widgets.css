@@ -109,14 +109,16 @@
 }
 
 .preview-container {
+	width: 200px;
+	height: 200px;
 	vertical-align: middle;
 	text-align: center;
 	margin-right: 5px;
 	position: relative;
 }
 .preview-container img {
-	max-width: 90%;
-	max-height: 90%;
+	width: 90%;
+	height: 90%;
 }
 .preview-container .checked-image {
 	position: absolute;

@@ -6,12 +6,8 @@ var g_deleteConfirmation = null;
 var g_activityEditor = null;
 
 // DOM indexes for cascaded DOM element search
-var g_indexOldImage = "old_image";
-var g_indexNewImage = "new_image";
-
-var g_wImageCell = 200;
-var g_hImageCell = 200;
-var g_hDelete = 30;
+var g_keyOldImage = "old_image";
+var g_keyNewImage = "new_image";
 
 // general variables
 var g_imagesLimit = 3;
@@ -35,8 +31,6 @@ function AddressField(input, map) {
 
 function ActivityEditor() {
 	this.id = null;
-	this.container = null;
-	this.dialog = null;
 	this.titleField = null;
 	this.titleCounter = null;
 	this.addressField = null;
@@ -53,7 +47,7 @@ function ActivityEditor() {
 	this.explorerTrigger = null;
 	this.hint = null;
 	this.captcha = null;
-	this.refresh = function(activity) {
+	this.composeContent = function(activity) {
 		this.id = null;
 		var isNewActivity = false;
 		if(activity == null || activity.id == null) isNewActivity = true;
@@ -129,7 +123,7 @@ function ActivityEditor() {
 		this.imageSelectors = new Array();
 
 		var newImagesRow = $("<div>", {
-			"class": "image-row new clearfix"
+			"class": "image-row clear"
 		});
 
 		if(activity != null && activity.images != null)	generateOldImagesRow(form, this, activity);
@@ -179,7 +173,7 @@ function ActivityEditor() {
 		}
 		
 		var buttons = $("<div>", {
-			"class": "edit-button-rows"
+			"class": "edit-button-rows clear"
 		}).appendTo(form);
 
 		/* Associated Buttons */
@@ -217,20 +211,14 @@ function ActivityEditor() {
 		}
 
 		this.hint = $("<div>", {
-			"class": "hint"
+			"class": "clear"
 		}).appendTo(form);
 
 		this.setNonSavable();
 		this.setSubmittable();
 
 	};
-	this.appendTo = function(par) {
-		// DOM elements
-		this.container = $("<div class='modal fade activity-editor' data-keyboard='false' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='create' aria-hidden='true'>").appendTo(par);
-		this.dialog = $("<div class='modal-dialog modal-lg'>").appendTo(this.container);
-		this.content= $("<div class='modal-content'>").appendTo(this.dialog);
-	};
-	
+
 	this.savable = false;
 	this.submittable = true;
 
@@ -280,19 +268,9 @@ function ActivityEditor() {
 		this.submittable = true;
 		this.enableEditorButtons();
 	};
-	
-	this.show = function() {
-		this.container.modal("show");
-	};
-
-	this.hide = function() {
-		this.container.modal("hide");
-	};
-
-	this.remove = function() {
-		this.container.remove();
-	};	
 }
+
+ActivityEditor.inherits(BaseModalWidget);
 
 function initActivityEditor(par) {
 	g_activityEditor = new ActivityEditor();
@@ -373,7 +351,7 @@ function onSave(evt){
                 var node = g_activityEditor.newImageNodes[k];
                 newImages.push(node.remoteName);
         }
-	formData[g_indexNewImage] = JSON.stringify(newImages);
+	formData[g_keyNewImage] = JSON.stringify(newImages);
 
 	var selectedOldImages = [];
 	for (var i = 0; i < g_activityEditor.imageSelectors.length; ++i){
@@ -382,7 +360,7 @@ function onSave(evt){
 		selectedOldImages.push(selector.id);
 		++countImages;
 	}
-	formData[g_indexOldImage] = JSON.stringify(selectedOldImages);
+	formData[g_keyOldImage] = JSON.stringify(selectedOldImages);
 
 	if (countImages > g_imagesLimit) {
 		alert(ALERTS["image_selection_requirement"]);
@@ -593,7 +571,7 @@ function onCancel(evt){
 // Generators
 function generateOldImagesRow(par, editor, activity) {
 	var oldImagesRow = $("<div>", {
-		"class": "image-row old clearfix"
+		"class": "image-row clear"
 	}).appendTo(par);
 
 	var countOldImages = Object.keys(activity.images).length;

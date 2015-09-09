@@ -132,15 +132,13 @@ function ActivityEditorImageNode(cdn, domain) {
 			"class": "preview-container left"
 		}).appendTo(this.content);
 
-		setDimensions(this.wrap, g_wImageCell, g_hImageCell);
-
 		this.preview = $('<img>').hide().appendTo(this.wrap);
 		
 		this.btnChoose = $('<button>', {
 			text: TITLES['choose_picture'],
 			'class': 'positive-button'
 		}).appendTo(this.wrap);
-		setDimensions(this.btnChoose, g_wImageCell, g_hImageCell);
+		setDimensions(this.btnChoose, "100%", "100%");
 
 		this.btnDel = $('<button>', {
 			text: TITLES["delete"],
@@ -149,8 +147,6 @@ function ActivityEditorImageNode(cdn, domain) {
 			evt.preventDefault();
 			var remoteName = evt.data.remoteName;
 			var editor = evt.data.editor;
-			editor.setSavable();
-			editor.setNonSubmittable();
 
 			if(!editor.newImageNodes.hasOwnProperty(remoteName)) return;
 			var thatNode = editor.newImageNodes[remoteName];
@@ -166,7 +162,7 @@ function ActivityEditorImageNode(cdn, domain) {
 			disableField(aButton);
 			thatNode.requestDel(onSuccess, onError);
 		});
-		setDimensions(this.btnDel, g_wImageCell, null);
+		setDimensions(this.btnDel, "90%", "10%");
 
 		if (cdn == g_cdnQiniu) {
 			// reference http://developer.qiniu.com/docs/v6/sdk/javascript-sdk.html
@@ -178,11 +174,11 @@ function ActivityEditorImageNode(cdn, domain) {
 				unique_names: false,
 				save_key: false,
 				domain: node.bucketDomain,
-				container: node.wrap[0],
+				container: node.preview[0],
 				max_file_size: '2mb',
 				max_retries: 2,
-				dragdrop: false, 
-				drop_element: node.wrap[0],
+				// dragdrop: true, 
+				// drop_element: node.preview[0],
 				chunk_size: '4mb',
 				auto_start: true, 
 				init: {
@@ -196,7 +192,9 @@ function ActivityEditorImageNode(cdn, domain) {
 						var file = files[0];
 						if (!validateImage(file)) return;
 
-						node.state = SLOT_UPLOADING; 
+						node.state = SLOT_UPLOADING;
+
+                                                node.uploader.disableBrowse();
 						disableField(node.btnChoose);
 					},
 					'BeforeUpload': function(up, file) {
@@ -211,16 +209,23 @@ function ActivityEditorImageNode(cdn, domain) {
 						node.state = SLOT_UPLOAD_FAILED; 
 					},
 					'UploadComplete': function() {
-						enableField(node.btnChoose);
-						if (node.state == SLOT_UPLOAD_FAILED) return;
+						if (node.state == SLOT_UPLOAD_FAILED) {
+						        node.uploader.disableBrowse(false);
+						        enableField(node.btnChoose)
+						        return;
+						}
+						node.btnChoose.remove();
+						var refreshParams = ["ts=" + currentMillis()];
 						var protocolPrefix = "http://";
-						var imageUrl = protocolPrefix + node.bucketDomain + "/" + node.remoteName;
+						var imageUrl = protocolPrefix + node.bucketDomain + "/" + node.remoteName + "?" + refreshParams.join('&');
 						node.preview.show();
 						node.preview.attr("src", imageUrl);
 						node.editor.newImageNodes[node.remoteName] = node;
 						node.state = SLOT_IDLE; 
-						node.btnChoose.remove();
-						node.btnDel.show();	 
+						node.btnDel.show();
+
+						node.editor.setNonSubmittable();
+						node.editor.setSavable();
 						
 						// TODO: show a new ActivityEditorImageNode instance to the right most of the row for ActivityEditor
 					},
@@ -247,7 +252,6 @@ function ProfileEditorImageNode(cdn, domain) {
 		this.wrap = $('<div>', {
 			"class": "preview-container left"
 		}).appendTo(this.content);
-		setDimensions(this.wrap, g_wImageCell, g_hImageCell);
 
 		this.preview = $('<img>', {
 			src: editor.player.avatar
@@ -257,7 +261,7 @@ function ProfileEditorImageNode(cdn, domain) {
 			text: TITLES['choose_picture'],
 			'class': 'positive-button'
 		}).appendTo(this.wrap);
-		setDimensions(this.btnChoose, g_wImageCell, null);
+		setDimensions(this.btnChoose, "100%", null);
 
 		if (cdn == g_cdnQiniu) {
 			// reference http://developer.qiniu.com/docs/v6/sdk/javascript-sdk.html
@@ -269,11 +273,11 @@ function ProfileEditorImageNode(cdn, domain) {
 				unique_names: false,
 				save_key: false,
 				domain: node.bucketDomain,
-				container: node.wrap[0],
+				container: node.preview[0],
 				max_file_size: '2mb',
 				max_retries: 2,
-				dragdrop: false, 
-				drop_element: node.wrap[0],
+				// dragdrop: false, 
+				// drop_element: node.preview[0],
 				chunk_size: '4mb',
 				auto_start: true, 
 				init: {

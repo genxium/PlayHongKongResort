@@ -286,17 +286,17 @@ public class ActivityController extends Controller {
                                 }
 
                                 // delete selected old images RECORDS
-                                if (previousImageList.size() > 0) {
-                                        for (Image previousImage : previousImageList) {
-                                                if (selectedOldImagesSet.contains(previousImage.getId())) continue;
-                                                toDeleteImageList.add(previousImage);
-                                        }
+                                for (Image previousImage : previousImageList) {
+                                        if (selectedOldImagesSet.contains(previousImage.getId())) continue;
+                                        toDeleteImageList.add(previousImage);
+                                }
+                                if (toDeleteImageList.size() > 0) {
                                         final SQLBuilder builderDeletion = new SQLBuilder();
                                         final PreparedStatement statDeletion = builderDeletion.from(Image.TABLE)
-                                                                                        .where(Image.ID, "IN", toDeleteImageList)
-                                                                                        .where(Image.META_ID, "=", activityId)
-                                                                                        .where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
-                                                                                        .toDelete(connection);
+                                                .where(Image.ID, "IN", toDeleteImageList)
+                                                .where(Image.META_ID, "=", activityId)
+                                                .where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
+                                                .toDelete(connection);
 
                                         SQLHelper.executeAndCloseStatement(statDeletion);
                                 }
@@ -369,7 +369,7 @@ public class ActivityController extends Controller {
                 try {
                         final Map<String, String[]> formData = request().body().asFormUrlEncoded();
 
-                        final Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID));
+                        final Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
                         String token = formData.get(Player.TOKEN)[0];
 
                         Long playerId = DBCommander.queryPlayerId(token);
