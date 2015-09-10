@@ -1,6 +1,5 @@
 package utilities;
 
-import controllers.ForeignPartyController;
 import dao.SQLHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -54,8 +53,8 @@ public class XMLHelper {
                         Element root = doc.getDocumentElement();
 
                         ret = new HashMap<>();
-                        ret.put(ForeignPartyController.APP_ID, root.getElementsByTagName(ForeignPartyController.APP_ID).item(0).getTextContent());
-                        ret.put(ForeignPartyController.APP_KEY, root.getElementsByTagName(ForeignPartyController.APP_KEY).item(0).getTextContent());
+                        ret.put(ForeignPartyHelper.APP_ID, root.getElementsByTagName(ForeignPartyHelper.APP_ID).item(0).getTextContent());
+                        ret.put(ForeignPartyHelper.APP_KEY, root.getElementsByTagName(ForeignPartyHelper.APP_KEY).item(0).getTextContent());
                 } catch (Exception e) {
                         Loggy.e(TAG, "readForeignPartyConfig", e);
                 }
@@ -73,8 +72,8 @@ public class XMLHelper {
                         Element root = doc.getDocumentElement();
 
                         ret = new HashMap<>();
-                        ret.put(CDNHelper.APP_ID, root.getElementsByTagName(ForeignPartyController.APP_ID).item(0).getTextContent());
-                        ret.put(CDNHelper.APP_KEY, root.getElementsByTagName(ForeignPartyController.APP_KEY).item(0).getTextContent());
+                        ret.put(CDNHelper.APP_ID, root.getElementsByTagName(CDNHelper.APP_ID).item(0).getTextContent());
+                        ret.put(CDNHelper.APP_KEY, root.getElementsByTagName(CDNHelper.APP_KEY).item(0).getTextContent());
                         ret.put(CDNHelper.BUCKET, root.getElementsByTagName(CDNHelper.BUCKET).item(0).getTextContent());
                         ret.put(CDNHelper.DOMAIN, root.getElementsByTagName(CDNHelper.DOMAIN).item(0).getTextContent());
                 } catch (Exception e) {

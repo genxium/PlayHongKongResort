@@ -14,26 +14,26 @@ public class ActivityDetail extends Activity {
         public static String APPLIED_PARTICIPANTS = "applied_participants";
         public static String PRESENT_PARTICIPANTS = "present_participants";
 
-        protected List<BasicPlayer> m_appliedParticipants = null;
+        protected List<BasicPlayer> appliedParticipants = null;
 
-        public void setAppliedParticipants(final List<BasicPlayer> appliedParticipants) {
-                m_appliedParticipants = appliedParticipants;
+        public void setAppliedParticipants(final List<BasicPlayer> aAppliedParticipants) {
+                appliedParticipants = aAppliedParticipants;
         }
 
         public void addAppliedParticipant(final BasicPlayer player) {
-                if (m_appliedParticipants == null) m_appliedParticipants = new ArrayList<>();
-                m_appliedParticipants.add(player);
+                if (appliedParticipants == null) appliedParticipants = new ArrayList<>();
+                appliedParticipants.add(player);
         }
 
-        protected List<BasicPlayer> m_presentParticipants = null;
+        protected List<BasicPlayer> presentParticipants = null;
 
-        public void setPresentParticipants(final List<BasicPlayer> presentParticipants) {
-                m_presentParticipants = presentParticipants;
+        public void setPresentParticipants(final List<BasicPlayer> aPresentParticipants) {
+                presentParticipants = aPresentParticipants;
         }
 
         public void addPresentParticipant(final BasicPlayer player) {
-                if (m_presentParticipants == null) m_presentParticipants = new ArrayList<>();
-                m_presentParticipants.add(player);
+                if (presentParticipants == null) presentParticipants = new ArrayList<>();
+                presentParticipants.add(player);
         }
 
         public ActivityDetail(final SimpleMap data) {
@@ -45,20 +45,20 @@ public class ActivityDetail extends Activity {
                 try {
 
                         ArrayNode appliedParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
-                        for (BasicPlayer participant : m_appliedParticipants) {
+                        for (BasicPlayer participant : appliedParticipants) {
                                 appliedParticipantsNode.add(participant.toObjectNode(viewerId));
                         }
                         ret.put(APPLIED_PARTICIPANTS, appliedParticipantsNode);
 
                         ArrayNode presentParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
-                        for (BasicPlayer participant : m_presentParticipants) {
+                        for (BasicPlayer participant : presentParticipants) {
                                 if (viewerId != null && viewerId.equals(participant.getId()))
                                         continue; // viewer cannot assess himself/herself
                                 presentParticipantsNode.add(participant.toObjectNode(viewerId));
                         }
                         ret.put(PRESENT_PARTICIPANTS, presentParticipantsNode);
 
-                        if (m_viewer != null) ret.put(VIEWER, m_viewer.toObjectNode(null));
+                        if (viewer != null) ret.put(VIEWER, viewer.toObjectNode(null));
 
                 } catch (Exception e) {
                         Loggy.e(TAG, "toObjectNode", e);

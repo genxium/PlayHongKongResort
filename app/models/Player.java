@@ -1,9 +1,9 @@
 package models;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import controllers.ForeignPartyController;
 import dao.SimpleMap;
 import fixtures.Constants;
+import utilities.ForeignPartyHelper;
 import utilities.Loggy;
 
 import java.util.regex.Pattern;
@@ -49,142 +49,142 @@ public class Player extends BasicPlayer {
 	public static final int EMAIL_AUTHENTICATED = (1 << 0);
 	public static final int PHONE_AUTHENTICATED = (1 << 1);
 
-	protected String m_password = null;
+	protected String password = null;
 
 	public String getPassword() {
-		return m_password;
+		return password;
 	}
 
 	public void setPassword(String password) {
-		m_password = password;
+		password = password;
 	}
 
-	protected String m_salt = null;
+	protected String salt = null;
 
 	public String getSalt() {
-		return (m_salt == null) ? "" : m_salt;
+		return (salt == null) ? "" : salt;
 	}
 
 	public void setSalt(String salt) {
-		m_salt = salt;
+		salt = salt;
 	}
 
-	protected Integer m_groupId = VISITOR;
+	protected Integer groupId = VISITOR;
 
 	public int getGroupId() {
-		return m_groupId;
+		return groupId;
 	}
 
-	public void setGroupId(final Integer groupId) {
-		m_groupId = groupId;
+	public void setGroupId(final Integer data) {
+		groupId = data;
 	}
 
-	protected Integer m_authenticationStatus = NOT_AUTHENTICATED; 
+	protected Integer authenticationStatus = NOT_AUTHENTICATED; 
 	public int getAuthenticationStatus() {
-		return m_authenticationStatus;
+		return authenticationStatus;
 	}
 
-	protected String m_verificationCode = null;
+	protected String verificationCode = null;
 
 	public String getVerificationCode() {
-		return m_verificationCode;
+		return verificationCode;
 	}
 
 	public void setVerificationCode(String code) {
-		m_verificationCode = code;
+		verificationCode = code;
 	}
 
-	protected Integer m_unreadCount = 0;
+	protected Integer unreadCount = 0;
 
 	public int getUnreadCount() {
-		return m_unreadCount;
+		return unreadCount;
 	}
 
-	protected Integer m_unassessedCount = 0;
+	protected Integer unassessedCount = 0;
 
 	public int getUnassessedCount() {
-		return m_unassessedCount;
+		return unassessedCount;
 	}
 
-	protected Integer m_party = ForeignPartyController.PARTY_NONE;
+	protected Integer party = ForeignPartyHelper.PARTY_NONE;
 
 	public Integer getParty() {
-		return m_party;
+		return party;
 	}
 
-	public void setParty(final Integer party) {
-		m_party = party;
+	public void setParty(final Integer data) {
+		party = data;
 	}
 
-	protected String m_lang = null;
+	protected String lang = null;
 
 	public String getLang() {
-		if (m_lang == null) return Constants.ZH_HK; // default to traditional Chinese
-		return m_lang;
+		if (lang == null) return Constants.ZH_HK; // default to traditional Chinese
+		return lang;
 	}
 
-	protected String m_gender = "";
+	protected String gender = "";
 
-	public void setGender(final String gender) {
-		m_gender = gender;
+	public void setGender(final String data) {
+		gender = data;
 	}
 
 	public String getGender() {
-		return m_gender;
+		return gender;
 	}
 
-	protected String m_age = "";
+	protected String age = "";
 
-	public void setAge(final String age) {
-		m_age = age;
+	public void setAge(final String data) {
+		age = data;
 	}
 
 	public String getAge() {
-		return m_age;
+		return age;
 	}
 
-	protected String m_mood = "";
+	protected String mood = "";
 
-	public void setMood(final String mood) {
-		m_mood = mood;
+	public void setMood(final String data) {
+		mood = data;
 	}
 
 	public String getMood() {
-		return m_mood;
+		return mood;
 	}
 
 	public Player(final String email, final String name) {
 		super(email, name);
-		m_groupId = VISITOR;
-		m_password = "";
+		groupId = VISITOR;
+		password = "";
 	}
 
 	public Player(final SimpleMap data) {
 		super(data);
-		m_password = data.getStr(PASSWORD);
-		m_salt = data.getStr(SALT);
-		m_groupId = data.getInt(GROUP_ID);
-		m_authenticationStatus = data.getInt(AUTHENTICATION_STATUS);
-		m_unreadCount = data.getInt(UNREAD_COUNT);
-		m_unassessedCount = data.getInt(UNASSESSED_COUNT);
-		m_lang = data.getStr(LANG);
-		m_gender = data.getStr(GENDER);
-		m_age = data.getStr(AGE);
-		m_mood = data.getStr(MOOD);
-		m_party = data.getInt(PARTY);
+		password = data.getStr(PASSWORD);
+		salt = data.getStr(SALT);
+		groupId = data.getInt(GROUP_ID);
+		authenticationStatus = data.getInt(AUTHENTICATION_STATUS);
+		unreadCount = data.getInt(UNREAD_COUNT);
+		unassessedCount = data.getInt(UNASSESSED_COUNT);
+		lang = data.getStr(LANG);
+		gender = data.getStr(GENDER);
+		age = data.getStr(AGE);
+		mood = data.getStr(MOOD);
+		party = data.getInt(PARTY);
 	}
 
 	public ObjectNode toObjectNode(final Long viewerId) {
 		ObjectNode ret = super.toObjectNode(viewerId);
 		try {
-			ret.put(GENDER, String.valueOf(m_gender));
-			ret.put(AGE, String.valueOf(m_age));
-			ret.put(MOOD, String.valueOf(m_mood));
-			ret.put(UNREAD_COUNT, String.valueOf(m_unreadCount));
-			ret.put(UNASSESSED_COUNT, String.valueOf(m_unassessedCount));
-			ret.put(GROUP_ID, String.valueOf(m_groupId));
-			ret.put(AUTHENTICATION_STATUS, String.valueOf(m_authenticationStatus));
-			ret.put(PARTY, String.valueOf(m_party));
+			ret.put(GENDER, String.valueOf(gender));
+			ret.put(AGE, String.valueOf(age));
+			ret.put(MOOD, String.valueOf(mood));
+			ret.put(UNREAD_COUNT, String.valueOf(unreadCount));
+			ret.put(UNASSESSED_COUNT, String.valueOf(unassessedCount));
+			ret.put(GROUP_ID, String.valueOf(groupId));
+			ret.put(AUTHENTICATION_STATUS, String.valueOf(authenticationStatus));
+			ret.put(PARTY, String.valueOf(party));
 		} catch (Exception e) {
 			Loggy.e(TAG, "toObjectNode", e);
 		}

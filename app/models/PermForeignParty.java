@@ -6,7 +6,7 @@ public class PermForeignParty {
 
 	public static final String TAG = PermForeignParty.class.getName();
 
-	public static final String TABLE = "perm_foreign_party";
+	public static final String TABLE = "perforeign_party";
 
 	public static final String ID = "id";
 	public static final String PARTY = "party";
@@ -14,32 +14,32 @@ public class PermForeignParty {
 
 	public static final String[] QUERY_FIELDS = {ID, PARTY, PLAYER_ID};
 
-	protected String m_id = null;
+	protected String id = null;
 	public String getId() {
-		return m_id;
+		return id;
 	}
 
-	protected Integer m_party = null;
+	protected Integer party = null;
 	public Integer getParty() {
-		return m_party;
+		return party;
 	}
-	public void setParty(final Integer party) {
-		m_party = party;
+	public void setParty(final int data) {
+		party = data;
 	}
 
-	protected Long m_playerId = null;
+	protected Long playerId = null;
 
 	public Long getPlayerId() {
-		return m_playerId;
+		return playerId;
 	}
 
-	public void setPlayerId(final Long playerId) {
-		m_playerId = playerId;
+	public void setPlayerId(final Long data) {
+		playerId = data;
 	}
 
 	public PermForeignParty(final SimpleMap data) {
-		m_id = data.getStr(ID);
-		m_party = data.getInt(PARTY);
-		m_playerId = data.getLong(PLAYER_ID);
+		id = data.getStr(ID);
+		party = data.getInt(PARTY);
+		playerId = data.getLong(PLAYER_ID);
 	}
 }

@@ -23,9 +23,10 @@ var g_adminEmail = "admin@qiutongqu.com";
 var g_idKeyboardEnter=13;
 
 // cookie keys
-var g_keyToken="token";
-var g_keyAccessToken="access_token";
-var g_keyParty="party";
+var g_keyToken = "token";
+var g_keyAccessToken = "access_token";
+var g_keyParty = "party";
+var g_keyPartyNickname = "party_nickname";
 
 // extra request keys 
 var g_keyId = "id";

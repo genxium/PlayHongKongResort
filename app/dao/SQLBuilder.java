@@ -33,58 +33,58 @@ public class SQLBuilder {
         }
     }
 
-    protected String m_table = null;
-    protected List<String> m_selectCols = null;
+    protected String table = null;
+    protected List<String> selectCols = null;
 
-    protected List<String> m_insertCols = null;
-    protected List<List<Object>> m_insertVals = null;
+    protected List<String> insertCols = null;
+    protected List<List<Object>> insertVals = null;
 
-    protected List<String> m_replaceCols = null;
-    protected List<List<Object>> m_replaceVals = null;
+    protected List<String> replaceCols = null;
+    protected List<List<Object>> replaceVals = null;
 
-    protected List<String> m_updateCols = null;
-    protected List<Object> m_updateVals = null;
+    protected List<String> updateCols = null;
+    protected List<Object> updateVals = null;
 
-    protected List<String> m_increaseCols = null;
-    protected List<Object> m_increaseVals = null;
-    protected List<String> m_decreaseCols = null;
-    protected List<Object> m_decreaseVals = null;
+    protected List<String> increaseCols = null;
+    protected List<Object> increaseVals = null;
+    protected List<String> decreaseCols = null;
+    protected List<Object> decreaseVals = null;
 
-    protected Map<String, List<OnCondition>> m_join = null;
+    protected Map<String, List<OnCondition>> join = null;
 
-    protected List<String> m_whereCols = null;
-    protected List<String> m_whereOps = null;
-    protected List<Object> m_whereVals = null;
-    protected String m_whereLink = null;
+    protected List<String> whereCols = null;
+    protected List<String> whereOps = null;
+    protected List<Object> whereVals = null;
+    protected String whereLink = null;
 
-    protected List<String> m_orderBy = null;
-    protected List<String> m_orientations = null;
+    protected List<String> orderBy = null;
+    protected List<String> orientations = null;
 
-    protected List<Integer> m_limits = null;
-    protected boolean m_ignore = false;
+    protected List<Integer> limits = null;
+    protected boolean ignore = false;
 
     public SQLBuilder() {
 
     }
 
-    public SQLBuilder from(final String table) {
-        m_table = table;
+    public SQLBuilder from(final String data) {
+        table = data;
         return this;
     }
 
-    public SQLBuilder into(final String table) {
-        m_table = table;
+    public SQLBuilder into(final String data) {
+        table = data;
         return this;
     }
 
-    public SQLBuilder update(final String table) {
-        m_table = table;
+    public SQLBuilder update(final String data) {
+        table = data;
         return this;
     }
 
     public SQLBuilder select(final String col) {
-        if (m_selectCols == null) m_selectCols = new LinkedList<>();
-        m_selectCols.add(col);
+        if (selectCols == null) selectCols = new LinkedList<>();
+        selectCols.add(col);
         return this;
     }
 
@@ -100,40 +100,40 @@ public class SQLBuilder {
 
     public SQLBuilder insert(final String[] cols, final Object[] vals) {
         if (cols == null || vals == null || cols.length != vals.length) return this;
-        if (m_insertCols == null) {
-            m_insertCols = new ArrayList<>(); // lazy init
-            Collections.addAll(m_insertCols, cols);
+        if (insertCols == null) {
+            insertCols = new ArrayList<>(); // lazy init
+            Collections.addAll(insertCols, cols);
         }
-        if (m_insertVals == null) m_insertVals = new ArrayList<>(); // lazy init
+        if (insertVals == null) insertVals = new ArrayList<>(); // lazy init
         List<Object> tmp = new ArrayList<>();
         Collections.addAll(tmp, vals);
-        m_insertVals.add(tmp);
+        insertVals.add(tmp);
         return this;
     }
 
     public SQLBuilder replace(final String[] cols, final Object[] vals) {
         if (cols == null || vals == null || cols.length != vals.length) return this;
-        if (m_replaceCols == null) {
-            m_replaceCols = new ArrayList<>(); // lazy init
-            Collections.addAll(m_replaceCols, cols);
+        if (replaceCols == null) {
+            replaceCols = new ArrayList<>(); // lazy init
+            Collections.addAll(replaceCols, cols);
         }
-        if (m_replaceVals == null) m_replaceVals = new ArrayList<>(); // lazy init
+        if (replaceVals == null) replaceVals = new ArrayList<>(); // lazy init
         List<Object> tmp = new ArrayList<>();
         Collections.addAll(tmp, vals);
-        m_replaceVals.add(tmp);
+        replaceVals.add(tmp);
         return this;
     }
 
     public SQLBuilder ignore(final boolean val) {
-        m_ignore = val;
+        ignore = val;
         return this;
     }
 
     public SQLBuilder set(final String col, final Object val) {
-        if (m_updateCols == null) m_updateCols = new LinkedList<>();
-        if (m_updateVals == null) m_updateVals = new LinkedList<>();
-        m_updateCols.add(col);
-        m_updateVals.add(val);
+        if (updateCols == null) updateCols = new LinkedList<>();
+        if (updateVals == null) updateVals = new LinkedList<>();
+        updateCols.add(col);
+        updateVals.add(val);
         return this;
     }
 
@@ -160,10 +160,10 @@ public class SQLBuilder {
     }
 
     public SQLBuilder increase(final String col, final Object val) {
-        if (m_increaseCols == null) m_increaseCols = new LinkedList<>();
-        if (m_increaseVals == null) m_increaseVals = new LinkedList<>();
-        m_increaseCols.add(col);
-        m_increaseVals.add(val);
+        if (increaseCols == null) increaseCols = new LinkedList<>();
+        if (increaseVals == null) increaseVals = new LinkedList<>();
+        increaseCols.add(col);
+        increaseVals.add(val);
         return this;
     }
 
@@ -178,10 +178,10 @@ public class SQLBuilder {
     }
 
     public SQLBuilder decrease(final String col, final Object val) {
-        if (m_decreaseCols == null) m_decreaseCols = new LinkedList<>();
-        if (m_decreaseVals == null) m_decreaseVals = new LinkedList<>();
-        m_decreaseCols.add(col);
-        m_decreaseVals.add(val);
+        if (decreaseCols == null) decreaseCols = new LinkedList<>();
+        if (decreaseVals == null) decreaseVals = new LinkedList<>();
+        decreaseCols.add(col);
+        decreaseVals.add(val);
         return this;
     }
 
@@ -199,26 +199,26 @@ public class SQLBuilder {
      * Note that `appendJoin` always translates the `ON` conditions as
      * <`secondary_table_alias`.`secondary_table_field`> <operator> <value>.
      * If <value> is to be filled in with associative field name, it could ONLY
-     * be a primary table (i.e. m_table) field.
+     * be a primary table (i.e. table) field.
      */
     public SQLBuilder join(final String table, final String[] keys, final String[] ops, final Object[] vals) {
         if (table == null || keys == null || ops == null || vals == null) return this;
         if (keys.length != vals.length || ops.length != vals.length) return this;
         int length = keys.length;
-        if (m_join == null) m_join = new HashMap<>();
+        if (join == null) join = new HashMap<>();
         List<OnCondition> conditionList = new ArrayList<>();
         for (int i = 0; i < length; ++i) conditionList.add(new OnCondition(keys[i], ops[i], vals[i]));
-        m_join.put(table, conditionList);
+        join.put(table, conditionList);
         return this;
     }
 
     public SQLBuilder where(final String col, final String op, final Object val) {
-        if (m_whereCols == null) m_whereCols = new LinkedList<>();
-        if (m_whereOps == null) m_whereOps = new LinkedList<>();
-        if (m_whereVals == null) m_whereVals = new LinkedList<>();
-        m_whereCols.add(col);
-        m_whereOps.add(op);
-        m_whereVals.add(val);
+        if (whereCols == null) whereCols = new LinkedList<>();
+        if (whereOps == null) whereOps = new LinkedList<>();
+        if (whereVals == null) whereVals = new LinkedList<>();
+        whereCols.add(col);
+        whereOps.add(op);
+        whereVals.add(val);
         return this;
     }
 
@@ -233,12 +233,12 @@ public class SQLBuilder {
     }
 
     public SQLBuilder order(final String col, final String orientation) {
-        if (m_orderBy == null) m_orderBy = new LinkedList<>();
-        m_orderBy.add(col);
+        if (orderBy == null) orderBy = new LinkedList<>();
+        orderBy.add(col);
 
         if (orientation == null) return this;
-        if (m_orientations == null) m_orientations = new LinkedList<>();
-        m_orientations.add(orientation);
+        if (orientations == null) orientations = new LinkedList<>();
+        orientations.add(orientation);
         return this;
     }
 
@@ -284,32 +284,32 @@ public class SQLBuilder {
     }
 
     public SQLBuilder limit(final int st, final int count) {
-        if (m_limits == null) m_limits = new LinkedList<>();
-        m_limits.clear();
-        m_limits.add(st);
-        m_limits.add(count);
+        if (limits == null) limits = new LinkedList<>();
+        limits.clear();
+        limits.add(st);
+        limits.add(count);
         return this;
     }
 
     public SQLBuilder limit(final int num) {
-        if (m_limits == null) m_limits = new LinkedList<>();
-        m_limits.clear();
-        m_limits.add(num);
+        if (limits == null) limits = new LinkedList<>();
+        limits.clear();
+        limits.add(num);
         return this;
     }
 
     protected String appendFromTable(String query) {
-        return query + " FROM `" + m_table + "`";
+        return query + " FROM `" + table + "`";
     }
 
     protected String appendIntoTable(String query) {
-        return query + " INTO `" + m_table + "`";
+        return query + " INTO `" + table + "`";
     }
 
     protected String appendJoin(String query) {
-        if (m_join == null) return query;
+        if (join == null) return query;
         int index = 0;
-        for (Map.Entry<String, List<OnCondition>> entry : m_join.entrySet()) {
+        for (Map.Entry<String, List<OnCondition>> entry : join.entrySet()) {
             String table = entry.getKey();
             List<OnCondition> conditionList = entry.getValue();
             int length = conditionList.size();
@@ -327,7 +327,7 @@ public class SQLBuilder {
                     }
                     query += ")";
                 } else if (condition.val instanceof PrimaryTableField) {
-                    query += ("`" + m_table + "`.`" + ((PrimaryTableField) condition.val).name + "`"); // special case for joining
+                    query += ("`" + table + "`.`" + ((PrimaryTableField) condition.val).name + "`"); // special case for joining
                 } else {
                     query += "?";
                 }
@@ -339,51 +339,51 @@ public class SQLBuilder {
     }
 
     protected String appendWhere(String query) {
-        if (m_whereCols == null) return query;
+        if (whereCols == null) return query;
         query += " WHERE ";
-        for (int i = 0; i < m_whereCols.size(); i++) {
-            String col = m_whereCols.get(i);
-            String op = m_whereOps.get(i);
-            Object val = m_whereVals.get(i);
+        for (int i = 0; i < whereCols.size(); i++) {
+            String col = whereCols.get(i);
+            String op = whereOps.get(i);
+            Object val = whereVals.get(i);
             query += ("`" + col + "` " + op + " ");
             if (val instanceof List) {
                 query += "(";
-                List<?> castedVals = (List<?>) (m_whereVals.get(i));
+                List<?> castedVals = (List<?>) (whereVals.get(i));
                 for (int j = 0; j < castedVals.size(); ++j) {
                     query += "?";
                     if (j < castedVals.size() - 1) query += ", ";
                 }
                 query += ")";
             } else query += "?";
-            if (i < m_whereCols.size() - 1) {
-                if (m_whereLink == null) query += " AND ";
-                else query += (" " + m_whereLink + " ");
+            if (i < whereCols.size() - 1) {
+                if (whereLink == null) query += " AND ";
+                else query += (" " + whereLink + " ");
             }
         }
         return query;
     }
 
     protected String appendOrder(String query) {
-        if (m_orderBy == null) return query;
+        if (orderBy == null) return query;
         query += " ORDER BY ";
-        for (int i = 0; i < m_orderBy.size(); i++) {
-            String col = m_orderBy.get(i);
+        for (int i = 0; i < orderBy.size(); i++) {
+            String col = orderBy.get(i);
             query += ("`" + col + "`");
-            if (m_orientations.size() > i) {
-                String orientation = m_orientations.get(i);
+            if (orientations.size() > i) {
+                String orientation = orientations.get(i);
                 query += " " + orientation;
             }
-            if (i < m_orderBy.size() - 1) query += ", ";
+            if (i < orderBy.size() - 1) query += ", ";
         }
         return query;
     }
 
     protected String appendLimit(String query) {
-        if (m_limits == null) return query;
+        if (limits == null) return query;
         query += " LIMIT ";
-        for (int i = 0; i < m_limits.size(); i++) {
+        for (int i = 0; i < limits.size(); i++) {
             query += "?";
-            if (i < m_limits.size() - 1) query += ", ";
+            if (i < limits.size() - 1) query += ", ";
         }
         return query;
     }
@@ -395,9 +395,9 @@ public class SQLBuilder {
         try {
             String query = "SELECT ";
 
-            for (int i = 0; i < m_selectCols.size(); i++) {
-                query += ("`" + m_selectCols.get(i) + "`");
-                if (i < m_selectCols.size() - 1) query += ", ";
+            for (int i = 0; i < selectCols.size(); i++) {
+                query += ("`" + selectCols.get(i) + "`");
+                if (i < selectCols.size() - 1) query += ", ";
             }
 
             query = appendFromTable(query);
@@ -408,8 +408,8 @@ public class SQLBuilder {
 
             int index = 1;
             statement = connection.prepareStatement(query);
-            if (m_join != null) {
-                for (Map.Entry<String, List<OnCondition>> entry : m_join.entrySet()) {
+            if (join != null) {
+                for (Map.Entry<String, List<OnCondition>> entry : join.entrySet()) {
                     List<OnCondition> conditionList = entry.getValue();
                     for (OnCondition condition : conditionList) {
                         if (condition.val instanceof List) {
@@ -423,8 +423,8 @@ public class SQLBuilder {
                     }
                 }
             }
-            if (m_whereVals != null) {
-                for (Object val : m_whereVals) {
+            if (whereVals != null) {
+                for (Object val : whereVals) {
                     if (val instanceof List) {
                         List<?> castedVals = (List<?>) val;
                         for (Object castedVal : castedVals) {
@@ -433,8 +433,8 @@ public class SQLBuilder {
                     } else statement.setObject(index++, val);
                 }
             }
-            if (m_limits != null) {
-                for (Integer limit : m_limits) {
+            if (limits != null) {
+                for (Integer limit : limits) {
                     statement.setInt(index++, limit);
                 }
             }
@@ -450,32 +450,32 @@ public class SQLBuilder {
         PreparedStatement statement = null;
         try {
             String query = "INSERT";
-            if (m_ignore) query += " IGNORE";
+            if (ignore) query += " IGNORE";
             query = appendIntoTable(query);
 
             query += "(";
-            for (int i = 0; i < m_insertCols.size(); i++) {
-                query += ("`" + m_insertCols.get(i) + "`");
-                if (i < m_insertCols.size() - 1) query += ", ";
+            for (int i = 0; i < insertCols.size(); i++) {
+                query += ("`" + insertCols.get(i) + "`");
+                if (i < insertCols.size() - 1) query += ", ";
             }
             query += ") ";
 
             query += " VALUES ";
-            for (int i = 0; i < m_insertVals.size(); i++) {
+            for (int i = 0; i < insertVals.size(); i++) {
                 query += "(";
-                for (int j = 0; j < m_insertVals.get(i).size(); ++j) {
+                for (int j = 0; j < insertVals.get(i).size(); ++j) {
                     query += "?";
-                    if (j < m_insertVals.get(i).size() - 1) query += ", ";
+                    if (j < insertVals.get(i).size() - 1) query += ", ";
                 }
                 query += ")";
-                if (i < m_insertVals.size() - 1) query += ", ";
+                if (i < insertVals.size() - 1) query += ", ";
             }
 
             int index = 1;
 
             statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            if (m_insertVals != null) {
-                for (List<Object> list : m_insertVals) {
+            if (insertVals != null) {
+                for (List<Object> list : insertVals) {
                     for (Object val : list) {
                         statement.setObject(index++, val);
                     }
@@ -496,28 +496,28 @@ public class SQLBuilder {
             query = appendIntoTable(query);
 
             query += "(";
-            for (int i = 0; i < m_replaceCols.size(); i++) {
-                query += ("`" + m_replaceCols.get(i) + "`");
-                if (i < m_replaceCols.size() - 1) query += ", ";
+            for (int i = 0; i < replaceCols.size(); i++) {
+                query += ("`" + replaceCols.get(i) + "`");
+                if (i < replaceCols.size() - 1) query += ", ";
             }
             query += ") ";
 
             query += " VALUES ";
-            for (int i = 0; i < m_replaceVals.size(); i++) {
+            for (int i = 0; i < replaceVals.size(); i++) {
                 query += "(";
-                for (int j = 0; j < m_replaceVals.get(i).size(); ++j) {
+                for (int j = 0; j < replaceVals.get(i).size(); ++j) {
                     query += "?";
-                    if (j < m_replaceVals.get(i).size() - 1) query += ", ";
+                    if (j < replaceVals.get(i).size() - 1) query += ", ";
                 }
                 query += ")";
-                if (i < m_replaceVals.size() - 1) query += ", ";
+                if (i < replaceVals.size() - 1) query += ", ";
             }
 
             int index = 1;
 
             statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            if (m_replaceVals != null) {
-                for (List<Object> list : m_replaceVals) {
+            if (replaceVals != null) {
+                for (List<Object> list : replaceVals) {
                     for (Object val : list) {
                         statement.setObject(index++, val);
                     }
@@ -541,8 +541,8 @@ public class SQLBuilder {
 
             int index = 1;
             statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            if (m_whereVals != null) {
-                for (Object val : m_whereVals) {
+            if (whereVals != null) {
+                for (Object val : whereVals) {
                     if (val instanceof List) {
                         List<?> castedVals = (List<?>) val;
                         for (Object castedVal : castedVals) {
@@ -563,29 +563,29 @@ public class SQLBuilder {
         if (connection == null) return null;
         PreparedStatement statement = null;
         try {
-            String query = "UPDATE " + m_table;
+            String query = "UPDATE " + table;
             query += " SET ";
 
             boolean hasPrevFields = false;
 
-            if (m_updateCols != null) {
-                    for (String col : m_updateCols) {
+            if (updateCols != null) {
+                    for (String col : updateCols) {
                             if (hasPrevFields) query += ", ";
                             hasPrevFields = true;
                             query += ("`" + col + "`" + "=?");
                     }
             }
 
-            if (m_increaseCols != null) {
-                    for (String col : m_increaseCols) {
+            if (increaseCols != null) {
+                    for (String col : increaseCols) {
                             if (hasPrevFields) query += ", ";
                             hasPrevFields = true;
                             query += ("`" + col + "`" + "=" + "`" + col + "`" + "+?");
                     }
             }
 
-            if (m_decreaseCols != null) {
-                    for (String col : m_decreaseCols) {
+            if (decreaseCols != null) {
+                    for (String col : decreaseCols) {
                             if (hasPrevFields) query += ", ";
                             hasPrevFields = true;
                             query += ("`" + col + "`" + "=" + "`" + col + "`" + "-?");
@@ -597,26 +597,26 @@ public class SQLBuilder {
 
             int index = 1;
             statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            if (m_updateVals != null) {
-                for (Object val : m_updateVals) {
+            if (updateVals != null) {
+                for (Object val : updateVals) {
                     statement.setObject(index++, val);
                 }
             }
 
-            if (m_increaseVals != null) {
-                for (Object val : m_increaseVals) {
+            if (increaseVals != null) {
+                for (Object val : increaseVals) {
                     statement.setObject(index++, val);
                 }
             }
 
-            if (m_decreaseVals != null) {
-                for (Object val : m_decreaseVals) {
+            if (decreaseVals != null) {
+                for (Object val : decreaseVals) {
                     statement.setObject(index++, val);
                 }
             }
 
-            if (m_whereVals != null) {
-                for (Object val : m_whereVals) {
+            if (whereVals != null) {
+                for (Object val : whereVals) {
                     if (val instanceof List) {
                         List<?> castedVals = (List<?>) val;
                         for (Object castedVal : castedVals) {
@@ -626,8 +626,8 @@ public class SQLBuilder {
                 }
             }
 
-            if (m_limits != null) {
-                for (Integer val : m_limits) {
+            if (limits != null) {
+                for (Integer val : limits) {
                     statement.setInt(index++, val);
                 }
             }

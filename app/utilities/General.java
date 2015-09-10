@@ -11,10 +11,10 @@ import java.util.TimeZone;
 
 public class General {
 
-    protected static Calendar s_localCalendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+8"));
+    protected static Calendar localCalendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+8"));
 
     public static Calendar localCalendar() {
-        return s_localCalendar;
+        return localCalendar;
     }
 
     public static boolean validateEmail(final String email) {

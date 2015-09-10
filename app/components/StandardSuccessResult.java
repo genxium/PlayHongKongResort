@@ -5,13 +5,13 @@ import models.AbstractMessage;
 import play.libs.Json;
 
 public class StandardSuccessResult {
-    private static ObjectNode s_result = null;
+    private static ObjectNode result = null;
 
     public static ObjectNode get() {
-        if (s_result == null) {
-            s_result = Json.newObject();
-            s_result.put(AbstractMessage.RET, "0");
+        if (result == null) {
+            result = Json.newObject();
+            result.put(AbstractMessage.RET, "0");
         }
-        return s_result;
+        return result;
     }
 }

@@ -32,6 +32,8 @@ function Player(data){
 	this.age = data.age;
 	this.gender = data.gender;
 	this.mood = data.mood;
+	this.party = data.party;
+	this.partyNickname = data.party_nickname;
 }
 
 function Image(data){

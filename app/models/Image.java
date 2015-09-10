@@ -27,52 +27,52 @@ public class Image extends AbstractModel {
 
         public static final Pattern REMOTE_NAME_PATTERN = Pattern.compile("^([\\d]+)_([\\d]+)$", Pattern.UNICODE_CHARACTER_CLASS);
 
-        protected String m_url = null;
-        protected Long m_metaId = null;
-        protected Integer m_metaType = null;
-        protected String m_remoteName = null;
-        protected String m_bucket = null;
-        protected Integer m_cdnId = null;
-        protected Long m_generatedTime = null;
+        protected String url = null;
+        protected Long metaId = null;
+        protected Integer metaType = null;
+        protected String remoteName = null;
+        protected String bucket = null;
+        protected Integer cdnId = null;
+        protected Long generatedTime = null;
 
         public String getUrl() {
-                return m_url;
+                return url;
         }
 
         public Long getMetaId() {
-                return m_metaId;
+                return metaId;
         }
 
         public Integer getMetaType() {
-                return m_metaType;
+                return metaType;
         }
 
         public String getRemoteName() {
-                return m_remoteName;
+                return remoteName;
         }
 
         public String getBucket() {
-                return m_bucket;
+                return bucket;
         }
 
         public Integer getCDNId() {
-                return m_cdnId;
+                return cdnId;
         }
 
         public Image(final SimpleMap data) {
                 super(data);
-                m_url = data.getStr(URL);
-                m_metaId = data.getLong(META_ID);
-                m_metaType = data.getInt(META_TYPE);
-                m_cdnId = data.getInt(CDN_ID);
-                m_remoteName = data.getStr(REMOTE_NAME);
-                m_bucket = data.getStr(BUCKET);
-                m_generatedTime = data.getLong(GENERATED_TIME);
+                url = data.getStr(URL);
+                metaId = data.getLong(META_ID);
+                metaType = data.getInt(META_TYPE);
+                cdnId = data.getInt(CDN_ID);
+                remoteName = data.getStr(REMOTE_NAME);
+                bucket = data.getStr(BUCKET);
+                generatedTime = data.getLong(GENERATED_TIME);
         }
 
         public ObjectNode toObjectNode() {
                 final ObjectNode ret = super.toObjectNode();
-                ret.put(URL, m_url);
+                ret.put(URL, url);
                 return ret;
         }
 }

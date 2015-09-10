@@ -13,44 +13,44 @@ public abstract class AbstractMessage extends AbstractSimpleMessage {
         public static final String FROM = "from";
         public static final String TO = "to";
 
-        public static final String FROM_PLAYER = "from_player";
+        public static final String FROM_PLAYER = "froplayer";
         public static final String TO_PLAYER = "to_player";
 
         public static final String GENERATED_TIME = "generated_time";
 
-        protected Long m_from = null;
-        protected Long m_to = null;
-        protected Long m_generatedTime = null;
+        protected Long from = null;
+        protected Long to = null;
+        protected Long generatedTime = null;
 
         public Long getFrom() {
-                return m_from;
+                return from;
         }
 
-        public void setFrom(final long from) {
-                m_from = from;
+        public void setFrom(final long data) {
+                from = data;
         }
 
         public Long getTo() {
-                return m_to;
+                return to;
         }
 
-        protected Player m_fromPlayer = null;
-        protected Player m_toPlayer = null;
+        protected Player fromPlayer = null;
+        protected Player toPlayer = null;
 
         public Player getFromPlayer() {
-                return m_fromPlayer;
+                return fromPlayer;
         }
 
         public void setFromPlayer(final Player player) {
-                m_fromPlayer = player;
+                fromPlayer = player;
         }
 
         public Player getToPlayer() {
-                return m_toPlayer;
+                return toPlayer;
         }
 
         public void setToPlayer(final Player player) {
-                m_toPlayer = player;
+                toPlayer = player;
         }
 
         public AbstractMessage() {
@@ -59,17 +59,17 @@ public abstract class AbstractMessage extends AbstractSimpleMessage {
 
         public AbstractMessage(final SimpleMap data) {
                 super(data);
-                m_from = data.getLong(FROM);
-                m_to = data.getLong(TO);
-                m_generatedTime = data.getLong(GENERATED_TIME);
+                from = data.getLong(FROM);
+                to = data.getLong(TO);
+                generatedTime = data.getLong(GENERATED_TIME);
         }
 
         public ObjectNode toObjectNode() {
                 ObjectNode ret = super.toObjectNode();
                 try {
-                        ret.put(FROM, m_from);
-                        ret.put(TO, m_to);
-                        ret.put(GENERATED_TIME, String.valueOf(m_generatedTime));
+                        ret.put(FROM, from);
+                        ret.put(TO, to);
+                        ret.put(GENERATED_TIME, String.valueOf(generatedTime));
                 } catch (Exception e) {
                         Loggy.e(TAG, "toObjectNode", e);
                 }

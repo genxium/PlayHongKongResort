@@ -8,14 +8,14 @@ public class AbstractActivityMessage extends AbstractMessage {
 
         public static final String ACTIVITY_ID = "activity_id";
 
-        protected Long m_activityId = null;
+        protected Long activityId = null;
 
         public Long getActivityId() {
-                return m_activityId;
+                return activityId;
         }
 
-        public void setActivityId(long activityId) {
-                m_activityId = activityId;
+        public void setActivityId(final long data) {
+                activityId = data;
         }
 
         public AbstractActivityMessage() {
@@ -24,13 +24,13 @@ public class AbstractActivityMessage extends AbstractMessage {
 
         public AbstractActivityMessage(SimpleMap data) {
                 super(data);
-                m_activityId = data.getLong(ACTIVITY_ID);
+                activityId = data.getLong(ACTIVITY_ID);
         }
 
         public ObjectNode toObjectNode() {
                 ObjectNode ret = super.toObjectNode();
                 try {
-                        ret.put(ACTIVITY_ID, String.valueOf(m_activityId));
+                        ret.put(ACTIVITY_ID, String.valueOf(activityId));
                 } catch (Exception e) {
                         Loggy.e(this.getClass().getName(), "toObjectNode", e);
                 }

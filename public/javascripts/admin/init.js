@@ -183,8 +183,8 @@ function onBtnAcceptClicked(evt) {
 	disableField(btnAccept);
 	$.ajax({
 		type: "POST",
-		url: "/el/admin/activity/accept",
-		// url: "/admin/accept",
+		// url: "/el/admin/activity/accept",
+		url: "/admin/accept",
 		data: params,
 		success: function(data, status, xhr) {
 			enableField(btnAccept);

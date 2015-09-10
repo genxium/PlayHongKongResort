@@ -20,7 +20,7 @@ public class SQLHelper {
 
     public static final String TAG = SQLHelper.class.getName();
 
-    private static DataSource s_dataSource = null;
+    private static DataSource dataSource = null;
 
     public static String DATABASE_NAME = "DatabaseName";
     public static String HOST = "Host";
@@ -38,14 +38,14 @@ public class SQLHelper {
     public static String ASCEND = "ASC";
     public static String DESCEND = "DESC";
 
-    private static String s_databaseName = null;
-    private static String s_host = null;
-    private static Integer s_port = null;
-    private static String s_user = null;
-    private static String s_password = null;
-    private static String s_charsetResult = null;
-    private static String s_charsetEncoding = null;
-    private static String s_useUnicode = null;
+    private static String databaseName = null;
+    private static String host = null;
+    private static Integer port = null;
+    private static String user = null;
+    private static String password = null;
+    private static String charsetResult = null;
+    private static String charsetEncoding = null;
+    private static String useUnicode = null;
 
     private static boolean readMySQLConfig() {
         boolean ret = false;
@@ -55,14 +55,14 @@ public class SQLHelper {
             else if (Play.application().isDev()) fullPath += "devel_database_config.xml";
             else fullPath += "test_database_config.xml";
             Map<String, String> attributes = XMLHelper.readDatabaseConfig(fullPath);
-            s_databaseName = attributes.get(DATABASE_NAME);
-            s_host = attributes.get(HOST);
-            s_port = Integer.parseInt(attributes.get(PORT));
-            s_user = attributes.get(USER);
-            s_password = attributes.get(PASSWORD);
-            s_charsetResult = attributes.get(CHARSET_RESULT);
-            s_charsetEncoding = attributes.get(CHARSET_ENCODING);
-            s_useUnicode = attributes.get(USE_UNICODE);
+            databaseName = attributes.get(DATABASE_NAME);
+            host = attributes.get(HOST);
+            port = Integer.parseInt(attributes.get(PORT));
+            user = attributes.get(USER);
+            password = attributes.get(PASSWORD);
+            charsetResult = attributes.get(CHARSET_RESULT);
+            charsetEncoding = attributes.get(CHARSET_ENCODING);
+            useUnicode = attributes.get(USE_UNICODE);
             ret = true;
         } catch (Exception e) {
             Loggy.e(TAG, "readMySQLConfig", e);
@@ -75,7 +75,7 @@ public class SQLHelper {
         try {
             if (!readMySQLConfig()) return null;
             Class.forName("com.mysql.jdbc.Driver");
-            ret = "jdbc:mysql://" + s_host + ":" + s_port.toString() + "/" + s_databaseName;
+            ret = "jdbc:mysql://" + host + ":" + port.toString() + "/" + databaseName;
         } catch (Exception e) {
             Loggy.e(TAG, "getConnectionURI", e);
         }
@@ -88,12 +88,12 @@ public class SQLHelper {
              * MySQL server connection options reference: http://pages.citebite.com/p4x3a0r8pmhm
              * */
             Properties prop = new Properties();
-            prop.setProperty("user", s_user);
-            prop.setProperty("password", s_password);
+            prop.setProperty("user", user);
+            prop.setProperty("password", password);
 
-            if (s_useUnicode != null) prop.setProperty("useUnicode", s_useUnicode);
-            if (s_charsetEncoding != null) prop.setProperty("characterEncoding", s_charsetEncoding);
-            if (s_charsetResult != null) prop.setProperty("characterSetResults", s_charsetResult);
+            if (useUnicode != null) prop.setProperty("useUnicode", useUnicode);
+            if (charsetEncoding != null) prop.setProperty("characterEncoding", charsetEncoding);
+            if (charsetResult != null) prop.setProperty("characterSetResults", charsetResult);
 
             /**
              * avoid auto-disconnection from MySQL server after 8 hours' idle time
@@ -128,12 +128,12 @@ public class SQLHelper {
 
     public static Connection getConnection() {
         try {
-            if (s_dataSource == null) {
+            if (dataSource == null) {
                 String connectURI = getConnectionURI();
-                s_dataSource = setupDataSource(connectURI);
+                dataSource = setupDataSource(connectURI);
             }
-            if (s_dataSource == null) return null;
-            else return s_dataSource.getConnection();
+            if (dataSource == null) return null;
+            else return dataSource.getConnection();
         } catch (Exception e) {
             Loggy.e(TAG, "getConnection", e);
         }

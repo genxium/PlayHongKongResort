@@ -9,41 +9,41 @@ public class TempForeignParty {
 	public static final String TABLE = "temp_foreign_party";
 
 	public static final String AUTHORIZATION_CODE = "authorization_code";
-	public static final String ACCESS_TOKEN = "access_token";
+	public static final String ACCESS_TOKEN = "accestoken";
 	public static final String PARTY = "party";
 	public static final String PARTY_ID = "party_id";
 	public static final String TIMESTAMP = "timestamp";
 
 	public static final String[] QUERY_FIELDS = {ACCESS_TOKEN, PARTY, PARTY_ID, TIMESTAMP};
 
-	protected String m_accessToken = null;
+	protected String accessToken = null;
 
 	public String getAccessToken() {
-		return m_accessToken;
+		return accessToken;
 	}
 
-	protected Integer m_party = null;
+	protected Integer party = null;
 
 	public Integer getParty() {
-		return m_party;
+		return party;
 	}
 
-	public void setParty(final Integer party) {
-		m_party = party;
+	public void setParty(final int data) {
+		party = data;
 	}
 
-	protected String m_partyId = null;
+	protected String partyId = null;
 
 	public String getPartyId() {
-		return m_partyId;
+		return partyId;
 	}
 
-	protected Long m_timestamp = null;
+	protected Long timestamp = null;
 
 	public TempForeignParty(final SimpleMap data) {
-		m_accessToken = data.getStr(ACCESS_TOKEN);
-		m_party = data.getInt(PARTY);
-		m_partyId = data.getStr(PARTY_ID);
-		m_timestamp = data.getLong(TIMESTAMP);
+		accessToken = data.getStr(ACCESS_TOKEN);
+		party = data.getInt(PARTY);
+		partyId = data.getStr(PARTY_ID);
+		timestamp = data.getLong(TIMESTAMP);
 	}
 }

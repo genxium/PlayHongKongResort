@@ -36,8 +36,8 @@ public class Activity extends AbstractSimpleMessage {
         public static final String BEGIN_TIME = "begin_time";
         public static final String DEADLINE = "application_deadline";
         public static final String CAPACITY = "capacity";
-        public static final String NUM_APPLIED = "num_applied";
-        public static final String NUM_SELECTED = "num_selected";
+        public static final String NUM_APPLIED = "nuapplied";
+        public static final String NUM_SELECTED = "nuselected";
         public static final String STATUS = "status";
         public static final String HOST_ID = "host_id";
         public static final String HOST = "host";
@@ -81,176 +81,176 @@ public class Activity extends AbstractSimpleMessage {
         public static final int[] BEGIN_TIME_MASK_LIST = {2, (1 | 2), (2 | 4), (1 | 2 | 4)};
         public static final int[] DEADLINE_MASK_LIST = {4, (1 | 4), (2 | 4), (1 | 2 | 4)};
 
-        protected String m_title = null;
+        protected String title = null;
 
         public String getTitle() {
-                return m_title;
+                return title;
         }
 
-        public void setTitle(final String title) {
-                m_title = title;
+        public void setTitle(final String aTitle) {
+                title = aTitle;
         }
 
-        protected Long m_createdTime = null;
+        protected Long createdTime = null;
 
         public long getCreatedTime() {
-                return m_createdTime;
+                return createdTime;
         }
 
-        public void setCreatedTime(final long createdTime) {
-                m_createdTime = createdTime;
+        public void setCreatedTime(final long aCreatedTime) {
+                createdTime = aCreatedTime;
         }
 
-        protected Long m_beginTime = null;
+        protected Long beginTime = null;
 
         public long getBeginTime() {
-                return m_beginTime;
+                return beginTime;
         }
 
-        public void setBeginTime(final long beginTime) {
-                m_beginTime = beginTime;
+        public void setBeginTime(final long aBeginTime) {
+                beginTime = aBeginTime;
         }
 
-        protected Long m_deadline = null;
+        protected Long deadline = null;
 
         public long getDeadline() {
-                return m_deadline;
+                return deadline;
         }
 
-        public void setDeadline(long deadline) {
-                m_deadline = deadline;
+        public void setDeadline(final long aDeadline) {
+                deadline = aDeadline;
         }
 
-        protected Long m_lastAcceptedTime = null;
+        protected Long lastAcceptedTime = null;
 
-        public void setLastAcceptedTime(final long time) {
-                m_lastAcceptedTime = time;
+        public void setLastAcceptedTime(final long aTime) {
+                lastAcceptedTime = aTime;
         }
 
-        protected Long m_lastRejectedTime = null;
+        protected Long lastRejectedTime = null;
 
-        public void setLastRejectedTime(final long time) {
-                m_lastRejectedTime = time;
+        public void setLastRejectedTime(final long aTime) {
+                lastRejectedTime = aTime;
         }
 
-        protected Integer m_capacity = 0;
+        protected Integer capacity = 0;
 
         public int getCapacity() {
-                return m_capacity;
+                return capacity;
         }
 
-        protected Integer m_numApplied = 0;
+        protected Integer numApplied = 0;
 
         public int getNumApplied() {
-                return m_numApplied;
+                return numApplied;
         }
 
         public boolean exceededAppliedLimit() {
-                return m_numApplied > MAX_APPLIED;
+                return numApplied > MAX_APPLIED;
         }
 
-        protected Integer m_numSelected = 0;
+        protected Integer numSelected = 0;
 
         public int getNumSelected() {
-                return m_numSelected;
+                return numSelected;
         }
 
         public boolean exceededSelectedLimit() {
-                return m_numSelected > MAX_SELECTED;
+                return numSelected > MAX_SELECTED;
         }
 
-        protected Integer m_status = CREATED;
+        protected Integer status = CREATED;
 
         public int getStatus() {
-                return m_status;
+                return status;
         }
 
-        public void setStatus(final int status) {
-                m_status = status;
+        public void setStatus(final int aStatus) {
+                status = aStatus;
         }
 
-        protected String m_address = null;
+        protected String address = null;
 
         public String getAddress() {
-                return m_address;
+                return address;
         }
 
-        public void setAddress(final String address) {
-                m_address = address;
+        public void setAddress(final String aAddress) {
+                address = aAddress;
         }
 
-        protected Long m_hostId = null;
+        protected Long hostId = null;
 
         public Long getHostId() {
-                return m_hostId;
+                return hostId;
         }
 
-        protected Player m_host = null;
+        protected Player host = null;
 
         public Player getHost() {
-                return m_host;
+                return host;
         }
 
-        public void setHost(Player host) {
-                m_host = host;
+        public void setHost(final Player aHost) {
+                host = aHost;
         }
 
-        protected Player m_viewer = null;
+        protected Player viewer = null;
 
         public Player getViewer() {
-                return m_viewer;
+                return viewer;
         }
 
-        public void setViewer(final Player viewer) {
-                m_viewer = viewer;
+        public void setViewer(final Player aViewer) {
+                viewer = aViewer;
         }
 
-        protected List<Image> m_imageList = null;
+        protected List<Image> imageList = null;
 
-        public void setImageList(final List<Image> imageList) {
-                m_imageList = imageList;
+        public void setImageList(final List<Image> aImageList) {
+                imageList = aImageList;
         }
 
         public void addImage(final Image image) {
-                if (m_imageList == null) m_imageList = new ArrayList<>();
-                m_imageList.add(image);
+                if (imageList == null) imageList = new ArrayList<>();
+                imageList.add(image);
         }
 
-        protected Integer m_priority = 0;
+        protected Integer priority = 0;
 
         public int getPriority() {
-                return m_priority;
+                return priority;
         }
 
-        protected Integer m_filterMask = 0;
+        protected Integer filterMask = 0;
 
         public int getFilterMask() {
-                return m_filterMask;
+                return filterMask;
         }
 
-        protected Integer m_orderMask = 0;
+        protected Integer orderMask = 0;
 
         public int getOrderMask() {
-                return m_orderMask;
+                return orderMask;
         }
 
         public boolean isDeadlineExpired() {
-                return General.millisec() > m_deadline;
+                return General.millisec() > deadline;
         }
 
         public boolean hasBegun() {
-                return General.millisec() > m_beginTime;
+                return General.millisec() > beginTime;
         }
 
-        protected List<BasicPlayer> m_selectedParticipants = null;
+        protected List<BasicPlayer> selectedParticipants = null;
 
-        public void setSelectedParticipants(final List<BasicPlayer> selectedParticipants) {
-                m_selectedParticipants = selectedParticipants;
+        public void setSelectedParticipants(final List<BasicPlayer> aSelectedParticipants) {
+                selectedParticipants = aSelectedParticipants;
         }
 
-        public void addSelectedParticipant(final BasicPlayer player) {
-                if (m_selectedParticipants == null) m_selectedParticipants = new ArrayList<>();
-                m_selectedParticipants.add(player);
+        public void addSelectedParticipant(final BasicPlayer aPlayer) {
+                if (selectedParticipants == null) selectedParticipants = new ArrayList<>();
+                selectedParticipants.add(aPlayer);
         }
 
         public Activity() {
@@ -259,60 +259,60 @@ public class Activity extends AbstractSimpleMessage {
 
         public Activity(final SimpleMap data) {
                 super(data);
-                m_title = data.getStr(TITLE);
-                m_createdTime = data.getLong(CREATED_TIME);
-                m_beginTime = data.getLong(BEGIN_TIME);
-                m_deadline = data.getLong(DEADLINE);
-                m_capacity = data.getInt(CAPACITY);
-                m_numApplied = data.getInt(NUM_APPLIED);
-                m_numSelected = data.getInt(NUM_SELECTED);
-                m_status = data.getInt(STATUS);
-                m_lastAcceptedTime = data.getLong(LAST_ACCEPTED_TIME);
-                m_lastRejectedTime = data.getLong(LAST_REJECTED_TIME);
-                m_address = data.getStr(ADDRESS);
-                m_hostId = data.getLong(HOST_ID);
-                m_priority = data.getInt(PRIORITY);
-                m_filterMask = data.getInt(FILTER_MASK);
-                m_orderMask = data.getInt(ORDER_MASK);
+                title = data.getStr(TITLE);
+                createdTime = data.getLong(CREATED_TIME);
+                beginTime = data.getLong(BEGIN_TIME);
+                deadline = data.getLong(DEADLINE);
+                capacity = data.getInt(CAPACITY);
+                numApplied = data.getInt(NUM_APPLIED);
+                numSelected = data.getInt(NUM_SELECTED);
+                status = data.getInt(STATUS);
+                lastAcceptedTime = data.getLong(LAST_ACCEPTED_TIME);
+                lastRejectedTime = data.getLong(LAST_REJECTED_TIME);
+                address = data.getStr(ADDRESS);
+                hostId = data.getLong(HOST_ID);
+                priority = data.getInt(PRIORITY);
+                filterMask = data.getInt(FILTER_MASK);
+                orderMask = data.getInt(ORDER_MASK);
         }
 
         public ObjectNode toObjectNode(final Long viewerId) {
                 ObjectNode ret = super.toObjectNode();
                 try {
-                        ret.put(TITLE, m_title);
-                        ret.put(ADDRESS, m_address);
+                        ret.put(TITLE, title);
+                        ret.put(ADDRESS, address);
 
-                        ret.put(CREATED_TIME, String.valueOf(m_createdTime));
-                        ret.put(BEGIN_TIME, String.valueOf(m_beginTime));
-                        ret.put(DEADLINE, String.valueOf(m_deadline));
+                        ret.put(CREATED_TIME, String.valueOf(createdTime));
+                        ret.put(BEGIN_TIME, String.valueOf(beginTime));
+                        ret.put(DEADLINE, String.valueOf(deadline));
 
-                        ret.put(CAPACITY, String.valueOf(m_capacity));
-                        ret.put(NUM_APPLIED, String.valueOf(m_numApplied));
-                        ret.put(NUM_SELECTED, String.valueOf(m_numSelected));
-                        if (m_host != null) ret.put(HOST, m_host.toObjectNode(viewerId));
+                        ret.put(CAPACITY, String.valueOf(capacity));
+                        ret.put(NUM_APPLIED, String.valueOf(numApplied));
+                        ret.put(NUM_SELECTED, String.valueOf(numSelected));
+                        if (host != null) ret.put(HOST, host.toObjectNode(viewerId));
 
-                        if (m_imageList != null && m_imageList.size() > 0) {
+                        if (imageList != null && imageList.size() > 0) {
                                 ArrayNode imagesNode = new ArrayNode(JsonNodeFactory.instance);
-                                for (Image image : m_imageList) imagesNode.add(image.toObjectNode());
+                                for (Image image : imageList) imagesNode.add(image.toObjectNode());
                                 ret.put(ActivityDetail.IMAGES, imagesNode);
                         }
 
-                        if (m_selectedParticipants != null && m_selectedParticipants.size() > 0) {
+                        if (selectedParticipants != null && selectedParticipants.size() > 0) {
                                 ArrayNode selectedParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
-                                for (BasicPlayer participant : m_selectedParticipants)
+                                for (BasicPlayer participant : selectedParticipants)
                                         selectedParticipantsNode.add(participant.toObjectNode(viewerId));
                                 ret.put(SELECTED_PARTICIPANTS, selectedParticipantsNode);
                         }
 
-                        ret.put(PRIORITY, String.valueOf(m_priority));
+                        ret.put(PRIORITY, String.valueOf(priority));
 
                         if (viewerId == null) return ret;
-                        int relation = DBCommander.queryPlayerActivityRelation(viewerId, m_id);
+                        int relation = DBCommander.queryPlayerActivityRelation(viewerId, id);
                         if (relation != PlayerActivityRelation.INVALID) ret.put(PlayerActivityRelation.RELATION, relation);
-                        if (viewerId.equals(m_host.getId())) ret.put(STATUS, String.valueOf(m_status));
-                        if (m_viewer != null && m_viewer.getGroupId() == Player.ADMIN) {
-                                ret.put(ORDER_MASK, String.valueOf(m_orderMask));
-                                ret.put(STATUS, String.valueOf(m_status));
+                        if (viewerId.equals(host.getId())) ret.put(STATUS, String.valueOf(status));
+                        if (viewer != null && viewer.getGroupId() == Player.ADMIN) {
+                                ret.put(ORDER_MASK, String.valueOf(orderMask));
+                                ret.put(STATUS, String.valueOf(status));
                         }
 
                 } catch (Exception e) {

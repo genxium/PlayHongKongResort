@@ -8,14 +8,14 @@ public abstract class AbstractSimpleMessage extends AbstractModel {
 
         public static final String CONTENT = "content";
 
-        protected String m_content = null;
+        protected String content = null;
 
         public String getContent() {
-                return m_content;
+                return content;
         }
 
-        public void setContent(final String content) {
-                m_content = content;
+        public void setContent(final String data) {
+                content = data;
         }
 
         public AbstractSimpleMessage() {
@@ -24,13 +24,13 @@ public abstract class AbstractSimpleMessage extends AbstractModel {
 
         public AbstractSimpleMessage(final SimpleMap data) {
                 super(data);
-                m_content = data.getStr(CONTENT);
+                content = data.getStr(CONTENT);
         }
 
         public ObjectNode toObjectNode() {
                 ObjectNode ret = super.toObjectNode();
                 try {
-                        ret.put(CONTENT, m_content);
+                        ret.put(CONTENT, content);
                 } catch (Exception e) {
                         Loggy.e(this.getClass().getName(), "toObjectNode", e);
                 }

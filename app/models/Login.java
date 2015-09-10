@@ -10,18 +10,18 @@ public class Login {
         public static final String TOKEN = "token";
         public static final String TIMESTAMP = "timestamp";
 
-        protected Long m_playerId = null;
-        protected String m_token = null;
-        protected Long m_timestamp = null;
+        protected Long playerId = null;
+        protected String token = null;
+        protected Long timestamp = null;
 
         public Long getPlayerId() {
-                return m_playerId;
+                return playerId;
         }
 
         public Login(final SimpleMap data) {
-                m_playerId = data.getLong(PLAYER_ID);
-                m_token = data.getStr(TOKEN);
-                m_timestamp = data.getLong(TIMESTAMP);
+                playerId = data.getLong(PLAYER_ID);
+                token = data.getStr(TOKEN);
+                timestamp = data.getLong(TIMESTAMP);
         }
 
         public boolean hasExpired() {

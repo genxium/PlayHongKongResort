@@ -15,7 +15,7 @@ public abstract class AbstractModel {
         public static final String PAGE = "page";
         public static final String PAGE_ST = "page_st";
         public static final String PAGE_ED = "page_ed";
-        public static final String NUM_ITEMS = "num_items";
+        public static final String NUM_ITEMS = "nuitems";
         public static final String ORDER = "order";
         public static final String ORIENTATION = "orientation";
 
@@ -25,24 +25,24 @@ public abstract class AbstractModel {
 
         }
 
-        protected Long m_id = null;
+        protected Long id = null;
 
         public Long getId() {
-                return m_id;
+                return id;
         }
 
-        public void setId(final long id) {
-                m_id = id;
+        public void setId(final long data) {
+                id = data;
         }
 
         public AbstractModel(final SimpleMap data) {
-                m_id = data.getLong(ID);
+                id = data.getLong(ID);
         }
 
         public ObjectNode toObjectNode() {
                 ObjectNode ret = Json.newObject();
                 try {
-                        ret.put(ID, m_id);
+                        ret.put(ID, id);
                 } catch (Exception e) {
                         Loggy.e(TAG, "toObjectNode", e);
                 }

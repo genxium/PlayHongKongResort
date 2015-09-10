@@ -8,14 +8,14 @@ import java.text.SimpleDateFormat;
 
 public class Converter {
 
-    protected static SimpleDateFormat s_dateFormat = null;
+    protected static SimpleDateFormat dateFormat = null;
 
     public static SimpleDateFormat getDateFormat() {
-        if (s_dateFormat == null) {
-            s_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            s_dateFormat.setTimeZone(General.localCalendar().getTimeZone());
+        if (dateFormat == null) {
+            dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            dateFormat.setTimeZone(General.localCalendar().getTimeZone());
         }
-        return s_dateFormat;
+        return dateFormat;
     }
 
     public static String md5(String input) {
