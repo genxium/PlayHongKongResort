@@ -242,7 +242,7 @@ public class ActivityController extends Controller {
                         List<Image> newImageList = new LinkedList<>();
                         if (formData.containsKey(NEW_IMAGE)) {
                                 final ObjectMapper mapper = new ObjectMapper();
-                                newRemoteNameList.addAll(mapper.readValue(formData.get(NEW_IMAGE)[0], mapper.getTypeFactory().constructCollectionType(List.class, String.class)));
+                                newRemoteNameList.addAll((List<String>)mapper.readValue(formData.get(NEW_IMAGE)[0], mapper.getTypeFactory().constructCollectionType(List.class, String.class)));
                                 newImageList = ExtraCommander.queryImages(playerId, Image.TYPE_OWNER, newRemoteNameList);
                         }
 

@@ -587,7 +587,7 @@ function checkForeignPartyLoginStatus() {
 	params[g_keyParty] = party;
 	$.ajax({
 		type: "POST",
-		url: "/player/foreign/login",
+		url: "/player/foreign/implicit/login",
 		data: params,
 		success: function(data, status, xhr){
 			if (isPlayerNotFound(data)) {

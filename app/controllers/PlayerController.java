@@ -235,9 +235,11 @@ public class PlayerController extends Controller {
 
                         long previousAvatarId = player.getAvatar();
                         // TODO: combine to transaction block
-                        final Image previousAvatar = ExtraCommander.queryImage(previousAvatarId);
                         final List<Image> toDeleteImageList = new LinkedList<>();
-                        toDeleteImageList.add(previousAvatar);
+			if (previousAvatarId > 0) {
+				final Image previousAvatar = ExtraCommander.queryImage(previousAvatarId);
+				toDeleteImageList.add(previousAvatar);
+			}
 
                         // TODO: combine into transaction block
                         final Image avatar = ExtraCommander.queryImage(playerId, Image.TYPE_OWNER, avatarRemoteName);

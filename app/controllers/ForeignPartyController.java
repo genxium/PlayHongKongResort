@@ -184,11 +184,12 @@ public class ForeignPartyController extends Controller {
 			final Integer party = Converter.toInteger(formData.get(TempForeignParty.PARTY)[0]);
 
 			String accessToken = null;
+			String partyId = null;
 			if (grantType.equals("authcode")) {
 				final String authorizationCode = (formData.containsKey(TempForeignParty.AUTHORIZATION_CODE) ? formData.get(TempForeignParty.AUTHORIZATION_CODE)[0] : null);
 				accessToken = (formData.containsKey(TempForeignParty.ACCESS_TOKEN) ? formData.get(TempForeignParty.ACCESS_TOKEN)[0] : null);
 				if (authorizationCode != null) {
-					// TODO: get access token for specified party if authorization code is not empty 
+					// TODO: get (access token, party id) for specified party if authorization code is not empty 
 
 				} 
 				return ok(StandardFailureResult.get());

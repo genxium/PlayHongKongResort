@@ -102,8 +102,8 @@ public class DBCommander {
 
         public static boolean updatePlayer(final Player player) {
                 try {
-                        String[] cols = {Player.EMAIL, Player.PASSWORD, Player.NAME, Player.GROUP_ID, Player.AGE, Player.GENDER, Player.MOOD, Player.VERIFICATION_CODE};
-                        Object[] values = {player.getEmail(), player.getPassword(), player.getName(), player.getGroupId(), player.getAge(), player.getGender(), player.getMood(), player.getVerificationCode()};
+                        String[] cols = {Player.EMAIL, Player.PASSWORD, Player.NAME, Player.AVATAR, Player.GROUP_ID, Player.AGE, Player.GENDER, Player.MOOD, Player.VERIFICATION_CODE};
+                        Object[] values = {player.getEmail(), player.getPassword(), player.getName(), player.getAvatar(), player.getGroupId(), player.getAge(), player.getGender(), player.getMood(), player.getVerificationCode()};
 
                         SQLBuilder builder = new SQLBuilder();
                         return builder.update(Player.TABLE).set(cols, values).where(Player.ID, "=", player.getId()).execUpdate();
