@@ -738,8 +738,8 @@ public class DBCommander {
                         fields.add(PlayerActivityRelation.ACTIVITY_ID);
                         SQLBuilder builder = new SQLBuilder();
                         List<SimpleMap> records = builder.select(fields)
-                                .from(Player.TABLE)
-                                .join(PlayerActivityRelation.TABLE, onCols, onOps, onVals).execSelect();
+							.from(Player.TABLE)
+							.join(PlayerActivityRelation.TABLE, onCols, onOps, onVals).execSelect();
 
                         if (records == null) throw new NullPointerException();
 

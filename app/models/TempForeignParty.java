@@ -9,7 +9,7 @@ public class TempForeignParty {
 	public static final String TABLE = "temp_foreign_party";
 
 	public static final String AUTHORIZATION_CODE = "authorization_code";
-	public static final String ACCESS_TOKEN = "accestoken";
+	public static final String ACCESS_TOKEN = "access_token";
 	public static final String PARTY = "party";
 	public static final String PARTY_ID = "party_id";
 	public static final String TIMESTAMP = "timestamp";

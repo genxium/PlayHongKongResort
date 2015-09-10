@@ -36,8 +36,8 @@ public class Activity extends AbstractSimpleMessage {
         public static final String BEGIN_TIME = "begin_time";
         public static final String DEADLINE = "application_deadline";
         public static final String CAPACITY = "capacity";
-        public static final String NUM_APPLIED = "nuapplied";
-        public static final String NUM_SELECTED = "nuselected";
+        public static final String NUM_APPLIED = "num_applied";
+        public static final String NUM_SELECTED = "num_selected";
         public static final String STATUS = "status";
         public static final String HOST_ID = "host_id";
         public static final String HOST = "host";

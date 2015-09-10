@@ -162,7 +162,7 @@ public class ForeignPartyController extends Controller {
 
 			playerId = SQLHelper.executeInsertAndCloseStatement(createPlayerStat);
 
-			// insert record into `perforeign_party`
+			// insert record into `perm_foreign_party`
 			final String[] cols2 = {PermForeignParty.ID, PermForeignParty.PARTY, PermForeignParty.PLAYER_ID};
 			final Object[] vals2 = {tempForeignPartyRecord.getPartyId(), tempForeignPartyRecord.getParty(), playerId};
 
@@ -205,6 +205,7 @@ public class ForeignPartyController extends Controller {
 
 	protected static WrappedPlayer loginWithoutNameCompletion(final String accessToken, final Integer party, String partyId) throws ForeignPartyRegistrationRequiredException, IOException {
 	        if (partyId == null) {
+
 	                // for implicit-grant
                         final ForeignPartySpecs specs = queryForeignPartySpecs(accessToken, party, partyId);
                         if (specs == null || !specs.isValid()) return null;
@@ -212,6 +213,7 @@ public class ForeignPartyController extends Controller {
                 }
 
 		final PermForeignParty record = DBCommander.queryPermForeignParty(partyId, party);
+
 		if (record != null) {
 		        final Player player = DBCommander.queryPlayer(record.getPlayerId());
                         return new WrappedPlayer(player, partyId);
@@ -226,8 +228,9 @@ public class ForeignPartyController extends Controller {
 
 	public static Result login(String grantType) {
 		try {
+
 			final Map<String, String[]> formData = request().body().asFormUrlEncoded();
-			if (!formData.containsKey(TempForeignParty.ACCESS_TOKEN) || !formData.containsKey(TempForeignParty.PARTY))	return ok(StandardFailureResult.get());
+			if (!formData.containsKey(TempForeignParty.ACCESS_TOKEN) || !formData.containsKey(TempForeignParty.PARTY))	throw new NullPointerException();	
 
 			final Integer party = Converter.toInteger(formData.get(TempForeignParty.PARTY)[0]);
 
@@ -254,15 +257,17 @@ public class ForeignPartyController extends Controller {
 
 			if (wrappedPlayer == null) throw new PlayerNotFoundException();
 
+
                         // TODO: clear this dirty fix
                         if (party == ForeignPartyHelper.PARTY_QQ) {
                                 final String nickname = queryQQNickname(accessToken, wrappedPlayer.partyId);
-                                if (nickname == null) throw new NullPointerException();
+                                // if (nickname == null) throw new NullPointerException();
                                 wrappedPlayer.partyNickname = nickname;
                         }
 
+
 			// auto-login
-			String token = Converter.generateToken(wrappedPlayer.player.getEmail(), wrappedPlayer.player.getName());
+			final String token = Converter.generateToken(wrappedPlayer.player.getEmail(), wrappedPlayer.player.getName());
 
 			final SQLBuilder builder = new SQLBuilder();
 			final String[] cols = {Login.PLAYER_ID, Login.TOKEN, Login.TIMESTAMP};

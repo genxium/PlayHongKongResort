@@ -6,7 +6,7 @@ public class PermForeignParty {
 
 	public static final String TAG = PermForeignParty.class.getName();
 
-	public static final String TABLE = "perforeign_party";
+	public static final String TABLE = "perm_foreign_party";
 
 	public static final String ID = "id";
 	public static final String PARTY = "party";

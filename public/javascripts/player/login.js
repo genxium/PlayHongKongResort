@@ -4,6 +4,11 @@ var g_preLoginForm = null;
 var g_postLoginMenu = null;
 var g_nameCompletionForm = null;
 
+function clearForeignPartyCookies() {
+	$.removeCookie(g_keyAccessToken, {path: '/'});
+	$.removeCookie(g_keyParty, {path: '/'});
+}
+
 function PreLoginForm(handle, psw, btn, forgot, registry, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
 	// TODO: refactor with container-dialog-appendTo-refresh pattern
 	this.handle = handle;
@@ -273,6 +278,7 @@ function NameCompletionForm() {
 					enableField(btnSubmit);
 					if (isPlayerNotFound(data)) {
 						alert(ALERTS.player_not_existing);
+						clearForeignPartyCookies();
 						widget.hide();
 						return;
 					}
@@ -291,9 +297,7 @@ function NameCompletionForm() {
 						return;
 					}
 
-					$.removeCookie(g_keyAccessToken, {path: '/'});
-					$.removeCookie(g_keyParty, {path: '/'});
-
+					clearForeignPartyCookies();
 					g_loggedInPlayer = new Player(data); 
 					$.cookie(g_keyToken, data[g_keyToken], {path: '/'});
 
@@ -311,8 +315,7 @@ function NameCompletionForm() {
 			"class": "btn-cancel negative-button",
 			text: TITLES.cancel
 		}).appendTo(buttons).click(this, function(evt) {
-			$.removeCookie(g_keyAccessToken, {path: '/'});
-			$.removeCookie(g_keyParty, {path: '/'});
+			clearForeignPartyCookies();
 			var widget = evt.data;
 			widget.hide();
 		});
@@ -576,8 +579,7 @@ function checkForeignPartyLoginStatus() {
 	var party = $.cookie(g_keyParty);	
 	
 	if (!accessToken || !party) {
-		$.removeCookie(g_keyAccessToken, {path: '/'});
-		$.removeCookie(g_keyParty, {path: '/'});
+		clearForeignPartyCookies();
 		checkLoginStatus(false);
 		return;
 	}
@@ -592,6 +594,7 @@ function checkForeignPartyLoginStatus() {
 		success: function(data, status, xhr){
 			if (isPlayerNotFound(data)) {
 				alert(ALERTS.player_not_existing);
+				clearForeignPartyCookies();
 				checkLoginStatus(false);
 				return;
 			}
@@ -611,8 +614,7 @@ function checkForeignPartyLoginStatus() {
 				return;
 			}
 
-			$.removeCookie(g_keyAccessToken, {path: '/'});
-			$.removeCookie(g_keyParty, {path: '/'});
+			clearForeignPartyCookies();
 			g_loggedInPlayer = new Player(data);
 			$.cookie(g_keyToken, data[g_keyToken], {path: '/'});
 
