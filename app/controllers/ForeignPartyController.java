@@ -113,8 +113,8 @@ public class ForeignPartyController extends Controller {
 
 			SQLBuilder createPlayerBuilder = new SQLBuilder();
 			PreparedStatement createPlayerStat = createPlayerBuilder.insert(cols, values)
-				.into(Player.TABLE)
-				.toInsert(connection);
+										.into(Player.TABLE)
+										.toInsert(connection);
 
 			playerId = SQLHelper.executeInsertAndCloseStatement(createPlayerStat);
 
@@ -124,8 +124,8 @@ public class ForeignPartyController extends Controller {
 
 			SQLBuilder createPermForeignPartyBuilder = new SQLBuilder();
 			PreparedStatement createPermForeignPartyStat = createPermForeignPartyBuilder.insert(cols2, vals2)
-				.into(PermForeignParty.TABLE)
-				.toInsert(connection);
+                                                                                                .into(PermForeignParty.TABLE)
+                                                                                                .toInsert(connection);
 
 			SQLHelper.executeAndCloseStatement(createPermForeignPartyStat);
 
@@ -146,15 +146,13 @@ public class ForeignPartyController extends Controller {
 		} finally {
 			SQLHelper.enableAutoCommitAndClose(connection);
 		}
-		/**
-		 * Transaction ends
-		 * */
 
 		if (!transactionSucceeded) throw new NullPointerException();
 		Player player = new Player(email, name);
 		/**
 		 * TODO: the following 2 lines are used for adaptation of Player.toObjectNode method, however this might be better covered by the initialization of `Player`
 		 * */
+                if (playerId == null) throw new NullPointerException();
 		player.setId(playerId);
 		player.setParty(party);
 		player.setGroupId(Player.USER);
@@ -178,17 +176,28 @@ public class ForeignPartyController extends Controller {
 		throw new ForeignPartyRegistrationRequiredException();
 	}
 
-	public static Result login() {
+	public static Result login(String grantType) {
 		try {
 			Map<String, String[]> formData = request().body().asFormUrlEncoded();
-			if (!formData.containsKey(TempForeignParty.ACCESS_TOKEN) || !formData.containsKey(TempForeignParty.PARTY))
+			if (!formData.containsKey(TempForeignParty.ACCESS_TOKEN) || !formData.containsKey(TempForeignParty.PARTY))	return ok(StandardFailureResult.get());
+
+			final Integer party = Converter.toInteger(formData.get(TempForeignParty.PARTY)[0]);
+
+			String accessToken = null;
+			if (grantType.equals("authcode")) {
+				final String authorizationCode = (formData.containsKey(TempForeignParty.AUTHORIZATION_CODE) ? formData.get(TempForeignParty.AUTHORIZATION_CODE)[0] : null);
+				accessToken = (formData.containsKey(TempForeignParty.ACCESS_TOKEN) ? formData.get(TempForeignParty.ACCESS_TOKEN)[0] : null);
+				if (authorizationCode != null) {
+					// TODO: get access token for specified party if authorization code is not empty 
+
+				} 
 				return ok(StandardFailureResult.get());
-
-			String accessToken = formData.get(TempForeignParty.ACCESS_TOKEN)[0];
-			Integer party = Converter.toInteger(formData.get(TempForeignParty.PARTY)[0]);
-
-			String name = (formData.containsKey(Player.NAME) ? formData.get(Player.NAME)[0] : null);
-			String email = (formData.containsKey(Player.EMAIL) ? formData.get(Player.EMAIL)[0] : null);
+			}
+			if (grantType.equals("implicit")) {
+				accessToken = formData.get(TempForeignParty.ACCESS_TOKEN)[0];
+			}
+			final String name = (formData.containsKey(Player.NAME) ? formData.get(Player.NAME)[0] : null);
+			final String email = (formData.containsKey(Player.EMAIL) ? formData.get(Player.EMAIL)[0] : null);
 			Player player = null;
 
 			if (name != null) player = loginWithNameCompletion(accessToken, party, name, email);

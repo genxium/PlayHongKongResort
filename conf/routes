@@ -10,7 +10,7 @@ GET	/wstest controllers.Application.wstest()
 # Account System
 POST /player/login controllers.PlayerController.login()
 POST /player/register controllers.PlayerController.register()
-POST /player/foreign/login controllers.ForeignPartyController.login()
+POST /player/foreign/$grant_type<(implicit|authcode)>/login controllers.ForeignPartyController.login(grant_type: String)
 
 GET /player/status controllers.PlayerController.status(token: String ?=null)
 GET /player/name/duplicate controllers.PlayerController.duplicate(name: String ?=null)
@@ -38,7 +38,6 @@ PUT /activity/mark controllers.ActivityController.mark()
 
 # Profile
 GET /player/detail controllers.PlayerController.detail(viewee_id: Long ?=0, token : String ?=null)
-
 POST /player/save controllers.PlayerController.save()
 
 # Admin

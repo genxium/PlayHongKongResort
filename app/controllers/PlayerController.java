@@ -294,10 +294,14 @@ public class PlayerController extends Controller {
                          * */
 
                         // TODO: combine into transaction block
-                        if (transactionSucceeded) {
-                                CDNHelper.deleteRemoteImages(CDNHelper.QINIU, toDeleteImageList);
-                                player.setAvatar(avatar.getId());
-                        }
+                        try {
+				if (!transactionSucceeded) throw new NullPointerException();
+				player.setAvatar(avatar.getId());
+				if (toDeleteImageList.size() == 0) throw new NullPointerException();
+				CDNHelper.deleteRemoteImages(CDNHelper.QINIU, toDeleteImageList);
+			} catch (Exception e) {
+				Loggy.e(TAG, "save", e);
+			}
                         DBCommander.updatePlayer(player);
                         return ok(player.toObjectNode(playerId));
                 } catch (Exception e) {

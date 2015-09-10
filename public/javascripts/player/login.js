@@ -267,7 +267,7 @@ function NameCompletionForm() {
 
 		    $.ajax({
 				type: "POST",
-				url: "/player/foreign/login",
+				url: "/player/foreign/implicit/login",
 				data: params,
 				success: function(data, status, xhr){
 					enableField(btnSubmit);

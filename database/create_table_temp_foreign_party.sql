@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `temp_foreign_party`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `temp_foreign_party` (
-  `access_token` varchar(32) NOT NULL,
+  `access_token` varchar(180) NOT NULL,
   `party` int(11) NOT NULL,
   `party_id` varchar(32) NOT NULL,
   `timestamp` bigint(20) NOT NULL,
@@ -40,4 +40,4 @@ CREATE TABLE `temp_foreign_party` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-09-09 19:11:44
+-- Dump completed on 2015-09-10 12:00:49

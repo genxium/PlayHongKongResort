@@ -135,10 +135,12 @@ function ProfileEditor() {
 		if (!g_loggedInPlayer || player.id != g_loggedInPlayer.id) return;
 
 		// avatar
-		this.avatarNode = new ProfileEditorImageNode(g_cdnQiniu, g_cdnDomain); 
-		this.avatarNode.appendTo(avatarBox);	
-		this.avatarNode.refresh(this);
-		this.avatarHint = $("<p>").appendTo(this.avatarBox);
+		if (this.mode == this.EDITING) {
+			this.avatarNode = new ProfileEditorImageNode(g_cdnQiniu, g_cdnDomain); 
+			this.avatarNode.appendTo(avatarBox);	
+			this.avatarNode.refresh(this);
+			this.avatarHint = $("<p>").appendTo(this.avatarBox);
+		}
 	
 		// buttons
 		var buttonRow = $("<p>").appendTo(this.content);
@@ -160,25 +162,6 @@ function ProfileEditor() {
 			var editor = evt.data;
 			editor.mode = editor.NORMAL;
 			editor.refresh(player);
-
-			var token = $.cookie(g_keyToken);
-			if (!token)	return; 
-
-			var params = {};
-			params[g_keyBundle] = JSON.stringify([editor.avatarNode.remoteName]);
-			params[g_keyToken] = token;
-
-			$.ajax({
-				type: 'POST',
-				url: '/image/cdn/qiniu/delete',
-				data: params,
-				success: function(data, status, xhr) {
-					if (!isStandardSuccess(data))	return;
-				},
-				error: function(xhr, status, err) {
-
-				}
-			});	
 		});
 		if (this.mode == this.EDITING) this.btnCancel.show();
 
@@ -200,7 +183,7 @@ function ProfileEditor() {
 
 			var aButton = getTarget(evt);
 			disableField(aButton);	
-			editor.hint.text(MESSAGES.saving);
+			editor.avatarHint.text(MESSAGES.saving);
 			
 			$.ajax({
 				method: "POST",
@@ -210,11 +193,11 @@ function ProfileEditor() {
 					enableField(aButton);	
 					// update logged in player profile
 					player = g_viewee = g_loggedInPlayer = new Player(data);
-					editor.hint.text(MESSAGES.saved);
+					editor.avatarHint.text(MESSAGES.saved);
 				},
 				error: function(xhr, status, err){
 					enableField(aButton);	
-					editor.hint.text(MESSAGES.save_failed);
+					editor.avatarHint.text(MESSAGES.save_failed);
 				}
 			});
 		});	
