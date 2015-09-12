@@ -515,6 +515,7 @@ function removeWarningStyle(field) {
 }
 
 function queryCDNDomainSync() {
+	var ret = null;
         var token = $.cookie(g_keyToken);
         var url = apiCDNDomain(g_cdnQiniu);
         var params = {};
@@ -528,10 +529,11 @@ function queryCDNDomainSync() {
 				if (isTokenExpired(data))       return null;
 				if (isPlayerNotFound(data))     return null;
 				if (!data.domain) return null;
-				return data.domain;
+				ret = data.domain;
 			},
 			error: function(xhr, status, err){
 			        return null;
 			}
 	});
+	return ret;
 }

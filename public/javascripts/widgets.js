@@ -92,6 +92,7 @@ ImageNode.inherits(BaseWidget);
  * */
 
 function ActivityEditorImageNode(cdn, domain) {
+	this.setCDNCredentials(cdn, domain, getToken(), g_loggedInPlayer);	
 	this.btnDel = null;
 	this.requestDel = function(onSuccess, onError) {
 		// async process
@@ -126,7 +127,6 @@ function ActivityEditorImageNode(cdn, domain) {
 	};
 
 	this.composeContent = function(data) {
-		this.setCDNCredentials(cdn, domain, $.cookie(g_keyToken), g_loggedInPlayer);	
 		this.editor = data;
 		this.editor.newImageNodes[this.remoteName] = this;
 		this.wrap = $('<div>', {
@@ -247,8 +247,8 @@ ActivityEditorImageNode.inherits(ImageNode);
  * */
 
 function ProfileEditorImageNode(cdn, domain) {
+	this.setCDNCredentials(cdn, domain, getToken(), g_loggedInPlayer);	
 	this.composeContent = function(data) {
-		this.setCDNCredentials(cdn, domain, $.cookie(g_keyToken), g_loggedInPlayer);	
 		this.editor = data;
 		this.wrap = $('<div>', {
 			"class": "preview-container"

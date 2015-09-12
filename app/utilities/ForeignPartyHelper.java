@@ -44,7 +44,6 @@ public class ForeignPartyHelper {
                         params.put("openid", openId);
                         params.put("format", "json");
                         final String url = "https://graph.qq.com/user/get_user_info?" + DataUtils.toUrlParams(params);
-                        Loggy.e(TAG, "queryQQNickname", "url is " + url);
                         final URLConnection conn = new URL(url).openConnection();
                         final BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                         String line = "";
@@ -53,7 +52,6 @@ public class ForeignPartyHelper {
                                 line += tmp;
                         }
                         in.close();
-                        Loggy.e(TAG, "queryQQNickname", line);
                         final ObjectMapper mapper = new ObjectMapper();
                         final Map<String, String> parsedData = mapper.readValue(line, mapper.getTypeFactory().constructMapType(Map.class, String.class, String.class));
                         return parsedData.get("nickname");
