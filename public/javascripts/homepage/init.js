@@ -73,8 +73,7 @@ function routeByHash() {
 		var party = stateWithAction[g_keyParty];
 		var accessToken = tag[g_keyAccessToken]; 	
 
-		$.cookie(g_keyParty, party, {path: '/'});
-		$.cookie(g_keyAccessToken, accessToken, {path: '/'});
+                saveAccessTokenAndParty(accessToken, party);
 
 		var state = stateWithAction[g_keyState];
 		tag = state[g_keyTag];			

@@ -7,14 +7,11 @@ GET	 /	controllers.Application.index(dev: Integer ?=0, theme: String ?="main")
 GET	 /admin	controllers.Application.admin()
 GET	/wstest controllers.Application.wstest()
 
-# Account System
-POST /player/login controllers.PlayerController.login()
-POST /player/register controllers.PlayerController.register()
+# Player
+POST /player/$act<(login|register|status|logout|detail|save)> controllers.PlayerController.misc(act: String)
 POST /player/foreign/$grant_type<(implicit|authcode)>/login controllers.ForeignPartyController.login(grant_type: String)
 
-GET /player/status controllers.PlayerController.status(token: String ?=null)
 GET /player/name/duplicate controllers.PlayerController.duplicate(name: String ?=null)
-POST /player/logout controllers.PlayerController.logout()
 
 GET /player/password/index controllers.PasswordController.index()
 GET /player/password/request controllers.PasswordController.request(email: String ?=null)
@@ -27,7 +24,6 @@ GET /player/email/duplicate controllers.EmailController.duplicate(email: String 
 POST /player/email/resend controllers.EmailController.resend()
 
 # Home Page
-
 POST /activity/delete controllers.ActivityController.delete()
 POST /activity/join controllers.ActivityController.join()
 POST /activity/save controllers.ActivityController.save()
@@ -35,10 +31,6 @@ POST /activity/submit controllers.ActivityController.submit()
 GET /activity/list controllers.ActivityController.list(page_st: Integer ?=null, page_ed: Integer ?=null, num_items: Integer ?=null, order_key: String ?=null, orientation: Integer ?=null, token: String ?= null, viewee_id: Long ?=0, relation: Integer ?=null, status: Integer ?=null)
 GET /activity/detail controllers.ActivityController.detail(activity_id: Long ?=0, token: String ?=null)
 PUT /activity/mark controllers.ActivityController.mark()
-
-# Profile
-GET /player/detail controllers.PlayerController.detail(viewee_id: Long ?=0, token : String ?=null)
-POST /player/save controllers.PlayerController.save()
 
 # Admin
 POST /admin/accept controllers.AdminController.accept()
@@ -70,8 +62,8 @@ POST /notification/delete controllers.NotificationController.delete()
 GET /captcha controllers.Application.captcha(sid: String ?=null)
 
 # Image CDN
-GET /image/cdn/qiniu/uptoken controllers.ImageController.qiniuUptoken(token: String ?=null, remote_name: String ?=null)
-POST /image/cdn/qiniu/delete controllers.ImageController.qiniuDelete()
+GET /image/cdn/qiniu/uptoken controllers.ImageController.qiniuUptoken(token: String ?=null, domain: String ?=null, remote_name: String ?=null)
+POST /image/cdn/qiniu/$act<(domain|delete)> controllers.ImageController.qiniuMisc(act: String)
 
 # Play websocket test
 GET /ws controllers.Websocket.connect(token: String ?=null)

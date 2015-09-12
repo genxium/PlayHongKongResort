@@ -4,10 +4,13 @@ import com.qiniu.common.QiniuException;
 import com.qiniu.storage.BucketManager;
 import com.qiniu.util.Auth;
 import models.Image;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import play.Play;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class CDNHelper {
 
@@ -21,12 +24,31 @@ public class CDNHelper {
         public static final String APP_ID = "AppId";
         public static final String APP_KEY = "AppKey";
         public static final String BUCKET = "Bucket";
+        public static final String NAME = "Name";
         public static final String DOMAIN = "Domain";
 
-        private static Map<String, String> qiniuMap = null;
+        private static Random generator = null;
+        private static Map<String, Object> qiniuMap = null;
         private static Auth qiniuAuth = null;
 
-        public static Map<String, String> getAttr(final int provider) {
+        public static class Bucket {
+                public String name;
+                public String domain;
+                public Bucket(final Node node) {
+                        NodeList children = node.getChildNodes();
+                        this.name = children.item(0).getTextContent();
+                        this.domain = children.item(1).getTextContent();
+                }
+        }
+
+        public static Random getGenerator() {
+                if (generator == null) {
+                        generator = new Random();
+                }
+                return generator;
+        }
+
+        public static Map<String, Object> getAttr(final int provider) {
                 if (provider == QINIU) {
                         if (qiniuMap == null) {
                                 String fullPath = Play.application().path() + "/conf/" + "qiniu_config.xml";
@@ -38,13 +60,16 @@ public class CDNHelper {
         }
 
         public static Object getAuth(final int provider) {
-                final Map<String, String> attrs = getAttr(provider);
+                final Map<String, Object> attrs = getAttr(provider);
                 if (attrs == null) return null;
                 if (provider == QINIU) {
                         if (qiniuAuth == null) {
                                 // TODO: maintain a singleton
-                                return Auth.create(attrs.get(CDNHelper.APP_ID), attrs.get(CDNHelper.APP_KEY));
+                                final String appId = (String) attrs.get(CDNHelper.APP_ID);
+                                final String appKey = (String) attrs.get(CDNHelper.APP_KEY);
+                                qiniuAuth = Auth.create(appId, appKey);
                         }
+                        return qiniuAuth;
                 }
                 return null;
         }
@@ -63,5 +88,19 @@ public class CDNHelper {
                         return true;
                 }
                 return false;
+        }
+
+        public static CDNHelper.Bucket pollSingleBucket(final int provider) {
+                try {
+                        if (provider == QINIU) {
+                                        final Map<String, Object> attrs = getAttr(provider);
+                                        final List<Bucket> bucketList = (List<Bucket>) attrs.get(CDNHelper.BUCKET);
+                                        final int randomIndex = getGenerator().nextInt(bucketList.size());
+                                        return bucketList.get(randomIndex);
+                        }
+                } catch (Exception e) {
+                        Loggy.e(TAG, "pollSingleBucket", e);
+                }
+                return null;
         }
 }

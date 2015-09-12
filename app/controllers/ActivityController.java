@@ -243,6 +243,7 @@ public class ActivityController extends Controller {
                         if (formData.containsKey(NEW_IMAGE)) {
                                 final ObjectMapper mapper = new ObjectMapper();
                                 newRemoteNameList.addAll((List<String>)mapper.readValue(formData.get(NEW_IMAGE)[0], mapper.getTypeFactory().constructCollectionType(List.class, String.class)));
+                                // TODO: combine into transaction
                                 newImageList = ExtraCommander.queryImages(playerId, Image.TYPE_OWNER, newRemoteNameList);
                         }
 
@@ -257,23 +258,20 @@ public class ActivityController extends Controller {
                                 SQLHelper.disableAutoCommit(connection);
 
                                 // update activity
-                                String[] cols1 = {Activity.TITLE, Activity.ADDRESS, Activity.CONTENT, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
-                                Object[] values1 = {activity.getTitle(), activity.getAddress(), activity.getContent(), activity.getBeginTime(), activity.getDeadline(), activity.getCapacity()};
-                                SQLBuilder builderUpdate = new SQLBuilder();
-                                PreparedStatement statUpdate = builderUpdate.update(Activity.TABLE)
-                                        .set(cols1, values1)
-                                        .where(Activity.ID, "=", activity.getId())
-                                        .toUpdate(connection);
+                                final String[] cols1 = {Activity.TITLE, Activity.ADDRESS, Activity.CONTENT, Activity.BEGIN_TIME, Activity.DEADLINE, Activity.CAPACITY};
+                                final Object[] values1 = {activity.getTitle(), activity.getAddress(), activity.getContent(), activity.getBeginTime(), activity.getDeadline(), activity.getCapacity()};
+                                final SQLBuilder builderUpdate = new SQLBuilder();
+                                final PreparedStatement statUpdate = builderUpdate.update(Activity.TABLE)
+                                                                                        .set(cols1, values1)
+                                                                                        .where(Activity.ID, "=", activity.getId())
+                                                                                        .toUpdate(connection);
                                 SQLHelper.executeAndCloseStatement(statUpdate);
 
                                 if (newImageList.size() > 0) {
                                         String[] cols2 = {Image.URL, Image.META_ID, Image.META_TYPE};
-                                        final Map<String, String> attr = CDNHelper.getAttr(CDNHelper.QINIU);
-                                        if (attr == null) throw new NullPointerException();
                                         final String urlProtocolPrefix = "http://";
-                                        final String domain = attr.get(CDNHelper.DOMAIN);
                                         for (Image newImage : newImageList) {
-                                                final String url = urlProtocolPrefix + domain + "/" + newImage.getRemoteName();
+                                                final String url = urlProtocolPrefix + newImage.getBucket() + "/" + newImage.getRemoteName();
                                                 final SQLBuilder builderUpdate2 = new SQLBuilder();
                                                 Object[] values2 = {url, activity.getId(), Image.TYPE_ACTIVITY};
                                                 final PreparedStatement statUpdate2 = builderUpdate2.update(Image.TABLE)

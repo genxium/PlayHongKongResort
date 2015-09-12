@@ -243,11 +243,6 @@ public class Activity extends AbstractSimpleMessage {
         }
 
         protected List<BasicPlayer> selectedParticipants = null;
-
-        public void setSelectedParticipants(final List<BasicPlayer> aSelectedParticipants) {
-                selectedParticipants = aSelectedParticipants;
-        }
-
         public void addSelectedParticipant(final BasicPlayer aPlayer) {
                 if (selectedParticipants == null) selectedParticipants = new ArrayList<>();
                 selectedParticipants.add(aPlayer);
@@ -277,7 +272,7 @@ public class Activity extends AbstractSimpleMessage {
         }
 
         public ObjectNode toObjectNode(final Long viewerId) {
-                ObjectNode ret = super.toObjectNode();
+                final ObjectNode ret = super.toObjectNode();
                 try {
                         ret.put(TITLE, title);
                         ret.put(ADDRESS, address);

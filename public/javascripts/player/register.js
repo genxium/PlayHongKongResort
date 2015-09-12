@@ -117,13 +117,13 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 			url: "/player/name/duplicate",
 			data: params,
 			success: function(data, status, xhr){
-				if (isStandardSuccess(data)){
-					removeWarningStyle(nameCheck);
-					nameCheck.html("<p>" + MESSAGES.playername_valid + "</p>");        
-			    }else{
-					addWarningStyle(nameCheck);
-					nameCheck.html("<p>" + MESSAGES.playername_invalid + "</p>");
-				}        
+                                if (isStandardSuccess(data)){
+                                        removeWarningStyle(nameCheck);
+                                        nameCheck.html("<p>" + MESSAGES.playername_valid + "</p>");
+                                } else{
+                                        addWarningStyle(nameCheck);
+                                        nameCheck.html("<p>" + MESSAGES.playername_invalid + "</p>");
+                                }
 			},
 			error: function(xhr, status, err){
 			}
@@ -150,13 +150,13 @@ function RegisterWidget(name, nameCheck, email, emailCheck, psw, pswCheck, pswCo
 			url: "/player/email/duplicate",
 			data: params,
 			success: function(data, status, xhr){
-				if (isStandardSuccess(data)){
-					removeWarningStyle(emailCheck);
-					emailCheck.html("<p>" + MESSAGES.email_valid + "</p>");        
-				}else{
-					addWarningStyle(emailCheck);
-					emailCheck.html("<p>" + MESSAGES.email_invalid + "</p>");
-				}        
+                                if (isStandardSuccess(data)){
+                                        removeWarningStyle(emailCheck);
+                                        emailCheck.html("<p>" + MESSAGES.email_valid + "</p>");
+                                }else{
+                                        addWarningStyle(emailCheck);
+                                        emailCheck.html("<p>" + MESSAGES.email_invalid + "</p>");
+                                }
 			},
 			error: function(xhr, status, err){
 			}

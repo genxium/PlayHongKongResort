@@ -55,8 +55,8 @@ public class Player extends BasicPlayer {
 		return password;
 	}
 
-	public void setPassword(String password) {
-		password = password;
+	public void setPassword(final String data) {
+		password = data;
 	}
 
 	protected String salt = null;
@@ -90,8 +90,8 @@ public class Player extends BasicPlayer {
 		return verificationCode;
 	}
 
-	public void setVerificationCode(String code) {
-		verificationCode = code;
+	public void setVerificationCode(final String data) {
+		verificationCode = data;
 	}
 
 	protected Integer unreadCount = 0;

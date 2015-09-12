@@ -1,6 +1,5 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import components.StandardFailureResult;
 import dao.SQLBuilder;
@@ -70,41 +69,14 @@ public class ForeignPartyController extends Controller {
 	        }
 	}
 
-	protected static String queryQQNickname(final String accessToken, final String openId) {
-	        try {
-                        final Map<String, String> qqAttr = ForeignPartyHelper.getAttr(ForeignPartyHelper.PARTY_QQ);
-                        if (qqAttr == null) return null;
-                        final Map<String, Object> params = new HashMap<>();
-                        params.put("oauth_consumer_key", qqAttr.get(ForeignPartyHelper.APP_ID));
-                        params.put(TempForeignParty.ACCESS_TOKEN, accessToken);
-                        params.put("openid", openId);
-                        params.put("format", "json");
-                        final String url = "https://graph.qq.com/user/get_user_info?" + DataUtils.toUrlParams(params);
-                        final URLConnection conn = new URL(url).openConnection();
-                        final BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                        String line = "";
-                        String tmp;
-                        while ((tmp = in.readLine()) != null) {
-                                line += tmp;
-                        }
-                        in.close();
-                        final ObjectMapper mapper = new ObjectMapper();
-                        final Map<String, String> parsedData = mapper.readValue(line, mapper.getTypeFactory().constructMapType(Map.class, String.class, String.class));
-                        return parsedData.get("nickname");
-                } catch (Exception e) {
-                        Loggy.e(TAG, "queryQQNickname", e);
-                }
-                return null;
-	}
-
 	protected static ForeignPartySpecs queryForeignPartySpecs(final String accessToken, final Integer party, String partyId) throws IOException {
 		/**
 		 * TODO: implementation for major foreign parties
 		 * */
 		switch (party) {
 			case ForeignPartyHelper.PARTY_QQ:
-                                final Map<String, Object> params = new HashMap<>();
-                                params.put(TempForeignParty.ACCESS_TOKEN, accessToken);
+                        final Map<String, Object> params = new HashMap<>();
+                        params.put(TempForeignParty.ACCESS_TOKEN, accessToken);
 				String url = "https://graph.qq.com/oauth2.0/me?" + DataUtils.toUrlParams(params);
                                 final URLConnection conn = new URL(url).openConnection();
 				final BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -260,11 +232,10 @@ public class ForeignPartyController extends Controller {
 
                         // TODO: clear this dirty fix
                         if (party == ForeignPartyHelper.PARTY_QQ) {
-                                final String nickname = queryQQNickname(accessToken, wrappedPlayer.partyId);
-                                // if (nickname == null) throw new NullPointerException();
+                                final String nickname = ForeignPartyHelper.queryQQNickname(accessToken, wrappedPlayer.partyId);
+                                if (nickname == null) throw new NullPointerException();
                                 wrappedPlayer.partyNickname = nickname;
                         }
-
 
 			// auto-login
 			final String token = Converter.generateToken(wrappedPlayer.player.getEmail(), wrappedPlayer.player.getName());

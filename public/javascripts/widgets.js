@@ -80,7 +80,7 @@ function ImageNode() {
 		this.bucketDomain = bucketDomain;
 		var tick = currentMillis();
 		this.remoteName =  '{0}_{1}'.format(player.id, tick);
-		var uptokenParams = [g_keyToken + '=' + token, g_keyRemoteName + '=' + this.remoteName]; 
+		var uptokenParams = [g_keyToken + '=' + token, g_keyDomain + '=' + this.bucketDomain, g_keyRemoteName + '=' + this.remoteName];
 		this.uptokenUrl = '/image/cdn/qiniu/uptoken?' + uptokenParams.join('&'); 
 	};
 }

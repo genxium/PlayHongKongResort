@@ -36,15 +36,14 @@ public class DBCommander {
         }
 
         public static Player queryPlayer(final Long playerId) {
-
                 try {
-                        String[] names = Player.QUERY_FILEDS;
-                        SQLBuilder builder = new SQLBuilder();
-                        List<SimpleMap> results = builder.select(names).from(Player.TABLE).where(Player.ID, "=", playerId).execSelect();
+                        final String[] names = Player.QUERY_FILEDS;
+                        final SQLBuilder builder = new SQLBuilder();
+                        final List<SimpleMap> results = builder.select(names).from(Player.TABLE).where(Player.ID, "=", playerId).execSelect();
                         if (results == null || results.size() <= 0) return null;
-                        Iterator<SimpleMap> it = results.iterator();
+                        final Iterator<SimpleMap> it = results.iterator();
                         if (!it.hasNext()) return null;
-                        SimpleMap playerData = it.next();
+                        final SimpleMap playerData = it.next();
                         return new Player(playerData);
                 } catch (Exception e) {
                         Loggy.e(TAG, "queryPlayerList", e);
@@ -81,7 +80,7 @@ public class DBCommander {
                         SimpleMap playerData = it.next();
                         player = new Player(playerData);
                 } catch (Exception e) {
-                        System.out.println(DBCommander.class.getName() + ".queryPlayerByEmail, " + e.getMessage());
+                        Loggy.e(TAG, "queryPlayerByEmail", e);
 
                 }
                 return player;

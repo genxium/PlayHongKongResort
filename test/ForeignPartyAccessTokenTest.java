@@ -1,21 +1,4 @@
-import controllers.ForeignPartyController;
-import controllers.DBCommander;
-import models.TempForeignParty;
-import models.Player;
-import org.apache.commons.collections.map.HashedMap;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
-
-import play.mvc.Result;
-import play.test.FakeRequest;
 import play.test.WithApplication;
-
-import static play.mvc.Http.Status.OK;
-import static play.test.Helpers.*;
-
-import utilities.Loggy;
 
 
 /**
@@ -23,8 +6,9 @@ import utilities.Loggy;
  * */
 public class ForeignPartyAccessTokenTest extends WithApplication {
 	
-		public static final String TAG = ForeignPartyController.class.getName();
+		public static final String TAG = ForeignPartyAccessTokenTest.class.getName();
 
+                /*
 		@Before
 		public void beforeAnything() {
 			start();
@@ -34,7 +18,7 @@ public class ForeignPartyAccessTokenTest extends WithApplication {
 		public void testValidNewAccessToken() {
 			HashedMap data = new HashedMap();
 			final String accessToken = "qyi32789urjwkqefn";
-			final Integer party = ForeignPartyController.PARTY_QQ;
+			final Integer party = ForeignPartyHelper.PARTY_QQ;
 			data.put(TempForeignParty.ACCESS_TOKEN, accessToken);
 			data.put(TempForeignParty.PARTY, String.valueOf(party));
 			final FakeRequest fakeRequest = new FakeRequest(POST, "/player/foreign/login").withFormUrlEncodedBody(data);
@@ -44,14 +28,13 @@ public class ForeignPartyAccessTokenTest extends WithApplication {
 			TempForeignParty record = DBCommander.queryTempForeignParty(accessToken, party);
 			assert(record != null);	
 			boolean ret = DBCommander.deleteTempForeignParty(accessToken, party);
-			assert(ret == true);
+			assert(ret);
 		}
 		
-		/*
 		@Test
 		public void testValidNewAccessTokenNameCompletion() {
 			final String accessToken = "qyi32789urjwkqefn";
-			final Integer party = ForeignPartyController.PARTY_QQ;
+			final Integer party = ForeignPartyHelper.PARTY_QQ;
 
 			HashedMap data = new HashedMap();
 			data.put(TempForeignParty.ACCESS_TOKEN, accessToken);
@@ -70,12 +53,11 @@ public class ForeignPartyAccessTokenTest extends WithApplication {
 			// delete db records in `perm_foreign_party`, `player`, `login`
 		}
 
-		/*
 		@Test
 		public void testRegisteredAccessToken() {
 			HashedMap data = new HashedMap();
 			data.put(TempForeignParty.ACCESS_TOKEN, "a7s89dfhaaskdfja89");
-			data.put(TempForeignParty.PARTY, String.valueOf(ForeignPartyController.PARTY_QQ));
+			data.put(TempForeignParty.PARTY, String.valueOf(ForeignPartyHelper.PARTY_QQ));
 			final FakeRequest fakeRequest = new FakeRequest(POST, "/player/foreign/login").withFormUrlEncodedBody(data);
 			Result result = route(fakeRequest);
 			assertThat(status(result)).isEqualTo(OK);
@@ -83,5 +65,5 @@ public class ForeignPartyAccessTokenTest extends WithApplication {
 			// check db records in `login`
 			// delete db records in `login`
 		}
-		*/
+                */
 }

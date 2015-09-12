@@ -30,12 +30,9 @@ public class ExtraCommander extends DBCommander {
                         List<Image> images = queryImages(activityId);
                         activityDetail.setImageList(images);
 
-                        List<BasicPlayer> appliedParticipants = queryAppliedParticipants(activityId);
-                        List<BasicPlayer> selectedParticipants = querySelectedParticipants(activityId);
-                        List<BasicPlayer> presentParticipants = new LinkedList<>(); // not used
-                        activityDetail.setAppliedParticipants(appliedParticipants);
-                        activityDetail.setPresentParticipants(presentParticipants);
-                        activityDetail.setSelectedParticipants(selectedParticipants);
+                        List<ActivityDetail> tmp = new LinkedList<>();
+                        tmp.add(activityDetail);
+                        appendParticipantInfoForActivityDetail(tmp);
 
                         return activityDetail;
                 } catch (Exception e) {
@@ -216,7 +213,8 @@ public class ExtraCommander extends DBCommander {
                         List<SimpleMap> records = builder.select(Image.QUERY_FIELDS)
                                                         .from(Image.TABLE)
                                                         .where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
-                                                        .where(Image.META_ID, "IN", activityIdList).execSelect();
+                                                        .where(Image.META_ID, "IN", activityIdList)
+                                                        .execSelect();
 
                         for (SimpleMap record : records) {
                                 final Image image = new Image(record);

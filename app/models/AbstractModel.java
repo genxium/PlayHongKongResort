@@ -40,7 +40,7 @@ public abstract class AbstractModel {
         }
 
         public ObjectNode toObjectNode() {
-                ObjectNode ret = Json.newObject();
+                final ObjectNode ret = Json.newObject();
                 try {
                         ret.put(ID, id);
                 } catch (Exception e) {

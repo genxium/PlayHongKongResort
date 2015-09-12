@@ -15,22 +15,12 @@ public class ActivityDetail extends Activity {
         public static String PRESENT_PARTICIPANTS = "present_participants";
 
         protected List<BasicPlayer> appliedParticipants = null;
-
-        public void setAppliedParticipants(final List<BasicPlayer> aAppliedParticipants) {
-                appliedParticipants = aAppliedParticipants;
-        }
-
         public void addAppliedParticipant(final BasicPlayer player) {
                 if (appliedParticipants == null) appliedParticipants = new ArrayList<>();
                 appliedParticipants.add(player);
         }
 
         protected List<BasicPlayer> presentParticipants = null;
-
-        public void setPresentParticipants(final List<BasicPlayer> aPresentParticipants) {
-                presentParticipants = aPresentParticipants;
-        }
-
         public void addPresentParticipant(final BasicPlayer player) {
                 if (presentParticipants == null) presentParticipants = new ArrayList<>();
                 presentParticipants.add(player);
@@ -41,7 +31,7 @@ public class ActivityDetail extends Activity {
         }
 
         public ObjectNode toObjectNode(final Long viewerId) {
-                ObjectNode ret = super.toObjectNode(viewerId);
+                final ObjectNode ret = super.toObjectNode(viewerId);
                 try {
 
                         ArrayNode appliedParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
@@ -52,8 +42,7 @@ public class ActivityDetail extends Activity {
 
                         ArrayNode presentParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
                         for (BasicPlayer participant : presentParticipants) {
-                                if (viewerId != null && viewerId.equals(participant.getId()))
-                                        continue; // viewer cannot assess himself/herself
+                                if (viewerId != null && viewerId.equals(participant.getId()))   continue;
                                 presentParticipantsNode.add(participant.toObjectNode(viewerId));
                         }
                         ret.put(PRESENT_PARTICIPANTS, presentParticipantsNode);

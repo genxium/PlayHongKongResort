@@ -28,7 +28,7 @@ public abstract class AbstractSimpleMessage extends AbstractModel {
         }
 
         public ObjectNode toObjectNode() {
-                ObjectNode ret = super.toObjectNode();
+                final ObjectNode ret = super.toObjectNode();
                 try {
                         ret.put(CONTENT, content);
                 } catch (Exception e) {

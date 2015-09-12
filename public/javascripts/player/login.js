@@ -4,7 +4,32 @@ var g_preLoginForm = null;
 var g_postLoginMenu = null;
 var g_nameCompletionForm = null;
 
-function clearForeignPartyCookies() {
+function getToken() {
+        return $.cookie(g_keyToken);
+}
+
+function saveToken(token) {
+	$.cookie(g_keyToken, token, {path: '/'});
+}
+
+function clearToken() {
+        $.removeCookie(g_keyToken, {path: '/'});
+}
+
+function getAccessToken() {
+        return $.cookie(g_keyAccessToken);
+}
+
+function getParty() {
+        return $.cookie(g_keyParty);
+}
+
+function saveAccessTokenAndParty(accessToken, party) {
+        $.cookie(g_keyParty, party, {path: '/'});
+        $.cookie(g_keyAccessToken, accessToken, {path: '/'});
+}
+
+function clearAccessTokenAndParty() {
 	$.removeCookie(g_keyAccessToken, {path: '/'});
 	$.removeCookie(g_keyParty, {path: '/'});
 }
@@ -74,8 +99,8 @@ function PreLoginForm(handle, psw, btn, forgot, registry, onLoginSuccess, onLogi
 				g_loggedInPlayer = new Player(data);
 				if (!g_loggedInPlayer) return;
 				// store token in cookie iff query succeeds
-				$.cookie(g_keyToken, data[g_keyToken], {path: '/'});
-				wsConnect();	
+				saveToken(data.token);
+				wsConnect();
 				if(!g_sectionLogin) return;
 				g_postLoginMenu = generatePostLoginMenu(g_sectionLogin, form.onLoginSuccess, form.onLoginError, form.onLogoutSuccess, form.onLogoutError);
 				if(!form.onLoginSuccess) return;
@@ -144,100 +169,100 @@ function NameCompletionForm() {
 	this.onError = null;
 
 	this.composeContent = function(data) {
-			var title = $('<div>', {
-				'class':	"title-alpha first-foreign-party-registration-title",
-				text: TITLES.first_foreign_party_registration
-			}).appendTo(this.content);
+                var title = $('<div>', {
+                        'class':	"title-alpha first-foreign-party-registration-title",
+                        text: TITLES.first_foreign_party_registration
+                }).appendTo(this.content);
 
-			var registerBox = $('<div>', {
-				id: "register-box"
-			}).appendTo(this.content);
-			var rowName = $('<div>', {
-				"class": "register-name"
-			}).appendTo(registerBox);
-			this.name = $('<input>', {
-				type: "text",
-				placeHolder: HINTS.playername,
-			}).appendTo(rowName);
-			this.nameCheck = $('<div>', {
-				"class": "message"
-			}).appendTo(rowName);
+                var registerBox = $('<div>', {
+                        id: "register-box"
+                }).appendTo(this.content);
+                var rowName = $('<div>', {
+                        "class": "register-name"
+                }).appendTo(registerBox);
+                this.name = $('<input>', {
+                        type: "text",
+                        placeHolder: HINTS.playername,
+                }).appendTo(rowName);
+                this.nameCheck = $('<div>', {
+                        "class": "message"
+                }).appendTo(rowName);
 
-			var rowEmail = $('<div>', {
-				"class": "register-email"
-			}).appendTo(registerBox);
-			this.email = $('<input>', {
-				type: "text",
-				placeHolder: HINTS.email,
-			}).appendTo(rowEmail);
-			this.emailCheck = $('<div>', {
-				"class": "message"
-			}).appendTo(rowEmail);
+                var rowEmail = $('<div>', {
+                        "class": "register-email"
+                }).appendTo(registerBox);
+                this.email = $('<input>', {
+                        type: "text",
+                        placeHolder: HINTS.email,
+                }).appendTo(rowEmail);
+                this.emailCheck = $('<div>', {
+                        "class": "message"
+                }).appendTo(rowEmail);
 
-			this.name.on("focusin focusout", this.nameCheck, function(evt) {
-				evt.preventDefault();
-				var nameCheck = evt.data;
-				nameCheck.empty();
-				nameCheck.html("");
-				var nameVal = $(this).val();
-				if(!nameVal || nameVal.length === 0) return;
-				if(!validateName(nameVal)) {
-					addWarningStyle(nameCheck);
-					nameCheck.html("<p>" + MESSAGES.playername_requirement + "</p>");
-					return;
-				}
+                this.name.on("focusin focusout", this.nameCheck, function(evt) {
+                        evt.preventDefault();
+                        var nameCheck = evt.data;
+                        nameCheck.empty();
+                        nameCheck.html("");
+                        var nameVal = $(this).val();
+                        if(!nameVal || nameVal.length === 0) return;
+                        if(!validateName(nameVal)) {
+                                addWarningStyle(nameCheck);
+                                nameCheck.html("<p>" + MESSAGES.playername_requirement + "</p>");
+                                return;
+                        }
 
-				var params={};
-				params[g_keyName] = nameVal;
-				$.ajax({
-					type: "GET",
-					url: "/player/name/duplicate",
-					data: params,
-					success: function(data, status, xhr){
-						if (isStandardSuccess(data)){
-							removeWarningStyle(nameCheck);	
-							nameCheck.html("<p>" + MESSAGES.playername_valid + "</p>");
-						}else{
-							addWarningStyle(nameCheck);
-							nameCheck.html("<p>" + MESSAGES.playername_invalid + "</p>");
-						}
-					},
-					error: function(xhr, status, err){
-					}
-				});
-			});
+                        var params={};
+                        params[g_keyName] = nameVal;
+                        $.ajax({
+                                type: "GET",
+                                url: "/player/name/duplicate",
+                                data: params,
+                                success: function(data, status, xhr){
+                                        if (isStandardSuccess(data)){
+                                                removeWarningStyle(nameCheck);
+                                                nameCheck.html("<p>" + MESSAGES.playername_valid + "</p>");
+                                        }else{
+                                                addWarningStyle(nameCheck);
+                                                nameCheck.html("<p>" + MESSAGES.playername_invalid + "</p>");
+                                        }
+                                },
+                                error: function(xhr, status, err){
+                                }
+                        });
+                });
 
-			this.email.on("focusin focusout", this.emailCheck, function(evt){
-				evt.preventDefault();
-				var emailCheck = evt.data;
-				emailCheck.empty();
-				emailCheck.html("");
-				var emailVal = $(this).val();
-				if(!emailVal || emailVal.length === 0) return;
-				if(!validateEmail(emailVal)) {
-					addWarningStyle(emailCheck);
-					emailCheck.html("<p>" + MESSAGES.email_requirement + "</p>");
-					return;
-				}
+                this.email.on("focusin focusout", this.emailCheck, function(evt){
+                        evt.preventDefault();
+                        var emailCheck = evt.data;
+                        emailCheck.empty();
+                        emailCheck.html("");
+                        var emailVal = $(this).val();
+                        if(!emailVal || emailVal.length === 0) return;
+                        if(!validateEmail(emailVal)) {
+                                addWarningStyle(emailCheck);
+                                emailCheck.html("<p>" + MESSAGES.email_requirement + "</p>");
+                                return;
+                        }
 
-				var params = {};
-				params[g_keyEmail] = emailVal;
-				$.ajax({
-					type: "GET",
-					url: "/player/email/duplicate",
-					data: params,
-					success: function(data, status, xhr){
-						if (isStandardSuccess(data)){
-							removeWarningStyle(emailCheck);
-							emailCheck.html("<p>" + MESSAGES.email_valid + "</p>");
-						}else{
-							addWarningStyle(emailCheck);
-							emailCheck.html("<p>" + MESSAGES.email_invalid + "</p>");
-						}
-					},
-					error: function(xhr, status, err){
-					}
-				});
+                        var params = {};
+                        params[g_keyEmail] = emailVal;
+                        $.ajax({
+                                type: "GET",
+                                url: "/player/email/duplicate",
+                                data: params,
+                                success: function(data, status, xhr){
+                                        if (isStandardSuccess(data)){
+                                                removeWarningStyle(emailCheck);
+                                                emailCheck.html("<p>" + MESSAGES.email_valid + "</p>");
+                                        }else{
+                                                addWarningStyle(emailCheck);
+                                                emailCheck.html("<p>" + MESSAGES.email_invalid + "</p>");
+                                        }
+                                },
+                                error: function(xhr, status, err){
+                                }
+                        });
 		});
 
 		var buttons = $("<div>", {
@@ -255,10 +280,10 @@ function NameCompletionForm() {
 		    if (!playername || playername.length === 0 || !validateName(playername)) return;
 		    if (!(!email) && email.length > 0 && !validateEmail(email)) return;
 
-		    var accessToken = $.cookie(g_keyAccessToken);
+		    var accessToken = getAccessToken();
 		    if (!accessToken) return;
 
-		    var party = $.cookie(g_keyParty);
+		    var party = getParty();
 		    if (!party) return;
 
 		    var btnSubmit = getTarget(evt);
@@ -278,7 +303,7 @@ function NameCompletionForm() {
 					enableField(btnSubmit);
 					if (isPlayerNotFound(data)) {
 						alert(ALERTS.player_not_existing);
-						clearForeignPartyCookies();
+						clearAccessTokenAndParty();
 						widget.hide();
 						return;
 					}
@@ -297,9 +322,9 @@ function NameCompletionForm() {
 						return;
 					}
 
-					clearForeignPartyCookies();
-					g_loggedInPlayer = new Player(data); 
-					$.cookie(g_keyToken, data[g_keyToken], {path: '/'});
+					clearAccessTokenAndParty();
+					g_loggedInPlayer = new Player(data);
+					saveToken(data.token);
 
 					widget.hide();
 					checkLoginStatus(false);
@@ -315,7 +340,7 @@ function NameCompletionForm() {
 			"class": "btn-cancel negative-button",
 			text: TITLES.cancel
 		}).appendTo(buttons).click(this, function(evt) {
-			clearForeignPartyCookies();
+			clearAccessTokenAndParty();
 			var widget = evt.data;
 			widget.hide();
 		});
@@ -404,9 +429,8 @@ function logout(evt) {
 	var menu = ((evt && evt.data) ? evt.data : g_postLoginMenu);
 	if (!menu) return;
 
-	var token = $.cookie(g_keyToken);
 	var params = {};
-	params[g_keyToken] = token;
+	params[g_keyToken] = getToken();
 
 	var aButton = (evt ? $(evt.srcElement ? evt.srcElement : evt.target) : null);
 	disableField(aButton);
@@ -428,7 +452,7 @@ function logout(evt) {
 			// reload the whole page if exception occurs
 			enableField(aButton);
 			wsDisconnect();
-			$.removeCookie(g_keyToken, {path: '/'});
+			clearToken();
 			if (!menu.onLogoutError) return;
 			menu.onLogoutError(err);
 		}	
@@ -520,7 +544,6 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 }
 
 function encodeStateWithAction(party, cbfunc, argList) {
-
 	/**
          * this function returns a JSON-serialized and  URI-component-encoded string of 
          * {	 
@@ -575,11 +598,11 @@ function decodeStateWithAction(rawBundle) {
 
 function checkForeignPartyLoginStatus() {
 
-	var accessToken = $.cookie(g_keyAccessToken);	
-	var party = $.cookie(g_keyParty);	
+	var accessToken = getAccessToken();
+	var party = getParty();
 	
 	if (!accessToken || !party) {
-		clearForeignPartyCookies();
+		clearAccessTokenAndParty();
 		checkLoginStatus(false);
 		return;
 	}
@@ -594,7 +617,7 @@ function checkForeignPartyLoginStatus() {
 		success: function(data, status, xhr){
 			if (isPlayerNotFound(data)) {
 				alert(ALERTS.player_not_existing);
-				clearForeignPartyCookies();
+				clearAccessTokenAndParty();
 				checkLoginStatus(false);
 				return;
 			}
@@ -614,9 +637,9 @@ function checkForeignPartyLoginStatus() {
 				return;
 			}
 
-			clearForeignPartyCookies();
+			clearAccessTokenAndParty();
 			g_loggedInPlayer = new Player(data);
-			$.cookie(g_keyToken, data[g_keyToken], {path: '/'});
+			saveToken(data.token);
 
 			checkLoginStatus(false);	
 		},
@@ -630,7 +653,7 @@ function checkLoginStatus(willAttemptForeignPartyLogin) {
 	
 	willAttemptForeignPartyLogin = (willAttemptForeignPartyLogin === undefined ? true : willAttemptForeignPartyLogin);
 
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 
 	if(!token) {		
 		if (willAttemptForeignPartyLogin) {
@@ -653,7 +676,7 @@ function checkLoginStatus(willAttemptForeignPartyLogin) {
 	var params={};
 	params[g_keyToken] = token;
 	$.ajax({
-		type: "GET",
+		type: "POST",
 		url: "/player/status",
 		data: params,
 		success: function(data, status, xhr){
@@ -666,8 +689,8 @@ function checkLoginStatus(willAttemptForeignPartyLogin) {
 			}
 			g_loggedInPlayer = new Player(data);
 			if (!g_loggedInPlayer) return;
-			$.cookie(g_keyToken, data[g_keyToken], {path: '/'});
-			wsConnect();	
+			saveToken(data.token);
+			wsConnect();
 			if (!g_preLoginForm) return;
 			g_postLoginMenu = generatePostLoginMenu(g_sectionLogin, g_preLoginForm.onLoginSuccess, g_preLoginForm.onLoginError, g_preLoginForm.onLogoutSuccess, g_preLoginForm.onLogoutError);
 			if (!g_preLoginForm.onLoginSuccess)	return;

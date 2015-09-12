@@ -462,6 +462,13 @@ function isPswErr(data) {
 	return ret == g_errPswErr;
 }
 
+function isDuplicated(data) {
+	if (data === null) return false;
+	if (!data.hasOwnProperty(g_keyRet)) return false;
+	var ret = parseInt(data[g_keyRet]);
+	return ret == g_errDuplicated;
+}
+
 function isApplicantLimitExceeded(data) {
 	if (data === null) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
@@ -505,4 +512,26 @@ function addWarningStyle(field) {
 function removeWarningStyle(field) {
 	field.removeClass('warning');
 	field.addClass('patch-block-sigma');
+}
+
+function queryCDNDomainSync() {
+        var token = $.cookie(g_keyToken);
+        var url = apiCDNDomain(g_cdnQiniu);
+        var params = {};
+        params[g_keyToken] = token;
+	$.ajax({
+			type: "POST",
+			url: url,
+			data: params,
+			async: false,
+			success: function(data, status, xhr){
+				if (isTokenExpired(data))       return null;
+				if (isPlayerNotFound(data))     return null;
+				if (!data.domain) return null;
+				return data.domain;
+			},
+			error: function(xhr, status, err){
+			        return null;
+			}
+	});
 }

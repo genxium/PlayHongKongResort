@@ -3,11 +3,15 @@ package utilities;
 import dao.SQLHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class XMLHelper {
@@ -61,8 +65,8 @@ public class XMLHelper {
                 return ret;
         }
 
-        public static Map<String, String> readCDNConfig(final String filepath) {
-                Map<String, String> ret = null;
+        public static Map<String, Object> readCDNConfig(final String filepath) {
+                Map<String, Object> ret = null;
                 try {
                         File fXmlFile = new File(filepath);
                         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -74,8 +78,17 @@ public class XMLHelper {
                         ret = new HashMap<>();
                         ret.put(CDNHelper.APP_ID, root.getElementsByTagName(CDNHelper.APP_ID).item(0).getTextContent());
                         ret.put(CDNHelper.APP_KEY, root.getElementsByTagName(CDNHelper.APP_KEY).item(0).getTextContent());
-                        ret.put(CDNHelper.BUCKET, root.getElementsByTagName(CDNHelper.BUCKET).item(0).getTextContent());
-                        ret.put(CDNHelper.DOMAIN, root.getElementsByTagName(CDNHelper.DOMAIN).item(0).getTextContent());
+
+                        List<CDNHelper.Bucket> bucketList = new ArrayList<>();
+
+                        NodeList buckets = root.getElementsByTagName(CDNHelper.BUCKET);
+                        int nBuckets = buckets.getLength();
+                        for (int i = 0; i < nBuckets; ++i) {
+                                Node node = buckets.item(i);
+                                CDNHelper.Bucket bucket = new CDNHelper.Bucket(node);
+                                bucketList.add(bucket);
+                        }
+                        ret.put(CDNHelper.BUCKET, bucketList);
                 } catch (Exception e) {
                         Loggy.e(TAG, "readCDNConfig", e);
                 }

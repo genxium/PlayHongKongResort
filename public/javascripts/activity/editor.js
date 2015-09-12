@@ -54,7 +54,8 @@ function ActivityEditor() {
 		fromImageSelector = (fromImageSelector === undefined ? false : fromImageSelector);
 		fromDeletion = (fromDeletion === undefined ? false : fromDeletion);
 		if (!fromImageSelector && !fromDeletion) {
-			var node = new ActivityEditorImageNode(g_cdnQiniu, g_cdnDomain);
+		        var domain = queryCDNDomainSync();
+			var node = new ActivityEditorImageNode(g_cdnQiniu, domain);
 			node.appendTo(this.newImageRow);
 			node.refresh(this);
 		}

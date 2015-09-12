@@ -152,6 +152,7 @@ var g_assessmentContentPattern = /^.{0,64}$/;
 var g_errNotLoggedIn = 1001;
 var g_errPlayerNotFound = 1003;
 var g_errPswErr = 1004;
+var g_errDuplicated = 1006;
 
 var g_errActivityHasBegun = 3007;
 var g_errActivityAppliedLimit = 3008;
@@ -173,9 +174,9 @@ var g_partyQQ = 1;
 var g_appIdQQ = 101239106;
 
 /* CDN */
+var g_keyDomain = "domain";
 var g_keyRemoteName = "remote_name";
 var g_keyUptoken = "uptoken";
 var g_keyFileref = "fileref";
 
 var g_cdnQiniu = 1;
-var g_cdnDomain = '7xljmm.dl1.z0.glb.clouddn.com';

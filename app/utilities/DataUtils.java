@@ -65,7 +65,7 @@ public class DataUtils {
                 for (Map.Entry<String, Object> entry : map.entrySet()) {
                         String val = encodeUtf8(String.valueOf(entry.getValue()));
                         if (!first) ret += String.format("&%s=%s", entry.getKey(), val);
-                        ret += String.format("%s=%s", entry.getKey(), val);
+                        else ret += String.format("%s=%s", entry.getKey(), val);
                         first = false;
                 }
                 return ret;

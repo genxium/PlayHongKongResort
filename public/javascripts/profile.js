@@ -136,7 +136,8 @@ function ProfileEditor() {
 
 		// avatar
 		if (this.mode == this.EDITING) {
-			this.avatarNode = new ProfileEditorImageNode(g_cdnQiniu, g_cdnDomain); 
+		        var domain = queryCDNDomainSync();
+			this.avatarNode = new ProfileEditorImageNode(g_cdnQiniu, domain);
 			this.avatarNode.appendTo(avatarBox);	
 			this.avatarNode.refresh(this);
 			this.avatarHint = $("<p>").appendTo(this.avatarBox);
@@ -221,7 +222,7 @@ function queryPlayerDetail(){
 	var token = $.cookie(g_keyToken);
 	if(!(!token)) params[g_keyToken] = token;
 	$.ajax({
-		type: "GET",
+		type: "POST",
 		url: "/player/detail",
 		data: params,
 		success: function(data, status, xhr){
