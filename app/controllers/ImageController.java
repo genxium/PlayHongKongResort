@@ -37,6 +37,8 @@ import java.util.regex.Matcher;
 public class ImageController extends Controller {
         public static final String TAG = ImageController.class.getName();
 
+	public static String DOMAIN = "domain";
+
         public static Result qiniuUptoken(String token, String domain, String remoteName) {
                 try {
                         Matcher matcher = Image.REMOTE_NAME_PATTERN.matcher(remoteName);
@@ -88,7 +90,7 @@ public class ImageController extends Controller {
                 Cache.set(key, bucket.name, expires);
 
                 final ObjectNode ret = Json.newObject();
-                ret.put(CDNHelper.DOMAIN, bucket.domain);
+                ret.put(DOMAIN, bucket.domain);
                 return ret;
         }
 

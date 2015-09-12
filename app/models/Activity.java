@@ -87,8 +87,8 @@ public class Activity extends AbstractSimpleMessage {
                 return title;
         }
 
-        public void setTitle(final String aTitle) {
-                title = aTitle;
+        public void setTitle(final String data) {
+                title = data;
         }
 
         protected Long createdTime = null;
@@ -97,8 +97,8 @@ public class Activity extends AbstractSimpleMessage {
                 return createdTime;
         }
 
-        public void setCreatedTime(final long aCreatedTime) {
-                createdTime = aCreatedTime;
+        public void setCreatedTime(final long data) {
+                createdTime = data;
         }
 
         protected Long beginTime = null;
@@ -107,8 +107,8 @@ public class Activity extends AbstractSimpleMessage {
                 return beginTime;
         }
 
-        public void setBeginTime(final long aBeginTime) {
-                beginTime = aBeginTime;
+        public void setBeginTime(final long data) {
+                beginTime = data;
         }
 
         protected Long deadline = null;
@@ -117,20 +117,20 @@ public class Activity extends AbstractSimpleMessage {
                 return deadline;
         }
 
-        public void setDeadline(final long aDeadline) {
-                deadline = aDeadline;
+        public void setDeadline(final long data) {
+                deadline = data;
         }
 
         protected Long lastAcceptedTime = null;
 
-        public void setLastAcceptedTime(final long aTime) {
-                lastAcceptedTime = aTime;
+        public void setLastAcceptedTime(final long data) {
+                lastAcceptedTime = data;
         }
 
         protected Long lastRejectedTime = null;
 
-        public void setLastRejectedTime(final long aTime) {
-                lastRejectedTime = aTime;
+        public void setLastRejectedTime(final long data) {
+                lastRejectedTime = data;
         }
 
         protected Integer capacity = 0;
@@ -165,8 +165,8 @@ public class Activity extends AbstractSimpleMessage {
                 return status;
         }
 
-        public void setStatus(final int aStatus) {
-                status = aStatus;
+        public void setStatus(final int data) {
+                status = data;
         }
 
         protected String address = null;
@@ -175,8 +175,8 @@ public class Activity extends AbstractSimpleMessage {
                 return address;
         }
 
-        public void setAddress(final String aAddress) {
-                address = aAddress;
+        public void setAddress(final String data) {
+                address = data;
         }
 
         protected Long hostId = null;
@@ -191,8 +191,8 @@ public class Activity extends AbstractSimpleMessage {
                 return host;
         }
 
-        public void setHost(final Player aHost) {
-                host = aHost;
+        public void setHost(final Player data) {
+                host = data;
         }
 
         protected Player viewer = null;
@@ -201,14 +201,14 @@ public class Activity extends AbstractSimpleMessage {
                 return viewer;
         }
 
-        public void setViewer(final Player aViewer) {
-                viewer = aViewer;
+        public void setViewer(final Player data) {
+                viewer = data;
         }
 
         protected List<Image> imageList = null;
 
-        public void setImageList(final List<Image> aImageList) {
-                imageList = aImageList;
+        public void setImageList(final List<Image> data) {
+                imageList = data;
         }
 
         public void addImage(final Image image) {

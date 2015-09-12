@@ -65,8 +65,8 @@ public class Player extends BasicPlayer {
 		return (salt == null) ? "" : salt;
 	}
 
-	public void setSalt(String salt) {
-		salt = salt;
+	public void setSalt(final String data) {
+		salt = data;
 	}
 
 	protected Integer groupId = VISITOR;
