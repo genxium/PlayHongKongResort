@@ -46,52 +46,54 @@ public class XMLHelper {
 
         public static Map<String, String> readForeignPartyConfig(final String filepath) {
 
-                Map<String, String> ret = null;
-
                 try {
-                        File fXmlFile = new File(filepath);
-                        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                        Document doc = dBuilder.parse(fXmlFile);
+                        final File fXmlFile = new File(filepath);
+                        final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                        final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                        final Document doc = dBuilder.parse(fXmlFile);
 
-                        Element root = doc.getDocumentElement();
+                        final Element root = doc.getDocumentElement();
 
-                        ret = new HashMap<>();
+                        final Map<String, String> ret = new HashMap<>();
                         ret.put(ForeignPartyHelper.APP_ID, root.getElementsByTagName(ForeignPartyHelper.APP_ID).item(0).getTextContent());
                         ret.put(ForeignPartyHelper.APP_KEY, root.getElementsByTagName(ForeignPartyHelper.APP_KEY).item(0).getTextContent());
+                        return ret;
                 } catch (Exception e) {
                         Loggy.e(TAG, "readForeignPartyConfig", e);
                 }
-                return ret;
+                return null;
         }
 
         public static Map<String, Object> readCDNConfig(final String filepath) {
-                Map<String, Object> ret = null;
                 try {
-                        File fXmlFile = new File(filepath);
-                        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                        Document doc = dBuilder.parse(fXmlFile);
+                        final File fXmlFile = new File(filepath);
+                        final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                        final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                        final Document doc = dBuilder.parse(fXmlFile);
 
-                        Element root = doc.getDocumentElement();
+                        final Element root = doc.getDocumentElement();
 
-                        ret = new HashMap<>();
+                        final Map<String, Object> ret = new HashMap<>();
                         ret.put(CDNHelper.APP_ID, root.getElementsByTagName(CDNHelper.APP_ID).item(0).getTextContent());
                         ret.put(CDNHelper.APP_KEY, root.getElementsByTagName(CDNHelper.APP_KEY).item(0).getTextContent());
 
-                        List<CDNHelper.Bucket> bucketList = new ArrayList<>();
+                        final List<CDNHelper.Bucket> bucketList = new ArrayList<>();
+                        final Map<String, String> bucketMap = new HashMap<>();
 
-                        NodeList buckets = root.getElementsByTagName(CDNHelper.BUCKET);
+                        final NodeList buckets = root.getElementsByTagName(CDNHelper.BUCKET);
                         int nBuckets = buckets.getLength();
                         for (int i = 0; i < nBuckets; ++i) {
                                 Node node = buckets.item(i);
                                 CDNHelper.Bucket bucket = new CDNHelper.Bucket(node);
                                 bucketList.add(bucket);
+                                bucketMap.put(bucket.name, bucket.domain);
                         }
-                        ret.put(CDNHelper.BUCKET, bucketList);
+                        ret.put(CDNHelper.BUCKET_LIST, bucketList);
+                        ret.put(CDNHelper.BUCKET_MAP, bucketMap);
+                        return ret;
                 } catch (Exception e) {
                         Loggy.e(TAG, "readCDNConfig", e);
                 }
-                return ret;
+                return null;
         }
 }

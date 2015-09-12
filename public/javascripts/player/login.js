@@ -4,36 +4,6 @@ var g_preLoginForm = null;
 var g_postLoginMenu = null;
 var g_nameCompletionForm = null;
 
-function getToken() {
-        return $.cookie(g_keyToken);
-}
-
-function saveToken(token) {
-	$.cookie(g_keyToken, token, {path: '/'});
-}
-
-function clearToken() {
-        $.removeCookie(g_keyToken, {path: '/'});
-}
-
-function getAccessToken() {
-        return $.cookie(g_keyAccessToken);
-}
-
-function getParty() {
-        return $.cookie(g_keyParty);
-}
-
-function saveAccessTokenAndParty(accessToken, party) {
-        $.cookie(g_keyParty, party, {path: '/'});
-        $.cookie(g_keyAccessToken, accessToken, {path: '/'});
-}
-
-function clearAccessTokenAndParty() {
-	$.removeCookie(g_keyAccessToken, {path: '/'});
-	$.removeCookie(g_keyParty, {path: '/'});
-}
-
 function PreLoginForm(handle, psw, btn, forgot, registry, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
 	// TODO: refactor with container-dialog-appendTo-refresh pattern
 	this.handle = handle;
@@ -168,10 +138,15 @@ function NameCompletionForm() {
 	this.onSuccess = null;
 	this.onError = null;
 
+	this.partyNickname = null;
+
 	this.composeContent = function(data) {
+		this.partyNickname = data;
+		var party = getParty();
+		var titleHtml = (party == g_partyQQ ? TITLES.first_foreign_party_registration_qq.format(this.partyNickname) : TITLES.first_foreign_party_registration);
                 var title = $('<div>', {
                         'class':	"title-alpha first-foreign-party-registration-title",
-                        text: TITLES.first_foreign_party_registration
+                        html: titleHtml 
                 }).appendTo(this.content);
 
                 var registerBox = $('<div>', {
@@ -308,7 +283,7 @@ function NameCompletionForm() {
 						return;
 					}
 					if (isForeignPartyRegistrationRequired(data)) {
-						widget.refresh();
+						widget.refresh(widget.partyNickname);
 						return;
 					}
 					if (isTempForeignPartyRecordNotFound(data)) {
@@ -318,7 +293,7 @@ function NameCompletionForm() {
 					}
 					if (isStandardFailure(data)) {
 						alert(ALERTS.unknown_error);
-						widget.refresh();
+						widget.refresh(widget.partyNickname);
 						return;
 					}
 
@@ -351,7 +326,24 @@ NameCompletionForm.inherits(BaseModalWidget);
 
 function initNameCompletionForm(par) {
 	g_nameCompletionForm = new NameCompletionForm();
-	g_nameCompletionForm.appendTo(par);
+	g_nameCompletionForm.appendTo(par, true);
+}
+
+var g_qqWelcomePopup = null;
+function QQWelcomePopup() {
+	this.composeContent = function(data) {
+		var nickname = data;
+		var message = $('<div>', {
+			html:MESSAGES.qq_welcome.format(nickname)
+		}).appendTo(this.content);	
+	};
+}
+
+QQWelcomePopup.inherits(BaseModalWidget);
+
+function initQQWelcomePopup(par) {
+	g_qqWelcomePopup = new QQWelcomePopup();
+	g_qqWelcomePopup.appendTo(par);
 }
 
 function appendForeignPartyLoginEntry(par, party) {
@@ -441,7 +433,7 @@ function logout(evt) {
 		success: function(data, status, xhr){
 			enableField(aButton);
 			g_loggedInPlayer = null;
-			$.removeCookie(g_keyToken, {path: '/'});
+			clearToken();
 			wsDisconnect();
 			if (!g_sectionLogin) return;
 			g_preLoginForm = generatePreLoginForm(g_sectionLogin, menu.onLoginSuccess, menu.onLoginError, menu.onLogoutSuccess, menu.onLogoutError);
@@ -622,7 +614,8 @@ function checkForeignPartyLoginStatus() {
 				return;
 			}
 			if (isForeignPartyRegistrationRequired(data)) {
-				g_nameCompletionForm.refresh();
+				var partyNickname = data[g_keyPartyNickname];
+				g_nameCompletionForm.refresh(partyNickname);
 				g_nameCompletionForm.show();
 				return;
 			}
@@ -640,6 +633,11 @@ function checkForeignPartyLoginStatus() {
 			clearAccessTokenAndParty();
 			g_loggedInPlayer = new Player(data);
 			saveToken(data.token);
+
+			if (party == g_partyQQ && !(!data[g_keyPartyNickname])) {
+				g_qqWelcomePopup.refresh(data[g_keyPartyNickname]);
+				g_qqWelcomePopup.show();
+			}
 
 			checkLoginStatus(false);	
 		},
@@ -682,7 +680,7 @@ function checkLoginStatus(willAttemptForeignPartyLogin) {
 		success: function(data, status, xhr){
 			if (isStandardFailure(data)) {
 				wsDisconnect();	
-				$.removeCookie(g_keyToken, {path: '/'});
+				clearToken();
 				if(!g_preLoginForm.onLoginError) return;
 				g_preLoginForm.onLoginError(null);		
 				return;

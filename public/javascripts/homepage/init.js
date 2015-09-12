@@ -116,8 +116,10 @@ $(document).ready(function(){
 	initTopbar($("#topbar"));
 	initFooter($("#footer-content"));
 
-	initActivityEditor($("#content"));
-	initNameCompletionForm($("#content"));
+	var homepageContent = $("#content");
+	initActivityEditor(homepageContent);
+	initNameCompletionForm(homepageContent);
+	initQQWelcomePopup(homepageContent);
 
 	$(window).on("hashchange", function(evt) {
 		routeByHash();

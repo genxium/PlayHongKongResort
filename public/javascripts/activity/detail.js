@@ -22,7 +22,7 @@ function clearDetail() {
 
 function queryActivityDetail(activityId){
 
-        var token = $.cookie(g_keyToken);
+        var token = getToken();
     	var params = {};
     	params[g_keyActivityId] = activityId;
         if(token != null)	params[g_keyToken] = token;
@@ -120,7 +120,7 @@ function displayActivityDetail(par){
 	initAssessmentsViewer($("#content"));
 	g_batchAssessmentEditor = generateBatchAssessmentEditor(g_tabAssessments, g_activity, queryActivityDetail);
 
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 	if(token == null)   return ret;
 
 	if (g_activity.hasBegun()) {

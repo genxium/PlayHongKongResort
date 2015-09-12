@@ -3,7 +3,7 @@ var g_ws = null;
 
 function wsConnect() {
 	if (g_ws != null) return;
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 	if (token == null)	return;
 	var host = window.location.host;
 	g_ws = new WS("ws://" + host + "/el/ws?" + g_keyToken + "=" + token);

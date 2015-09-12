@@ -118,7 +118,7 @@ function generateAssessmentButtons(par, activity, batchEditor){
 		if (assessments.length == 0) return;
 
 		var params = {};
-		var token = $.cookie(g_keyToken);
+		var token = getToken();
 		params[g_keyToken] = token;
 		params[g_keyActivityId] = aActivity.id; 
 		params[g_keyBundle] = JSON.stringify(assessments);
@@ -243,7 +243,7 @@ function generateBatchAssessmentEditor(par, activity, onRefresh){
 function updateAttendance(activityId, attendance, onSuccess, onError){
 	// prototypes: onSuccess(data), onError(err)
 	if(g_updatingAttendance) return;
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 	if(token == null) return; 
 	var params={};
 	params[g_keyRelation] = attendance;

@@ -172,7 +172,7 @@ function ProfileEditor() {
 		}).hide().appendTo(buttonRow).click(this, function(evt) {
 			evt.preventDefault();
 			var editor = evt.data;	
-			var token = $.cookie(g_keyToken);
+			var token = getToken();
 			if (!token) return;
 
 			var formData = {};
@@ -219,7 +219,7 @@ function clearProfile() {
 function queryPlayerDetail(){
 	var params={};
 	params[g_keyVieweeId] = g_vieweeId;
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 	if(!(!token)) params[g_keyToken] = token;
 	$.ajax({
 		type: "POST",
@@ -265,7 +265,7 @@ function queryPlayerDetail(){
 			if (g_loggedInPlayer.hasEmail() && !g_loggedInPlayer.isEmailAuthenticated() && g_vieweeId == g_loggedInPlayer.id) {
 				var resendHint = null;
 				var extraParams2 = {};
-				extraParams2[g_keyToken] = $.cookie(g_keyToken);
+				extraParams2[g_keyToken] = getToken();
 				var onSuccess = function(data) {
 					if (!data) return;
 					if (isTokenExpired(data)) {

@@ -101,7 +101,7 @@ function onQueryAssessmentsError(err) {
 
 function queryAssessments(refIndex, numItems, direction, to, activityId) {
 	
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 	if (token == null) {
 		focusLogin();
 		return;
@@ -168,7 +168,7 @@ function onListAssessmentsError(err) {
 
 function generateAssessmentsListParams(pager, page) {
 	if (page == null) return null;
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 	if (token == null) {
 		focusLogin();
 		return;

@@ -27,6 +27,9 @@ public class CDNHelper {
         public static final String NAME = "Name";
         public static final String DOMAIN = "Domain";
 
+        public static final String BUCKET_LIST = "BucketList";
+        public static final String BUCKET_MAP = "BucketMap";
+
         private static Random generator = null;
         private static Map<String, Object> qiniuMap = null;
         private static Auth qiniuAuth = null;
@@ -57,6 +60,11 @@ public class CDNHelper {
                         return qiniuMap;
                 }
                 return null;
+        }
+
+        public static String getDomain(final int provider, final String bucketName) {
+                final Map<String, String> bucketMap = (Map<String, String>)getAttr(provider).get(bucketName);
+                return bucketMap.get(bucketName);
         }
 
         public static Object getAuth(final int provider) {
@@ -94,7 +102,7 @@ public class CDNHelper {
                 try {
                         if (provider == QINIU) {
                                         final Map<String, Object> attrs = getAttr(provider);
-                                        final List<Bucket> bucketList = (List<Bucket>) attrs.get(CDNHelper.BUCKET);
+                                        final List<Bucket> bucketList = (List<Bucket>) attrs.get(CDNHelper.BUCKET_LIST);
                                         final int randomIndex = getGenerator().nextInt(bucketList.size());
                                         return bucketList.get(randomIndex);
                         }

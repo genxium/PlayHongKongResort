@@ -130,7 +130,7 @@ function PriorityEditor (activity) {
 
 		this.btnSubmit.click(function(evt) {
 			evt.preventDefault();
-			var token = $.cookie(g_keyToken);
+			var token = getToken();
 			if (token == null) return;
 
 			var orderMask = 0;
@@ -175,7 +175,7 @@ function onBtnAcceptClicked(evt) {
 
 	evt.preventDefault();
 	var data = evt.data;
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 	var params = {};
  	params[g_keyActivityId] = data[g_keyActivityId];
 	params[g_keyToken] = token;
@@ -211,7 +211,7 @@ function onBtnRejectClicked(evt) {
 
 	evt.preventDefault();
 	var data = evt.data;
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 	var params = {};
  	params[g_keyActivityId] = data[g_keyActivityId];
 	params[g_keyToken] = token;
@@ -247,7 +247,7 @@ function onBtnDeleteClicked(evt){
 
 	evt.preventDefault();
 	var data = evt.data;
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 	var params = {};
 	params[g_keyActivityId] = data[g_keyActivityId];
 	params[g_keyToken] = token;

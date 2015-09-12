@@ -23,7 +23,7 @@ var STATUS_NAMES = {
 	pending: "等待審核",
 	rejected: "未通過審核",
 	accepted: "已通過審核"
-}
+};
 
 // constant titles
 var TITLES = {
@@ -91,7 +91,8 @@ var TITLES = {
 	age: "年齡",
 	gender: "性別",
 	mood: "心情",
-	first_foreign_party_registration: "這是你的首次登入, 請填寫一個用戶名以完成註冊, 同時建議填寫電郵地址"
+	first_foreign_party_registration: "這是你的首次登入, 請填寫一個用戶名以完成註冊, 同時建議填寫電郵地址",
+	first_foreign_party_registration_qq: "Hi, <span class='highlight'>QQ</span>用戶<span class='highlight'>{0}</span>, 這是你的首次登入, 請填寫一個用戶名以完成註冊, 同時建議填寫電郵地址"
 };
 
 var MESSAGES = {
@@ -110,9 +111,6 @@ var MESSAGES = {
 	email_requirement: "請填寫有效的電郵地址",
 	password_requirement: "密碼需為6~32位由英文字母，數字或符號'#'，'_'及'!'組成",	
 	password_confirm_requirement: "密碼不匹配",
-	age_requirement: "請填寫0～16個字",
-	gender_requirement: "請填寫0～16個字",
-	mood_requirement: "請填寫0～64個字",
 	comment_reply_not_submitted: "回覆未提交",
 	assessment_requirement: "請填寫0～64個字",
 	age_requirement: "請填寫0～16個字",
@@ -138,7 +136,8 @@ var MESSAGES = {
 	notice: "請注意",
 	password_reset_notice_1: "若電郵地址未在本站註冊， 你將無法收到所需郵件",
 	password_reset_notice_2: "若電郵地址不存在， 你將無法收到所需郵件",
-	password_reset_notice_3: "電郵地址所關聯帳號在申請密碼重設期間不會失效， 如需凍結帳號請通過<a href=\"mailto:admin@qiutongqu.com?subject='account suspension'\">admin@qiutongqu.com</a>聯繫我們"
+	password_reset_notice_3: "電郵地址所關聯帳號在申請密碼重設期間不會失效， 如需凍結帳號請通過<a href=\"mailto:admin@qiutongqu.com?subject='account suspension'\">admin@qiutongqu.com</a>聯繫我們",
+	qq_welcome: "歡迎回來, <span class='highlight'>QQ</span>用戶<span class='highlight'>{0}</span>"
 };
 
 var HINTS = {

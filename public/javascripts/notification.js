@@ -18,7 +18,7 @@ function clearNotifications() {
 }
 
 function countNotifications() {
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 	if (token == null) return;
 	var paramsBubble = {};
 	paramsBubble[g_keyToken] = token;
@@ -135,7 +135,7 @@ function NotificationTrash(toolbar) {
 			} 
 
 			var params = {};
-			var token = $.cookie(g_keyToken);
+			var token = getToken();
 			if (token == null) return;
 			params[g_keyToken] = token;
 			params[g_keyBundle] = JSON.stringify(notificationIdArray) ;
@@ -192,7 +192,7 @@ function listNotifications(page, onSuccess, onError){
 function generateNotificationsListParams(pager, page) {
 	var params = {};
 	if (g_loggedInPlayer == null) return null;
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 	params[g_keyToken] = token;
 	var pageSt = page - 2;
 	var pageEd = page + 2;
@@ -303,7 +303,7 @@ function NotificationCell(container, notification, indicator) {
 		evt.preventDefault();
 		var aCell = evt.data;
 		var aNotification = aCell.notification;
-		var token = $.cookie(g_keyToken);
+		var token = getToken();
 		if (token == null) return;
 
 		var params = {};

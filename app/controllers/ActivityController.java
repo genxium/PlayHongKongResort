@@ -271,7 +271,7 @@ public class ActivityController extends Controller {
                                         String[] cols2 = {Image.URL, Image.META_ID, Image.META_TYPE};
                                         final String urlProtocolPrefix = "http://";
                                         for (Image newImage : newImageList) {
-                                                final String url = urlProtocolPrefix + newImage.getBucket() + "/" + newImage.getRemoteName();
+                                                final String url = urlProtocolPrefix + CDNHelper.getDomain(newImage.getCDNId(), newImage.getBucket()) + "/" + newImage.getRemoteName();
                                                 final SQLBuilder builderUpdate2 = new SQLBuilder();
                                                 Object[] values2 = {url, activity.getId(), Image.TYPE_ACTIVITY};
                                                 final PreparedStatement statUpdate2 = builderUpdate2.update(Image.TABLE)

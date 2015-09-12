@@ -514,9 +514,39 @@ function removeWarningStyle(field) {
 	field.addClass('patch-block-sigma');
 }
 
+function getToken() {
+        return $.cookie(g_keyToken);
+}
+
+function saveToken(token) {
+	$.cookie(g_keyToken, token, {path: '/'});
+}
+
+function clearToken() {
+        $.removeCookie(g_keyToken, {path: '/'});
+}
+
+function getAccessToken() {
+        return $.cookie(g_keyAccessToken);
+}
+
+function getParty() {
+        return $.cookie(g_keyParty);
+}
+
+function saveAccessTokenAndParty(accessToken, party) {
+        $.cookie(g_keyParty, party, {path: '/'});
+        $.cookie(g_keyAccessToken, accessToken, {path: '/'});
+}
+
+function clearAccessTokenAndParty() {
+	$.removeCookie(g_keyAccessToken, {path: '/'});
+	$.removeCookie(g_keyParty, {path: '/'});
+}
+
 function queryCDNDomainSync() {
 	var ret = null;
-        var token = $.cookie(g_keyToken);
+        var token = getToken();
         var url = apiCDNDomain(g_cdnQiniu);
         var params = {};
         params[g_keyToken] = token;

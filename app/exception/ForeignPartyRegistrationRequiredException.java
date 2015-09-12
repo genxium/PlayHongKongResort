@@ -2,8 +2,14 @@ package exception;
 
 public class ForeignPartyRegistrationRequiredException extends Exception {
 
-    public ForeignPartyRegistrationRequiredException() {
-        super("Foreign party registration required");
-    }
+        private String partyNickname = null; // for QQ only
+        public String getPartyNickname() {
+                return partyNickname;
+        }
+
+        public ForeignPartyRegistrationRequiredException(final String data) {
+                super("Foreign party registration required");
+                partyNickname = data;
+        }
 
 } 

@@ -95,9 +95,17 @@ public class ForeignPartyController extends Controller {
 
 	protected static WrappedPlayer loginWithNameCompletion(final String accessToken, final Integer party, String partyId, final String name, String email) throws ForeignPartyRegistrationRequiredException, TempForeignPartyRecordNotFoundException, SQLException, NullPointerException {
 
+                String partyNickname = null;
+
 		// player should re-submit valid name and email(if not empty)
-		if (name == null || !General.validateName(name)) throw new ForeignPartyRegistrationRequiredException();
-		if (email != null && !General.validateEmail(email)) throw new ForeignPartyRegistrationRequiredException();
+		if (name == null || !General.validateName(name)) {
+                        if (party != null && party.equals(ForeignPartyHelper.PARTY_QQ)) partyNickname = ForeignPartyHelper.queryQQNickname(accessToken, partyId);
+                        throw new ForeignPartyRegistrationRequiredException(partyNickname);
+                }
+		if (email != null && !General.validateEmail(email)) {
+                        if (party != null && party.equals(ForeignPartyHelper.PARTY_QQ)) partyNickname = ForeignPartyHelper.queryQQNickname(accessToken, partyId);
+                        throw new ForeignPartyRegistrationRequiredException(partyNickname);
+                }
 
 		final TempForeignParty tempForeignPartyRecord = DBCommander.queryTempForeignParty(accessToken, party);
 
@@ -177,7 +185,6 @@ public class ForeignPartyController extends Controller {
 
 	protected static WrappedPlayer loginWithoutNameCompletion(final String accessToken, final Integer party, String partyId) throws ForeignPartyRegistrationRequiredException, IOException {
 	        if (partyId == null) {
-
 	                // for implicit-grant
                         final ForeignPartySpecs specs = queryForeignPartySpecs(accessToken, party, partyId);
                         if (specs == null || !specs.isValid()) return null;
@@ -194,8 +201,13 @@ public class ForeignPartyController extends Controller {
 		// record creation failure might indicate that there's an existing record
 		DBCommander.createTempForeignParty(accessToken, party, partyId);
 
+                String partyNickname = null;
+		if (party != null && party.equals(ForeignPartyHelper.PARTY_QQ)) {
+                        partyNickname = ForeignPartyHelper.queryQQNickname(accessToken, partyId);
+                }
+
 		// player should submit valid name and email(if not empty)
-		throw new ForeignPartyRegistrationRequiredException();
+		throw new ForeignPartyRegistrationRequiredException(partyNickname);
 	}
 
 	public static Result login(String grantType) {
@@ -203,8 +215,7 @@ public class ForeignPartyController extends Controller {
 
 			final Map<String, String[]> formData = request().body().asFormUrlEncoded();
 			if (!formData.containsKey(TempForeignParty.ACCESS_TOKEN) || !formData.containsKey(TempForeignParty.PARTY))	throw new NullPointerException();	
-
-			final Integer party = Converter.toInteger(formData.get(TempForeignParty.PARTY)[0]);
+			final int party = Converter.toInteger(formData.get(TempForeignParty.PARTY)[0]);
 
 			String accessToken = null;
 			String partyId = null;
@@ -229,7 +240,6 @@ public class ForeignPartyController extends Controller {
 
 			if (wrappedPlayer == null) throw new PlayerNotFoundException();
 
-
                         // TODO: clear this dirty fix
                         if (party == ForeignPartyHelper.PARTY_QQ) {
                                 final String nickname = ForeignPartyHelper.queryQQNickname(accessToken, wrappedPlayer.partyId);
@@ -252,7 +262,10 @@ public class ForeignPartyController extends Controller {
 		} catch (TempForeignPartyRecordNotFoundException e) {
 			return ok(StandardFailureResult.get(Constants.INFO_TEMP_FOREIGN_PARTY_RECORD_NOT_FOUND));
 		} catch (ForeignPartyRegistrationRequiredException e) {
-			return ok(StandardFailureResult.get(Constants.INFO_FOREIGN_PARTY_REGISTRATION_REQUIRED));
+		        final ObjectNode result = StandardFailureResult.get(Constants.INFO_FOREIGN_PARTY_REGISTRATION_REQUIRED);
+		        final String partyNickname = e.getPartyNickname();
+		        if (partyNickname != null) result.put(WrappedPlayer.PARTY_NICKNAME, partyNickname);
+			return ok(result);
 		} catch (PlayerNotFoundException e) {
 			return ok(StandardFailureResult.get(Constants.INFO_PLAYER_NOT_FOUND));
 		} catch (Exception e) {

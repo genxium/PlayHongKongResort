@@ -115,7 +115,7 @@ function generateReplyEditor(par, activity, comment){
                 evt.preventDefault();
 		var aInput = evt.data;
                 var content = evt.data.val();
-                var token = $.cookie(g_keyToken);
+                var token = getToken();
 
                 if (content == null || !validateCommentContent(content)) {
 			alert(ALERTS["comment_requirement"]);
@@ -233,7 +233,7 @@ function generateCommentCell(par, commentJson, activity, single){
 		}
 	}
 
-        var token = $.cookie(g_keyToken);
+        var token = getToken();
         if(token == null || activity.hasBegun()) return;
 
         var operations = $('<div>',{
@@ -303,7 +303,7 @@ function generateSubCommentCell(par, commentJson, activity){
 		"class": "comment-time left"
 	}).appendTo(row);
 
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 	if(token == null || activity.hasBegun()) return ret;
 
 	var operations = $('<div>',{
@@ -346,7 +346,7 @@ function generateCommentEditor(par, activity){
 
 		evt.preventDefault();
 		var content = input.val();
-		var token = $.cookie(g_keyToken);
+		var token = getToken();
 		
 		if(content == null || !validateCommentContent(content)) {
 			return;	

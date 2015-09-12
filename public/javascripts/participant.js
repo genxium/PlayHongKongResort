@@ -109,7 +109,7 @@ function generateParticipantsSelectionForm(par, activity) {
 		if (participantIdList.length == 0) return;
 
 		// append player token and activity id for identity
-		var token = $.cookie(g_keyToken);
+		var token = getToken();
 		if (token == null) return;
 
 		// prevent violation

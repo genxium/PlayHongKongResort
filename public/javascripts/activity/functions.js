@@ -62,7 +62,7 @@ function generateActivitiesListParams(pager, page) {
 
 	if (!params.hasOwnProperty(g_keyOrientation)) params[g_keyOrientation] = g_orderDescend;
 
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 	if (token != null)	params[g_keyToken] = token;
 	return params;
 }
@@ -172,7 +172,7 @@ function onBtnJoinClicked(evt){
 		return;
 	} 
 
-	var token = $.cookie(g_keyToken).toString();
+	var token = getToken();
 
 	var params={};
 	params[g_keyActivityId] = activity.id;

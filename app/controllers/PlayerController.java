@@ -179,7 +179,7 @@ public class PlayerController extends Controller {
                         SQLHelper.disableAutoCommit(connection);
 
                         final String urlProtocolPrefix = "http://";
-                        final String url = urlProtocolPrefix + avatar.getBucket() + "/" + avatarRemoteName;
+                        final String url = urlProtocolPrefix + CDNHelper.getDomain(avatar.getCDNId(), avatar.getBucket()) + "/" + avatarRemoteName;
 
                         String[] cols = {Image.URL, Image.META_ID, Image.META_TYPE};
                         Object[] vals = {url, player.getId(), Image.TYPE_PLAYER};

@@ -39,8 +39,10 @@ function BaseModalWidget() {
 }
 
 BaseModalWidget.inherits(BaseWidget);
-BaseModalWidget.method('appendTo', function(par) {
-		this.container = $("<div class='modal fade activity-editor' data-keyboard='false' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='create' aria-hidden='true'>").appendTo(par);
+BaseModalWidget.method('appendTo', function(par, isStatic, containerClass) {
+		this.container = $("<div class='modal fade' data-keyboard='false' tabindex='-1' role='dialog' aria-labelledby='create' aria-hidden='true'>").appendTo(par);
+		if (!(!containerClass)) this.container.addClass(containerClass);
+		if (!(!isStatic)) this.container.attr("data-backdrop", "static"); 
 		this.dialog = $("<div class='modal-dialog modal-lg'>").appendTo(this.container);
 		this.content= $("<div class='modal-content'>").appendTo(this.dialog);
 });
@@ -96,7 +98,7 @@ function ActivityEditorImageNode(cdn, domain) {
 	this.btnDel = null;
 	this.requestDel = function(onSuccess, onError) {
 		// async process
-		var token = $.cookie(g_keyToken);				
+		var token = getToken();				
 		if (!token) return;
 		if (!this.remoteName) return;
 		if (this.state != SLOT_IDLE) return;
@@ -631,33 +633,18 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 	}
 }
 
-/*
- * Return a modal handle
- * */
-function createModal(par, message, widthRatioPercentage, heightRatioPercentage) {
-	var pager = $("<div class='modal fade general-popup' tabindex='-1' role='dialog' aria-labelledby='none' aria-hidden='true'>").appendTo(par);	
-	var dialog = $("<div class='modal-dialog modal-lg'>").appendTo(pager);
-	var content = $("<div class='modal-content'>").appendTo(dialog);
-	var div = $("<div>", {
-		"class": "general-popup-paragraph",
-		text: message
-	}).appendTo(content);
-	return pager;
+function Announcement() {
+	this.composeContent = function(data) {
+		setDimensions(this.content, "80%", "90%");
+		var message = data;
+		var div = $("<div>", {
+			"class": "general-popup-paragraph",
+			text: message
+		}).appendTo(this.content);
+	};
 }
 
-function showModal(container) {
-	container.modal("show");
-}
-
-function hideModal(container) {
-	container.modal("hide");
-}
-
-function removeModal(container){
-	container.empty();
-	container.remove();
-	container = null;
-}
+Announcement.inherits(BaseModalWidget);
 
 function createBinarySwitch(par, disabled, initVal, disabledText, positiveText, negativeText, inputId){
 	var container = $("<div class='onoffswitch'>").appendTo(par);

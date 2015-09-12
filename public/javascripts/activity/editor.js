@@ -304,7 +304,7 @@ ActivityEditor.inherits(BaseModalWidget);
 
 function initActivityEditor(par) {
 	g_activityEditor = new ActivityEditor();
-	g_activityEditor.appendTo(par);	
+	g_activityEditor.appendTo(par, true, "activity-editor");	
 }
 
 function DeleteConfirmation(container, activity, btnYes, btnNo) {
@@ -367,7 +367,7 @@ function onSave(evt){
 	var formData = {};
 
 	// append player token and activity id for identity
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 	if (!token) {
 		alert(ALERTS.please_log_in);
 		return;
@@ -504,7 +504,7 @@ function onSubmit(evt){
         var params = {};
 
         // append player token and activity id for identity
-        var token = $.cookie(g_keyToken);
+        var token = getToken();
         if(!token) {
             alert(ALERTS.please_log_in);
             return;
@@ -544,7 +544,7 @@ function onDelete(evt){
 
 	evt.preventDefault();
 	var activityId = evt.data;
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 
 	var params={};
 	params[g_keyActivityId] = activityId;
@@ -577,7 +577,7 @@ function onCancel(evt){
 	evt.preventDefault();
 	g_activityEditor.hide();
 
-	var token = $.cookie(g_keyToken);
+	var token = getToken();
 	if (!token)	return; 
 
 	var newImageNodes = g_activityEditor.newImageNodes;
