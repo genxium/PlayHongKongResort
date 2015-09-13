@@ -334,6 +334,7 @@ function QQWelcomePopup() {
 	this.composeContent = function(data) {
 		var nickname = data;
 		var message = $('<div>', {
+			"class": "general-popup-paragraph",
 			html:MESSAGES.qq_welcome.format(nickname)
 		}).appendTo(this.content);	
 	};

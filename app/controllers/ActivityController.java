@@ -57,7 +57,7 @@ public class ActivityController extends Controller {
                                 viewerId = DBCommander.queryPlayerId(token);
                                 viewer = DBCommander.queryPlayer(viewerId);
                         }
-                        if (vieweeId.equals(0L)) vieweeId = null;
+                        if (vieweeId != null && vieweeId.equals(0L)) vieweeId = null;
 
                         List<Activity> activities = null;
                         if (orderKey == null || orderKey.isEmpty()) orderKey = Activity.LAST_ACCEPTED_TIME;
