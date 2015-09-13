@@ -69,13 +69,16 @@ public class XMLHelper {
                         final File fXmlFile = new File(filepath);
                         final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
                         final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+
                         final Document doc = dBuilder.parse(fXmlFile);
 
                         final Element root = doc.getDocumentElement();
 
                         final Map<String, Object> ret = new HashMap<>();
-                        ret.put(CDNHelper.APP_ID, root.getElementsByTagName(CDNHelper.APP_ID).item(0).getTextContent());
-                        ret.put(CDNHelper.APP_KEY, root.getElementsByTagName(CDNHelper.APP_KEY).item(0).getTextContent());
+                        final String appId = root.getElementsByTagName(CDNHelper.APP_ID).item(0).getTextContent();
+                        final String appKey = root.getElementsByTagName(CDNHelper.APP_KEY).item(0).getTextContent();
+                        ret.put(CDNHelper.APP_ID, appId);
+                        ret.put(CDNHelper.APP_KEY, appKey);
 
                         final List<CDNHelper.Bucket> bucketList = new ArrayList<>();
                         final Map<String, String> bucketMap = new HashMap<>();

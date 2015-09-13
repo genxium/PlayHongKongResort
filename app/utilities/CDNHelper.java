@@ -4,6 +4,7 @@ import com.qiniu.common.QiniuException;
 import com.qiniu.storage.BucketManager;
 import com.qiniu.util.Auth;
 import models.Image;
+import org.apache.xerces.dom.DeferredElementImpl;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import play.Play;
@@ -38,9 +39,10 @@ public class CDNHelper {
                 public String name;
                 public String domain;
                 public Bucket(final Node node) {
-                        NodeList children = node.getChildNodes();
-                        this.name = children.item(0).getTextContent();
-                        this.domain = children.item(1).getTextContent();
+                        final Node nameNode = ((DeferredElementImpl) node).getElementsByTagName(NAME).item(0);
+                        this.name = nameNode.getTextContent();
+                        final Node domainNode = ((DeferredElementImpl) node).getElementsByTagName(DOMAIN).item(0);
+                        this.domain = domainNode.getTextContent();
                 }
         }
 
@@ -63,7 +65,7 @@ public class CDNHelper {
         }
 
         public static String getDomain(final int provider, final String bucketName) {
-                final Map<String, String> bucketMap = (Map<String, String>)getAttr(provider).get(bucketName);
+                final Map<String, String> bucketMap = (Map<String, String>)getAttr(provider).get(CDNHelper.BUCKET_MAP);
                 return bucketMap.get(bucketName);
         }
 

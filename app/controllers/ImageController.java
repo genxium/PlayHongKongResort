@@ -83,6 +83,7 @@ public class ImageController extends Controller {
 
         private static ObjectNode domain() {
                 final CDNHelper.Bucket bucket = CDNHelper.pollSingleBucket(CDNHelper.QINIU);
+
                 if (bucket == null) throw new NullPointerException();
 
                 final String key = TAG + ":cdn:bucket:" + bucket.domain;
