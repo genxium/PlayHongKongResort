@@ -33,20 +33,22 @@ public class ActivityDetail extends Activity {
         public ObjectNode toObjectNode(final Long viewerId) {
                 final ObjectNode ret = super.toObjectNode(viewerId);
                 try {
+			if (appliedParticipants != null) {
+				ArrayNode appliedParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
+				for (BasicPlayer participant : appliedParticipants) {
+					appliedParticipantsNode.add(participant.toObjectNode(viewerId));
+				}
+				ret.put(APPLIED_PARTICIPANTS, appliedParticipantsNode);
+			}
 
-                        ArrayNode appliedParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
-                        for (BasicPlayer participant : appliedParticipants) {
-                                appliedParticipantsNode.add(participant.toObjectNode(viewerId));
-                        }
-                        ret.put(APPLIED_PARTICIPANTS, appliedParticipantsNode);
-
-                        ArrayNode presentParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
-                        for (BasicPlayer participant : presentParticipants) {
-                                if (viewerId != null && viewerId.equals(participant.getId()))   continue;
-                                presentParticipantsNode.add(participant.toObjectNode(viewerId));
-                        }
-                        ret.put(PRESENT_PARTICIPANTS, presentParticipantsNode);
-
+			if (presentParticipants != null) {
+				ArrayNode presentParticipantsNode = new ArrayNode(JsonNodeFactory.instance);
+				for (BasicPlayer participant : presentParticipants) {
+					if (viewerId != null && viewerId.equals(participant.getId()))   continue;
+					presentParticipantsNode.add(participant.toObjectNode(viewerId));
+				}
+				ret.put(PRESENT_PARTICIPANTS, presentParticipantsNode);
+			}
                         if (viewer != null) ret.put(VIEWER, viewer.toObjectNode(null));
 
                 } catch (Exception e) {
