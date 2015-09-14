@@ -1007,7 +1007,7 @@ public class DBCommander {
                                 .where(PermForeignParty.ID, "=", partyId)
                                 .where(PermForeignParty.PARTY, "=", party)
                                 .execSelect();
-                        if (results == null || results.size() != 1) throw new NullPointerException();
+                        if (results == null || results.size() != 1) return null;
                         SimpleMap data = results.get(0);
                         return new PermForeignParty(data);
                 } catch (Exception e) {
