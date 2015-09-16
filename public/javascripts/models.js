@@ -80,7 +80,7 @@ function Activity(data) {
 		this.images = images;
 	}
 
-	if (data.hasOwnProperty("applied_participants")) {
+	if (!(!data.applied_participants)) {
 		var participants = new Array();
 		var participantsData = data.applied_participants;
 		for (var key in participantsData){
@@ -91,7 +91,7 @@ function Activity(data) {
 		this.appliedParticipants = participants;
 	}
 
-	if (data.hasOwnProperty("selected_participants")) {
+	if (!(!data.selected_participants)) {
 		var participants = [];
 		var participantsData = data.selected_participants;
 		for (var key in participantsData){
@@ -102,7 +102,7 @@ function Activity(data) {
 		this.selectedParticipants = participants;
 	}
 
-	if (data.hasOwnProperty("present_participants")) {
+	if (!(!data.present_participants)) {
 		var participants = [];
 		var participantsData = data.present_participants;
 		for (var key in participantsData){
@@ -117,37 +117,36 @@ function Activity(data) {
 	var host = new Player(hostData);
 	this.host = host;
 
-	if (data.hasOwnProperty("viewer")) {
+	if (!(!data.viewer)) {
 		var viewerData = data.viewer;
 		var viewer = new Player(viewerData);
 		this.viewer = viewer;
 	}
 	
-	if (data.hasOwnProperty("priority")) {
+	if (!(!data.priority)) {
 		this.priority = parseInt(data.priority);
 	}
 
-	if (data.hasOwnProperty("order_mask")) {
+	if (!(!data.order_mask)) {
 		this.orderMask = parseInt(data.order_mask);
 	}
 }
 
 function Comment(data) {
 
-        if (data.hasOwnProperty("id")) this.id = parseInt(data.id);
-        if (data.hasOwnProperty("content")) this.content = data.content;
+        this.id = parseInt(data.id);
+        this.content = data.content;
+        this.activityId = parseInt(data.activity_id);
+        if (!(!data.parent_id)) this.parentId = parseInt(data.parent_id);
+        if (!(!data.predecessor_id)) this.predecessorId = parseInt(data.predecessor_id);
+        if (!(!data.generated_time)) this.generatedTime = parseInt(data.generated_time);
+        if (!(!data.num_children)) this.numChildren = parseInt(data.num_children);
 
-        if (data.hasOwnProperty("activity_id")) this.activityId = parseInt(data.activity_id);
-        if (data.hasOwnProperty("parent_id")) this.parentId = parseInt(data.parent_id);
-        if (data.hasOwnProperty("predecessor_id")) this.predecessorId = parseInt(data.predecessor_id);
-        if (data.hasOwnProperty("generated_time")) this.generatedTime = parseInt(data.generated_time);
-        if (data.hasOwnProperty("num_children")) this.numChildren = parseInt(data.num_children);
+        if (!(!data.from)) this.from = parseInt(data.from);
+        if (!(!data.from_player)) this.fromPlayer = new Player(data.from_player);
 
-        if (data.hasOwnProperty("from")) this.from = parseInt(data.from);
-        if (data.hasOwnProperty("from_player")) this.fromPlayer = new Player(data.from_player);
-
-        if (data.hasOwnProperty("to")) this.to = parseInt(data.to);
-        if (data.hasOwnProperty("to_player")) this.toPlayer = new Player(data.to_player);
+        if (!(!data.to)) this.to = parseInt(data.to);
+        if (!(!data.to_player)) this.toPlayer = new Player(data.to_player);
 }
 
 function Assessment(data) {

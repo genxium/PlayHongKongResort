@@ -20,7 +20,7 @@ public class Comment extends AbstractActivityMessage {
     public static final String COMMENT_ID = "comment_id";
     public static final String PARENT_ID = "parent_id";
     public static final String PREDECESSOR_ID = "predecessor_id";
-    public static final String NUM_CHILDREN = "nuchildren";
+    public static final String NUM_CHILDREN = "num_children";
 
     public static final String SUB_COMMENTS = "sub_comments";
     public static final String COMMENTS = "comments";
