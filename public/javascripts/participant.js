@@ -19,7 +19,8 @@ function appendParticipantLabels(par, relationAlias, editable, participantList, 
 		var aParticipant = evt.data;
 		window.location.hash = ("profile?" + g_keyVieweeId + "=" + aParticipant.id.toString());
 	};
-	for (var participant in participantList){
+	for (var i = 0; i < length; ++i){
+		var participant = participantList[i];
 		if (relationAlias == g_aliasApplied)	idList.push(participant.id);
 		relationList.push(relationAlias);
 		var row = $("<p>").appendTo(par);

@@ -9,14 +9,14 @@ var g_activityId = null;
 var g_activity = null;
 
 function emptyBarButtons() {
-	if (g_barButtons == null) return;
+	if (!g_barButtons) return;
 	g_barButtons.empty();
 }
 
 function clearDetail() {
-	if (g_sectionActivity != null) g_sectionActivity.empty();
-	if (g_sectionNav != null) g_sectionNav.empty();
-	if (g_sectionPanes != null) g_sectionPanes.empty();
+	if (!(!g_sectionActivity)) g_sectionActivity.empty();
+	if (!(!g_sectionNav)) g_sectionNav.empty();
+	if (!(!g_sectionPanes)) g_sectionPanes.empty();
 	emptyBarButtons();
 }
 
@@ -25,7 +25,7 @@ function queryActivityDetail(activityId){
         var token = getToken();
     	var params = {};
     	params[g_keyActivityId] = activityId;
-        if(token != null)	params[g_keyToken] = token;
+        if(!(!token))	params[g_keyToken] = token;
 
         $.ajax({
 			type: "GET",
@@ -35,11 +35,11 @@ function queryActivityDetail(activityId){
 				var activityJson = data;
 				g_activity = new Activity(activityJson);
 				displayActivityDetail(g_sectionActivity);
-				if (g_loggedInPlayer == null || g_loggedInPlayer.id == g_activity.host.id) {
+				if (!g_loggedInPlayer || g_loggedInPlayer.id == g_activity.host.id) {
 					emptyBarButtons();
 					return;
 				}
-				if (g_activity.isDeadlineExpired() && g_activity.relation == null) {
+				if (g_activity.isDeadlineExpired() && !g_activity.relation) {
 					emptyBarButtons();
 					return;
 				}
@@ -48,7 +48,7 @@ function queryActivityDetail(activityId){
 				attachJoinButton(g_barButtons, g_activity);
 			},
 			error: function(xhr, status, err){
-				alert(ALERTS["not_permitted_to_view_detail"]);	
+				alert(ALERTS.not_permitted_to_view_detail);	
 				emptyBarButtons();	
 				g_sectionActivity.empty();	
 			}
@@ -74,10 +74,10 @@ function displayActivityDetail(par){
 		"class": "activity-addr-detail title-beta"	
 	}).appendTo(ret);
 
-	if(g_activity.host.id != null && g_activity.host.name != null){
+	if(!(!g_activity.host.id) && !(!g_activity.host.name)){
 			var host = $('<a>', {
 					href: "#", 
-					text: TITLES["by_host"].format(g_activity.host.name),
+					text: TITLES.by_host.format(g_activity.host.name),
 					"class": "activity-host patch-block-lambda"
 			}).appendTo(ret);
 			host.click(function(evt){
@@ -93,7 +93,7 @@ function displayActivityDetail(par){
 		"class": "activity-content title-lambda"
 	}).appendTo(ret);
 
-	if(g_activity.images != null) {
+	if(!(!g_activity.images)) {
 		var imagesContainer = $("<div>", {
 			"class": "activity-image-container clearfix"
 		}).appendTo(ret);
@@ -121,21 +121,21 @@ function displayActivityDetail(par){
 	g_batchAssessmentEditor = generateBatchAssessmentEditor(g_tabAssessments, g_activity, queryActivityDetail);
 
 	var token = getToken();
-	if(token == null)   return ret;
+	if(!token)   return ret;
 
 	if (g_activity.hasBegun()) {
 		$("<p>", {
 			"class": "comment-not-permitted .warning",
-			text: MESSAGES["comment_disabled_activity_has_begun"]
+			text: MESSAGES.comment_disabled_activity_has_begun
 		}).appendTo(ret);
 		return ret;
 	}
 
-	if (g_activity.status != null && g_activity.status != undefined && g_activity.status != g_statusAccepted) {
+	if (!(!g_activity.status) && g_activity.status != g_statusAccepted) {
 		// for host viewing unaccepted activity
 		$("<p>", {
 			"class": "comment-not-permitted .warning",
-			text: MESSAGES["comment_disabled_activity_not_accepted"]
+			text: MESSAGES.comment_disabled_activity_not_accepted
 		}).appendTo(ret);
 		return ret;
 	}
@@ -143,9 +143,9 @@ function displayActivityDetail(par){
 	// Comment editor
 	generateCommentEditor(ret, g_activity);
 	g_onCommentSubmitSuccess = function() {
-		if (g_commentId == null)	listCommentsAndRefresh(g_activity);
+		if (!g_commentId)	listCommentsAndRefresh(g_activity);
 		else listSubCommentsAndRefresh(g_commentId); 
-	}
+	};
 
 	return ret;
 }
@@ -166,12 +166,12 @@ function requestActivityDetail(activityId) {
 
 	g_activityId = activityId;
 	g_sectionActivity = $("#section-activity");
-	g_sectionNav = $("#section-nav")
+	g_sectionNav = $("#section-nav");
 	g_sectionPanes = $("#section-panes");
 	g_barButtons = $("#section-player");
 
 	var refs = ["tab-comments", "tab-participants", "tab-assessments"];
-	var titles = [TITLES["question"], TITLES["participant"], TITLES["assessment"]];
+	var titles = [TITLES.question, TITLES.participant, TITLES.assessment];
 	var preactiveRef = refs[0];	
 		
 	var tabCommentContent = $("<div>", {
