@@ -13,7 +13,7 @@ public abstract class AbstractMessage extends AbstractSimpleMessage {
         public static final String FROM = "from";
         public static final String TO = "to";
 
-        public static final String FROM_PLAYER = "froplayer";
+        public static final String FROM_PLAYER = "from_player";
         public static final String TO_PLAYER = "to_player";
 
         public static final String GENERATED_TIME = "generated_time";
