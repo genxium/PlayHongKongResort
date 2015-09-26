@@ -791,25 +791,26 @@ function Captcha(sid) {
 	this.sid = sid;
 	this.input = null;
 	this.img = null;
-	this.hide = function() {
-		this.input.hide();
-		this.img.hide();
-		this.input.parent().hide();
+	this.hasImg = function() {
+		var imgSrc = this.img.attr("src");
+		return (!(!imgSrc) && imgSrc.length !== 0);
 	};
-	this.show = function() {
-		this.input.parent().show();
-		this.input.show();
-		this.img.show();
+	this.updateImg = function() {
+		this.img.attr("src", "/captcha?" + g_keySid + "=" + this.sid + "&ts=" + new Date().getTime());
 	};
-	this.appendTo = function(par) {
+	this.composeContent = function(data) {
 		var row = $("<div>", {
 			"class": "captcha"
-		}).appendTo(par);
+		}).appendTo(this.content);
 		this.input = $("<input>", {
 			placeHolder: HINTS.captcha
+		}).on("focusin", this, function(evt) {
+			var widget = evt.data;
+			if (widget.hasImg()) return;
+			widget.updateImg();	 
 		}).appendTo(row);
 		this.img = $("<img>", {
-			src: "/captcha?" + g_keySid + "=" + this.sid
+			src: ""
 		}).appendTo(row);
 		var btnChange = $("<button>", {
 			"class": "change"
@@ -817,11 +818,13 @@ function Captcha(sid) {
 
 		btnChange.click(this, function(evt) {
 			evt.preventDefault();
-			var captcha = evt.data;	
-			captcha.img.attr("src", "/captcha?" + g_keySid + "=" + captcha.sid + "&ts=" + new Date().getTime());
+			var widget = evt.data;	
+			widget.updateImg();
 		});
 	};
 }
+
+Captcha.inherits(BaseWidget);
 
 /*
  * WordCounter Widget

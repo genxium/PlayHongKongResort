@@ -2,20 +2,14 @@ function clearHome() {
 	$("#pager-filters").empty();
 	$("#pager-bar-activities").empty();
 	$("#pager-screen-activities").empty();
-	removeRegisterWidget();
+	g_registerWidgetY.hide();
+	g_registerWidgetX.hide();
 }
 
 function requestHome() {
 	clearProfile();
 	clearDetail();
 	clearNotifications();
-	g_registerWidget = generateRegisterWidget($("#section-register"), false, 
-						function(data) {
-							alert(ALERTS.registered);
-						},
-						function(err) {
-							alert(ALERTS.not_registered);
-						});
 	var keySelector = createSelector($("#pager-filters"), [TITLES.defaulted, TITLES.begin_time, TITLES.deadline], ["", g_keyBeginTime, g_keyDeadline], null, null, null, null);
 	var orientationSelector = createSelector($("#pager-filters"), [TITLES.descendant, TITLES.ascendant], [g_orderDescend, g_orderAscend], null, null, null, null);
 	var keyFilter = new PagerFilter(g_keyOrderKey, keySelector);
@@ -27,18 +21,18 @@ function requestHome() {
 	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
 
 	var onLoginSuccess = function(data) {
-		if (!(!g_registerWidget)) g_registerWidget.hide();
+		if (!(!g_registerWidgetX)) g_registerWidgetX.hide();
 		listActivitiesAndRefresh();
 	};
 
 	var onLoginError = function(err) {
-		if (!(!g_registerWidget)) g_registerWidget.show();
+		if (!(!g_registerWidgetX)) g_registerWidgetX.show();
 		g_pager.screen.show();
 		listActivitiesAndRefresh();
 	};
 
 	var onLogoutSuccess = function(data) {
-		if (!(!g_registerWidget)) g_registerWidget.show();
+		if (!(!g_registerWidgetX)) g_registerWidgetX.show();
 		g_pager.screen.show();
 		listActivitiesAndRefresh();
 	}; 
@@ -120,6 +114,17 @@ $(document).ready(function(){
 	initActivityEditor(homepageContent);
 	initNameCompletionForm(homepageContent);
 	initQQWelcomePopup(homepageContent);
+
+	var onRegisterSuccess = function(data) {
+		alert(ALERTS.registered);
+	};
+	var onRegisterError = function(err) {
+		alert(ALERTS.not_registered);
+	};
+	initRegisterWidgetX($("#section-register"), onRegisterSuccess, onRegisterError);
+	initRegisterWidgetY(homepageContent, onRegisterSuccess, onRegisterError);
+	g_registerWidgetX.refresh();
+	g_registerWidgetY.refresh();
 
 	$(window).on("hashchange", function(evt) {
 		routeByHash();

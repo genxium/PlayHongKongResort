@@ -194,12 +194,11 @@ function ActivityEditor() {
 		}).appendTo(scheduleRow2);
 		this.beginTimePicker = generateDateSelection(scheduleCell22, gmtMiilisecToLocalYmdhi(beginTime));
 
-		var sid = null;
 		this.captcha = null;
 		if (isNewActivity) {
-			sid = generateUuid();  
-			this.captcha = new Captcha(sid);
+			this.captcha = new Captcha(generateUuid());
 			this.captcha.appendTo(form);
+			this.captcha.refresh();
 		}
 		
 		var buttons = $("<div>", {

@@ -92,11 +92,7 @@ function PreLoginForm(handle, psw, btn, forgot, registry, onLoginSuccess, onLogi
 	if (this.registry) {
 		this.registry.click(function(evt) {
 			evt.preventDefault();
-			/**
-			 * TODO: replace `$("#content")` by a member variable
-			 * */
-			g_registerWidget = generateRegisterWidget($("#content"), true, null, null);
-			g_sectionRegister.modal("show");
+			g_registerWidgetY.show();	
 		});
 	}
 } 
@@ -119,7 +115,7 @@ function NotiBubble(num, view) {
 }
 
 function PostLoginMenu(bubble, dropdownMenu, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
-	// TODO: refactor with container-dialog-appendTo-refresh pattern
+	// TODO: refactor with BaseModalWidget and BaseWidget inheritance 
 	this.bubble = bubble;
 	this.dropdownMenu = dropdownMenu;
 	this.onLoginSuccess = onLoginSuccess;
