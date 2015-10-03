@@ -53,9 +53,9 @@ function generateActivitiesListParams(pager, page) {
 	if (pager.nItems != null) params[g_keyNumItems] = pager.nItems;
 	if (g_vieweeId != null) params[g_keyVieweeId] = g_vieweeId;
 
-	if (pager.filters != null) {
-		for (var i = 0; i < pager.filters.length; ++i) {
-			var filter = pager.filters[i];
+	if (pager.filterList != null) {
+		for (var i = 0; i < pager.filterList.length; ++i) {
+			var filter = pager.filterList[i];
 			params[filter.key] = filter.selector.val();	
 		}
 	}
@@ -68,36 +68,7 @@ function generateActivitiesListParams(pager, page) {
 }
 
 function onListActivitiesSuccess(data){
-	var jsonResponse = data;
-
-	var pageSt = parseInt(jsonResponse[g_keyPageSt]);
-	var pageEd = parseInt(jsonResponse[g_keyPageEd]);
-	var page = pageSt;
-
-	var activitiesJson = jsonResponse[g_keyActivities];
-	var length = Object.keys(activitiesJson).length;
-
-	g_pager.screen.empty();
-	var activities = [];
-	for(var idx = 1; idx <= length; ++idx) {
-		var activityJson = activitiesJson[idx - 1];
-		var activity = new Activity(activityJson);
-		activities.push(activity);
-		if (page == g_pager.page) {
-			generateActivityCell(g_pager.screen, activity);
-		}
-
-		if (idx % g_pager.nItems != 0) continue;
-		g_pager.cache.putPage(page, activities);
-		activities = [];
-		++page;	
-	}
-	if (activities != null && activities.length > 0) {
-		// for the last page
-		g_pager.cache.putPage(page, activities);
-	}
-	
-	g_pager.refreshBar();
+	g_pager.refreshScreen(data);
 } 
 
 function onListActivitiesError(err){

@@ -98,21 +98,6 @@
 .activity-info .activity-cell-relation {
   float: right;
 }
-#pager-filters {
-  padding: 10px;
-}
-#pager-filters select {
-  margin-right: 10px;
-}
-#pager-bar-activities {
-  padding: 10px;
-}
-#pager-bar-activities button,
-.paginator button {
-  min-width: 30px;
-  height: 25px;
-  margin-right: 5px;
-}
 .activity-edit {
   width: 24px;
   height: 24px;

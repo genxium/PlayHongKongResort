@@ -1,7 +1,5 @@
 function clearHome() {
-	$("#pager-filters").empty();
-	$("#pager-bar-activities").empty();
-	$("#pager-screen-activities").empty();
+	$("#pager-activities").empty();
 	g_registerWidgetY.hide();
 	g_registerWidgetX.hide();
 }
@@ -10,15 +8,15 @@ function requestHome() {
 	clearProfile();
 	clearDetail();
 	clearNotifications();
-	var keySelector = createSelector($("#pager-filters"), [TITLES.defaulted, TITLES.begin_time, TITLES.deadline], ["", g_keyBeginTime, g_keyDeadline], null, null, null, null);
-	var orientationSelector = createSelector($("#pager-filters"), [TITLES.descendant, TITLES.ascendant], [g_orderDescend, g_orderAscend], null, null, null, null);
-	var keyFilter = new PagerFilter(g_keyOrderKey, keySelector);
-	var orientationFilter = new PagerFilter(g_keyOrientation, orientationSelector); 
-	var filters = [keyFilter, orientationFilter];	
-	var pagerCache = new PagerCache(5);
 
-	// initialize pager widgets
-	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
+	// initialize pager 
+	var filterMap = {};
+	filterMap[g_keyOrderKey] = [[TITLES.defaulted, TITLES.begin_time, TITLES.deadline], ["", g_keyBeginTime, g_keyDeadline]];
+	filterMap[g_keyOrientation] = [[TITLES.descendant, TITLES.ascendant], [g_orderDescend, g_orderAscend]];
+
+	g_pager = new HomeActivityPager(g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, 5, filterMap, onListActivitiesSuccess, onListActivitiesError);
+	g_pager.appendTo("#pager-activities");
+	g_pager.refresh();
 
 	var onLoginSuccess = function(data) {
 		if (!(!g_registerWidgetX)) g_registerWidgetX.hide();
@@ -27,13 +25,11 @@ function requestHome() {
 
 	var onLoginError = function(err) {
 		if (!(!g_registerWidgetX)) g_registerWidgetX.show();
-		g_pager.screen.show();
 		listActivitiesAndRefresh();
 	};
 
 	var onLogoutSuccess = function(data) {
 		if (!(!g_registerWidgetX)) g_registerWidgetX.show();
-		g_pager.screen.show();
 		listActivitiesAndRefresh();
 	}; 
 

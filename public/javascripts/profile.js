@@ -209,9 +209,7 @@ function ProfileEditor() {
 ProfileEditor.inherits(BaseWidget);
 
 function clearProfile() {
-	$("#pager-filters").empty();
-	$("#pager-bar-activities").empty();
-	$("#pager-screen-activities").empty();
+	$("#pager-activities").empty();
 	if (!g_sectionPlayer) return;
 	g_sectionPlayer.empty();
 }
@@ -250,17 +248,16 @@ function queryPlayerDetail(){
 			
 			// refresh pager for assessments
 			if (!(!g_pagerAssessments)) g_pagerAssessments.remove();
-			var pagerBar = $("<div>", {
-				id: "pager-bar-assessments"
-			}).appendTo(g_sectionPlayer);
 			var pagerScreen = $("<div>", {
-				id: "pager-screen-assessments"
+				id: "pager-assessments"
 			}).appendTo(g_sectionPlayer);
-			var pagerCache = new PagerCache(5);
 			var extraParams = {
 				to: g_viewee.id
 			};
-			g_pagerAssessments = new Pager(pagerScreen, pagerBar, 10, "/assessment/list", generateAssessmentsListParams, extraParams, pagerCache, null, onQueryAssessmentsSuccess, onQueryAssessmentsError); 	
+			g_pagerAssessments = new Pager(10, "/assessment/list", generateAssessmentsListParams, extraParams, 5, null, onQueryAssessmentsSuccess, onQueryAssessmentsError); 	
+			g_pagerAssessments.appendTo(pagerScreen);
+			g_pagerAssessments.refresh();
+
 			if (!g_loggedInPlayer) return;
 			if (g_loggedInPlayer.hasEmail() && !g_loggedInPlayer.isEmailAuthenticated() && g_vieweeId == g_loggedInPlayer.id) {
 				var resendHint = null;
@@ -296,18 +293,15 @@ function requestProfile(vieweeId) {
 	clearDetail();	
 	clearNotifications();
 	g_vieweeId = vieweeId;
-
 	g_sectionPlayer = $("#section-player");
-
-	var relationSelector = createSelector($("#pager-filters"), [TITLES.hosted_activities, TITLES.joined_activities], [hosted, present], null, null, null, null);
-	var orientationSelector = createSelector($("#pager-filters"), [TITLES.time_descendant, TITLES.time_ascendant], [g_orderDescend, g_orderAscend], null, null, null, null);
-	var relationFilter = new PagerFilter(g_keyRelation, relationSelector);
-	var orientationFilter = new PagerFilter(g_keyOrientation, orientationSelector); 
-	var filters = [relationFilter, orientationFilter];	
-	var pagerCache = new PagerCache(5);
 	
-	// initialize pager widgets
-	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, pagerCache, filters, onListActivitiesSuccess, onListActivitiesError);
+	// initialize pager 
+	var filterMap = {};
+	filterMap[g_keyRelation] = [[TITLES.hosted_activities, TITLES.joined_activities], [hosted, present]]; 
+	filterMap[g_keyOrientation] = [[TITLES.time_descendant, TITLES.ascendant], [g_orderDescend, g_orderAscend]];
+	g_pager = new Pager(g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, 5, filterMap, onListActivitiesSuccess, onListActivitiesError);
+	g_pager.appendTo("#pager-activities");
+	g_pager.refresh();
 	
 	var onLoginSuccess = function(data) {
 		queryPlayerDetail();

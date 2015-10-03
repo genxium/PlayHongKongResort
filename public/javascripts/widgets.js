@@ -3,8 +3,6 @@
  * */
 
 function BaseWidget() {
-	this.content = null;
-		
 	this.refresh = function(data) {
 		if (!this.content) return;
 		this.content.empty();
@@ -34,8 +32,6 @@ function BaseWidget() {
  */
 
 function BaseModalWidget() {
-	this.container = null;
-	this.dialog = null;
 }
 
 BaseModalWidget.inherits(BaseWidget);
@@ -69,8 +65,6 @@ function ImageNode() {
 
 	// TODO: only supports ProfileEditor and ActivityEditor at the moment
 	this.state = SLOT_IDLE; 
-	this.cdn = null;
-	this.bucketDomain = null;
 	this.uploader = null;
 	this.wrap = null;
 	this.preview = null;
@@ -95,7 +89,6 @@ ImageNode.inherits(BaseWidget);
 
 function ActivityEditorImageNode(cdn, domain) {
 	this.setCDNCredentials(cdn, domain, getToken(), g_loggedInPlayer);	
-	this.btnDel = null;
 	this.requestDel = function(onSuccess, onError) {
 		// async process
 		var token = getToken();				
@@ -340,7 +333,6 @@ function AjaxButton(text, url, clickData, method, extraParams, onSuccess, onErro
 	this.extraParams = extraParams;
 	this.onSuccess = onSuccess;
 	this.onError = onError;
-	this.button = null;
 	this.appendTo = function(par) {
 		this.remove();
 		this.button = $("<button>", {
@@ -443,24 +435,6 @@ function generateDatePicker(par, time, onEdit) {
  * Pager Widgets
  */
 
-function createSelector(par, titles, values, width, height, left, top) {
-	if (titles.length != values.length) return;
-	var length = titles.length;
-
-	var ret = $("<select>").appendTo(par);
-	
-	for (var i = 0; i < length; ++i) {
-		var title = titles[i];
-		var val = values[i];
-		$("<option>", {
-			text: title,
-			value: val
-		}).appendTo(ret);
-	}	
-
-	return ret;
-}
-
 function PagerFilter(key, selector) {
 	this.key = key;
 	this.selector = selector;
@@ -506,50 +480,102 @@ function PagerButton(pager, page) {
 	this.page = page;
 }
 
-function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, pagerCache, filters, onSuccess, onError) {
+// TODO: create subclasses HomeActivityPager, ProfileActivityPager, CommentPager, AssessmentPager etc. 
+function Pager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
+	
+	this.init = function(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
 
-	this.screen = screen; // screen of the pager
-	this.nItems = numItemsPerPage; // number of items per page
+		this.nItems = numItemsPerPage; 
+		this.page = 1; 
+		this.total = 0; 
 
-	this.page = 1; // current page
-	this.total = 0; // initial number of total pages should always be 0
+		// starting & ending indices of the current page
+		// the indices are set to -infinity & infinity respectively by default to facilitate initialization after the first query of items
+		// they could be either integers or strings	
+		this.st = -g_inf; 
+		this.ed = g_inf; 
 
-	// starting & ending indices of the current page
-	// the indices are set to -infinity & infinity respectively by default to facilitate initialization after the first query of items
-	// they could be either integers or strings	
-	this.st = -g_inf; 
-	this.ed = g_inf; 
-	this.url = url;
+		this.url = url;
+		// prototype: paramsGenerator(Pager, page)
+		this.paramsGenerator = paramsGenerator;
+		this.extraParams = extraParams;
 
-	// prototype: paramsGenerator(Pager, page)
-	this.paramsGenerator = paramsGenerator;
-	this.extraParams = extraParams;
+		this.onSuccess = onSuccess;
+		this.onError = onError;
 
-	// prototypes: onSuccess(data), onError(err)
-	this.onSuccess = onSuccess;
-	this.onError = onError;
-		
-	// pager cache
-	this.cache = pagerCache;
+		this.cache = new PagerCache(cacheSize);
+
+		// filter map in {key: [titleList, valueList]} format
+		this.filterMap = filterMap;		
+	};
+
+	this.refreshFilters = function() {
+		this.filterList = [];
+		if (!this.filterMap) return;
+		for (var key in this.filterMap) {
+			var tuplet = this.filterMap[key];	
+			var titleList = tuplet[0];
+			var valueList = tuplet[1];	
+			
+			var selector  = $("<select>").appendTo(this.filterBar);
+			
+			var length = titleList.length;
+			for (var i = 0; i < length; ++i) {
+				var title = titleList[i];
+				var value = valueList[i];
+				$("<option>", {
+					text: title,
+					value: value
+				}).appendTo(selector);
+			}	
+			var selectorOnChange = function(evt){
+				var pager = evt.data;
+				var params = pager.paramsGenerator(pager, 1);	
+				if (!params) return;
+				var selector = filter.selector;
+				disableField(selector);
+				$.ajax({
+				    type: "GET",
+				    url: pager.url,
+				    data: params,
+				    success: function(data, status, xhr) {
+						var size = pager.cache.size;
+						pager.cache = new PagerCache(size);
+						enableField(selector);
+						pager.onSuccess(data);
+				    },
+				    error: function(xhr, status, err) {
+						enableField(selector);
+						pager.onError(err);
+				    }
+				});
+			};
+			selector.change(this, selectorOnChange);	
+			var filter = new PagerFilter(key, selector);
+			this.filterList.push(filter);
+		}	
+	};
+	this.createFilters = function() {
+		this.filterBar = $("<div>").appendTo(this.content);
+		this.refreshFilters();
+	};
 
 	// pager bar
-	this.bar = bar; // control bar of the pager
-	if (!this.bar) return;
 	this.refreshBar = function() {
 		var pager = this;
 		var page = pager.page;
 		var pagerCache = pager.cache;
-		// display pager bar 
+
 		pager.bar.empty();
 		var length = Object.keys(pagerCache.map).length;
 		if (length <= 1) return;
 		var indicatorOnClick = function(evt) {
 			if (!pager.url) return;
+			var indicator = getTarget(evt);
 			var pagerButton = evt.data;
 			pager.page = pagerButton.page;
 			var params = pager.paramsGenerator(pager, pagerButton.page);
 			if (!params) return;
-			var indicator = getTarget(evt);
 			disableField(indicator);
 			$.ajax({
 				type: "GET",
@@ -566,13 +592,11 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 			});
 		};
 		for(var key in pagerCache.map) {
-
 			var index = parseInt(key);
 			var indicator = $("<button>", {
 				text: index,
 				"class": "plain-button pager-button"
 			}).appendTo(pager.bar);
-		
 			var pagerButton = new PagerButton(pager, index);
 			indicator.click(pagerButton, indicatorOnClick);
 			
@@ -581,57 +605,61 @@ function Pager(screen, bar, numItemsPerPage, url, paramsGenerator, extraParams, 
 			indicator.addClass("active-button");
 		}	
 	};	
+	this.createBar = function() {
+		this.bar = $("<div>").appendTo(this.content); // control bar of the pager
+		this.refreshBar();
+	}; 
 
-	this.squeeze = function() {
-		// encapsulated for convenience
-		setDimensions(this.screen.parent(), "0px", null);
-		this.screen.parent().hide();
+	this.refreshScreen = function(data) {
+		this.screen.empty();
+		this.updateScreen(data);
 	};
 
-	this.expand = function(width) {
-		// encapsulated for convenience
-		if (!width) width = "100%";
-		setDimensions(this.screen.parent(), width, null);
-		this.screen.parent().show();
+	this.createScreen = function(data) {
+		this.screen = $("<div>").appendTo(this.content);
+		this.refreshScreen(data);
 	};
-		
-	this.remove = function() {
-		if (!this.screen) return;
-		this.screen.remove();
-	};
-	
-	// multi-level filters
-	this.filters = filters;
-	
-	if (!filters) return;
-	var pager = this;
-	var selectorOnChange = function(evt){
-		var pager = evt.data;
-		var params = pager.paramsGenerator(pager, 1);	
-		if (!params) return;
-		var selector = filter.selector;
-		disableField(selector);
-		$.ajax({
-		    type: "GET",
-		    url: pager.url,
-		    data: params,
-		    success: function(data, status, xhr) {
-				var size = pager.cache.size;
-				pager.cache = new PagerCache(size);
-				enableField(selector);
-				pager.onSuccess(data);
-		    },
-		    error: function(xhr, status, err) {
-				enableField(selector);
-				pager.onError(err);
-		    }
-		});
-	};
-	for (var i = 0; i < filters.length; ++i) {
-		var filter = filters[i];
-		filter.selector.change(pager, selectorOnChange);	
-	}
+
+	this.composeContent = function(data) {
+		if (!this.filterBar) this.createFilters();
+		if (!this.bar) this.createBar();
+		if (!this.screen) this.createScreen(data);
+	}; 
 }
+
+Pager.inherits(BaseWidget);
+
+function HomeActivityPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
+	this.init(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError);
+
+	this.updateScreen = function(data) {
+		if (!data) return;
+		var pageSt = parseInt(data[g_keyPageSt]);
+		var pageEd = parseInt(data[g_keyPageEd]);
+		var page = pageSt;
+
+		var activitiesJson = data[g_keyActivities];
+		var length = Object.keys(activitiesJson).length;
+
+		var activities = [];
+		for(var idx = 1; idx <= length; ++idx) {
+			var activityJson = activitiesJson[idx - 1];
+			var activity = new Activity(activityJson);
+			activities.push(activity);
+			if (page == this.page)	generateActivityCell(this.screen, activity);
+			if (idx % this.nItems != 0) continue;
+			this.cache.putPage(page, activities);
+			activities = [];
+			++page;	
+		}
+		if (activities != null && activities.length > 0) {
+			// for the last page
+			this.cache.putPage(page, activities);
+		}
+	};
+}
+
+HomeActivityPager.inherits(Pager);
 
 function Announcement() {
 	this.composeContent = function(data) {
@@ -698,7 +726,6 @@ function DropdownMenu(toggle, items, reactions) {
 	this.toggle = toggle; // toggle is button element
 	this.items = items; // items are <li> elements
 	this.reactions = reactions; // reactions are onClick(evt) functions
-	this.reactionParams = null;
 	this.setReactionParams = function(params) {
 		this.reactionParams = params;	
 		var length = params.length;
@@ -709,8 +736,8 @@ function DropdownMenu(toggle, items, reactions) {
 	};
 }
 
-function createDropdownMenu(par, id, menuTitle, icons, actionNames, titles, reactions) {
-	var length = titles.length;
+function createDropdownMenu(par, id, menuTitle, icons, actionNames, titleList, reactions) {
+	var length = titleList.length;
 	if (length != icons.length) return; 
 	var container = $("<div>", { "class": "menu-actions" }).appendTo(par);
 	// these params indicate that the container is centred
@@ -732,16 +759,16 @@ function createDropdownMenu(par, id, menuTitle, icons, actionNames, titles, reac
 	var ul = $("<ul>", {
 	}).appendTo(container); 
 	var lis = [];
-	for (var i = 0; i < titles.length; i++) {
+	for (var i = 0; i < titleList.length; i++) {
 		var li = $("<li class='action-" + actionNames[i] + " patch-block-gamma'>").appendTo(ul);
-		var action = $("<a class='patch-block-gamma' tabindex='-1' href='#' title='"+titles[i]+"'>").appendTo(li);
+		var action = $("<a class='patch-block-gamma' tabindex='-1' href='#' title='"+titleList[i]+"'>").appendTo(li);
 		//action.css("font-size", "15pt");
 		//action.css("display", "block"); // increase the size of the link target, ref: http://css-tricks.com/keep-margins-out-of-link-lists/
 		//action.css("padding", "5px");
 		//action.css("text-align", "center");
 		//action.css("vertical-align", "middle");
 		//setBackgroundImage(action, icons[i], "contain", "no-repeat", "left center");
-		action.text(titles[i]);
+		action.text(titleList[i]);
 		lis.push(li);
 	}
 	return new DropdownMenu(toggle, lis, reactions);
@@ -755,7 +782,7 @@ function NavTab(panes) {
 	this.panes = panes;
 }
 
-function createNavTab(par, refs, titles, preactiveRef, sectionPanes, contents) {
+function createNavTab(par, refs, titleList, preactiveRef, sectionPanes, contents) {
 	var ul = $("<ul class='nav nav-pills' role='tablist'>").appendTo(par);
 	var length = refs.length;
 	for (var i = 0; i < length; i++) {
@@ -763,7 +790,7 @@ function createNavTab(par, refs, titles, preactiveRef, sectionPanes, contents) {
 		if (refs[i] == preactiveRef)	li = $("<li role='presentation' class='active'>").appendTo(ul);
 		else li = $("<li role='presentation'>").appendTo(ul);
 		var href = $("<a href='#" + refs[i] + "' role='tab' data-toggle='tab'>").appendTo(li);
-		href.text(titles[i]);	
+		href.text(titleList[i]);	
 	}
 	var panes = [];
 	for (var j = 0; j < length; j++) {
@@ -789,8 +816,6 @@ function createNavTabPane(par, ref, isPreactive, content) {
 
 function Captcha(sid) {
 	this.sid = sid;
-	this.input = null;
-	this.img = null;
 	this.hasImg = function() {
 		var imgSrc = this.img.attr("src");
 		return (!(!imgSrc) && imgSrc.length !== 0);
@@ -836,9 +861,6 @@ function WordCounter(text, min, max, regex, violationHint) {
 	this.max = max;
 	this.regex = regex;
 	this.violationHint = violationHint;
-	this.currentText = null;
-	this.maxText = null;
-	this.hintText = null;
 	this.update = function(text) {
 		this.text = text;
 		this.currentText.text(text.length);	
@@ -870,3 +892,26 @@ function WordCounter(text, min, max, regex, violationHint) {
 		return (regex.test(this.text));
 	};
 }
+
+/**
+ * RegexInputWidget
+ * */
+
+function RegexInputWidget() {
+
+}
+
+/**
+ * SearchWidget
+ * */
+
+function SearchWidget() {
+	this.collapse = function() {
+
+	};
+	this.expand = function() {
+
+	};
+}
+
+SearchWidget.inherits(BaseWidget);

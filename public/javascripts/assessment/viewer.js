@@ -146,11 +146,11 @@ function queryAssessmentsAndRefresh(to, activityId) {
 }
 
 function onListAssessmentsSuccess(data) {
-	if (data == null || Object.keys(data).length == 0) return;
-	var assessments = new Array();
+	if (!data || Object.keys(data).length === 0) return;
+	var assessments = [];
 	for (var key in data) {
-		var assessmentJson = data[key];
-		var assessment = new Assessment(assessmentJson);
+		var json = data[key];
+		var assessment = new Assessment(json);
 		assessments.push(assessment);
 	}
 	/*
@@ -158,7 +158,7 @@ function onListAssessmentsSuccess(data) {
 	 * */	
 	for (var i = 0; i < assessments.length; ++i) {
 		var assessment = assessments[i];		
-		generateAssessmentTag(g_pagerAssessments.screen, assessment);	
+		generateAssessmentTag(g_pagerAssessments.content, assessment);	
 	}
 }
 
