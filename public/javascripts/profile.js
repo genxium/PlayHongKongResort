@@ -246,16 +246,14 @@ function queryPlayerDetail(){
 			g_profileEditor.appendTo(profile);	
 			g_profileEditor.refresh(g_viewee);
 			
+			var pagerAssessmentSection = $("#pager-assessments");
 			// refresh pager for assessments
 			if (!(!g_pagerAssessments)) g_pagerAssessments.remove();
-			var pagerScreen = $("<div>", {
-				id: "pager-assessments"
-			}).appendTo(g_sectionPlayer);
 			var extraParams = {
 				to: g_viewee.id
 			};
-			g_pagerAssessments = new Pager(10, "/assessment/list", generateAssessmentsListParams, extraParams, 5, null, onQueryAssessmentsSuccess, onQueryAssessmentsError); 	
-			g_pagerAssessments.appendTo(pagerScreen);
+			g_pagerAssessments = new AssessmentPager(10, "/assessment/list", generateAssessmentsListParams, extraParams, 5, null, onListAssessmentsSuccess, onListAssessmentsError); 	
+			g_pagerAssessments.appendTo(pagerAssessmentSection);
 			g_pagerAssessments.refresh();
 
 			if (!g_loggedInPlayer) return;
@@ -299,7 +297,8 @@ function requestProfile(vieweeId) {
 	var filterMap = {};
 	filterMap[g_keyRelation] = [[TITLES.hosted_activities, TITLES.joined_activities], [hosted, present]]; 
 	filterMap[g_keyOrientation] = [[TITLES.time_descendant, TITLES.ascendant], [g_orderDescend, g_orderAscend]];
-	g_pager = new Pager(g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, 5, filterMap, onListActivitiesSuccess, onListActivitiesError);
+
+	g_pager = new ProfileActivityPager(g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, 5, filterMap, onListActivitiesSuccess, onListActivitiesError);
 	g_pager.appendTo("#pager-activities");
 	g_pager.refresh();
 	

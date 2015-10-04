@@ -1,6 +1,7 @@
 var g_sectionAssessmentsViewer = null;
 var g_modalAssessmentsViewer = null;
 var g_assessmentsViewer = null;
+
 var g_nAssessmentsPerPage = 20;
 var g_pagerAssessments = null;
 
@@ -84,15 +85,14 @@ function onQueryAssessmentsSuccess(data) {
 		alert(ALERTS["no_assessment"]);
 		return;
 	}
-	var assessments = new Array();
+	var assessments = [];
 	for(var key in data) {
 		var assessmentJson = data[key];
 		var assessment = new Assessment(assessmentJson);
 		assessments.push(assessment);
 	}
 	
-	showAssessmentsViewer(assessments);				
-	
+	showAssessmentsViewer(assessments);
 }
 
 function onQueryAssessmentsError(err) {
@@ -146,20 +146,7 @@ function queryAssessmentsAndRefresh(to, activityId) {
 }
 
 function onListAssessmentsSuccess(data) {
-	if (!data || Object.keys(data).length === 0) return;
-	var assessments = [];
-	for (var key in data) {
-		var json = data[key];
-		var assessment = new Assessment(json);
-		assessments.push(assessment);
-	}
-	/*
-	 * should show results in a pager widget
-	 * */	
-	for (var i = 0; i < assessments.length; ++i) {
-		var assessment = assessments[i];		
-		generateAssessmentTag(g_pagerAssessments.content, assessment);	
-	}
+	g_pagerAssessments.refreshScreen(data);
 }
 
 function onListAssessmentsError(err) {
