@@ -251,7 +251,7 @@ public class ActivityController extends Controller {
                          * begin SQL-transaction guard
                          * */
                         boolean transactionSucceeded = true;
-                        Connection connection = SQLHelper.getConnection();
+                        final Connection connection = SQLHelper.getConnection();
 
                         try {
                                 if (connection == null) throw new NullPointerException();

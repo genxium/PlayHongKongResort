@@ -97,31 +97,31 @@ public class AdminController extends Controller {
 
     public static Result prioritize() {
         try {
-            Map<String, String[]> formData = request().body().asFormUrlEncoded();
+            final Map<String, String[]> formData = request().body().asFormUrlEncoded();
             String token = formData.get(Player.TOKEN)[0];
 
-            Long playerId = DBCommander.queryPlayerId(token);
+            final Long playerId = DBCommander.queryPlayerId(token);
             if (playerId == null) throw new PlayerNotFoundException();
 
-            Player player = DBCommander.queryPlayer(playerId);
+            final Player player = DBCommander.queryPlayer(playerId);
             if (player == null) throw new PlayerNotFoundException();
             if (!DBCommander.validateAdminAccess(player)) throw new AccessDeniedException();
 
-            Integer priority = Converter.toInteger(formData.get(Activity.PRIORITY)[0]);
+            final Integer priority = Converter.toInteger(formData.get(Activity.PRIORITY)[0]);
             if (priority == null) throw new InvalidRequestParamsException();
 
-            Integer orderMask = Converter.toInteger(formData.get(Activity.ORDER_MASK)[0]);
+            final Integer orderMask = Converter.toInteger(formData.get(Activity.ORDER_MASK)[0]);
             if (orderMask == null) throw new InvalidRequestParamsException();
 
-            Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
+            final Long activityId = Converter.toLong(formData.get(PlayerActivityRelation.ACTIVITY_ID)[0]);
             if (activityId == null) throw new InvalidRequestParamsException();
 
-            Activity activity = DBCommander.queryActivity(activityId);
+            final Activity activity = DBCommander.queryActivity(activityId);
             if (activity == null) throw new ActivityNotFoundException();
 
             if (activity.getStatus() != Activity.ACCEPTED) throw new ActivityNotAcceptedException();
 
-            SQLBuilder builder = new SQLBuilder();
+            final SQLBuilder builder = new SQLBuilder();
             builder.update(Activity.TABLE)
                     .set(Activity.PRIORITY, priority)
                     .set(Activity.ORDER_MASK, orderMask)

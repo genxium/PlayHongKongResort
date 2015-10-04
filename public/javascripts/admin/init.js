@@ -1,10 +1,48 @@
 var g_keyStatusIndicator = "status-indicator";
+var g_pagerActivity = null; 
+
+function AdminActivityPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
+	this.init(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError);
+
+	this.updateScreen = function(data) {
+			
+		if (!data) return;
+
+		var pageSt = parseInt(data[g_keyPageSt]);
+		var pageEd = parseInt(data[g_keyPageEd]);
+		var page = pageSt;
+
+		var activitiesJson = data[g_keyActivities];
+		var length = Object.keys(activitiesJson).length;
+
+		var activities = [];
+		for(var idx = 1; idx <= length; ++idx) {
+			var activityJson = activitiesJson[idx - 1];
+			var activity = new Activity(activityJson);
+			activities.push(activity);
+			if (page == this.page) {
+				generateActivityCellForAdmin(this.screen, activity);
+			}
+
+			if (idx % this.nItems !== 0) continue;
+			this.cache.putPage(page, activities);
+			activities = [];
+			++page;
+		}
+		if (!(!activities) && activities.length > 0) {
+			// for the last page
+			this.cache.putPage(page, activities);
+		}
+
+	};
+}
+
+AdminActivityPager.inherits(Pager);
 
 function OrderOption (editor, bitCode, labelName, initChecked) {
 	this.editor = editor;
 	this.bitCode = bitCode;
 	this.labelName = labelName;
-	this.checkbox = null;
 	this.initChecked = initChecked;
 	this.appendTo = function(par) {
 		var container = $("<p>", {
@@ -15,10 +53,6 @@ function OrderOption (editor, bitCode, labelName, initChecked) {
 			"class": "order-label"
 		}).appendTo(container);
 
-		this.checkbox = $("<input>",{
-			type: "checkbox",
-			"class": "order-checkbox"
-		}).appendTo(label);
 
 		var name = $("<plaintext>", {
 			"class": "order-label-name",
@@ -26,28 +60,26 @@ function OrderOption (editor, bitCode, labelName, initChecked) {
 		}).appendTo(label);
 	
 		var aEditor = this.editor;
-		this.checkbox.change(function(evt) {
+		this.checkbox = $("<input>",{
+			type: "checkbox",
+			"class": "order-checkbox"
+		}).appendTo(label).change(function(evt) {
 			aEditor.enableSubmit();
 		});
 		if (this.initChecked > 0)	this.check();
 	};
 	this.check = function() {
-		if (this.checkbox == null) return;
+		if (!this.checkbox) return;
 		checkField(this.checkbox); 	
 	};
 	this.uncheck = function() {
-		if (this.checkbox == null) return;
+		if (!this.checkbox) return;
 		uncheckField(this.checkbox); 	
 	};
 }
 
 function PriorityEditor (activity) {
 	this.activity = activity;
-	this.btnCheckAll = null;
-	this.btnUncheckAll = null;
-	this.orderOptionList = null;
-	this.selectPriority = null;
-	this.btnSubmit = null;
 	this.disableSubmit = function () {
 		disableField(this.btnSubmit);
 	};
@@ -73,31 +105,27 @@ function PriorityEditor (activity) {
 		}).appendTo(container);
 
 		this.btnCheckAll = $("<button>", {
-			"class": "priority-editor-check-all",
-			text: TITLES["check_all"]
-		}).appendTo(buttonsRow);
-
-		this.btnUncheckAll = $("<button>", {
-			"class": "priority-editor-uncheck-all",
-			text: TITLES["uncheck_all"]
-		}).appendTo(buttonsRow);
-
-		this.btnCheckAll.click(function(evt) {
+			"class": "positive-button",
+			text: TITLES.check_all
+		}).appendTo(buttonsRow).click(function(evt) {
 			evt.preventDefault();
 			for (var i = 0; i < aEditor.orderOptionList.length; ++i) {
 				var orderOption = aEditor.orderOptionList[i];
 				orderOption.check();
-				aEditor.enableSubmit();
 			}
+			aEditor.enableSubmit();
 		});
 
-		this.btnUncheckAll.click(function(evt) {
+		this.btnUncheckAll = $("<button>", {
+			"class": "positive-button",
+			text: TITLES.uncheck_all
+		}).appendTo(buttonsRow).click(function(evt) {
 			evt.preventDefault();
 			for (var i = 0; i < aEditor.orderOptionList.length; ++i) {
 				var orderOption = aEditor.orderOptionList[i];
 				orderOption.uncheck();
-				aEditor.enableSubmit();	
 			}
+			aEditor.enableSubmit();	
 		});
 		
 		var sectionOrderList = $("<p>", {
@@ -105,7 +133,7 @@ function PriorityEditor (activity) {
 		}).appendTo(container);
 		this.orderOptionList = [];
 
-		var labelNameList = [TITLES["last_accepted_time"], TITLES["begin_time"], TITLES["deadline"]];
+		var labelNameList = [TITLES.last_accepted_time, TITLES.begin_time, TITLES.deadline];
 		var bitCodeList = [1, 2, 4];
 
 		var length = labelNameList.length;
@@ -114,7 +142,7 @@ function PriorityEditor (activity) {
 			var labelName = labelNameList[i];
 			var bitCode = bitCodeList[i];
 			var initChecked = ((activity.orderMask & bitCode) > 0 ? 1 : 0);
-			var orderOption = new OrderOption(this, bitCode, labelName, (activity.orderMask & bitCode));
+			var orderOption = new OrderOption(this, bitCode, labelName, initChecked);
 			orderOption.appendTo(sectionOrderList);
 			this.orderOptionList.push(orderOption);	
 		}
@@ -124,14 +152,12 @@ function PriorityEditor (activity) {
 		}).appendTo(container);
 		
 		this.btnSubmit = $("<button>", {
-			text: TITLES["update"],
-			"class": "priority-editor-submit"
-		}).appendTo(sectionSubmit);
-
-		this.btnSubmit.click(function(evt) {
+			text: TITLES.update,
+			"class": "positive-button"
+		}).appendTo(sectionSubmit).click(function(evt) {
 			evt.preventDefault();
 			var token = getToken();
-			if (token == null) return;
+			if (!token) return;
 
 			var orderMask = 0;
 			for (var i = 0; i < aEditor.orderOptionList.length; ++i) {
@@ -157,7 +183,7 @@ function PriorityEditor (activity) {
 					aEditor.activity.orderMask = orderMask;
 				},
 				error: function(xhr, status, err) {
-					alert(ALERTS["not_updated"]);
+					alert(ALERTS.not_updated);
 					aEditor.enableSubmit();
 				} 
 			});
@@ -171,7 +197,7 @@ function PriorityEditor (activity) {
 // Assistant Handlers
 function onBtnAcceptClicked(evt) {
 
-	var btnAccept = $(evt.srcElement ? evt.srcElement : evt.target);
+	var btnAccept = getTarget(evt);
 
 	evt.preventDefault();
 	var data = evt.data;
@@ -207,7 +233,7 @@ function onBtnAcceptClicked(evt) {
 
 function onBtnRejectClicked(evt) {
 
-	var btnReject = $(evt.srcElement ? evt.srcElement : evt.target);
+	var btnReject = getTarget(evt);
 
 	evt.preventDefault();
 	var data = evt.data;
@@ -243,7 +269,7 @@ function onBtnRejectClicked(evt) {
 
 function onBtnDeleteClicked(evt){
 
-	var btnDelete = $(evt.srcElement ? evt.srcElement : evt.target);
+	var btnDelete = getTarget(evt);
 
 	evt.preventDefault();
 	var data = evt.data;
@@ -287,36 +313,8 @@ function onListActivitiesSuccessAdmin(data) {
 		logout(null);
 		return;
 	}
-	var jsonResponse = data;
 
-	var pageSt = parseInt(jsonResponse[g_keyPageSt]);
-	var pageEd = parseInt(jsonResponse[g_keyPageEd]);
-	var page = pageSt;
-
-	var activitiesJson = jsonResponse[g_keyActivities];
-	var length = Object.keys(activitiesJson).length;
-
-	g_pager.screen.empty();
-	var activities = [];
-	for(var idx = 1; idx <= length; ++idx) {
-		var activityJson = activitiesJson[idx - 1];
-		var activity = new Activity(activityJson);
-		activities.push(activity);
-		if (page == g_pager.page) {
-			generateActivityCellForAdmin(g_pager.screen, activity);
-		}
-
-		if (idx % g_pager.nItems != 0) continue;
-		g_pager.cache.putPage(page, activities);
-		activities = [];
-		++page;
-	}
-	if (activities != null && activities.length > 0) {
-		// for the last page
-		g_pager.cache.putPage(page, activities);
-	}
-
-	g_pager.refreshBar();
+	g_pagerActivity.refreshScreen(data);
 } 
 
 function onListActivitiesErrorAdmin(err) {
@@ -326,7 +324,7 @@ function onListActivitiesErrorAdmin(err) {
 // Generators
 function generateActivityCellForAdmin(par, activity) {
 
-	var arrayStatusName = ['created','pending','rejected','accepted','expired'];
+	var arrayStatusName = ['created', 'pending', 'rejected', 'accepted', 'expired'];
 
 	var coverImageUrl = null;
 
@@ -338,7 +336,7 @@ function generateActivityCellForAdmin(par, activity) {
 		style: "margin-left: 5pt;"	
 	}).appendTo(ret);
 
-	if(activity.images != null) {
+	if(!(!activity.images)) {
 		var imagesContainer = $('<div>', {
 			"class": "activity-image-container clearfix"
 		}).appendTo(infoWrap);
@@ -426,14 +424,13 @@ function generateActivityCellForAdmin(par, activity) {
 
 function requestAdmin() {
 
-	var selector = createSelector($("#pager-filters"), ["pending", "accepted", "rejected"], [g_statusPending, g_statusAccepted, g_statusRejected], null, null, null, null);
-	var filter = new PagerFilter(g_keyStatus, selector);
-	var filters = [filter];	
-
-	var pagerCache = new PagerCache(10);
+	var filterMap = {};
+	filterMap[g_keyStatus] = [["pending", "accepted", "rejected"], [g_statusPending, g_statusAccepted, g_statusRejected]]; 
 
 	// initialize pager widgets
-	g_pager = new Pager($("#pager-screen-activities"), $("#pager-bar-activities"), g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, pagerCache, filters, onListActivitiesSuccessAdmin, onListActivitiesErrorAdmin);
+	g_pagerActivity = new AdminActivityPager(g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, 10, filterMap, onListActivitiesSuccessAdmin, onListActivitiesErrorAdmin);
+	g_pagerActivity.appendTo($("#pager-activities"));
+	g_pagerActivity.refresh();
 
 	var onLoginSuccess = function(data) {
 		listActivitiesAndRefreshAdmin();

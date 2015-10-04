@@ -177,14 +177,6 @@ function requestActivityDetail(activityId) {
 	var tabCommentContent = $("<div>", {
 		"class": "tab-container"
 	});
-	var commentsContainer = $("<div>", {
-	}).appendTo(tabCommentContent);
-	var commentPagerBar = $("<div>", {
-		"class": "paginator"
-	}).appendTo(commentsContainer);
-	var commentPagerScreen = $("<div>", {
-		"class": "comment-content"
-	}).appendTo(commentsContainer);
 
 	// sub-comments' container is initially invisible 
 	var subCommentsContainer = $("<div>", {
@@ -198,10 +190,8 @@ function requestActivityDetail(activityId) {
 	btnBack.click(function(evt) {
 		evt.preventDefault();
 		g_commentId = null;
-		g_pagerComments.expand(null);
-		//setOffset(g_pagerComments.screen.parent(), "0%", null);
-		g_pagerSubComments.squeeze();
-		//setOffset(g_pagerSubComments.screen.parent(), "100%", null);
+		g_pagerComments.show();
+		g_pagerSubComments.hide();
 	});
 	var subCommentPagerBar = $("<div>").appendTo(subCommentsContainer);
 	var subCommentPagerScreen = $("<div>").appendTo(subCommentsContainer);
@@ -215,7 +205,9 @@ function requestActivityDetail(activityId) {
 	g_tabAssessments = g_navTab.panes[2];
 
 	var commentsCache = new PagerCache(5);
-	g_pagerComments = new Pager(commentPagerScreen, commentPagerBar, 5, "/comment/list", generateCommentsListParams, null, commentsCache, null, onListCommentsSuccess, onListCommentsError);
+	g_pagerComments = new Pager(5, "/comment/list", generateCommentsListParams, null, commentsCache, null, onListCommentsSuccess, onListCommentsError);
+	g_pagerComments.appendTo(tabCommentContent);
+	g_pagerComments.refresh();
 
 	var subCommentsCache = new PagerCache(20);	
 

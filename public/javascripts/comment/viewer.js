@@ -1,6 +1,40 @@
 var g_commentId = null; // a global g_commentId is set for the convenience of uniformed paramGenerator(pager, page) prototype in class Pager 
 var g_pagerSubComments = null;
 
+function SubCommentPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
+	this.init(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError);
+
+	this.updateScreen = function(data) {
+		if (!data) return;
+
+		var subCommentsJson = data[g_keySubComments];
+		var length = Object.keys(subCommentsJson).length;
+
+		var pageSt = parseInt(data[g_keyPageSt]);
+		var pageEd = parseInt(data[g_keyPageEd]);
+		var page = pageSt;
+
+		var comments = [];
+		for(var idx = 1; idx <= length; ++idx){
+			var commentJson = subCommentsJson[idx - 1];
+			var comment = new Comment(commentJson);
+			comments.push(comment);
+			if (page == this.page) generateSubCommentCell(this.screen, commentJson, g_activity);
+
+			if (idx % this.nItems !== 0) continue;
+			this.cache.putPage(page, comments);
+			comments = [];
+			++page;
+		}
+		if (!(!comments) && comments.length > 0) {
+			// for the last page
+			this.cache.putPage(page, comments);
+		}
+	};
+}
+
+SubCommentPager.inherits(Pager);
+
 function listSubCommentsAndRefresh(parentId) {
 	var page = 1;
 	listSubComments(page, parentId, onListSubCommentsSuccess, onListSubCommentsError);
@@ -24,36 +58,8 @@ function listSubComments(page, parentId, onSuccess, onError){
 
 // Tab Q&A a.k.a comments
 function onListSubCommentsSuccess(data){
-	// this function is only valid in detail's page
-	if(g_activity == null || data == null) return;
-
-	var subCommentsJson = data[g_keySubComments];
-	var length = Object.keys(subCommentsJson).length;
-
-        var pageSt = parseInt(data[g_keyPageSt]);
-        var pageEd = parseInt(data[g_keyPageEd]);
-        var page = pageSt;
-
-	g_pagerSubComments.screen.empty();
-	var comments = [];
-	for(var idx = 1; idx <= length; ++idx){
-		var commentJson = subCommentsJson[idx - 1];
-		var comment = new Comment(commentJson);
-		comments.push(comment);
-		if (page == g_pagerSubComments.page) {
-                    generateSubCommentCell(g_pagerSubComments.screen, commentJson, g_activity);
-                }
-
-                if (idx % g_pagerSubComments.nItems != 0) continue;
-                g_pagerSubComments.cache.putPage(page, comments);
-                comments = [];
-                ++page;
-	}
-	if (comments != null && comments.length > 0) {
-                // for the last page
-                g_pagerSubComments.cache.putPage(page, comments);
-        }
-        g_pagerSubComments.refreshBar();
+	if(!g_activity) return;
+	g_pagerSubComments.refreshScreen(data);
 }
 
 function onListSubCommentsError(err){

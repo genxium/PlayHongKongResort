@@ -1,5 +1,5 @@
 var g_vieweeId = null; // should always be null except in profile's page
-var g_pager = null;
+var g_pagerActivity = null;
 var g_onJoined = null;
 
 function onBtnEditClicked(evt){
@@ -13,7 +13,7 @@ function onBtnEditClicked(evt){
 
 function listActivities(page, onSuccess, onError) {
 	// prototypes: onSuccess(data), onError(err)
-	var params = generateActivitiesListParams(g_pager, page);
+	var params = generateActivitiesListParams(g_pagerActivity, page);
 
 	$.ajax({
 		type: "GET",
@@ -68,7 +68,7 @@ function generateActivitiesListParams(pager, page) {
 }
 
 function onListActivitiesSuccess(data){
-	g_pager.refreshScreen(data);
+	g_pagerActivity.refreshScreen(data);
 } 
 
 function onListActivitiesError(err){

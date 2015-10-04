@@ -3,32 +3,13 @@ var g_viewee = null;
 var g_profileEditor = null;
 
 function ProfileEditor() {
-	// player
-	this.player = null;
-
-	// avatar
-	this.avatarNode = null;
-	this.avatarHint = null;
-
-	// text fields
-	this.age = null;
-	this.ageHint = null;
-	this.gender = null;
-	this.genderHint = null;
-	this.mood = null;
-	this.moodHint = null;
-	
-	// controlling buttons
-	this.btnSave = null;
-	this.btnEdit = null;
-	this.btnCancel = null;
 
 	this.NORMAL = 0;	
 	this.EDITING = 1;
 	this.mode = this.NORMAL; 
 
 	this.composeContent = function(player) {
-		if (!player) return null;
+		if (!player) return;
 		this.player = player;
 
 		// avatar 
@@ -208,6 +189,38 @@ function ProfileEditor() {
 
 ProfileEditor.inherits(BaseWidget);
 
+function ProfileActivityPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
+	this.init(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError);
+
+	this.updateScreen = function(data) {
+		if (!data) return;
+		var pageSt = parseInt(data[g_keyPageSt]);
+		var pageEd = parseInt(data[g_keyPageEd]);
+		var page = pageSt;
+
+		var activitiesJson = data[g_keyActivities];
+		var length = Object.keys(activitiesJson).length;
+
+		var activities = [];
+		for(var idx = 1; idx <= length; ++idx) {
+			var activityJson = activitiesJson[idx - 1];
+			var activity = new Activity(activityJson);
+			activities.push(activity);
+			if (page == this.page)	generateActivityCell(this.screen, activity);
+			if (idx % this.nItems != 0) continue;
+			this.cache.putPage(page, activities);
+			activities = [];
+			++page;	
+		}
+		if (activities != null && activities.length > 0) {
+			// for the last page
+			this.cache.putPage(page, activities);
+		}
+	};
+}
+
+ProfileActivityPager.inherits(Pager);
+
 function clearProfile() {
 	$("#pager-activities").empty();
 	if (!g_sectionPlayer) return;
@@ -298,9 +311,9 @@ function requestProfile(vieweeId) {
 	filterMap[g_keyRelation] = [[TITLES.hosted_activities, TITLES.joined_activities], [hosted, present]]; 
 	filterMap[g_keyOrientation] = [[TITLES.time_descendant, TITLES.ascendant], [g_orderDescend, g_orderAscend]];
 
-	g_pager = new ProfileActivityPager(g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, 5, filterMap, onListActivitiesSuccess, onListActivitiesError);
-	g_pager.appendTo("#pager-activities");
-	g_pager.refresh();
+	g_pagerActivity = new ProfileActivityPager(g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, 5, filterMap, onListActivitiesSuccess, onListActivitiesError);
+	g_pagerActivity.appendTo("#pager-activities");
+	g_pagerActivity.refresh();
 	
 	var onLoginSuccess = function(data) {
 		queryPlayerDetail();

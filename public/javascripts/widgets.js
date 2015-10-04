@@ -630,96 +630,6 @@ function Pager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, fi
 
 Pager.inherits(BaseWidget);
 
-function HomeActivityPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
-	this.init(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError);
-
-	this.updateScreen = function(data) {
-		if (!data) return;
-		var pageSt = parseInt(data[g_keyPageSt]);
-		var pageEd = parseInt(data[g_keyPageEd]);
-		var page = pageSt;
-
-		var activitiesJson = data[g_keyActivities];
-		var length = Object.keys(activitiesJson).length;
-
-		var activities = [];
-		for(var idx = 1; idx <= length; ++idx) {
-			var activityJson = activitiesJson[idx - 1];
-			var activity = new Activity(activityJson);
-			activities.push(activity);
-			if (page == this.page)	generateActivityCell(this.screen, activity);
-			if (idx % this.nItems != 0) continue;
-			this.cache.putPage(page, activities);
-			activities = [];
-			++page;	
-		}
-		if (activities != null && activities.length > 0) {
-			// for the last page
-			this.cache.putPage(page, activities);
-		}
-	};
-}
-
-HomeActivityPager.inherits(Pager);
-
-function ProfileActivityPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
-	this.init(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError);
-
-	this.updateScreen = function(data) {
-		if (!data) return;
-		var pageSt = parseInt(data[g_keyPageSt]);
-		var pageEd = parseInt(data[g_keyPageEd]);
-		var page = pageSt;
-
-		var activitiesJson = data[g_keyActivities];
-		var length = Object.keys(activitiesJson).length;
-
-		var activities = [];
-		for(var idx = 1; idx <= length; ++idx) {
-			var activityJson = activitiesJson[idx - 1];
-			var activity = new Activity(activityJson);
-			activities.push(activity);
-			if (page == this.page)	generateActivityCell(this.screen, activity);
-			if (idx % this.nItems != 0) continue;
-			this.cache.putPage(page, activities);
-			activities = [];
-			++page;	
-		}
-		if (activities != null && activities.length > 0) {
-			// for the last page
-			this.cache.putPage(page, activities);
-		}
-	};
-}
-
-ProfileActivityPager.inherits(Pager);
-
-function AssessmentPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
-	this.init(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError);
-
-	this.updateScreen = function(data) {
-		// TODO: handle the 'page' param
-		if (!data || Object.keys(data).length === 0) return;
-		for (var key in data) {
-			var json = data[key];
-			var assessment = new Assessment(json);
-			generateAssessmentTag(this.screen, assessment);	
-		}
-	};	
-}
-
-AssessmentPager.inherits(Pager);
-
-function CommentPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
-	this.init(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError);
-
-	this.updateScreen = function(data) {
-		// TODO
-	};
-}
-
-CommentPager.inherits(Pager);
-
 function Announcement() {
 	this.composeContent = function(data) {
 		setDimensions(this.content, "80%", "90%");
@@ -974,3 +884,21 @@ function SearchWidget() {
 }
 
 SearchWidget.inherits(BaseWidget);
+
+function createSelector(par, titles, values, width, height, left, top) {
+	if (titles.length != values.length) return;
+	var length = titles.length;
+
+	var ret = $("<select>").appendTo(par);
+	
+	for (var i = 0; i < length; ++i) {
+		var title = titles[i];
+		var val = values[i];
+		$("<option>", {
+			text: title,
+			value: val
+		}).appendTo(ret);
+	}	
+
+	return ret;
+}

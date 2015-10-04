@@ -1,3 +1,35 @@
+function HomeActivityPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
+	this.init(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError);
+
+	this.updateScreen = function(data) {
+		if (!data) return;
+		var pageSt = parseInt(data[g_keyPageSt]);
+		var pageEd = parseInt(data[g_keyPageEd]);
+		var page = pageSt;
+
+		var activitiesJson = data[g_keyActivities];
+		var length = Object.keys(activitiesJson).length;
+
+		var activities = [];
+		for(var idx = 1; idx <= length; ++idx) {
+			var activityJson = activitiesJson[idx - 1];
+			var activity = new Activity(activityJson);
+			activities.push(activity);
+			if (page == this.page)	generateActivityCell(this.screen, activity);
+			if (idx % this.nItems != 0) continue;
+			this.cache.putPage(page, activities);
+			activities = [];
+			++page;	
+		}
+		if (activities != null && activities.length > 0) {
+			// for the last page
+			this.cache.putPage(page, activities);
+		}
+	};
+}
+
+HomeActivityPager.inherits(Pager);
+
 function clearHome() {
 	$("#pager-activities").empty();
 	g_registerWidgetY.hide();
@@ -14,9 +46,9 @@ function requestHome() {
 	filterMap[g_keyOrderKey] = [[TITLES.defaulted, TITLES.begin_time, TITLES.deadline], ["", g_keyBeginTime, g_keyDeadline]];
 	filterMap[g_keyOrientation] = [[TITLES.descendant, TITLES.ascendant], [g_orderDescend, g_orderAscend]];
 
-	g_pager = new HomeActivityPager(g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, 5, filterMap, onListActivitiesSuccess, onListActivitiesError);
-	g_pager.appendTo("#pager-activities");
-	g_pager.refresh();
+	g_pagerActivity = new HomeActivityPager(g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, 5, filterMap, onListActivitiesSuccess, onListActivitiesError);
+	g_pagerActivity.appendTo("#pager-activities");
+	g_pagerActivity.refresh();
 
 	var onLoginSuccess = function(data) {
 		if (!(!g_registerWidgetX)) g_registerWidgetX.hide();

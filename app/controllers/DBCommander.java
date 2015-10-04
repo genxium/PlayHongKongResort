@@ -11,6 +11,7 @@ import utilities.General;
 import utilities.Loggy;
 
 import java.util.*;
+import java.sql.PreparedStatement;
 
 /*
  * Note that the relation (a.k.a PlayerActivityRelation.RELATION) in this class is always referring to masked relation
@@ -179,23 +180,23 @@ public class DBCommander {
         }
 
         public static List<Activity> queryActivities(final Integer pageSt, final Integer pageEd, final String orderKey, final String orientation, final Integer numItems, final Long vieweeId, final List<Integer> maskedRelationList) {
-                List<Activity> ret = new ArrayList<>();
+                final List<Activity> ret = new ArrayList<>();
                 try {
-                        SQLBuilder builder = new SQLBuilder();
-                        String[] names = Activity.QUERY_FIELDS;
-                        String[] onCols = {PlayerActivityRelation.PLAYER_ID, PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.RELATION};
-                        String[] onOps = {"=", "=", "IN"};
+                        final SQLBuilder builder = new SQLBuilder();
+                        final String[] names = Activity.QUERY_FIELDS;
+                        final String[] onCols = {PlayerActivityRelation.PLAYER_ID, PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.RELATION};
+                        final String[] onOps = {"=", "=", "IN"};
 
-                        Object[] onVals = {vieweeId, new SQLBuilder.PrimaryTableField(Activity.ID), maskedRelationList};
+                        final Object[] onVals = {vieweeId, new SQLBuilder.PrimaryTableField(Activity.ID), maskedRelationList};
 
-                        List<SimpleMap> activityDataList = builder.select(names)
+                        final List<SimpleMap> activityDataList = builder.select(names)
                                 .from(Activity.TABLE)
                                 .join(PlayerActivityRelation.TABLE, onCols, onOps, onVals)
                                 .order(orderKey, orientation)
                                 .limit((pageSt - 1) * numItems, (pageEd - pageSt + 1) * numItems).execSelect();
                         if (activityDataList == null) return null;
 
-                        for (SimpleMap activityData : activityDataList) {
+                        for (final SimpleMap activityData : activityDataList) {
                                 Activity activity = new Activity(activityData);
                                 ret.add(activity);
                         }
@@ -208,10 +209,10 @@ public class DBCommander {
         }
 
         public static List<Activity> queryActivities(final Integer pageSt, final Integer pageEd, final String orderKey, final String orientation, final Integer numItems, final int status, final int offset) {
-                List<Activity> ret = new ArrayList<>();
+                final List<Activity> ret = new ArrayList<>();
                 try {
-                        SQLBuilder builder = new SQLBuilder();
-                        String[] names = Activity.QUERY_FIELDS;
+                        final SQLBuilder builder = new SQLBuilder();
+                        final String[] names = Activity.QUERY_FIELDS;
                         builder.select(names)
                                 .from(Activity.TABLE)
                                 .order(orderKey, orientation)
@@ -222,11 +223,11 @@ public class DBCommander {
                                 // ONLY admin queries should be accessing this closure
                                 builder.where(Activity.DEADLINE, ">", General.millisec());
                         }
-                        List<SimpleMap> activityDataList = builder.execSelect();
+                        final List<SimpleMap> activityDataList = builder.execSelect();
                         if (activityDataList == null) return ret;
 
-                        for (SimpleMap activityData : activityDataList) {
-                                Activity activity = new Activity(activityData);
+                        for (final SimpleMap activityData : activityDataList) {
+                                final Activity activity = new Activity(activityData);
                                 ret.add(activity);
                         }
                         if (ret.size() == 0) return ret;
@@ -266,11 +267,10 @@ public class DBCommander {
         }
 
         public static List<Activity> queryPrioritizedActivities(final List<Integer> orderMaskList, final Integer numberItems) {
-                List<Activity> ret = new ArrayList<>();
+                final List<Activity> ret = new ArrayList<>();
                 try {
-                        SQLBuilder builder = new SQLBuilder();
-                        String[] names = Activity.QUERY_FIELDS;
-                        builder.select(names)
+                        final SQLBuilder builder = new SQLBuilder();
+                        builder.select(Activity.QUERY_FIELDS)
                                 .from(Activity.TABLE)
                                 .where(Activity.ORDER_MASK, "IN", orderMaskList)
                                 .where(Activity.PRIORITY, ">", 0)
@@ -278,7 +278,7 @@ public class DBCommander {
                                 .order(Activity.PRIORITY, SQLHelper.DESCEND)
                                 .limit(numberItems);
 
-                        List<SimpleMap> activityDataList = builder.execSelect();
+                        final List<SimpleMap> activityDataList = builder.execSelect();
 
                         if (activityDataList == null || activityDataList.size() == 0) return ret;
                         for (SimpleMap activityData : activityDataList) {

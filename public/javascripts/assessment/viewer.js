@@ -1,98 +1,70 @@
-var g_sectionAssessmentsViewer = null;
-var g_modalAssessmentsViewer = null;
-var g_assessmentsViewer = null;
-
-var g_nAssessmentsPerPage = 20;
 var g_pagerAssessments = null;
 
-function removeAssessmentsViewer(){
-        if(g_sectionAssessmentsViewer == null) return;
-        g_sectionAssessmentsViewer.hide();
-        g_sectionAssessmentsViewer.modal("hide");
-        if(g_modalAssessmentsViewer == null) return;
-        g_modalAssessmentsViewer.empty();
-        if(g_assessmentsViewer == null) return;
-        g_assessmentsViewer.remove();
+/**
+ * Modal VIewer
+ **/
+
+var g_assessmentModalWidget = null;
+
+function AssessmentModalWidget() {
+	this.composeContent = function(data) {
+		if(data == null || Object.keys(data).length == 0) {
+			alert(ALERTS["no_assessment"]);
+			return;
+		}
+		var assessments = [];
+		for(var key in data) {
+			var assessmentJson = data[key];
+			var assessment = new Assessment(assessmentJson);
+			assessments.push(assessment);
+		}
+
+		var ret = $("<div>", {
+			style: "padding: 10%"
+		}).appendTo(par);
+
+		var tbl = $("<table class='assessments-viewer'>").appendTo(ret);
+		var head = $("<tr class='assessments-viewer-row'>").appendTo(tbl);
+
+		$('<th>', {
+			text: TITLES["content"],
+			"class": "assessments-viewer-header-content"
+		}).appendTo(head);
+
+		$('<th>', {
+			text: TITLES["from"],
+			"class": "assessments-viewer-header-from"
+		}).appendTo(head);
+
+		for(var i = 0; i < assessments.length; i++) {
+			var assessment = assessments[i];
+			var row = $("<tr class='assessments-viewer-row'>").appendTo(tbl);
+			$('<td>', {
+				text: assessment.content
+			}).appendTo(row);
+			var fromCell = $("<td>").appendTo(row);
+			var iconSlot = $("<img>", {
+				src: assessment.fromPlayer.avatar,
+				"class": "assessments-viewer-avatar"
+			}).appendTo(fromCell);
+			var nameSlot = $("<span>", {
+				text: assessment.fromPlayer.name,
+				"class": "assessments-viewer-name"
+			}).appendTo(fromCell);
+		}
+	}; 
 }
 
-function initAssessmentsViewer(par){
-	/*
-		Note: ALL attributes, especially the `class` attribute MUST be written INSIDE the div tag, bootstrap is NOT totally compatible with jQuery!!!
-	*/
-	g_sectionAssessmentsViewer = $("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='' aria-hidden='true'>", {
-		style: "position: absolute; width: 80%; height: 80%;"
-	}).appendTo(par);
-	var dialog = $("<div>", {
-		"class": "modal-dialog modal-lg"
-	}).appendTo(g_sectionAssessmentsViewer);
-	g_modalAssessmentsViewer = $("<div>", {
-		"class": "modal-content"
-	}).appendTo(dialog);	
-	removeAssessmentsViewer();
+AssessmentModalWidget.inherits(BaseModalWidget);
+
+function initAssessmentModalWidget(par){
+	g_assessmentModalWidget = new AssessmentModalWidget();
+	g_assessmentModalWidget.appendTo(par, false);
 }
-
-function showAssessmentsViewer(assessments) {
-		
-	g_modalAssessmentsViewer.empty();
-	g_assessmentsViewer = generateAssessmentsViewer(g_modalAssessmentsViewer, assessments);
-	g_sectionAssessmentsViewer.modal({
-		show: true
-	});
-
-}
-
-function generateAssessmentsViewer(par, assessments) {
-	if (assessments == null) return null;
-
-	var ret = $("<div>", {
-		style: "padding: 10%"
-	}).appendTo(par);
-
-	var tbl = $("<table class='assessments-viewer'>").appendTo(ret);
-	var head = $("<tr class='assessments-viewer-row'>").appendTo(tbl);
-
-	$('<th>', {
-		text: TITLES["content"],
-		"class": "assessments-viewer-header-content"
-	}).appendTo(head);
-
-	$('<th>', {
-		text: TITLES["from"],
-		"class": "assessments-viewer-header-from"
-	}).appendTo(head);
-
-	for(var i = 0; i < assessments.length; i++) {
-		var assessment = assessments[i];
-		var row = $("<tr class='assessments-viewer-row'>").appendTo(tbl);
-		$('<td>', {
-			text: assessment.content
-		}).appendTo(row);
-		var fromCell = $("<td>").appendTo(row);
-		var iconSlot = $("<img>", {
-			src: assessment.fromPlayer.avatar,
-			"class": "assessments-viewer-avatar"
-		}).appendTo(fromCell);
-		var nameSlot = $("<span>", {
-			text: assessment.fromPlayer.name,
-			"class": "assessments-viewer-name"
-		}).appendTo(fromCell);
- 	}
-	return ret;
-} 
 
 function onQueryAssessmentsSuccess(data) {
-	if(data == null || Object.keys(data).length == 0) {
-		alert(ALERTS["no_assessment"]);
-		return;
-	}
-	var assessments = [];
-	for(var key in data) {
-		var assessmentJson = data[key];
-		var assessment = new Assessment(assessmentJson);
-		assessments.push(assessment);
-	}
-	
-	showAssessmentsViewer(assessments);
+	g_assessmentModalWidget.refresh(data);	
+	g_assessmentModalWidget.show();
 }
 
 function onQueryAssessmentsError(err) {
@@ -130,8 +102,32 @@ function queryAssessments(refIndex, numItems, direction, to, activityId) {
 	});
 }
 
+function queryAssessmentsAndRefresh(to, activityId) {
+	queryAssessments(0, 20, g_directionForward, to, activityId);
+}
+
+/**
+ * Pager Viewer
+ **/
+
+function AssessmentPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
+	this.init(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError);
+
+	this.updateScreen = function(data) {
+		// TODO: handle the 'page' param
+		if (!data || Object.keys(data).length === 0) return;
+		for (var key in data) {
+			var json = data[key];
+			var assessment = new Assessment(json);
+			generateAssessmentTag(this.screen, assessment);	
+		}
+	};	
+}
+
+AssessmentPager.inherits(Pager);
+
 function generateAssessmentTag(par, assessment) {
-	var ret = $("<span>", {
+	$("<span>", {
 		text: assessment.content,
 		"class": "assessment-tag"
 	}).click(assessment, function(evt) {
@@ -139,10 +135,6 @@ function generateAssessmentTag(par, assessment) {
 		var aAssessment = evt.data;
 		window.location.hash = ("detail?" + g_keyActivityId + "=" + aAssessment.activityId);
 	}).appendTo(par);	
-}
-
-function queryAssessmentsAndRefresh(to, activityId) {
-	queryAssessments(0, g_nAssessmentsPerPage, g_directionForward, to, activityId);
 }
 
 function onListAssessmentsSuccess(data) {

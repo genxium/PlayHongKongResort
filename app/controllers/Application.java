@@ -28,12 +28,12 @@ public class Application extends Controller {
         return badRequest();
     }
 
-    public static Result admin() {
+    public static Result admin(Integer dev) {
         try {
-            Content html = views.html.admin.render();
+            Content html = views.html.admin.render(dev);
             return ok(html);
         } catch (Exception e) {
-
+            Loggy.e(TAG, "admin", e);
         }
         return badRequest();
     }

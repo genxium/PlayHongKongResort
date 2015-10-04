@@ -5,7 +5,44 @@ var g_activity = null;
 var g_replyEditor = null;
 
 var g_onCommentSubmitSuccess = null;
+
 var g_pagerComments = null;
+
+function CommentPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
+	this.init(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError);
+
+	this.updateScreen = function(data) {
+		if (!data) return;
+
+		var commentsJson = data[g_keyComments];
+		var length = Object.keys(commentsJson).length;
+
+		var pageSt = parseInt(data[g_keyPageSt]);
+		var pageEd = parseInt(data[g_keyPageEd]);
+		var page = pageSt;
+
+		var comments = [];
+		for(var idx = 1; idx <= length; ++idx) {
+			var commentJson = commentsJson[idx - 1];
+			var comment = new Comment(commentJson);
+			comments.push(comment);
+			if (page == this.page) {
+			    generateCommentCell(this.screen, commentJson, g_activity, false);
+			}
+
+			if (idx % this.nItems !== 0) continue;
+			this.cache.putPage(page, comments);
+			comments = [];
+			++page;
+		}
+		if (!(!comments) && comments.length > 0) {
+			// for the last page
+			this.cache.putPage(page, comments);
+		}
+	};
+}
+
+CommentPager.inherits(Pager);
 
 function CommentReplyEditor(input, submit, collapse) {
 	this.input = input;
@@ -41,11 +78,11 @@ function listComments(page, onSuccess, onError){
 
 function generateCommentsListParams(pager, page) {
 	var params = {};
-	if (g_commentId != null)	params[g_keyParentId] = g_commentId;
-	if (g_activity != null)		params[g_keyActivityId] = g_activity.id;
+	if (!(!g_commentId))	params[g_keyParentId] = g_commentId;
+	if (!(!g_activity))		params[g_keyActivityId] = g_activity.id;
 	var pageSt = page - 2;
         var pageEd = page + 2;
-        var offset = pageSt < 1 ? (pageSt - 1) : 0;
+        var offset = (pageSt < 1 ? (pageSt - 1) : 0);
         pageSt -= offset;
         pageEd -= offset;
         params[g_keyPageSt] = pageSt;
@@ -58,36 +95,8 @@ function generateCommentsListParams(pager, page) {
 // Tab Q & A a.k.a comments
 function onListCommentsSuccess(data){
 	// this function is only valid in detail's page
-	if(g_activity == null || data == null) return;
-
-	var commentsJson = data[g_keyComments];
-	var length = Object.keys(commentsJson).length;
-
-        var pageSt = parseInt(data[g_keyPageSt]);
-        var pageEd = parseInt(data[g_keyPageEd]);
-        var page = pageSt;
-
-	g_pagerComments.screen.empty();
-
-	var comments = [];
-        for(var idx = 1; idx <= length; ++idx) {
-                var commentJson = commentsJson[idx - 1];
-                var comment = new Comment(commentJson);
-                comments.push(comment);
-                if (page == g_pagerComments.page) {
-                    generateCommentCell(g_pagerComments.screen, commentJson, g_activity, false);
-                }
-
-                if (idx % g_pagerComments.nItems != 0) continue;
-                g_pagerComments.cache.putPage(page, comments);
-                comments = [];
-                ++page;
-        }
-        if (comments != null && comments.length > 0) {
-                // for the last page
-                g_pagerComments.cache.putPage(page, comments);
-        }
-        g_pagerComments.refreshBar();
+	if(!g_activity) return;
+	g_pagerComments.refreshScreen(data);
 }
 
 function onListCommentsError(err){
@@ -95,7 +104,7 @@ function onListCommentsError(err){
 }
 
 function removeReplyEditor(){
-    if(g_replyEditor == null) return;
+    if (!g_replyEditor) return;
     g_replyEditor.remove();
     g_replyEditor = null;
 }
@@ -103,10 +112,10 @@ function removeReplyEditor(){
 function generateReplyEditor(par, activity, comment){
     var ret = $('<p>').appendTo(par);
     var input = $('<input>', {
-        placeholder: HINTS["reply"].format(comment.fromPlayer.name)
+        placeholder: HINTS.reply.format(comment.fromPlayer.name)
     }).appendTo(ret);
     var btnSubmit = $('<button>',{
-        text: TITLES["submit_comment_reply"],
+        text: TITLES.submit_comment_reply,
         "class": "comment-submit positive-button"
     }).appendTo(ret);
 
@@ -117,8 +126,8 @@ function generateReplyEditor(par, activity, comment){
                 var content = evt.data.val();
                 var token = getToken();
 
-                if (content == null || !validateCommentContent(content)) {
-			alert(ALERTS["comment_requirement"]);
+                if (!content || !validateCommentContent(content)) {
+			alert(ALERTS.comment_requirement);
 			return;
 		}
 
@@ -131,7 +140,8 @@ function generateReplyEditor(par, activity, comment){
                 params[g_keyToken] = token;
                 params[g_keyTo] = comment.from;
 		
-		var aButton = $(evt.srcElement ? evt.srcElement : evt.target);
+		var aButton = getTarget(evt); 
+
 		disableField(aButton);
 		disableField(aInput);
                 $.ajax({
@@ -146,21 +156,21 @@ function generateReplyEditor(par, activity, comment){
 					return;
 				}
                                 removeReplyEditor();
-                                if(g_onCommentSubmitSuccess == null) return;
+                                if(!g_onCommentSubmitSuccess) return;
                                 g_onCommentSubmitSuccess();
                         },
                         error: function(xhr, status, err){
 				enableField(aButton);
 				enableField(aInput);
-                                alert(MESSAGES["comment_reply_not_submitted"]);
+                                alert(MESSAGES.comment_reply_not_submitted);
                         }
                 });
 
     });
 
     var btnCollapse = $('<button>',{
-        text: TITLES["collapse"],
-        "class": "comment-collapse gray"
+        text: TITLES.collapse,
+        "class": "negative-button"
     }).appendTo(ret);
 
     btnCollapse.click(function(evt){
@@ -210,11 +220,10 @@ function generateCommentCell(par, commentJson, activity, single){
 			"class": "comment-view left patch-block-lambda"
 		}).appendTo(row);
 		var viewAll = $("<a>", {
-			text: TITLES["view_all_replies"].format(comment.numChildren)
-		}).appendTo(spanView);
-		viewAll.click(comment.id, function(evt) {
+			text: TITLES.view_all_replies.format(comment.numChildren)
+		}).appendTo(spanView).click(comment.id, function(evt) {
 			evt.preventDefault();
-			g_pagerComments.squeeze();
+			g_pagerComments.hide();
 			setOffset(g_pagerComments.screen.parent(), "-100%", null);
 			g_pagerSubComments.expand(null);
 			setOffset(g_pagerSubComments.screen.parent(), "0%", null);
@@ -234,14 +243,14 @@ function generateCommentCell(par, commentJson, activity, single){
 	}
 
         var token = getToken();
-        if(token == null || activity.hasBegun()) return;
+        if(!token || activity.hasBegun()) return;
 
         var operations = $('<div>',{
                 "class": "comment-action left"
         }).appendTo(row);
 
         var btnReply = $('<button>',{
-            text: TITLES["reply"],
+            text: TITLES.reply,
             "class": "comment-reply positive-button"
         }).appendTo(operations);
 
@@ -271,7 +280,7 @@ function generateSubCommentCell(par, commentJson, activity){
 	var hrefTo = $('<a>', {
 		"class": "patch-block-lambda",
 		href: "#",
-		text: TITLES["replied_to"].format(comment.toPlayer.name),
+		text: TITLES.replied_to.format(comment.toPlayer.name),
 		target: "_blank",
 	}).appendTo(commentTo);
 	hrefTo.click(function(evt) {
@@ -304,14 +313,14 @@ function generateSubCommentCell(par, commentJson, activity){
 	}).appendTo(row);
 
 	var token = getToken();
-	if(token == null || activity.hasBegun()) return ret;
+	if(!token || activity.hasBegun()) return ret;
 
 	var operations = $('<div>',{
 		"class": "comment-action left"
 	}).appendTo(row);
 
 	var btnReply = $('<button>',{
-		text: TITLES["reply"],
+		text: TITLES.reply,
 		"class": "comment-reply positive-button"
 	}).appendTo(operations);
 
@@ -331,11 +340,11 @@ function generateCommentEditor(par, activity){
     var input = $('<input>', {
     }).appendTo(editor);
     var btnSubmit = $('<button>',{
-        text: TITLES["submit_comment_question"],
+        text: TITLES.submit_comment_question,
     	"class": "positive-button"
     }).appendTo(editor);
 
-    var inputCounter = new WordCounter("", 5, 128, g_commentContentPattern, ALERTS["comment_requirement"]);
+    var inputCounter = new WordCounter("", 5, 128, g_commentContentPattern, ALERTS.comment_requirement);
     inputCounter.appendCounter(editor);
 
     input.on("input paste keyup", inputCounter, function(evt){
@@ -348,7 +357,7 @@ function generateCommentEditor(par, activity){
 		var content = input.val();
 		var token = getToken();
 		
-		if(content == null || !validateCommentContent(content)) {
+		if(!content || !validateCommentContent(content)) {
 			return;	
 		}
 
@@ -381,7 +390,7 @@ function generateCommentEditor(par, activity){
 			error: function(xhr, status, err){
 				enableField(aButton);
 				enableField(aInput);
-				alert(ALERTS["comment_question_not_submitted"]);
+				alert(ALERTS.comment_question_not_submitted);
 			}
 		});
     });
