@@ -1,25 +1,55 @@
-var g_sectionNotifications = null;
 var g_pagerNotifications = null;
-var g_notificationTrash = null;
 
-function emptySectionNotifications() {
-	if (g_sectionNotifications == null) return;
-	g_sectionNotifications.empty();
+function NotificationPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
+	this.init(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError);
+
+	this.updateScreen = function(data) {
+		if (!data) return;
+			
+		var notificationJsonList = data[g_keyNotifications];
+		var length = Object.keys(notificationJsonList).length;
+		var pageSt = parseInt(data[g_keyPageSt]);
+		var pageEd = parseInt(data[g_keyPageEd]);
+		var page = pageSt;
+
+		var tbl = $("<table class='notifications-viewer'>").appendTo(this.screen);
+		var notifications = [];
+		var cells = [];
+		for(var idx = 1; idx <= length; ++idx) {
+			var notificationJson = notificationJsonList[idx - 1];
+			var notification = new Notification(notificationJson);
+			notifications.push(notification);
+			if (page == this.page) {
+				var cell = generateNotificationCell(tbl, notification);
+				cells.push(cell);
+			}
+
+			if (idx % this.nItems !== 0) continue;
+			this.cache.putPage(page, notifications);
+			notifications = [];
+			++page;	
+		}
+		g_notificationTrash.updateCells(cells);
+
+		if (!(!notifications) && notifications.length > 0) {
+			// for the last page
+			this.cache.putPage(page, notifications);
+		}
+	};
 }
+
+var g_notificationTrash = null;
 
 function clearNotifications() {
 	var toolbar = $("#toolbar");
 	toolbar.empty();
 	setDimensions(toolbar, "100%", 0);
-	$("#pager-filters").empty();
-	$("#pager-bar-notifications").empty();
-	$("#pager-screen-notifications").empty();
-	emptySectionNotifications();
+	$("#pager-notifications").empty();
 }
 
 function countNotifications() {
 	var token = getToken();
-	if (token == null) return;
+	if (!token) return;
 	var paramsBubble = {};
 	paramsBubble[g_keyToken] = token;
 	
@@ -28,7 +58,7 @@ function countNotifications() {
 		url: "/notification/count",
 		data: paramsBubble,
 		success: function(data, status, xhr) {
-			if (g_loggedInPlayer == null) return;
+			if (!g_loggedInPlayer) return;
 			if (isTokenExpired(data)) {
 				logout(null);
 				return;
@@ -77,7 +107,7 @@ function NotificationTrash(toolbar) {
 		this.cells = cells;	
 		if (this.isActive) this.activate();
 		else this.deactivate();
-	}
+	};
 
 	// init buttons
 	this.init = function() {
@@ -125,18 +155,18 @@ function NotificationTrash(toolbar) {
 			evt.preventDefault();
 
 			var aTrash = evt.data;
-			if (aTrash.cells.length == 0) return;
+			if (aTrash.cells.length === 0) return;
 		
 			var notificationIdArray = [];
 			for (var i = 0; i < aTrash.cells.length; ++i) {
 				var cell = aTrash.cells[i];
-				if (cell.checkbox == null || !cell.checkbox.is(":checked")) continue;
+				if (!cell.checkbox || !isChecked(cell.checkbox)) continue;
 				notificationIdArray.push(cell.notification.id);
 			} 
 
 			var params = {};
 			var token = getToken();
-			if (token == null) return;
+			if (!token) return;
 			params[g_keyToken] = token;
 			params[g_keyBundle] = JSON.stringify(notificationIdArray) ;
 		
@@ -162,7 +192,7 @@ function NotificationTrash(toolbar) {
 			});
 		});
 	
-	}
+	};
 }
 
 function listNotificationsAndRefresh() {
@@ -191,7 +221,7 @@ function listNotifications(page, onSuccess, onError){
 
 function generateNotificationsListParams(pager, page) {
 	var params = {};
-	if (g_loggedInPlayer == null) return null;
+	if (!g_loggedInPlayer) return null;
 	var token = getToken();
 	params[g_keyToken] = token;
 	var pageSt = page - 2;
@@ -204,10 +234,10 @@ function generateNotificationsListParams(pager, page) {
 	params[g_keyNumItems] = pager.nItems;
 	params[g_keyOrientation] = g_orderDescend;
 
-	if (pager.filters != null) {
+	if (!(!pager.filters)) {
 		for (var i = 0; i < pager.filters.length; ++i) {
 			var filter = pager.filters[i];
-			if (filter.selector.val() == null || filter.selector.val() == "") continue;
+			if (!filter.selector.val() || filter.selector.val() === "") continue;
 			params[filter.key] = filter.selector.val();	
 		}
 	}
@@ -216,42 +246,7 @@ function generateNotificationsListParams(pager, page) {
 
 // Tab Q & A a.k.a comments
 function onListNotificationsSuccess(data){
-
-	var jsonResponse = data;
-	if(jsonResponse == null) return;
-
-	var notificationJsonList = jsonResponse[g_keyNotifications];
-	var length = Object.keys(notificationJsonList).length;
-	var pageSt = parseInt(jsonResponse[g_keyPageSt]);
-	var pageEd = parseInt(jsonResponse[g_keyPageEd]);
-	var page = pageSt;
-
-	g_pagerNotifications.screen.empty();
-	var tbl = $("<table class='notifications-viewer'>").appendTo(g_pagerNotifications.screen);
-	var notifications = [];
-	var cells = [];
-	for(var idx = 1; idx <= length; ++idx) {
-		var notificationJson = notificationJsonList[idx - 1];
-		var notification = new Notification(notificationJson);
-		notifications.push(notification);
-		if (page == g_pagerNotifications.page) {
-			var cell = generateNotificationCell(tbl, notification);
-			cells.push(cell);
-		}
-
-		if (idx % g_pagerNotifications.nItems != 0) continue;
-		g_pagerNotifications.cache.putPage(page, notifications);
-		notifications = [];
-		++page;	
-	}
-	g_notificationTrash.updateCells(cells);
-
-	if (notifications != null && notifications.length > 0) {
-		// for the last page
-		g_pagerNotifications.cache.putPage(page, notifications);
-	}
-	g_pagerNotifications.refreshBar();
-
+	g_pagerNotifications.refreshScreen(data);
 }
 
 function onListNotificationsError(err){
@@ -274,7 +269,7 @@ function NotificationCell(container, notification, indicator) {
 	};
 
 	this.removeCheckbox = function() {
-		if (this.checkbox == null) return;
+		if (!this.checkbox) return;
 		this.checkbox.parent().remove();
 		this.checkbox.remove();
 		this.checkbox = null;
@@ -287,7 +282,7 @@ function NotificationCell(container, notification, indicator) {
 		window.location.hash = ("detail?" + g_keyActivityId + "=" + aNotification.activityId);
 	});
 
-	if (this.notification.isRead != 0) {
+	if (this.notification.isRead !== 0) {
 		var readIndicator = $("<div>", {
 			"class": "notification-read"
 		}).appendTo(this.indicator);
@@ -304,7 +299,7 @@ function NotificationCell(container, notification, indicator) {
 		var aCell = evt.data;
 		var aNotification = aCell.notification;
 		var token = getToken();
-		if (token == null) return;
+		if (!token) return;
 
 		var params = {};
 		params[g_keyToken] = token;
@@ -356,17 +351,17 @@ function requestNotifications() {
 	clearProfile();
 	clearDetail();
 
+	// initialize trash
 	g_notificationTrash = new NotificationTrash($("#toolbar"));
 	g_notificationTrash.init();
 
-	var selector = createSelector($("#pager-filters"), ["全部", "未讀", "已讀"], ["", 0, 1], null, null, null, null);
-	var filter = new PagerFilter(g_keyIsRead, selector);
-	var filters = [filter];	
+	// initialize pager 
+	var filterMap = {};
+	filterMap[g_keyIsRead] = [[TITLES.all, TITLES.unread, TITLES.read], ["", 0, 1]];
 
-	var pagerCache = new PagerCache(5); 
-
-	// initialize pager widgets
-	g_pagerNotifications = new Pager($("#pager-screen-notifications"), $("#pager-bar-notifications"), 10, "/notification/list", generateNotificationsListParams, null, pagerCache, filters, onListNotificationsSuccess, onListNotificationsError);
+	g_pagerNotifications = new NotificationPager(10, "/notification/list", generateNotificationsListParams, null, 5, filterMap, onListNotificationsSuccess, onListNotificationsError);
+	g_pagerNotifications.appendTo($("#pager-notifications"));
+	g_pagerNotifications.refresh();
 
 	var onLoginSuccess = function(data) {
 		countNotifications();

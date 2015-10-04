@@ -117,7 +117,7 @@ function displayActivityDetail(par){
 	listCommentsAndRefresh(g_activity);
 
 	// Tab assessments
-	initAssessmentsViewer($("#content"));
+	initAssessmentModalWidget($("#content"));
 	g_batchAssessmentEditor = generateBatchAssessmentEditor(g_tabAssessments, g_activity, queryActivityDetail);
 
 	var token = getToken();
@@ -178,24 +178,6 @@ function requestActivityDetail(activityId) {
 		"class": "tab-container"
 	});
 
-	// sub-comments' container is initially invisible 
-	var subCommentsContainer = $("<div>", {
-		"class": "subcomment-container"
-	}).appendTo(tabCommentContent);
-	var btnBack = $("<button>", {
-		text: "< BACK",
-		"class": "back-button patch-block-lambda"
-	}).appendTo(subCommentsContainer);
-	// note that the back button in sub-comments' container takes both pagers as input
-	btnBack.click(function(evt) {
-		evt.preventDefault();
-		g_commentId = null;
-		g_pagerComments.show();
-		g_pagerSubComments.hide();
-	});
-	var subCommentPagerBar = $("<div>").appendTo(subCommentsContainer);
-	var subCommentPagerScreen = $("<div>").appendTo(subCommentsContainer);
-
 	var contents = [tabCommentContent, null, null];
 
 	g_navTab = createNavTab(g_sectionNav, refs, titles, preactiveRef, g_sectionPanes, contents);
@@ -204,17 +186,16 @@ function requestActivityDetail(activityId) {
 	g_tabParticipants = g_navTab.panes[1];
 	g_tabAssessments = g_navTab.panes[2];
 
-	var commentsCache = new PagerCache(5);
-	g_pagerComments = new Pager(5, "/comment/list", generateCommentsListParams, null, commentsCache, null, onListCommentsSuccess, onListCommentsError);
+	// top-level-comments
+	g_pagerComments = new CommentPager(5, "/comment/list", generateCommentsListParams, null, 5, null, onListCommentsSuccess, onListCommentsError);
 	g_pagerComments.appendTo(tabCommentContent);
 	g_pagerComments.refresh();
 
-	var subCommentsCache = new PagerCache(20);	
-
-	g_pagerSubComments = new Pager(subCommentPagerScreen, subCommentPagerBar, 20, "/comment/sub/list", generateCommentsListParams, null, subCommentsCache, null, onListSubCommentsSuccess, onListSubCommentsError);
-	
-	// squeeze the sub-comments' container
-	g_pagerSubComments.squeeze();
+	// sub-comments
+	g_pagerSubComments = new SubCommentPager(10, "/comment/sub/list", generateCommentsListParams, null, 5, null, onListSubCommentsSuccess, onListSubCommentsError);
+	g_pagerSubComments.appendTo(tabCommentContent);
+	g_pagerSubComments.hide();
+	g_pagerSubComments.refresh();
 
 	var onLoginSuccess = function(data) {
 		countNotifications();

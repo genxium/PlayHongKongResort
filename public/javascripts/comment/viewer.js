@@ -19,7 +19,7 @@ function SubCommentPager(numItemsPerPage, url, paramsGenerator, extraParams, cac
 			var commentJson = subCommentsJson[idx - 1];
 			var comment = new Comment(commentJson);
 			comments.push(comment);
-			if (page == this.page) generateSubCommentCell(this.screen, commentJson, g_activity);
+			if (page == this.page)	generateSubCommentCell(this.screen, commentJson, g_activity);
 
 			if (idx % this.nItems !== 0) continue;
 			this.cache.putPage(page, comments);
@@ -34,6 +34,19 @@ function SubCommentPager(numItemsPerPage, url, paramsGenerator, extraParams, cac
 }
 
 SubCommentPager.inherits(Pager);
+SubCommentPager.method("appendTo", function(par) {
+	var aPager = this;
+	this.content= $('<div>').appendTo(par);
+	this.btnBack = $("<button>", {
+		text: "< " + TITLES.back,
+		"class": "back-button patch-block-lambda"
+	}).appendTo(this.content).click(function(evt) {
+		evt.preventDefault();
+		aPager.hide();
+		g_commentId = null;
+		g_pagerComments.show();
+	});
+});
 
 function listSubCommentsAndRefresh(parentId) {
 	var page = 1;

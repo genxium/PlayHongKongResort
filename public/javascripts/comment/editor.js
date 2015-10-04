@@ -26,9 +26,7 @@ function CommentPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheS
 			var commentJson = commentsJson[idx - 1];
 			var comment = new Comment(commentJson);
 			comments.push(comment);
-			if (page == this.page) {
-			    generateCommentCell(this.screen, commentJson, g_activity, false);
-			}
+			if (page == this.page)	generateCommentCell(this.screen, commentJson, g_activity, false);
 
 			if (idx % this.nItems !== 0) continue;
 			this.cache.putPage(page, comments);
@@ -224,9 +222,8 @@ function generateCommentCell(par, commentJson, activity, single){
 		}).appendTo(spanView).click(comment.id, function(evt) {
 			evt.preventDefault();
 			g_pagerComments.hide();
-			setOffset(g_pagerComments.screen.parent(), "-100%", null);
-			g_pagerSubComments.expand(null);
-			setOffset(g_pagerSubComments.screen.parent(), "0%", null);
+			g_pagerSubComments.show();
+
 			var commentId = evt.data;	
 			listSubCommentsAndRefresh(commentId);
 		});

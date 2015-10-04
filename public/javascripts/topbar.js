@@ -9,16 +9,14 @@ function initTopbar(par){
 		"class": "left"
 	}).appendTo(g_topbar);
 	var topbarTitle = $("<p>", {
-		text: "Let's Date"
-	}).appendTo(topbarBanner);
+		text: TITLES.logo_alias 
+	}).appendTo(topbarBanner).click(function(evt){
+		evt.preventDefault();
+		window.location.href = "/";
+	});
 
 	g_sectionLogin = $("<div>", {
 		id: "login-section",
 		"class": "patch-block-beta right"	
 	}).appendTo(g_topbar);
-
-	topbarTitle.click(function(evt){
-		evt.preventDefault();
-		window.location.href = "/";
-	});
 }

@@ -27,6 +27,11 @@ var STATUS_NAMES = {
 
 // constant titles
 var TITLES = {
+	logo_alias: "一起玩吧",
+	all: "全部",
+	unread: "未讀",
+	read: "已讀" ,	
+	back: "返回",
 	create: "創建",
 	profile: "個人",
 	register: "註冊帳號",
