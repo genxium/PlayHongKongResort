@@ -76,9 +76,9 @@ public class ExtraCommander extends DBCommander {
                 return true;
         }
 
-        public static boolean deleteActivity(long activityId) {
+        public static boolean deleteActivity(final long activityId) {
                 try {
-                        Connection connection = SQLHelper.getConnection();
+                        final Connection connection = SQLHelper.getConnection();
                         if (connection == null) throw new NullPointerException();
                         try {
                                 /**
@@ -86,31 +86,38 @@ public class ExtraCommander extends DBCommander {
                                  * */
                                 SQLHelper.disableAutoCommit(connection);
 
-                                SQLBuilder builderRelation = new SQLBuilder();
+                                final SQLBuilder builderRelation = new SQLBuilder();
                                 builderRelation.from(PlayerActivityRelation.TABLE).where(PlayerActivityRelation.ACTIVITY_ID, "=", activityId);
-                                PreparedStatement statRelation = builderRelation.toDelete(connection);
+                                final PreparedStatement statRelation = builderRelation.toDelete(connection);
                                 SQLHelper.executeAndCloseStatement(statRelation);
 
                                 // delete images
-                                SQLBuilder builderImages = new SQLBuilder();
-                                PreparedStatement statImages = builderImages.from(Image.TABLE)
+                                final SQLBuilder builderImages = new SQLBuilder();
+                                final PreparedStatement statImages = builderImages.from(Image.TABLE)
                                         .where(Image.META_TYPE, "=", Image.TYPE_ACTIVITY)
                                         .where(Image.META_ID, "=", activityId).toDelete(connection);
                                 SQLHelper.executeAndCloseStatement(statImages);
 
                                 // delete comments
-                                SQLBuilder builderComments = new SQLBuilder();
+                                final SQLBuilder builderComments = new SQLBuilder();
                                 PreparedStatement statComments = builderComments.from(Comment.TABLE)
                                                                                 .where(Comment.ACTIVITY_ID, "=", activityId)
                                                                                 .toDelete(connection);
                                 SQLHelper.executeAndCloseStatement(statComments);
 
                                 // delete assessments
-                                SQLBuilder builderAssessments = new SQLBuilder();
-                                PreparedStatement statAssessments = builderAssessments.from(Comment.TABLE)
+                                final SQLBuilder builderAssessments = new SQLBuilder();
+                                final PreparedStatement statAssessments = builderAssessments.from(Comment.TABLE)
                                                                                 .where(Comment.ACTIVITY_ID, "=", activityId)
                                                                                 .toDelete(connection);
                                 SQLHelper.executeAndCloseStatement(statAssessments);
+
+				final SQLBuilder builderActivity = new SQLBuilder();
+				final PreparedStatement statActivity = builderActivity.from(Activity.TABLE)
+										.where(Activity.ID, "=", activityId)
+										.toDelete(connection);
+
+				SQLHelper.executeAndCloseStatement(statActivity);
 
                                 SQLHelper.commit(connection);
                         } catch (Exception e) {
@@ -122,6 +129,7 @@ public class ExtraCommander extends DBCommander {
                         /**
                          * end SQL-transaction guard
                          * */
+			return true;
                 } catch (Exception e) {
                         Loggy.e(TAG, "deleteActivity", e);
                 }

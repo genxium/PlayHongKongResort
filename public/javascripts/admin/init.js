@@ -177,6 +177,7 @@ function PriorityEditor (activity) {
 			aEditor.disableSubmit();		
 			$.ajax({
 				type: "POST",
+				// url: "/el/admin/prioritize", // TODO
 				url: "/admin/prioritize",
 				data: params,
 				success: function(data, status, xhr) {
@@ -245,8 +246,8 @@ function onBtnRejectClicked(evt) {
 	disableField(btnReject);
 	$.ajax({
 		type: "POST",
-		url: "/el/admin/activity/reject", 
-		// url: "/admin/reject",
+		// url: "/el/admin/activity/reject", 
+		url: "/admin/reject",
 		data: params,
 		success: function(data, status, xhr){
 			enableField(btnReject);
@@ -281,6 +282,7 @@ function onBtnDeleteClicked(evt){
 	disableField(btnDelete);
 	$.ajax({
 		type: "POST",
+		// url: "/el/admin/activity/delete",
 		url: "/admin/delete", 
 		data: params,
 		success: function(data, status, xhr){
