@@ -6,7 +6,7 @@ function onBtnEditClicked(evt){
 	evt.preventDefault();
 	var data = evt.data;
 	var activity = data[g_keyActivity];
-	if (g_activityEditor == null) return;
+	if (!g_activityEditor) return;
 	g_activityEditor.refresh(activity);
 	g_activityEditor.show();
 }
@@ -38,11 +38,11 @@ function listActivitiesAndRefresh() {
 }
 
 function generateActivitiesListParams(pager, page) {
-	if (page == null) return null;
+	if (!page) return null;
 
 	var params = {};
 	
-	if (g_vieweeId != null)	params[g_keyVieweeId] = g_vieweeId;
+	if (!(!g_vieweeId))	params[g_keyVieweeId] = g_vieweeId;
 	var pageSt = page - 2;
 	var pageEd = page + 2;
 	var offset = pageSt < 1 ? (pageSt - 1) : 0;
@@ -50,10 +50,10 @@ function generateActivitiesListParams(pager, page) {
 	pageEd -= offset;
 	params[g_keyPageSt] = pageSt;
 	params[g_keyPageEd] = pageEd;
-	if (pager.nItems != null) params[g_keyNumItems] = pager.nItems;
-	if (g_vieweeId != null) params[g_keyVieweeId] = g_vieweeId;
+	if (!(!pager.nItems)) params[g_keyNumItems] = pager.nItems;
+	if (!(!g_vieweeId)) params[g_keyVieweeId] = g_vieweeId;
 
-	if (pager.filterList != null) {
+	if (!(!pager.filterList)) {
 		for (var i = 0; i < pager.filterList.length; ++i) {
 			var filter = pager.filterList[i];
 			params[filter.key] = filter.selector.val();	
@@ -63,7 +63,7 @@ function generateActivitiesListParams(pager, page) {
 	if (!params.hasOwnProperty(g_keyOrientation)) params[g_keyOrientation] = g_orderDescend;
 
 	var token = getToken();
-	if (token != null)	params[g_keyToken] = token;
+	if (!(!token))	params[g_keyToken] = token;
 	return params;
 }
 
@@ -81,7 +81,7 @@ function displayTimesTable(par, activity) {
 		"class": "time-table dealine clearfix"
 	}).appendTo(par);
 	var deadlineTitle = $("<div>", {
-		text: TITLES["deadline"],
+		text: TITLES.deadline,
 		"class": "time-label left label-active-alpha"
 	}).appendTo(deadlineRow);
 	var deadline = $("<div>", {
@@ -96,7 +96,7 @@ function displayTimesTable(par, activity) {
 		"class": "time-table begin clearfix"
 	}).appendTo(par);
 	var beginTimeTitle = $("<div>", {
-		text: TITLES["begin_time"],
+		text: TITLES.begin_time,
 		"class": "time-label left label-active-beta"
 	}).appendTo(beginTimeRow);
 	var beginTime = $("<div>", {
@@ -114,12 +114,12 @@ function displayParticipantStatistics(par, activity) {
 		"class": "clearfix"
 	}).appendTo(par);
 	var spanSelected = $("<li>", {
-		text: activity.numSelected.toString() + " " + TITLES["selected"],
+		text: activity.numSelected.toString() + " " + TITLES.selected,
 		"class": "selected left"
 	}).appendTo(attend);
 
 	var spanApplied = $("<li>", {
-		text: (activity.numApplied + activity.numSelected).toString() + " " + TITLES["applied"], // display the total number of applied players including the selected ones
+		text: (activity.numApplied + activity.numSelected).toString() + " " + TITLES.applied, // display the total number of applied players including the selected ones
 		"class": "applied left"
 	}).appendTo(attend);
 
@@ -133,13 +133,13 @@ function onBtnJoinClicked(evt){
 	var activity = evt.data;
 
 	if (activity.isDeadlineExpired()) {
-		alert(ALERTS["deadline_expired"]);
+		alert(ALERTS.deadline_expired);
 		return;
 	}
 
 	// prevent number limit violation
 	if (activity.numApplied >= g_maxApplied) {
-		alert(ALERTS["applicant_num_exceeded"]);
+		alert(ALERTS.applicant_num_exceeded);
 		return;
 	} 
 
@@ -163,11 +163,11 @@ function onBtnJoinClicked(evt){
 				return;
 			}
 			if (isApplicationLimitExceeded(data)) {
-				alert(ALERTS["applicant_num_exceeded"]);
+				alert(ALERTS.applicant_num_exceeded);
 				return;
 			}
 			if (!isStandardSuccess(data)) return;
-			if (g_onJoined == null) return;
+			if (!g_onJoined) return;
 			g_onJoined(activity.id);
 		},
 		error: function(xhr, status, err){
@@ -178,10 +178,10 @@ function onBtnJoinClicked(evt){
 
 function attachJoinButton(par, activity) {
 
-	if(activity.relation == null && !activity.isDeadlineExpired()){
+	if(!activity.relation && !activity.isDeadlineExpired()){
 		var btnJoin = $('<button>', {
 			"class": "btn-join right positive-button",
-			text: TITLES["join"]
+			text: TITLES.join
 		}).appendTo(par);
 		btnJoin.click(activity, onBtnJoinClicked);
 	} else {
@@ -192,7 +192,7 @@ function attachJoinButton(par, activity) {
 
 function attachRelationIndicator(par, activity, inListCell) {
 
-	if(activity.relation == null || g_loggedInPlayer == null || g_loggedInPlayer.id == activity.host.id) return;
+	if(!activity.relation || !g_loggedInPlayer || g_loggedInPlayer.id == activity.host.id) return;
 
 	var mapRelationName = {};
 	mapRelationName[applied] = RELATION_NAMES["applied"];
@@ -216,7 +216,7 @@ function attachRelationIndicator(par, activity, inListCell) {
 }
 
 function attachStatusIndicator(par, activity) {
-	if(activity.status == null) return;
+	if(!activity.status) return;
 
 	var arrayStatusName = [STATUS_NAMES["created"], STATUS_NAMES["pending"], STATUS_NAMES["rejected"], STATUS_NAMES["accepted"]];
 	
@@ -245,7 +245,7 @@ function getPriorRelation(activity) {
 function generateActivityCell(par, activity){
 
 	var coverImageUrl = null;
-	if(activity.images != null) {
+	if(!(!activity.images)) {
             for(var key in activity.images){
                var img = activity.images[key];
                coverImageUrl = img.url;
@@ -268,7 +268,7 @@ function generateActivityCell(par, activity){
 	var helper = $("<span>", {
 		"class": "image-helper"
 	}).appendTo(left);
-	if(coverImageUrl != null){
+	if(!(!coverImageUrl)){
 		//setBackgroundImageDefault(left, coverImageUrl);
 		var cover = $("<img>", {
 			src: coverImageUrl
@@ -297,7 +297,7 @@ function generateActivityCell(par, activity){
 	var selectedSnippet = $("<div>", {
 		"class": "selected-snippet"
 	}).appendTo(middle);
-	if (activity.selectedParticipants != null) {
+	if (!(!activity.selectedParticipants)) {
 		var count = activity.selectedParticipants.length <= 3 ? activity.selectedParticipants.length : 3;
 		for (var i = 0; i < count; ++i) {
 			var participant = activity.selectedParticipants[i];
@@ -336,7 +336,7 @@ function generateActivityCell(par, activity){
 
 	var btnDetail = $('<button>', {
 		"class": "activity-detail big-positive-button",
-		text: TITLES["view"]
+		text: TITLES.view
 	}).appendTo(right);
 	
 	btnDetail.click(activity, function(evt){
