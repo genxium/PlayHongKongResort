@@ -1,7 +1,5 @@
 # Project specific files
 conf/*.xml
-*.min.js
-*.min.css
 *.rpm
 *.rpm.*
 *.log
@@ -61,7 +59,6 @@ local.properties
 /*/local.properties
 /*/out
 /*/*/build
-/*/*/production
 *.iml
 *.iws
 *.ipr
