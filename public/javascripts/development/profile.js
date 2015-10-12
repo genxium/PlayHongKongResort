@@ -158,7 +158,11 @@ function ProfileEditor() {
 
 			var formData = {};
 			formData[g_keyToken] = token;
-			formData[g_keyAvatar] = editor.avatarNode.remoteName;
+			// TODO: remove usage of magic string
+			var avatarSrc = editor.avatarNode.preview.attr("src"); 
+			if (avatarSrc.indexOf("assets") == -1) { 
+				formData[g_keyAvatar] = editor.avatarNode.remoteName;
+			}
 			formData[g_keyAge] =  editor.age.val();
 			formData[g_keyGender] =  editor.gender.val();
 			formData[g_keyMood] =  editor.mood.val();

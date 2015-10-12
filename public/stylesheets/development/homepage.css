@@ -55,7 +55,7 @@ table.player-profile-table span.player-profile-table-plain-value {
 	width: 80px;
 	height: 50px;
 	border: solid 1px #999;
-	background: url("../icons/refresh.png") 20px top no-repeat;
+	background: url("/assets/icons/refresh.png") 20px top no-repeat;
 }
 .captcha .change:hover {
 	background-position: 20px bottom;

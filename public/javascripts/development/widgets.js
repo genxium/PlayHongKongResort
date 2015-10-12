@@ -309,7 +309,7 @@ function ProfileEditorImageNode(cdn, domain) {
 						node.preview.attr("src", imageUrl);
 						node.state = SLOT_IDLE; 
 					},
-					 'Key': function(up, file) {
+					'Key': function(up, file) {
 						// would ONLY be invoked when {unique_names: false , save_key: false}
 						return node.remoteName;
 					 }

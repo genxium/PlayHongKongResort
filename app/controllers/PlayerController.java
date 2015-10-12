@@ -219,10 +219,9 @@ public class PlayerController extends Controller {
                 try {
                         if (!transactionSucceeded) throw new NullPointerException();
                         player.setAvatar(avatar.getId());
-                        if (toDeleteImageList.size() == 0) throw new NullPointerException();
-                        CDNHelper.deleteRemoteImages(CDNHelper.QINIU, toDeleteImageList);
+                        if (toDeleteImageList.size() > 0)	CDNHelper.deleteRemoteImages(CDNHelper.QINIU, toDeleteImageList);
                 } catch (Exception e) {
-                        Loggy.e(TAG, "save", e);
+			Loggy.e(TAG, "save", e);
                 }
                 DBCommander.updatePlayer(player);
                 return player.toObjectNode(playerId);

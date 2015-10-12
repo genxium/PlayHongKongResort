@@ -4,57 +4,61 @@ basedir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # JS
 PREFIX="$basedir/../public/javascripts"
-COMMENT=$PREFIX/comment
-ACTIVITY=$PREFIX/activity
-ASSESSMENT=$PREFIX/assessment
-PLAYER=$PREFIX/player
-HOMEPAGE=$PREFIX/homepage
-WS=$PREFIX/ws
-TARGET=$PREFIX/home.min.js
-cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.js $PREFIX/apis.js $PREFIX/models.js $PREFIX/widgets.js $PREFIX/participant.js > $TARGET
+PREFIX_DEVELOPMENT="$PREFIX/development"
+PREFIX_PRODUCTION="$PREFIX/production"
+COMMENT=$PREFIX_DEVELOPMENT/comment
+ACTIVITY=$PREFIX_DEVELOPMENT/activity
+ASSESSMENT=$PREFIX_DEVELOPMENT/assessment
+PLAYER=$PREFIX_DEVELOPMENT/player
+HOMEPAGE=$PREFIX_DEVELOPMENT/homepage
+WS=$PREFIX_DEVELOPMENT/ws
+TARGET=$PREFIX_PRODUCTION/home.min.js
+cat $PREFIX_DEVELOPMENT/lang_zh_hk.js $PREFIX_DEVELOPMENT/global_variables.js $PREFIX_DEVELOPMENT/global_functions.js $PREFIX_DEVELOPMENT/apis.js $PREFIX_DEVELOPMENT/models.js $PREFIX_DEVELOPMENT/widgets.js $PREFIX_DEVELOPMENT/participant.js > $TARGET
 cat $COMMENT/viewer.js $COMMENT/editor.js >> $TARGET
 cat $ASSESSMENT/editor.js $ASSESSMENT/viewer.js >> $TARGET
-cat $PREFIX/notification.js >> $TARGET
-cat $PREFIX/activity/functions.js $PREFIX/activity/editor.js $PREFIX/activity/detail.js >> $TARGET
-cat $PREFIX/profile.js >> $TARGET
+cat $PREFIX_DEVELOPMENT/notification.js >> $TARGET
+cat $ACTIVITY/functions.js $ACTIVITY/editor.js $ACTIVITY/detail.js >> $TARGET
+cat $PREFIX_DEVELOPMENT/profile.js >> $TARGET
 cat $PLAYER/register.js $PLAYER/login.js >> $TARGET
-cat $PREFIX/topbar.js $PREFIX/footer.js >> $TARGET
+cat $PREFIX_DEVELOPMENT/topbar.js $PREFIX_DEVELOPMENT/footer.js >> $TARGET
 cat $WS/websocket.js >> $TARGET
 cat $HOMEPAGE/init.js >> $TARGET
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.js$:.js' $TARGET 
 
-ADMIN=$PREFIX/admin
-TARGET=$PREFIX/admin.min.js
-cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.js $PREFIX/apis.js $PREFIX/models.js $PREFIX/widgets.js $PREFIX/participant.js > $TARGET
+ADMIN=$PREFIX_DEVELOPMENT/admin
+TARGET=$PREFIX_PRODUCTION/admin.min.js
+cat $PREFIX_DEVELOPMENT/lang_zh_hk.js $PREFIX_DEVELOPMENT/global_variables.js $PREFIX_DEVELOPMENT/global_functions.js $PREFIX_DEVELOPMENT/apis.js $PREFIX_DEVELOPMENT/models.js $PREFIX_DEVELOPMENT/widgets.js $PREFIX_DEVELOPMENT/participant.js > $TARGET
 cat $COMMENT/viewer.js $COMMENT/editor.js >> $TARGET
 cat $ASSESSMENT/editor.js $ASSESSMENT/viewer.js >> $TARGET
-cat $PREFIX/notification.js >> $TARGET
-cat $PREFIX/activity/functions.js $PREFIX/activity/editor.js $PREFIX/activity/detail.js >> $TARGET
-cat $PREFIX/profile.js >> $TARGET
+cat $PREFIX_DEVELOPMENT/notification.js >> $TARGET
+cat $ACTIVITY/functions.js $ACTIVITY/editor.js $ACTIVITY/detail.js >> $TARGET
+cat $PREFIX_DEVELOPMENT/profile.js >> $TARGET
 cat $PLAYER/register.js $PLAYER/login.js >> $TARGET
-cat $PREFIX/topbar.js $PREFIX/footer.js $PREFIX/widgets.js >> $TARGET
+cat $PREFIX_DEVELOPMENT/topbar.js $PREFIX_DEVELOPMENT/footer.js $PREFIX_DEVELOPMENT/widgets.js >> $TARGET
 cat $WS/websocket.js >> $TARGET
 cat $ADMIN/init.js >> $TARGET
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.js$:.js' $TARGET 
 
-TARGET=$PREFIX/email_verification.min.js
-cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.js $PREFIX/apis.js $PREFIX/models.js $PREFIX/widgets.js $PREFIX/participant.js > $TARGET
+TARGET=$PREFIX_PRODUCTION/email_verification.min.js
+cat $PREFIX_DEVELOPMENT/lang_zh_hk.js $PREFIX_DEVELOPMENT/global_variables.js $PREFIX_DEVELOPMENT/global_functions.js $PREFIX_DEVELOPMENT/apis.js $PREFIX_DEVELOPMENT/models.js $PREFIX_DEVELOPMENT/widgets.js $PREFIX_DEVELOPMENT/participant.js > $TARGET
 cat $PLAYER/email_verification.js >> $TARGET
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.js$:.js' $TARGET 
 
-TARGET=$PREFIX/password_index.min.js
-cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.js $PREFIX/apis.js $PREFIX/models.js $PREFIX/widgets.js $PREFIX/participant.js > $TARGET
-cat $PREFIX/topbar.js $PREFIX/footer.js >> $TARGET
+TARGET=$PREFIX_PRODUCTION/password_index.min.js
+cat $PREFIX_DEVELOPMENT/lang_zh_hk.js $PREFIX_DEVELOPMENT/global_variables.js $PREFIX_DEVELOPMENT/global_functions.js $PREFIX_DEVELOPMENT/apis.js $PREFIX_DEVELOPMENT/models.js $PREFIX_DEVELOPMENT/widgets.js $PREFIX_DEVELOPMENT/participant.js > $TARGET
+cat $PREFIX_DEVELOPMENT/topbar.js $PREFIX_DEVELOPMENT/footer.js >> $TARGET
 cat $PLAYER/password_index.js >> $TARGET
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.js$:.js' $TARGET 
 
-TARGET=$PREFIX/password_reset.min.js
-cat $PREFIX/lang_zh_hk.js $PREFIX/global_variables.js $PREFIX/global_functions.js $PREFIX/apis.js $PREFIX/models.js $PREFIX/widgets.js $PREFIX/participant.js > $TARGET
+TARGET=$PREFIX_PRODUCTION/password_reset.min.js
+cat $PREFIX_DEVELOPMENT/lang_zh_hk.js $PREFIX_DEVELOPMENT/global_variables.js $PREFIX_DEVELOPMENT/global_functions.js $PREFIX_DEVELOPMENT/apis.js $PREFIX_DEVELOPMENT/models.js $PREFIX_DEVELOPMENT/widgets.js $PREFIX_DEVELOPMENT/participant.js > $TARGET
 cat $PLAYER/password_reset.js >> $TARGET
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.js$:.js' $TARGET 
 
 # LESS
-ALL_LESS_FILES=`find $basedir/../public/stylesheets -name "*.less" -type f`
+LESS_PREFIX="$basedir/../public/stylesheets"
+LESS_PREFIX_DEVELOPMENT="$LESS_PREFIX/development"
+ALL_LESS_FILES=`find $LESS_PREFIX_DEVELOPMENT -name "*.less" -type f`
 for LESS_FILE in $ALL_LESS_FILES
 do
 	CSS_FILE="$(echo $LESS_FILE | sed 's/\(.*\)\.less/\1\.css/g')" # beware of the escaping  
@@ -65,30 +69,32 @@ done
 
 # CSS
 CSS_PREFIX="$basedir/../public/stylesheets"
-TARGET_CSS=$CSS_PREFIX/theme-main.min.css
-cat $CSS_PREFIX/theme-main.css > $TARGET_CSS
+CSS_PREFIX_DEVELOPMENT="$CSS_PREFIX/development"
+CSS_PREFIX_PRODUCTION="$CSS_PREFIX/production"
+TARGET_CSS=$CSS_PREFIX_PRODUCTION/theme-main.min.css
+cat $CSS_PREFIX_DEVELOPMENT/theme-main.css > $TARGET_CSS
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.css$:.css' $TARGET_CSS 
 
-TARGET_CSS=$CSS_PREFIX/home.min.css
-cat $CSS_PREFIX/common.css $CSS_PREFIX/header.css $CSS_PREFIX/footer.css $CSS_PREFIX/widgets.css $CSS_PREFIX/activity.css $CSS_PREFIX/assessment.css $CSS_PREFIX/comment.css $CSS_PREFIX/notification.css > $TARGET_CSS
-cat $CSS_PREFIX/homepage.css >> $TARGET_CSS
+TARGET_CSS=$CSS_PREFIX_PRODUCTION/home.min.css
+cat $CSS_PREFIX_DEVELOPMENT/common.css $CSS_PREFIX_DEVELOPMENT/header.css $CSS_PREFIX_DEVELOPMENT/footer.css $CSS_PREFIX_DEVELOPMENT/widgets.css $CSS_PREFIX_DEVELOPMENT/activity.css $CSS_PREFIX_DEVELOPMENT/assessment.css $CSS_PREFIX_DEVELOPMENT/comment.css $CSS_PREFIX_DEVELOPMENT/notification.css > $TARGET_CSS
+cat $CSS_PREFIX_DEVELOPMENT/homepage.css >> $TARGET_CSS
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.css$:.css' $TARGET_CSS 
 
-TARGET_CSS=$CSS_PREFIX/admin.min.css
-cat $CSS_PREFIX/common.css $CSS_PREFIX/header.css $CSS_PREFIX/footer.css $CSS_PREFIX/widgets.css $CSS_PREFIX/activity.css $CSS_PREFIX/assessment.css $CSS_PREFIX/comment.css $CSS_PREFIX/notification.css > $TARGET_CSS
-cat $CSS_PREFIX/admin.css >> $TARGET_CSS
+TARGET_CSS=$CSS_PREFIX_PRODUCTION/admin.min.css
+cat $CSS_PREFIX_DEVELOPMENT/common.css $CSS_PREFIX_DEVELOPMENT/header.css $CSS_PREFIX_DEVELOPMENT/footer.css $CSS_PREFIX_DEVELOPMENT/widgets.css $CSS_PREFIX_DEVELOPMENT/activity.css $CSS_PREFIX_DEVELOPMENT/assessment.css $CSS_PREFIX_DEVELOPMENT/comment.css $CSS_PREFIX_DEVELOPMENT/notification.css > $TARGET_CSS
+cat $CSS_PREFIX_DEVELOPMENT/admin.css >> $TARGET_CSS
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.css$:.css' $TARGET_CSS 
 
-TARGET_CSS=$CSS_PREFIX/email_verification.min.css
-cat $CSS_PREFIX/common.css $CSS_PREFIX/header.css $CSS_PREFIX/footer.css $CSS_PREFIX/widgets.css $CSS_PREFIX/activity.css $CSS_PREFIX/assessment.css $CSS_PREFIX/comment.css $CSS_PREFIX/notification.css > $TARGET_CSS
+TARGET_CSS=$CSS_PREFIX_PRODUCTION/email_verification.min.css
+cat $CSS_PREFIX_DEVELOPMENT/common.css $CSS_PREFIX_DEVELOPMENT/header.css $CSS_PREFIX_DEVELOPMENT/footer.css $CSS_PREFIX_DEVELOPMENT/widgets.css $CSS_PREFIX_DEVELOPMENT/activity.css $CSS_PREFIX_DEVELOPMENT/assessment.css $CSS_PREFIX_DEVELOPMENT/comment.css $CSS_PREFIX_DEVELOPMENT/notification.css > $TARGET_CSS
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.css$:.css' $TARGET_CSS 
 
-TARGET_CSS=$CSS_PREFIX/password_index.min.css
-cat $CSS_PREFIX/common.css $CSS_PREFIX/header.css $CSS_PREFIX/footer.css $CSS_PREFIX/widgets.css $CSS_PREFIX/activity.css $CSS_PREFIX/assessment.css $CSS_PREFIX/comment.css $CSS_PREFIX/notification.css > $TARGET_CSS
-cat $CSS_PREFIX/password.css >> $TARGET_CSS
+TARGET_CSS=$CSS_PREFIX_PRODUCTION/password_index.min.css
+cat $CSS_PREFIX_DEVELOPMENT/common.css $CSS_PREFIX_DEVELOPMENT/header.css $CSS_PREFIX_DEVELOPMENT/footer.css $CSS_PREFIX_DEVELOPMENT/widgets.css $CSS_PREFIX_DEVELOPMENT/activity.css $CSS_PREFIX_DEVELOPMENT/assessment.css $CSS_PREFIX_DEVELOPMENT/comment.css $CSS_PREFIX_DEVELOPMENT/notification.css > $TARGET_CSS
+cat $CSS_PREFIX_DEVELOPMENT/password.css >> $TARGET_CSS
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.css$:.css' $TARGET_CSS 
 
-TARGET_CSS=$CSS_PREFIX/password_reset.min.css
-cat $CSS_PREFIX/common.css $CSS_PREFIX/header.css $CSS_PREFIX/footer.css $CSS_PREFIX/widgets.css $CSS_PREFIX/activity.css $CSS_PREFIX/assessment.css $CSS_PREFIX/comment.css $CSS_PREFIX/notification.css > $TARGET_CSS
-cat $CSS_PREFIX/password.css >> $TARGET_CSS
+TARGET_CSS=$CSS_PREFIX_PRODUCTION/password_reset.min.css
+cat $CSS_PREFIX_DEVELOPMENT/common.css $CSS_PREFIX_DEVELOPMENT/header.css $CSS_PREFIX_DEVELOPMENT/footer.css $CSS_PREFIX_DEVELOPMENT/widgets.css $CSS_PREFIX_DEVELOPMENT/activity.css $CSS_PREFIX_DEVELOPMENT/assessment.css $CSS_PREFIX_DEVELOPMENT/comment.css $CSS_PREFIX_DEVELOPMENT/notification.css > $TARGET_CSS
+cat $CSS_PREFIX_DEVELOPMENT/password.css >> $TARGET_CSS
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.css$:.css' $TARGET_CSS 

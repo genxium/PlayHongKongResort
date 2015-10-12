@@ -103,7 +103,7 @@
   height: 24px;
   border: none;
   margin-left: 10px;
-  background: url("../icons/edit-button.png") left top no-repeat;
+  background: url("/assets/icons/edit-button.png") left top no-repeat;
 }
 .activity-edit:hover {
   background-position: left bottom;

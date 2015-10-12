@@ -9,6 +9,7 @@ conf/*.xml
 all_data.sql
 .target
 .target/*
+*.DS_Store
 
 # built application files
 *.apk

@@ -153,8 +153,8 @@ function onBtnJoinClicked(evt){
 	disableField(aButton);
 	$.ajax({
 		type: "POST",
-		url: "/el/activity/join",
-		// url: "/activity/join",
+		// url: "/el/activity/join",
+		url: "/activity/join",
 		data: params,
 		success: function(data, status, xhr){
 			enableField(aButton);
@@ -162,7 +162,7 @@ function onBtnJoinClicked(evt){
 				logout(null);
 				return;
 			}
-			if (isApplicationLimitExceeded(data)) {
+			if (isApplicantLimitExceeded(data)) {
 				alert(ALERTS.applicant_num_exceeded);
 				return;
 			}

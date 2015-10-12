@@ -61,7 +61,7 @@
 .noti-container {
 	width: 35px;
 	height: 35px;
-	background: url("../icons/message-button.png") left top no-repeat;
+	background: url("/assets/icons/message-button.png") left top no-repeat;
 	position: relative;
 	cursor: pointer;
 }
@@ -100,13 +100,13 @@
 	font-size: 10px;
 }
 .menu-actions .action-create a {
-	background: url("../icons/create-button.png") left top no-repeat;
+	background: url("/assets/icons/create-button.png") left top no-repeat;
 }
 .menu-actions .action-profile a {
-	background: url("../icons/profile-button.png") left top no-repeat;
+	background: url("/assets/icons/profile-button.png") left top no-repeat;
 }
 .menu-actions .action-logout a {
-	background: url("../icons/logout-button.png") left top no-repeat;
+	background: url("/assets/icons/logout-button.png") left top no-repeat;
 }
 .foreign-party-logo {
 	margin-left: 5px;

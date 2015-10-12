@@ -34,12 +34,12 @@
 	height: 40px;
 }
 .notification-unread {
-	background: url("../icons/notification-close.png") left top no-repeat;
+	background: url("/assets/icons/notification-close.png") left top no-repeat;
 	cursor: pointer;
 }
 .notification-unread:hover {
-	background: url("../icons/notification-open.png") left top no-repeat;
+	background: url("/assets/icons/notification-open.png") left top no-repeat;
 }
 .notification-read {
-	background: url("../icons/notification-gray.png") left top no-repeat;
+	background: url("/assets/icons/notification-gray.png") left top no-repeat;
 }

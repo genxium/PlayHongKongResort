@@ -675,7 +675,7 @@ function checkLoginStatus(willAttemptForeignPartyLogin) {
 		url: "/player/status",
 		data: params,
 		success: function(data, status, xhr){
-			if (isStandardFailure(data)) {
+			if (isStandardFailure(data) || isTokenExpired(data) || isPlayerNotFound(data)) {
 				wsDisconnect();	
 				clearToken();
 				if(!g_preLoginForm.onLoginError) return;

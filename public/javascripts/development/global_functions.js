@@ -115,24 +115,6 @@ function loadScriptFile(windowHandle, path, filetype, callbackFunc) {
 
 }
 
-function loadJquery(windowHandle, callbackFunc){
-        loadScriptFile(windowHandle, "assets/javascripts/jquery-2.0.3.min.js", "js", callbackFunc);
-}
-
-function loadJqueryPlugins(windowHandle){
-    // jquery-cookie
-    loadScriptFile(windowHandle, "assets/javascripts/jquery-cookie.js", "js", null);
-    // jquery-ui
-    loadScriptFile(windowHandle, "assets/javascripts/jquery-ui.js", "js", null);
-}
-
-function loadCommonScripts(windowHandle){
-        // global_variables
-        loadScriptFile(windowHandle, "assets/javascripts/global_variables.js", "js", null);
-        // global_functions
-        loadScriptFile(windowHandle, "assets/javascripts/global_functions.js", "js", null);
-}
-
 function validateEmail(email) { 
 	var regex = g_emailPattern;
 	return regex.test(email);
@@ -242,18 +224,18 @@ function compareYmdhisDate(foo, bar) {
 	var first = [];	
 	var second = [];
 	{
-		var parts = foo.split(" ");
-		var ymd = parts[0].split("-"); 
-		var his = parts[1].split(":");
-		for(var n in ymd) first.push(parseInt(ymd[n]));
-		for(var n in his) first.push(parseInt(his[n]));
+		var parts1 = foo.split(" ");
+		var ymd1 = parts1[0].split("-"); 
+		var his1 = parts1[1].split(":");
+		for(var n1 in ymd1) first.push(parseInt(ymd1[n1]));
+		for(var n2 in his1) first.push(parseInt(his1[n2]));
 	}
 	{
-		var parts = bar.split(" ");
-		var ymd = parts[0].split("-"); 
-		var his = parts[1].split(":");
-		for(var n in ymd) second.push(parseInt(ymd[n]));
-		for(var n in his) second.push(parseInt(his[n]));
+		var parts2 = bar.split(" ");
+		var ymd2 = parts2[0].split("-"); 
+		var his2 = parts2[1].split(":");
+		for(var n3 in ymd2) second.push(parseInt(ymd2[n]));
+		for(var n4 in his2) second.push(parseInt(his2[n]));
 	}
 	for(var i = 0; i <  first.length; i++) {
 		if(first[i] < second[i]) return -1;
@@ -383,7 +365,7 @@ function validateImage(file){
 	var ext = filetype.split('/').pop().toLowerCase();
 	if (!ext) return false;
 	if ($.inArray(ext, ['png','jpg','jpeg']) == -1) {
-		alert(ALERTS["invalid_image_type"]);
+		alert(ALERTS.invalid_image_type);
 		return false;
 	}
 	return true;
@@ -463,42 +445,42 @@ function isPswErr(data) {
 }
 
 function isDuplicated(data) {
-	if (data === null) return false;
+	if (!data) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errDuplicated;
 }
 
 function isApplicantLimitExceeded(data) {
-	if (data === null) return false;
+	if (!data) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errActivityAppliedLimit;
 }
 
 function isSelectedLimitExceeded(data) {
-	if (data === null) return false;
+	if (!data) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errActivitySelectedLimit;
 }
 
 function isCreationLimitExceeded(data) {
-	if (data === null) return false;
+	if (!data) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errActivityCreationLimit;
 }
 
 function isForeignPartyRegistrationRequired(data) {
-	if (data === null) return false;
+	if (!data) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errForeignPartyRegistrationRequired;
 }
 
 function isTempForeignPartyRecordNotFound(data) {
-	if (data === null) return false;
+	if (!data) return false;
 	if (!data.hasOwnProperty(g_keyRet)) return false;
 	var ret = parseInt(data[g_keyRet]);
 	return ret == g_errTempForeignPartyRecordNotFound;
