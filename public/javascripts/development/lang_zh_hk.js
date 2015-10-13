@@ -161,6 +161,7 @@ var HINTS = {
 };
 
 var ALERTS = {
+	
 	captcha_not_matched: "驗證碼錯誤",
 	creation_limit_exceeded: "創建活動太頻繁囉， 請稍後片刻",
 	applicant_num_exceeded: "報名人數已達到上限",
@@ -189,5 +190,6 @@ var ALERTS = {
 	invalid_image_type: "圖片類型應為jpg, jpeg或png",
 	player_not_found: "未找到用戶記錄",
 	relogin_required: "請重新登入",
+	participant_selection_not_submitted: "參與者選擇未提交",
 	unknown_error: "未知錯誤"	
 };

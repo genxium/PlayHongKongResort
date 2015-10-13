@@ -24,8 +24,8 @@ button {
 }
 .disabled-button {
   background-color: white;
-  color: #eeeeee;
-  border: solid 1px #eeeeee;
+  color: #eee;
+  border: solid 1px #eee;
   cursor: default;
 }
 .disabled-button:hover {
@@ -221,7 +221,7 @@ textarea {
   color: #e21e61;
 }
 .title-gamma {
-  color: #888888;
+  color: #888;
 }
 .title-delta {
   color: darkcyan;
@@ -241,8 +241,8 @@ textarea {
   background-color: darkslateblue;
 }
 .label-disabled {
-  color: #888888;
-  background-color: #eeeeee;
+  color: #888;
+  background-color: #eee;
 }
 .warning {
   color: indianred;

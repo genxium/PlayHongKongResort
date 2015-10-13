@@ -71,10 +71,8 @@ function generateParticipantsSelectionForm(par, activity) {
 	if (!editable || appliedParticipantsLength === 0 || boxes.length <= 1) return ret; // no submit button is needed	
 	var btnSubmit = $("<button>",{
 		text: TITLES.submit_participant_selection,
-		"class": "participant-confirm"
-	}).appendTo(form);
-
-	btnSubmit.click(ret, function(evt) {
+		"class": "positive-button"
+	}).appendTo(form).click(ret, function(evt) {
 		evt.preventDefault(); // prevent default action.
 		var aForm = evt.data;
 		var participantIdList = [];
@@ -121,7 +119,10 @@ function generateParticipantsSelectionForm(par, activity) {
 					alert(ALERTS.selected_num_exceeded);
 					return;
 				}
-				if (!isStandardSuccess(data)) return;
+				if (!isStandardSuccess(data)) {
+					alert(ALERTS.participant_selection_not_submitted)
+					return;
+				}
 				for(var i = 0; i < aForm.labels.length; ++i){
 					var label = aForm.labels[i];
 					// ignore selected participants
