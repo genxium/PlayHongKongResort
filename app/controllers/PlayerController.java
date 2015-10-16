@@ -131,8 +131,7 @@ public class PlayerController extends Controller {
         }
 
         public static ObjectNode detail(final Long vieweeId, final String token) throws TokenExpiredException, PlayerNotFoundException {
-                Long viewerId = null;
-                if (token != null) viewerId = DBCommander.queryPlayerId(token);
+                final Long viewerId = (token == null ? null : DBCommander.queryPlayerId(token));
                 final Player viewee = DBCommander.queryPlayer(vieweeId);
                 if (viewee == null) throw new PlayerNotFoundException();
                 return viewee.toObjectNode(viewerId);
@@ -255,7 +254,7 @@ public class PlayerController extends Controller {
                                 }
                                 case "detail": {
                                         final Long vieweeId = Converter.toLong(formData.get(PlayerActivityRelation.VIEWEE_ID)[0]);
-                                        final String token = formData.get(Player.TOKEN)[0];
+                                        final String token = (formData.containsKey(Player.TOKEN) ? formData.get(Player.TOKEN)[0] : null);
                                         return ok(detail(vieweeId, token));
                                 }
                                 case "save": {

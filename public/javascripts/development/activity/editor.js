@@ -16,6 +16,161 @@ var g_imagesLimit = 3;
 var g_onActivitySaveSuccess = null;
 var g_loadingWidget = null;
 
+/**
+ * ActivityEditorImageNode
+ * */
+
+function ActivityEditorImageNode(cdn, domain) {
+	this.setCDNCredentials(cdn, domain, getToken(), g_loggedInPlayer);	
+	this.requestDel = function(onSuccess, onError) {
+		// async process
+		var token = getToken();				
+		if (!token) return;
+		if (!this.remoteName) return;
+		if (this.state != SLOT_IDLE) return;
+
+		var params = {};
+		params[g_keyToken] = token;
+		var remoteNameList = [];
+		remoteNameList.push(this.remoteName);
+		params[g_keyBundle] = JSON.stringify(remoteNameList);
+
+		this.state = SLOT_AJAX_PENDING;
+
+		$.ajax({
+			type: 'POST',
+			url: '/image/cdn/qiniu/delete',
+			data: params,
+			success: function(data, status, xhr) {
+			        this.state = SLOT_IDLE;
+			        if (!onSuccess) return;
+			        onSuccess(data);
+			},
+			error: function(xhr, status, err) {
+			        this.state = SLOT_IDLE;
+				if (!onError) return;
+				onError(err);
+			}
+		});
+	};
+
+	this.composeContent = function(data) {
+		this.editor = data;
+		this.editor.newImageNodes[this.remoteName] = this;
+		this.wrap = $('<div>', {
+			"class": "preview-container left"
+		}).appendTo(this.content);
+
+		this.preview = $('<img>').hide().appendTo(this.wrap);
+		
+		this.btnChoose = $('<button>', {
+			text: TITLES.choose_picture,
+			'class': 'positive-button'
+		}).appendTo(this.wrap);
+		setDimensions(this.btnChoose, "100%", "100%");
+
+		this.btnDel = $('<button>', {
+			text: TITLES.del,
+			"class": "positive-button"
+		}).hide().appendTo(this.wrap).click(this, function(evt){
+			evt.preventDefault();
+			var remoteName = evt.data.remoteName;
+			var editor = evt.data.editor;
+
+			if(!editor.newImageNodes.hasOwnProperty(remoteName)) return;
+			var thatNode = editor.newImageNodes[remoteName];
+			var aButton = getTarget(evt);
+			var onSuccess = function(data) {
+                                enableField(aButton);
+				delete editor.newImageNodes[remoteName];
+				thatNode.remove();
+				editor.addNewImageNode(false, true);
+			};
+			var onError = function(err) {
+                                enableField(aButton);
+			};
+			disableField(aButton);
+			thatNode.requestDel(onSuccess, onError);
+		});
+		setDimensions(this.btnDel, "90%", "10%");
+
+		if (cdn == g_cdnQiniu) {
+			// reference http://developer.qiniu.com/docs/v6/sdk/javascript-sdk.html
+			var node = this;
+			this.uploader = Qiniu.uploader({
+				runtimes: 'html5,flash,html4',		    
+				browse_button: node.btnChoose[0],
+				uptoken_url: node.uptokenUrl,
+				unique_names: false,
+				save_key: false,
+				domain: node.bucketDomain,
+				container: node.preview[0],
+				max_file_size: '2mb',
+				max_retries: 2,
+				// dragdrop: true, 
+				// drop_element: node.preview[0],
+				chunk_size: '4mb',
+				auto_start: true, 
+				init: {
+					'FilesAdded': function(up, files) {
+						if (!files) return null;
+						if (files.length != 1) {
+							alert(ALERTS.choose_one_image);
+							return;
+						}
+
+						var file = files[0];
+						if (!validateImage(file)) return;
+
+						node.state = SLOT_UPLOADING;
+
+                                                node.uploader.disableBrowse();
+						disableField(node.btnChoose);
+					},
+					'BeforeUpload': function(up, file) {
+						node.state = SLOT_IDLE;
+					},
+					'UploadProgress': function(up, file) {
+						// TODO: show progress
+					},
+					'FileUploaded': function(up, file, info) {
+					},
+					'Error': function(up, err, errTip) {
+						node.state = SLOT_UPLOAD_FAILED; 
+					},
+					'UploadComplete': function() {
+						if (node.state == SLOT_UPLOAD_FAILED) {
+						        node.uploader.disableBrowse(false);
+						        enableField(node.btnChoose);
+						        return;
+						}
+						node.btnChoose.remove();
+						var refreshParams = ["ts=" + currentMillis()];
+						var protocolPrefix = "http://";
+						var imageUrl = protocolPrefix + node.bucketDomain + "/" + node.remoteName + "?" + refreshParams.join('&');
+						node.preview.show();
+						node.preview.attr("src", imageUrl);
+						node.state = SLOT_IDLE; 
+						node.btnDel.show();
+
+						node.editor.setNonSubmittable();
+						node.editor.setSavable();
+						
+						node.editor.addNewImageNode(false);
+					},
+					 'Key': function(up, file) {
+						// would ONLY be invoked when {unique_names: false , save_key: false}
+						return node.remoteName;
+					 }
+				}
+			});
+		}	
+	};
+}
+
+ActivityEditorImageNode.inherits(ImageNode);
+
+
 // Existing images selector
 function ImageSelector(id, image, indicator) {
 	this.id = id;

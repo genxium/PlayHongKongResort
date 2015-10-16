@@ -2,6 +2,90 @@ var g_sectionPlayer = null;
 var g_viewee = null;
 var g_profileEditor = null;
 
+/**
+ * ProfileEditorImageNode
+ * */
+
+function ProfileEditorImageNode(cdn, domain) {
+	this.setCDNCredentials(cdn, domain, getToken(), g_loggedInPlayer);	
+	this.composeContent = function(data) {
+		this.editor = data;
+		this.wrap = $('<div>', {
+			"class": "preview-container"
+		}).appendTo(this.content);
+
+		this.preview = $('<img>', {
+			src: this.editor.player.avatar
+		}).appendTo(this.wrap);
+		
+		this.btnChoose = $('<button>', {
+			text: TITLES.choose_picture,
+			"class": "positive-button"
+		}).appendTo(this.wrap);
+		setDimensions(this.btnChoose, "100%", null);
+
+		if (cdn == g_cdnQiniu) {
+			// reference http://developer.qiniu.com/docs/v6/sdk/javascript-sdk.html
+			var node = this;
+			this.uploader = Qiniu.uploader({
+				runtimes: 'html5,flash,html4',		    
+				browse_button: node.btnChoose[0],
+				uptoken_url: node.uptokenUrl,
+				unique_names: false,
+				save_key: false,
+				domain: node.bucketDomain,
+				container: node.preview[0],
+				max_file_size: '2mb',
+				max_retries: 2,
+				// dragdrop: false, 
+				// drop_element: node.preview[0],
+				chunk_size: '4mb',
+				auto_start: true, 
+				init: {
+					'FilesAdded': function(up, files) {
+						if (!files) return null;
+						if (files.length != 1) {
+							alert(ALERTS.choose_one_image);
+							return;
+						}
+
+						var file = files[0];
+						if (!validateImage(file)) return;
+
+						node.state = SLOT_UPLOADING; 
+						disableField(node.btnChoose);
+					},
+					'BeforeUpload': function(up, file) {
+						node.state = SLOT_IDLE;
+					},
+					'UploadProgress': function(up, file) {
+						// TODO: show progress
+					},
+					'FileUploaded': function(up, file, info) {
+					},
+					'Error': function(up, err, errTip) {
+						node.state = SLOT_UPLOAD_FAILED; 
+					},
+					'UploadComplete': function() {
+						enableField(node.btnChoose);
+						if (node.state == SLOT_UPLOAD_FAILED) return;
+						var protocolPrefix = "http://";
+						var imageUrl = protocolPrefix + node.bucketDomain + "/" + node.remoteName;
+						node.preview.attr("src", imageUrl);
+						node.state = SLOT_IDLE; 
+					},
+					'Key': function(up, file) {
+						// would ONLY be invoked when {unique_names: false , save_key: false}
+						return node.remoteName;
+					 }
+				}
+			});
+		}	
+	};
+}
+ 
+ProfileEditorImageNode.inherits(ImageNode);
+
 function ProfileEditor() {
 
 	this.NORMAL = 0;	
@@ -313,7 +397,7 @@ function requestProfile(vieweeId) {
 	// initialize pager 
 	var filterMap = {};
 	filterMap[g_keyRelation] = [[TITLES.hosted_activities, TITLES.joined_activities], [hosted, present]]; 
-	filterMap[g_keyOrientation] = [[TITLES.time_descendant, TITLES.ascendant], [g_orderDescend, g_orderAscend]];
+	filterMap[g_keyOrientation] = [[TITLES.time_descendant, TITLES.time_ascendant], [g_orderDescend, g_orderAscend]];
 
 	g_pagerActivity = new ProfileActivityPager(g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, 5, filterMap, onListActivitiesSuccess, onListActivitiesError);
 	g_pagerActivity.appendTo("#pager-activities");
