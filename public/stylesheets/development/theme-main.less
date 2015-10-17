@@ -241,8 +241,16 @@ input, textarea {
 	padding: 5px;
 }
 
+select {
+	margin: 2px;
+	padding: 2px;
+}
+
 #header {
 	background-color: @header-background;
+}
+
+#footer{
 }
 
 #topbar {
@@ -389,3 +397,52 @@ input, textarea {
 .highlight {
 	color: @highlight-font-color;
 } 
+
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.clear {
+	clear: both;
+}
+
+.clearfix {
+	zoom: 1;
+}
+
+.clearfix:after {
+	content: ".";
+	display: block;
+	clear: both;
+	width: 0;
+	height: 0;
+}
+
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+.hide {
+	display: none !important;
+}
+
+.inline {
+	display: inline;
+}
+
+.truncate {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.image-helper {
+	display: inline-block;
+	vertical-align: middle;
+	height: 100%;
+}

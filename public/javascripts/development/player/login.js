@@ -89,7 +89,7 @@ function PreLoginForm(handle, psw, btn, forgot, registry, onLoginSuccess, onLogi
 		window.open("/player/password/index");
 	});
 
-	if (this.registry) {
+	if (!(!this.registry)) {
 		this.registry.click(function(evt) {
 			evt.preventDefault();
 			g_registerWidgetY.show();	
@@ -125,17 +125,6 @@ function PostLoginMenu(bubble, dropdownMenu, onLoginSuccess, onLoginError, onLog
 }
 
 function NameCompletionForm() {
-	this.name = null;
-	this.nameCheck = null;
-	this.email = null;
-	this.emailCheck = null;
-	this.btnSubmit = null;
-	this.btnCancel = null;
-	this.onSuccess = null;
-	this.onError = null;
-
-	this.partyNickname = null;
-
 	this.composeContent = function(data) {
 		this.partyNickname = data;
 		var party = getParty();
