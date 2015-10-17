@@ -1,3 +1,29 @@
+// cookie operations
+function setCookie(key, val, path, days) {
+	if (!path) var path = "/";
+	var expires = null;
+	if (!(!days)) {
+		var date = new Date();
+		date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+		expires = "; expires=" + date.toGMTString();	
+	} else expires = ""; 
+	document.cookie = key + "=" + val + expires + "; path=" + path;	
+}
+
+function getCookie(key) {
+	if (document.cookie.length <= 0) return null;
+	start = document.cookie.indexOf(key + "=");
+	if (start == -1)	return null;
+	start = start + key.length + 1;
+	end = document.cookie.indexOf(";", start);
+	if (end == -1)	end = document.cookie.length;
+	return unescape(document.cookie.substring(start, end));
+}
+
+function removeCookie(key) {
+	setCookie(key, "", "/", -1);
+}
+
 // javascript inheritance sugar, reference http://www.crockford.com/javascript/inheritance.html
 Function.prototype.method = function (name, func) {
     this.prototype[name] = func;
@@ -497,33 +523,33 @@ function removeWarningStyle(field) {
 }
 
 function getToken() {
-        return $.cookie(g_keyToken);
+        return getCookie(g_keyToken);
 }
 
 function saveToken(token) {
-	$.cookie(g_keyToken, token, {path: '/'});
+	setCookie(g_keyToken, token);
 }
 
 function clearToken() {
-        $.removeCookie(g_keyToken, {path: '/'});
+        removeCookie(g_keyToken);
 }
 
 function getAccessToken() {
-        return $.cookie(g_keyAccessToken);
+        return getCookie(g_keyAccessToken);
 }
 
 function getParty() {
-        return $.cookie(g_keyParty);
+        return getCookie(g_keyParty);
 }
 
 function saveAccessTokenAndParty(accessToken, party) {
-        $.cookie(g_keyParty, party, {path: '/'});
-        $.cookie(g_keyAccessToken, accessToken, {path: '/'});
+        setCookie(g_keyParty, party);
+        setCookie(g_keyAccessToken, accessToken);
 }
 
 function clearAccessTokenAndParty() {
-	$.removeCookie(g_keyAccessToken, {path: '/'});
-	$.removeCookie(g_keyParty, {path: '/'});
+	removeCookie(g_keyAccessToken);
+	removeCookie(g_keyParty);
 }
 
 function queryCDNDomainSync() {
@@ -549,3 +575,5 @@ function queryCDNDomainSync() {
 	});
 	return ret;
 }
+
+
