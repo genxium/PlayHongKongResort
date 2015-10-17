@@ -360,21 +360,28 @@ function queryPlayerDetail(){
 			if (!g_loggedInPlayer) return;
 			if (g_loggedInPlayer.hasEmail() && !g_loggedInPlayer.isEmailAuthenticated() && g_vieweeId == g_loggedInPlayer.id) {
 				var resendHint = null;
-				var extraParams2 = {};
-				extraParams2[g_keyToken] = getToken();
-				var onSuccess = function(data) {
-					if (!data) return;
-					if (isTokenExpired(data)) {
-						logout(null);
-						return;
+				var btnResend = new AjaxButton(TITLES.resend_email_verification);
+				var dButton = {
+					url: "/player/email/resend",
+					type: "POST",
+					clickData: null,
+					extraParams: {
+						token: getToken()
+					},
+					onSuccess: function(data) {
+						if (!data) return;
+						if (isStandardFailure(data) || isTokenExpired(data) || isPlayerNotFound(data)) {
+							logout(null);
+							return;
+						}
+						resendHint.text(MESSAGES.email_verification_sent.format(data[g_keyEmail]));
+					},
+					onError: function(err) {
+						resendHint.text(MESSAGES.email_verification_not_sent);
 					}
-					resendHint.text(MESSAGES.email_verification_sent.format(data[g_keyEmail]));
 				};
-				var onError = function(err) {
-					resendHint.text(MESSAGES.email_verification_not_sent);
-				};
-				var btnResend = new AjaxButton(TITLES.resend_email_verification, "/player/email/resend", null, "POST", extraParams2, onSuccess, onError);
 				btnResend.appendTo(g_sectionPlayer)
+				btnResend.refresh(dButton);
 				btnResend.button.addClass("caution-button");
 				resendHint = $("<p>", {
 					"class": "hint-resend"

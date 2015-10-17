@@ -24,30 +24,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fixtures.Constants;
+
 public class EmailController extends PlayerController {
 
 	public static final String TAG = EmailController.class.getName();
 
 	public static Result resend() {
 		try {
-			Http.RequestBody body = request().body();
 			// get player token and activity id from request body stream
-			Map<String, String[]> formData = body.asFormUrlEncoded();
+			final Map<String, String[]> formData = request().body().asFormUrlEncoded();
 			final String token = formData.get(Player.TOKEN)[0];
 			if (token == null) throw new NullPointerException();
-			Long playerId = DBCommander.queryPlayerId(token);
+			final Long playerId = DBCommander.queryPlayerId(token);
 			if (playerId == null) throw new PlayerNotFoundException();
-			Player player = DBCommander.queryPlayer(playerId);
+			final Player player = DBCommander.queryPlayer(playerId);
 			if (player == null) throw new PlayerNotFoundException();
 			final String code = DBCommander.generateVerificationCode(player.getName());
 			player.setVerificationCode(code);
 			if (!DBCommander.updatePlayer(player)) throw new NullPointerException();
 			sendVerificationEmail(player.getLang(), player.getName(), player.getEmail(), code);
-			ObjectNode ret = Json.newObject();
+			final ObjectNode ret = Json.newObject();
 			ret.put(Player.EMAIL, player.getEmail());
 			return ok(ret);
 		} catch (TokenExpiredException e) {
 			return ok(TokenExpiredResult.get());
+		} catch (PlayerNotFoundException e) {
+                        return ok(StandardFailureResult.get(Constants.INFO_PLAYER_NOT_FOUND));
 		} catch (Exception e) {
 			Loggy.e(TAG, "resend", e);
 		}

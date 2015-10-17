@@ -87,40 +87,30 @@ ImageNode.inherits(BaseWidget);
  * AjaxButton
  * */
 
-function AjaxButton(text, url, clickData, method, extraParams, onSuccess, onError) {
+function AjaxButton(text, url, clickData, type, extraParams, onSuccess, onError) {
 	this.text = text;
 	this.url = url;
 	this.clickData = clickData;
-	this.method = method;
+	this.type = type;
 	this.extraParams = extraParams;
 	this.onSuccess = onSuccess;
 	this.onError = onError;
-	this.appendTo = function(par) {
-		this.remove();
+	this.composeContent = function(dButton) {
 		this.button = $("<button>", {
 			text: this.text,
-		}).appendTo(par);
-		var dButton = {
-			url: this.url,
-			method: this.method,
-			clickData: this.clickData,
-			extraParams: this.extraParams,
-			onSuccess: this.onSuccess,
-			onError: this.onError
-		};
-		this.button.click(dButton, function(evt){
+		}).appendTo(this.content).click(dButton, function(evt){
 			evt.preventDefault();
 			var aClickData = evt.data.clickData;
 			var aUrl = evt.data.url;
-			var aMethod = evt.data.method;
+			var aType = evt.data.type;
 			var aExtraParams = evt.data.extraParams; 
 			var aOnSuccess = evt.data.onSuccess;
 			var aOnError = evt.data.onError;
-			var aButton = $(evt.srcElement ? evt.srcElement : evt.target);
+			var aButton = getTarget(evt) 
 			disableField(aButton);
 			$.ajax({
 				url: aUrl,
-				type: aMethod,
+				type: aType,
 				data: aExtraParams,
 				success: function(data, status, xhr) {
 					enableField(aButton);
@@ -135,12 +125,9 @@ function AjaxButton(text, url, clickData, method, extraParams, onSuccess, onErro
 			});
 		});
 	};
-	this.remove = function() {
-		if (!this.button) return;
-		this.button.remove();
-		this.button = null;
-	};
 }
+
+AjaxButton.inherits(BaseWidget);
 
 /*
  * Datetime Picker

@@ -828,13 +828,13 @@ public class DBCommander {
                 return ret;
         }
 
-        public static Long queryPlayerId(String token) throws TokenExpiredException {
+        public static Long queryPlayerId(final String token) throws TokenExpiredException {
 
-                SQLBuilder builder = new SQLBuilder();
+                final SQLBuilder builder = new SQLBuilder();
                 List<SimpleMap> allData = builder.select(Login.PLAYER_ID).from(Login.TABLE).where(Login.TOKEN, "=", token).execSelect();
                 if (allData == null || allData.size() != 1) return null;
-                SimpleMap loginData = allData.get(0);
-                Login login = new Login(loginData);
+                final SimpleMap loginData = allData.get(0);
+                final Login login = new Login(loginData);
                 if (login.hasExpired()) throw new TokenExpiredException();
                 return login.getPlayerId();
 
