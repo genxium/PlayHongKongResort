@@ -24,8 +24,8 @@ button {
 }
 .disabled-button {
   background-color: white;
-  color: #eee;
-  border: solid 1px #eee;
+  color: #eeeeee;
+  border: solid 1px #eeeeee;
   cursor: default;
 }
 .disabled-button:hover {
@@ -225,7 +225,7 @@ select {
   color: #e21e61;
 }
 .title-gamma {
-  color: #888;
+  color: #888888;
 }
 .title-delta {
   color: darkcyan;
@@ -245,8 +245,8 @@ select {
   background-color: darkslateblue;
 }
 .label-disabled {
-  color: #888;
-  background-color: #eee;
+  color: #888888;
+  background-color: #eeeeee;
 }
 .warning {
   color: indianred;
@@ -266,7 +266,6 @@ select {
   zoom: 1;
 }
 .clearfix:after {
-  content: ".";
   display: block;
   clear: both;
   width: 0;
