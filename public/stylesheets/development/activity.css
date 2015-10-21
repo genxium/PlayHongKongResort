@@ -2,10 +2,8 @@
   padding: 5px 5px 5px 5px 5px 25px;
 }
 .cell-container {
-  margin: 10px;
-}
-.prioritized {
-  background-color: #FFEBCD;
+	padding: 5px;
+	margin: 5px;
 }
 .activity-cover {
   background-color: #666;
@@ -77,15 +75,6 @@
   height: 150px;
   font-size: 40px;
   border-radius: 5px;
-}
-.activity-action-small {
-  display: none;
-}
-.activity-detail-small {
-  width: 50px;
-  height: 36px;
-  font-size: 18px;
-  margin-left: 5px;
 }
 .activity-cell-status,
 .activity-cell-relation {
@@ -209,34 +198,31 @@
 	margin: 10px;
 }
 @media (max-width: 752px) {
-  .activity-action {
-    display: none;
-  }
-  .activity-action-small {
-    display: block;
-  }
-  .cell-container {
-    max-width: 566px;
-    margin: 10px auto;
-  }
+	.activity-action {
+		display: block;
+	}
+	.cell-container {
+		max-width: 566px;
+	}
 }
 @media (max-width: 657px) {
-  .cell-container {
-    max-width: 560px;
-  }
-  .activity-info {
-    margin-left: 0;
-  }
-  .activity-cover {
-    margin-left: 2px;
-  }
-  .time-table {
-    padding: 5px;
-  }
-  .activity-attend li {
-    padding-left: 0;
-  }
+	.cell-container {
+		max-width: 560px;
+	}
+	.activity-info {
+		margin-left: 0;
+	}
+	.activity-cover {
+		margin-left: 2px;
+	}
+	.time-table {
+		padding: 5px;
+	}
+	.activity-attend li {
+		padding-left: 0;
+	}
 }
+
 .input-title,
 .input-address,
 .input-content {

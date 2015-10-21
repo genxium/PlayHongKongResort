@@ -54,7 +54,8 @@
 @bubble-font-color: white;
 @bubble-background: indianred; 
 
-@prioritized-row-background: LemonChiffon;  
+@prioritized-cell-background: LemonChiffon;  
+@non-prioritized-cell-background: rgba(9, 9, 9, 0.15);  
 
 @patch-block-alpha-font-color: black;
 @patch-block-alpha-font-color-hover: black;
@@ -156,10 +157,6 @@ button {
 	}
 }
 
-.big-positive-button {
-	.positive-button();			
-}
-
 .negative-button {
 	color: @negative-button-font-color;
 	background-color: @negative-button-background;
@@ -194,8 +191,12 @@ button {
 	}
 }
 
-.prioritized-row {
-  background-color: @prioritized-row-background;
+.prioritized-cell {
+ 	background-color: @prioritized-cell-background;
+}
+
+.non-prioritized-cell {
+ 	background-color: @non-prioritized-cell-background;
 }
 
 html, body {

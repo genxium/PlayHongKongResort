@@ -142,13 +142,12 @@ function DatetimePicker(input) {
 }
 
 function generateDatePicker(par, time, onEdit) {
-    
 	var container = $('<div>', {
-		//"class": 'col-sm-6'    
-	}).appendTo(par);
-
+		// "class": 'col-sm-6'    
+	}).appendTo(par).on("input change keyup", onEdit);
+ 
 	var formGroup = $('<div>', {
-		//"class": 'form-group'    
+		// "class": 'form-group'    
 	}).appendTo(container);
 
 	var inputGroup = $("<div>", {
@@ -176,7 +175,6 @@ function generateDatePicker(par, time, onEdit) {
 		pick12HourFormat: false  
 	});
 
-	container.on("input change keyup", onEdit);
 	return new DatetimePicker(input);
 }
 
@@ -375,6 +373,25 @@ function Pager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, fi
 		if (!this.bar) this.createBar();
 		if (!this.screen) this.createScreen(data);
 	}; 
+
+	this.goToPage = function(pageNumber) {
+		// TODO: refactor `indicatorOnClick`	
+		var pager = this;
+		pager.page = pageNumber;
+		var params = pager.paramsGenerator(pager, pageNumber);
+		if (!params) return;
+		$.ajax({
+			type: "GET",
+			url: pager.url,
+			data: params,
+			success: function(data, status, xhr) {
+				pager.onSuccess(data);
+			},
+			error: function(xhr, status, err) {
+				pager.onError(err);
+			}
+		});
+	};
 }
 
 Pager.inherits(BaseWidget);

@@ -1,3 +1,18 @@
+var g_keyHomeActivityPagerPos = "home_activity_pager_pos";
+
+function saveHomeActivityPagerPos() {
+	if (!g_pagerActivity) return;
+	var pageNumber = g_pagerActivity.page;	
+	setCookie(g_keyHomeActivityPagerPos, pageNumber);	
+}
+
+function loadHomeActivityPagerPos() {
+	var pageNumber = parseInt(getCookie(g_keyHomeActivityPagerPos));	
+	if (!pageNumber) return 1;
+	removeCookie(g_keyHomeActivityPagerPos);
+	return pageNumber;
+}
+
 function HomeActivityPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
 	this.init(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError);
 
@@ -31,6 +46,7 @@ function HomeActivityPager(numItemsPerPage, url, paramsGenerator, extraParams, c
 HomeActivityPager.inherits(Pager);
 
 function clearHome() {
+	saveHomeActivityPagerPos();
 	$("#pager-activities").empty();
 	g_registerWidgetY.hide();
 	g_registerWidgetX.hide();
@@ -49,6 +65,9 @@ function requestHome() {
 	g_pagerActivity = new HomeActivityPager(g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, 5, filterMap, onListActivitiesSuccess, onListActivitiesError);
 	g_pagerActivity.appendTo("#pager-activities");
 	g_pagerActivity.refresh();
+
+	var savedPageNumber = loadHomeActivityPagerPos();
+	g_pagerActivity.goToPage(savedPageNumber);
 
 	var onLoginSuccess = function(data) {
 		if (!(!g_registerWidgetX)) g_registerWidgetX.hide();

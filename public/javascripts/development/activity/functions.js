@@ -216,7 +216,8 @@ function attachRelationIndicator(par, activity, inListCell) {
 }
 
 function attachStatusIndicator(par, activity) {
-	if(!activity.status) return;
+	// NOTE: when activity.status === 0, using (!activity.status) to check field-existence fails 
+	if(activity.status === null || activity.status === undefined) return;
 
 	var arrayStatusName = [STATUS_NAMES["created"], STATUS_NAMES["pending"], STATUS_NAMES["rejected"], STATUS_NAMES["accepted"]];
 	
@@ -256,10 +257,10 @@ function generateActivityCell(par, activity){
 	var ret = null; 
 	
 	if (activity.priority > 0) ret = $("<div>", {
-		"class": "cell-container clearfix prioritized-row"
+		"class": "cell-container clearfix prioritized-cell"
 	}).appendTo(par); 
 	else ret = $("<div>", {
-		"class": "cell-container clearfix"
+		"class": "cell-container clearfix non-prioritized-cell"
 	}).appendTo(par);
 
 	var left = $("<div>", {
@@ -313,36 +314,17 @@ function generateActivityCell(par, activity){
 		}
 	}
 
-	var rightMiddle = $("<div>", {
-		"class": "activity-action-small right"
-	}).appendTo(middle);
-
-	var btnDetailMiddle = $('<button>', {
-		"class": "activity-detail-small right",
-	}).appendTo(rightMiddle);
-
-	btnDetailMiddle.click(activity, function(evt){
-		evt.preventDefault();
-		var act = evt.data;
-		window.location.hash = ("detail?" + g_keyActivityId + "=" + act.id.toString());
-	});
-
-	attachStatusIndicator(rightMiddle, activity);
-	attachRelationIndicator(rightMiddle, activity, true);
-
 	var right = $("<div>", {
 		"class": "activity-action right"
 	}).appendTo(ret);
 
-	var btnDetail = $('<button>', {
-		"class": "activity-detail big-positive-button",
+	var btnDetailMiddle = $('<button>', {
+		"class": "activity-detail positive-button",
 		text: TITLES.view
-	}).appendTo(right);
-	
-	btnDetail.click(activity, function(evt){
+	}).appendTo(right).click(activity, function(evt){
 		evt.preventDefault();
 		var act = evt.data;
-		window.location.hash = ("detail?" + g_keyActivityId + "=" + act.id.toString());
+		window.location.hash = ("detail?" + g_keyActivityId + "=" + act.id);
 	});
 
 	attachStatusIndicator(right, activity);

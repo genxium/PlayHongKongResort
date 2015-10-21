@@ -18,6 +18,10 @@ table.player-profile-table span.player-profile-table-plain-value {
 	padding: 5px;
 }
 
+#section-player {
+	padding: 5px;
+}
+
 .section-player-avatar {
 	width: 180px;
 	height: 180px;

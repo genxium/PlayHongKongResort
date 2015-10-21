@@ -24,8 +24,8 @@ button {
 }
 .disabled-button {
   background-color: white;
-  color: #eeeeee;
-  border: solid 1px #eeeeee;
+  color: #eee;
+  border: solid 1px #eee;
   cursor: default;
 }
 .disabled-button:hover {
@@ -39,16 +39,6 @@ button {
   background-color: gold;
 }
 .positive-button:disabled {
-  background-color: gray;
-}
-.big-positive-button {
-  color: white;
-  background-color: orange;
-}
-.big-positive-button:hover {
-  background-color: gold;
-}
-.big-positive-button:disabled {
   background-color: gray;
 }
 .negative-button {
@@ -81,8 +71,11 @@ button {
   color: gold;
   background-color: transparent;
 }
-.prioritized-row {
+.prioritized-cell {
   background-color: LemonChiffon;
+}
+.non-prioritized-cell {
+  background-color: rgba(9, 9, 9, 0.15);
 }
 html,
 body {
@@ -225,7 +218,7 @@ select {
   color: #e21e61;
 }
 .title-gamma {
-  color: #888888;
+  color: #888;
 }
 .title-delta {
   color: darkcyan;
@@ -245,8 +238,8 @@ select {
   background-color: darkslateblue;
 }
 .label-disabled {
-  color: #888888;
-  background-color: #eeeeee;
+  color: #888;
+  background-color: #eee;
 }
 .warning {
   color: indianred;

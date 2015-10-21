@@ -105,7 +105,11 @@ public class PlayerController extends Controller {
                 final Player player = DBCommander.queryPlayer(playerId);
 
                 if (player == null) throw new PlayerNotFoundException();
-                return player.toObjectNode(playerId);
+
+		// echo token
+		final ObjectNode ret = player.toObjectNode(playerId);
+		ret.put(Player.TOKEN, token);
+                return ret;
         }
 
         public static ObjectNode logout(final String token) {
