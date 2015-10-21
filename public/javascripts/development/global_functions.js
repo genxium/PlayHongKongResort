@@ -12,8 +12,9 @@ function setCookie(key, val, path, days) {
 
 function getCookie(key) {
 	if (document.cookie.length <= 0) return null;
-	start = document.cookie.indexOf(key + "=");
+	var start = document.cookie.indexOf(key + "=");
 	if (start == -1)	return null;
+	if (start - 1 >= 0 && (document.cookie[start - 1] != ' ' && document.cookie[start - 1] != ';')) return null;
 	start = start + key.length + 1;
 	end = document.cookie.indexOf(";", start);
 	if (end == -1)	end = document.cookie.length;

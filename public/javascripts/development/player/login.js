@@ -578,7 +578,7 @@ function checkForeignPartyLoginStatus() {
 
 	var accessToken = getAccessToken();
 	var party = getParty();
-	
+
 	if (!accessToken || !party) {
 		clearAccessTokenAndParty();
 		checkLoginStatus(false);
