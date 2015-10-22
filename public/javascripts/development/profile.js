@@ -56,7 +56,6 @@ function ProfileEditorImageNode(cdn, domain) {
 						disableField(node.btnChoose);
 					},
 					'BeforeUpload': function(up, file) {
-						node.state = SLOT_IDLE;
 					},
 					'UploadProgress': function(up, file) {
 						// TODO: show progress
@@ -72,7 +71,7 @@ function ProfileEditorImageNode(cdn, domain) {
 						var protocolPrefix = "http://";
 						var imageUrl = protocolPrefix + node.bucketDomain + "/" + node.remoteName;
 						node.preview.attr("src", imageUrl);
-						node.state = SLOT_IDLE; 
+						node.state = SLOT_UPLOADED; 
 					},
 					'Key': function(up, file) {
 						// would ONLY be invoked when {unique_names: false , save_key: false}
@@ -242,9 +241,8 @@ function ProfileEditor() {
 
 			var formData = {};
 			formData[g_keyToken] = token;
-			// TODO: remove usage of magic string
-			var avatarSrc = editor.avatarNode.preview.attr("src"); 
-			if (avatarSrc.indexOf("assets") == -1) { 
+
+			if (editor.avatarNode.state == SLOT_UPLOADED) { 
 				formData[g_keyAvatar] = editor.avatarNode.remoteName;
 			}
 			formData[g_keyAge] =  editor.age.val();

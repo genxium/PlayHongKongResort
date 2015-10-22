@@ -60,6 +60,7 @@ var SLOT_IDLE = 0;
 var SLOT_UPLOADING = 1;
 var SLOT_UPLOAD_FAILED = 2;
 var SLOT_AJAX_PENDING = 3;
+var SLOT_UPLOADED = 4;
 
 function ImageNode() {
 

@@ -27,7 +27,7 @@ function ActivityEditorImageNode(cdn, domain) {
 		var token = getToken();				
 		if (!token) return;
 		if (!this.remoteName) return;
-		if (this.state != SLOT_IDLE) return;
+		if (this.state != SLOT_IDLE && this.state != SLOT_UPLOADED) return;
 
 		var params = {};
 		params[g_keyToken] = token;
@@ -126,9 +126,11 @@ function ActivityEditorImageNode(cdn, domain) {
 
                                                 node.uploader.disableBrowse();
 						disableField(node.btnChoose);
+
+						node.editor.setNonSubmittable();
+						node.editor.setNonSavable();
 					},
 					'BeforeUpload': function(up, file) {
-						node.state = SLOT_IDLE;
 					},
 					'UploadProgress': function(up, file) {
 						// TODO: show progress
@@ -139,6 +141,9 @@ function ActivityEditorImageNode(cdn, domain) {
 						node.state = SLOT_UPLOAD_FAILED; 
 					},
 					'UploadComplete': function() {
+						node.editor.setNonSubmittable();
+						node.editor.setSavable();
+
 						if (node.state == SLOT_UPLOAD_FAILED) {
 						        node.uploader.disableBrowse(false);
 						        enableField(node.btnChoose);
@@ -150,13 +155,10 @@ function ActivityEditorImageNode(cdn, domain) {
 						var imageUrl = protocolPrefix + node.bucketDomain + "/" + node.remoteName + "?" + refreshParams.join('&');
 						node.preview.show();
 						node.preview.attr("src", imageUrl);
-						node.state = SLOT_IDLE; 
+						node.state = SLOT_UPLOADED; 
 						node.btnDel.show();
-
-						node.editor.setNonSubmittable();
-						node.editor.setSavable();
 						
-						node.editor.addNewImageNode(false);
+						node.editor.addNewImageNode(false, false);
 					},
 					 'Key': function(up, file) {
 						// would ONLY be invoked when {unique_names: false , save_key: false}
@@ -364,8 +366,7 @@ function ActivityEditor() {
 		this.btnSave = $('<button>',{
 			"class": "btn-save positive-button",
 			text: TITLES.save
-		}).appendTo(buttons);
-		this.btnSave.click(onSave);
+		}).appendTo(buttons).click(onSave);
 
 		this.btnSubmit = $('<button>',{
 			"class": "btn-submit positive-button",
@@ -378,16 +379,14 @@ function ActivityEditor() {
 		this.btnCancel = $('<button>',{
 			"class": "btn-cancel negative-button",
 			text: TITLES.cancel
-		}).appendTo(buttons);
-		this.btnCancel.click(onCancel);
+		}).appendTo(buttons).click(onCancel);
 
 		this.btnDelete = null;
 		if(!isNewActivity){
 			this.btnDelete = $('<button>',{
 				"class": "btn-delete caution-button",
 				text: TITLES.del
-			}).appendTo(buttons);
-			this.btnDelete.click(function(evt) {
+			}).appendTo(buttons).click(function(evt) {
 				evt.preventDefault();
 				if (!(!g_deleteConfirmation)) g_deleteConfirmation.remove();
 				g_deleteConfirmation = generateDeleteConfirmation(g_activityEditor.content, activity);
@@ -400,7 +399,6 @@ function ActivityEditor() {
 
 		this.setNonSavable();
 		this.setSubmittable();
-
 	};
 
 	this.savable = false;
