@@ -46,11 +46,11 @@ button {
   background-color: gray;
 }
 .negative-button:hover {
-  background-color: azure;
+  background-color: lightgray;
 }
 .caution-button {
   color: white;
-  background-color: hotpink;
+  background-color: gray;
 }
 .caution-button:hover {
   background-color: indianred;

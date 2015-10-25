@@ -12,13 +12,13 @@ function AdminActivityPager(numItemsPerPage, url, paramsGenerator, extraParams, 
 		var pageEd = parseInt(data[g_keyPageEd]);
 		var page = pageSt;
 
-		var activitiesJson = data[g_keyActivities];
-		var length = Object.keys(activitiesJson).length;
+		var activitiesData = data[g_keyActivities];
+		var length = Object.keys(activitiesData).length;
 
 		var activities = [];
 		for(var idx = 1; idx <= length; ++idx) {
-			var activityJson = activitiesJson[idx - 1];
-			var activity = new Activity(activityJson);
+			var activityData = activitiesData[idx - 1];
+			var activity = new Activity(activityData);
 			activities.push(activity);
 			if (page == this.page) {
 				generateActivityCellForAdmin(this.screen, activity);
@@ -224,7 +224,7 @@ function onBtnAcceptClicked(evt) {
 			var cell = buttonsWrap.parent(); 
 			btnAccept.remove();
 			var indicator = cell.data(g_keyStatusIndicator);
-			indicator.text("Accepted");
+			indicator.text(STATUS_NAMES.accepted);
 		},
 		error: function(xhr, status, err) {
 			enableField(btnAccept);
@@ -378,7 +378,7 @@ function generateActivityCellForAdmin(par, activity) {
 	// this condition is temporarily hard-coded
 	if(activity.status != g_statusAccepted){
 		var btnAccept = $("<button>", {
-			"class": "admin-cell-button-accept",
+			"class": "admin-cell-button-accept positive-button",
 			text: 'Accept'
 		}).appendTo(buttonsWrap);
 		var dAccept = {};
@@ -390,7 +390,7 @@ function generateActivityCellForAdmin(par, activity) {
 		var dReject = {};
 		dReject[g_keyActivityId] = activity.id;
 		var btnReject = $("<button>", {
-			"class": "admin-cell-button-reject",
+			"class": "admin-cell-button-reject negative-button",
 			text: 'Reject'
 		}).appendTo(buttonsWrap).click(dReject, onBtnRejectClicked);
         }
@@ -398,7 +398,7 @@ function generateActivityCellForAdmin(par, activity) {
 	var dDelete = {};
 	dDelete[g_keyActivityId] = activity.id;
 	var btnDelete = $("<button>", {
-		"class": "admin-cell-button-delete",
+		"class": "admin-cell-button-delete negative-button",
 		text: 'Delete'
 	}).appendTo(buttonsWrap).click(dDelete, onBtnDeleteClicked);
 

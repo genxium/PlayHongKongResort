@@ -26,12 +26,17 @@
 	display: inline;
 }
 
+.priority-editor-buttons-row > button {
+	margin: 3px;
+}
+
 .priority-editor-submit {
 	font-size: 14px;
 }
 
 .admin-cell-info-wrap {
 	margin-left: 5pt;
+	margin-bottom: 5pt;
 }
 
 .admin-cell-activity-content {
@@ -56,19 +61,6 @@
 	height: 36pt;
 	font-size: 16pt;
 	margin-left: 5pt;
-	background-color: #aaaaaa;
-}
-
-.admin-cell-button-accept {
-	color: DarkSlateBlue;
-}
-
-.admin-cell-button-reject {
-	color: Purple;
-}
-
-.admin-cell-section-priority-editor {
-	padding: 2px;	
 }
 
 .admin-cell-separator {

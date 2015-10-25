@@ -99,11 +99,14 @@ function ProfileEditor() {
 		var avatarBox = $('<div>').hide().appendTo(this.content);
 		if (this.mode == this.EDITING) avatarBox.show();
 
-		var avatarNormalView = $('<img>', {
+		var avatarPreview = $('<div>', {
+			"class": "preview-container"
+		}).hide().appendTo(this.content);  
+		$('<img>', {
 			"class": "image-helper",
 			src: player.avatar
-		}).hide().appendTo(this.content);			
-		if (this.mode == this.NORMAL) avatarNormalView.show();	
+		}).appendTo(avatarPreview);			
+		if (this.mode == this.NORMAL) avatarPreview.show();	
 
 		// misc
 		$("<br>").appendTo(this.content);
@@ -204,7 +207,9 @@ function ProfileEditor() {
 			this.avatarNode = new ProfileEditorImageNode(g_cdnQiniu, domain);
 			this.avatarNode.appendTo(avatarBox);	
 			this.avatarNode.refresh(this);
-			this.avatarHint = $("<p>").appendTo(this.avatarBox);
+			this.avatarHint = $("<p>", {
+				"class": "player-profile-avatar-hint"
+			}).appendTo(avatarBox);
 		}
 	
 		// buttons
@@ -270,6 +275,42 @@ function ProfileEditor() {
 			});
 		});	
 		if (this.mode == this.EDITING) this.btnSave.show();
+
+		if (!g_loggedInPlayer) return;
+		if (g_loggedInPlayer.hasEmail() && !g_loggedInPlayer.isEmailAuthenticated() && g_vieweeId == g_loggedInPlayer.id) {
+			this.resendHint = $("<p>", {
+				"class": "hint-resend"
+			}).hide().appendTo(this.content);
+			this.btnResend = new AjaxButton(TITLES.resend_email_verification);
+			var editor = this;
+			var dButton = {
+				url: "/player/email/resend",
+				type: "POST",
+				clickData: null,
+				extraParams: {
+					token: getToken()
+				},
+				onSuccess: function(data) {
+					if (!data) return;
+					if (isStandardFailure(data) || isTokenExpired(data) || isPlayerNotFound(data)) {
+						logout(null);
+						return;
+					}
+					editor.resendHint.text(MESSAGES.email_verification_sent.format(data[g_keyEmail]));
+				},
+				onError: function(err) {
+					editor.resendHint.text(MESSAGES.email_verification_not_sent);
+				}
+			};
+			this.btnResend.appendTo(this.content);
+			this.btnResend.hide();
+			this.btnResend.refresh(dButton);
+			this.btnResend.button.addClass("caution-button");
+			if (this.mode == this.NORMAL) {
+				this.btnResend.show();
+				this.resendHint.show();
+			}
+		}
 	};
 }
 
@@ -355,38 +396,7 @@ function queryPlayerDetail(){
 			g_pagerAssessments.appendTo(pagerAssessmentSection);
 			g_pagerAssessments.refresh();
 
-			if (!g_loggedInPlayer) return;
-			if (g_loggedInPlayer.hasEmail() && !g_loggedInPlayer.isEmailAuthenticated() && g_vieweeId == g_loggedInPlayer.id) {
-				var resendHint = null;
-				var btnResend = new AjaxButton(TITLES.resend_email_verification);
-				var dButton = {
-					url: "/player/email/resend",
-					type: "POST",
-					clickData: null,
-					extraParams: {
-						token: getToken()
-					},
-					onSuccess: function(data) {
-						if (!data) return;
-						if (isStandardFailure(data) || isTokenExpired(data) || isPlayerNotFound(data)) {
-							logout(null);
-							return;
-						}
-						resendHint.text(MESSAGES.email_verification_sent.format(data[g_keyEmail]));
-					},
-					onError: function(err) {
-						resendHint.text(MESSAGES.email_verification_not_sent);
-					}
-				};
-				btnResend.appendTo(g_sectionPlayer)
-				btnResend.refresh(dButton);
-				btnResend.button.addClass("caution-button");
-				resendHint = $("<p>", {
-					"class": "hint-resend"
-				}).appendTo(g_sectionPlayer);
-			}
-
-			if (g_loggedInPlayer.id == g_vieweeId) return;
+			if (!g_loggedInPlayer || g_loggedInPlayer.id == g_vieweeId) return;
 			listAssessmentsAndRefresh();
 		}
 	});
