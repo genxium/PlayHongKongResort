@@ -228,7 +228,6 @@ function PagerButton(pager, page) {
 	this.page = page;
 }
 
-// TODO: create subclasses HomeActivityPager, ProfileActivityPager, CommentPager, AssessmentPager etc. 
 function Pager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
 	
 	this.init = function(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {

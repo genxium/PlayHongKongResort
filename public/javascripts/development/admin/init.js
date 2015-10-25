@@ -323,19 +323,17 @@ function onListActivitiesErrorAdmin(err) {
 
 }
 
-// Generators
 function generateActivityCellForAdmin(par, activity) {
+	// TODO: refactor by BaseWidget and proper css classes
 
-	var arrayStatusName = ['created', 'pending', 'rejected', 'accepted', 'expired'];
+	var arrayStatusName = [STATUS_NAMES.created, STATUS_NAMES.pending, STATUS_NAMES.rejected, STATUS_NAMES.accepted];
 
 	var coverImageUrl = null;
 
-	var ret = $("<div>", {
-		style: "display: block;"
-	}).appendTo(par);
+	var ret = $("<div>").appendTo(par);
 
 	var infoWrap = $("<div>", {
-		style: "margin-left: 5pt;"	
+		"class": "admin-cell-info-wrap"
 	}).appendTo(ret);
 
 	if(!(!activity.images)) {
@@ -356,69 +354,64 @@ function generateActivityCellForAdmin(par, activity) {
 	}
 
 	var cellActivityTitle = $("<a>", {
-	    href: window.location.protocol + "//" + window.location.host + "#" +("detail?" + g_keyActivityId + "=" + activity.id.toString()),
+		href: window.location.protocol + "//" + window.location.host + "#" +("detail?" + g_keyActivityId + "=" + activity.id.toString()),
 		"class": "activity-title",
 		text: activity.title
 	}).appendTo(infoWrap);
 
 	var cellActivityContent = $("<div>", {
-		"class": "truncate",	
-		style: "font-size: 1.2em; width: 100%;",
+		"class": "truncate admin-cell-activity-content",	
 		text: activity.content
 	}).appendTo(infoWrap);
 
-	$("<br/><br/>").appendTo(ret);
-
 	var statusIndicator = $("<div>", {
-		style: "color: red; font-size: 15pt; margin-left: 5pt; display: inline-block",
+		"class": "admin-cell-status-indicator",
 		text: arrayStatusName[parseInt(activity.status)]
 	}).appendTo(ret);
 
 	ret.data(g_keyStatusIndicator, statusIndicator);
 	
 	var buttonsWrap = $("<div>", {
-	    style: "display: inline-block;"
+		"class": "admin-cell-buttons-wrap"
 	}).appendTo(ret);
 
 	// this condition is temporarily hard-coded
 	if(activity.status != g_statusAccepted){
-            var btnAccept = $("<button>", {
-		        style: "width: 64pt; height: 36pt; font-size: 16pt; color: DarkSlateBlue; margin-left: 5pt; background-color: #aaaaaa;",
-                text: 'Accept'
-            }).appendTo(buttonsWrap);
-            var dAccept = {};
-            dAccept[g_keyActivityId] = activity.id;
-            btnAccept.click(dAccept, onBtnAcceptClicked);
+		var btnAccept = $("<button>", {
+			"class": "admin-cell-button-accept",
+			text: 'Accept'
+		}).appendTo(buttonsWrap);
+		var dAccept = {};
+		dAccept[g_keyActivityId] = activity.id;
+		btnAccept.click(dAccept, onBtnAcceptClicked);
         }
 
 	if(activity.status != g_statusRejected){
-            var btnReject = $("<button>", {
-		        style: " width: 64pt; height: 36pt; font-size: 16pt; color: purple; margin-left: 5pt; background-color: #aaaaaa;",
-                text: 'Reject'
-            }).appendTo(buttonsWrap);
-            var dReject = {};
-            dReject[g_keyActivityId] = activity.id;
-            btnReject.click(dReject, onBtnRejectClicked);
+		var dReject = {};
+		dReject[g_keyActivityId] = activity.id;
+		var btnReject = $("<button>", {
+			"class": "admin-cell-button-reject",
+			text: 'Reject'
+		}).appendTo(buttonsWrap).click(dReject, onBtnRejectClicked);
         }
 
-	var btnDelete = $("<button>", {
-		style: "width: 64pt; height: 36pt; font-size: 16pt; color: IndianRed; margin-left: 5pt; background-color: #aaaaaa;",
-		text: 'Delete'
-	}).appendTo(buttonsWrap);
 	var dDelete = {};
 	dDelete[g_keyActivityId] = activity.id;
-	btnDelete.click(dDelete, onBtnDeleteClicked);
+	var btnDelete = $("<button>", {
+		"class": "admin-cell-button-delete",
+		text: 'Delete'
+	}).appendTo(buttonsWrap).click(dDelete, onBtnDeleteClicked);
 
 	if (activity.status == g_statusAccepted) {
 		var sectionPriorityEditor = $("<div>", {
-			style: "padding: 2px;"
+			"class": "admin-cell-section-priority-editor"
 		}).appendTo(ret);
 		var editor = new PriorityEditor(activity);
 		editor.appendTo(sectionPriorityEditor);
 	}
 
 	var hr = $("<hr>", {
-		style: "height: 1pt; color: black; background-color: black"
+		"class": "admin-cell-separator"
 	}).appendTo(ret);
 
 	return ret;
@@ -427,7 +420,7 @@ function generateActivityCellForAdmin(par, activity) {
 function requestAdmin() {
 
 	var filterMap = {};
-	filterMap[g_keyStatus] = [["pending", "accepted", "rejected"], [g_statusPending, g_statusAccepted, g_statusRejected]]; 
+	filterMap[g_keyStatus] = [[STATUS_NAMES.pending, STATUS_NAMES.accepted, STATUS_NAMES.rejected], [g_statusPending, g_statusAccepted, g_statusRejected]]; 
 
 	// initialize pager widgets
 	g_pagerActivity = new AdminActivityPager(g_numItemsPerPage, "/activity/list", generateActivitiesListParams, null, 10, filterMap, onListActivitiesSuccessAdmin, onListActivitiesErrorAdmin);

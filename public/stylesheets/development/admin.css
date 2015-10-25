@@ -9,12 +9,14 @@
 	height: 50px;
 	width: auto;
 }
+
 .order-checkbox {
 	vertical-align: middle;
 	height: 30px;
 	width: 30px;
 	display: inline;
 }
+
 .order-label-name {
 	vertical-align: middle;
 	font-size: 16px;
@@ -23,6 +25,54 @@
 	width: auto;
 	display: inline;
 }
+
 .priority-editor-submit {
 	font-size: 14px;
+}
+
+.admin-cell-info-wrap {
+	margin-left: 5pt;
+}
+
+.admin-cell-activity-content {
+	font-size: 1.2em;
+	width: 100%;
+}
+
+.admin-cell-status-indicator {
+	color: red;
+	font-size: 15pt;
+	margin-left: 5pt;
+	margin-top: 5pt;
+	display: inline-block
+}
+
+.admin-cell-buttons-wrap {
+	display: inline-block;
+}
+
+.admin-cell-button-accept, .admin-cell-button-reject, .admin-cell-button-delete {
+	width: 64pt;
+	height: 36pt;
+	font-size: 16pt;
+	margin-left: 5pt;
+	background-color: #aaaaaa;
+}
+
+.admin-cell-button-accept {
+	color: DarkSlateBlue;
+}
+
+.admin-cell-button-reject {
+	color: Purple;
+}
+
+.admin-cell-section-priority-editor {
+	padding: 2px;	
+}
+
+.admin-cell-separator {
+	height: 1pt;
+	color: black;
+	background-color: black
 }
