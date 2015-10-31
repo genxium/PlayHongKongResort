@@ -8,59 +8,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
 		<meta property="qc:admins" content="351376177761154767156375" />	
 		<title>Home</title>
-		@if(dev == 0) {
-		<script src="//code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-		} else {
-		<script src="@routes.Assets.at("javascripts/production/jquery-2.1.1.min.js")"></script>
-		<link rel="stylesheet" href="@routes.Assets.at("stylesheets/production/bootstrap.min.css")">
-		<script src="@routes.Assets.at("javascripts/production/bootstrap.min.js")"></script>
-		}
-		
-		<script src="@routes.Assets.at("javascripts/production/plupload.full.min.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/production/qiniu.min.js")" type="text/javascript"></script>
-
-		<script src="@routes.Assets.at("javascripts/production/moment.min.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/production/bootstrap-datetimepicker.min.js")" type="text/javascript"></script>
-
-		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/production/bootstrap-datetimepicker.min.css")" type="text/css">
-
-		@if(theme == null) {
-		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/production/theme-main.min.css")" type="text/css">
-		} else {
-		<link rel="stylesheet" media="screen" href='@routes.Assets.at("stylesheets/production/theme-" + theme + ".min.css")' type="text/css">
-		}
-
-		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/production/home.min.css")" type="text/css">
-
-		@if(dev == 0) {
-		<script src="@routes.Assets.at("javascripts/production/home.min.js")" type="text/javascript"></script>
-		} else {
-		<script src="@routes.Assets.at("javascripts/development/lang_zh_hk.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/global_variables.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/global_functions.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/apis.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/ws/websocket.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/models.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/widgets.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/participant.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/comment/viewer.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/comment/editor.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/assessment/editor.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/assessment/viewer.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/notification.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/activity/functions.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/activity/editor.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/activity/detail.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/profile.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/player/register.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/player/login.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/topbar.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/footer.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/development/homepage/init.js")" type="text/javascript"></script>
-		}
-
 	</head>
 	<body>
 		<div id="header">
@@ -85,4 +32,59 @@
 		</div>
 	</body>
 
+	@if(dev == 0) {
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	} else {
+	<link rel="stylesheet" href="@routes.Assets.at("stylesheets/production/bootstrap.min.css")">
+	}
+
+	<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/production/bootstrap-datetimepicker.min.css")" type="text/css">
+
+	@if(theme == null) {
+	<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/production/theme-main.min.css")" type="text/css">
+	} else {
+	<link rel="stylesheet" media="screen" href='@routes.Assets.at("stylesheets/production/theme-" + theme + ".min.css")' type="text/css">
+	}
+
+	<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/production/home.min.css")" type="text/css">
+	@if(dev == 0) {
+	<script src="//code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	} else {
+	<script src="@routes.Assets.at("javascripts/production/jquery-2.1.1.min.js")"></script>
+	<script src="@routes.Assets.at("javascripts/production/bootstrap.min.js")"></script>
+	}
+	
+	<script src="@routes.Assets.at("javascripts/production/plupload.full.min.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/production/qiniu.min.js")" type="text/javascript"></script>
+
+	<script src="@routes.Assets.at("javascripts/production/moment.min.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/production/bootstrap-datetimepicker.min.js")" type="text/javascript"></script>
+
+	@if(dev == 0) {
+	<script src="@routes.Assets.at("javascripts/production/home.min.js")" type="text/javascript"></script>
+	} else {
+	<script src="@routes.Assets.at("javascripts/development/lang_zh_hk.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/global_variables.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/global_functions.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/apis.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/ws/websocket.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/models.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/widgets.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/participant.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/comment/viewer.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/comment/editor.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/assessment/editor.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/assessment/viewer.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/notification.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/activity/functions.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/activity/editor.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/activity/detail.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/profile.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/player/register.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/player/login.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/topbar.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/footer.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/development/homepage/init.js")" type="text/javascript"></script>
+	}
 </html>

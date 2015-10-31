@@ -24,8 +24,8 @@ button {
 }
 .disabled-button {
   background-color: white;
-  color: #eee;
-  border: solid 1px #eee;
+  color: #eeeeee;
+  border: solid 1px #eeeeee;
   cursor: default;
 }
 .disabled-button:hover {
@@ -107,15 +107,6 @@ ul {
   margin: 0;
   list-style: none;
 }
-input,
-textarea {
-  margin: 0;
-  padding: 0;
-  border: solid 1px #999;
-  height: 30px;
-  width: 100%;
-  padding: 5px;
-}
 select {
   margin: 2px;
   padding: 2px;
@@ -124,23 +115,26 @@ select {
   background-color: BurlyWood;
 }
 #topbar {
+  position: relative;
   margin: 0 auto;
   width: 100%;
   max-width: 1024px;
   height: 100px;
 }
 #topbar-title {
-  width: 320px;
+  position: absolute;
+  left: 0%;
+  width: 30%;
   height: 100%;
   color: white;
   background-color: orange;
-  font-size: 45px;
+  font-size: 2.5em;
   font-weight: bold;
 }
 #topbar-title:hover {
   cursor: pointer;
   color: white;
-  background-color: gold;
+  background-color: orange;
 }
 #topbar-title p {
   padding: 18px 15px;
@@ -218,7 +212,7 @@ select {
   color: #e21e61;
 }
 .title-gamma {
-  color: #888;
+  color: #888888;
 }
 .title-delta {
   color: darkcyan;
@@ -238,8 +232,8 @@ select {
   background-color: darkslateblue;
 }
 .label-disabled {
-  color: #888;
-  background-color: #eee;
+  color: #888888;
+  background-color: #eeeeee;
 }
 .warning {
   color: indianred;

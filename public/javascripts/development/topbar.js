@@ -17,6 +17,6 @@ function initTopbar(par){
 
 	g_sectionLogin = $("<div>", {
 		id: "login-section",
-		"class": "patch-block-beta right"	
+		"class": "patch-block-beta"	
 	}).appendTo(g_topbar);
 }

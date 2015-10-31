@@ -357,10 +357,11 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 	if (!par) return null;
 	par.empty();
 	var container = $('<div>', {
-		id: "login-box"
+		id: "login-box",
+		"class": "right"
 	}).appendTo(par);
 	var row1 = $('<div>', {
-		"class": "login-row1 clearfix"
+		"class": "login-info-row"
 	}).appendTo(container);
 	var inputs = $('<div>', {
 		"class": "login-inputs left plain-input"
@@ -377,10 +378,11 @@ function generatePreLoginForm(par, onLoginSuccess, onLoginError, onLogoutSuccess
 	}).appendTo(inputs);
 	var btn = $('<button>',{
 		text: TITLES.login,
-		"class": "login-btn right positive-button"
+		"class": "login-btn left positive-button"
 	}).appendTo(row1);
+
 	var row2 = $("<div>", {
-		"class": "accessory-row"
+		"class": "accessory-row clear"
 	}).appendTo(container);
 	var forgot = $("<button>", {
 		text: TITLES.forgot_password,
@@ -438,6 +440,7 @@ function logout(evt) {
 }
 
 function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError) {
+	// TODO: refactor by BaseWidget
 	if (!par) return null;
 	if (!g_loggedInPlayer) return null;
 	par.empty();

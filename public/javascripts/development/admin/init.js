@@ -1,4 +1,3 @@
-var g_keyStatusIndicator = "status-indicator";
 var g_pagerActivity = null; 
 
 function AdminActivityPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
@@ -21,7 +20,9 @@ function AdminActivityPager(numItemsPerPage, url, paramsGenerator, extraParams, 
 			var activity = new Activity(activityData);
 			activities.push(activity);
 			if (page == this.page) {
-				generateActivityCellForAdmin(this.screen, activity);
+				var cell = new AdminActivityCell();
+				cell.appendTo(this.screen);
+				cell.refresh(activity);
 			}
 
 			if (idx % this.nItems !== 0) continue;
@@ -201,10 +202,11 @@ function onBtnAcceptClicked(evt) {
 	var btnAccept = getTarget(evt);
 
 	evt.preventDefault();
-	var data = evt.data;
+	var cell = evt.data;
 	var token = getToken();
+	if (!token) return;
 	var params = {};
- 	params[g_keyActivityId] = data[g_keyActivityId];
+ 	params[g_keyActivityId] = cell.id; 
 	params[g_keyToken] = token;
 
 	disableField(btnAccept);
@@ -220,11 +222,8 @@ function onBtnAcceptClicked(evt) {
 				return;
 			}
 			if (!isStandardSuccess(data)) return;
-			var buttonsWrap = btnAccept.parent();
-			var cell = buttonsWrap.parent(); 
 			btnAccept.remove();
-			var indicator = cell.data(g_keyStatusIndicator);
-			indicator.text(STATUS_NAMES.accepted);
+			cell.statusIndicator.text(STATUS_NAMES.accepted);
 		},
 		error: function(xhr, status, err) {
 			enableField(btnAccept);
@@ -237,10 +236,11 @@ function onBtnRejectClicked(evt) {
 	var btnReject = getTarget(evt);
 
 	evt.preventDefault();
-	var data = evt.data;
+	var cell = evt.data;
 	var token = getToken();
+	if (!token) return;
 	var params = {};
- 	params[g_keyActivityId] = data[g_keyActivityId];
+ 	params[g_keyActivityId] = cell.id;
 	params[g_keyToken] = token;
 
 	disableField(btnReject);
@@ -256,11 +256,8 @@ function onBtnRejectClicked(evt) {
 				return;
 			}
 			if (!isStandardSuccess(data)) return;
-			var buttonsWrap = btnReject.parent(); 
-			var cell = buttonsWrap.parent();
 			btnReject.remove();
-			var indicator = cell.data(g_keyStatusIndicator);
-			indicator.text("Rejected");
+			cell.statusIndicator.text(STATUS_NAMES.rejected);
 		},
 		error: function(xhr, status, err){
 			enableField(btnReject);
@@ -273,10 +270,11 @@ function onBtnDeleteClicked(evt){
 	var btnDelete = getTarget(evt);
 
 	evt.preventDefault();
-	var data = evt.data;
+	var cell = evt.data;
 	var token = getToken();
+	if (!token) return;
 	var params = {};
-	params[g_keyActivityId] = data[g_keyActivityId];
+	params[g_keyActivityId] = cell.id;
 	params[g_keyToken] = token;
 
 	disableField(btnDelete);
@@ -292,11 +290,8 @@ function onBtnDeleteClicked(evt){
 				return;
 			}
 			if (!isStandardSuccess(data)) return;
-			var buttonsWrap = btnDelete.parent(); 
-			var cell = buttonsWrap.parent();
 			btnDelete.remove();
-			var indicator = cell.data(g_keyStatusIndicator);
-			indicator.text("Deleted");
+			cell.statusIndicator.text("Deleted");
 		},
 		error: function(xhr, status, err){
 			enableField(btnDelete);
@@ -323,99 +318,93 @@ function onListActivitiesErrorAdmin(err) {
 
 }
 
-function generateActivityCellForAdmin(par, activity) {
-	// TODO: refactor by BaseWidget and proper css classes
+function AdminActivityCell() {
+	this.composeContent = function(activity) {
 
-	var arrayStatusName = [STATUS_NAMES.created, STATUS_NAMES.pending, STATUS_NAMES.rejected, STATUS_NAMES.accepted];
+		this.id = activity.id;
 
-	var coverImageUrl = null;
+		// TODO: display cover image as well
 
-	var ret = $("<div>").appendTo(par);
+		var arrayStatusName = [STATUS_NAMES.created, STATUS_NAMES.pending, STATUS_NAMES.rejected, STATUS_NAMES.accepted];
 
-	var infoWrap = $("<div>", {
-		"class": "admin-cell-info-wrap"
-	}).appendTo(ret);
+		var infoWrap = $("<div>", {
+			"class": "admin-cell-info-wrap"
+		}).appendTo(this.content);
 
-	if(!(!activity.images)) {
-		var imagesContainer = $('<div>', {
-			"class": "activity-image-container clearfix"
-		}).appendTo(infoWrap);
-		for(var i = 0; i < activity.images.length; ++i){
-		    var imageNode = $('<div>', {
-			"class": "activity-image left"
-		    }).appendTo(imagesContainer);
-		    $('<span>',{
-			"class": "image-helper"
-		    }).appendTo(imageNode);
-		    $('<img>',{
-			src: activity.images[i].url,
-		    }).appendTo(imageNode);
+		if(!(!activity.images)) {
+			var imagesContainer = $('<div>', {
+				"class": "activity-image-container clearfix"
+			}).appendTo(infoWrap);
+			for(var i = 0; i < activity.images.length; ++i){
+			    var imageNode = $('<div>', {
+				"class": "activity-image left"
+			    }).appendTo(imagesContainer);
+			    $('<span>',{
+				"class": "image-helper"
+			    }).appendTo(imageNode);
+			    $('<img>',{
+				src: activity.images[i].url,
+			    }).appendTo(imageNode);
+			}
 		}
-	}
 
-	var cellActivityTitle = $("<a>", {
-		href: window.location.protocol + "//" + window.location.host + "#" +("detail?" + g_keyActivityId + "=" + activity.id.toString()),
-		"class": "activity-title",
-		text: activity.title
-	}).appendTo(infoWrap);
+		var cellActivityTitle = $("<a>", {
+			href: window.location.protocol + "//" + window.location.host + "#" +("detail?" + g_keyActivityId + "=" + activity.id.toString()),
+			"class": "activity-title",
+			text: activity.title
+		}).appendTo(infoWrap);
 
-	var cellActivityContent = $("<div>", {
-		"class": "truncate admin-cell-activity-content",	
-		text: activity.content
-	}).appendTo(infoWrap);
+		var cellActivityContent = $("<div>", {
+			"class": "truncate admin-cell-activity-content",	
+			text: activity.content
+		}).appendTo(infoWrap);
 
-	var statusIndicator = $("<div>", {
-		"class": "admin-cell-status-indicator",
-		text: arrayStatusName[parseInt(activity.status)]
-	}).appendTo(ret);
+		if (!!activity.status) {
+			this.statusIndicator = $("<div>", {
+				"class": "admin-cell-status-indicator",
+				text: arrayStatusName[parseInt(activity.status)]
+			}).appendTo(this.content);
+		}		
 
-	ret.data(g_keyStatusIndicator, statusIndicator);
-	
-	var buttonsWrap = $("<div>", {
-		"class": "admin-cell-buttons-wrap"
-	}).appendTo(ret);
+		var buttonsWrap = $("<div>", {
+			"class": "admin-cell-buttons-wrap"
+		}).appendTo(this.content);
 
-	// this condition is temporarily hard-coded
-	if(activity.status != g_statusAccepted){
-		var btnAccept = $("<button>", {
-			"class": "admin-cell-button-accept positive-button",
-			text: 'Accept'
-		}).appendTo(buttonsWrap);
-		var dAccept = {};
-		dAccept[g_keyActivityId] = activity.id;
-		btnAccept.click(dAccept, onBtnAcceptClicked);
-        }
+		// this condition is temporarily hard-coded
+		if(!!activity.status && activity.status != g_statusAccepted){
+			var btnAccept = $("<button>", {
+				"class": "admin-cell-button-accept positive-button",
+				text: 'Accept'
+			}).appendTo(buttonsWrap).click(this, onBtnAcceptClicked);
+		}
 
-	if(activity.status != g_statusRejected){
-		var dReject = {};
-		dReject[g_keyActivityId] = activity.id;
-		var btnReject = $("<button>", {
-			"class": "admin-cell-button-reject negative-button",
-			text: 'Reject'
-		}).appendTo(buttonsWrap).click(dReject, onBtnRejectClicked);
-        }
+		if(!!activity.status && activity.status != g_statusRejected){
+			var btnReject = $("<button>", {
+				"class": "admin-cell-button-reject negative-button",
+				text: 'Reject'
+			}).appendTo(buttonsWrap).click(this, onBtnRejectClicked);
+		}
 
-	var dDelete = {};
-	dDelete[g_keyActivityId] = activity.id;
-	var btnDelete = $("<button>", {
-		"class": "admin-cell-button-delete negative-button",
-		text: 'Delete'
-	}).appendTo(buttonsWrap).click(dDelete, onBtnDeleteClicked);
+		var btnDelete = $("<button>", {
+			"class": "admin-cell-button-delete negative-button",
+			text: 'Delete'
+		}).appendTo(buttonsWrap).click(this, onBtnDeleteClicked);
 
-	if (activity.status == g_statusAccepted) {
-		var sectionPriorityEditor = $("<div>", {
-			"class": "admin-cell-section-priority-editor"
-		}).appendTo(ret);
-		var editor = new PriorityEditor(activity);
-		editor.appendTo(sectionPriorityEditor);
-	}
+		if (!!activity.status && activity.status == g_statusAccepted) {
+			var sectionPriorityEditor = $("<div>", {
+				"class": "admin-cell-section-priority-editor"
+			}).appendTo(this.content);
+			var editor = new PriorityEditor(activity);
+			editor.appendTo(sectionPriorityEditor);
+		}
 
-	var hr = $("<hr>", {
-		"class": "admin-cell-separator"
-	}).appendTo(ret);
-
-	return ret;
+		var hr = $("<hr>", {
+			"class": "admin-cell-separator"
+		}).appendTo(this.content);
+	};
 }
+
+AdminActivityCell.inherits(BaseWidget);
 
 function requestAdmin() {
 

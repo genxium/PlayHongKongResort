@@ -7,7 +7,7 @@
 
 @topbar-title-background: orange;
 @topbar-title-font-color: white;
-@topbar-title-background-hover: gold;
+@topbar-title-background-hover: orange;
 @topbar-title-font-color-hover: white;
 
 @content-background: white;
@@ -233,15 +233,6 @@ ul {
 	list-style: none;
 }
 
-input, textarea {
-	margin: 0;
-	padding: 0;
-	border: solid 1px #999;
-	height: 30px;
-	width: 100%;
-	padding: 5px;
-}
-
 select {
 	margin: 2px;
 	padding: 2px;
@@ -255,6 +246,7 @@ select {
 }
 
 #topbar {
+	position: relative;
 	margin: 0 auto;
 	width: 100%;
 	max-width: 1024px;
@@ -262,11 +254,13 @@ select {
 }
 
 #topbar-title {
-	width: 320px;
+	position: absolute;
+	left: 0%;
+	width: 30%;
 	height: 100%;
 	color: @topbar-title-font-color;
 	background-color: @topbar-title-background;
-	font-size: 45px;
+	font-size: 2.5em;
 	font-weight: bold;
 	&:hover {
 		cursor: pointer;

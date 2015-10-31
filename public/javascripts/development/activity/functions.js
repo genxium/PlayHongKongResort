@@ -244,6 +244,7 @@ function getPriorRelation(activity) {
 }
 
 function generateActivityCell(par, activity){
+	// TODO: refactor by BaseWidget
 
 	var coverImageUrl = null;
 	if(!(!activity.images)) {
