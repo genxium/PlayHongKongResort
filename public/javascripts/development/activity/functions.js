@@ -305,6 +305,7 @@ function generateActivityCell(par, activity){
 		"class": "selected-snippet"
 	}).appendTo(activityInfo);
 	if (!(!activity.selectedParticipants)) {
+		// TODO: remove the hard-coded constant
 		var count = activity.selectedParticipants.length <= 3 ? activity.selectedParticipants.length : 3;
 		for (var i = 0; i < count; ++i) {
 			var participant = activity.selectedParticipants[i];
@@ -312,10 +313,6 @@ function generateActivityCell(par, activity){
 				title: participant.name,
 				src: participant.avatar,
 				"class": "selected-snippet-avatar left"
-			}).click(participant, function(evt) {
-				evt.preventDefault();
-				var aParticipant = evt.data;
-				window.location.hash = ("profile?" + g_keyVieweeId + "=" + aParticipant.id.toString());
 			}).appendTo(selectedSnippet);
 		}
 	}
