@@ -50,13 +50,13 @@ function Activity(data) {
 	this.applicationDeadline = parseInt(data.application_deadline);
 	this.isDeadlineExpired = function() {
 	    var date = new Date();
-	    var localNow = 1000 * moment().zone(date.getTimezoneOffset()).unix(); 
+	    var localNow = 1000 * moment().utcOffset(date.getTimezoneOffset()).unix(); 
 	    return localNow > this.applicationDeadline;
 	};
 	this.beginTime = parseInt(data.begin_time);
 	this.hasBegun = function() {
 	    var date = new Date();
-	    var localNow = 1000 * moment().zone(date.getTimezoneOffset()).unix(); 
+	    var localNow = 1000 * moment().utcOffset(date.getTimezoneOffset()).unix(); 
 	    return localNow > this.beginTime;
 	};
 

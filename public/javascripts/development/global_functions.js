@@ -400,22 +400,22 @@ function validateImage(file){
 
 function currentMillis() {
     var date = new Date();
-    return 1000 * moment().zone(date.getTimezoneOffset()).unix(); 
+    return 1000 * moment().utcOffset(date.getTimezoneOffset()).unix(); 
 }
 
 function gmtMiilisecToLocalYmdhis(millis) {
     var date = new Date();
-    return moment(millis).zone(date.getTimezoneOffset()).format("YYYY-MM-DD HH:mm:ss"); 
+    return moment(millis).utcOffset(date.getTimezoneOffset()).format("YYYY-MM-DD HH:mm:ss"); 
 }
 
 function gmtMiilisecToLocalYmdhi(millis) {
     var date = new Date();
-    return moment(millis).zone(date.getTimezoneOffset()).format("YYYY-MM-DD HH:mm"); 
+    return moment(millis).utcOffset(date.getTimezoneOffset()).format("YYYY-MM-DD HH:mm"); 
 }
 
 function localYmdhisToGmtMillisec(dateStr) {
     var date = new Date();
-    return 1000 * moment(dateStr, "YYYY-MM-DD HH:mm:ss").zone(date.getTimezoneOffset()).unix(); 
+    return 1000 * moment(dateStr, "YYYY-MM-DD HH:mm:ss").utcOffset(date.getTimezoneOffset()).unix(); 
 }
 
 function generateUuid() {

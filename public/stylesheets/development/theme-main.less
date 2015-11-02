@@ -1,13 +1,15 @@
+@import url("./main-color.less");
+
 @theme-element-font-color: white;
-@theme-element-background: orange;
+@theme-element-background: @main-color-1;
 
 @main-font-color: black;
 @main-background: white;
 @main-border-color: gray;
 
-@topbar-title-background: orange;
+@topbar-title-background: @main-color-1;
 @topbar-title-font-color: white;
-@topbar-title-background-hover: orange;
+@topbar-title-background-hover: @main-color-2;
 @topbar-title-font-color-hover: white;
 
 @content-background: white;
@@ -20,11 +22,11 @@
 @plain-button-font-color: black;
 @plain-button-background: white;
 @plain-button-font-color-hover: white;
-@plain-button-background-hover: orange;
+@plain-button-background-hover: @main-color-1;
 
 @positive-button-font-color: white;
-@positive-button-background: orange;
-@positive-button-background-hover: gold;
+@positive-button-background: @main-color-1;
+@positive-button-background-hover: @main-color-2;
 @positive-button-background-disabled: gray;
 
 @negative-button-font-color: black;
@@ -44,11 +46,11 @@
 
 @underline-button-font-color: white;
 @underline-button-background: #3ba8c2;
-@underline-button-font-color-hover: gold;
+@underline-button-font-color-hover: @main-color-2;
 
 @faketext-button-font-color: white;
 @faketext-button-background: transparent;
-@faketext-button-font-color-hover: gold;
+@faketext-button-font-color-hover: @main-color-2;
 @faketext-button-background-hover: transparent;
 
 @bubble-font-color: white;
@@ -59,13 +61,13 @@
 
 @patch-block-alpha-font-color: black;
 @patch-block-alpha-font-color-hover: black;
-@patch-block-alpha-background: darkorange;
-@patch-block-alpha-background-hover: orange;
+@patch-block-alpha-background: @main-color-1;
+@patch-block-alpha-background-hover: @main-color-2;
 
 @patch-block-beta-font-color: white;
 @patch-block-beta-font-color-hover: white;
-@patch-block-beta-background: darkorange;
-@patch-block-beta-background-hover: darkorange;
+@patch-block-beta-background: @main-color-1;
+@patch-block-beta-background-hover: @main-color-2;
 
 @patch-block-gamma-font-color: black;
 @patch-block-gamma-font-color-hover: white;
@@ -105,7 +107,7 @@
 
 @warning-font-color: indianred;
 
-@highlight-font-color: gold;
+@highlight-font-color: @main-color-2;
 
 .theme-element {
 	color: @theme-element-font-color;
@@ -271,17 +273,26 @@ select {
 	left: 0%;
 	width: 30%;
 	height: 100%;
+	line-height: 100%;
+	text-align: center;
+	vertical-align: middle;
 	color: @topbar-title-font-color;
 	background-color: @topbar-title-background;
-	font-size: 2.0em;
+	font-size: 3em;
 	font-weight: bold;
 	&:hover {
 		cursor: pointer;
 		color: @topbar-title-font-color-hover;
 		background-color: @topbar-title-background-hover;
 	}
-	p {
-		padding: 18px 15px;
+	
+	div {
+		position: absolute;
+		width: 50%;
+		height: 50%;
+		line-height: 50%;
+		left: 25%;
+		top: 25%;
 	}
 }
 

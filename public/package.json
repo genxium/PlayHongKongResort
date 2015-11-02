@@ -1,0 +1,19 @@
+{
+  "name": "hkr-public",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "genxium@hotmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "*",
+    "bootstrap": "*",
+    "moment": "*",
+    "eonasdan-bootstrap-datetimepicker": "*",
+    "Plupload": "git+https://github.com/moxiecode/plupload.git",
+    "qiniu-js-sdk": "git+https://github.com/qiniu/js-sdk.git"
+  }
+}

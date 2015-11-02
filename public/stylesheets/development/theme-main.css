@@ -24,8 +24,8 @@ button {
 }
 .disabled-button {
   background-color: white;
-  color: #eeeeee;
-  border: solid 1px #eeeeee;
+  color: #eee;
+  border: solid 1px #eee;
   cursor: default;
 }
 .disabled-button:hover {
@@ -141,18 +141,26 @@ select {
   left: 0%;
   width: 30%;
   height: 100%;
+  line-height: 100%;
+  text-align: center;
+  vertical-align: middle;
   color: white;
   background-color: orange;
-  font-size: 2.0em;
+  font-size: 3em;
   font-weight: bold;
 }
 #topbar-title:hover {
   cursor: pointer;
   color: white;
-  background-color: orange;
+  background-color: gold;
 }
-#topbar-title p {
-  padding: 18px 15px;
+#topbar-title div {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  line-height: 50%;
+  left: 25%;
+  top: 25%;
 }
 #login-section {
   position: absolute;
@@ -315,19 +323,19 @@ select {
 }
 .patch-block-alpha {
   color: black;
-  background-color: darkorange;
+  background-color: orange;
 }
 .patch-block-alpha:hover {
   color: black;
-  background-color: orange;
+  background-color: gold;
 }
 .patch-block-beta {
   color: white;
-  background-color: darkorange;
+  background-color: orange;
 }
 .patch-block-beta:hover {
   color: white;
-  background-color: darkorange;
+  background-color: gold;
 }
 .patch-block-gamma {
   color: black;
@@ -368,7 +376,7 @@ select {
   color: #e21e61;
 }
 .title-gamma {
-  color: #888888;
+  color: #888;
 }
 .title-delta {
   color: darkcyan;
@@ -388,8 +396,8 @@ select {
   background-color: darkslateblue;
 }
 .label-disabled {
-  color: #888888;
-  background-color: #eeeeee;
+  color: #888;
+  background-color: #eee;
 }
 .warning {
   color: indianred;

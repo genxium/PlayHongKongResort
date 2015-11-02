@@ -263,42 +263,47 @@ function generateActivityCell(par, activity){
 	else ret = $("<div>", {
 		"class": "cell-container clearfix non-prioritized-cell"
 	}).appendTo(par);
+	
+	ret.click(activity, function(evt){
+		evt.preventDefault();
+		var act = evt.data;
+		window.location.hash = ("detail?" + g_keyActivityId + "=" + act.id);
+	});
 
-	var left = $("<div>", {
+	var cover = $("<div>", {
 		"class": "activity-cover left"
 	}).appendTo(ret);
 	var helper = $("<span>", {
 		"class": "image-helper"
-	}).appendTo(left);
+	}).appendTo(cover);
 	if(!(!coverImageUrl)){
-		//setBackgroundImageDefault(left, coverImageUrl);
 		var cover = $("<img>", {
 			src: coverImageUrl
-		}).appendTo(left);
+		}).appendTo(cover);
 	}
 
-	var middle = $("<div>", {
+	var activityInfo = $("<div>", {
 		"class": "activity-info left"
 	}).appendTo(ret);
 	var title = $("<p>", {
 		"class": "activity-title truncate title-alpha",
 		text: activity.title
-	}).appendTo(middle);
+	}).appendTo(activityInfo);
 	
 	var addr = $("<p>", {
 		"class": "activity-addr truncate title-beta",
 		text: activity.address
-	}).appendTo(middle);
+	}).appendTo(activityInfo);
 
-	displayTimesTable(middle, activity);
-	var midBottom = $("<div>", {
+	displayTimesTable(activityInfo, activity);
+	var participantStat = $("<div>", {
 		"class": "activity-attend"
-	}).appendTo(middle);
-	displayParticipantStatistics(midBottom, activity);
+	}).appendTo(activityInfo);
+	displayParticipantStatistics(participantStat, activity);
 	
 	var selectedSnippet = $("<div>", {
 		"class": "selected-snippet"
-	}).appendTo(middle);
+	}).appendTo(activityInfo);
 	if (!(!activity.selectedParticipants)) {
 		var count = activity.selectedParticipants.length <= 3 ? activity.selectedParticipants.length : 3;
 		for (var i = 0; i < count; ++i) {
@@ -315,19 +320,9 @@ function generateActivityCell(par, activity){
 		}
 	}
 
-	var right = $("<div>", {
-		"class": "activity-action right"
+	var moreActions = $("<div>", {
+		"class": "activity-action left"
 	}).appendTo(ret);
-
-	var btnDetailMiddle = $('<button>', {
-		"class": "activity-detail positive-button",
-		text: TITLES.view
-	}).appendTo(right).click(activity, function(evt){
-		evt.preventDefault();
-		var act = evt.data;
-		window.location.hash = ("detail?" + g_keyActivityId + "=" + act.id);
-	});
-
-	attachStatusIndicator(right, activity);
-	attachRelationIndicator(right, activity, true);
+	attachStatusIndicator(moreActions, activity);
+	attachRelationIndicator(moreActions, activity, true);
 }
