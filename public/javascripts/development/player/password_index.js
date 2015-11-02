@@ -62,7 +62,7 @@ function onEmailRequest(evt) {
 $(document).ready(function(){
 	
 	initTopbar($("#topbar"));
-	initFooter($("#footer-content"));
+	initFooter($("#footer"));
 
 	$("#reset-tips").html(MESSAGES["password_reset_tips"]);
 	$("#notice").html(MESSAGES["notice"]);

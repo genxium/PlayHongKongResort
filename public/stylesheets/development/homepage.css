@@ -55,6 +55,7 @@ table.player-profile-table span.player-profile-table-plain-value {
 
 #register-box input {
 	width: 100%;
+	padding: 5px;
 }
 
 #register-box .register-button button{

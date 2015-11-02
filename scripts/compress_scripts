@@ -76,25 +76,25 @@ cat $CSS_PREFIX_DEVELOPMENT/theme-main.css > $TARGET_CSS
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.css$:.css' $TARGET_CSS 
 
 TARGET_CSS=$CSS_PREFIX_PRODUCTION/home.min.css
-cat $CSS_PREFIX_DEVELOPMENT/header.css $CSS_PREFIX_DEVELOPMENT/footer.css $CSS_PREFIX_DEVELOPMENT/widgets.css $CSS_PREFIX_DEVELOPMENT/activity.css $CSS_PREFIX_DEVELOPMENT/assessment.css $CSS_PREFIX_DEVELOPMENT/comment.css $CSS_PREFIX_DEVELOPMENT/notification.css > $TARGET_CSS
+cat $CSS_PREFIX_DEVELOPMENT/widgets.css $CSS_PREFIX_DEVELOPMENT/activity.css $CSS_PREFIX_DEVELOPMENT/assessment.css $CSS_PREFIX_DEVELOPMENT/comment.css $CSS_PREFIX_DEVELOPMENT/notification.css > $TARGET_CSS
 cat $CSS_PREFIX_DEVELOPMENT/homepage.css >> $TARGET_CSS
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.css$:.css' $TARGET_CSS 
 
 TARGET_CSS=$CSS_PREFIX_PRODUCTION/admin.min.css
-cat $CSS_PREFIX_DEVELOPMENT/header.css $CSS_PREFIX_DEVELOPMENT/footer.css $CSS_PREFIX_DEVELOPMENT/widgets.css $CSS_PREFIX_DEVELOPMENT/activity.css $CSS_PREFIX_DEVELOPMENT/assessment.css $CSS_PREFIX_DEVELOPMENT/comment.css $CSS_PREFIX_DEVELOPMENT/notification.css > $TARGET_CSS
+cat $CSS_PREFIX_DEVELOPMENT/widgets.css $CSS_PREFIX_DEVELOPMENT/activity.css $CSS_PREFIX_DEVELOPMENT/assessment.css $CSS_PREFIX_DEVELOPMENT/comment.css $CSS_PREFIX_DEVELOPMENT/notification.css > $TARGET_CSS
 cat $CSS_PREFIX_DEVELOPMENT/admin.css >> $TARGET_CSS
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.css$:.css' $TARGET_CSS 
 
 TARGET_CSS=$CSS_PREFIX_PRODUCTION/email_verification.min.css
-cat $CSS_PREFIX_DEVELOPMENT/header.css $CSS_PREFIX_DEVELOPMENT/footer.css $CSS_PREFIX_DEVELOPMENT/widgets.css $CSS_PREFIX_DEVELOPMENT/activity.css $CSS_PREFIX_DEVELOPMENT/assessment.css $CSS_PREFIX_DEVELOPMENT/comment.css $CSS_PREFIX_DEVELOPMENT/notification.css > $TARGET_CSS
+cat $CSS_PREFIX_DEVELOPMENT/widgets.css $CSS_PREFIX_DEVELOPMENT/activity.css $CSS_PREFIX_DEVELOPMENT/assessment.css $CSS_PREFIX_DEVELOPMENT/comment.css $CSS_PREFIX_DEVELOPMENT/notification.css > $TARGET_CSS
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.css$:.css' $TARGET_CSS 
 
 TARGET_CSS=$CSS_PREFIX_PRODUCTION/password_index.min.css
-cat $CSS_PREFIX_DEVELOPMENT/header.css $CSS_PREFIX_DEVELOPMENT/footer.css $CSS_PREFIX_DEVELOPMENT/widgets.css $CSS_PREFIX_DEVELOPMENT/activity.css $CSS_PREFIX_DEVELOPMENT/assessment.css $CSS_PREFIX_DEVELOPMENT/comment.css $CSS_PREFIX_DEVELOPMENT/notification.css > $TARGET_CSS
+cat $CSS_PREFIX_DEVELOPMENT/widgets.css $CSS_PREFIX_DEVELOPMENT/activity.css $CSS_PREFIX_DEVELOPMENT/assessment.css $CSS_PREFIX_DEVELOPMENT/comment.css $CSS_PREFIX_DEVELOPMENT/notification.css > $TARGET_CSS
 cat $CSS_PREFIX_DEVELOPMENT/password.css >> $TARGET_CSS
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.css$:.css' $TARGET_CSS 
 
 TARGET_CSS=$CSS_PREFIX_PRODUCTION/password_reset.min.css
-cat $CSS_PREFIX_DEVELOPMENT/header.css $CSS_PREFIX_DEVELOPMENT/footer.css $CSS_PREFIX_DEVELOPMENT/widgets.css $CSS_PREFIX_DEVELOPMENT/activity.css $CSS_PREFIX_DEVELOPMENT/assessment.css $CSS_PREFIX_DEVELOPMENT/comment.css $CSS_PREFIX_DEVELOPMENT/notification.css > $TARGET_CSS
+cat $CSS_PREFIX_DEVELOPMENT/widgets.css $CSS_PREFIX_DEVELOPMENT/activity.css $CSS_PREFIX_DEVELOPMENT/assessment.css $CSS_PREFIX_DEVELOPMENT/comment.css $CSS_PREFIX_DEVELOPMENT/notification.css > $TARGET_CSS
 cat $CSS_PREFIX_DEVELOPMENT/password.css >> $TARGET_CSS
 java -jar $basedir/yuicompressor-2.4.8.jar -o '.css$:.css' $TARGET_CSS 

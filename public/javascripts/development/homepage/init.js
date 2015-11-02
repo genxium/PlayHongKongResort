@@ -155,7 +155,7 @@ function routeByHash() {
 $(document).ready(function(){
 
 	initTopbar($("#topbar"));
-	initFooter($("#footer-content"));
+	initFooter($("#footer"));
 
 	var homepageContent = $("#content");
 	initActivityEditor(homepageContent);

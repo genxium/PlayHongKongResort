@@ -466,7 +466,7 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	var logoutReact = logout;
 	
 	var playerBox = $("<div>", {
-		"class": "player-box clearfix"
+		"class": "post-login-whole right"
 	}).appendTo(par);
 	var avatarContainer = $("<div>", {
 		"class": "post-login-avatar left patch-block-alpha"
@@ -480,17 +480,18 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	}).appendTo(avatarContainer);
 	avatarContainer.click(profileReact);
 	
-	var playerBoxLeft = $("<div>", {
-		"class": "player-box-left left clearfix patch-block-gamma"
+	// post login buttons panel 
+	var buttonsPanel = $("<div>", {
+		"class": "post-login-buttons-panel left patch-block-gamma"
 	}).appendTo(playerBox);
-	var leftFirstRow = $("<div>", {
-		"class": "left-first-row clearfix"
-	}).appendTo(playerBoxLeft);
+
+	// upper row of buttons panel
+	var upperRow = $("<div>", {
+		"class": "menu-info-row"
+	}).appendTo(buttonsPanel);
 	var noti = $("<div>", {
 		"class": "noti-container left"
-	}).appendTo(leftFirstRow);
-
-	noti.click(function(evt){
+	}).appendTo(upperRow).click(function(evt){
 		evt.preventDefault();		
 		if (!g_loggedInPlayer) return;
 		window.location.hash = "notifications";
@@ -504,20 +505,21 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	bubble.update(g_loggedInPlayer.unreadCount);
 
 	var playerName = $("<div>", {
-		"class": "playername left patch-block-delta",
+		"class": "post-login-player-name left",
 		html: g_loggedInPlayer.name
-	}).appendTo(leftFirstRow);
+	}).appendTo(upperRow);
 
-	var postLoginMenuContainer = $("<div>", {
+	// menu action row (lower row) of buttons panel
+	var lowerRow = $("<div>", {
 		"class": "menu-action-row"
-	}).appendTo(playerBoxLeft);
+	}).appendTo(buttonsPanel);
 
 	var icons = ["/assets/icons/new_activity.png", "/assets/icons/profile.png", "/assets/icons/logout.png"];
 	var actionNames = ["create", "profile", "logout"];
 	var titles = [TITLES.create, TITLES.profile, TITLES.logout];
 	var reactions = [createReact, profileReact, logoutReact]; 
 
-	var dropdownMenu = createDropdownMenu(postLoginMenuContainer, "menu-post-login", g_loggedInPlayer.name, icons, actionNames, titles, reactions);
+	var dropdownMenu = createDropdownMenu(lowerRow, "menu-post-login", g_loggedInPlayer.name, icons, actionNames, titles, reactions);
 	var menu = new PostLoginMenu(bubble, dropdownMenu, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
 	var params = [menu, menu, menu];
 	dropdownMenu.setReactionParams(params);
