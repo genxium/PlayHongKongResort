@@ -8,7 +8,7 @@ public class Notification extends AbstractActivityMessage {
 
         public static String TAG = Notification.class.getName();
 
-        public static final String IS_READ = "iread";
+        public static final String IS_READ = "is_read";
         public static final String COMMENT_ID = "comment_id";
         public static final String ASSESSMENT_ID = "assessment_id";
         public static final String CMD = "cmd";

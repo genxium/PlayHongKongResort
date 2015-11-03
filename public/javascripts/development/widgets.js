@@ -171,9 +171,7 @@ function generateDatePicker(par, time, onEdit) {
 	}).appendTo(inputGroupAddon);
 
 	inputGroup.datetimepicker({
-		format: 'YYYY-MM-DD HH:mm',
-		pickSeconds: false,
-		pick12HourFormat: false  
+		format: 'YYYY-MM-DD HH:mm'
 	});
 
 	return new DatetimePicker(input);

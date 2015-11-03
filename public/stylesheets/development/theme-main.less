@@ -356,13 +356,9 @@ select {
 	height: 100%;
 }
 
-@post-login-avatar-width-percentage: 35%;
-@post-login-buttons-panel-width-percentage: 65%;
-
 .post-login-avatar {
 	display: inline-block;
-	position: absolute;
-	width: @post-login-avatar-width-percentage;
+	position: relative;
 	height: 100%;
 	padding: 5px;
 	text-align: center;
@@ -376,7 +372,7 @@ select {
 
 .post-login-avatar img {
 	max-width: 100%;
-	max-height: 100%;
+	max-height: 90%;
 }
 
 .post-login-avatar span {
@@ -391,16 +387,13 @@ select {
 
 .post-login-buttons-panel {
 	display: inline-block;
-	position: absolute;
+	position: relative;
 	padding: 5px;
-	width: @post-login-buttons-panel-width-percentage;
-	left: @post-login-avatar-width-percentage;	
 	height: 100%;
 	line-height: 100%;
 }
 
 .menu-info-row {
-	padding: 5px;
 	height: 48%;
 	line-height: 48%;
 }
@@ -409,11 +402,12 @@ select {
 @bubble-length: 15px;
 
 .noti-container {
-	position: absolute;
+	position: relative;
 	width: @menu-action-icon-length;
 	height: @menu-action-icon-length;
 	background: url("/assets/icons/message-button.png") left top no-repeat;
 	cursor: pointer;
+	margin-right: 10px;
 	&:hover {
 		background-position: left -(@menu-action-icon-length + 1px);
 		padding-top: 25px;
@@ -434,23 +428,21 @@ select {
 }
 
 .post-login-player-name {
-	position: absolute;
+	position: relative;
 	font-size: 1.25em;
 	color: white;
 	height: @menu-action-icon-length;
 	line-height: @menu-action-icon-length;
-	left: @menu-action-icon-length + @bubble-length;
 }
 
 .menu-action-row {
-	padding: 5px;
 	height: 48%;
 	line-height: 48%;
 }
 
 .menu-actions li {
-	float: left;
-	padding-right: 5px;
+	float: right;
+	padding-right: 10px;
 }
 
 .menu-actions li a {

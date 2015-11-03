@@ -468,29 +468,24 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	var playerBox = $("<div>", {
 		"class": "post-login-whole right"
 	}).appendTo(par);
-	var avatarContainer = $("<div>", {
-		"class": "post-login-avatar left patch-block-alpha"
-	}).appendTo(playerBox);
-	var avatarImage = $("<img>", {
-		src: g_loggedInPlayer.avatar
-	}).appendTo(avatarContainer);
 
-	var avatarSpan = $("<span>", {
-		text: TITLES.profile
-	}).appendTo(avatarContainer);
-	avatarContainer.click(profileReact);
-	
 	// post login buttons panel 
 	var buttonsPanel = $("<div>", {
-		"class": "post-login-buttons-panel left patch-block-gamma"
+		"class": "post-login-buttons-panel right patch-block-gamma"
 	}).appendTo(playerBox);
 
 	// upper row of buttons panel
 	var upperRow = $("<div>", {
 		"class": "menu-info-row"
 	}).appendTo(buttonsPanel);
+
+	var playerName = $("<div>", {
+		"class": "post-login-player-name right",
+		html: g_loggedInPlayer.name
+	}).appendTo(upperRow);
+
 	var noti = $("<div>", {
-		"class": "noti-container left"
+		"class": "noti-container right"
 	}).appendTo(upperRow).click(function(evt){
 		evt.preventDefault();		
 		if (!g_loggedInPlayer) return;
@@ -503,11 +498,6 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	}).appendTo(noti);
 	var bubble = new NotiBubble(0, spBubble);
 	bubble.update(g_loggedInPlayer.unreadCount);
-
-	var playerName = $("<div>", {
-		"class": "post-login-player-name left",
-		html: g_loggedInPlayer.name
-	}).appendTo(upperRow);
 
 	// menu action row (lower row) of buttons panel
 	var lowerRow = $("<div>", {
@@ -523,6 +513,20 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	var menu = new PostLoginMenu(bubble, dropdownMenu, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
 	var params = [menu, menu, menu];
 	dropdownMenu.setReactionParams(params);
+
+	// logged-in player avatar
+	var avatarContainer = $("<div>", {
+		"class": "post-login-avatar right patch-block-alpha"
+	}).appendTo(playerBox);
+	var avatarImage = $("<img>", {
+		src: g_loggedInPlayer.avatar
+	}).appendTo(avatarContainer);
+
+	var avatarSpan = $("<span>", {
+		text: TITLES.profile
+	}).appendTo(avatarContainer);
+	avatarContainer.click(profileReact);
+	
 	return menu;
 }
 

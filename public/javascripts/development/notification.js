@@ -38,6 +38,8 @@ function NotificationPager(numItemsPerPage, url, paramsGenerator, extraParams, c
 	};
 }
 
+NotificationPager.inherits(Pager);
+
 var g_notificationTrash = null;
 
 function clearNotifications() {
