@@ -1,0 +1,148 @@
+/*
+ * The top level container of the whole switch.
+ * */
+.onoffswitch {
+	position: relative; width: 90px;
+	-webkit-player-select:none; -moz-player-select:none; -ms-player-select: none;
+}
+
+/*
+ * Checkbox is the driver of this switch.
+ * */
+.onoffswitch-checkbox {
+	display: none;
+}
+
+/*
+ * Label is the container of an inner background and a circular switch.
+ * */
+.onoffswitch-label {
+	display: block; overflow: hidden; cursor: pointer;
+	border: 2px solid #999999; border-radius: 20px;
+}
+
+/*
+ * The background of the inner part of the switch consists of 2 horizontal segments with equal width. 
+ * The :before component is a blue rectangle and the :after component is black. 
+ * */
+.onoffswitch-inner {
+	display: block; width: 200%; margin-left: -100%;
+	-moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
+	-o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
+}
+
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+	display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
+	font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+	-moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+}
+
+.onoffswitch-inner:before {
+	content: attr(left-text);
+	padding-left: 10px;
+	background-color: #2FCCFF; color: #FFFFFF;
+}
+
+.onoffswitch-inner:after {
+	content: attr(right-text);
+	padding-right: 10px;
+	background-color: #EEEEEE; color: #999999;
+	text-align: right;
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+	margin-left: 0;
+}
+
+/*
+ * The circular switch
+ * */
+.onoffswitch-switch {
+	display: block; width: 18px; margin: 6px;
+	background: #FFFFFF;
+	border: 2px solid #999999;
+	border-radius: 20px;
+	position: absolute; top: 0; bottom: 0; right: 56px;
+	-moz-transition: all 0.3s ease-in 0s;
+	-webkit-transition: all 0.3s ease-in 0s;
+	-o-transition: all 0.3s ease-in 0s;
+	transition: all 0.3s ease-in 0s; 
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+	right: 0px; 
+}
+
+.date-picker-input {
+}
+
+.general-popup {
+	position: fixed;
+}
+
+.general-popup-paragraph {
+	white-space: pre;
+	padding: 50px;
+	font-size: 20px;
+}
+
+.word-counter-current {
+	font-family: "Times New Roman", Georgia, Serif; 	
+	font-size: 24px;
+}
+.word-counter-max {
+	font-family: "Times New Roman", Georgia, Serif; 	
+	font-size: 24px;
+}
+.word-counter-violation-hint {
+	color: brown;
+	margin-left: 30px;
+	max-width: 720px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-family: "Times New Roman", Georgia, Serif; 	
+	font-size: 24px;
+}
+.active-button {
+	font-weight: bold;
+}
+
+.preview-container {
+	position: relative;
+	width: 200px;
+	height: 200px;
+	vertical-align: middle;
+	text-align: center;
+	margin-right: 5px;
+	margin-top: 5px;
+}
+.preview-container img {
+	width: 90%;
+	height: 90%;
+}
+.preview-container .checked-image {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	width: 50px;
+	height: 50px;
+}
+
+@datetime-picker-height: 34px;
+
+.edit-datetime-deadline,
+.edit-datetime-begin {
+	margin-bottom: 5px;
+}
+
+.edit-datetime-label {
+	width: 30%;
+	font-size: 16px;
+	line-height: @datetime-picker-height;
+}
+
+.datetime-picker {
+	width: 70%;
+	line-height: @datetime-picker-height;
+}

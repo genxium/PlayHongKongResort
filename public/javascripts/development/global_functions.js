@@ -398,24 +398,25 @@ function validateImage(file){
 	return true;
 }
 
+// initialize moment instance
+var date = new Date();
+moment().utcOffset(date.getTimezoneOffset());
 function currentMillis() {
-    var date = new Date();
-    return 1000 * moment().utcOffset(date.getTimezoneOffset()).unix(); 
+    return 1000 * moment().unix(); 
 }
 
 function gmtMiilisecToLocalYmdhis(millis) {
     var date = new Date();
-    return moment(millis).utcOffset(date.getTimezoneOffset()).format("YYYY-MM-DD HH:mm:ss"); 
+    return moment(millis).format("YYYY-MM-DD HH:mm:ss"); 
 }
 
 function gmtMiilisecToLocalYmdhi(millis) {
     var date = new Date();
-    return moment(millis).utcOffset(date.getTimezoneOffset()).format("YYYY-MM-DD HH:mm"); 
+    return moment(millis).format("YYYY-MM-DD HH:mm"); 
 }
 
 function localYmdhisToGmtMillisec(dateStr) {
-    var date = new Date();
-    return 1000 * moment(dateStr, "YYYY-MM-DD HH:mm:ss").utcOffset(date.getTimezoneOffset()).unix(); 
+    return 1000 * moment(dateStr, "YYYY-MM-DD HH:mm:ss").unix(); 
 }
 
 function generateUuid() {

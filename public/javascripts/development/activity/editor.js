@@ -314,7 +314,7 @@ function ActivityEditor() {
 		this.imageSelectors = [];
 
 		this.newImageRow = $("<div>", {
-			"class": "image-row clear"
+			"class": "edit-image-row clear"
 		}).appendTo(form);
 		if(!(!activity) && !(!activity.images))	generateOldImagesRow(form, this, activity);
 
@@ -328,11 +328,11 @@ function ActivityEditor() {
 		if(!(!activity) && !(!activity.beginTime)) beginTime = activity.beginTime;
 
 		var scheduleRow1 = $("<div>", {
-			"class": "edit-deadline clearfix"
+			"class": "edit-datetime-deadline clearfix clear"
 		}).appendTo(form);
 		var scheduleCell11 = $("<div>", {
 			text: TITLES.deadline,
-			"class": "left edit-label"
+			"class": "left edit-datetime-label"
 		}).appendTo(scheduleRow1);
 		var scheduleCell12 = $("<div>", {
 			"class": "datetime-picker left"
@@ -340,11 +340,11 @@ function ActivityEditor() {
 		this.deadlinePicker = generateDateSelection(scheduleCell12, gmtMiilisecToLocalYmdhi(deadline));
 		
 		var scheduleRow2 = $("<div>", {
-			"class": "edit-begin clearfix"
+			"class": "edit-datetime-begin clearfix clear"
 		}).appendTo(form);
 		var scheduleCell21 = $("<div>", {
 			text: TITLES.begin_time,
-			"class": "left edit-label"
+			"class": "left edit-datetime-label"
 		}).appendTo(scheduleRow2);
 		var scheduleCell22 = $("<div>", {
 			"class": "datetime-picker left"
@@ -769,7 +769,7 @@ function onCancel(evt){
 // Generators
 function generateOldImagesRow(par, editor, activity) {
 	var oldImagesRow = $("<div>", {
-		"class": "image-row clear"
+		"class": "edit-image-row clear"
 	}).appendTo(par);
 
 	var countOldImages = Object.keys(activity.images).length;

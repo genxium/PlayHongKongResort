@@ -144,11 +144,11 @@ function DatetimePicker(input) {
 
 function generateDatePicker(par, time, onEdit) {
 	var container = $('<div>', {
-		// "class": 'col-sm-6'    
-	}).appendTo(par).on("input change keyup", onEdit);
+		"class": 'col-sm-6'    
+	}).appendTo(par);
  
 	var formGroup = $('<div>', {
-		// "class": 'form-group'    
+		"class": 'form-group'    
 	}).appendTo(container);
 
 	var inputGroup = $("<div>", {
@@ -158,8 +158,7 @@ function generateDatePicker(par, time, onEdit) {
 	var input = $("<input>", {
 		type: 'text',
 		value: time,
-		disabled: true,
-		"class": "form-control",
+		"class": "form-control"
 	}).appendTo(inputGroup);
 
 	var inputGroupAddon = $('<span>', {
@@ -170,9 +169,13 @@ function generateDatePicker(par, time, onEdit) {
 		"class": 'glyphicon glyphicon-calendar'   
 	}).appendTo(inputGroupAddon);
 
+	// options reference http://eonasdan.github.io/bootstrap-datetimepicker/Options/#usestrict
 	inputGroup.datetimepicker({
-		format: 'YYYY-MM-DD HH:mm'
+		format: 'YYYY-MM-DD HH:mm',
+		ignoreReadonly: true,
+		sideBySide: true
 	});
+	inputGroup.on('dp.change', onEdit);
 
 	return new DatetimePicker(input);
 }

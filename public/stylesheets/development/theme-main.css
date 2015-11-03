@@ -21,6 +21,8 @@ button {
 }
 .pager-button {
   border: solid 1px gray;
+  padding: 5px;
+  margin: 5px;
 }
 .disabled-button {
   background-color: white;
@@ -310,11 +312,14 @@ select {
   width: 24px;
 }
 #content {
+  position: relative;
   margin: 0 auto;
   max-width: 1024px;
   min-height: 500px;
   background-color: white;
   padding-bottom: 30px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 .patch-block-alpha {
   color: black;

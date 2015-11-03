@@ -4,8 +4,8 @@ var g_onJoined = null;
 
 function onBtnEditClicked(evt){
 	evt.preventDefault();
-	var data = evt.data;
-	var activity = data[g_keyActivity];
+	evt.stopPropagation();
+	var activity = evt.data;
 	if (!g_activityEditor) return;
 	g_activityEditor.refresh(activity);
 	g_activityEditor.show();
@@ -231,8 +231,7 @@ function attachStatusIndicator(par, activity) {
 		"class": 'activity-edit'
 	}).appendTo(statusIndicator);
 	var dEdit = {};
-	dEdit[g_keyActivity] = activity;
-	btnEdit.click(dEdit, onBtnEditClicked);
+	btnEdit.click(activity, onBtnEditClicked);
 }
 
 function getPriorRelation(activity) {
