@@ -406,12 +406,10 @@ function currentMillis() {
 }
 
 function gmtMiilisecToLocalYmdhis(millis) {
-    var date = new Date();
     return moment(millis).format("YYYY-MM-DD HH:mm:ss"); 
 }
 
 function gmtMiilisecToLocalYmdhi(millis) {
-    var date = new Date();
     return moment(millis).format("YYYY-MM-DD HH:mm"); 
 }
 

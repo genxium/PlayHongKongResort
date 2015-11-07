@@ -155,11 +155,7 @@ function generateDatePicker(par, time, onEdit) {
 		"class": 'input-group date'    
 	}).appendTo(formGroup);
 
-	var input = $("<input>", {
-		type: 'text',
-		value: time,
-		"class": "form-control"
-	}).appendTo(inputGroup);
+	var input = $("<input type='text' class='form-control right' style='cursor: default;' readonly>").appendTo(inputGroup).val(time);
 
 	var inputGroupAddon = $('<span>', {
 		"class": 'input-group-addon'    
@@ -399,7 +395,6 @@ Pager.inherits(BaseWidget);
 
 function Announcement() {
 	this.composeContent = function(data) {
-		setDimensions(this.content, "80%", "90%");
 		var message = data;
 		var div = $("<div>", {
 			"class": "general-popup-paragraph",

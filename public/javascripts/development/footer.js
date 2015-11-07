@@ -47,6 +47,6 @@ function initFooter(par){
 	var footerRight = $("<div>", {
 		id: "footer-copy",
 		"class": "right",
-		html: "Copyright &copy; All rights reserved."
+		html: TITLES.copyright
 	}).appendTo(g_footer);
 }

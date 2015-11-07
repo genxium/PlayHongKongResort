@@ -78,6 +78,7 @@ var TITLES = {
 	about_us: "關於我們",
 	contact_us: "聯絡我們",
 	privacy_policy: "隱私聲明",
+	copyright: "&copy; 2015 HKR",
 	resend_email_verification: "重發驗證郵件",
 	submit_participant_selection: "提交",
 	new_password: "新密碼",
