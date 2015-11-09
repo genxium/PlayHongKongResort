@@ -188,11 +188,14 @@ public class DBCommander {
 
                         final Object[] onVals = {vieweeId, new SQLBuilder.PrimaryTableField(Activity.ID), maskedRelationList};
 
+			// TODO: remove usage of 'join' to enhance horizontal scalability
                         final List<SimpleMap> activityDataList = builder.select(names)
                                 .from(Activity.TABLE)
                                 .join(PlayerActivityRelation.TABLE, onCols, onOps, onVals)
                                 .order(orderKey, orientation)
-                                .limit((pageSt - 1) * numItems, (pageEd - pageSt + 1) * numItems).execSelect();
+                                .limit((pageSt - 1) * numItems, (pageEd - pageSt + 1) * numItems)
+				.execSelect();
+
                         if (activityDataList == null) return null;
 
                         for (final SimpleMap activityData : activityDataList) {
@@ -697,22 +700,23 @@ public class DBCommander {
         }
 
         public static List<BasicPlayer> queryPlayers(final long activityId, final List<Integer> maskedRelationList) {
-                List<BasicPlayer> players = new ArrayList<>();
+                final List<BasicPlayer> players = new ArrayList<>();
                 if (maskedRelationList == null || maskedRelationList.size() == 0) return players;
                 try {
-                        String[] onCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.PLAYER_ID, PlayerActivityRelation.RELATION};
-                        String[] onOps = {"=", "=", "IN"};
-                        Object[] onVals = {activityId, new SQLBuilder.PrimaryTableField(Player.ID), maskedRelationList};
+                        final String[] onCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.PLAYER_ID, PlayerActivityRelation.RELATION};
+                        final String[] onOps = {"=", "=", "IN"};
+                        final Object[] onVals = {activityId, new SQLBuilder.PrimaryTableField(Player.ID), maskedRelationList};
 
-                        SQLBuilder builder = new SQLBuilder();
-                        List<SimpleMap> records = builder.select(Player.QUERY_FILEDS)
+			// TODO: remove usage of 'join' to enhance horizontal scalability
+                        final SQLBuilder builder = new SQLBuilder();
+                        final List<SimpleMap> records = builder.select(Player.QUERY_FILEDS)
                                 .from(Player.TABLE)
                                 .join(PlayerActivityRelation.TABLE, onCols, onOps, onVals)
                                 .execSelect();
 
                         if (records == null) throw new NullPointerException();
 
-                        for (SimpleMap playerData : records) {
+                        for (final SimpleMap playerData : records) {
                                 BasicPlayer player = new BasicPlayer(playerData);
                                 players.add(player);
                         }
@@ -723,25 +727,28 @@ public class DBCommander {
         }
 
         public static List<SpecialPlayerRecord> queryPlayers(final List<Long> activityIdList, final List<Integer> maskedRelationList) {
-                List<SpecialPlayerRecord> ret = new ArrayList<>();
+                final List<SpecialPlayerRecord> ret = new ArrayList<>();
                 if (activityIdList == null || activityIdList.size() == 0) return ret;
                 if (maskedRelationList == null || maskedRelationList.size() == 0) return ret;
                 try {
-                        String[] onCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.PLAYER_ID, PlayerActivityRelation.RELATION};
-                        String[] onOps = {"IN", "=", "IN"};
-                        Object[] onVals = {activityIdList, new SQLBuilder.PrimaryTableField(Player.ID), maskedRelationList};
+                        final String[] onCols = {PlayerActivityRelation.ACTIVITY_ID, PlayerActivityRelation.PLAYER_ID, PlayerActivityRelation.RELATION};
+                        final String[] onOps = {"IN", "=", "IN"};
+                        final Object[] onVals = {activityIdList, new SQLBuilder.PrimaryTableField(Player.ID), maskedRelationList};
 
-                        List<String> fields = new ArrayList<>();
-                        for (String field : Player.QUERY_FILEDS) fields.add(field);
+                        final List<String> fields = new ArrayList<>();
+                        for (final String field : Player.QUERY_FILEDS) fields.add(field);
                         fields.add(PlayerActivityRelation.ACTIVITY_ID);
-                        SQLBuilder builder = new SQLBuilder();
-                        List<SimpleMap> records = builder.select(fields)
+
+			// TODO: remove usage of 'join' to enhance horizontal scalability
+                        final SQLBuilder builder = new SQLBuilder();
+                        final List<SimpleMap> records = builder.select(fields)
 							.from(Player.TABLE)
-							.join(PlayerActivityRelation.TABLE, onCols, onOps, onVals).execSelect();
+							.join(PlayerActivityRelation.TABLE, onCols, onOps, onVals)
+							.execSelect();
 
                         if (records == null) throw new NullPointerException();
 
-                        for (SimpleMap record : records) {
+                        for (final SimpleMap record : records) {
                                 ret.add(new SpecialPlayerRecord(record));
                         }
                 } catch (Exception e) {

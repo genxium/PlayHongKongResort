@@ -86,6 +86,7 @@ function ProfileEditorImageNode(cdn, domain) {
 ProfileEditorImageNode.inherits(ImageNode);
 
 function ProfileEditor() {
+	// TODO: add transitional animations to cover the abrupt GUI changes  
 
 	this.NORMAL = 0;	
 	this.EDITING = 1;
