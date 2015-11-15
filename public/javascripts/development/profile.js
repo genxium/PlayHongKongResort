@@ -85,237 +85,230 @@ function ProfileEditorImageNode(cdn, domain) {
  
 ProfileEditorImageNode.inherits(ImageNode);
 
+function refreshProfileInfoTable(par, fieldKey, fieldVal, title, regex, requirement, disabled) {
+	if (!par[fieldKey]) {
+		par[fieldKey] = $('<div>', {
+			"class": "profile-info-table-row"
+		}).appendTo(par);
+	}
+	if (!par[fieldKey].title) {
+		par[fieldKey].title = $('<div>', {
+			"class": "profile-info-table-title",
+			text: title 
+		}).appendTo(par[fieldKey]); 
+	}
+	if (!par[fieldKey].input) {
+		par[fieldKey].input = $("<input>", {
+			"class": "profile-info-table-input"
+		}).appendTo(par[fieldKey]); 
+	}
+	par[fieldKey].input.val(fieldVal);
+	if (disabled)	disableField(par[fieldKey].input);
+
+	if (!par[fieldKey].hint) {
+		par[fieldKey].hint = $("<div>", {
+			"class": "profile-info-table-hint"
+		}).appendTo(par[fieldKey]);
+		par[fieldKey].hint.regex = regex;
+		par[fieldKey].input.on("input keyup paste", par[fieldKey].hint, function(evt){
+			evt.preventDefault();
+			var hint = evt.data;
+			var aInput = getTarget(evt);
+			hint.empty();
+			hint.html("");
+			hint.removeClass("warn");
+			var val = aInput.val();
+			if(!val || val.length === 0) return;
+			if(regex.test(val))	return;
+			hint.addClass("warn");
+			hint.html(requirement);
+		});	
+	}
+} 
+
 function ProfileEditor() {
 	// TODO: add transitional animations to cover the abrupt GUI changes  
 
 	this.NORMAL = 0;	
 	this.EDITING = 1;
 	this.mode = this.NORMAL; 
+	this.infoTableVarList = [
+		["age", TITLES.age, g_playerAgePattern, MESSAGES.age_requirement],
+		["gender", TITLES.gender, g_playerGenderPattern, MESSAGES.gender_requirement],
+		["mood", TITLES.mood, g_playerMoodPattern, MESSAGES.mood_requirement]
+	];
 
 	this.composeContent = function(player) {
 		if (!player) return;
 		this.player = player;
 
 		// avatar 
-		var avatarBox = $('<div>').hide().appendTo(this.content);
-		if (this.mode == this.EDITING) avatarBox.show();
-
-		var avatarPreview = $('<div>', {
-			"class": "preview-container"
-		}).hide().appendTo(this.content);  
-		$('<img>', {
-			"class": "image-helper",
-			src: player.avatar
-		}).appendTo(avatarPreview);			
-		if (this.mode == this.NORMAL) avatarPreview.show();	
-
-		// misc
-		$("<br>").appendTo(this.content);
-		
-		var tbl = $("<table>", {
-			"class": "player-profile-table clear"
+		if (!this.avatarBox)	this.avatarBox = $('<div>', {
+			"class": "profile-avatar-box"
 		}).appendTo(this.content);
-		var ageRow = $("<tr>").appendTo(tbl); 
-		var ageTitle = $("<td>", {
-			text: TITLES.age
-		}).appendTo(ageRow);
-		var ageValue = $("<td>").appendTo(ageRow);
-		var ageHintCell = $("<td>").appendTo(ageRow);
 
-		var genderRow = $("<tr>").appendTo(tbl);
-		var genderTitle = $("<td>", {
-			text: TITLES.gender
-		}).appendTo(genderRow);	
-		var genderValue = $("<td>").appendTo(genderRow);
-		var genderHintCell = $("<td>").appendTo(genderRow);
-	
-		var moodRow = $("<tr>").appendTo(tbl);
-		var moodTitle = $("<td>", {
-			text: TITLES.mood
-		}).appendTo(moodRow);
-		var moodValue = $("<td>").appendTo(moodRow);
-		var moodHintCell = $("<td>").appendTo(moodRow);
+		if (!this.avatarPreview) {
+			this.avatarPreview = $('<div>', {
+				"class": "preview-container"
+			}).hide().appendTo(this.content);  
+			$('<img>', {
+				src: player.avatar
+			}).appendTo(this.avatarPreview);
+		}
+		if (this.mode == this.NORMAL) this.avatarPreview.show();	
+		else this.avatarPreview.hide();	
 
-		if (this.mode == this.EDITING) {
-			this.age = $("<input>").appendTo(ageValue); 
-			this.age.val(player.age);
-			this.ageHint = $("<span>").appendTo(ageHintCell);
-			
-			this.age.on("input keyup paste", this.ageHint, function(evt){
-				evt.preventDefault();
-				var hint = evt.data;
-				hint.empty();
-				hint.html("");
-				hint.removeClass("warn");
-				var val = $(this).val();
-				if(!val || val.length === 0) return;
-				if(validatePlayerAge(val))	return;
-				hint.addClass("warn");
-				hint.html(MESSAGES.age_requirement);
-			});	
+		if (!this.infoTable) {
+			this.infoTable = $("<div>", {
+				"class": "profile-info-table clear"
+			}).appendTo(this.content);
 
-			this.gender = $("<input>").appendTo(genderValue);
-			this.gender.val(player.gender);
-			this.genderHint = $("<span>").appendTo(genderHintCell);
-			this.gender.on("input keyup paste", this.genderHint, function(evt){
-				evt.preventDefault();
-				var hint = evt.data;
-				hint.empty();
-				hint.html("");
-				hint.removeClass("warn");
-				var val = $(this).val();
-				if(!val || val.length === 0) return;
-				if(validatePlayerGender(val))	return;
-				hint.addClass("warn");
-				hint.html(MESSAGES.gender_requirement);
-			});	
-			
-			this.mood = $("<input>").appendTo(moodValue);
-			this.mood.val(player.mood);
-			this.moodHint = $("<span>").appendTo(moodHintCell);
-			this.mood.on("input keyup paste", this.moodHint, function(evt){
-				evt.preventDefault();
-				var hint = evt.data;
-				hint.empty();
-				hint.html("");
-				hint.removeClass("warn");
-				var val = $(this).val();
-				if(!val || val.length === 0 ) return;
-				if(validatePlayerMood(val))	return;
-				hint.addClass("warn");
-				hint.html(MESSAGES.mood_requirement);
-			});	
-		} else if (this.mode == this.NORMAL) {
-			this.age = $("<span>", {
-				"class": "player-profile-table-plain-value",
-				text: player.age
-			}).appendTo(ageValue);
-			this.gender = $("<span>", {
-				"class": "player-profile-table-plain-value",
-				text: player.gender
-			}).appendTo(genderValue);
-			this.mood = $("<span>", {
-				"class": "player-profile-table-plain-value",
-				text: player.mood
-			}).appendTo(moodValue);
-		} else;
+			var disabled = (this.mode == this.NORMAL);		
+			for (var idx in this.infoTableVarList) {
+				var tmpList = this.infoTableVarList[idx];
+				refreshProfileInfoTable(this.infoTable, tmpList[0], player[tmpList[0]], tmpList[1], tmpList[2], tmpList[3], disabled);
+			}
+		}
 
 		if (!g_loggedInPlayer || player.id != g_loggedInPlayer.id) return;
 
-		// avatar
-		if (this.mode == this.EDITING) {
+		if (!this.avatarNode) {
 		        var domain = queryCDNDomainSync();
 			this.avatarNode = new ProfileEditorImageNode(g_cdnQiniu, domain);
-			this.avatarNode.appendTo(avatarBox);	
+			this.avatarNode.appendTo(this.avatarBox);	
 			this.avatarNode.refresh(this);
 			this.avatarHint = $("<p>", {
-				"class": "player-profile-avatar-hint"
-			}).appendTo(avatarBox);
+				"class": "profile-avatar-hint"
+			}).appendTo(this.avatarBox);
+		}
+		if (this.mode == this.EDITING)	{
+			this.avatarNode.show();
+			this.avatarHint.show();	
+		} else {
+			this.avatarNode.hide();
+			this.avatarHint.hide();	
 		}
 	
 		// buttons
-		var buttonRow = $("<p>").appendTo(this.content);
+		if (!this.buttonRow) this.buttonRow = $("<p>").appendTo(this.content);
 
-		this.btnEdit = $("<button>", {
-			text: TITLES.edit,
-			"class": "btn-edit positive-button" 
-		}).hide().appendTo(buttonRow).click(this, function(evt) {
-			var editor = evt.data;
-			editor.mode = editor.EDITING;
-			editor.refresh(player);
-		});
-		if (this.mode == this.NORMAL) this.btnEdit.show();
-
-		this.btnCancel = $("<button>", {
-			text: TITLES.cancel,
-			"class": "btn-cancel negative-button"
-		}).hide().appendTo(buttonRow).click(this, function(evt) {
-			var editor = evt.data;
-			editor.mode = editor.NORMAL;
-			editor.refresh(player);
-		});
-		if (this.mode == this.EDITING) this.btnCancel.show();
-
-		this.btnSave = $("<button>", {
-			text: TITLES.save,	
-			"class": "btn-save positive-button"
-		}).hide().appendTo(buttonRow).click(this, function(evt) {
-			evt.preventDefault();
-			var editor = evt.data;	
-			var token = getToken();
-			if (!token) return;
-
-			var formData = {};
-			formData[g_keyToken] = token;
-
-			if (editor.avatarNode.state == SLOT_UPLOADED) { 
-				formData[g_keyAvatar] = editor.avatarNode.remoteName;
-			}
-			formData[g_keyAge] =  editor.age.val();
-			formData[g_keyGender] =  editor.gender.val();
-			formData[g_keyMood] =  editor.mood.val();
-
-			var aButton = getTarget(evt);
-			disableField(aButton);	
-			editor.avatarHint.text(MESSAGES.saving);
-			
-			$.ajax({
-				method: "POST",
-				url: "/player/save", 
-				data: formData,
-				success: function(data, status, xhr){
-					enableField(aButton);	
-					// update logged in player profile
-					player = g_viewee = g_loggedInPlayer = new Player(data);
-					editor.avatarHint.text(MESSAGES.saved);
-				},
-				error: function(xhr, status, err){
-					enableField(aButton);	
-					editor.avatarHint.text(MESSAGES.save_failed);
-				}
+		if (!this.btnEdit) {
+			this.btnEdit = $("<button>", {
+				text: TITLES.edit,
+				"class": "profile-btn-edit positive-button" 
+			}).hide().appendTo(this.buttonRow).click(this, function(evt) {
+				var editor = evt.data;
+				editor.mode = editor.EDITING;
+				editor.refresh(player);
 			});
-		});	
+		}
+		if (this.mode == this.NORMAL) this.btnEdit.show();
+		else this.btnEdit.hide();
+
+		if (!this.btnCancel) {
+			this.btnCancel = $("<button>", {
+				text: TITLES.cancel,
+				"class": "profile-btn-cancel negative-button"
+			}).hide().appendTo(this.buttonRow).click(this, function(evt) {
+				var editor = evt.data;
+				editor.mode = editor.NORMAL;
+				editor.refresh(player);
+			});
+		}
+		if (this.mode == this.EDITING) this.btnCancel.show();
+		else this.btnCancel.hide();
+
+		if (!this.btnSave) {
+			this.btnSave = $("<button>", {
+				text: TITLES.save,	
+				"class": "btn-save positive-button"
+			}).hide().appendTo(this.buttonRow).click(this, function(evt) {
+				evt.preventDefault();
+				var editor = evt.data;	
+				var token = getToken();
+				if (!token) return;
+
+				var formData = {};
+				formData[g_keyToken] = token;
+
+				if (editor.avatarNode.state == SLOT_UPLOADED) { 
+					formData[g_keyAvatar] = editor.avatarNode.remoteName;
+				}
+				formData[g_keyAge] =  editor.age.val();
+				formData[g_keyGender] =  editor.gender.val();
+				formData[g_keyMood] =  editor.mood.val();
+
+				var aButton = getTarget(evt);
+				disableField(aButton);	
+				editor.avatarHint.text(MESSAGES.saving);
+				
+				$.ajax({
+					method: "POST",
+					url: "/player/save", 
+					data: formData,
+					success: function(data, status, xhr){
+						enableField(aButton);	
+						// update logged in player profile
+						player = g_viewee = g_loggedInPlayer = new Player(data);
+						editor.avatarHint.text(MESSAGES.saved);
+					},
+					error: function(xhr, status, err){
+						enableField(aButton);	
+						editor.avatarHint.text(MESSAGES.save_failed);
+					}
+				});
+			});	
+		}
 		if (this.mode == this.EDITING) this.btnSave.show();
+		else this.btnSave.hide();
 
 		if (!g_loggedInPlayer) return;
 		if (g_loggedInPlayer.hasEmail() && !g_loggedInPlayer.isEmailAuthenticated() && g_vieweeId == g_loggedInPlayer.id) {
-			this.resendHint = $("<p>", {
-				"class": "hint-resend"
-			}).hide().appendTo(this.content);
-			this.btnResend = new AjaxButton(TITLES.resend_email_verification);
-			var editor = this;
-			var dButton = {
-				url: "/player/email/resend",
-				type: "POST",
-				clickData: null,
-				extraParams: {
-					token: getToken()
-				},
-				onSuccess: function(data) {
-					if (!data) return;
-					if (isStandardFailure(data) || isTokenExpired(data) || isPlayerNotFound(data)) {
-						logout(null);
-						return;
+			if (!this.btnResend) {
+				this.resendHint = $("<p>", {
+					"class": "profile-resend-hint"
+				}).hide().appendTo(this.content);
+				this.btnResend = new AjaxButton(TITLES.resend_email_verification);
+				var editor = this;
+				var dButton = {
+					url: "/player/email/resend",
+					type: "POST",
+					clickData: null,
+					extraParams: {
+						token: getToken()
+					},
+					onSuccess: function(data) {
+						if (!data || isStandardFailure(data) || isTokenExpired(data) || isPlayerNotFound(data)) {
+							logout(null);
+							return;
+						}
+						editor.resendHint.text(MESSAGES.email_verification_sent.format(data[g_keyEmail]));
+					},
+					onError: function(err) {
+						editor.resendHint.text(MESSAGES.email_verification_not_sent);
 					}
-					editor.resendHint.text(MESSAGES.email_verification_sent.format(data[g_keyEmail]));
-				},
-				onError: function(err) {
-					editor.resendHint.text(MESSAGES.email_verification_not_sent);
-				}
-			};
-			this.btnResend.appendTo(this.content);
-			this.btnResend.hide();
-			this.btnResend.refresh(dButton);
-			this.btnResend.button.addClass("caution-button");
+				};
+				this.btnResend.appendTo(this.content);
+				this.btnResend.refresh(dButton);
+				this.btnResend.button.addClass("caution-button");
+			}
 			if (this.mode == this.NORMAL) {
 				this.btnResend.show();
 				this.resendHint.show();
+			} else {
+				this.btnResend.hide();
+				this.resendHint.hide();
 			}
 		}
 	};
 }
 
 ProfileEditor.inherits(BaseWidget);
+// for lazy-loading
+ProfileEditor.method('refresh', function(data) {
+	if (!this.content) return;	
+	this.composeContent(data);
+});
 
 function ProfileActivityPager(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError) {
 	this.init(numItemsPerPage, url, paramsGenerator, extraParams, cacheSize, filterMap, onSuccess, onError);

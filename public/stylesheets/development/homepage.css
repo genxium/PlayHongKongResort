@@ -4,19 +4,6 @@
 .player-profile {
   padding: 10px;
 }
-table.player-profile-table tr {
-  width: 256px;
-  height: 64px;
-}
-table.player-profile-table td {
-  padding: 10px;
-}
-table.player-profile-table span.player-profile-table-plain-value {
-  padding: 5px;
-}
-#section-player {
-  padding: 5px;
-}
 .section-player-avatar {
   width: 180px;
   height: 180px;
@@ -70,20 +57,7 @@ table.player-profile-table span.player-profile-table-plain-value {
 .captcha img {
   float: left;
 }
-.btn-edit {
-  width: 80px;
-  height: 30pt;
-  font-size: 15pt;
-}
 .first-foreign-party-registration-title {
   padding: 5px;
   font-size: 18px;
-}
-.hint-resend {
-  padding: 5px;
-}
-.player-profile-avatar-hint {
-  color: indianred;
-  font-size: 1em;
-  height: 15px;
 }

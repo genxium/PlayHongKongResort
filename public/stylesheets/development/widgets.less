@@ -108,10 +108,11 @@
 	font-weight: bold;
 }
 
+@preview-container-length: 200px;
 .preview-container {
 	position: relative;
-	width: 200px;
-	height: 200px;
+	width: @preview-container-length;
+	height: @preview-container-length;
 	vertical-align: middle;
 	text-align: center;
 	margin-right: 5px;
@@ -120,6 +121,8 @@
 .preview-container img {
 	width: 90%;
 	height: 90%;
+	display: inline-block;
+	vertical-align: middle;
 }
 .preview-container .checked-image {
 	position: absolute;

@@ -443,3 +443,40 @@ select {
   vertical-align: middle;
   height: 100%;
 }
+.profile-avatar-box {
+  width: 220px;
+  length: 220px;
+  padding: 10px;
+}
+.profile-info-table-row {
+  height: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.profile-info-table-title,
+.profile-info-table-input,
+.profile-info-table-hint {
+  display: inline-block;
+  font-size: 1.3em;
+}
+.profile-info-table-input,
+profile-info-table-hint {
+  margin-left: 10px;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+.profile-avatar-hint {
+  color: indianred;
+  font-size: 1em;
+  height: 15px;
+}
+.profile-btn-cancel,
+.profile-btn-edit {
+  width: 80px;
+  height: 30pt;
+  font-size: 15pt;
+}
+.profile-resend-hint {
+  padding: 5px;
+}

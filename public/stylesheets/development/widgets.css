@@ -132,6 +132,8 @@
 .preview-container img {
   width: 90%;
   height: 90%;
+  display: inline-block;
+  vertical-align: middle;
 }
 .preview-container .checked-image {
   position: absolute;
