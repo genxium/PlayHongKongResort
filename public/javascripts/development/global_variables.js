@@ -26,7 +26,9 @@ var g_idKeyboardEnter=13;
 var g_keyToken = "token";
 var g_keyAccessToken = "access_token";
 var g_keyParty = "party";
+var g_keyPartyName = "party_name";
 var g_keyPartyNickname = "party_nickname";
+var g_keyStateWithAction = "state_with_action";
 
 // extra request keys 
 var g_keyId = "id";

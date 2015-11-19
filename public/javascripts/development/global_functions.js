@@ -198,25 +198,95 @@ function validateAssessmentContent(content) {
 }
 
 function extractTagAndParams(url) {
-	var urlRegex = /https?:\/\/(.+)#(default|profile|detail|home|search|notifications|success|failure|access_token=[\w\d]+)\??\&?(.*)/i;
+	var urlRegex = /https?:\/\/(.+)#(default|profile|detail|home|search|notifications|success|failure)\??(.*)/i;
 	var matchUrl = urlRegex.exec(url);
 
 	if (matchUrl === null) return null;
 
 	var ret = {};
 	var tag = matchUrl[2];
-	var tagRegex = /(\w+)=([@\.\w]+)/g;
-	var matchTag = tagRegex.exec(tag);
-	if (matchTag !== null) {
-		tag = {};
-		tag[matchTag[1]] = matchTag[2];	
-	}
-	
+
 	ret[g_keyTag] = tag;
 	ret[g_keyParams] = {};
 	
 	// TODO: this imposes an assumption on `params` that none of its component values contains character '='
 	var params = decodeURIComponent(matchUrl[3]);
+	var paramRegex = /(\w+)=([:,\[\]{}"@\.\w]+)/g; 
+	var matchParams = paramRegex.exec(params);
+	while (matchParams !== null) {
+		ret[g_keyParams][matchParams[1]] = matchParams[2];
+		matchParams = paramRegex.exec(params);
+	}
+	return ret;
+}
+
+function encodeStateWithAction(cbfunc, argList) {
+	/**
+         * this function returns a JSON-serialized and  URI-component-encoded string of 
+         * {	 
+	 * 	state: {
+	 *		tag:	<tag_val>
+	 *		param_name_1:	<param_val_1>,
+	 *		param_name_2:	<param_val_2>,
+	 *		...
+	 * 	},
+	 *	cbfunc: <cbfunc.name>,	 
+	 *	args:	[
+	 *		<arg_val_1>,
+	 *		<arg_val_2>,
+	 *		...
+	 *	]
+	 * }
+	 * where argList must be of list type and contain only integer or string variabls
+	 * */ 
+	var currentHref = window.location.href;
+	var currentBundle = extractTagAndParams(currentHref);
+	if (!currentBundle)	return;
+
+	var currentTag = currentBundle[g_keyTag];	
+	var currentParams = currentBundle[g_keyParams];
+		
+	var state = {};
+	state[g_keyTag] = currentTag;
+	for (var k in currentParams) state[k] = currentParams[k];
+
+	var args = [];
+	for (var u in argList)	args.push(argList[u]); 
+
+	var ret = {};
+	ret[g_keyState] = state;
+
+	if (cbfunc) ret[g_keyCbfunc] = cbfunc.name;	
+	if (argList) ret[g_keyArgs] = args;
+
+	ret = JSON.stringify(ret);	
+	ret = encodeURIComponent(ret);
+
+	return ret;
+}
+
+function decodeStateWithAction(rawBundle) {
+	var ret = decodeURIComponent(rawBundle);
+	ret = JSON.parse(ret);	
+	return ret;
+}
+
+function extractCallbackParams(url) {
+	var urlRegex = /https?:\/\/(.+)/callback/(qq|wechat)/(.*)\??#?(.*)/i;
+	var matchUrl = urlRegex.exec(url);
+
+	if (matchUrl === null) return null;
+
+	var ret = {};
+	var partyName = matchUrl[2];
+	var stateWithAction = decodeStateWithAction(matchUrl[3]);
+	
+	ret[g_keyPartyName] = partyName;
+	ret[g_keyStateWithAction] = stateWithAction;
+	ret[g_keyParams] = {};
+	
+	// TODO: this imposes an assumption on `params` that none of its component values contains character '='
+	var params = decodeURIComponent(matchUrl[4]);
 	var paramRegex = /(\w+)=([:,\[\]{}"@\.\w]+)/g; 
 	var matchParams = paramRegex.exec(params);
 	while (matchParams !== null) {

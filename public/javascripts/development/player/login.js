@@ -341,12 +341,11 @@ function appendForeignPartyLoginEntry(par, party) {
 		}).appendTo(par);
 		qqLoginEntry.click(function(evt) {
 			evt.preventDefault();
+			var rawBundle = encodeStateWithAction(checkLoginStatus, [false]);
 			
-			var rawBundle = encodeStateWithAction(g_partyQQ, checkLoginStatus, [false]);
-			
-			var redirectUri = (window.location.protocol + "//" + window.location.host);
+			var redirectUri = encodeURIComponent(window.location.protocol + "//" + window.location.host + "/callback/qq/" + rawBundle);
 			var oauthTarget = 'https://graph.qq.com/oauth2.0/authorize?';
-			var oauthParams = ['client_id=' + g_appIdQQ, 'redirect_uri=' + redirectUri, 'scope=get_user_info','response_type=token', 'state=' + rawBundle];
+			var oauthParams = ['client_id=' + g_appIdQQ, 'redirect_uri=' + redirectUri, 'scope=get_user_info','response_type=token'];
         
 			window.location.assign(oauthTarget + oauthParams.join('&'));
 		});
@@ -528,59 +527,6 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	avatarContainer.click(profileReact);
 	
 	return menu;
-}
-
-function encodeStateWithAction(party, cbfunc, argList) {
-	/**
-         * this function returns a JSON-serialized and  URI-component-encoded string of 
-         * {	 
-	 * 	state: {
-	 *		tag:	<tag_val>
-	 *		param_name_1:	<param_val_1>,
-	 *		param_name_2:	<param_val_2>,
-	 *		...
-	 * 	},
-	 * 	party:	<party>,
-	 *	cbfunc: <cbfunc.name>,	 
-	 *	args:	[
-	 *		<arg_val_1>,
-	 *		<arg_val_2>,
-	 *		...
-	 *	]
-	 * }
-	 * where argList must be of list type and contain only integer or string variabls
-	 * */ 
-	var currentHref = window.location.href;
-	var currentBundle = extractTagAndParams(currentHref);
-	if (!currentBundle)	return;
-
-	var currentTag = currentBundle[g_keyTag];	
-	var currentParams = currentBundle[g_keyParams];
-		
-	var state = {};
-	state[g_keyTag] = currentTag;
-	for (var k in currentParams) state[k] = currentParams[k];
-
-	var args = [];
-	for (var u in argList)	args.push(argList[u]); 
-
-	var ret = {};
-	ret[g_keyState] = state;
-	ret[g_keyParty] = party;
-
-	if (cbfunc) ret[g_keyCbfunc] = cbfunc.name;	
-	if (argList) ret[g_keyArgs] = args;
-
-	ret = JSON.stringify(ret);	
-	ret = encodeURIComponent(ret);
-
-	return ret;
-}
-
-function decodeStateWithAction(rawBundle) {
-	var ret = decodeURIComponent(rawBundle);
-	ret = JSON.parse(ret);	
-	return ret;
 }
 
 function checkForeignPartyLoginStatus() {

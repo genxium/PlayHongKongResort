@@ -234,9 +234,9 @@ function ProfileEditor() {
 				if (editor.avatarNode.state == SLOT_UPLOADED) { 
 					formData[g_keyAvatar] = editor.avatarNode.remoteName;
 				}
-				formData[g_keyAge] =  editor.age.val();
-				formData[g_keyGender] =  editor.gender.val();
-				formData[g_keyMood] =  editor.mood.val();
+				formData[g_keyAge] =  editor.infoTable.age.input.val();
+				formData[g_keyGender] =  editor.infoTable.gender.input.val();
+				formData[g_keyMood] =  editor.infoTable.mood.input.val();
 
 				var aButton = getTarget(evt);
 				disableField(aButton);	

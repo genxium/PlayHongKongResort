@@ -28,6 +28,16 @@ public class Application extends Controller {
         return badRequest();
     }
 
+    public static Result callback(Integer dev, String theme, String partyName, String stateWithAction) {
+        try {
+            Content html = views.html.homepage.render(dev, theme);
+            return ok(html);
+        } catch (Exception e) {
+            Loggy.e(TAG, "callback", e);
+        }
+        return badRequest();
+    }
+
     public static Result admin(Integer dev) {
         try {
             Content html = views.html.admin.render(dev);

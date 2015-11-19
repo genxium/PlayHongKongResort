@@ -95,43 +95,21 @@ function routeByHash() {
 	var href = window.location.href;
 	var bundle = extractTagAndParams(href);
 	if (!bundle) {
-		window.location.hash = "home";
-		return;
-	}
-
-	var tag = bundle[g_keyTag];	
-	var params = bundle[g_keyParams];
-
-	var cbfuncName = null;
-	var args = null;
-
-	if (typeof tag == "object") {
-		// for QQ only
-		var stateWithAction = decodeStateWithAction(params[g_keyState]);
-		if (stateWithAction.hasOwnProperty(g_keyCbfunc)) cbfuncName = stateWithAction[g_keyCbfunc];
-		if (stateWithAction.hasOwnProperty(g_keyArgs)) args = stateWithAction[g_keyArgs];
-
-		var party = stateWithAction[g_keyParty];
-		var accessToken = tag[g_keyAccessToken]; 	
-		
-                saveAccessTokenAndParty(accessToken, party);
-
-		var state = stateWithAction[g_keyState];
-		tag = state[g_keyTag];			
-		var toRecoverHash = tag;
-		 
-		if (Object.keys(state).length > 1) {
-			var toRecoverParamList = [];
-			for (var k in state) {
-				if (k == g_keyTag) continue;
-				toRecoverParamList.push(k + "=" + state[k]);
-			}
-			toRecoverHash += ("?" + toRecoverParamList.join('&'));
-		}
-
-		// TODO: proceed accordingly with `cbfuncName` and `args` 
-		window.location.hash = toRecoverHash;
-		return;
+		bundle = extractCallbackParams(href); 
+		if (!bundle) return;
+		var partyName = bundle[g_keyPartyName];
+		var stateWithAction = bundle[g_keyStateWithActionn];
+		var params = bundle[g_keyParams];
+		if (partyName == "qq") {
+			var party = g_partyQQ;
+			var accessToken = params[g_keyAccessToken];	
+			saveAccessTokenAndParty(accessToken, party);
+			var tag = stateWithAction[g_keyTag];
+			var addr = window.location.protocol + "//" + window.location.host + "#" + tag;
+			window.location.assign(addr);	
+			return;
+			
+		} else return;	
 	}
 
 	if (tag == "home") {
