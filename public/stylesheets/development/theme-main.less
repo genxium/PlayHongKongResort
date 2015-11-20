@@ -7,6 +7,8 @@
 @main-background: white;
 @main-border-color: gray;
 
+@topbar-background: @main-color-3;
+
 @topbar-title-background: @main-color-1;
 @topbar-title-font-color: white;
 @topbar-title-background-hover: @main-color-2;
@@ -37,7 +39,7 @@
 @caution-button-background: gray;
 @caution-button-background-hover: indianred;
 
-@header-background: BurlyWood; 
+@header-background: transparent; 
 
 @disabled-button-font-color: #eee;
 @disabled-button-background: white;
@@ -50,7 +52,7 @@
 
 @faketext-button-font-color: white;
 @faketext-button-background: transparent;
-@faketext-button-font-color-hover: @main-color-2;
+@faketext-button-font-color-hover: white;
 @faketext-button-background-hover: transparent;
 
 @bubble-font-color: white;
@@ -190,6 +192,7 @@ button {
 	color: @faketext-button-font-color;
 	background-color: @faketext-button-background;
 	&:hover {
+		font-weight: bold;
 		color: @faketext-button-font-color-hover;
 		background-color: @faketext-button-background-hover;
 	}
@@ -268,6 +271,7 @@ select {
 	width: 100%;
 	max-width: 1024px;
 	height: 100px;
+	background-color: @topbar-background;
 }
 
 #topbar-title {
@@ -485,8 +489,6 @@ select {
 	min-height: 500px;
 	background-color: @content-background;
 	padding-bottom: 30px;
-	padding-left: 5px;
-	padding-right: 5px;
 }
 
 .patch-block-alpha {

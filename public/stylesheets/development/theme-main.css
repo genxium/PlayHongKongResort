@@ -70,7 +70,8 @@ button {
   background-color: transparent;
 }
 .faketext-button:hover {
-  color: gold;
+  font-weight: bold;
+  color: white;
   background-color: transparent;
 }
 .prioritized-cell {
@@ -114,7 +115,7 @@ select {
   padding: 2px;
 }
 #header {
-  background-color: BurlyWood;
+  background-color: transparent;
 }
 #footer {
   padding: 3px;
@@ -137,6 +138,7 @@ select {
   width: 100%;
   max-width: 1024px;
   height: 100px;
+  background-color: chocolate;
 }
 #topbar-title {
   position: absolute;
@@ -318,8 +320,6 @@ select {
   min-height: 500px;
   background-color: white;
   padding-bottom: 30px;
-  padding-left: 5px;
-  padding-right: 5px;
 }
 .patch-block-alpha {
   color: black;

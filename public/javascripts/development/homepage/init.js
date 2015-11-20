@@ -96,7 +96,10 @@ function routeByHash() {
 	var bundle = extractTagAndParams(href);
 	if (!bundle) {
 		bundle = extractCallbackParams(href); 
-		if (!bundle) return;
+		if (!bundle) {
+			window.location.hash = "home";
+			return;
+		}
 		var partyName = bundle[g_keyPartyName];
 		var stateWithAction = bundle[g_keyStateWithActionn];
 		var params = bundle[g_keyParams];
@@ -111,6 +114,9 @@ function routeByHash() {
 			
 		} else return;	
 	}
+
+	var tag = bundle[g_keyTag];
+	var params = bundle[g_keyParams];
 
 	if (tag == "home") {
 		requestHome();

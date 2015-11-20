@@ -272,7 +272,7 @@ function decodeStateWithAction(rawBundle) {
 }
 
 function extractCallbackParams(url) {
-	var urlRegex = /https?:\/\/(.+)/callback/(qq|wechat)/(.*)\??#?(.*)/i;
+	var urlRegex = /https?:\/\/(.+)\/callback\/(qq|wechat)\/(.+)\??#?(.*)/i;
 	var matchUrl = urlRegex.exec(url);
 
 	if (matchUrl === null) return null;
