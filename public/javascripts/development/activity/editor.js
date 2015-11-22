@@ -796,9 +796,8 @@ function generateOldImagesRow(par, editor, activity) {
 			src: activity.images[i].url
 		}).appendTo(node);
 
-		var indicator = $('<img>',{
-			"class": "checked-image",
-			src: "/assets/icons/checked.png"
+		var indicator = $('<div aria-hidden="true">',{
+			"class": "checked-image glyphicon glyphicon-ok"
 		}).appendTo(node);
 
 		var selector = new ImageSelector(activity.images[i].id, image, indicator);

@@ -1,3 +1,5 @@
+@import url("./main-color.less");
+
 /*
  * The top level container of the whole switch.
  * */
@@ -118,18 +120,21 @@
 	margin-right: 5px;
 	margin-top: 5px;
 }
+
 .preview-container img {
 	width: 90%;
 	height: 90%;
 	display: inline-block;
 	vertical-align: middle;
 }
+
 .preview-container .checked-image {
 	position: absolute;
 	right: 0;
 	bottom: 0;
-	width: 50px;
-	height: 50px;
+	width: 40px;
+	height: 40px;
+	color: @main-color-2;
 }
 
 @datetime-picker-height: 34px;
@@ -149,3 +154,29 @@
 	width: 70%;
 	line-height: @datetime-picker-height;
 }
+
+.captcha {
+	height: 85px;
+}
+
+.captcha input {
+	width: 100%;
+	padding: 5px;
+}
+
+@captcha-change-length: 50px;
+.captcha-change {
+	display: inline-block;
+	width: @captcha-change-length;
+	height: @captcha-change-length;
+	font-size: 40px;
+	padding: 5px;
+	&:hover {
+		cursor: pointer;
+	}
+}
+
+.captcha img{
+	float: left;
+}
+

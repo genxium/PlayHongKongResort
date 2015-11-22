@@ -55,9 +55,6 @@
 @faketext-button-font-color-hover: white;
 @faketext-button-background-hover: transparent;
 
-@bubble-font-color: white;
-@bubble-background: indianred; 
-
 @prioritized-cell-background: LemonChiffon;  
 @non-prioritized-cell-background: rgba(9, 9, 9, 0.15);  
 
@@ -400,86 +397,88 @@ select {
 }
 
 .menu-info-row {
+	padding: 5px;
 	height: 48%;
-	line-height: 48%;
+	line-height: 100%;
 }
 
 @menu-action-icon-length: 35px;
-@bubble-length: 15px;
-
+@menu-action-glyphicon-font-size: 30px;
 .noti-container {
 	position: relative;
+	color: white;
 	width: @menu-action-icon-length;
 	height: @menu-action-icon-length;
-	background: url("/assets/icons/message-button.png") left top no-repeat;
+	font-size: @menu-action-glyphicon-font-size;
 	cursor: pointer;
 	margin-right: 10px;
 	&:hover {
-		background-position: left -(@menu-action-icon-length + 1px);
-		padding-top: 25px;
+		color: black;
 	}
 }
 
+@bubble-length: 15px;
+@bubble-font-color: white;
+@bubble-background: crimson; 
 .bubble {
+	font-size: 12px;
 	color: @bubble-font-color;
 	position: absolute;
-	right: -6px;
-	top: 1px;
+	right: -5px;
+	top: -5px;
 	width: @bubble-length;
 	height: @bubble-length;
-	line-height: @bubble-length;
+	line-height: 100%;
 	background-color: @bubble-background;
 	text-align: center;
-	border-radius: 10px;
+	vertical-align: middle;
+	border-radius: 6px;
 }
 
 .post-login-player-name {
 	position: relative;
-	font-size: 1.25em;
+	font-size: 1.5em;
 	color: white;
 	height: @menu-action-icon-length;
+	width: 2*(@menu-action-icon-length + @menu-action-glyphicon-font-size);
 	line-height: @menu-action-icon-length;
+
+	overflow: hidden;
+	text-overflow: ellipsis;
+	-o-text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .menu-action-row {
+	padding: 5px;
 	height: 48%;
-	line-height: 48%;
+	line-height: 100%;
 }
 
 .menu-actions li {
 	float: right;
-	padding-right: 10px;
-}
-
-.menu-actions li a {
-	width: @menu-action-icon-length;
-	height: @menu-action-icon-length;
-	font-size: 0;
-	display: inline-block;
+	font-size: @menu-action-glyphicon-font-size;
+	color: white; 
+	a {
+		width: @menu-action-icon-length;
+		height: @menu-action-icon-length;
+		font-size: 0;
+		display: inline-block;
+		color: transparent; 
+	}		
 	&:hover {
-		background-position: left -(@menu-action-icon-length + 1px);
-		padding-top: @menu-action-icon-length;
-		font-size: 10px;
+		color: black; 
+		a {
+			font-size: (@menu-action-glyphicon-font-size - 16px);  
+			color: white; 
+		}	
 	}
 }
 
-.menu-actions .action-create a {
-	background: url("/assets/icons/create-button.png") left top no-repeat;
-}
-
-.menu-actions .action-profile a {
-	background: url("/assets/icons/profile-button.png") left top no-repeat;
-}
-
-.menu-actions .action-logout a {
-	background: url("/assets/icons/logout-button.png") left top no-repeat;
-}
-
-@foreign-party-logo-length: 24px;
-
-.foreign-party-logo {
+@foreign-party-logo-height: 24px;
+.qq-logo {
 	margin-left: 5px;
-	width: @foreign-party-logo-length;
+	height: @foreign-party-logo-height;
 }
 
 #content {
@@ -684,4 +683,11 @@ select {
 
 .profile-resend-hint {
 	padding: 5px;
+}
+
+.glyphicon-button {
+	color: black;
+	&:hover {
+		color: @main-color-2;  	
+	}
 }

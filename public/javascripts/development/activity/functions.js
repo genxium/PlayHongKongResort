@@ -228,10 +228,8 @@ function attachStatusIndicator(par, activity) {
 
 	if(activity.status != g_statusCreated && activity.status != g_statusRejected) return;
 	var btnEdit = $('<button>', {
-		"class": 'activity-edit'
-	}).appendTo(statusIndicator);
-	var dEdit = {};
-	btnEdit.click(activity, onBtnEditClicked);
+		"class": 'activity-btn-edit'
+	}).appendTo(statusIndicator).click(activity, onBtnEditClicked);
 }
 
 function getPriorRelation(activity) {

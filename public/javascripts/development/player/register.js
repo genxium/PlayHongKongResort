@@ -19,9 +19,7 @@ function RegisterWidgetX(onSuccess, onError) {
 		var registerBox = $('<div>', {
 			id: "register-box"
 		}).appendTo(this.content);
-		var rowName = $('<div>', {
-			"class": "register-name"
-		}).appendTo(registerBox);
+		var rowName = $('<div>').appendTo(registerBox);
 		this.name = $('<input>', {
 			type: "text",
 			placeHolder: HINTS.playername,	
@@ -60,9 +58,7 @@ function RegisterWidgetX(onSuccess, onError) {
 			});
 		});
 
-		var rowEmail = $('<div>', {
-			"class": "register-email"
-		}).appendTo(registerBox);
+		var rowEmail = $('<div>').appendTo(registerBox);
 		this.email = $('<input>', {
 			type: "text",
 			placeHolder: HINTS.email,
@@ -101,9 +97,7 @@ function RegisterWidgetX(onSuccess, onError) {
 			});
 		});
 		
-		var rowPsw = $('<div>', {
-			"class": "register-password"
-		}).appendTo(registerBox);
+		var rowPsw = $('<div>').appendTo(registerBox);
 		this.psw = $('<input>', {
 			type: "password",
 			placeHolder: HINTS.password	
@@ -123,9 +117,7 @@ function RegisterWidgetX(onSuccess, onError) {
 			pswCheck.html("<p>" + MESSAGES.password_requirement + "</p>");
 		});
 
-		var rowPswConfirm = $('<div>', {
-			"class": "register-pswconfirm"
-		}).appendTo(registerBox);
+		var rowPswConfirm = $('<div>').appendTo(registerBox);
 		this.pswConfirm = $('<input>', {
 			type: "password",
 			placeHolder: HINTS.confirm_password	

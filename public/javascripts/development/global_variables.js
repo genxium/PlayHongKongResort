@@ -182,3 +182,6 @@ var g_keyUptoken = "uptoken";
 var g_keyFileref = "fileref";
 
 var g_cdnQiniu = 1;
+
+/* logos */
+var g_srcQQLogo = "http://7xljmm.dl1.z0.glb.clouddn.com/qq.png";

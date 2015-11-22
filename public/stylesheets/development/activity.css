@@ -87,15 +87,13 @@
 .activity-info .activity-cell-relation {
   float: right;
 }
-.activity-edit {
+.activity-btn-edit {
   width: 24px;
   height: 24px;
+  font-size: 18px;
+  padding: 3px;
   border: none;
   margin-left: 10px;
-  background: url("/assets/icons/edit-button.png") left top no-repeat;
-}
-.activity-edit:hover {
-  background-position: left bottom;
 }
 .activity-detail-relation {
   font-size: 40px;

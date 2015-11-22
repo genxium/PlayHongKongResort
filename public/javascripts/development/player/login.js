@@ -137,9 +137,7 @@ function NameCompletionForm() {
                 var registerBox = $('<div>', {
                         id: "register-box"
                 }).appendTo(this.content);
-                var rowName = $('<div>', {
-                        "class": "register-name"
-                }).appendTo(registerBox);
+                var rowName = $('<div>').appendTo(registerBox);
                 this.name = $('<input>', {
                         type: "text",
                         placeHolder: HINTS.playername,
@@ -148,9 +146,7 @@ function NameCompletionForm() {
                         "class": "message"
                 }).appendTo(rowName);
 
-                var rowEmail = $('<div>', {
-                        "class": "register-email"
-                }).appendTo(registerBox);
+                var rowEmail = $('<div>').appendTo(registerBox);
                 this.email = $('<input>', {
                         type: "text",
                         placeHolder: HINTS.email,
@@ -336,8 +332,8 @@ function appendForeignPartyLoginEntry(par, party) {
 	if (!par) return;
 	if (party == g_partyQQ) {
 		var qqLoginEntry = $("<img>", {
-			src: "/assets/icons/qq.png",
-			"class": "foreign-party-logo"
+			src: g_srcQQLogo,
+			"class": "qq-logo"
 		}).appendTo(par);
 		qqLoginEntry.click(function(evt) {
 			evt.preventDefault();
@@ -479,12 +475,12 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 	}).appendTo(buttonsPanel);
 
 	var playerName = $("<div>", {
-		"class": "post-login-player-name right",
+		"class": "post-login-player-name left",
 		html: g_loggedInPlayer.name
 	}).appendTo(upperRow);
 
 	var noti = $("<div>", {
-		"class": "noti-container right"
+		"class": "noti-container glyphicon glyphicon-envelope left"
 	}).appendTo(upperRow).click(function(evt){
 		evt.preventDefault();		
 		if (!g_loggedInPlayer) return;
@@ -503,12 +499,12 @@ function generatePostLoginMenu(par, onLoginSuccess, onLoginError, onLogoutSucces
 		"class": "menu-action-row"
 	}).appendTo(buttonsPanel);
 
-	var icons = ["/assets/icons/new_activity.png", "/assets/icons/profile.png", "/assets/icons/logout.png"];
-	var actionNames = ["create", "profile", "logout"];
+	// TODO: remove the following name-dependency for glyphicons
+	var actionNames = ["file", "user", "log-out"];
 	var titles = [TITLES.create, TITLES.profile, TITLES.logout];
 	var reactions = [createReact, profileReact, logoutReact]; 
 
-	var dropdownMenu = createDropdownMenu(lowerRow, "menu-post-login", g_loggedInPlayer.name, icons, actionNames, titles, reactions);
+	var dropdownMenu = createDropdownMenu(lowerRow, "menu-post-login", g_loggedInPlayer.name, actionNames, titles, reactions);
 	var menu = new PostLoginMenu(bubble, dropdownMenu, onLoginSuccess, onLoginError, onLogoutSuccess, onLogoutError);
 	var params = [menu, menu, menu];
 	dropdownMenu.setReactionParams(params);

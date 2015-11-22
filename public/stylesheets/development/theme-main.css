@@ -247,71 +247,75 @@ select {
   line-height: 100%;
 }
 .menu-info-row {
+  padding: 5px;
   height: 48%;
-  line-height: 48%;
+  line-height: 100%;
 }
 .noti-container {
   position: relative;
+  color: white;
   width: 35px;
   height: 35px;
-  background: url("/assets/icons/message-button.png") left top no-repeat;
+  font-size: 30px;
   cursor: pointer;
   margin-right: 10px;
 }
 .noti-container:hover {
-  background-position: left -36px;
-  padding-top: 25px;
+  color: black;
 }
 .bubble {
+  font-size: 12px;
   color: white;
   position: absolute;
-  right: -6px;
-  top: 1px;
+  right: -5px;
+  top: -5px;
   width: 15px;
   height: 15px;
-  line-height: 15px;
-  background-color: indianred;
+  line-height: 100%;
+  background-color: crimson;
   text-align: center;
-  border-radius: 10px;
+  vertical-align: middle;
+  border-radius: 6px;
 }
 .post-login-player-name {
   position: relative;
-  font-size: 1.25em;
+  font-size: 1.5em;
   color: white;
   height: 35px;
+  width: 130px;
   line-height: 35px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .menu-action-row {
+  padding: 5px;
   height: 48%;
-  line-height: 48%;
+  line-height: 100%;
 }
 .menu-actions li {
   float: right;
-  padding-right: 10px;
+  font-size: 30px;
+  color: white;
 }
 .menu-actions li a {
   width: 35px;
   height: 35px;
   font-size: 0;
   display: inline-block;
+  color: transparent;
 }
-.menu-actions li a:hover {
-  background-position: left -36px;
-  padding-top: 35px;
-  font-size: 10px;
+.menu-actions li:hover {
+  color: black;
 }
-.menu-actions .action-create a {
-  background: url("/assets/icons/create-button.png") left top no-repeat;
+.menu-actions li:hover a {
+  font-size: 14px;
+  color: white;
 }
-.menu-actions .action-profile a {
-  background: url("/assets/icons/profile-button.png") left top no-repeat;
-}
-.menu-actions .action-logout a {
-  background: url("/assets/icons/logout-button.png") left top no-repeat;
-}
-.foreign-party-logo {
+.qq-logo {
   margin-left: 5px;
-  width: 24px;
+  height: 24px;
 }
 #content {
   position: relative;
@@ -479,4 +483,10 @@ profile-info-table-hint {
 }
 .profile-resend-hint {
   padding: 5px;
+}
+.glyphicon-button {
+  color: black;
+}
+.glyphicon-button:hover {
+  color: gold;
 }

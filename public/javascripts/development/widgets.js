@@ -467,38 +467,15 @@ function DropdownMenu(toggle, items, reactions) {
 	};
 }
 
-function createDropdownMenu(par, id, menuTitle, icons, actionNames, titleList, reactions) {
+function createDropdownMenu(par, id, menuTitle, actionNames, titleList, reactions) {
 	var length = titleList.length;
-	if (length != icons.length) return; 
 	var container = $("<div>", { "class": "menu-actions" }).appendTo(par);
-	// these params indicate that the container is centred
-	//container.css("position", "absolute");
-	//container.css("width", "90%")
-	//container.css("left", "5%")
-	//container.css("height", "60%");
-	//container.css("top", "20%")
-	
-	/*var toggle = $("<button id='" + id + "' class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>").appendTo(container);
-	toggle.css("font-size", "1em");
-	toggle.css("width", "100%")
-	toggle.css("height", "100%");
-	
-	toggle.text(menuTitle);*/
 	var toggle = null;
-	//var sp = $("<span class='caret'>").appendTo(toggle);	
-	//var ul = $("<ul  aria-labelledby='" + id + "' class='dropdown-menu' role = 'menu'>").appendTo(container);
-	var ul = $("<ul>", {
-	}).appendTo(container); 
+	var ul = $("<ul>").appendTo(container); 
 	var lis = [];
 	for (var i = 0; i < titleList.length; i++) {
-		var li = $("<li class='action-" + actionNames[i] + " patch-block-gamma'>").appendTo(ul);
-		var action = $("<a class='patch-block-gamma' tabindex='-1' href='#' title='"+titleList[i]+"'>").appendTo(li);
-		//action.css("font-size", "15pt");
-		//action.css("display", "block"); // increase the size of the link target, ref: http://css-tricks.com/keep-margins-out-of-link-lists/
-		//action.css("padding", "5px");
-		//action.css("text-align", "center");
-		//action.css("vertical-align", "middle");
-		//setBackgroundImage(action, icons[i], "contain", "no-repeat", "left center");
+		var li = $("<li class='glyphicon glyphicon-" + actionNames[i] + "'>").appendTo(ul);
+		var action = $("<a class='patch-block-gamma' tabindex='-1' href='#' title='" + titleList[i] + "'>").appendTo(li);
 		action.text(titleList[i]);
 		lis.push(li);
 	}
@@ -568,11 +545,9 @@ function Captcha(sid) {
 		this.img = $("<img>", {
 			src: ""
 		}).appendTo(row);
-		var btnChange = $("<button>", {
-			"class": "change"
-		}).appendTo(row);
-
-		btnChange.click(this, function(evt) {
+		var btnChange = $("<div>", {
+			"class": "captcha-change glyphicon glyphicon-refresh glyphicon-button"
+		}).appendTo(row).click(this, function(evt) {
 			evt.preventDefault();
 			var widget = evt.data;	
 			widget.updateImg();
