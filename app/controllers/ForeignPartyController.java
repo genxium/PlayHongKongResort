@@ -19,8 +19,22 @@ import utilities.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
 import java.net.URL;
-import java.net.URLConnection;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.NoSuchAlgorithmException;
+import java.security.KeyManagementException;
+
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -68,23 +82,49 @@ public class ForeignPartyController extends Controller {
                         return ret;
 	        }
 	}
+	
+	/* reference http://stackoverflow.com/questions/1828775/how-to-handle-invalid-ssl-certificates-with-apache-httpclient */
+	private static class DefaultTrustManager implements X509TrustManager {
 
-	protected static ForeignPartySpecs queryForeignPartySpecs(final String accessToken, final Integer party, String partyId) throws IOException {
+			@Override
+			public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+
+			@Override
+			public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+
+			@Override
+			public X509Certificate[] getAcceptedIssuers() {
+				return null;
+			}
+	}
+
+	protected static ForeignPartySpecs queryForeignPartySpecs(final String accessToken, final Integer party, String partyId) throws IOException, NoSuchAlgorithmException, KeyManagementException {
 		/**
 		 * TODO: implementation for major foreign parties
 		 * */
 		switch (party) {
 			case ForeignPartyHelper.PARTY_QQ:
-                        final Map<String, Object> params = new HashMap<>();
-                        params.put(TempForeignParty.ACCESS_TOKEN, accessToken);
-				String url = "https://graph.qq.com/oauth2.0/me?" + DataUtils.toUrlParams(params);
-                                final URLConnection conn = new URL(url).openConnection();
+				SSLContext ctx = SSLContext.getInstance("TLS");
+				ctx.init(new KeyManager[0], new TrustManager[] {new DefaultTrustManager()}, new SecureRandom());
+				SSLContext.setDefault(ctx);
+				final Map<String, Object> params = new HashMap<>();
+				params.put(TempForeignParty.ACCESS_TOKEN, accessToken);
+				final String url = "https://graph.qq.com/oauth2.0/me?" + DataUtils.toUrlParams(params);
+                                final HttpsURLConnection conn = (HttpsURLConnection)(new URL(url).openConnection());
+				// TODO: remove the following dirty fix and patch cert-verification systematically
+				conn.setHostnameVerifier(new HostnameVerifier() {
+						@Override
+						public boolean verify(String arg0, SSLSession arg1) {
+							return true;
+						}
+				});
 				final BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				final String line = in.readLine();
 				in.close();
+				conn.disconnect();
 
-				Pattern resPattern = Pattern.compile("^callback\\([\\s\\S]*\\{\"client_id\":\"([\\w\\d]+)\",\"openid\":\"([\\w\\d]+)\"\\}[\\s\\S]*\\);$", Pattern.UNICODE_CHARACTER_CLASS);
-				Matcher matcher = resPattern.matcher(line);
+				final Pattern resPattern = Pattern.compile("^callback\\([\\s\\S]*\\{\"client_id\":\"([\\w\\d]+)\",\"openid\":\"([\\w\\d]+)\"\\}[\\s\\S]*\\);$", Pattern.UNICODE_CHARACTER_CLASS);
+				final Matcher matcher = resPattern.matcher(line);
 				if (!matcher.matches()) return null;
 				partyId = matcher.group(2);
 				return new ForeignPartySpecs(partyId, party);
@@ -183,7 +223,7 @@ public class ForeignPartyController extends Controller {
 		 * */
 	}
 
-	protected static WrappedPlayer loginWithoutNameCompletion(final String accessToken, final Integer party, String partyId) throws ForeignPartyRegistrationRequiredException, IOException {
+	protected static WrappedPlayer loginWithoutNameCompletion(final String accessToken, final Integer party, String partyId) throws ForeignPartyRegistrationRequiredException, IOException, NoSuchAlgorithmException, KeyManagementException {
 	        if (partyId == null) {
 	                // for implicit-grant
                         final ForeignPartySpecs specs = queryForeignPartySpecs(accessToken, party, partyId);

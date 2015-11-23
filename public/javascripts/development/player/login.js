@@ -334,15 +334,11 @@ function appendForeignPartyLoginEntry(par, party) {
 		var qqLoginEntry = $("<img>", {
 			src: g_srcQQLogo,
 			"class": "qq-logo"
-		}).appendTo(par);
-		qqLoginEntry.click(function(evt) {
+		}).appendTo(par).click(function(evt) {
 			evt.preventDefault();
-			var rawBundle = encodeStateWithAction(checkLoginStatus, [false]);
-			
-			var redirectUri = encodeURIComponent(window.location.protocol + "//" + window.location.host + "/callback/qq/" + rawBundle);
+			var redirectUri = encodeURIComponent(window.location.protocol + "//" + window.location.host + "/callback/qq");
 			var oauthTarget = 'https://graph.qq.com/oauth2.0/authorize?';
-			var oauthParams = ['client_id=' + g_appIdQQ, 'redirect_uri=' + redirectUri, 'scope=get_user_info','response_type=token'];
-        
+			var oauthParams = ['client_id=' + g_appIdQQ, 'redirect_uri=' + redirectUri, 'scope=get_user_info', 'response_type=token', 'state=' + encodeStateWithAction(checkLoginStatus, [false])];
 			window.location.assign(oauthTarget + oauthParams.join('&'));
 		});
 	}

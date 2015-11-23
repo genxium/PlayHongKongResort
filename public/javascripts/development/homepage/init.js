@@ -93,28 +93,36 @@ function requestHome() {
 
 function routeByHash() {
 	var href = window.location.href;
-	var bundle = extractTagAndParams(href);
-	if (!bundle) {
-		bundle = extractCallbackParams(href); 
-		if (!bundle) {
-			window.location.hash = "home";
-			return;
-		}
-		var partyName = bundle[g_keyPartyName];
-		var stateWithAction = bundle[g_keyStateWithActionn];
-		var params = bundle[g_keyParams];
-		if (partyName == "qq") {
-			var party = g_partyQQ;
-			var accessToken = params[g_keyAccessToken];	
-			saveAccessTokenAndParty(accessToken, party);
-			var tag = stateWithAction[g_keyTag];
+	// check whether it's called back from a foreign party login attempt
+	var foreignPartyBundle = extractAnyForeignPartyLogin(href);
+	if (!(!foreignPartyBundle)) {
+		if (foreignPartyBundle[g_keyParty] == g_partyQQ) {
+			var accessToken = foreignPartyBundle[g_keyAccessToken];	
+			saveAccessTokenAndParty(accessToken, g_partyQQ);
+			var stateWithAction = foreignPartyBundle[g_keyStateWithAction];
+			var state = stateWithAction[g_keyState];
+			var tag = state[g_keyTag];
+			var otherParamList = [];
+			for (var key in state) {
+				if (key == g_keyTag) continue; 
+				otherParamList.push(key + "=" + state[key]);
+			}
 			var addr = window.location.protocol + "//" + window.location.host + "#" + tag;
+			if (otherParamList.length > 0) addr += ("?" + otherParamList.join('&'));
 			window.location.assign(addr);	
 			return;
 			
-		} else return;	
+		} else {
+			// TODO
+			return;	
+		}
 	}
 
+	var bundle = extractTagAndParams(href);
+	if (!bundle) {
+		window.location.hash = "home";
+		return;
+	}
 	var tag = bundle[g_keyTag];
 	var params = bundle[g_keyParams];
 

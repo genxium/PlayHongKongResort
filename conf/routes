@@ -5,6 +5,7 @@
 # Global
 GET	 /	controllers.Application.index(dev: Integer ?=0, theme: String ?="main")
 GET	 /callback/$party_name<(qq|wechat)>/$state_with_action<(.*)>	controllers.Application.callback(dev: Integer ?=0, theme: String ?="main", party_name: String, state_with_action: String)
+GET	 /callback/$party_name<(qq|wechat)>	controllers.Application.callbackWithStateAsParam(dev: Integer ?=0, theme: String ?="main", party_name: String)
 GET	 /admin	controllers.Application.admin(dev: Integer ?=0)
 GET	/wstest controllers.Application.wstest()
 

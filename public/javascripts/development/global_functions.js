@@ -209,9 +209,8 @@ function extractTagAndParams(url) {
 	ret[g_keyTag] = tag;
 	ret[g_keyParams] = {};
 	
-	// TODO: this imposes an assumption on `params` that none of its component values contains character '='
 	var params = decodeURIComponent(matchUrl[3]);
-	var paramRegex = /(\w+)=([:,\[\]{}"@\.\w]+)/g; 
+	var paramRegex = /([^&]+)=([^&]+)/g; 
 	var matchParams = paramRegex.exec(params);
 	while (matchParams !== null) {
 		ret[g_keyParams][matchParams[1]] = matchParams[2];
@@ -271,29 +270,38 @@ function decodeStateWithAction(rawBundle) {
 	return ret;
 }
 
-function extractCallbackParams(url) {
-	var urlRegex = /https?:\/\/(.+)\/callback\/(qq|wechat)\/(.+)\??#?(.*)/i;
+function extractQQLoginParams(url) {
+	var urlRegex = /https?:\/\/(.+)\/callback\/qq\?#(((expires_in|access_token|state)=([^&]+)&?)+)/i;
 	var matchUrl = urlRegex.exec(url);
 
 	if (matchUrl === null) return null;
 
-	var ret = {};
-	var partyName = matchUrl[2];
-	var stateWithAction = decodeStateWithAction(matchUrl[3]);
-	
-	ret[g_keyPartyName] = partyName;
-	ret[g_keyStateWithAction] = stateWithAction;
-	ret[g_keyParams] = {};
-	
-	// TODO: this imposes an assumption on `params` that none of its component values contains character '='
-	var params = decodeURIComponent(matchUrl[4]);
-	var paramRegex = /(\w+)=([:,\[\]{}"@\.\w]+)/g; 
-	var matchParams = paramRegex.exec(params);
+	var paramStr = decodeURIComponent(matchUrl[2]);
+	var paramDict = {};
+
+	var paramRegex = /([^&]+)=([^&]+)/g; 
+	var matchParams = paramRegex.exec(paramStr);
 	while (matchParams !== null) {
-		ret[g_keyParams][matchParams[1]] = matchParams[2];
-		matchParams = paramRegex.exec(params);
+		paramDict[matchParams[1]] = matchParams[2];
+		matchParams = paramRegex.exec(paramStr);
 	}
-	return ret;
+		
+	var ret = {};
+	ret[g_keyParty] = g_partyQQ;
+	ret[g_keyAccessToken] = paramDict[g_keyAccessToken];
+
+	if (!(!paramDict['state'])) { 
+		var stateWithAction = decodeStateWithAction(paramDict['state']);
+		ret[g_keyStateWithAction] = stateWithAction;	
+		return ret;
+	}
+	return null;
+}
+
+function extractAnyForeignPartyLogin(url) {
+	var bundle = extractQQLoginParams(url);
+	if (!(!bundle)) return bundle;
+	return null;
 }
 
 function firstChild(obj, selector){

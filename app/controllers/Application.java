@@ -20,7 +20,7 @@ public class Application extends Controller {
 
     public static Result index(Integer dev, String theme) {
         try {
-            Content html = views.html.homepage.render(dev, theme);
+            final Content html = views.html.homepage.render(dev, theme);
             return ok(html);
         } catch (Exception e) {
             Loggy.e(TAG, "index", e);
@@ -30,7 +30,7 @@ public class Application extends Controller {
 
     public static Result callback(Integer dev, String theme, String partyName, String stateWithAction) {
         try {
-            Content html = views.html.homepage.render(dev, theme);
+            final Content html = views.html.homepage.render(dev, theme);
             return ok(html);
         } catch (Exception e) {
             Loggy.e(TAG, "callback", e);
@@ -38,9 +38,19 @@ public class Application extends Controller {
         return badRequest();
     }
 
+    public static Result callbackWithStateAsParam(Integer dev, String theme, String partyName) {
+        try {
+            final Content html = views.html.homepage.render(dev, theme);
+            return ok(html);
+        } catch (Exception e) {
+            Loggy.e(TAG, "callbackWithStateAsParam", e);
+        }
+        return badRequest();
+    }
+
     public static Result admin(Integer dev) {
         try {
-            Content html = views.html.admin.render(dev);
+            final Content html = views.html.admin.render(dev);
             return ok(html);
         } catch (Exception e) {
             Loggy.e(TAG, "admin", e);
@@ -50,7 +60,7 @@ public class Application extends Controller {
 
     public static Result wstest() {
         try {
-            Content html = views.html.wstest.render();
+            final Content html = views.html.wstest.render();
             return ok(html);
         } catch (Exception e) {
 
@@ -60,11 +70,11 @@ public class Application extends Controller {
 
     public static Result captcha(String sid) {
         if (sid == null) return badRequest();
-        DefaultKaptcha captcha = new DefaultKaptcha();
+        final DefaultKaptcha captcha = new DefaultKaptcha();
         captcha.setConfig(new Config(new Properties()));
-        String text = captcha.createText();
-        BufferedImage img = captcha.createImage(text);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final String text = captcha.createText();
+        final BufferedImage img = captcha.createImage(text);
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             ImageIO.write(img, "jpg", baos);
             session(sid, text);

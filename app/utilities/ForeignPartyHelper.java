@@ -26,7 +26,7 @@ public class ForeignPartyHelper {
         public static Map<String, String> getAttr(final int party) {
                 if (party == PARTY_QQ) {
                         if (qqMap == null) {
-                                String fullPath = Play.application().path() + "/conf/" + "qq_config.xml";
+                                final String fullPath = Play.application().path() + "/conf/" + "qq_config.xml";
                                 qqMap = XMLHelper.readForeignPartyConfig(fullPath);
                         }
                         return qqMap;
@@ -36,8 +36,11 @@ public class ForeignPartyHelper {
 
         public static String queryQQNickname(final String accessToken, final String openId) {
                 try {
+                        Loggy.e(TAG, "queryQQNickname", "called with " + accessToken + ", " + openId);
                         final Map<String, String> qqAttr = ForeignPartyHelper.getAttr(ForeignPartyHelper.PARTY_QQ);
                         if (qqAttr == null) return null;
+
+                        Loggy.e(TAG, "queryQQNickname", "read qqAttr");
                         final Map<String, Object> params = new HashMap<>();
                         params.put("oauth_consumer_key", qqAttr.get(ForeignPartyHelper.APP_ID));
                         params.put(TempForeignParty.ACCESS_TOKEN, accessToken);
