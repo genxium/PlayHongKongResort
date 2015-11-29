@@ -1,0 +1,14 @@
+#!/bin/bash
+
+basedir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+host='localhost'
+dbname='hongkongresort'
+user='root'
+
+tables=( player activity player_activity_relation login image assessment comment notification temp_foreign_party perm_foreign_party )
+
+for tablename in "${tables[@]}"
+do
+	mysql -h $host -u $user $dbname < $basedir/create_table_"$tablename".sql
+done

@@ -5,14 +5,13 @@ basedir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 host='localhost'
 dbname='hongkongresort'
 user='root'
+extra_opt='--default-character-set=utf8'
 
-mysqldump -h $host -u $user -d $dbname activity > $basedir/create_table_activity.sql
-mysqldump -h $host -u $user -d $dbname assessment > $basedir/create_table_assessment.sql
-mysqldump -h $host -u $user -d $dbname comment > $basedir/create_table_comment.sql
-mysqldump -h $host -u $user -d $dbname image > $basedir/create_table_image.sql
-mysqldump -h $host -u $user -d $dbname login > $basedir/create_table_login.sql
-mysqldump -h $host -u $user -d $dbname notification > $basedir/create_table_notification.sql 
-mysqldump -h $host -u $user -d $dbname player_activity_relation > $basedir/create_table_player_activity_relation.sql
-mysqldump -h $host -u $user -d $dbname player > $basedir/create_table_player.sql
-mysqldump -h $host -u $user -d $dbname perm_foreign_party > $basedir/create_table_perm_foreign_party.sql
-mysqldump -h $host -u $user -d $dbname temp_foreign_party > $basedir/create_table_temp_foreign_party.sql
+mysqldump -h $host -u $user $extra_opt $dbname player | sed 's/ AUTO_INCREMENT=[0-9]*//g' > $basedir/create_table_player.sql
+
+tables=( activity player_activity_relation login image assessment comment notification temp_foreign_party perm_foreign_party )
+
+for tablename in "${tables[@]}"
+do
+	mysqldump -h $host -u $user -d $extra_opt $dbname $tablename | sed 's/ AUTO_INCREMENT=[0-9]*//g' > $basedir/create_table_"$tablename".sql
+done

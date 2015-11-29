@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.22, for osx10.10 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.27, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: hongkongresort
 -- ------------------------------------------------------
--- Server version	5.6.22
+-- Server version	5.6.27-0ubuntu0.14.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -44,8 +44,18 @@ CREATE TABLE `player` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `player`
+--
+
+LOCK TABLES `player` WRITE;
+/*!40000 ALTER TABLE `player` DISABLE KEYS */;
+INSERT INTO `player` VALUES (45,'genxium',NULL,NULL,NULL,3,0,'',194,NULL,NULL,0,NULL,NULL,0,'','',1),(46,'angryboy',NULL,NULL,NULL,1,0,'',0,NULL,'183c422b674903ea',0,NULL,NULL,0,'','',1),(47,'winless',NULL,NULL,NULL,1,0,'',0,NULL,'91fdbb213d4ac5e3',0,NULL,NULL,0,'','',1),(48,'qazwsx',NULL,NULL,'3123123@163.com',1,0,'',0,NULL,'bf2269936085ffdd',0,NULL,NULL,0,'','',1),(51,'genxium5555',NULL,'561d0861caf428562508acc20f4a8550','genxium@gmail.com',3,0,'malejn',0,NULL,NULL,0,NULL,'f6670f9acac01f12',0,'2892342','no mood lalala',0),(52,'RayC33',NULL,NULL,'saichanjiawei@gmail.com',1,0,'',0,NULL,'8616dbb4a04e6840',0,NULL,NULL,0,'','',1),(53,'wofuck',NULL,NULL,'m@roowe.net',1,0,'',0,NULL,'3ebe71e5217c2570',0,NULL,NULL,0,'','',1),(54,'hachicats',NULL,NULL,NULL,1,0,'',244,NULL,NULL,0,NULL,NULL,0,'','',1),(55,'genxium1988',NULL,'52633c22256370be439fceef08b77690','genxium@hotmail.com',3,0,'',0,NULL,'7b48c31f6f5c37cc',0,NULL,'409a56eff51c0443',0,'','',0);
+/*!40000 ALTER TABLE `player` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -56,4 +66,4 @@ CREATE TABLE `player` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-09-10 12:00:49
+-- Dump completed on 2015-11-29 13:37:35
