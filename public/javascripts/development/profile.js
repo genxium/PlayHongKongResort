@@ -104,6 +104,7 @@ function refreshProfileInfoTable(par, fieldKey, fieldVal, title, regex, requirem
 	}
 	par[fieldKey].input.val(fieldVal);
 	if (disabled)	disableField(par[fieldKey].input);
+	else enableField(par[fieldKey].input);
 
 	if (!par[fieldKey].hint) {
 		par[fieldKey].hint = $("<div>", {
@@ -142,32 +143,40 @@ function ProfileEditor() {
 		if (!player) return;
 		this.player = player;
 
-		// avatar 
-		if (!this.avatarBox)	this.avatarBox = $('<div>', {
-			"class": "profile-avatar-box"
-		}).appendTo(this.content);
-
-		if (!this.avatarPreview) {
-			this.avatarPreview = $('<div>', {
-				"class": "preview-container"
-			}).hide().appendTo(this.content);  
-			$('<img>', {
-				src: player.avatar
-			}).appendTo(this.avatarPreview);
+		// avatar box is  
+		if (!this.avatarEditBox) {	
+			this.avatarEditBox = $('<div>', {
+				"class": "profile-avatar-box"
+			}).hide().appendTo(this.content);
 		}
-		if (this.mode == this.NORMAL) this.avatarPreview.show();	
-		else this.avatarPreview.hide();	
+
+		if (!this.avatarNormalBox) {
+			this.avatarNormalBox = $('<div>', {
+				"class": "profile-avatar-box"
+			}).hide().appendTo(this.content);
+			this.normalPreviewContainer = $('<div>', {
+				"class": "preview-container"
+			}).appendTo(this.avatarNormalBox);  
+			this.normalPreview = $('<img>').appendTo(this.normalPreviewContainer);
+		}
+		this.normalPreview.attr('src', player.avatar);
+		if (this.mode == this.NORMAL) {
+			this.avatarNormalBox.show();	
+			this.avatarEditBox.hide();	
+		} else {
+			this.avatarNormalBox.hide();	
+			this.avatarEditBox.show();	
+		}
 
 		if (!this.infoTable) {
 			this.infoTable = $("<div>", {
 				"class": "profile-info-table clear"
 			}).appendTo(this.content);
-
-			var disabled = (this.mode == this.NORMAL);		
-			for (var idx in this.infoTableVarList) {
-				var tmpList = this.infoTableVarList[idx];
-				refreshProfileInfoTable(this.infoTable, tmpList[0], player[tmpList[0]], tmpList[1], tmpList[2], tmpList[3], disabled);
-			}
+		}
+		var disabled = (this.mode == this.NORMAL);		
+		for (var idx in this.infoTableVarList) {
+			var tmpList = this.infoTableVarList[idx];
+			refreshProfileInfoTable(this.infoTable, tmpList[0], player[tmpList[0]], tmpList[1], tmpList[2], tmpList[3], disabled);
 		}
 
 		if (!g_loggedInPlayer || player.id != g_loggedInPlayer.id) return;
@@ -175,11 +184,11 @@ function ProfileEditor() {
 		if (!this.avatarNode) {
 		        var domain = queryCDNDomainSync();
 			this.avatarNode = new ProfileEditorImageNode(g_cdnQiniu, domain);
-			this.avatarNode.appendTo(this.avatarBox);	
+			this.avatarNode.appendTo(this.avatarEditBox);	
 			this.avatarNode.refresh(this);
 			this.avatarHint = $("<p>", {
 				"class": "profile-avatar-hint"
-			}).appendTo(this.avatarBox);
+			}).appendTo(this.avatarEditBox);
 		}
 		if (this.mode == this.EDITING)	{
 			this.avatarNode.show();

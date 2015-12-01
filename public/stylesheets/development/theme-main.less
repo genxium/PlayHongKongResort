@@ -363,6 +363,7 @@ select {
 	display: inline-block;
 	position: relative;
 	height: 100%;
+	width: 80px;
 	padding: 5px;
 	text-align: center;
 	cursor: pointer;
@@ -640,9 +641,10 @@ select {
 }
 
 @profile-avatar-box-length: 220px;
+@profile-avatar-hint-height: 20px;
 .profile-avatar-box {
 	width: @profile-avatar-box-length;
-	length: @profile-avatar-box-length;
+	height: @profile-avatar-box-length + @profile-avatar-hint-height;
 	padding: 10px;
 }
 
@@ -672,7 +674,7 @@ select {
 .profile-avatar-hint {
 	color: indianred;
 	font-size: 1em;
-	height: 15px;
+	height: @profile-avatar-hint-height;
 }
 
 .profile-btn-cancel, .profile-btn-edit {

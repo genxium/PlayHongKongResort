@@ -219,6 +219,7 @@ select {
   display: inline-block;
   position: relative;
   height: 100%;
+  width: 80px;
   padding: 5px;
   text-align: center;
   cursor: pointer;
@@ -449,7 +450,7 @@ select {
 }
 .profile-avatar-box {
   width: 220px;
-  length: 220px;
+  height: 240px;
   padding: 10px;
 }
 .profile-info-table-row {
@@ -473,7 +474,7 @@ profile-info-table-hint {
 .profile-avatar-hint {
   color: indianred;
   font-size: 1em;
-  height: 15px;
+  height: 20px;
 }
 .profile-btn-cancel,
 .profile-btn-edit {
