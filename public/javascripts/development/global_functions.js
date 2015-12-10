@@ -11,14 +11,18 @@ function setCookie(key, val, path, days) {
 }
 
 function getCookie(key) {
-	if (document.cookie.length <= 0) return null;
-	var start = document.cookie.indexOf(key + "=");
-	if (start == -1)	return null;
-	if (start - 1 >= 0 && (document.cookie[start - 1] != ' ' && document.cookie[start - 1] != ';')) return null;
-	start = start + key.length + 1;
-	end = document.cookie.indexOf(";", start);
-	if (end == -1)	end = document.cookie.length;
-	return unescape(document.cookie.substring(start, end));
+        if (document.cookie.length <= 0) return null;
+        var start = document.cookie.indexOf(key + "=");
+        var isValid = (start == 0 || document.cookie[start - 1] == ' ' || document.cookie[start - 1] == ';');
+        while (!isValid) {
+                if (start == -1)        return null;
+                start = document.cookie.indexOf(key + "=", start + 1); 
+                isValid = (start == 0 || document.cookie[start - 1] == ' ' || document.cookie[start - 1] == ';');
+        }
+        start = start + key.length + 1;
+        end = document.cookie.indexOf(";", start);
+        if (end == -1)  end = document.cookie.length;
+        return unescape(document.cookie.substring(start, end));
 }
 
 function removeCookie(key) {
