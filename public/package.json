@@ -14,6 +14,6 @@
     "moment": "*",
     "eonasdan-bootstrap-datetimepicker": "*",
     "Plupload": "git+https://github.com/moxiecode/plupload.git",
-    "qiniu-js-sdk": "git+https://github.com/qiniu/js-sdk.git"
+    "qiniu-js": "git+https://github.com/qiniu/js-sdk.git"
   }
 }
